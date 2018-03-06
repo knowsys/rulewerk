@@ -9,6 +9,18 @@ public class Constant implements Term {
 		this.name = name;
 	}
 
+	public TermType getType() {
+		return TermType.CONSTANT;
+	}
+
+	public boolean isVariable() {
+		return false;
+	}
+
+	public boolean isConstant() {
+		return true;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

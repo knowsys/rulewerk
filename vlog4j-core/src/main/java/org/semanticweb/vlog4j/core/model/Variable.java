@@ -13,6 +13,18 @@ public class Variable implements Term {
 		return name;
 	}
 
+	public TermType getType() {
+		return TermType.VARIABLE;
+	}
+
+	public boolean isVariable() {
+		return true;
+	}
+
+	public boolean isConstant() {
+		return false;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

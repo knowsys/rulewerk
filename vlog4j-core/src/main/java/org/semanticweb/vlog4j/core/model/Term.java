@@ -4,4 +4,9 @@ public interface Term {
 
 	String getName();
 	
+	TermType getType();
+	
+	boolean isVariable();
+	
+	boolean isConstant();
 }
