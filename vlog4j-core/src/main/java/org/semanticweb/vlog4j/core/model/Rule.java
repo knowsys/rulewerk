@@ -43,7 +43,6 @@ public class Rule {
 	private final Set<Term> terms = new HashSet<Term>();
 
 	public Rule(Atom[] body, Atom[] head) throws RuleValidationException {
-		super();
 
 		validateRuleInput(body, head);
 
