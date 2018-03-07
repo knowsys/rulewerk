@@ -30,7 +30,6 @@ public class Atom {
 	private final List<Term> arguments;
 
 	public Atom(String predicateName, List<Term> arguments) {
-		super();
 		this.predicateName = predicateName;
 		this.arguments = Collections.unmodifiableList(arguments);
 	}

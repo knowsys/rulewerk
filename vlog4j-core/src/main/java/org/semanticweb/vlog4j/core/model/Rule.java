@@ -1,5 +1,8 @@
 package org.semanticweb.vlog4j.core.model;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -21,42 +24,54 @@ package org.semanticweb.vlog4j.core.model;
  */
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.vlog4j.core.validation.RuleValidationException;
 
 public class Rule {
 
-	private final Atom[] body;
-	private final Atom[] head;
+	private final List<Atom> body;
+	private final List<Atom> head;
 
-	// TODO should we use Collections.unmodifiableList(body)? no compile error
-	private final Set<Variable> existentiallyQuantifiedVariables = new HashSet<Variable>();
+	private final Set<Variable> existentiallyQuantifiedVariables;
 
-	private final Set<Variable> bodyVariables = new HashSet<Variable>();
-	private final Set<Variable> headVariables = new HashSet<Variable>();
-	private final Set<Variable> variables = new HashSet<Variable>();
-	private final Set<Variable> universallyQuantifiedVariables = new HashSet<Variable>();
-	private final Set<Constant> bodyConstants = new HashSet<Constant>();
-	private final Set<Constant> headConstants = new HashSet<Constant>();
-	private final Set<Constant> constants = new HashSet<Constant>();
-	private final Set<Term> terms = new HashSet<Term>();
+	private final Set<Variable> bodyVariables;
+	private final Set<Variable> headVariables;
+	private final Set<Variable> variables;
+	private final Set<Variable> universallyQuantifiedVariables;
+	private final Set<Constant> bodyConstants;
+	private final Set<Constant> headConstants;
+	private final Set<Constant> constants;
+	private final Set<Term> terms;
 
-	public Rule(Atom[] body, Atom[] head) throws RuleValidationException {
-
+	public Rule(List<Atom> body, List<Atom> head) throws RuleValidationException {
 		validateRuleInput(body, head);
 
-		this.body = body;
-		this.head = head;
+		this.body = Collections.unmodifiableList(body);
+		this.head = Collections.unmodifiableList(head);
 
-		collectTerms();
+		this.bodyVariables = Collections.unmodifiableSet(collectVariables(body));
+		this.bodyConstants = Collections.unmodifiableSet(collectConstants(body));
+		this.headVariables = Collections.unmodifiableSet(collectVariables(head));
+		this.headConstants = Collections.unmodifiableSet(collectConstants(head));
+
+		this.variables = Collections.unmodifiableSet(collectVariables());
+		this.constants = Collections.unmodifiableSet(collectConstants());
+		this.terms = Collections.unmodifiableSet(collectTerms());
+
+		this.existentiallyQuantifiedVariables = Collections.unmodifiableSet(collectExistentiallyQuantifiedVariables());
+		this.universallyQuantifiedVariables = Collections.unmodifiableSet(collectUniversallyQuantifiedVariables());
 	}
 
-	private void validateRuleInput(Atom[] body, Atom[] head) throws RuleValidationException {
+	// TODO: to String
+	// TODO: hasCode, equals
+
+	private void validateRuleInput(List<Atom> body, List<Atom> head) throws RuleValidationException {
 		if (body == null) {
 			throw new RuleValidationException("Null rule body");
 		}
-		if (body.length == 0) {
+		if (body.isEmpty()) {
 			throw new RuleValidationException("Empty rule body");
 		}
 		for (Atom bodyAtom : body) {
@@ -68,7 +83,7 @@ public class Rule {
 		if (head == null) {
 			throw new RuleValidationException("Null rule head");
 		}
-		if (head.length == 0) {
+		if (head.isEmpty()) {
 			throw new RuleValidationException("Empty rule head");
 		}
 		for (Atom headAtom : head) {
@@ -78,58 +93,81 @@ public class Rule {
 		}
 	}
 
-	private void collectTerms() {
-		for (Atom bodyAtom : this.body) {
-			for (Term term : bodyAtom.getArguments()) {
+	private Set<Variable> collectVariables(Collection<Atom> atoms) {
+		final Set<Variable> variables = new HashSet<>();
+		for (Atom atom : atoms) {
+			for (Term term : atom.getArguments()) {
 				if (term.isVariable()) {
-					bodyVariables.add((Variable) term);
-				} else {
-					bodyConstants.add((Constant) term);
+					variables.add((Variable) term);
 				}
 			}
 		}
-		for (Atom headAtom : this.head) {
-			for (Term term : headAtom.getArguments()) {
-				if (term.isVariable()) {
-					headVariables.add((Variable) term);
-				} else {
-					headConstants.add((Constant) term);
+		return variables;
+	}
+
+	private Set<Constant> collectConstants(Collection<Atom> atoms) {
+		final Set<Constant> constants = new HashSet<>();
+		for (Atom atom : atoms) {
+			for (Term term : atom.getArguments()) {
+				if (term.isConstant()) {
+					constants.add((Constant) term);
 				}
 			}
 		}
-		variables.addAll(bodyVariables);
-		variables.addAll(headVariables);
+		return constants;
+	}
 
-		constants.addAll(bodyConstants);
-		constants.addAll(headConstants);
+	private Set<Variable> collectVariables() {
+		final Set<Variable> variables = new HashSet<>();
+		variables.addAll(this.bodyVariables);
+		variables.addAll(this.headVariables);
+		return variables;
+	}
 
-		terms.addAll(variables);
-		terms.addAll(constants);
+	private Set<Constant> collectConstants() {
+		final Set<Constant> constants = new HashSet<>();
+		constants.addAll(this.bodyConstants);
+		constants.addAll(this.headConstants);
+		return constants;
+	}
 
-		for (Variable headVariable : headVariables) {
-			if (!bodyVariables.contains(headVariable)) {
+	private Set<Term> collectTerms() {
+		final Set<Term> terms = new HashSet<>();
+		terms.addAll(this.variables);
+		terms.addAll(this.constants);
+		return terms;
+	}
+
+	private Set<Variable> collectExistentiallyQuantifiedVariables() {
+		final Set<Variable> existentiallyQuantifiedVariables = new HashSet<>();
+		for (Variable headVariable : this.headVariables) {
+			if (!this.bodyVariables.contains(headVariable)) {
 				existentiallyQuantifiedVariables.add(headVariable);
 			}
 		}
+		return existentiallyQuantifiedVariables;
+	}
 
-		for (Variable variable : variables) {
-			if (!existentiallyQuantifiedVariables.contains(variable)) {
+	private Set<Variable> collectUniversallyQuantifiedVariables() {
+		final Set<Variable> universallyQuantifiedVariables = new HashSet<>();
+		for (Variable variable : this.variables) {
+			if (!this.existentiallyQuantifiedVariables.contains(variable)) {
 				universallyQuantifiedVariables.add(variable);
 			}
 		}
+		return universallyQuantifiedVariables;
 	}
 
-	public Atom[] getBody() {
-		return body;
+	public List<Atom> getBody() {
+		return this.body;
 	}
 
-	public Atom[] getHead() {
-		return head;
-
+	public List<Atom> getHead() {
+		return this.head;
 	}
 
 	public Set<Variable> getExistentiallyQuantifiedVariables() {
-		return existentiallyQuantifiedVariables;
+		return this.existentiallyQuantifiedVariables;
 	}
 
 	public Set<Variable> getBodyVariables() {
