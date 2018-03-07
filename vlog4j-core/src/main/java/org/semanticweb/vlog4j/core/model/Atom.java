@@ -20,26 +20,37 @@ package org.semanticweb.vlog4j.core.model;
  * #L%
  */
 
+import java.util.Collections;
+import java.util.List;
+
 public class Atom {
 
 	private final String predicateName;
 
-	private final Term[] arguments;
+	private final List<Term> arguments;
 
-	public Atom(String predicateName, Term[] arguments) {
+	public Atom(String predicateName, List<Term> arguments) {
 		super();
 		this.predicateName = predicateName;
-		this.arguments = arguments;
+		this.arguments = Collections.unmodifiableList(arguments);
 	}
 
 	public String getPredicateName() {
 		return predicateName;
 	}
 
-	public Term[] getArguments() {
+	/**
+	 * Returns the argument list as an unmodifiableList. An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
+	 * 
+	 * @return an unmodifiableList representing Atom arguments
+	 */
+	public List<Term> getArguments() {
 		return arguments;
 	}
 
 	// TODO: toString, which format?
-	
+
+	// TODO hashCode, equals
 }
