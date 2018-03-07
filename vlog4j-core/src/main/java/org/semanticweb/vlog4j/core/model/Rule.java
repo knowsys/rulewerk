@@ -1,7 +1,7 @@
 package org.semanticweb.vlog4j.core.model;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /*
  * #%L
@@ -23,183 +23,104 @@ import java.util.Collections;
  * #L%
  */
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+//TODO rule definition
+//TODO specify body and head are non-empty
+public interface Rule {
 
-import org.semanticweb.vlog4j.core.validation.RuleValidationException;
+	/**
+	 * The Atoms representing the Rule body conjuncts as an unmodifiableList. An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
+	 * 
+	 * @return an unmodifiableList representing the Rule body conjuncts.
+	 */
+	public List<Atom> getBody();
 
-public class Rule {
+	/**
+	 * The Atoms representing the Rule head conjuncts as an unmodifiableList. An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
+	 * 
+	 * @return an unmodifiableList representing the Rule head conjuncts.
+	 */
+	public List<Atom> getHead();
 
-	private final List<Atom> body;
-	private final List<Atom> head;
+	/**
+	 * The existentially quantified variables, which are variables that only occur
+	 * in the Rule head, and not in the Rule Body. They are returned as an
+	 * unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an
+	 * attempt to modify the list occurs.
+	 * 
+	 * @return an unmodifiableList representing the Rule existentially quantified
+	 *         variables.
+	 */
+	public Set<Variable> getExistentiallyQuantifiedVariables();
 
-	private final Set<Variable> existentiallyQuantifiedVariables;
+	/**
+	 * The universally quantified variables, which are variables that occur in the
+	 * rule and are not existentially quantified. They are returned as an
+	 * unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an
+	 * attempt to modify the list occurs.
+	 * 
+	 * @return an unmodifiableList representing the Rule universally quantified
+	 *         variables.
+	 */
+	public Set<Variable> getUniversallyQuantifiedVariables();
 
-	private final Set<Variable> bodyVariables;
-	private final Set<Variable> headVariables;
-	private final Set<Variable> variables;
-	private final Set<Variable> universallyQuantifiedVariables;
-	private final Set<Constant> bodyConstants;
-	private final Set<Constant> headConstants;
-	private final Set<Constant> constants;
-	private final Set<Term> terms;
+	/**
+	 * All Variables occurring in the Rule body, returned as an unmodifiableList.  An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
+	 * @return an unmodifiableList representing all Variables in the Rule body.
+	 */
+	public Set<Variable> getBodyVariables();
 
-	public Rule(List<Atom> body, List<Atom> head) throws RuleValidationException {
-		validateRuleInput(body, head);
+	/**
+	 * All Variables occurring in the Rule head, returned as an unmodifiableList.  An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
+	 * @return an unmodifiableList representing all Variables in the Rule head.
+	 */
+	public Set<Variable> getHeadVariables();
 
-		this.body = Collections.unmodifiableList(body);
-		this.head = Collections.unmodifiableList(head);
+	/**
+	 * All Variables occurring in the Rule head and body atoms, returned as an unmodifiableList.  An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
+	 * @return an unmodifiableList representing all Variables in the Rule.
+	 */
+	public Set<Variable> getVariables();
 
-		this.bodyVariables = Collections.unmodifiableSet(collectVariables(body));
-		this.bodyConstants = Collections.unmodifiableSet(collectConstants(body));
-		this.headVariables = Collections.unmodifiableSet(collectVariables(head));
-		this.headConstants = Collections.unmodifiableSet(collectConstants(head));
+	/**
+	 * All Constants occurring in the Rule body, returned as an unmodifiableList.  An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
+	 * @return an unmodifiableList representing all Constants in the Rule body.
+	 */
+	public Set<Constant> getBodyConstants();
 
-		this.variables = Collections.unmodifiableSet(collectVariables());
-		this.constants = Collections.unmodifiableSet(collectConstants());
-		this.terms = Collections.unmodifiableSet(collectTerms());
+	/**
+	 * All Constants occurring in the Rule head, returned as an unmodifiableList.  An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
+	 * @return an unmodifiableList representing all Constants in the Rule head.
+	 */
+	public Set<Constant> getHeadConstants();
 
-		this.existentiallyQuantifiedVariables = Collections.unmodifiableSet(collectExistentiallyQuantifiedVariables());
-		this.universallyQuantifiedVariables = Collections.unmodifiableSet(collectUniversallyQuantifiedVariables());
-	}
+	/**
+	 * All Constant occurring in the Rule head and body atoms, returned as an unmodifiableList.  An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
+	 * @return an unmodifiableList representing all Constant in the Rule.
+	 */
+	public Set<Constant> getConstants();
 
-	// TODO: to String
-	// TODO: hasCode, equals
-
-	private void validateRuleInput(List<Atom> body, List<Atom> head) throws RuleValidationException {
-		if (body == null) {
-			throw new RuleValidationException("Null rule body");
-		}
-		if (body.isEmpty()) {
-			throw new RuleValidationException("Empty rule body");
-		}
-		for (Atom bodyAtom : body) {
-			if (bodyAtom == null) {
-				throw new RuleValidationException("Rule body contains null atoms");
-			}
-		}
-
-		if (head == null) {
-			throw new RuleValidationException("Null rule head");
-		}
-		if (head.isEmpty()) {
-			throw new RuleValidationException("Empty rule head");
-		}
-		for (Atom headAtom : head) {
-			if (headAtom == null) {
-				throw new RuleValidationException("Rule head contains null atoms");
-			}
-		}
-	}
-
-	private Set<Variable> collectVariables(Collection<Atom> atoms) {
-		final Set<Variable> variables = new HashSet<>();
-		for (Atom atom : atoms) {
-			for (Term term : atom.getArguments()) {
-				if (term.isVariable()) {
-					variables.add((Variable) term);
-				}
-			}
-		}
-		return variables;
-	}
-
-	private Set<Constant> collectConstants(Collection<Atom> atoms) {
-		final Set<Constant> constants = new HashSet<>();
-		for (Atom atom : atoms) {
-			for (Term term : atom.getArguments()) {
-				if (term.isConstant()) {
-					constants.add((Constant) term);
-				}
-			}
-		}
-		return constants;
-	}
-
-	private Set<Variable> collectVariables() {
-		final Set<Variable> variables = new HashSet<>();
-		variables.addAll(this.bodyVariables);
-		variables.addAll(this.headVariables);
-		return variables;
-	}
-
-	private Set<Constant> collectConstants() {
-		final Set<Constant> constants = new HashSet<>();
-		constants.addAll(this.bodyConstants);
-		constants.addAll(this.headConstants);
-		return constants;
-	}
-
-	private Set<Term> collectTerms() {
-		final Set<Term> terms = new HashSet<>();
-		terms.addAll(this.variables);
-		terms.addAll(this.constants);
-		return terms;
-	}
-
-	private Set<Variable> collectExistentiallyQuantifiedVariables() {
-		final Set<Variable> existentiallyQuantifiedVariables = new HashSet<>();
-		for (Variable headVariable : this.headVariables) {
-			if (!this.bodyVariables.contains(headVariable)) {
-				existentiallyQuantifiedVariables.add(headVariable);
-			}
-		}
-		return existentiallyQuantifiedVariables;
-	}
-
-	private Set<Variable> collectUniversallyQuantifiedVariables() {
-		final Set<Variable> universallyQuantifiedVariables = new HashSet<>();
-		for (Variable variable : this.variables) {
-			if (!this.existentiallyQuantifiedVariables.contains(variable)) {
-				universallyQuantifiedVariables.add(variable);
-			}
-		}
-		return universallyQuantifiedVariables;
-	}
-
-	public List<Atom> getBody() {
-		return this.body;
-	}
-
-	public List<Atom> getHead() {
-		return this.head;
-	}
-
-	public Set<Variable> getExistentiallyQuantifiedVariables() {
-		return this.existentiallyQuantifiedVariables;
-	}
-
-	public Set<Variable> getBodyVariables() {
-		return this.bodyVariables;
-	}
-
-	public Set<Variable> getHeadVariables() {
-		return this.headVariables;
-	}
-
-	public Set<Variable> getVariables() {
-		return this.variables;
-	}
-
-	public Set<Variable> getUniversallyQuantifiedVariables() {
-		return this.universallyQuantifiedVariables;
-	}
-
-	public Set<Constant> getBodyConstants() {
-		return this.bodyConstants;
-	}
-
-	public Set<Constant> getHeadConstants() {
-		return this.headConstants;
-	}
-
-	public Set<Constant> getConstants() {
-		return this.constants;
-	}
-
-	public Set<Term> getTerms() {
-		return this.terms;
-	}
+	/**
+	 * All Terms (Variables and Constants) occurring in the Rule head and body atoms, returned as an unmodifiableList.  An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
+	 * @return an unmodifiableList representing all Terms in the Rule.
+	 */
+	public Set<Term> getTerms();
 
 }

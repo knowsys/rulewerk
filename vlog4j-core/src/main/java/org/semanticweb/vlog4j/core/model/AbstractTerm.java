@@ -20,6 +20,26 @@ package org.semanticweb.vlog4j.core.model;
  * #L%
  */
 
-public interface Variable extends Term{
+public abstract class AbstractTerm implements Term {
+
+	private final String name;
+
+	public AbstractTerm(final String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public abstract TermType getType();
+
+	@Override
+	public abstract boolean isVariable();
+
+	@Override
+	public abstract boolean isConstant();
 
 }

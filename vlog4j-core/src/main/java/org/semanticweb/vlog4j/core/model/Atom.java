@@ -1,5 +1,8 @@
 package org.semanticweb.vlog4j.core.model;
 
+import java.util.List;
+import java.util.Set;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -20,36 +23,37 @@ package org.semanticweb.vlog4j.core.model;
  * #L%
  */
 
-import java.util.Collections;
-import java.util.List;
+public interface Atom {
 
-public class Atom {
-
-	private final String predicateName;
-
-	private final List<Term> arguments;
-
-	public Atom(String predicateName, List<Term> arguments) {
-		this.predicateName = predicateName;
-		this.arguments = Collections.unmodifiableList(arguments);
-	}
-
-	public String getPredicateName() {
-		return predicateName;
-	}
+	public String getPredicateName();
 
 	/**
-	 * Returns the argument list as an unmodifiableList. An
+	 * The predicate arguments as an unmodifiableList. An
 	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
 	 * the list occurs.
 	 * 
-	 * @return an unmodifiableList representing Atom arguments
+	 * @return an unmodifiableList representing the predicate arguments
 	 */
-	public List<Term> getArguments() {
-		return arguments;
-	}
+	public List<Term> getArguments();
 
-	// TODO: toString, which format?
+	/**
+	 * The Variables that occur in the predicate arguments as an
+	 * unmodifiableSet. An {@link UnsupportedOperationException} is thrown, when an
+	 * attempt to modify the set occurs.
+	 * 
+	 * @return an unmodifiableSet representing Variables in the the predicate
+	 *         arguments.
+	 */
+	public Set<Variable> getVariables();
 
-	// TODO hashCode, equals
+	/**
+	 * The Constants that occur in the predicate arguments as an
+	 * unmodifiableSet. An {@link UnsupportedOperationException} is thrown, when an
+	 * attempt to modify the set occurs.
+	 * 
+	 * @return an unmodifiableSet representing Constants in the the predicate
+	 *         arguments.
+	 */
+	public Set<Constant> getConstants();
+
 }
