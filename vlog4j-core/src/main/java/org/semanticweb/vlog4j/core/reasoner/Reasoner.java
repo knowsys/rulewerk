@@ -1,5 +1,13 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
+import java.io.File;
+import java.util.List;
+import java.util.Set;
+
+import org.semanticweb.vlog4j.core.model.Atom;
+import org.semanticweb.vlog4j.core.model.Rule;
+import org.semanticweb.vlog4j.core.model.Term;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -19,7 +27,43 @@ package org.semanticweb.vlog4j.core.reasoner;
  * limitations under the License.
  * #L%
  */
+public interface Reasoner {
 
-public class Reasoner {
+	// TODO or do we prefer
+	// addRule(),removeRule(),addRules(),removeRules(),removeAllRules()
+	// TODO how should this behave once we started the VLog reasoner/once we
+	// materialized
+	Set<Rule> getRules();
 
+	// TODO do we want a start() method? or do we pass the config in the Reasoner
+	// constructor?
+
+	// TODO do we want to return anything?
+	void applyReasoning();
+
+	// TODO: do we want to expose this method?
+	/**
+	 * Returns all facts
+	 * 
+	 * @param predicate
+	 * @param arity
+	 * @return
+	 */
+	Set<Atom> query(String predicate, int arity);
+
+	Set<Atom> query(String predicate, List<Term> arguments);
+
+	// TODO what would happen in the case of CSVs? Where will they be stored?
+	void updateDB();
+
+	// TODO: will this export all EDBs and IDBs? or only materialization result?
+	// Should we have a separate method for exportIDBs?
+	// TODO: where will we get the file names? what if IDBs do not have valid file
+	// names?
+	// TODO what about parameters with same name and different arties?
+	void exportDB(File directoryLocation);
+	
+	void dispose();
 }
+
+
