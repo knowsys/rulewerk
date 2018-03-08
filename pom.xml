@@ -267,7 +267,7 @@
 							<artifactId>vlog</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>../lib/jvlog.jar</file>
+							<file>./lib/jvlog.jar</file>
 						</configuration>
 					</execution>
 				</executions>
