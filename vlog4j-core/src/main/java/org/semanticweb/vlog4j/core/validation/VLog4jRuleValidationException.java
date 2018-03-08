@@ -20,9 +20,10 @@ package org.semanticweb.vlog4j.core.validation;
  * #L%
  */
 
-public class RuleValidationException extends Exception {
+public class VLog4jRuleValidationException extends Exception {
+//	TODO Logging
 
-	public RuleValidationException(String string) {
+	public VLog4jRuleValidationException(String string) {
 		// TODO Auto-generated constructor stub
 	}
 

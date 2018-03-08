@@ -1,12 +1,15 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.Atom;
 import org.semanticweb.vlog4j.core.model.Rule;
 import org.semanticweb.vlog4j.core.model.Term;
+
+import karmaresearch.vlog.VLog;
 
 /*
  * #%L
@@ -29,27 +32,31 @@ import org.semanticweb.vlog4j.core.model.Term;
  */
 
 public class ReasonerImpl implements Reasoner {
-
+	
+	/**
+	 * VLog reasoner
+	 */
+	private VLog vlog = new VLog();
+	
+	private Set<Rule> rules = new HashSet<>();
+	
 	@Override
 	public Set<Rule> getRules() {
-		// TODO Auto-generated method stub
-		return null;
+		return rules;
 	}
 
 	@Override
 	public void applyReasoning() {
+	//	vlog.setRules(arg0, arg1);
+	//	vlog.start(arg0, arg1);
+//		vlog.materialize(arg0);
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public Set<Atom> query(String predicate, int arity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
-	public Set<Atom> query(String predicate, List<Term> arguments) {
+	public Set<Atom> query(Atom atom) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -68,6 +75,12 @@ public class ReasonerImpl implements Reasoner {
 
 	@Override
 	public void dispose() {
+		vlog.stop();
+	}
+
+	@Override
+	public void exportFactsToCSV(String predicate, int arity, File csvFile) {
+		//vlog.writePredicateToCsv(arg0, arg1);
 		// TODO Auto-generated method stub
 		
 	}

@@ -87,6 +87,14 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${apacheCommonsLangVersion}</version>
 		</dependency>
+		
+		<dependency>
+		<!-- Useful for integrating the jar containing the JNI to VLog -->
+			<groupId>karmaresearch</groupId>
+			<artifactId>vlog</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
@@ -138,6 +146,43 @@
 										<ignore />
 									</action>
 								</pluginExecution>
+								
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>aspectj-maven-plugin</artifactId>
+										<versionRange>[1.11,)</versionRange>
+										<goals>
+											<goal>test-compile</goal>
+											<goal>compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-install-plugin
+										</artifactId>
+										<versionRange>
+											[2.4,)
+										</versionRange>
+										<goals>
+											<goal>install-file</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+										</execute>
+									</action>
+								</pluginExecution>
+								
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -202,6 +247,33 @@
 					<scmBranch>gh-pages</scmBranch>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<!-- Useful for integrating the jar containing the JNI to VLog -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<!-- <configuration> <groupId>karmaresearch</groupId> <artifactId>vlog</artifactId> 
+							<version>1.0</version> <packaging>jar</packaging> <file>./lib/jvlog.jar</file> 
+							</configuration> -->
+						<configuration>
+							<groupId>karmaresearch</groupId>
+							<artifactId>vlog</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>../lib/jvlog.jar</file>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			
 		</plugins>
 	</build>
 	

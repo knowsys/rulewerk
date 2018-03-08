@@ -25,6 +25,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+import org.semanticweb.vlog4j.core.validation.VLog4jAtomValidationException;
+
 public class AtomImpl implements Atom {
 
 	private final String predicateName;
@@ -35,7 +38,10 @@ public class AtomImpl implements Atom {
 
 	private final Set<Constant> constants;
 
-	public AtomImpl(String predicateName, List<Term> arguments) {
+	public AtomImpl(String predicateName, List<Term> arguments) throws VLog4jAtomValidationException {
+		validatePredicateName(predicateName);
+		validateArguments(arguments);
+
 		this.predicateName = predicateName;
 		this.arguments = Collections.unmodifiableList(arguments);
 
@@ -43,26 +49,31 @@ public class AtomImpl implements Atom {
 		this.constants = Collections.unmodifiableSet(collectConstants());
 	}
 
-	@Override
-	public String getPredicateName() {
-		return this.predicateName;
+	private void validatePredicateName(String predicateName) throws VLog4jAtomValidationException {
+		if (StringUtils.isBlank(predicateName)) {
+			// TODO use string formatter
+			throw new VLog4jAtomValidationException("Invalid blank Atom predicate name: " + predicateName);
+		}
+
+		// TODO other Predicate name validations
+
 	}
 
-	@Override
-	public List<Term> getArguments() {
-		return this.arguments;
+	private void validateArguments(List<Term> arguments) throws VLog4jAtomValidationException {
+		// FIXME do we allow empty predicates?
+		if (arguments == null) {
+			throw new VLog4jAtomValidationException("Null Atom argument list");
+		}
+		if (arguments.isEmpty()) {
+			throw new VLog4jAtomValidationException("Empty Atom argument list");
+		}
+		for (Term term : arguments) {
+			if (term == null) {
+				throw new VLog4jAtomValidationException("Atom argument list contains null terms");
+			}
+		}
 	}
 
-	@Override
-	public Set<Variable> getVariables() {
-		return variables;
-	}
-
-	@Override
-	public Set<Constant> getConstants() {
-		return constants;
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -94,10 +105,30 @@ public class AtomImpl implements Atom {
 		return true;
 	}
 
-//	TODO: perhaps another format
+	// TODO: perhaps another format
 	@Override
 	public String toString() {
 		return "AtomImpl [predicateName=" + this.predicateName + ", arguments=" + this.arguments + "]";
+	}
+
+	@Override
+	public String getPredicateName() {
+		return this.predicateName;
+	}
+
+	@Override
+	public List<Term> getArguments() {
+		return this.arguments;
+	}
+
+	@Override
+	public Set<Variable> getVariables() {
+		return variables;
+	}
+
+	@Override
+	public Set<Constant> getConstants() {
+		return constants;
 	}
 
 	private Set<Variable> collectVariables() {

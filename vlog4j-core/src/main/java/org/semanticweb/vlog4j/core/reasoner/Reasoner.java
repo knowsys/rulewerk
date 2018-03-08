@@ -41,17 +41,10 @@ public interface Reasoner {
 	// TODO do we want to return anything?
 	void applyReasoning();
 
-	// TODO: do we want to expose this method?
-	/**
-	 * Returns all facts
-	 * 
-	 * @param predicate
-	 * @param arity
-	 * @return
-	 */
-	Set<Atom> query(String predicate, int arity);
-
-	Set<Atom> query(String predicate, List<Term> arguments);
+	Set<Atom> query(Atom query);
+	
+//	TODO is it more inconvenient for the user to provide the arity at export? Or create a predicate with a given arity when creating rules?
+	void exportFactsToCSV(String predicate, int arity, File csvFile);
 
 	// TODO what would happen in the case of CSVs? Where will they be stored?
 	void updateDB();

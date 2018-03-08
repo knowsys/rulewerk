@@ -1,5 +1,8 @@
 package org.semanticweb.vlog4j.core.model;
 
+import org.apache.commons.lang3.StringUtils;
+import org.semanticweb.vlog4j.core.validation.VLog4jTermValidationException;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -24,7 +27,12 @@ public abstract class AbstractTerm implements Term {
 
 	private final String name;
 
-	public AbstractTerm(final String name) {
+	public AbstractTerm(final String name) throws VLog4jTermValidationException {
+		if (StringUtils.isBlank(name)) {
+//			TODO use string formatter
+			throw new VLog4jTermValidationException("Invalid blank Term name: "+ name);
+		}
+//		TODO: other name validations
 		this.name = name;
 	}
 

@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model;
+package org.semanticweb.vlog4j.core.validation;
 
 /*
  * #%L
@@ -20,14 +20,11 @@ package org.semanticweb.vlog4j.core.model;
  * #L%
  */
 
-public interface Term {
+public class VLog4jTermValidationException extends Exception {
+//	TODO Logging
+	
+	public VLog4jTermValidationException(String string) {
+		// TODO Auto-generated constructor stub
+	}
 
-	String getName();
-	
-	//TODO maybe use karmaresearch.vlog.Term.TermType or a TermType declared outside Term class
-	TermType  getType();
-	
-	boolean isVariable();
-	
-	boolean isConstant();
 }

@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model;
 
+import org.semanticweb.vlog4j.core.validation.VLog4jTermValidationException;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -22,7 +24,7 @@ package org.semanticweb.vlog4j.core.model;
 
 public class VariableImpl  extends AbstractTerm implements Variable {
 
-	public VariableImpl(String name) {
+	public VariableImpl(String name) throws VLog4jTermValidationException {
 		super(name);
 	}
 
