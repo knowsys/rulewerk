@@ -49,7 +49,7 @@ public class VariableImpl  extends AbstractTerm implements Variable {
 		int result = 1;
 		result = prime * result + ((super.getName() == null) ? 0 : super.getName().hashCode());
 		return result;
-	}
+	} 
 
 	@Override
 	public boolean equals(Object obj) {

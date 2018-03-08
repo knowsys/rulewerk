@@ -29,10 +29,10 @@ public abstract class AbstractTerm implements Term {
 
 	public AbstractTerm(final String name) throws VLog4jTermValidationException {
 		if (StringUtils.isBlank(name)) {
-//			TODO use string formatter
-			throw new VLog4jTermValidationException("Invalid blank Term name: "+ name);
+			// TODO use string formatter
+			throw new VLog4jTermValidationException("Invalid blank Term name: " + name);
 		}
-//		TODO: other name validations
+		// TODO: other name validations
 		this.name = name;
 	}
 
