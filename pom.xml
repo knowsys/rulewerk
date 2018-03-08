@@ -247,36 +247,9 @@
 					<scmBranch>gh-pages</scmBranch>
 				</configuration>
 			</plugin>
-			
-			<plugin>
-				<!-- Useful for integrating the jar containing the JNI to VLog -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.4</version>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<!-- <configuration> <groupId>karmaresearch</groupId> <artifactId>vlog</artifactId> 
-							<version>1.0</version> <packaging>jar</packaging> <file>./lib/jvlog.jar</file> 
-							</configuration> -->
-						<configuration>
-							<groupId>karmaresearch</groupId>
-							<artifactId>vlog</artifactId>
-							<version>1.0</version>
-							<packaging>jar</packaging>
-							<file>./lib/jvlog.jar</file>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			
-			
 		</plugins>
 	</build>
-	
+
 	<profiles>
 		<profile>
 			<id>sign</id>
