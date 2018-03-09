@@ -1,12 +1,14 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.File;
-import java.util.List;
+import java.io.IOException;
 import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.Atom;
 import org.semanticweb.vlog4j.core.model.Rule;
-import org.semanticweb.vlog4j.core.model.Term;
+
+import karmaresearch.vlog.AlreadyStartedException;
+import karmaresearch.vlog.EDBConfigurationException;
 
 /*
  * #%L
@@ -17,9 +19,9 @@ import org.semanticweb.vlog4j.core.model.Term;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +43,7 @@ public interface Reasoner {
 	// constructor?
 
 	// TODO do we want to return anything?
-	void applyReasoning();
+	void applyReasoning() throws AlreadyStartedException, EDBConfigurationException, IOException;
 
 	Set<Atom> query(Atom query);
 
