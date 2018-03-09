@@ -2,12 +2,10 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.Atom;
 import org.semanticweb.vlog4j.core.model.Rule;
-import org.semanticweb.vlog4j.core.model.Term;
 
 import karmaresearch.vlog.VLog;
 
@@ -32,28 +30,32 @@ import karmaresearch.vlog.VLog;
  */
 
 public class ReasonerImpl implements Reasoner {
-	
+
 	/**
 	 * VLog reasoner
 	 */
 	private VLog vlog = new VLog();
-	
 	private Set<Rule> rules = new HashSet<>();
-	
+	private Set<String[]> edbConfig = new HashSet<>();
+
 	@Override
 	public Set<Rule> getRules() {
 		return rules;
 	}
 
 	@Override
-	public void applyReasoning() {
-	//	vlog.setRules(arg0, arg1);
-	//	vlog.start(arg0, arg1);
-//		vlog.materialize(arg0);
-		// TODO Auto-generated method stub
-		
+	public Set<String[]> getEDBConfig() {
+		return edbConfig;
 	}
 
+	@Override
+	public void applyReasoning() {
+		// vlog.setRules(arg0, arg1);
+		// vlog.start(arg0, arg1);
+		// vlog.materialize(arg0);
+		// TODO Auto-generated method stub
+
+	}
 
 	@Override
 	public Set<Atom> query(Atom atom) {
@@ -64,13 +66,13 @@ public class ReasonerImpl implements Reasoner {
 	@Override
 	public void updateDB() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void exportDB(File directoryLocation) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -80,9 +82,9 @@ public class ReasonerImpl implements Reasoner {
 
 	@Override
 	public void exportFactsToCSV(String predicate, int arity, File csvFile) {
-		//vlog.writePredicateToCsv(arg0, arg1);
+		// vlog.writePredicateToCsv(arg0, arg1);
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

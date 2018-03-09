@@ -35,6 +35,8 @@ public interface Reasoner {
 	// materialized
 	Set<Rule> getRules();
 
+	Set<String[]> getEDBConfig();
+
 	// TODO do we want a start() method? or do we pass the config in the Reasoner
 	// constructor?
 
@@ -42,8 +44,9 @@ public interface Reasoner {
 	void applyReasoning();
 
 	Set<Atom> query(Atom query);
-	
-//	TODO is it more inconvenient for the user to provide the arity at export? Or create a predicate with a given arity when creating rules?
+
+	// TODO is it more inconvenient for the user to provide the arity at export? Or
+	// create a predicate with a given arity when creating rules?
 	void exportFactsToCSV(String predicate, int arity, File csvFile);
 
 	// TODO what would happen in the case of CSVs? Where will they be stored?
@@ -55,8 +58,6 @@ public interface Reasoner {
 	// names?
 	// TODO what about parameters with same name and different arties?
 	void exportDB(File directoryLocation);
-	
+
 	void dispose();
 }
-
-
