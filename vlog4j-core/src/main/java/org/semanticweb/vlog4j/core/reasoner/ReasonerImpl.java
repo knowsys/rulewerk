@@ -2,14 +2,22 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.semanticweb.vlog4j.core.model.Atom;
 import org.semanticweb.vlog4j.core.model.Rule;
+import org.semanticweb.vlog4j.core.model.Term;
+import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
+import karmaresearch.vlog.NotStartedException;
+import karmaresearch.vlog.StringQueryResultEnumeration;
 import karmaresearch.vlog.VLog;
+import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 /*
  * #%L
@@ -37,51 +45,58 @@ public class ReasonerImpl implements Reasoner {
 	 * VLog reasoner
 	 */
 	private final VLog vlog = new VLog();
-	private final Set<Rule> ruleSet;
-	private final Set<String[]> edbProgramConfig;
+	private final List<Rule> rules = new ArrayList<>();
+	private final List<Atom> facts = new ArrayList<>();
+	private final List<EDBPredConfig> edbProgramConfig = new ArrayList<>();
 
-	public ReasonerImpl(final Set<Rule> rules, final Set<String[]> edbConfig) {
-
-		this.edbProgramConfig = edbConfig;
-		this.ruleSet = rules;
+	@Override
+	public List<Rule> getRules() {
+		return this.rules;
 	}
 
 	@Override
-	public Set<Rule> getRules() {
-		return this.ruleSet;
+	public List<Atom> getFacts() {
+		return this.facts;
 	}
 
 	@Override
-	public Set<String[]> getEDBConfig() {
+	public List<EDBPredConfig> getEDBConfig() {
 		return this.edbProgramConfig;
 	}
 
 	@Override
-	public void applyReasoning() throws AlreadyStartedException, EDBConfigurationException, IOException {
-		this.vlog.start(EDBConfigToFileFormat(), false);
+	public void applyReasoning() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+		// Start reasoner
+		this.vlog.start("", false);
 
-		// vlog.setRules(arg0, arg1);
-		// vlog.start(arg0, arg1);
-		// vlog.materialize(arg0);
-		// TODO Auto-generated method stub
+		// Load rules
+		this.vlog.setRules(ModelToVLogConverter.toVLogRuleArray(this.rules), RuleRewriteStrategy.NONE);
 
-	}
-
-	private String EDBConfigToFileFormat() {
-		String EDBConfigStr = new String("");
-		for (final String[] edbConfigItem : this.edbProgramConfig) {
-			final String predicateName = edbConfigItem[0];
-			final String sourcePath = edbConfigItem[1];
-			final String databaseType = edbConfigItem[2];
-			EDBConfigStr += "PredicateName: " + predicateName + "\n" + "Source path: " + sourcePath + "\n" + "Source type: " + databaseType + "\n\n";
+		// Load in memory facts
+		// TODO Fix this so it deals with punning
+		final Map<String, List<List<Term>>> factsMap = new HashMap<>();
+		for (final Atom fact : this.facts) {
+			factsMap.putIfAbsent(fact.getPredicateName(), new ArrayList<>());
+			factsMap.get(fact.getPredicateName()).add(fact.getArguments());
 		}
-		return EDBConfigStr;
+		for (final String predName : factsMap.keySet()) {
+			final List<List<Term>> predNameArgs = factsMap.get(predName);
+			final int arity = predNameArgs.get(0).size();
+			final String[][] tuplesMatrix = new String[predNameArgs.size()][arity];
+			for (int i = 0; i < predNameArgs.size(); i++) {
+				for (int j = 0; j < arity; j++) {
+					tuplesMatrix[i][j] = predNameArgs.get(i).get(j).getName();
+				}
+			}
+			this.vlog.addData(predName, tuplesMatrix);
+		}
+
+		this.vlog.materialize(true);
 	}
 
 	@Override
-	public Set<Atom> query(final Atom atom) {
-		// TODO Auto-generated method stub
-		return null;
+	public StringQueryResultEnumeration query(final Atom atom) throws NotStartedException {
+		return this.vlog.query(ModelToVLogConverter.toVLogAtom(atom));
 	}
 
 	@Override

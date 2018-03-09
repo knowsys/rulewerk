@@ -2,13 +2,15 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.Atom;
 import org.semanticweb.vlog4j.core.model.Rule;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
+import karmaresearch.vlog.NotStartedException;
+import karmaresearch.vlog.StringQueryResultEnumeration;
 
 /*
  * #%L
@@ -35,17 +37,22 @@ public interface Reasoner {
 	// addRule(),removeRule(),addRules(),removeRules(),removeAllRules()
 	// TODO how should this behave once we started the VLog reasoner/once we
 	// materialized
-	Set<Rule> getRules();
+	List<Rule> getRules();
 
-	Set<String[]> getEDBConfig();
+	// TODO or do we prefer
+	// addRule(),removeRule(),addRules(),removeRules(),removeAllRules()
+	// TODO how should this behave once we started the VLog reasoner/once we
+	// materialized
+	List<Atom> getFacts();
+
+	List<EDBPredConfig> getEDBConfig();
 
 	// TODO do we want a start() method? or do we pass the config in the Reasoner
 	// constructor?
-
 	// TODO do we want to return anything?
-	void applyReasoning() throws AlreadyStartedException, EDBConfigurationException, IOException;
+	void applyReasoning() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException;
 
-	Set<Atom> query(Atom query);
+	StringQueryResultEnumeration query(Atom query) throws NotStartedException;
 
 	// TODO is it more inconvenient for the user to provide the arity at export? Or
 	// create a predicate with a given arity when creating rules?
