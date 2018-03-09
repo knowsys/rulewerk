@@ -12,8 +12,6 @@ import org.semanticweb.vlog4j.core.model.Rule;
 import org.semanticweb.vlog4j.core.model.RuleImpl;
 import org.semanticweb.vlog4j.core.model.Term;
 import org.semanticweb.vlog4j.core.model.VariableImpl;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.ReasonerImpl;
 import org.semanticweb.vlog4j.core.validation.VLog4jAtomValidationException;
 import org.semanticweb.vlog4j.core.validation.VLog4jRuleValidationException;
 import org.semanticweb.vlog4j.core.validation.VLog4jTermValidationException;
@@ -22,7 +20,7 @@ import junit.framework.TestCase;
 
 public class ReasonerTest1 extends TestCase {
 
-	public void testEliminateTopOnlyTop() throws VLog4jRuleValidationException, VLog4jAtomValidationException, VLog4jTermValidationException {
+	public void simpleInference() throws VLog4jRuleValidationException, VLog4jAtomValidationException, VLog4jTermValidationException {
 
 		// Rule set: { H(x) :- B(x) . }
 		final List<Term> bodyAtomArgs = new ArrayList<>();
@@ -47,6 +45,6 @@ public class ReasonerTest1 extends TestCase {
 		edbConfig.add(new String[] { csvFilePath, "B" });
 
 		// VLog reasoner
-		final Reasoner reasoner = new ReasonerImpl(ruleSet, edbConfig);
+		// final Reasoner reasoner = new ReasonerImpl(ruleSet, edbConfig);
 	}
 }
