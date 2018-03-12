@@ -21,7 +21,7 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 public class VLogTest extends TestCase {
 
-	public void simpleInferenceTest() throws AlreadyStartedException, EDBConfigurationException, IOException, VLog4jAtomValidationException,
+	public void testVLogSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException, VLog4jAtomValidationException,
 			VLog4jTermValidationException, VLog4jRuleValidationException, NotStartedException {
 
 		// Initialize and start VLog
@@ -33,7 +33,7 @@ public class VLogTest extends TestCase {
 		final String[][] argsAMatrix = { { "a" }, { "b" } };
 		vlog.addData(predA, argsAMatrix);
 		final String predB = "B";
-		final String[][] argsBMatrix = { { "c" }, { "d" } };
+		// final String[][] argsBMatrix = { { "c" }, { "d" } };
 		// vlog.addData(predB, argsBMatrix);
 
 		// Loading Rule: B(X) :- A(X) .
