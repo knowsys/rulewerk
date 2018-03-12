@@ -74,9 +74,9 @@ public class ReasonerTest1 extends TestCase {
 		final List<Term> secondFactArgs = new ArrayList<>();
 		secondFactArgs.add(new ConstantImpl("b"));
 		reasoner.getFacts().add(new AtomImpl("A", secondFactArgs));
-		final List<Term> fact3Args = new ArrayList<>();
-		fact3Args.add(new ConstantImpl("c"));
-		reasoner.getFacts().add(new AtomImpl("B", fact3Args));
+		// final List<Term> fact3Args = new ArrayList<>();
+		// fact3Args.add(new ConstantImpl("c"));
+		// reasoner.getFacts().add(new AtomImpl("B", fact3Args));
 
 		// Reasoning
 		reasoner.applyReasoning();
