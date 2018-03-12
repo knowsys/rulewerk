@@ -38,16 +38,10 @@ public abstract class AbstractTerm implements Term {
 
 	@Override
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	@Override
 	public abstract TermType getType();
-
-	@Override
-	public abstract boolean isVariable();
-
-	@Override
-	public abstract boolean isConstant();
 
 }

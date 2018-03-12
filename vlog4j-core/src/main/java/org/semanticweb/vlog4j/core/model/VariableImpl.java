@@ -22,9 +22,9 @@ import org.semanticweb.vlog4j.core.validation.VLog4jTermValidationException;
  * #L%
  */
 
-public class VariableImpl  extends AbstractTerm implements Variable {
+public class VariableImpl extends AbstractTerm implements Variable {
 
-	public VariableImpl(String name) throws VLog4jTermValidationException {
+	public VariableImpl(final String name) throws VLog4jTermValidationException {
 		super(name);
 	}
 
@@ -34,37 +34,32 @@ public class VariableImpl  extends AbstractTerm implements Variable {
 	}
 
 	@Override
-	public boolean isVariable() {
-		return true;
-	}
-
-	@Override
-	public boolean isConstant() {
-		return false;
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((super.getName() == null) ? 0 : super.getName().hashCode());
+		result = prime * result + (super.getName() == null ? 0 : super.getName().hashCode());
 		return result;
-	} 
+	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		VariableImpl other = (VariableImpl) obj;
+		}
+		final VariableImpl other = (VariableImpl) obj;
 		if (super.getName() == null) {
-			if (other.getType() != null)
+			if (other.getType() != null) {
 				return false;
-		} else if (!super.getName().equals(other.getName()))
+			}
+		} else if (!super.getName().equals(other.getName())) {
 			return false;
+		}
 		return true;
 	}
 

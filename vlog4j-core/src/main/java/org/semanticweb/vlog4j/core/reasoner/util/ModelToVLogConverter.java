@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.reasoner.util;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ public class ModelToVLogConverter {
 
 	public static karmaresearch.vlog.Term toVLogTerm(final Term term) {
 		// TODO treat null case: throw exception or return null?
-
+		// TODO visitor pattern
 		// FIXME perhaps declare enum class only in VLog project, and use
 		// karmaresearch.vlog.Term.EnumType dependency
 		// FIXME The names of variables and constants need to be appropriately modified so VLog recognises them as such.
@@ -56,6 +56,8 @@ public class ModelToVLogConverter {
 		// TODO treat null case: throw exception or return null?
 		final karmaresearch.vlog.Term[] terms = toVLogTermArray(atom.getArguments());
 		// FIXME: Append arity at the end of the predicate name (punning)
+		// FIXME: should we generate predicate names by appending the terms arity to the
+		// given name?
 		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(atom.getPredicateName(), terms);
 		return vLogAtom;
 	}

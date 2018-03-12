@@ -38,18 +38,18 @@ public class AtomImpl implements Atom {
 
 	private final Set<Constant> constants;
 
-	public AtomImpl(String predicateName, List<Term> arguments) throws VLog4jAtomValidationException {
+	public AtomImpl(final String predicateName, final List<Term> arguments) throws VLog4jAtomValidationException {
 		validatePredicateName(predicateName);
 		validateArguments(arguments);
 
 		this.predicateName = predicateName;
-		this.arguments = Collections.unmodifiableList(arguments);
+		this.arguments = arguments;
 
-		this.variables = Collections.unmodifiableSet(collectVariables());
-		this.constants = Collections.unmodifiableSet(collectConstants());
+		this.variables = collectVariables();
+		this.constants = collectConstants();
 	}
 
-	private void validatePredicateName(String predicateName) throws VLog4jAtomValidationException {
+	private void validatePredicateName(final String predicateName) throws VLog4jAtomValidationException {
 		if (StringUtils.isBlank(predicateName)) {
 			// TODO use string formatter
 			throw new VLog4jAtomValidationException("Invalid blank Atom predicate name: " + predicateName);
@@ -59,7 +59,7 @@ public class AtomImpl implements Atom {
 
 	}
 
-	private void validateArguments(List<Term> arguments) throws VLog4jAtomValidationException {
+	private void validateArguments(final List<Term> arguments) throws VLog4jAtomValidationException {
 		// FIXME do we allow empty predicates?
 		if (arguments == null) {
 			throw new VLog4jAtomValidationException("Null Atom argument list");
@@ -67,7 +67,7 @@ public class AtomImpl implements Atom {
 		if (arguments.isEmpty()) {
 			throw new VLog4jAtomValidationException("Empty Atom argument list");
 		}
-		for (Term term : arguments) {
+		for (final Term term : arguments) {
 			if (term == null) {
 				throw new VLog4jAtomValidationException("Atom argument list contains null terms");
 			}
@@ -78,30 +78,37 @@ public class AtomImpl implements Atom {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.predicateName == null) ? 0 : this.predicateName.hashCode());
-		result = prime * result + ((this.arguments == null) ? 0 : this.arguments.hashCode());
+		result = prime * result + (this.predicateName == null ? 0 : this.predicateName.hashCode());
+		result = prime * result + (this.arguments == null ? 0 : this.arguments.hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		AtomImpl other = (AtomImpl) obj;
+		}
+		final AtomImpl other = (AtomImpl) obj;
 		if (this.predicateName == null) {
-			if (other.predicateName != null)
+			if (other.predicateName != null) {
 				return false;
-		} else if (!this.predicateName.equals(other.predicateName))
+			}
+		} else if (!this.predicateName.equals(other.predicateName)) {
 			return false;
+		}
 		if (this.arguments == null) {
-			if (other.arguments != null)
+			if (other.arguments != null) {
 				return false;
-		} else if (!this.arguments.equals(other.arguments))
+			}
+		} else if (!this.arguments.equals(other.arguments)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -118,23 +125,23 @@ public class AtomImpl implements Atom {
 
 	@Override
 	public List<Term> getArguments() {
-		return this.arguments;
+		return Collections.unmodifiableList(this.arguments);
 	}
 
 	@Override
 	public Set<Variable> getVariables() {
-		return variables;
+		return Collections.unmodifiableSet(this.variables);
 	}
 
 	@Override
 	public Set<Constant> getConstants() {
-		return constants;
+		return Collections.unmodifiableSet(this.constants);
 	}
 
 	private Set<Variable> collectVariables() {
-		Set<Variable> variables = new HashSet<>();
-		for (Term term : this.arguments) {
-			if (term.isVariable()) {
+		final Set<Variable> variables = new HashSet<>();
+		for (final Term term : this.arguments) {
+			if (TermType.VARIABLE.equals(term.getType())) {
 				variables.add((Variable) term);
 			}
 		}
@@ -142,9 +149,9 @@ public class AtomImpl implements Atom {
 	}
 
 	private Set<Constant> collectConstants() {
-		Set<Constant> constants = new HashSet<>();
-		for (Term term : this.arguments) {
-			if (term.isConstant()) {
+		final Set<Constant> constants = new HashSet<>();
+		for (final Term term : this.arguments) {
+			if (TermType.CONSTANT.equals(term.getType())) {
 				constants.add((Constant) term);
 			}
 		}

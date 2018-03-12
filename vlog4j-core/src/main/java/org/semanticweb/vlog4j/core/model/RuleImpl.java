@@ -46,11 +46,9 @@ public class RuleImpl implements Rule {
 	private final Set<Term> terms;
 
 	/**
-	 * Creates a Rule with a non-empty body and an non-empty head. The variables
-	 * that occur only in the rule head (and not in the rule body) are considered to
-	 * be existentially quantified. The variables that are not existentially
-	 * quantified are considered to be universally quantified.
-	 * 
+	 * Creates a Rule with a non-empty body and an non-empty head. The variables that occur only in the rule head (and not in the rule body) are considered to
+	 * be existentially quantified. The variables that are not existentially quantified are considered to be universally quantified.
+	 *
 	 * @param body
 	 *            list of Atoms representing the rule body conjuncts.
 	 * @param head
@@ -58,53 +56,60 @@ public class RuleImpl implements Rule {
 	 * @throws VLog4jRuleValidationException
 	 *             if body or head are null or empty.
 	 */
-	public RuleImpl(List<Atom> body, List<Atom> head) throws VLog4jRuleValidationException {
+	public RuleImpl(final List<Atom> body, final List<Atom> head) throws VLog4jRuleValidationException {
 		validateRuleInput(body, head);
 
-		this.body = Collections.unmodifiableList(body);
-		this.head = Collections.unmodifiableList(head);
+		this.body = body;
+		this.head = head;
 
-		this.bodyVariables = Collections.unmodifiableSet(collectVariables(body));
-		this.bodyConstants = Collections.unmodifiableSet(collectConstants(body));
-		this.headVariables = Collections.unmodifiableSet(collectVariables(head));
-		this.headConstants = Collections.unmodifiableSet(collectConstants(head));
+		this.bodyVariables = collectVariables(body);
+		this.bodyConstants = collectConstants(body);
+		this.headVariables = collectVariables(head);
+		this.headConstants = collectConstants(head);
 
-		this.variables = Collections.unmodifiableSet(collectVariables());
-		this.constants = Collections.unmodifiableSet(collectConstants());
-		this.terms = Collections.unmodifiableSet(collectTerms());
+		this.variables = collectVariables();
+		this.constants = collectConstants();
+		this.terms = collectTerms();
 
-		this.existentiallyQuantifiedVariables = Collections.unmodifiableSet(collectExistentiallyQuantifiedVariables());
-		this.universallyQuantifiedVariables = Collections.unmodifiableSet(collectUniversallyQuantifiedVariables());
+		this.existentiallyQuantifiedVariables = collectExistentiallyQuantifiedVariables();
+		this.universallyQuantifiedVariables = collectUniversallyQuantifiedVariables();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.body == null) ? 0 : this.body.hashCode());
-		result = prime * result + ((this.head == null) ? 0 : this.head.hashCode());
+		result = prime * result + (this.body == null ? 0 : this.body.hashCode());
+		result = prime * result + (this.head == null ? 0 : this.head.hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		RuleImpl other = (RuleImpl) obj;
+		}
+		final RuleImpl other = (RuleImpl) obj;
 		if (this.body == null) {
-			if (other.body != null)
+			if (other.body != null) {
 				return false;
-		} else if (!this.body.equals(other.body))
+			}
+		} else if (!this.body.equals(other.body)) {
 			return false;
+		}
 		if (this.head == null) {
-			if (other.head != null)
+			if (other.head != null) {
 				return false;
-		} else if (!this.head.equals(other.head))
+			}
+		} else if (!this.head.equals(other.head)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -116,67 +121,67 @@ public class RuleImpl implements Rule {
 
 	@Override
 	public List<Atom> getBody() {
-		return this.body;
+		return Collections.unmodifiableList(this.body);
 	}
 
 	@Override
 	public List<Atom> getHead() {
-		return this.head;
+		return Collections.unmodifiableList(this.head);
 	}
 
 	@Override
 	public Set<Variable> getExistentiallyQuantifiedVariables() {
-		return this.existentiallyQuantifiedVariables;
+		return Collections.unmodifiableSet(this.existentiallyQuantifiedVariables);
 	}
 
 	@Override
 	public Set<Variable> getBodyVariables() {
-		return this.bodyVariables;
+		return Collections.unmodifiableSet(this.bodyVariables);
 	}
 
 	@Override
 	public Set<Variable> getHeadVariables() {
-		return this.headVariables;
+		return Collections.unmodifiableSet(this.headVariables);
 	}
 
 	@Override
 	public Set<Variable> getVariables() {
-		return this.variables;
+		return Collections.unmodifiableSet(this.variables);
 	}
 
 	@Override
 	public Set<Variable> getUniversallyQuantifiedVariables() {
-		return this.universallyQuantifiedVariables;
+		return Collections.unmodifiableSet(this.universallyQuantifiedVariables);
 	}
 
 	@Override
 	public Set<Constant> getBodyConstants() {
-		return this.bodyConstants;
+		return Collections.unmodifiableSet(this.bodyConstants);
 	}
 
 	@Override
 	public Set<Constant> getHeadConstants() {
-		return this.headConstants;
+		return Collections.unmodifiableSet(this.headConstants);
 	}
 
 	@Override
 	public Set<Constant> getConstants() {
-		return this.constants;
+		return Collections.unmodifiableSet(this.constants);
 	}
 
 	@Override
 	public Set<Term> getTerms() {
-		return this.terms;
+		return Collections.unmodifiableSet(this.terms);
 	}
 
-	private void validateRuleInput(List<Atom> body, List<Atom> head) throws VLog4jRuleValidationException {
+	private void validateRuleInput(final List<Atom> body, final List<Atom> head) throws VLog4jRuleValidationException {
 		if (body == null) {
 			throw new VLog4jRuleValidationException("Null rule body");
 		}
 		if (body.isEmpty()) {
 			throw new VLog4jRuleValidationException("Empty rule body");
 		}
-		for (Atom bodyAtom : body) {
+		for (final Atom bodyAtom : body) {
 			if (bodyAtom == null) {
 				throw new VLog4jRuleValidationException("Rule body contains null atoms");
 			}
@@ -188,24 +193,24 @@ public class RuleImpl implements Rule {
 		if (head.isEmpty()) {
 			throw new VLog4jRuleValidationException("Empty rule head");
 		}
-		for (Atom headAtom : head) {
+		for (final Atom headAtom : head) {
 			if (headAtom == null) {
 				throw new VLog4jRuleValidationException("Rule head contains null atoms");
 			}
 		}
 	}
 
-	private Set<Variable> collectVariables(Collection<Atom> atoms) {
+	private Set<Variable> collectVariables(final Collection<Atom> atoms) {
 		final Set<Variable> variables = new HashSet<>();
-		for (Atom atom : atoms) {
+		for (final Atom atom : atoms) {
 			variables.addAll(atom.getVariables());
 		}
 		return variables;
 	}
 
-	private Set<Constant> collectConstants(Collection<Atom> atoms) {
+	private Set<Constant> collectConstants(final Collection<Atom> atoms) {
 		final Set<Constant> constants = new HashSet<>();
-		for (Atom atom : atoms) {
+		for (final Atom atom : atoms) {
 			constants.addAll(atom.getConstants());
 		}
 		return constants;
@@ -234,7 +239,7 @@ public class RuleImpl implements Rule {
 
 	private Set<Variable> collectExistentiallyQuantifiedVariables() {
 		final Set<Variable> existentiallyQuantifiedVariables = new HashSet<>();
-		for (Variable headVariable : this.headVariables) {
+		for (final Variable headVariable : this.headVariables) {
 			if (!this.bodyVariables.contains(headVariable)) {
 				existentiallyQuantifiedVariables.add(headVariable);
 			}
@@ -244,7 +249,7 @@ public class RuleImpl implements Rule {
 
 	private Set<Variable> collectUniversallyQuantifiedVariables() {
 		final Set<Variable> universallyQuantifiedVariables = new HashSet<>();
-		for (Variable variable : this.variables) {
+		for (final Variable variable : this.variables) {
 			if (!this.existentiallyQuantifiedVariables.contains(variable)) {
 				universallyQuantifiedVariables.add(variable);
 			}

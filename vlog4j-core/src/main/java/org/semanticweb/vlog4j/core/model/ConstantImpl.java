@@ -24,7 +24,7 @@ import org.semanticweb.vlog4j.core.validation.VLog4jTermValidationException;
 
 public class ConstantImpl extends AbstractTerm implements Constant {
 
-	public ConstantImpl(String name) throws VLog4jTermValidationException {
+	public ConstantImpl(final String name) throws VLog4jTermValidationException {
 		super(name);
 	}
 
@@ -34,37 +34,32 @@ public class ConstantImpl extends AbstractTerm implements Constant {
 	}
 
 	@Override
-	public boolean isVariable() {
-		return false;
-	}
-
-	@Override
-	public boolean isConstant() {
-		return true;
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((super.getName() == null) ? 0 : super.getName().hashCode());
+		result = prime * result + (super.getName() == null ? 0 : super.getName().hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		ConstantImpl other = (ConstantImpl) obj;
+		}
+		final ConstantImpl other = (ConstantImpl) obj;
 		if (super.getName() == null) {
-			if (other.getName() != null)
+			if (other.getName() != null) {
 				return false;
-		} else if (!super.getName().equals(other.getName()))
+			}
+		} else if (!super.getName().equals(other.getName())) {
 			return false;
+		}
 		return true;
 	}
 

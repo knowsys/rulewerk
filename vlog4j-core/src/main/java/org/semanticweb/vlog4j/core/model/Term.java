@@ -23,11 +23,7 @@ package org.semanticweb.vlog4j.core.model;
 public interface Term {
 
 	String getName();
-	
-	//TODO maybe use karmaresearch.vlog.Term.TermType or a TermType declared outside Term class
-	TermType  getType();
-	
-	boolean isVariable();
-	
-	boolean isConstant();
+
+	TermType getType();
+
 }
