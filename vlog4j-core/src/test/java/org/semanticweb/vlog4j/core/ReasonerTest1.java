@@ -21,6 +21,7 @@ import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
+import karmaresearch.vlog.StringQueryResultEnumeration;
 
 public class ReasonerTest1 extends TestCase {
 
@@ -69,20 +70,24 @@ public class ReasonerTest1 extends TestCase {
 		// Loading facts
 		final List<Term> firstFactArgs = new ArrayList<>();
 		firstFactArgs.add(new ConstantImpl("a"));
-		reasoner.getFacts().add(new AtomImpl("C", firstFactArgs));
+		reasoner.getFacts().add(new AtomImpl("A", firstFactArgs));
 		final List<Term> secondFactArgs = new ArrayList<>();
 		secondFactArgs.add(new ConstantImpl("b"));
-		reasoner.getFacts().add(new AtomImpl("C", secondFactArgs));
+		reasoner.getFacts().add(new AtomImpl("A", secondFactArgs));
+		final List<Term> fact3Args = new ArrayList<>();
+		fact3Args.add(new ConstantImpl("c"));
+		reasoner.getFacts().add(new AtomImpl("B", fact3Args));
 
 		// Reasoning
 		reasoner.applyReasoning();
 
 		// Querying
-		// final StringQueryResultEnumeration resultEnumeration = reasoner.query(headAtom);
+		// final StringQueryResultEnumeration resultEnumeration = reasoner.query(bodyAtom1);
+		final StringQueryResultEnumeration resultEnumeration = reasoner.query(headAtom1);
 		// final Iterator<String[]> iterator = resultEnumeration.asIterator();
 		// while (iterator.hasNext()) {
 		// final String[] answer = iterator.next();
-		// System.out.println(answer);
+		// System.out.println(answer[0]);
 		// }
 
 	}
