@@ -47,12 +47,13 @@ public class VLogTest extends TestCase {
 		final VLog vlog = new VLog();
 		vlog.start("", false);
 
-		// Loading Fact: B(a)
+		// Loading Facts: A(a), A(b)
 		final String predA = "A";
 		final String[][] argsAMatrix = { { "a" }, { "b" } };
 		vlog.addData(predA, argsAMatrix);
+
 		final String predB = "B";
-		final String[][] argsBMatrix = { { "c" }, { "d" } };
+		// final String[][] argsBMatrix = { { "c" }, { "d" } };
 		// vlog.addData(predB, argsBMatrix);
 
 		// Loading Rule: B(X) :- A(X) .
