@@ -33,7 +33,7 @@ public class VLogTest extends TestCase {
 		final String[][] argsAMatrix = { { "a" }, { "b" } };
 		vlog.addData(predA, argsAMatrix);
 		final String predB = "B";
-		// final String[][] argsBMatrix = { { "c" }, { "d" } };
+		final String[][] argsBMatrix = { { "c" }, { "d" } };
 		// vlog.addData(predB, argsBMatrix);
 
 		// Loading Rule: B(X) :- A(X) .
