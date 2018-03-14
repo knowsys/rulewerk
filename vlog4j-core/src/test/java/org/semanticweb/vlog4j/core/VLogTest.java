@@ -43,33 +43,28 @@ public class VLogTest extends TestCase {
 	public void testVLogSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException, VLog4jAtomValidationException,
 			VLog4jTermValidationException, VLog4jRuleValidationException, NotStartedException {
 
-		// Initialize and start VLog
+		// Creating rules and facts
+		final String[][] argsAMatrix = { { "a" }, { "b" } };
+		final Term[] argX = { new Term(TermType.VARIABLE, "X") };
+		final Atom atomBx = new Atom("B", argX);
+		final Atom atomAx = new Atom("A", argX);
+		final Atom[] headAtoms = { atomBx };
+		final Atom[] bodyAtoms = { atomAx };
+		final Rule[] rules = { new Rule(headAtoms, bodyAtoms) };
+
+		// Start VLog
 		final VLog vlog = new VLog();
 		vlog.start("", false);
 
-		// Loading Facts: A(a), A(b)
-		final String predA = "A";
-		final String[][] argsAMatrix = { { "a" }, { "b" } };
-		vlog.addData(predA, argsAMatrix);
-
-		final String predB = "B";
-		// final String[][] argsBMatrix = { { "c" }, { "d" } };
-		// vlog.addData(predB, argsBMatrix);
-
-		// Loading Rule: B(X) :- A(X) .
-		final Term[] args = { new Term(TermType.VARIABLE, "X") };
-		final Atom atomBx = new Atom(predB, args);
-		final Atom[] headAtoms = { atomBx };
-		final Atom atomAx = new Atom(predA, args);
-		final Atom[] bodyAtoms = { atomAx };
-		final Rule[] rules = { new Rule(headAtoms, bodyAtoms) };
+		// Loading rules and facts
+		vlog.addData("A", argsAMatrix);
 		vlog.setRules(rules, RuleRewriteStrategy.NONE);
 
 		// Materialization
 		vlog.materialize(true);
 
 		// Querying
-		System.out.println("Querying predicate: " + atomBx.getPredicate());
+		System.out.println("Querying atom: " + atomBx.getPredicate());
 		final StringQueryResultEnumeration answers = vlog.query(atomBx);
 		while (answers.hasMoreElements()) {
 			final String[] answer = answers.nextElement();

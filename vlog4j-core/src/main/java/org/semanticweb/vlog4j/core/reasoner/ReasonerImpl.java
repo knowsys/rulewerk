@@ -28,9 +28,9 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -69,16 +69,27 @@ public class ReasonerImpl implements Reasoner {
 		// Start reasoner
 		this.vlog.start("", false);
 
+		// Load in memory facts
+		// TODO Fix this method so it can correctly deal with punning
+		loadFacts();
+
+		// Load EDB facts
+		// TODO
+
 		// Load rules
 		this.vlog.setRules(ModelToVLogConverter.toVLogRuleArray(this.rules), RuleRewriteStrategy.NONE);
 
-		// Load in memory facts
-		// TODO Fix this so it deals with punning
+		this.vlog.materialize(true);
+	}
+
+	private void loadFacts() throws EDBConfigurationException {
 		final Map<String, List<List<Term>>> factsMap = new HashMap<>();
+
 		for (final Atom fact : this.facts) {
 			factsMap.putIfAbsent(fact.getPredicateName(), new ArrayList<>());
 			factsMap.get(fact.getPredicateName()).add(fact.getArguments());
 		}
+
 		for (final String predName : factsMap.keySet()) {
 			final List<List<Term>> predNameArgs = factsMap.get(predName);
 			final int arity = predNameArgs.get(0).size();
@@ -90,8 +101,6 @@ public class ReasonerImpl implements Reasoner {
 			}
 			this.vlog.addData(predName, tuplesMatrix);
 		}
-
-		this.vlog.materialize(true);
 	}
 
 	@Override
