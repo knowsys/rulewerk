@@ -55,12 +55,8 @@ public class VLogTest extends TestCase {
 		// Start VLog
 		final VLog vlog = new VLog();
 		vlog.start("", false);
-
-		// Loading rules and facts
 		vlog.addData("A", argsAMatrix);
 		vlog.setRules(rules, RuleRewriteStrategy.NONE);
-
-		// Materialization
 		vlog.materialize(true);
 
 		// Querying
@@ -70,5 +66,6 @@ public class VLogTest extends TestCase {
 			final String[] answer = answers.nextElement();
 			System.out.println(answer[0]);
 		}
+		// TODO assert
 	}
 }

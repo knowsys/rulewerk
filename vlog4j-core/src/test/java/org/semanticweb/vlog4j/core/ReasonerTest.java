@@ -22,7 +22,6 @@ package org.semanticweb.vlog4j.core;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Iterator;
 
 import org.semanticweb.vlog4j.core.model.Atom;
 import org.semanticweb.vlog4j.core.model.AtomImpl;
@@ -59,12 +58,13 @@ public class ReasonerTest extends TestCase {
 		reasoner.load();
 		reasoner.reason();
 
-		final Iterator<String[]> iterator = reasoner.compileAtomicQuery(factAc).asIterator();
+		final java.util.Iterator<String[]> iterator = reasoner.compileAtomicQuery(atomAx).asIterator();
 		System.out.print("Answers: ");
 		while (iterator.hasNext()) {
 			final String[] answer = iterator.next();
 			System.out.print(answer[0] + ", ");
 		}
+		// TODO assert
 
 	}
 }
