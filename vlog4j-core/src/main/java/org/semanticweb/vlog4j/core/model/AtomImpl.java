@@ -1,6 +1,5 @@
 package org.semanticweb.vlog4j.core.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /*
@@ -44,10 +43,8 @@ public class AtomImpl implements Atom {
 	public AtomImpl(final String predicateName, final List<Term> arguments) throws VLog4jAtomValidationException {
 		validatePredicateName(predicateName);
 		validateArguments(arguments);
-
 		this.predicateName = predicateName;
 		this.arguments = arguments;
-
 		this.variables = collectVariables();
 		this.constants = collectConstants();
 	}
@@ -55,13 +52,8 @@ public class AtomImpl implements Atom {
 	public AtomImpl(final String predicateName, final Term... arguments) throws VLog4jAtomValidationException {
 		validatePredicateName(predicateName);
 		validateArguments(Arrays.asList(arguments));
-
 		this.predicateName = predicateName;
-		this.arguments = new ArrayList<>();
-		for (final Term argument : arguments) {
-			this.arguments.add(argument);
-		}
-
+		this.arguments = Arrays.asList(arguments);
 		this.variables = collectVariables();
 		this.constants = collectConstants();
 	}
@@ -136,7 +128,7 @@ public class AtomImpl implements Atom {
 	}
 
 	@Override
-	public String getPredicateName() {
+	public String getPredicate() {
 		return this.predicateName;
 	}
 

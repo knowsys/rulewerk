@@ -23,10 +23,10 @@ package org.semanticweb.vlog4j.core;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.Atom;
 import org.semanticweb.vlog4j.core.model.AtomImpl;
+import org.semanticweb.vlog4j.core.model.ConstantImpl;
 import org.semanticweb.vlog4j.core.model.Rule;
 import org.semanticweb.vlog4j.core.model.RuleImpl;
 import org.semanticweb.vlog4j.core.model.VariableImpl;
@@ -40,35 +40,26 @@ import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
-import karmaresearch.vlog.StringQueryResultEnumeration;
 
 public class ReasonerTest extends TestCase {
 
 	public void testSimpleInference() throws VLog4jTermValidationException, VLog4jAtomValidationException, VLog4jRuleValidationException,
 			AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
-
-		// Creating rules and facts
-		final Atom factAc = new AtomImpl("A", new VariableImpl("c"));
-		final Atom factAd = new AtomImpl("A", new VariableImpl("d"));
-		final List<Atom> facts = Arrays.asList(factAc, factAd);
+		final Atom factAc = new AtomImpl("A", new ConstantImpl("c"));
+		final Atom factAd = new AtomImpl("A", new ConstantImpl("d"));
 		final Atom atomAx = new AtomImpl("A", new VariableImpl("X"));
 		final Atom atomBx = new AtomImpl("B", new VariableImpl("X"));
 		final Atom atomCx = new AtomImpl("C", new VariableImpl("X"));
 		final Rule ruleBxAx = new RuleImpl(Arrays.asList(atomBx), Arrays.asList(atomAx));
 		final Rule ruleCxBx = new RuleImpl(Arrays.asList(atomCx), Arrays.asList(atomBx));
-		final List<Rule> rules = Arrays.asList(ruleBxAx, ruleCxBx);
 
-		// Loading rules and facts
 		final Reasoner reasoner = new ReasonerImpl();
-		reasoner.getFacts().addAll(facts);
-		reasoner.getRules().addAll(rules);
+		reasoner.addFacts(factAc, factAd);
+		reasoner.addRules(ruleBxAx, ruleCxBx);
+		reasoner.load();
+		reasoner.reason();
 
-		// Reasoning
-		reasoner.applyReasoning();
-
-		// Querying
-		final StringQueryResultEnumeration resultEnumeration = reasoner.query(factAc);
-		final Iterator<String[]> iterator = resultEnumeration.asIterator();
+		final Iterator<String[]> iterator = reasoner.compileAtomicQuery(factAc).asIterator();
 		System.out.print("Answers: ");
 		while (iterator.hasNext()) {
 			final String[] answer = iterator.next();

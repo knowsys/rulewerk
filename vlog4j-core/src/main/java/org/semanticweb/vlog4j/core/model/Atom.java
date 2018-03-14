@@ -25,7 +25,7 @@ import java.util.Set;
 
 public interface Atom {
 
-	public String getPredicateName();
+	public String getPredicate();
 
 	/**
 	 * The predicate arguments as an unmodifiableList. An

@@ -1,8 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import org.semanticweb.vlog4j.core.model.Atom;
 import org.semanticweb.vlog4j.core.model.Rule;
@@ -21,9 +20,9 @@ import karmaresearch.vlog.StringQueryResultEnumeration;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,40 +32,30 @@ import karmaresearch.vlog.StringQueryResultEnumeration;
  */
 public interface Reasoner {
 
-	// TODO or do we prefer
-	// addRule(),removeRule(),addRules(),removeRules(),removeAllRules()
-	// TODO how should this behave once we started the VLog reasoner/once we
-	// materialized
-	List<Rule> getRules();
+	Algorithm getAlgorithm();
 
-	// TODO or do we prefer
-	// addRule(),removeRule(),addRules(),removeRules(),removeAllRules()
-	// TODO how should this behave once we started the VLog reasoner/once we
-	// materialized
-	List<Atom> getFacts();
+	void setAlgorithm(Algorithm algorithmType);
 
-	List<EDBPredConfig> getEDBConfig();
+	void addRules(Rule... rules);
 
-	// TODO do we want a start() method? or do we pass the config in the Reasoner
-	// constructor?
-	// TODO do we want to return anything?
-	void applyReasoning() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException;
+	void addRules(Collection<Rule> rules);
 
-	StringQueryResultEnumeration query(Atom query) throws NotStartedException;
+	void addFacts(Atom... fact);
+
+	void addFacts(Collection<Atom> facts);
+
+	void addEDBConfigInfo(EDBPredicateConfig... edbConfig);
+
+	void addEDBConfigInfo(Collection<EDBPredicateConfig> edbConfig);
+
+	void load() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException;
+
+	void reason() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException;
+
+	StringQueryResultEnumeration compileAtomicQuery(Atom query) throws NotStartedException;
 
 	// TODO is it more inconvenient for the user to provide the arity at export? Or
 	// create a predicate with a given arity when creating rules?
-	void exportFactsToCSV(String predicate, int arity, File csvFile);
+	void exportAtomicQueryAnswers(Atom atom, String outputFilePath);
 
-	// TODO what would happen in the case of CSVs? Where will they be stored?
-	void updateDB();
-
-	// TODO: will this export all EDBs and IDBs? or only materialization result?
-	// Should we have a separate method for exportIDBs?
-	// TODO: where will we get the file names? what if IDBs do not have valid file
-	// names?
-	// TODO what about parameters with same name and different arties?
-	void exportDB(File directoryLocation);
-
-	void dispose();
 }

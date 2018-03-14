@@ -20,6 +20,6 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 
-public enum MaterializationAlgorythmType {
+public enum DataFormat {
 	SKOLEM_CHASE, RESTRICTED_CHASE
 }

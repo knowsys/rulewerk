@@ -70,39 +70,5 @@ public class VLogTest extends TestCase {
 			final String[] answer = answers.nextElement();
 			System.out.println(answer[0]);
 		}
-
-		// TODO do we want to use this method from Java 9.
-		// final Iterator<String[]> answerIterator = answers.asIterator();
-		// while (answerIterator.hasNext()) {
-		// final String[] answer = answerIterator.next();
-		// System.out.println(answer[0]);
-		// }
-
-		// Loading rule: B(X) :- A(X) .
-		// final List<Rule> rules = new ArrayList<>();
-		// final List<Term> bodyAtomArgs1 = new ArrayList<>();
-		// bodyAtomArgs1.add(new VariableImpl("X"));
-		// final Atom bodyAtom1 = new AtomImpl("A", bodyAtomArgs1);
-		// final List<Atom> body1 = new ArrayList<>();
-		// body1.add(bodyAtom1);
-		// final List<Term> headAtomArgs1 = new ArrayList<>();
-		// headAtomArgs1.add(new VariableImpl("X"));
-		// final Atom headAtom1 = new AtomImpl("B", bodyAtomArgs1);
-		// final List<Atom> head1 = new ArrayList<>();
-		// head1.add(headAtom1);
-		// final Rule rule1 = new RuleImpl(body1, head1);
-		// rules.add(rule1);
-		// vlog.setRules(ModelToVLogConverter.toVLogRuleArray(rules), RuleRewriteStrategy.NONE);
-
-		// Loading facts
-		// final List<Term> firstFactArgs = new ArrayList<>();
-		// firstFactArgs.add(new ConstantImpl("a"));
-		// reasoner.getFacts().add(new AtomImpl("C", firstFactArgs));
-		// final List<Term> secondFactArgs = new ArrayList<>();
-		// secondFactArgs.add(new ConstantImpl("b"));
-		// reasoner.getFacts().add(new AtomImpl("C", secondFactArgs));
-		// vlog.addData(predName, tuplesMatrix);
-
-		// this.vlog.setRules(ModelToVLogConverter.toVLogRuleArray(this.rules), RuleRewriteStrategy.NONE);
 	}
 }

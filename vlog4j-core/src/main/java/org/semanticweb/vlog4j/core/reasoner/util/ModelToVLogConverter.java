@@ -58,7 +58,7 @@ public class ModelToVLogConverter {
 		// FIXME: Append arity at the end of the predicate name (punning)
 		// FIXME: should we generate predicate names by appending the terms arity to the
 		// given name?
-		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(atom.getPredicateName(), terms);
+		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(atom.getPredicate(), terms);
 		return vLogAtom;
 	}
 
