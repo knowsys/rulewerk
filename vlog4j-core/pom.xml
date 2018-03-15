@@ -20,7 +20,7 @@
 			<!-- Useful for integrating the jar containing the JNI to VLog -->
 			<groupId>karmaresearch</groupId>
 			<artifactId>vlog</artifactId>
-			<version>0.0.1-linux-SNAPSHOT</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -41,9 +41,9 @@
 					<configuration>
 						<groupId>karmaresearch</groupId>
 						<artifactId>vlog</artifactId>
-						<version>0.0.1-linux-SNAPSHOT</version>
+						<version>0.0.1-SNAPSHOT</version>
 						<packaging>jar</packaging>
-						<file>./lib/jvlog-linux-only.jar</file>
+						<file>./lib/jvlog.jar</file>
 					</configuration>
 				</execution>
 			</executions>

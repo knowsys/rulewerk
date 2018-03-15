@@ -86,15 +86,7 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${apacheCommonsLangVersion}</version>
-		</dependency>
-		
-		<dependency>
-		<!-- Useful for integrating the jar containing the JNI to VLog -->
-			<groupId>karmaresearch</groupId>
-			<artifactId>vlog</artifactId>
-			<version>1.0</version>
-		</dependency>
-		
+		</dependency>		
 	</dependencies>
 
 	<build>
