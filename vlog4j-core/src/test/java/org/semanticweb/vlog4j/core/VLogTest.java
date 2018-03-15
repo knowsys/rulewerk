@@ -22,6 +22,7 @@ package org.semanticweb.vlog4j.core;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
 import org.semanticweb.vlog4j.core.model.validation.TermValidationException;
@@ -38,10 +39,11 @@ import karmaresearch.vlog.Term.TermType;
 import karmaresearch.vlog.VLog;
 import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
+@Ignore
 public class VLogTest extends TestCase {
 
-	public void testVLogSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException, AtomValidationException,
-			TermValidationException, RuleValidationException, NotStartedException {
+	public void testVLogSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException,
+			AtomValidationException, TermValidationException, RuleValidationException, NotStartedException {
 
 		// Creating rules and facts
 		final String[][] argsAMatrix = { { "a" }, { "b" } };
@@ -67,5 +69,7 @@ public class VLogTest extends TestCase {
 			System.out.println(answer[0]);
 		}
 		// TODO assert
+
+		vlog.stop();
 	}
 }
