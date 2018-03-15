@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,9 +22,9 @@ package org.semanticweb.vlog4j.core;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.model.validation.VLog4jAtomValidationException;
-import org.semanticweb.vlog4j.core.model.validation.VLog4jRuleValidationException;
-import org.semanticweb.vlog4j.core.model.validation.VLog4jTermValidationException;
+import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
+import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
+import org.semanticweb.vlog4j.core.model.validation.TermValidationException;
 
 import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;
@@ -40,8 +40,8 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 public class VLogTest extends TestCase {
 
-	public void testVLogSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException, VLog4jAtomValidationException,
-			VLog4jTermValidationException, VLog4jRuleValidationException, NotStartedException {
+	public void testVLogSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException, AtomValidationException,
+			TermValidationException, RuleValidationException, NotStartedException {
 
 		// Creating rules and facts
 		final String[][] argsAMatrix = { { "a" }, { "b" } };

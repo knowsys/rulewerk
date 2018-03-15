@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model;
+package org.semanticweb.vlog4j.core.model.validation;
 
 /*
  * #%L
@@ -20,8 +20,6 @@ package org.semanticweb.vlog4j.core.model;
  * #L%
  */
 
-public interface Term {
-	String getName();
+public class EntityNameValidation {
 
-	TermType getType();
 }

@@ -12,9 +12,9 @@ import java.util.Arrays;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.semanticweb.vlog4j.core.model.validation.VLog4jAtomValidationException;
+import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 
 public class AtomImpl implements Atom {
 	private final String predicate;
@@ -37,7 +37,7 @@ public class AtomImpl implements Atom {
 	private final Set<Variable> variables;
 	private final Set<Constant> constants;
 
-	public AtomImpl(final String predicateName, final List<Term> arguments) throws VLog4jAtomValidationException {
+	public AtomImpl(final String predicateName, final List<Term> arguments) throws AtomValidationException {
 		validatePredicateName(predicateName);
 		validateArguments(arguments);
 		this.predicate = predicateName;
@@ -46,7 +46,7 @@ public class AtomImpl implements Atom {
 		this.constants = collectConstants();
 	}
 
-	public AtomImpl(final String predicateName, final Term... arguments) throws VLog4jAtomValidationException {
+	public AtomImpl(final String predicateName, final Term... arguments) throws AtomValidationException {
 		validatePredicateName(predicateName);
 		validateArguments(Arrays.asList(arguments));
 		this.predicate = predicateName;
@@ -63,27 +63,27 @@ public class AtomImpl implements Atom {
 		this.constants = new HashSet<>(atom.getConstants());
 	}
 
-	private void validatePredicateName(final String predicateName) throws VLog4jAtomValidationException {
+	private void validatePredicateName(final String predicateName) throws AtomValidationException {
 		if (StringUtils.isBlank(predicateName)) {
 			// TODO use string formatter
-			throw new VLog4jAtomValidationException("Invalid blank Atom predicate name: " + predicateName);
+			throw new AtomValidationException("Invalid blank Atom predicate name: " + predicateName);
 		}
 
 		// TODO other Predicate name validations
 
 	}
 
-	private void validateArguments(final List<Term> arguments) throws VLog4jAtomValidationException {
+	private void validateArguments(final List<Term> arguments) throws AtomValidationException {
 		// FIXME do we allow empty predicates?
 		if (arguments == null) {
-			throw new VLog4jAtomValidationException("Null Atom argument list");
+			throw new AtomValidationException("Null Atom argument list");
 		}
 		if (arguments.isEmpty()) {
-			throw new VLog4jAtomValidationException("Empty Atom argument list");
+			throw new AtomValidationException("Empty Atom argument list");
 		}
 		for (final Term term : arguments) {
 			if (term == null) {
-				throw new VLog4jAtomValidationException("Atom argument list contains null terms");
+				throw new AtomValidationException("Atom argument list contains null terms");
 			}
 		}
 	}

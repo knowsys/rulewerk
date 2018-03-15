@@ -212,9 +212,9 @@ public class ReasonerImpl implements Reasoner {
 	@Override
 	public List<List<String>> compileQuerySet(final Atom atomAx) throws NotStartedException {
 		final List<List<String>> answers = new ArrayList<>();
-		final java.util.Iterator<String[]> iterator = compileQueryIterator(atomAx).asIterator();
-		while (iterator.hasNext()) {
-			answers.add(Arrays.asList(iterator.next()));
+		final StringQueryResultEnumeration iterator = compileQueryIterator(atomAx);
+		while (iterator.hasMoreElements()) {
+			answers.add(Arrays.asList(iterator.nextElement()));
 		}
 		return answers;
 	}

@@ -1,6 +1,6 @@
 package org.semanticweb.vlog4j.core.model;
 
-import org.semanticweb.vlog4j.core.model.validation.VLog4jTermValidationException;
+import org.semanticweb.vlog4j.core.model.validation.TermValidationException;
 
 /*
  * #%L
@@ -24,7 +24,7 @@ import org.semanticweb.vlog4j.core.model.validation.VLog4jTermValidationExceptio
 
 public class ConstantImpl extends AbstractTerm implements Constant {
 
-	public ConstantImpl(final String name) throws VLog4jTermValidationException {
+	public ConstantImpl(final String name) throws TermValidationException {
 		super(name);
 	}
 

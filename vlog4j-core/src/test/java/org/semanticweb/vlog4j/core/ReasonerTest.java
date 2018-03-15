@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,9 +30,9 @@ import org.semanticweb.vlog4j.core.model.ConstantImpl;
 import org.semanticweb.vlog4j.core.model.Rule;
 import org.semanticweb.vlog4j.core.model.RuleImpl;
 import org.semanticweb.vlog4j.core.model.VariableImpl;
-import org.semanticweb.vlog4j.core.model.validation.VLog4jAtomValidationException;
-import org.semanticweb.vlog4j.core.model.validation.VLog4jRuleValidationException;
-import org.semanticweb.vlog4j.core.model.validation.VLog4jTermValidationException;
+import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
+import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
+import org.semanticweb.vlog4j.core.model.validation.TermValidationException;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerImpl;
 
@@ -43,7 +43,7 @@ import karmaresearch.vlog.NotStartedException;
 
 public class ReasonerTest extends TestCase {
 
-	public void testSimpleInference() throws VLog4jTermValidationException, VLog4jAtomValidationException, VLog4jRuleValidationException,
+	public void testSimpleInference() throws TermValidationException, AtomValidationException, RuleValidationException,
 			AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 		final Atom factAc = new AtomImpl("A", new ConstantImpl("c"));
 		final Atom factAd = new AtomImpl("A", new ConstantImpl("d"));

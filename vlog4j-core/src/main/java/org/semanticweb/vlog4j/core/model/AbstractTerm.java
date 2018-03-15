@@ -1,7 +1,7 @@
 package org.semanticweb.vlog4j.core.model;
 
 import org.apache.commons.lang3.StringUtils;
-import org.semanticweb.vlog4j.core.model.validation.VLog4jTermValidationException;
+import org.semanticweb.vlog4j.core.model.validation.TermValidationException;
 
 /*
  * #%L
@@ -24,13 +24,13 @@ import org.semanticweb.vlog4j.core.model.validation.VLog4jTermValidationExceptio
  */
 
 public abstract class AbstractTerm implements Term {
-
 	private final String name;
 
-	public AbstractTerm(final String name) throws VLog4jTermValidationException {
+	public AbstractTerm(final String name) throws TermValidationException {
+
 		if (StringUtils.isBlank(name)) {
 			// TODO use string formatter
-			throw new VLog4jTermValidationException("Invalid blank Term name: " + name);
+			throw new TermValidationException("Invalid blank Term name: " + name);
 		}
 		// TODO: other name validations
 		this.name = name;

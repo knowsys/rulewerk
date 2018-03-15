@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.semanticweb.vlog4j.core.model.validation.VLog4jRuleValidationException;
+import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
 
 public class RuleImpl implements Rule {
 
@@ -53,10 +53,10 @@ public class RuleImpl implements Rule {
 	 *            list of Atoms representing the rule body conjuncts.
 	 * @param head
 	 *            list of Atoms representing the rule head conjuncts.
-	 * @throws VLog4jRuleValidationException
+	 * @throws RuleValidationException
 	 *             if body or head are null or empty.
 	 */
-	public RuleImpl(final List<Atom> head, final List<Atom> body) throws VLog4jRuleValidationException {
+	public RuleImpl(final List<Atom> head, final List<Atom> body) throws RuleValidationException {
 		validateRuleInput(body, head);
 
 		this.body = body;
@@ -174,28 +174,28 @@ public class RuleImpl implements Rule {
 		return Collections.unmodifiableSet(this.terms);
 	}
 
-	private void validateRuleInput(final List<Atom> body, final List<Atom> head) throws VLog4jRuleValidationException {
+	private void validateRuleInput(final List<Atom> body, final List<Atom> head) throws RuleValidationException {
 		if (body == null) {
-			throw new VLog4jRuleValidationException("Null rule body");
+			throw new RuleValidationException("Null rule body");
 		}
 		if (body.isEmpty()) {
-			throw new VLog4jRuleValidationException("Empty rule body");
+			throw new RuleValidationException("Empty rule body");
 		}
 		for (final Atom bodyAtom : body) {
 			if (bodyAtom == null) {
-				throw new VLog4jRuleValidationException("Rule body contains null atoms");
+				throw new RuleValidationException("Rule body contains null atoms");
 			}
 		}
 
 		if (head == null) {
-			throw new VLog4jRuleValidationException("Null rule head");
+			throw new RuleValidationException("Null rule head");
 		}
 		if (head.isEmpty()) {
-			throw new VLog4jRuleValidationException("Empty rule head");
+			throw new RuleValidationException("Empty rule head");
 		}
 		for (final Atom headAtom : head) {
 			if (headAtom == null) {
-				throw new VLog4jRuleValidationException("Rule head contains null atoms");
+				throw new RuleValidationException("Rule head contains null atoms");
 			}
 		}
 	}
