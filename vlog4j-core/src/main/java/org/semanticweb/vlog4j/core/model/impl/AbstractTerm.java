@@ -1,4 +1,7 @@
-package org.semanticweb.vlog4j.core.model;
+package org.semanticweb.vlog4j.core.model.impl;
+
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.TermType;
 
 /*
  * #%L

@@ -22,7 +22,7 @@ package org.semanticweb.vlog4j.core.model.validation;
 
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.Term;
+import org.semanticweb.vlog4j.core.model.api.Term;
 
 public class AtomValidator {
 	public static void validArgumentsCheck(final List<Term> arguments) throws AtomValidationException {

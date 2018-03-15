@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.semanticweb.vlog4j.core.model.Atom;
-import org.semanticweb.vlog4j.core.model.AtomImpl;
-import org.semanticweb.vlog4j.core.model.Rule;
-import org.semanticweb.vlog4j.core.model.Term;
+import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;

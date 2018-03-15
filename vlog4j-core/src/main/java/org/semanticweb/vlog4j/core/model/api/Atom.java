@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model;
+package org.semanticweb.vlog4j.core.model.api;
 
 import java.util.List;
 import java.util.Set;

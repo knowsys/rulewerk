@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.Atom;
-import org.semanticweb.vlog4j.core.model.Rule;
+import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;

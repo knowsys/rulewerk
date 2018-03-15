@@ -22,10 +22,10 @@ package org.semanticweb.vlog4j.core.reasoner.util;
 
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.Atom;
-import org.semanticweb.vlog4j.core.model.Rule;
-import org.semanticweb.vlog4j.core.model.Term;
-import org.semanticweb.vlog4j.core.model.TermType;
+import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.TermType;
 
 public class ModelToVLogConverter {
 

@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model;
+package org.semanticweb.vlog4j.core.model.api;
 
 /*
  * #%L
@@ -20,6 +20,6 @@ package org.semanticweb.vlog4j.core.model;
  * #L%
  */
 
-public interface Variable extends Term{
-
+public enum TermType {
+	CONSTANT, BLANK, VARIABLE
 }

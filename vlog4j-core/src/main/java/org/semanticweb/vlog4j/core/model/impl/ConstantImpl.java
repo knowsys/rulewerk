@@ -1,7 +1,9 @@
-package org.semanticweb.vlog4j.core.model;
+package org.semanticweb.vlog4j.core.model.impl;
 
+import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.TermType;
+import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
-import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
 
 /*
  * #%L
@@ -23,19 +25,19 @@ import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationExcept
  * #L%
  */
 
-public class VariableImpl extends AbstractTerm implements Variable {
+public class ConstantImpl extends AbstractTerm implements Constant {
 
-	public VariableImpl(final String name) throws VariableNameValidationException {
+	public ConstantImpl(final String name) throws ConstantNameValidationException {
 		super(name);
-		EntityNameValidator.variableNameCheck(name);
+		EntityNameValidator.constantNameCheck(name);
 	}
 
-	public VariableImpl(final Variable copyVariable) throws VariableNameValidationException {
-		super(new String(copyVariable.getName()));
+	public ConstantImpl(final Constant copyConstant) throws ConstantNameValidationException {
+		super(new String(copyConstant.getName()));
 	}
 
 	@Override
 	public TermType getType() {
-		return TermType.VARIABLE;
+		return TermType.CONSTANT;
 	}
 }

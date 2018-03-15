@@ -2,7 +2,7 @@ package org.semanticweb.vlog4j.core.model.validation;
 
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.Atom;
+import org.semanticweb.vlog4j.core.model.api.Atom;
 
 public class RuleValidator {
 
