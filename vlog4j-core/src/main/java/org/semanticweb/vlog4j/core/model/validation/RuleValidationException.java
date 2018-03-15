@@ -21,9 +21,9 @@ package org.semanticweb.vlog4j.core.model.validation;
  */
 
 public class RuleValidationException extends Exception {
-//	TODO Logging
+	// TODO Logging
 
-	public RuleValidationException(String string) {
+	public RuleValidationException(final String string) {
 		// TODO Auto-generated constructor stub
 	}
 

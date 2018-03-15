@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model;
 
+import org.semanticweb.vlog4j.core.model.validation.BlankValidationException;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -20,6 +22,21 @@ package org.semanticweb.vlog4j.core.model;
  * #L%
  */
 
-public enum TermType {
-	CONSTANT, BLANK, VARIABLE
+import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
+
+public class BlankImpl extends AbstractTerm implements Blank {
+
+	public BlankImpl(final String name) throws BlankValidationException {
+		super(name);
+		EntityNameValidator.validBlankNameCheck(name);
+	}
+
+	public BlankImpl(final Blank copyBlank) throws BlankValidationException {
+		super(new String(copyBlank.getName()));
+	}
+
+	@Override
+	public TermType getType() {
+		return TermType.BLANK;
+	}
 }

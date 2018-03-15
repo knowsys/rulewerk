@@ -31,8 +31,9 @@ import org.semanticweb.vlog4j.core.model.Rule;
 import org.semanticweb.vlog4j.core.model.RuleImpl;
 import org.semanticweb.vlog4j.core.model.VariableImpl;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
+import org.semanticweb.vlog4j.core.model.validation.ConstantValidationException;
 import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
-import org.semanticweb.vlog4j.core.model.validation.TermValidationException;
+import org.semanticweb.vlog4j.core.model.validation.VariableValidationException;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerImpl;
 
@@ -43,7 +44,7 @@ import karmaresearch.vlog.NotStartedException;
 
 public class ReasonerTest extends TestCase {
 
-	public void testSimpleInference() throws TermValidationException, AtomValidationException, RuleValidationException,
+	public void testSimpleInference() throws AtomValidationException, ConstantValidationException, VariableValidationException, RuleValidationException,
 			AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 		final Atom factAc = new AtomImpl("A", new ConstantImpl("c"));
 		final Atom factAd = new AtomImpl("A", new ConstantImpl("d"));
@@ -57,12 +58,20 @@ public class ReasonerTest extends TestCase {
 		reasoner.addFacts(factAc, factAd);
 		reasoner.addRules(ruleBxAx, ruleCxBx);
 		reasoner.load();
+		final List<List<String>> answerBefore = reasoner.compileQuerySet(atomCx);
 		reasoner.reason();
-		final List<List<String>> answers = reasoner.compileQuerySet(atomCx);
+		final List<List<String>> answersAfter = reasoner.compileQuerySet(atomCx);
 
-		for (final List<String> answer : answers) {
-			System.out.println(answer);
+		System.out.print("Answers before reasoning: ");
+		for (final List<String> answer : answerBefore) {
+			System.out.print(answer);
 		}
+		System.out.println();
 
+		System.out.print(atomCx.toString() + " answers after reasoning: ");
+		for (final List<String> answer : answersAfter) {
+			System.out.print(answer + ",");
+		}
+		System.out.println();
 	}
 }

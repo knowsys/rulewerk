@@ -37,10 +37,10 @@ public class AtomImpl implements Atom {
 	private final Set<Variable> variables;
 	private final Set<Constant> constants;
 
-	public AtomImpl(final String predicateName, final List<Term> arguments) throws AtomValidationException {
-		validatePredicateName(predicateName);
+	public AtomImpl(final String predicate, final List<Term> arguments) throws AtomValidationException {
+		validatePredicateName(predicate);
 		validateArguments(arguments);
-		this.predicate = predicateName;
+		this.predicate = predicate;
 		this.arguments = arguments;
 		this.variables = collectVariables();
 		this.constants = collectConstants();
