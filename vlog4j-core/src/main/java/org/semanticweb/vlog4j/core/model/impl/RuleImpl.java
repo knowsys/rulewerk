@@ -56,7 +56,6 @@ public class RuleImpl implements Rule {
 	private final Set<Variable> bodyVariables = new HashSet<>();
 	private final Set<Variable> headVariables = new HashSet<>();
 	private final Set<Variable> existentiallyQuantifiedVariables = new HashSet<>();
-	private final Set<Variable> universallyQuantifiedVariables = new HashSet<>();
 
 	/**
 	 * Creates a Rule with a non-empty body and an non-empty head. The variables that occur only in the rule head (and not in the rule body) are considered to
@@ -82,17 +81,19 @@ public class RuleImpl implements Rule {
 		RuleValidator.headCheck(head);
 
 		for (final Atom bodyAtom : body) {
-			this.body.add(new AtomImpl(bodyAtom));
-			this.bodyConstants.addAll(new HashSet<>(bodyAtom.getConstants()));
-			this.bodyVariables.addAll(new HashSet<>(bodyAtom.getVariables()));
-			this.bodyTerms.addAll(new HashSet<>(bodyAtom.getArguments()));
+			final AtomImpl copiedBodyAtom = new AtomImpl(bodyAtom);
+			this.body.add(copiedBodyAtom);
+			this.bodyConstants.addAll(new HashSet<>(copiedBodyAtom.getConstants()));
+			this.bodyVariables.addAll(new HashSet<>(copiedBodyAtom.getVariables()));
+			this.bodyTerms.addAll(new HashSet<>(copiedBodyAtom.getArguments()));
 		}
 
 		for (final Atom headAtom : head) {
-			this.head.add(new AtomImpl(headAtom));
-			this.headConstants.addAll(new HashSet<>(headAtom.getConstants()));
-			this.headVariables.addAll(new HashSet<>(headAtom.getVariables()));
-			this.headTerms.addAll(new HashSet<>(headAtom.getArguments()));
+			final AtomImpl copiedHeadAtom = new AtomImpl(headAtom);
+			this.head.add(new AtomImpl(copiedHeadAtom));
+			this.headConstants.addAll(new HashSet<>(copiedHeadAtom.getConstants()));
+			this.headVariables.addAll(new HashSet<>(copiedHeadAtom.getVariables()));
+			this.headTerms.addAll(new HashSet<>(copiedHeadAtom.getArguments()));
 		}
 
 		this.terms.addAll(new HashSet<>(this.bodyTerms));
@@ -101,9 +102,8 @@ public class RuleImpl implements Rule {
 		this.constants.addAll(new HashSet<>(this.headConstants));
 		this.variables.addAll(new HashSet<>(this.bodyVariables));
 		this.variables.addAll(new HashSet<>(this.headVariables));
-		this.universallyQuantifiedVariables.addAll(new HashSet<>(this.bodyVariables));
 		this.existentiallyQuantifiedVariables.addAll(new HashSet<>(this.variables));
-		this.existentiallyQuantifiedVariables.removeAll(new HashSet<>(this.universallyQuantifiedVariables));
+		this.existentiallyQuantifiedVariables.removeAll(new HashSet<>(this.bodyVariables));
 	}
 
 	@Override
@@ -206,7 +206,7 @@ public class RuleImpl implements Rule {
 
 	@Override
 	public Set<Variable> getUniversallyQuantifiedVariables() {
-		return Collections.unmodifiableSet(this.universallyQuantifiedVariables);
+		return Collections.unmodifiableSet(this.bodyVariables);
 	}
 
 	@Override

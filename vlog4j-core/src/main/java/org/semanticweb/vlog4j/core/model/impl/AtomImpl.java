@@ -70,16 +70,19 @@ public class AtomImpl implements Atom {
 		for (final Term argument : arguments) {
 			switch (argument.getType()) {
 				case BLANK:
-					this.arguments.add(new BlankImpl((Blank) argument));
-					this.blanks.add(new BlankImpl((Blank) argument));
+					final BlankImpl copiedBlank = new BlankImpl((Blank) argument);
+					this.arguments.add(copiedBlank);
+					this.blanks.add(copiedBlank);
 					break;
 				case CONSTANT:
-					this.arguments.add(new ConstantImpl((Constant) argument));
-					this.constants.add(new ConstantImpl((Constant) argument));
+					final Constant copiedConstant = new ConstantImpl((Constant) argument);
+					this.arguments.add(copiedConstant);
+					this.constants.add(copiedConstant);
 					break;
 				case VARIABLE:
-					this.arguments.add(new VariableImpl((Variable) argument));
-					this.variables.add(new VariableImpl((Variable) argument));
+					final VariableImpl copiedVariable = new VariableImpl((Variable) argument);
+					this.arguments.add(copiedVariable);
+					this.variables.add(copiedVariable);
 					break;
 			}
 		}
