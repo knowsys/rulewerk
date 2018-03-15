@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.model.api;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,9 +20,21 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
+/**
+ * Interface for all different types of terms ({@link #CONSTANT}, {@link #BLANK}, and {@link #VARIABLE}).
+ *
+ * @author david.carral@tu-dresden.de
+ */
 public interface Term {
+
+	/**
+	 * @return this method may not return a blank String (null, " ", empty string...).
+	 */
 	String getName();
 
+	/**
+	 * @return the type of the term (BLANK, CONSTANT, or VARIABLE).
+	 */
 	TermType getType();
 
 }

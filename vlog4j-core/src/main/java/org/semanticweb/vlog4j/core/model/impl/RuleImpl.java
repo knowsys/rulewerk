@@ -35,6 +35,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;
+import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 import org.semanticweb.vlog4j.core.model.validation.PredicateNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
 import org.semanticweb.vlog4j.core.model.validation.RuleValidator;
@@ -72,9 +73,10 @@ public class RuleImpl implements Rule {
 	 * @throws BlankNameValidationException
 	 * @throws PredicateNameValidationException
 	 * @throws AtomValidationException
+	 * @throws IllegalEntityNameException
 	 */
 	public RuleImpl(final List<Atom> head, final List<Atom> body) throws RuleValidationException, AtomValidationException, PredicateNameValidationException,
-			BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException {
+			BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException, IllegalEntityNameException {
 		RuleValidator.ruleCheck(body, head);
 		RuleValidator.bodyCheck(body);
 		RuleValidator.headCheck(head);

@@ -17,10 +17,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
-import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.PredicateNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
+import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
 
 import karmaresearch.vlog.AlreadyStartedException;
@@ -39,9 +36,9 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -90,14 +87,12 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public void addFacts(final Atom... facts) throws AtomValidationException, PredicateNameValidationException, BlankNameValidationException,
-			ConstantNameValidationException, VariableNameValidationException {
+	public void addFacts(final Atom... facts) throws AtomValidationException, IllegalEntityNameException {
 		addFacts(Arrays.asList(facts));
 	}
 
 	@Override
-	public void addFacts(final Collection<Atom> facts) throws AtomValidationException, PredicateNameValidationException, BlankNameValidationException,
-			ConstantNameValidationException, VariableNameValidationException {
+	public void addFacts(final Collection<Atom> facts) throws AtomValidationException, IllegalEntityNameException {
 		if (!this.loaded) {
 			for (final Atom fact : facts) {
 				if (fact.getVariables().isEmpty()) {

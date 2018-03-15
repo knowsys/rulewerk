@@ -2,8 +2,7 @@ package org.semanticweb.vlog4j.core.model.impl;
 
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
-import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
+import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 /*
  * #%L
@@ -14,9 +13,9 @@ import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationExcept
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,12 +26,11 @@ import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationExcept
 
 public class VariableImpl extends AbstractTerm implements Variable {
 
-	public VariableImpl(final String name) throws VariableNameValidationException {
+	public VariableImpl(final String name) throws IllegalEntityNameException {
 		super(name);
-		EntityNameValidator.variableNameCheck(name);
 	}
 
-	public VariableImpl(final Variable copyVariable) throws VariableNameValidationException {
+	public VariableImpl(final Variable copyVariable) throws IllegalEntityNameException {
 		super(new String(copyVariable.getName()));
 	}
 

@@ -2,6 +2,8 @@ package org.semanticweb.vlog4j.core.model.impl;
 
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
+import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
+import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 /*
  * #%L
@@ -12,9 +14,9 @@ import org.semanticweb.vlog4j.core.model.api.TermType;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,11 +25,18 @@ import org.semanticweb.vlog4j.core.model.api.TermType;
  * #L%
  */
 
+/**
+ * Abstract class implementing all methods used by terms ({@link #CONSTANT}, {@link #BLANK}, and {@link #VARIABLE}).
+ *
+ * @author david.carral@tu-dresden.de
+ */
 public abstract class AbstractTerm implements Term {
+
 	private final String name;
 
-	public AbstractTerm(final String name) {
-		this.name = name;
+	public AbstractTerm(final String name) throws IllegalEntityNameException {
+		EntityNameValidator.validateNonEmptyString(name);
+		this.name = new String(name);
 	}
 
 	@Override

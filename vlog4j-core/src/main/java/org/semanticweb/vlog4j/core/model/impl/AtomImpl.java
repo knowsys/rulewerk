@@ -35,11 +35,8 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidator;
-import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
-import org.semanticweb.vlog4j.core.model.validation.PredicateNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
+import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 public class AtomImpl implements Atom {
 	private final String predicateName;
@@ -48,11 +45,10 @@ public class AtomImpl implements Atom {
 	private final Set<Constant> constants = new HashSet<>();
 	private final Set<Variable> variables = new HashSet<>();
 
-	public AtomImpl(final String predicateName, final List<Term> arguments) throws AtomValidationException, PredicateNameValidationException,
-			BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException {
-		EntityNameValidator.oredicateNameCheck(predicateName);
+	public AtomImpl(final String predicateName, final List<Term> arguments) throws AtomValidationException, IllegalEntityNameException {
+		EntityNameValidator.validateNonEmptyString(predicateName);
 		this.predicateName = new String(predicateName);
-		AtomValidator.validArgumentsCheck(arguments);
+		AtomValidator.validateArguments(arguments);
 		for (final Term argument : arguments) {
 			switch (argument.getType()) {
 				case BLANK:
@@ -71,8 +67,8 @@ public class AtomImpl implements Atom {
 		}
 	}
 
-	public AtomImpl(final String predicateName, final Term firstArgument, final Term... remainingArguments) throws AtomValidationException,
-			PredicateNameValidationException, BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException {
+	public AtomImpl(final String predicateName, final Term firstArgument, final Term... remainingArguments)
+			throws AtomValidationException, IllegalEntityNameException {
 		this(predicateName, append(firstArgument, remainingArguments));
 	}
 
@@ -83,8 +79,7 @@ public class AtomImpl implements Atom {
 		return arguments;
 	}
 
-	public AtomImpl(final Atom atom) throws AtomValidationException, PredicateNameValidationException, BlankNameValidationException,
-			ConstantNameValidationException, VariableNameValidationException {
+	public AtomImpl(final Atom atom) throws AtomValidationException, IllegalEntityNameException {
 		this(atom.getPredicate(), atom.getArguments());
 	}
 

@@ -2,38 +2,39 @@ package org.semanticweb.vlog4j.core.model.impl;
 
 import org.semanticweb.vlog4j.core.model.api.Blank;
 import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
+import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
-/*
- * #%L
- * VLog4j Core Components
- * %%
- * Copyright (C) 2018 VLog4j Developers
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
+/**
+ * Class for blank terms. A blank is an entity used to represent anonymous domain elements introduced during the reasoning process to satisfy existential
+ * restrictions.
+ *
+ * @author david.carral@tu-dresden.de
  */
-
-import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
-
 public class BlankImpl extends AbstractTerm implements Blank {
 
-	public BlankImpl(final String name) throws BlankNameValidationException {
+	/**
+	 * Parameterized constructor. This constructor creates a blank term with the name <b>{@code name}</b>.
+	 *
+	 * @param name
+	 *            cannot be a blank String (null, " ", empty string...).
+	 * @throws IllegalEntityNameException
+	 *             if the given name <b>{@code name}</b> is a blank String.
+	 */
+	public BlankImpl(final String name) throws IllegalEntityNameException {
 		super(name);
-		EntityNameValidator.blankNameCheck(name);
 	}
 
-	public BlankImpl(final Blank copyBlank) throws BlankNameValidationException {
+	/**
+	 * Deep copy constructor. This constructor creates a <b>{@code BlankImpl}</b> object with the same name as <b>{@code copyBlank}</b>. The new object does not
+	 * contain any reference to original data.
+	 *
+	 * @param copyBlank
+	 *            is the <b>{@code BlankImpl}</b> object that will be copied/cloned.
+	 *
+	 * @throws IllegalEntityNameException
+	 *             if the given field <b>{@code name}</b> in <b>{@code copyBlank}</b> is a blank String (null, " ", empty string...).
+	 */
+	public BlankImpl(final Blank copyBlank) throws IllegalEntityNameException {
 		super(new String(copyBlank.getName()));
 	}
 

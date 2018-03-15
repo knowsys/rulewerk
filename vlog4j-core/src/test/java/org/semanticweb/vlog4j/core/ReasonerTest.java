@@ -1,25 +1,5 @@
 package org.semanticweb.vlog4j.core;
 
-/*
- * #%L
- * VLog4j Core Components
- * %%
- * Copyright (C) 2018 VLog4j Developers
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +13,7 @@ import org.semanticweb.vlog4j.core.model.impl.VariableImpl;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;
+import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 import org.semanticweb.vlog4j.core.model.validation.PredicateNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
 import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
@@ -46,9 +27,9 @@ import karmaresearch.vlog.NotStartedException;
 
 public class ReasonerTest extends TestCase {
 
-	public void testSimpleInference()
-			throws AtomValidationException, PredicateNameValidationException, ConstantNameValidationException, VariableNameValidationException,
-			RuleValidationException, AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException, BlankNameValidationException {
+	public void testSimpleInference() throws AtomValidationException, IllegalEntityNameException, RuleValidationException, PredicateNameValidationException,
+			BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException, AlreadyStartedException, EDBConfigurationException,
+			IOException, NotStartedException {
 		final Atom factAc = new AtomImpl("A", new ConstantImpl("c"));
 		final Atom factAd = new AtomImpl("A", new ConstantImpl("d"));
 		final Atom atomAx = new AtomImpl("A", new VariableImpl("X"));
