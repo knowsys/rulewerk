@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model.validation;
+package org.semanticweb.vlog4j.core.model;
 
 /*
  * #%L
@@ -20,6 +20,18 @@ package org.semanticweb.vlog4j.core.model.validation;
  * #L%
  */
 
-public class EntityNameValidation {
+import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
+import org.semanticweb.vlog4j.core.model.validation.BlankValidationException;
 
+public class BlankImpl extends AbstractTerm implements Blank {
+
+	public BlankImpl(final String name) throws BlankValidationException {
+		super(name);
+		EntityNameValidator.validBlankNameCheck(name);
+	}
+
+	@Override
+	public TermType getType() {
+		return TermType.BLANK;
+	}
 }

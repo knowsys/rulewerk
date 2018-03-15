@@ -24,4 +24,5 @@ public interface Term {
 	String getName();
 
 	TermType getType();
+
 }

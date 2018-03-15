@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model.validation;
+package org.semanticweb.vlog4j.core.model;
 
 /*
  * #%L
@@ -20,11 +20,6 @@ package org.semanticweb.vlog4j.core.model.validation;
  * #L%
  */
 
-public class RuleValidationException extends Exception {
-	// TODO Logging
-
-	public RuleValidationException(final String string) {
-		// TODO Auto-generated constructor stub
-	}
+public interface Blank extends Term {
 
 }

@@ -1,6 +1,7 @@
 package org.semanticweb.vlog4j.core.model;
 
-import org.semanticweb.vlog4j.core.model.validation.TermValidationException;
+import org.semanticweb.vlog4j.core.model.validation.ConstantValidationException;
+import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
 
 /*
  * #%L
@@ -24,48 +25,13 @@ import org.semanticweb.vlog4j.core.model.validation.TermValidationException;
 
 public class ConstantImpl extends AbstractTerm implements Constant {
 
-	public ConstantImpl(final String name) throws TermValidationException {
+	public ConstantImpl(final String name) throws ConstantValidationException {
 		super(name);
+		EntityNameValidator.validConstantNameCheck(name);
 	}
 
 	@Override
 	public TermType getType() {
 		return TermType.CONSTANT;
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (super.getName() == null ? 0 : super.getName().hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final ConstantImpl other = (ConstantImpl) obj;
-		if (super.getName() == null) {
-			if (other.getName() != null) {
-				return false;
-			}
-		} else if (!super.getName().equals(other.getName())) {
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Constant [name=" + super.getName() + "]";
-	}
-
 }

@@ -20,10 +20,10 @@ package org.semanticweb.vlog4j.core.model.validation;
  * #L%
  */
 
-public class VarariableValidationException extends Exception {
+public class VariableValidationException extends Exception {
 	// TODO Logging
 
-	public VarariableValidationException(final String string) {
+	public VariableValidationException(final String string) {
 		// TODO Auto-generated constructor stub
 	}
 
