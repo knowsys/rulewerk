@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model;
 
+import org.semanticweb.vlog4j.core.model.validation.BlankValidationException;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -9,9 +11,9 @@ package org.semanticweb.vlog4j.core.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,13 +23,16 @@ package org.semanticweb.vlog4j.core.model;
  */
 
 import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
-import org.semanticweb.vlog4j.core.model.validation.BlankValidationException;
 
 public class BlankImpl extends AbstractTerm implements Blank {
 
 	public BlankImpl(final String name) throws BlankValidationException {
 		super(name);
 		EntityNameValidator.validBlankNameCheck(name);
+	}
+
+	public BlankImpl(final Blank copyBlank) throws BlankValidationException {
+		super(new String(copyBlank.getName()));
 	}
 
 	@Override
