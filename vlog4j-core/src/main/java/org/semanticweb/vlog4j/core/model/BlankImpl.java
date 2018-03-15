@@ -1,6 +1,6 @@
 package org.semanticweb.vlog4j.core.model;
 
-import org.semanticweb.vlog4j.core.model.validation.BlankValidationException;
+import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
 
 /*
  * #%L
@@ -26,12 +26,12 @@ import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
 
 public class BlankImpl extends AbstractTerm implements Blank {
 
-	public BlankImpl(final String name) throws BlankValidationException {
+	public BlankImpl(final String name) throws BlankNameValidationException {
 		super(name);
 		EntityNameValidator.validBlankNameCheck(name);
 	}
 
-	public BlankImpl(final Blank copyBlank) throws BlankValidationException {
+	public BlankImpl(final Blank copyBlank) throws BlankNameValidationException {
 		super(new String(copyBlank.getName()));
 	}
 

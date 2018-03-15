@@ -1,7 +1,7 @@
 package org.semanticweb.vlog4j.core.model;
 
 import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
-import org.semanticweb.vlog4j.core.model.validation.VariableValidationException;
+import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
 
 /*
  * #%L
@@ -25,12 +25,12 @@ import org.semanticweb.vlog4j.core.model.validation.VariableValidationException;
 
 public class VariableImpl extends AbstractTerm implements Variable {
 
-	public VariableImpl(final String name) throws VariableValidationException {
+	public VariableImpl(final String name) throws VariableNameValidationException {
 		super(name);
 		EntityNameValidator.validVariableNameCheck(name);
 	}
 
-	public VariableImpl(final Variable copyVariable) throws VariableValidationException {
+	public VariableImpl(final Variable copyVariable) throws VariableNameValidationException {
 		super(new String(copyVariable.getName()));
 	}
 

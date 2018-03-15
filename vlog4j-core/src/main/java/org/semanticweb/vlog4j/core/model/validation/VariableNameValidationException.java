@@ -20,10 +20,11 @@ package org.semanticweb.vlog4j.core.model.validation;
  * #L%
  */
 
-public class ConstantValidationException extends Exception {
+public class VariableNameValidationException extends Exception {
 	// TODO Logging
 
-	public ConstantValidationException(final String string) {
+	public VariableNameValidationException(final String string) {
 		// TODO Auto-generated constructor stub
 	}
+
 }
