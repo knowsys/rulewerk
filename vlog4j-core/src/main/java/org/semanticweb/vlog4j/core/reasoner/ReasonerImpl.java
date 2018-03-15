@@ -195,7 +195,7 @@ public class ReasonerImpl implements Reasoner {
 			this.vlog.materialize(skolemChase);
 			this.reasoned = true;
 		} else {
-			// TODO Log Warning: VLog already materialised
+			// TODO Log Warning: VLog already materialised- ok
 		}
 	}
 
@@ -204,7 +204,7 @@ public class ReasonerImpl implements Reasoner {
 		if (this.loaded) {
 			return this.vlog.query(ModelToVLogConverter.toVLogAtom(atom));
 		} else {
-			// TODO Log Warning: VLog was not loaded
+			// TODO throw exception
 			return null;
 		}
 	}
@@ -223,6 +223,12 @@ public class ReasonerImpl implements Reasoner {
 	public void exportAtomicQueryAnswers(final Atom queryAtom, final String outputFilePath) {
 		// vlog.writePredicateToCsv(arg0, arg1);
 		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void dispose() {
+		this.vlog.stop();
 
 	}
 

@@ -21,9 +21,9 @@ import karmaresearch.vlog.StringQueryResultEnumeration;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -57,6 +57,13 @@ public interface Reasoner {
 
 	void exportAtomicQueryAnswers(Atom atom, String outputFilePath);
 
+	// TODO arity should be in the EDB config file,
+	// do not read the files, have low-level API check if the file content corresponds the arity
+
+	// TODO check if URIs can be file names
+	// Set<EDBPredicateConfig> exportDBToFolder(File location);
+
 	List<List<String>> compileQuerySet(Atom atomAx) throws NotStartedException;
 
+	void dispose();
 }
