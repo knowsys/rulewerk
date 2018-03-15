@@ -3,6 +3,9 @@ jdk:
   - openjdk8
   - oraclejdk8
   - oraclejdk9
+  
+before_install:
+  - mvn initialize
 
 after_success:
   - mvn clean cobertura:cobertura coveralls:cobertura
