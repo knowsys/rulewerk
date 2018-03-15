@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.validation;
+package org.semanticweb.vlog4j.core.model.validation;
 
 /*
  * #%L
@@ -19,11 +19,10 @@ package org.semanticweb.vlog4j.core.validation;
  * limitations under the License.
  * #L%
  */
-
-public class VLog4jTermValidationException extends Exception {
+public class VLog4jAtomValidationException extends Exception{
 //	TODO Logging
 	
-	public VLog4jTermValidationException(String string) {
+	public VLog4jAtomValidationException(String string) {
 		// TODO Auto-generated constructor stub
 	}
 

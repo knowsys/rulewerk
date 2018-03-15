@@ -22,9 +22,9 @@ package org.semanticweb.vlog4j.core;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.validation.VLog4jAtomValidationException;
-import org.semanticweb.vlog4j.core.validation.VLog4jRuleValidationException;
-import org.semanticweb.vlog4j.core.validation.VLog4jTermValidationException;
+import org.semanticweb.vlog4j.core.model.validation.VLog4jAtomValidationException;
+import org.semanticweb.vlog4j.core.model.validation.VLog4jRuleValidationException;
+import org.semanticweb.vlog4j.core.model.validation.VLog4jTermValidationException;
 
 import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;

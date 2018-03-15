@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.semanticweb.vlog4j.core.validation.VLog4jRuleValidationException;
+import org.semanticweb.vlog4j.core.model.validation.VLog4jRuleValidationException;
 
 public class RuleImpl implements Rule {
 

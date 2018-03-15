@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.validation;
+package org.semanticweb.vlog4j.core.model.validation;
 
 /*
  * #%L

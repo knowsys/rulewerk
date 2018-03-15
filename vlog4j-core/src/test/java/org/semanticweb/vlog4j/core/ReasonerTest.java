@@ -30,11 +30,11 @@ import org.semanticweb.vlog4j.core.model.ConstantImpl;
 import org.semanticweb.vlog4j.core.model.Rule;
 import org.semanticweb.vlog4j.core.model.RuleImpl;
 import org.semanticweb.vlog4j.core.model.VariableImpl;
+import org.semanticweb.vlog4j.core.model.validation.VLog4jAtomValidationException;
+import org.semanticweb.vlog4j.core.model.validation.VLog4jRuleValidationException;
+import org.semanticweb.vlog4j.core.model.validation.VLog4jTermValidationException;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerImpl;
-import org.semanticweb.vlog4j.core.validation.VLog4jAtomValidationException;
-import org.semanticweb.vlog4j.core.validation.VLog4jRuleValidationException;
-import org.semanticweb.vlog4j.core.validation.VLog4jTermValidationException;
 
 import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;

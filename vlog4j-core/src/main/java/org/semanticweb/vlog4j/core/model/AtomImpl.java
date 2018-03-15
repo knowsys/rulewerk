@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.semanticweb.vlog4j.core.validation.VLog4jAtomValidationException;
+import org.semanticweb.vlog4j.core.model.validation.VLog4jAtomValidationException;
 
 public class AtomImpl implements Atom {
 	private final String predicate;

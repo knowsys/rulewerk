@@ -1,6 +1,6 @@
 package org.semanticweb.vlog4j.core.model;
 
-import org.semanticweb.vlog4j.core.validation.VLog4jTermValidationException;
+import org.semanticweb.vlog4j.core.model.validation.VLog4jTermValidationException;
 
 /*
  * #%L
