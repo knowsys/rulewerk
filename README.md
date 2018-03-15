@@ -1,7 +1,7 @@
 VLog4J
 ======
 
-A Java library based on the (https://github.com/karmaresearch/vlog)[VLog] rule engine
+A Java library based on the [VLog rule engine](https://github.com/karmaresearch/vlog)
 
 Installation
 ------------
