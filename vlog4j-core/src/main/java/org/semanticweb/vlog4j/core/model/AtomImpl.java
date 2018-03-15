@@ -1,5 +1,6 @@
 package org.semanticweb.vlog4j.core.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /*
@@ -11,9 +12,9 @@ import java.util.Arrays;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,19 +32,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.semanticweb.vlog4j.core.validation.VLog4jAtomValidationException;
 
 public class AtomImpl implements Atom {
-
-	private final String predicateName;
-
+	private final String predicate;
 	private final List<Term> arguments;
-
 	private final Set<Variable> variables;
-
 	private final Set<Constant> constants;
 
 	public AtomImpl(final String predicateName, final List<Term> arguments) throws VLog4jAtomValidationException {
 		validatePredicateName(predicateName);
 		validateArguments(arguments);
-		this.predicateName = predicateName;
+		this.predicate = predicateName;
 		this.arguments = arguments;
 		this.variables = collectVariables();
 		this.constants = collectConstants();
@@ -52,10 +49,18 @@ public class AtomImpl implements Atom {
 	public AtomImpl(final String predicateName, final Term... arguments) throws VLog4jAtomValidationException {
 		validatePredicateName(predicateName);
 		validateArguments(Arrays.asList(arguments));
-		this.predicateName = predicateName;
+		this.predicate = predicateName;
 		this.arguments = Arrays.asList(arguments);
 		this.variables = collectVariables();
 		this.constants = collectConstants();
+	}
+
+	public AtomImpl(final Atom atom) {
+		this.predicate = new String(atom.getPredicate());
+
+		this.arguments = new ArrayList<>(atom.getArguments());
+		this.variables = new HashSet<>(atom.getVariables());
+		this.constants = new HashSet<>(atom.getConstants());
 	}
 
 	private void validatePredicateName(final String predicateName) throws VLog4jAtomValidationException {
@@ -87,7 +92,7 @@ public class AtomImpl implements Atom {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (this.predicateName == null ? 0 : this.predicateName.hashCode());
+		result = prime * result + (this.predicate == null ? 0 : this.predicate.hashCode());
 		result = prime * result + (this.arguments == null ? 0 : this.arguments.hashCode());
 		return result;
 	}
@@ -104,11 +109,11 @@ public class AtomImpl implements Atom {
 			return false;
 		}
 		final AtomImpl other = (AtomImpl) obj;
-		if (this.predicateName == null) {
-			if (other.predicateName != null) {
+		if (this.predicate == null) {
+			if (other.predicate != null) {
 				return false;
 			}
-		} else if (!this.predicateName.equals(other.predicateName)) {
+		} else if (!this.predicate.equals(other.predicate)) {
 			return false;
 		}
 		if (this.arguments == null) {
@@ -124,12 +129,12 @@ public class AtomImpl implements Atom {
 	// TODO: perhaps another format
 	@Override
 	public String toString() {
-		return "AtomImpl [predicateName=" + this.predicateName + ", arguments=" + this.arguments + "]";
+		return "AtomImpl [predicateName=" + this.predicate + ", arguments=" + this.arguments + "]";
 	}
 
 	@Override
 	public String getPredicate() {
-		return this.predicateName;
+		return this.predicate;
 	}
 
 	@Override

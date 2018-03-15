@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.Atom;
+import org.semanticweb.vlog4j.core.model.AtomImpl;
 import org.semanticweb.vlog4j.core.model.Rule;
 import org.semanticweb.vlog4j.core.model.Term;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
@@ -33,9 +34,9 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -77,7 +78,7 @@ public class ReasonerImpl implements Reasoner {
 	@Override
 	public void addRules(final Collection<Rule> rules) {
 		if (!this.loaded) {
-			this.rules.addAll(rules);
+			this.rules.addAll(new ArrayList<>(rules));
 		} else {
 			// TODO Throw Exception: VLog has already loaded
 		}
@@ -93,7 +94,7 @@ public class ReasonerImpl implements Reasoner {
 		if (!this.loaded) {
 			for (final Atom fact : facts) {
 				if (fact.getVariables().isEmpty()) {
-					this.facts.add(fact);
+					this.facts.add(new AtomImpl(fact));
 				} else {
 					// TODO Throw Exception: not a fact
 				}
@@ -157,7 +158,7 @@ public class ReasonerImpl implements Reasoner {
 	private String edbPredicatesConfigToString() {
 		final StringBuilder edbPredicatesConfigSB = new StringBuilder();
 		for (int i = 0; i < this.edbPredicatesConfig.size(); i++) {
-			EDBPredicateConfig currenEDBPredicateConfig = this.edbPredicatesConfig.get(i);
+			final EDBPredicateConfig currenEDBPredicateConfig = this.edbPredicatesConfig.get(i);
 			edbPredicatesConfigSB.append("EDB").append(i).append("_predname=").append(currenEDBPredicateConfig.getPredicate()).append("\n");
 			edbPredicatesConfigSB.append("EDB").append(i).append("_type=INMEMORY" + "\n");
 			final File sourceFile = currenEDBPredicateConfig.getSourceFile();
@@ -199,13 +200,23 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public StringQueryResultEnumeration compileAtomicQuery(final Atom atom) throws NotStartedException {
+	public StringQueryResultEnumeration compileQueryIterator(final Atom atom) throws NotStartedException {
 		if (this.loaded) {
 			return this.vlog.query(ModelToVLogConverter.toVLogAtom(atom));
 		} else {
 			// TODO Log Warning: VLog was not loaded
 			return null;
 		}
+	}
+
+	@Override
+	public List<List<String>> compileQuerySet(final Atom atomAx) throws NotStartedException {
+		final List<List<String>> answers = new ArrayList<>();
+		final java.util.Iterator<String[]> iterator = compileQueryIterator(atomAx).asIterator();
+		while (iterator.hasNext()) {
+			answers.add(Arrays.asList(iterator.next()));
+		}
+		return answers;
 	}
 
 	@Override

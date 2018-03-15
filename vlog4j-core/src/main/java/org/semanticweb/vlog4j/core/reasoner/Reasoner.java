@@ -2,6 +2,7 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.Atom;
 import org.semanticweb.vlog4j.core.model.Rule;
@@ -20,9 +21,9 @@ import karmaresearch.vlog.StringQueryResultEnumeration;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,10 +53,10 @@ public interface Reasoner {
 
 	void reason() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException;
 
-	StringQueryResultEnumeration compileAtomicQuery(Atom query) throws NotStartedException;
+	StringQueryResultEnumeration compileQueryIterator(Atom query) throws NotStartedException;
 
-	// TODO is it more inconvenient for the user to provide the arity at export? Or
-	// create a predicate with a given arity when creating rules?
 	void exportAtomicQueryAnswers(Atom atom, String outputFilePath);
+
+	List<List<String>> compileQuerySet(Atom atomAx) throws NotStartedException;
 
 }
