@@ -27,7 +27,7 @@ public class ConstantImpl extends AbstractTerm implements Constant {
 
 	public ConstantImpl(final String name) throws ConstantNameValidationException {
 		super(name);
-		EntityNameValidator.validConstantNameCheck(name);
+		EntityNameValidator.constantNameCheck(name);
 	}
 
 	public ConstantImpl(final Constant copyConstant) throws ConstantNameValidationException {

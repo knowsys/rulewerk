@@ -28,7 +28,7 @@ public class BlankImpl extends AbstractTerm implements Blank {
 
 	public BlankImpl(final String name) throws BlankNameValidationException {
 		super(name);
-		EntityNameValidator.validBlankNameCheck(name);
+		EntityNameValidator.blankNameCheck(name);
 	}
 
 	public BlankImpl(final Blank copyBlank) throws BlankNameValidationException {

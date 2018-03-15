@@ -12,9 +12,9 @@ import java.util.Arrays;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,9 +45,9 @@ public class AtomImpl implements Atom {
 
 	public AtomImpl(final String predicateName, final List<Term> arguments) throws AtomValidationException, PredicateNameValidationException,
 			BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException {
-		EntityNameValidator.validPredicateNameCheck(predicateName);
+		EntityNameValidator.oredicateNameCheck(predicateName);
 		this.predicateName = new String(predicateName);
-		AtomValidator.validArguments(arguments);
+		AtomValidator.validArgumentsCheck(arguments);
 		for (final Term argument : arguments) {
 			switch (argument.getType()) {
 				case BLANK:
@@ -66,9 +66,16 @@ public class AtomImpl implements Atom {
 		}
 	}
 
-	public AtomImpl(final String predicateName, final Term... arguments) throws AtomValidationException, PredicateNameValidationException,
-			BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException {
-		this(predicateName, Arrays.asList(arguments));
+	public AtomImpl(final String predicateName, final Term firstArgument, final Term... remainingArguments) throws AtomValidationException,
+			PredicateNameValidationException, BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException {
+		this(predicateName, append(firstArgument, remainingArguments));
+	}
+
+	private static List<Term> append(final Term firstArgument, final Term... remainingArguments) {
+		final List<Term> arguments = new ArrayList<>();
+		arguments.add(firstArgument);
+		arguments.addAll(Arrays.asList(remainingArguments));
+		return arguments;
 	}
 
 	public AtomImpl(final Atom atom) throws AtomValidationException, PredicateNameValidationException, BlankNameValidationException,

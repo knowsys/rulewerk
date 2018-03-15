@@ -25,7 +25,7 @@ import java.util.List;
 import org.semanticweb.vlog4j.core.model.Term;
 
 public class AtomValidator {
-	public static void validArguments(final List<Term> arguments) throws AtomValidationException {
+	public static void validArgumentsCheck(final List<Term> arguments) throws AtomValidationException {
 		if (arguments == null) {
 			throw new AtomValidationException("Null Atom argument list");
 		}

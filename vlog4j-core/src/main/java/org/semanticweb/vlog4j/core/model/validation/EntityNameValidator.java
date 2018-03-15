@@ -22,28 +22,28 @@ package org.semanticweb.vlog4j.core.model.validation;
 
 public class EntityNameValidator {
 
-	public static void validBlankNameCheck(final String nullName) throws BlankNameValidationException {
+	public static void blankNameCheck(final String nullName) throws BlankNameValidationException {
 		// TODO Auto-generated method stub
 		if (false) {
 			throw new BlankNameValidationException("Not a valid null name: " + nullName);
 		}
 	}
 
-	public static void validConstantNameCheck(final String constantName) throws ConstantNameValidationException {
+	public static void constantNameCheck(final String constantName) throws ConstantNameValidationException {
 		// TODO Auto-generated method stub
 		if (false) {
 			throw new ConstantNameValidationException("Not a valid constant name: " + constantName);
 		}
 	}
 
-	public static void validVariableNameCheck(final String variableName) throws VariableNameValidationException {
+	public static void variableNameCheck(final String variableName) throws VariableNameValidationException {
 		// TODO Auto-generated method stub
 		if (false) {
 			throw new VariableNameValidationException("Not a valid variable name: " + variableName);
 		}
 	}
 
-	public static void validPredicateNameCheck(final String predicateName) throws PredicateNameValidationException {
+	public static void oredicateNameCheck(final String predicateName) throws PredicateNameValidationException {
 		// TODO Auto-generated method stub
 		if (false) {
 			throw new PredicateNameValidationException("Not a predicate null name: " + predicateName);

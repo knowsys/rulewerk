@@ -27,7 +27,7 @@ public class VariableImpl extends AbstractTerm implements Variable {
 
 	public VariableImpl(final String name) throws VariableNameValidationException {
 		super(name);
-		EntityNameValidator.validVariableNameCheck(name);
+		EntityNameValidator.variableNameCheck(name);
 	}
 
 	public VariableImpl(final Variable copyVariable) throws VariableNameValidationException {
