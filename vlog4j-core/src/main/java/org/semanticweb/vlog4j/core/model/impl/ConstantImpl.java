@@ -45,12 +45,6 @@ public class ConstantImpl extends AbstractTerm implements Constant {
 
 	/**
 	 * Deep copy constructor (the newly instantiated object does not contain any reference to original fields in the copied object).
-	 *
-	 * @param copyConstant
-	 *            is the <b>{@code ConstantImpl}</b> object that will be copied/cloned.
-	 *
-	 * @throws IllegalEntityNameException
-	 *             if the given field <b>{@code name}</b> in <b>{@code copyConstant}</b> is a blank String (null, " ", empty string...).
 	 */
 	public ConstantImpl(final Constant copyConstant) throws IllegalEntityNameException {
 		super(new String(copyConstant.getName()));

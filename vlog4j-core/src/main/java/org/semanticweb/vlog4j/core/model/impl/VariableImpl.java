@@ -45,12 +45,6 @@ public class VariableImpl extends AbstractTerm implements Variable {
 
 	/**
 	 * Deep copy constructor (the newly instantiated object does not contain any reference to original fields in the copied object).
-	 *
-	 * @param copyVariable
-	 *            is the <b>{@code VariableImpl}</b> object that will be copied/cloned.
-	 *
-	 * @throws IllegalEntityNameException
-	 *             if the given field <b>{@code name}</b> in <b>{@code copyVariable}</b> is a blank String (null, " ", empty string...).
 	 */
 	public VariableImpl(final Variable copyVariable) throws IllegalEntityNameException {
 		super(new String(copyVariable.getName()));

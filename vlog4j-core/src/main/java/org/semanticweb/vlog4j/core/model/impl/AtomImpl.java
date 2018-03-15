@@ -38,6 +38,12 @@ import org.semanticweb.vlog4j.core.model.validation.AtomValidator;
 import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
 import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
+/**
+ * Implements {@code Atom} objects. An atom is predicate applied to a tuple of terms; that is, an atomic formula is a formula of the form P(t1,...,tn) for P a
+ * predicate, and t1,...,tn some terms.
+ *
+ * @author david.carral@tu-dresden.de
+ */
 public class AtomImpl implements Atom {
 	private final String predicateName;
 	private final List<Term> arguments = new ArrayList<>();
@@ -45,7 +51,19 @@ public class AtomImpl implements Atom {
 	private final Set<Constant> constants = new HashSet<>();
 	private final Set<Variable> variables = new HashSet<>();
 
-	public AtomImpl(final String predicateName, final List<Term> arguments) throws AtomValidationException, IllegalEntityNameException {
+	/**
+	 * Instantiates an <b>{@code Atom}</b> object of the form <b>{@code predicateName}</b>(<b>{@code arguments}</b>).
+	 *
+	 * @param predicateName
+	 *            cannot be a blank String (null, " ", empty string...).
+	 * @param arguments
+	 *            cannot be null or contain some null value.
+	 * @throws AtomValidationException
+	 *             if the {@code arguments} is empty or null, or contains some null value.
+	 * @throws IllegalEntityNameException
+	 *             if the <b>{@code predicateName}</b> or the name of some term is a blank String.
+	 */
+	public AtomImpl(final String predicateName, final List<Term> arguments) throws IllegalEntityNameException, AtomValidationException {
 		EntityNameValidator.validateNonEmptyString(predicateName);
 		this.predicateName = new String(predicateName);
 		AtomValidator.validateArguments(arguments);
@@ -67,6 +85,21 @@ public class AtomImpl implements Atom {
 		}
 	}
 
+	/**
+	 * Instantiates an <b>{@code Atom}</b> object of the form <b>{@code predicateName}</b>(<b>{@code firstArgument}</b>, <b>{@code remainingArguments}</b>).
+	 *
+	 * @param predicateName
+	 *            cannot be a blank String (null, " ", empty string...).
+	 * @param firstArgument
+	 *            cannot be a blank String (null, " ", empty string...).
+	 * @param remainingArguments
+	 *            cannot be null or contain some null value.
+	 * @throws AtomValidationException
+	 *             if the {@code firstArgument} is null, {@code remainingArguments} is null, or {@code remainingArguments} contains some null value.
+	 * @throws IllegalEntityNameException
+	 *             if the <b>{@code predicateName}</b> or the name of some term is a blank String.
+	 *
+	 */
 	public AtomImpl(final String predicateName, final Term firstArgument, final Term... remainingArguments)
 			throws AtomValidationException, IllegalEntityNameException {
 		this(predicateName, append(firstArgument, remainingArguments));
@@ -79,8 +112,11 @@ public class AtomImpl implements Atom {
 		return arguments;
 	}
 
-	public AtomImpl(final Atom atom) throws AtomValidationException, IllegalEntityNameException {
-		this(atom.getPredicate(), atom.getArguments());
+	/**
+	 * Deep copy constructor (the newly instantiated object does not contain any reference to original fields in the copied object).
+	 */
+	public AtomImpl(final Atom copyAtom) throws AtomValidationException, IllegalEntityNameException {
+		this(copyAtom.getPredicate(), copyAtom.getArguments());
 	}
 
 	@Override

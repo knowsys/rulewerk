@@ -26,12 +26,6 @@ public class BlankImpl extends AbstractTerm implements Blank {
 
 	/**
 	 * Deep copy constructor (the newly instantiated object does not contain any reference to original fields in the copied object).
-	 *
-	 * @param copyBlank
-	 *            is the <b>{@code BlankImpl}</b> object that will be copied/cloned.
-	 *
-	 * @throws IllegalEntityNameException
-	 *             if the given field <b>{@code name}</b> in <b>{@code copyBlank}</b> is a blank String (null, " ", empty string...).
 	 */
 	public BlankImpl(final Blank copyBlank) throws IllegalEntityNameException {
 		super(new String(copyBlank.getName()));
