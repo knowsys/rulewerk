@@ -21,7 +21,7 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Interface for {@link #CONSTANT} terms. A constant is an entity used to represent named domain elements in the domain.
+ * Interface for {@link TermType#CONSTANT} terms. A constant is an entity used to represent named domain elements in the domain.
  *
  * @author david.carral@tu-dresden.de
  */

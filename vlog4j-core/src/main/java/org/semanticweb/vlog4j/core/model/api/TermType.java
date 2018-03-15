@@ -28,7 +28,7 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 public enum TermType {
 	/**
-	 * A constant is an entity used to represent named domain elements in the domain.
+	 * A constant is an entity used to represent named domain elements.
 	 */
 	CONSTANT,
 	/**

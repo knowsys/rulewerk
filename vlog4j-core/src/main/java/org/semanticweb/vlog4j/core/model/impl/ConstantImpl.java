@@ -24,12 +24,34 @@ import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
  * #L%
  */
 
+/**
+ * Implements {@link #CONSTANT} terms. A constant is an entity used to represent named domain elements in the domain.
+ *
+ * @author david.carral@tu-dresden.de
+ */
 public class ConstantImpl extends AbstractTerm implements Constant {
 
+	/**
+	 * Instantiates a <b>{@code ConstantImpl}</b> object with the name <b>{@code name}</b>.
+	 *
+	 * @param name
+	 *            cannot be a blank String (null, " ", empty string...).
+	 * @throws IllegalEntityNameException
+	 *             if the given name <b>{@code name}</b> is a blank String.
+	 */
 	public ConstantImpl(final String name) throws IllegalEntityNameException {
 		super(name);
 	}
 
+	/**
+	 * Deep copy constructor (the newly instantiated object does not contain any reference to original fields in the copied object).
+	 *
+	 * @param copyConstant
+	 *            is the <b>{@code ConstantImpl}</b> object that will be copied/cloned.
+	 *
+	 * @throws IllegalEntityNameException
+	 *             if the given field <b>{@code name}</b> in <b>{@code copyConstant}</b> is a blank String (null, " ", empty string...).
+	 */
 	public ConstantImpl(final Constant copyConstant) throws IllegalEntityNameException {
 		super(new String(copyConstant.getName()));
 	}

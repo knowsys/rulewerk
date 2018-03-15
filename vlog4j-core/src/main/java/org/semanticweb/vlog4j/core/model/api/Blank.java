@@ -21,8 +21,8 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Interface for {@link #BLANK} terms. A blank is an entity used to represent anonymous domain elements introduced during the reasoning process to satisfy
- * existential restrictions.
+ * Interface for {@link TermType##BLANK} terms. A blank is an entity used to represent anonymous domain elements introduced during the reasoning process to
+ * satisfy existential restrictions.
  *
  * @author david.carral@tu-dresden.de
  */

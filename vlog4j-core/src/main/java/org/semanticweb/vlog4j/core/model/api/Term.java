@@ -21,7 +21,7 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Interface for all different types of terms ({@link #CONSTANT}, {@link #BLANK}, and {@link #VARIABLE}).
+ * Interface for all different types of terms ({@link TermType##CONSTANT}, {@link TermType##BLANK}, and {@link TermType##VARIABLE}).
  *
  * @author david.carral@tu-dresden.de
  */

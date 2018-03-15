@@ -21,7 +21,7 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Interface for {@link #VARIABLE} terms. A variable is a parameter that stands for an arbitrary domain element.
+ * Interface for {@link TermType#VARIABLE} terms. A variable is a parameter that stands for an arbitrary domain element.
  *
  * @author david.carral@tu-dresden.de
  */

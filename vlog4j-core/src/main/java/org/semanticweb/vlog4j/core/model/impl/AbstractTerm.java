@@ -26,7 +26,7 @@ import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
  */
 
 /**
- * Abstract class implementing all methods used by terms ({@link #CONSTANT}, {@link #BLANK}, and {@link #VARIABLE}).
+ * Abstract class implementing all methods used by all types of terms ({@link TermType##CONSTANT}, {@link TermType##BLANK}, and {@link TermType##VARIABLE}).
  *
  * @author david.carral@tu-dresden.de
  */

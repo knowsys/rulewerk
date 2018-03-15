@@ -5,15 +5,15 @@ import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 /**
- * Class for blank terms. A blank is an entity used to represent anonymous domain elements introduced during the reasoning process to satisfy existential
- * restrictions.
+ * Implements {@link TermType#BLANK} terms. A blank is an entity used to represent anonymous domain elements introduced during the reasoning process to satisfy
+ * existential restrictions.
  *
  * @author david.carral@tu-dresden.de
  */
 public class BlankImpl extends AbstractTerm implements Blank {
 
 	/**
-	 * Parameterized constructor. This constructor creates a blank term with the name <b>{@code name}</b>.
+	 * Instantiates a <b>{@code BlankImpl}</b> object with the name <b>{@code name}</b>.
 	 *
 	 * @param name
 	 *            cannot be a blank String (null, " ", empty string...).
@@ -25,8 +25,7 @@ public class BlankImpl extends AbstractTerm implements Blank {
 	}
 
 	/**
-	 * Deep copy constructor. This constructor creates a <b>{@code BlankImpl}</b> object with the same name as <b>{@code copyBlank}</b>. The new object does not
-	 * contain any reference to original data.
+	 * Deep copy constructor (the newly instantiated object does not contain any reference to original fields in the copied object).
 	 *
 	 * @param copyBlank
 	 *            is the <b>{@code BlankImpl}</b> object that will be copied/cloned.
