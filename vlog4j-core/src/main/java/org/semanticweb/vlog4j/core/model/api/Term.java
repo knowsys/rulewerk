@@ -21,19 +21,25 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Interface for all different types of terms ({@link TermType##CONSTANT}, {@link TermType##BLANK}, and {@link TermType##VARIABLE}).
+ * Interface for terms. A term is characterized by a string name and a
+ * {@link TermType}.
  *
  * @author david.carral@tu-dresden.de
+ * @author Markus Krötzsch
  */
 public interface Term {
 
 	/**
-	 * @return this method may not return a blank String (null, " ", empty string...).
+	 * Returns a unique string identifier for this term.
+	 * 
+	 * @return non-empty, non-null String
 	 */
 	String getName();
 
 	/**
-	 * @return the type of the term (BLANK, CONSTANT, or VARIABLE).
+	 * Return the type of this term.
+	 * 
+	 * @return the type of this term
 	 */
 	TermType getType();
 

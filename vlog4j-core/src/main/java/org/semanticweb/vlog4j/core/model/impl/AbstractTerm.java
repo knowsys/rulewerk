@@ -1,9 +1,8 @@
 package org.semanticweb.vlog4j.core.model.impl;
 
+import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
-import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 /*
  * #%L
@@ -26,7 +25,9 @@ import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
  */
 
 /**
- * Abstract class implementing all methods used by all types of terms ({@link TermType##CONSTANT}, {@link TermType##BLANK}, and {@link TermType##VARIABLE}).
+ * Abstract class implementing all methods used by all types of terms
+ * ({@link TermType##CONSTANT}, {@link TermType##BLANK}, and
+ * {@link TermType##VARIABLE}).
  *
  * @author david.carral@tu-dresden.de
  */
@@ -34,8 +35,8 @@ public abstract class AbstractTerm implements Term {
 
 	private final String name;
 
-	public AbstractTerm(final String name) throws IllegalEntityNameException {
-		EntityNameValidator.validateNonEmptyString(name);
+	public AbstractTerm(final String name) {
+		Validate.notBlank(name, "Terms cannot be named by blank strings");
 		this.name = new String(name);
 	}
 
@@ -50,8 +51,8 @@ public abstract class AbstractTerm implements Term {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + (this.name == null ? 0 : this.name.hashCode());
+		int result = this.name.hashCode();
+		result = prime * result + this.getType().hashCode();
 		return result;
 	}
 
@@ -63,19 +64,12 @@ public abstract class AbstractTerm implements Term {
 		if (obj == null) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof Term)) {
 			return false;
 		}
-		final AbstractTerm other = (AbstractTerm) obj;
+		final Term other = (Term) obj;
 
-		if (this.name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!this.name.equals(other.name)) {
-			return false;
-		}
-		return true;
+		return (this.getType() == other.getType()) && this.name.equals(other.getName());
 	}
 
 	@Override

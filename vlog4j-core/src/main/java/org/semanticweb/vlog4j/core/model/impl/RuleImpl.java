@@ -79,21 +79,21 @@ public class RuleImpl implements Rule {
 		RuleValidator.bodyCheck(body);
 		RuleValidator.headCheck(head);
 
-		for (final Atom bodyAtom : body) {
-			final AtomImpl copiedBodyAtom = new AtomImpl(bodyAtom);
-			this.body.add(copiedBodyAtom);
-			this.bodyConstants.addAll(new HashSet<>(copiedBodyAtom.getConstants()));
-			this.bodyVariables.addAll(new HashSet<>(copiedBodyAtom.getVariables()));
-			this.bodyTerms.addAll(new HashSet<>(copiedBodyAtom.getArguments()));
-		}
-
-		for (final Atom headAtom : head) {
-			final AtomImpl copiedHeadAtom = new AtomImpl(headAtom);
-			this.head.add(new AtomImpl(copiedHeadAtom));
-			this.headConstants.addAll(new HashSet<>(copiedHeadAtom.getConstants()));
-			this.headVariables.addAll(new HashSet<>(copiedHeadAtom.getVariables()));
-			this.headTerms.addAll(new HashSet<>(copiedHeadAtom.getArguments()));
-		}
+//		for (final Atom bodyAtom : body) {
+//			final AtomImpl copiedBodyAtom = new AtomImpl(bodyAtom);
+//			this.body.add(copiedBodyAtom);
+//			this.bodyConstants.addAll(new HashSet<>(copiedBodyAtom.getConstants()));
+//			this.bodyVariables.addAll(new HashSet<>(copiedBodyAtom.getVariables()));
+//			this.bodyTerms.addAll(new HashSet<>(copiedBodyAtom.getArguments()));
+//		}
+//
+//		for (final Atom headAtom : head) {
+//			final AtomImpl copiedHeadAtom = new AtomImpl(headAtom);
+//			this.head.add(new AtomImpl(copiedHeadAtom));
+//			this.headConstants.addAll(new HashSet<>(copiedHeadAtom.getConstants()));
+//			this.headVariables.addAll(new HashSet<>(copiedHeadAtom.getVariables()));
+//			this.headTerms.addAll(new HashSet<>(copiedHeadAtom.getArguments()));
+//		}
 
 		this.terms.addAll(new HashSet<>(this.bodyTerms));
 		this.terms.addAll(new HashSet<>(this.headTerms));

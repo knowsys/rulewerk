@@ -25,29 +25,24 @@ import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
  */
 
 /**
- * Implements {@link #VARIABLE} terms. A variable is a parameter that stands for an arbitrary domain element.
+ * Implements {@link #VARIABLE} terms. A variable is a parameter that stands for
+ * an arbitrary domain element.
  *
  * @author david.carral@tu-dresden.de
  */
 public class VariableImpl extends AbstractTerm implements Variable {
 
 	/**
-	 * Instantiates a <b>{@code VariableImpl}</b> object with the name <b>{@code name}</b>.
+	 * Instantiates a <b>{@code VariableImpl}</b> object with the name
+	 * <b>{@code name}</b>.
 	 *
 	 * @param name
 	 *            cannot be a blank String (null, " ", empty string...).
 	 * @throws IllegalEntityNameException
 	 *             if the given name <b>{@code name}</b> is a blank String.
 	 */
-	public VariableImpl(final String name) throws IllegalEntityNameException {
+	public VariableImpl(final String name) {
 		super(name);
-	}
-
-	/**
-	 * Deep copy constructor (the newly instantiated object does not contain any reference to original fields in the copied object).
-	 */
-	public VariableImpl(final Variable copyVariable) throws IllegalEntityNameException {
-		super(new String(copyVariable.getName()));
 	}
 
 	@Override

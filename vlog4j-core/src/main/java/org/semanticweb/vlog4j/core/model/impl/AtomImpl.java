@@ -39,57 +39,41 @@ import org.semanticweb.vlog4j.core.model.validation.EntityNameValidator;
 import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 /**
- * Implements {@code Atom} objects. An atom is predicate applied to a tuple of terms; that is, an atomic formula is a formula of the form P(t1,...,tn) for P a
- * predicate, and t1,...,tn some terms.
+ * Implements {@link Atom} objects. An atom is an atomic formula is a formula of
+ * the form P(t1,...,tn) for P a predicate and t1,...,tn some {@link Term}s.
  *
  * @author david.carral@tu-dresden.de
  */
 public class AtomImpl implements Atom {
 	private final String predicateName;
 	private final List<Term> arguments = new ArrayList<>();
-	private final Set<Blank> blanks = new HashSet<>();
-	private final Set<Constant> constants = new HashSet<>();
-	private final Set<Variable> variables = new HashSet<>();
 
 	/**
-	 * Instantiates an <b>{@code Atom}</b> object of the form <b>{@code predicateName}</b>(<b>{@code arguments}</b>).
+	 * Instantiates an <b>{@code Atom}</b> object of the form
+	 * <b>{@code predicateName}</b>(<b>{@code arguments}</b>).
 	 *
 	 * @param predicateName
 	 *            cannot be a blank String (null, " ", empty string...).
 	 * @param arguments
 	 *            cannot be null or contain some null value.
 	 * @throws AtomValidationException
-	 *             if the {@code arguments} is empty or null, or contains some null value.
+	 *             if the {@code arguments} is empty or null, or contains some null
+	 *             value.
 	 * @throws IllegalEntityNameException
-	 *             if the <b>{@code predicateName}</b> or the name of some term is a blank String.
+	 *             if the <b>{@code predicateName}</b> or the name of some term is a
+	 *             blank String.
 	 */
-	public AtomImpl(final String predicateName, final List<Term> arguments) throws IllegalEntityNameException, AtomValidationException {
+	public AtomImpl(final String predicateName, final List<Term> arguments)
+			throws IllegalEntityNameException, AtomValidationException {
 		EntityNameValidator.validateNonEmptyString(predicateName);
 		this.predicateName = new String(predicateName);
 		AtomValidator.validateArguments(arguments);
-		for (final Term argument : arguments) {
-			switch (argument.getType()) {
-				case BLANK:
-					final BlankImpl copiedBlank = new BlankImpl((Blank) argument);
-					this.arguments.add(copiedBlank);
-					this.blanks.add(copiedBlank);
-					break;
-				case CONSTANT:
-					final Constant copiedConstant = new ConstantImpl((Constant) argument);
-					this.arguments.add(copiedConstant);
-					this.constants.add(copiedConstant);
-					break;
-				case VARIABLE:
-					final VariableImpl copiedVariable = new VariableImpl((Variable) argument);
-					this.arguments.add(copiedVariable);
-					this.variables.add(copiedVariable);
-					break;
-			}
-		}
 	}
 
 	/**
-	 * Instantiates an <b>{@code Atom}</b> object of the form <b>{@code predicateName}</b>(<b>{@code firstArgument}</b>, <b>{@code remainingArguments}</b>).
+	 * Instantiates an <b>{@code Atom}</b> object of the form
+	 * <b>{@code predicateName}</b>(<b>{@code firstArgument}</b>,
+	 * <b>{@code remainingArguments}</b>).
 	 *
 	 * @param predicateName
 	 *            cannot be a blank String (null, " ", empty string...).
@@ -98,9 +82,11 @@ public class AtomImpl implements Atom {
 	 * @param remainingArguments
 	 *            cannot be null or contain some null value.
 	 * @throws AtomValidationException
-	 *             if the {@code firstArgument} is null, {@code remainingArguments} is null, or {@code remainingArguments} contains some null value.
+	 *             if the {@code firstArgument} is null, {@code remainingArguments}
+	 *             is null, or {@code remainingArguments} contains some null value.
 	 * @throws IllegalEntityNameException
-	 *             if the <b>{@code predicateName}</b> or the name of some term is a blank String.
+	 *             if the <b>{@code predicateName}</b> or the name of some term is a
+	 *             blank String.
 	 *
 	 */
 	public AtomImpl(final String predicateName, final Term firstArgument, final Term... remainingArguments)
@@ -116,7 +102,8 @@ public class AtomImpl implements Atom {
 	}
 
 	/**
-	 * Deep copy constructor (the newly instantiated object does not contain any reference to original fields in the copied object).
+	 * Deep copy constructor (the newly instantiated object does not contain any
+	 * reference to original fields in the copied object).
 	 */
 	public AtomImpl(final Atom copyAtom) throws AtomValidationException, IllegalEntityNameException {
 		this(copyAtom.getPredicate(), copyAtom.getArguments());
@@ -133,18 +120,9 @@ public class AtomImpl implements Atom {
 	}
 
 	@Override
-	public Set<Blank> getBlanks() {
-		return Collections.unmodifiableSet(this.blanks);
-	}
-
-	@Override
-	public Set<Constant> getConstants() {
-		return Collections.unmodifiableSet(this.constants);
-	}
-
-	@Override
 	public Set<Variable> getVariables() {
-		return Collections.unmodifiableSet(this.variables);
+		//return Collections.unmodifiableSet(this.variables);
+		return null;
 	}
 
 	@Override

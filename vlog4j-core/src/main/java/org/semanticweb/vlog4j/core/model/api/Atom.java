@@ -24,8 +24,9 @@ import java.util.Set;
  */
 
 /**
- * Interface for atoms. An atom is predicate applied to a tuple of terms; that is, an atomic formula is a formula of the form P(t1,...,tn) for P a predicate,
- * and t1,...,tn some terms.
+ * Interface for atoms. An atom is predicate applied to a tuple of terms; that
+ * is, an atomic formula is a formula of the form P(t1,...,tn) for P a
+ * predicate, and t1,...,tn some terms.
  *
  * @author david.carral@tu-dresden.de
  */
@@ -33,39 +34,28 @@ import java.util.Set;
 public interface Atom {
 
 	/**
-	 * @return this method may not return a blank String (null, " ", empty string...).
+	 * @return this method may not return a blank String (null, " ", empty
+	 *         string...).
 	 */
 	public String getPredicate();
 
 	/**
-	 * The atom arguments as an unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an attempt to modify the list occurs.
+	 * The atom arguments as an unmodifiableList. An
+	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
+	 * the list occurs.
 	 *
 	 * @return a non-empty unmodifiableList representing the predicate arguments
 	 */
 	public List<Term> getArguments();
 
 	/**
-	 * The {@link TermType#VARIABLE} terms that occur in the predicate arguments as an unmodifiableSet. An {@link UnsupportedOperationException} is thrown, when
+	 * The {@link TermType#VARIABLE} terms that occur in the predicate arguments as
+	 * an unmodifiableSet. An {@link UnsupportedOperationException} is thrown, when
 	 * an attempt to modify the set occurs.
 	 *
-	 * @return an unmodifiableSet representing {@link TermType#VARIABLE} terms in the the predicate arguments.
+	 * @return an unmodifiableSet representing {@link TermType#VARIABLE} terms in
+	 *         the the predicate arguments.
 	 */
 	public Set<Variable> getVariables();
-
-	/**
-	 * The {@link TermType#CONSTANT} terms that occur in the predicate arguments as an unmodifiableSet. An {@link UnsupportedOperationException} is thrown, when
-	 * an attempt to modify the set occurs.
-	 *
-	 * @return an unmodifiableSet representing {@link TermType#CONSTANT} terms in the the predicate arguments.
-	 */
-	public Set<Constant> getConstants();
-
-	/**
-	 * The {@link TermType#BLANK} terms that occur in the predicate arguments as an unmodifiableSet. An {@link UnsupportedOperationException} is thrown, when an
-	 * attempt to modify the set occurs.
-	 *
-	 * @return an unmodifiableSet representing {@link TermType#BLANK} terms in the the predicate arguments.
-	 */
-	public Set<Blank> getBlanks();
 
 }

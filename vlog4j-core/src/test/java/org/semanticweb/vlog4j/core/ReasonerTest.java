@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
@@ -47,6 +48,7 @@ import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.StringQueryResultEnumeration;
 
+@Ignore
 public class ReasonerTest extends TestCase {
 
 	public void testSimpleInference() throws AtomValidationException, IllegalEntityNameException, RuleValidationException, PredicateNameValidationException,
