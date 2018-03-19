@@ -31,11 +31,11 @@ import org.semanticweb.vlog4j.core.model.api.TermType;
  *
  * @author david.carral@tu-dresden.de
  */
-public abstract class AbstractTerm implements Term {
+public abstract class AbstractTermImpl implements Term {
 
 	private final String name;
 
-	public AbstractTerm(final String name) {
+	public AbstractTermImpl(final String name) {
 		Validate.notBlank(name, "Terms cannot be named by blank strings");
 		this.name = new String(name);
 	}

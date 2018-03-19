@@ -28,10 +28,9 @@ import java.util.List;
 import org.junit.Ignore;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
-import org.semanticweb.vlog4j.core.model.impl.ConstantImpl;
+import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.impl.Expressions;
 import org.semanticweb.vlog4j.core.model.impl.RuleImpl;
-import org.semanticweb.vlog4j.core.model.impl.VariableImpl;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;
@@ -56,11 +55,13 @@ public class ReasonerTest extends TestCase {
 			IOException, NotStartedException {
 		final String constantNameC = "c";
 		final String constantNameD = "d";
-		final Atom factAc = new AtomImpl("A", new ConstantImpl(constantNameC));
-		final Atom factAd = new AtomImpl("A", new ConstantImpl(constantNameD));
-		final Atom atomAx = new AtomImpl("A", new VariableImpl("X"));
-		final Atom atomBx = new AtomImpl("B", new VariableImpl("X"));
-		final Atom atomCx = new AtomImpl("C", new VariableImpl("X"));
+
+		final Variable x = Expressions.makeVariable("x");
+		final Atom factAc = Expressions.makeAtom("A", Expressions.makeConstant(constantNameC));
+		final Atom factAd = Expressions.makeAtom("A", Expressions.makeConstant(constantNameD));
+		final Atom atomAx = Expressions.makeAtom("A", x);
+		final Atom atomBx = Expressions.makeAtom("B", x);
+		final Atom atomCx = Expressions.makeAtom("C", x);
 		final Rule ruleBxAx = new RuleImpl(Arrays.asList(atomBx), Arrays.asList(atomAx));
 		final Rule ruleCxBx = new RuleImpl(Arrays.asList(atomCx), Arrays.asList(atomBx));
 

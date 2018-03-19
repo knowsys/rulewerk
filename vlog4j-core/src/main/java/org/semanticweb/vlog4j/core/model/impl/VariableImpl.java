@@ -1,6 +1,7 @@
 package org.semanticweb.vlog4j.core.model.impl;
 
 import org.semanticweb.vlog4j.core.model.api.TermType;
+import org.semanticweb.vlog4j.core.model.api.TermVisitor;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
@@ -30,7 +31,7 @@ import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
  *
  * @author david.carral@tu-dresden.de
  */
-public class VariableImpl extends AbstractTerm implements Variable {
+public class VariableImpl extends AbstractTermImpl implements Variable {
 
 	/**
 	 * Instantiates a <b>{@code VariableImpl}</b> object with the name
@@ -48,5 +49,10 @@ public class VariableImpl extends AbstractTerm implements Variable {
 	@Override
 	public TermType getType() {
 		return TermType.VARIABLE;
+	}
+	
+	@Override
+	public <T> T accept(TermVisitor<T> termVisitor) {
+		return termVisitor.visit(this);
 	}
 }

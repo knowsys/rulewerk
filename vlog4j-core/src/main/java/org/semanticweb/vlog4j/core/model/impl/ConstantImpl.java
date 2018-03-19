@@ -2,6 +2,7 @@ package org.semanticweb.vlog4j.core.model.impl;
 
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.TermType;
+import org.semanticweb.vlog4j.core.model.api.TermVisitor;
 import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 /*
@@ -30,7 +31,7 @@ import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
  *
  * @author david.carral@tu-dresden.de
  */
-public class ConstantImpl extends AbstractTerm implements Constant {
+public class ConstantImpl extends AbstractTermImpl implements Constant {
 
 	/**
 	 * Instantiates a <b>{@code ConstantImpl}</b> object with the name
@@ -48,5 +49,10 @@ public class ConstantImpl extends AbstractTerm implements Constant {
 	@Override
 	public TermType getType() {
 		return TermType.CONSTANT;
+	}
+	
+	@Override
+	public <T> T accept(TermVisitor<T> termVisitor) {
+		return termVisitor.visit(this);
 	}
 }

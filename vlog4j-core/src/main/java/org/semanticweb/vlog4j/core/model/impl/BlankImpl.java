@@ -22,6 +22,7 @@ package org.semanticweb.vlog4j.core.model.impl;
 
 import org.semanticweb.vlog4j.core.model.api.Blank;
 import org.semanticweb.vlog4j.core.model.api.TermType;
+import org.semanticweb.vlog4j.core.model.api.TermVisitor;
 import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 /**
@@ -31,7 +32,7 @@ import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
  *
  * @author david.carral@tu-dresden.de
  */
-public class BlankImpl extends AbstractTerm implements Blank {
+public class BlankImpl extends AbstractTermImpl implements Blank {
 
 	/**
 	 * Instantiates a <b>{@code BlankImpl}</b> object with the name
@@ -49,5 +50,10 @@ public class BlankImpl extends AbstractTerm implements Blank {
 	@Override
 	public TermType getType() {
 		return TermType.BLANK;
+	}
+
+	@Override
+	public <T> T accept(TermVisitor<T> termVisitor) {
+		return termVisitor.visit(this);
 	}
 }

@@ -15,7 +15,6 @@ import java.util.Set;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
@@ -96,7 +95,7 @@ public class ReasonerImpl implements Reasoner {
 		if (!this.loaded) {
 			for (final Atom fact : facts) {
 				if (fact.getVariables().isEmpty()) {
-					this.facts.add(new AtomImpl(fact));
+					this.facts.add(fact);
 				} else {
 					// TODO Throw Exception: not a fact
 				}
@@ -161,12 +160,14 @@ public class ReasonerImpl implements Reasoner {
 		final StringBuilder edbPredicatesConfigSB = new StringBuilder();
 		for (int i = 0; i < this.edbPredicatesConfig.size(); i++) {
 			final EDBPredicateConfig currenEDBPredicateConfig = this.edbPredicatesConfig.get(i);
-			edbPredicatesConfigSB.append("EDB").append(i).append("_predname=").append(currenEDBPredicateConfig.getPredicate()).append("\n");
+			edbPredicatesConfigSB.append("EDB").append(i).append("_predname=")
+					.append(currenEDBPredicateConfig.getPredicate()).append("\n");
 			edbPredicatesConfigSB.append("EDB").append(i).append("_type=INMEMORY" + "\n");
 			final File sourceFile = currenEDBPredicateConfig.getSourceFile();
-			edbPredicatesConfigSB.append("EDB").append(i).append("_param0=").append(sourceFile.getParent()).append("\n");
-			edbPredicatesConfigSB.append("EDB").append(i).append("_param1=").append(sourceFile.getName().substring(0, sourceFile.getName().length() - 3))
-					.append("\n" + "\n");
+			edbPredicatesConfigSB.append("EDB").append(i).append("_param0=").append(sourceFile.getParent())
+					.append("\n");
+			edbPredicatesConfigSB.append("EDB").append(i).append("_param1=")
+					.append(sourceFile.getName().substring(0, sourceFile.getName().length() - 3)).append("\n" + "\n");
 		}
 		return edbPredicatesConfigSB.toString();
 	}
