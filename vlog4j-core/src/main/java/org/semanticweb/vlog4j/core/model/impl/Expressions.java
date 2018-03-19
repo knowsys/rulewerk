@@ -109,6 +109,19 @@ public class Expressions {
 	}
 
 	/**
+	 * Creates a {@code Rule}.
+	 *
+	 * @param head
+	 *            conjunction of atoms
+	 * @param body
+	 *            conjunction of atoms
+	 * @return a {@link Rule} corresponding to the input
+	 */
+	public static Rule makeRule(final Conjunction head, final Conjunction body) {
+		return new RuleImpl(head, body);
+	}
+
+	/**
 	 * Creates a {@code Rule} with a single atom in its head.
 	 *
 	 * @param headAtom

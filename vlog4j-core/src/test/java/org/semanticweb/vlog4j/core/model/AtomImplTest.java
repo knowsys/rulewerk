@@ -72,4 +72,24 @@ public class AtomImplTest {
 		assertFalse(atom2.equals(c));
 	}
 
+	@Test(expected = NullPointerException.class)
+	public void termsNotNull() {
+		new AtomImpl("p", null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void temrsNonEmpty() {
+		Expressions.makeAtom("p");
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void predicateNotNull() {
+		Expressions.makeAtom(null, Expressions.makeConstant("c"));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void predicateNotBlank() {
+		Expressions.makeAtom("", Expressions.makeConstant("c"));
+	}
+
 }

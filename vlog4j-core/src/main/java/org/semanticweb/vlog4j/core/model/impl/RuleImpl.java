@@ -1,5 +1,6 @@
 package org.semanticweb.vlog4j.core.model.impl;
 
+import java.util.HashSet;
 
 /*
  * #%L
@@ -23,9 +24,9 @@ package org.semanticweb.vlog4j.core.model.impl;
 
 import java.util.Set;
 
+import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
@@ -58,10 +59,12 @@ public class RuleImpl implements Rule {
 	 * @throws VariableNameValidationException
 	 * @throws IllegalEntityNameException
 	 */
-	public RuleImpl(final Conjunction head, final Conjunction body)  {
-//		RuleValidator.ruleCheck(body, head);
-//		RuleValidator.bodyCheck(body);
-//		RuleValidator.headCheck(head);
+	public RuleImpl(final Conjunction head, final Conjunction body) {
+		Validate.notNull(head);
+		Validate.notNull(body);
+		Validate.notEmpty(body.getAtoms());
+		Validate.notEmpty(head.getAtoms());
+
 		this.head = head;
 		this.body = body;
 	}
@@ -112,7 +115,7 @@ public class RuleImpl implements Rule {
 
 	@Override
 	public Set<Variable> getExistentiallyQuantifiedVariables() {
-		Set<Variable> result = this.head.getVariables();
+		Set<Variable> result = new HashSet<Variable>(this.head.getVariables());
 		result.removeAll(this.body.getVariables());
 		return result;
 	}
