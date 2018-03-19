@@ -41,7 +41,7 @@ public class AtomImplTest {
 		Variable y = Expressions.makeVariable("Y");
 		Constant c = Expressions.makeConstant("c");
 		Constant d = Expressions.makeConstant("d");
-		Atom atom = Expressions.makeAtom("p", Arrays.asList(x, c, d, y));
+		Atom atom = Expressions.makeAtom("p", x, c, d, y);
 
 		Set<Variable> variables = new HashSet<Variable>();
 		variables.add(x);

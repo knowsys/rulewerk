@@ -49,12 +49,9 @@ public interface Atom {
 	public List<Term> getArguments();
 
 	/**
-	 * The {@link TermType#VARIABLE} terms that occur in the predicate arguments as
-	 * an unmodifiableSet. An {@link UnsupportedOperationException} is thrown, when
-	 * an attempt to modify the set occurs.
+	 * Returns the {@link Variable}s that occur among the predicate arguments.
 	 *
-	 * @return an unmodifiableSet representing {@link TermType#VARIABLE} terms in
-	 *         the the predicate arguments.
+	 * @return a set of variables
 	 */
 	public Set<Variable> getVariables();
 

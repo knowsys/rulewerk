@@ -20,105 +20,46 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
-import java.util.List;
 import java.util.Set;
 
-//TODO rule definition
-//TODO specify body and head are non-empty
+/**
+ * Interface for classes representing a rule. This implementation assumes that
+ * rules are defined by their head and body atoms, without explicitly specifying
+ * quantifiers. All variables in the body are considered universally quantified;
+ * all variables in the head that do not occur in the body are considered
+ * existentially quantified.
+ * 
+ * @author Markus Krötzsch
+ *
+ */
 public interface Rule {
 
 	/**
-	 * The Atoms representing the Rule body conjuncts as an unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an attempt to modify the
-	 * list occurs.
+	 * Returns the conjunction of body atoms (the premise of the rule).
 	 *
-	 * @return an unmodifiableList representing the Rule body conjuncts.
+	 * @return conjunction of atoms
 	 */
-	public List<Atom> getBody();
+	public Conjunction getBody();
 
 	/**
-	 * The Atoms representing the Rule head conjuncts as an unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an attempt to modify the
-	 * list occurs.
+	 * Returns the conjunction of body atoms (the premise of the rule).
 	 *
-	 * @return an unmodifiableList representing the Rule head conjuncts.
+	 * @return conjunction of atoms
 	 */
-	public List<Atom> getHead();
+	public Conjunction getHead();
 
 	/**
-	 * The existentially quantified variables, which are variables that only occur in the Rule head, and not in the Rule Body. They are returned as an
-	 * unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an attempt to modify the list occurs.
+	 * Returns the existentially quantified head variables of this rule.
 	 *
-	 * @return an unmodifiableList representing the Rule existentially quantified variables.
+	 * @return a set of variables
 	 */
 	public Set<Variable> getExistentiallyQuantifiedVariables();
 
 	/**
-	 * The universally quantified variables, which are variables that occur in the rule and are not existentially quantified. They are returned as an
-	 * unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an attempt to modify the list occurs.
+	 * Returns the universally quantified variables of this rule.
 	 *
-	 * @return an unmodifiableList representing the Rule universally quantified variables.
+	 * @return a set of variables
 	 */
 	public Set<Variable> getUniversallyQuantifiedVariables();
-
-	/**
-	 * All Variables occurring in the Rule body, returned as an unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an attempt to modify
-	 * the list occurs.
-	 *
-	 * @return an unmodifiableList representing all Variables in the Rule body.
-	 */
-	public Set<Variable> getBodyVariables();
-
-	/**
-	 * All Variables occurring in the Rule head, returned as an unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an attempt to modify
-	 * the list occurs.
-	 *
-	 * @return an unmodifiableList representing all Variables in the Rule head.
-	 */
-	public Set<Variable> getHeadVariables();
-
-	/**
-	 * All Variables occurring in the Rule head and body atoms, returned as an unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an
-	 * attempt to modify the list occurs.
-	 *
-	 * @return an unmodifiableList representing all Variables in the Rule.
-	 */
-	public Set<Variable> getVariables();
-
-	/**
-	 * All Constants occurring in the Rule body, returned as an unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an attempt to modify
-	 * the list occurs.
-	 *
-	 * @return an unmodifiableList representing all Constants in the Rule body.
-	 */
-	public Set<Constant> getBodyConstants();
-
-	/**
-	 * All Constants occurring in the Rule head, returned as an unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an attempt to modify
-	 * the list occurs.
-	 *
-	 * @return an unmodifiableList representing all Constants in the Rule head.
-	 */
-	public Set<Constant> getHeadConstants();
-
-	/**
-	 * All Constant occurring in the Rule head and body atoms, returned as an unmodifiableList. An {@link UnsupportedOperationException} is thrown, when an
-	 * attempt to modify the list occurs.
-	 *
-	 * @return an unmodifiableList representing all Constant in the Rule.
-	 */
-	public Set<Constant> getConstants();
-
-	/**
-	 * All Terms (Variables and Constants) occurring in the Rule head and body
-	 * atoms, returned as an unmodifiableList. An
-	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
-	 * the list occurs.
-	 *
-	 * @return an unmodifiableList representing all Terms in the Rule.
-	 */
-	public Set<Term> getTerms();
-
-	Set<Term> getBodyTerms();
-
-	Set<Term> getHeadTerms();
 
 }

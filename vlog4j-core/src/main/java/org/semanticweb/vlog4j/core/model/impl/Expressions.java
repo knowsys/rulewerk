@@ -24,7 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 
@@ -82,6 +84,41 @@ public class Expressions {
 	 */
 	public static Atom makeAtom(final String predicateName, final Term... arguments) {
 		return new AtomImpl(predicateName, Arrays.asList(arguments));
+	}
+
+	/**
+	 * Creates a {@code Conjunction}.
+	 *
+	 * @param atoms
+	 *            list of non-null atoms
+	 * @return a {@link Conjunction} corresponding to the input
+	 */
+	public static Conjunction makeConjunction(final List<Atom> atoms) {
+		return new ConjunctionImpl(atoms);
+	}
+
+	/**
+	 * Creates a {@code Conjunction}.
+	 *
+	 * @param atoms
+	 *            array of non-null atoms
+	 * @return a {@link Conjunction} corresponding to the input
+	 */
+	public static Conjunction makeConjunction(final Atom... atoms) {
+		return new ConjunctionImpl(Arrays.asList(atoms));
+	}
+
+	/**
+	 * Creates a {@code Rule} with a single atom in its head.
+	 *
+	 * @param headAtom
+	 * @param bodyAtoms
+	 *            array of non-null atoms
+	 * @return a {@link Rule} corresponding to the input
+	 */
+	public static Rule makeRule(final Atom headAtom, final Atom... bodyAtoms) {
+		return new RuleImpl(new ConjunctionImpl(Arrays.asList(headAtom)),
+				new ConjunctionImpl(Arrays.asList(bodyAtoms)));
 	}
 
 }

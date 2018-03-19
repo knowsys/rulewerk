@@ -22,15 +22,12 @@ package org.semanticweb.vlog4j.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
-import org.semanticweb.vlog4j.core.model.impl.RuleImpl;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;
@@ -47,7 +44,6 @@ import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.StringQueryResultEnumeration;
 
-@Ignore
 public class ReasonerTest extends TestCase {
 
 	public void testSimpleInference() throws AtomValidationException, IllegalEntityNameException, RuleValidationException, PredicateNameValidationException,
@@ -62,8 +58,8 @@ public class ReasonerTest extends TestCase {
 		final Atom atomAx = Expressions.makeAtom("A", x);
 		final Atom atomBx = Expressions.makeAtom("B", x);
 		final Atom atomCx = Expressions.makeAtom("C", x);
-		final Rule ruleBxAx = new RuleImpl(Arrays.asList(atomBx), Arrays.asList(atomAx));
-		final Rule ruleCxBx = new RuleImpl(Arrays.asList(atomCx), Arrays.asList(atomBx));
+		final Rule ruleBxAx = Expressions.makeRule(atomBx, atomAx);
+		final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
 
 		final Reasoner reasoner = new ReasonerImpl();
 		reasoner.addFacts(factAc, factAd);
