@@ -21,8 +21,10 @@ package org.semanticweb.vlog4j.core;
  */
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import org.junit.Ignore;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
 
@@ -34,14 +36,15 @@ import karmaresearch.vlog.StringQueryResultEnumeration;
 import karmaresearch.vlog.VLog;
 import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
-@Ignore
 public class VLogTest extends TestCase {
 
 	public void testVLogSimpleInference()
 			throws AlreadyStartedException, EDBConfigurationException, IOException, AtomValidationException, RuleValidationException, NotStartedException {
 
 		// Creating rules and facts
-		final String[][] argsAMatrix = { { "a" }, { "b" } };
+		final String constantNameA = "a";
+		final String constantNameB = "b";
+		final String[][] argsAMatrix = { { constantNameA }, { constantNameB } };
 		final karmaresearch.vlog.Term[] argX = { new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
 		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("B", argX);
 		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", argX);
@@ -56,15 +59,31 @@ public class VLogTest extends TestCase {
 		vlog.setRules(rules, RuleRewriteStrategy.NONE);
 		vlog.materialize(true);
 
+		final List<List<String>> expectedQueryResults = new ArrayList<>();
+		final List<String> answer1 = new ArrayList<>();
+		answer1.add(constantNameA);
+		expectedQueryResults.add(answer1);
+		final List<String> answer2 = new ArrayList<>();
+		answer2.add(constantNameB);
+		expectedQueryResults.add(answer2);
+
 		// Querying
-		System.out.println("Querying atom: " + atomBx.getPredicate());
 		final StringQueryResultEnumeration answers = vlog.query(atomBx);
-		while (answers.hasMoreElements()) {
-			final String[] answer = answers.nextElement();
-			System.out.println(answer[0]);
-		}
-		// TODO assert
+
+		final List<List<String>> actualQueryResults = getAnswers(answers);
+		assertEquals(expectedQueryResults, actualQueryResults);
 
 		vlog.stop();
+	}
+
+	public static List<List<String>> getAnswers(final StringQueryResultEnumeration queryResult) {
+		final List<List<String>> answers = new ArrayList<>();
+		while (queryResult.hasMoreElements()) {
+			answers.add(Arrays.asList(queryResult.nextElement()));
+		}
+
+		queryResult.cleanup();
+
+		return answers;
 	}
 }

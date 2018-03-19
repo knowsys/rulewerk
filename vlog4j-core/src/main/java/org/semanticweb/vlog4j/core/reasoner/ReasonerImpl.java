@@ -36,9 +36,9 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -209,16 +209,6 @@ public class ReasonerImpl implements Reasoner {
 			// TODO throw exception
 			return null;
 		}
-	}
-
-	@Override
-	public List<List<String>> compileQuerySet(final Atom atomAx) throws NotStartedException {
-		final List<List<String>> answers = new ArrayList<>();
-		final StringQueryResultEnumeration iterator = compileQueryIterator(atomAx);
-		while (iterator.hasMoreElements()) {
-			answers.add(Arrays.asList(iterator.nextElement()));
-		}
-		return answers;
 	}
 
 	@Override
