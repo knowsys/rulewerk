@@ -2,7 +2,6 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -70,8 +69,6 @@ public interface Reasoner {
 
 	// TODO check if URIs can be file names
 	// Set<EDBPredicateConfig> exportDBToFolder(File location);
-
-	List<List<String>> compileQuerySet(Atom atomAx) throws NotStartedException;
 
 	void dispose();
 }

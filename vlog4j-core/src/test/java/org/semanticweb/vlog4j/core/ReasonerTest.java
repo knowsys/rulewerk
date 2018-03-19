@@ -21,6 +21,7 @@ package org.semanticweb.vlog4j.core;
  */
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,14 +45,17 @@ import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
+import karmaresearch.vlog.StringQueryResultEnumeration;
 
 public class ReasonerTest extends TestCase {
 
 	public void testSimpleInference() throws AtomValidationException, IllegalEntityNameException, RuleValidationException, PredicateNameValidationException,
 			BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException, AlreadyStartedException, EDBConfigurationException,
 			IOException, NotStartedException {
-		final Atom factAc = new AtomImpl("A", new ConstantImpl("c"));
-		final Atom factAd = new AtomImpl("A", new ConstantImpl("d"));
+		final String constantNameC = "c";
+		final String constantNameD = "d";
+		final Atom factAc = new AtomImpl("A", new ConstantImpl(constantNameC));
+		final Atom factAd = new AtomImpl("A", new ConstantImpl(constantNameD));
 		final Atom atomAx = new AtomImpl("A", new VariableImpl("X"));
 		final Atom atomBx = new AtomImpl("B", new VariableImpl("X"));
 		final Atom atomCx = new AtomImpl("C", new VariableImpl("X"));
@@ -62,20 +66,26 @@ public class ReasonerTest extends TestCase {
 		reasoner.addFacts(factAc, factAd);
 		reasoner.addRules(ruleBxAx, ruleCxBx);
 		reasoner.load();
-		final List<List<String>> answerBefore = reasoner.compileQuerySet(atomCx);
+
+		final StringQueryResultEnumeration cxQueryResultEnumBeforeReasoning = reasoner.compileQueryIterator(atomCx);
+		assertFalse(cxQueryResultEnumBeforeReasoning.hasMoreElements());
+
 		reasoner.reason();
-		final List<List<String>> answersAfter = reasoner.compileQuerySet(atomCx);
 
-		System.out.print("Answers before reasoning: ");
-		for (final List<String> answer : answerBefore) {
-			System.out.print(answer);
-		}
-		System.out.println();
+		final StringQueryResultEnumeration cxQueryResultEnumAfterReasoning = reasoner.compileQueryIterator(atomCx);
+		final List<List<String>> actualQueryResults = VLogTest.getAnswers(cxQueryResultEnumAfterReasoning);
 
-		System.out.print(atomCx.toString() + " answers after reasoning: ");
-		for (final List<String> answer : answersAfter) {
-			System.out.print(answer + ",");
-		}
-		System.out.println();
+		final List<List<String>> expectedQueryResults = new ArrayList<>();
+		final List<String> answer1 = new ArrayList<>();
+		answer1.add(constantNameC);
+		expectedQueryResults.add(answer1);
+		final List<String> answer2 = new ArrayList<>();
+		answer2.add(constantNameD);
+		expectedQueryResults.add(answer2);
+
+		assertEquals(expectedQueryResults, actualQueryResults);
+
+		reasoner.dispose();
 	}
+
 }

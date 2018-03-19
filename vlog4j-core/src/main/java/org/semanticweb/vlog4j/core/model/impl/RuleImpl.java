@@ -61,17 +61,16 @@ public class RuleImpl implements Rule {
 	 * Creates a Rule with a non-empty body and an non-empty head. The variables that occur only in the rule head (and not in the rule body) are considered to
 	 * be existentially quantified. The variables that are not existentially quantified are considered to be universally quantified.
 	 *
-	 * @param body
-	 *            list of Atoms representing the rule body conjuncts.
 	 * @param head
+	 *            list of Atoms representing the rule body conjuncts.
+	 * @param body
 	 *            list of Atoms representing the rule head conjuncts.
 	 * @throws RuleValidationException
-	 *             if body or head are null or empty.
-	 * @throws VariableNameValidationException
-	 * @throws ConstantNameValidationException
-	 * @throws BlankNameValidationException
-	 * @throws PredicateNameValidationException
 	 * @throws AtomValidationException
+	 * @throws PredicateNameValidationException
+	 * @throws BlankNameValidationException
+	 * @throws ConstantNameValidationException
+	 * @throws VariableNameValidationException
 	 * @throws IllegalEntityNameException
 	 */
 	public RuleImpl(final List<Atom> head, final List<Atom> body) throws RuleValidationException, AtomValidationException, PredicateNameValidationException,

@@ -212,16 +212,6 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public List<List<String>> compileQuerySet(final Atom atomAx) throws NotStartedException {
-		final List<List<String>> answers = new ArrayList<>();
-		final StringQueryResultEnumeration iterator = compileQueryIterator(atomAx);
-		while (iterator.hasMoreElements()) {
-			answers.add(Arrays.asList(iterator.nextElement()));
-		}
-		return answers;
-	}
-
-	@Override
 	public void exportAtomicQueryAnswers(final Atom queryAtom, final String outputFilePath) {
 		// vlog.writePredicateToCsv(arg0, arg1);
 		// TODO Auto-generated method stub
