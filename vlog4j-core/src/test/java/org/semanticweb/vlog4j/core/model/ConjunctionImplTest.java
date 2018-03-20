@@ -19,8 +19,9 @@ package org.semanticweb.vlog4j.core.model;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,6 +77,19 @@ public class ConjunctionImplTest {
 		assertNotEquals(conjunction3.hashCode(), conjunction1.hashCode());
 		assertFalse(conjunction1.equals(null));
 		assertFalse(conjunction1.equals(c));
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void atomsNotNull() {
+		new ConjunctionImpl(null);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void atomsNoNullElements() {
+		Variable x = Expressions.makeVariable("X");
+		Atom atom1 = Expressions.makeAtom("p", x);
+		List<Atom> atomList = Arrays.asList(atom1, null);
+		Expressions.makeConjunction(atomList);
 	}
 
 }

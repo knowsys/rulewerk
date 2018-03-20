@@ -63,27 +63,27 @@ public class Expressions {
 	/**
 	 * Creates an {@code Atom}.
 	 *
-	 * @param predicateName
+	 * @param predicate
 	 *            non-blank predicate name
-	 * @param arguments
-	 *            non-empty list of non-null terms
+	 * @param terms
+	 *            non-empty, non-null list of non-null terms
 	 * @return an {@link Atom} corresponding to the input
 	 */
-	public static Atom makeAtom(final String predicateName, final List<Term> arguments) {
-		return new AtomImpl(predicateName, arguments);
+	public static Atom makeAtom(final String predicate, final List<Term> terms) {
+		return new AtomImpl(predicate, terms);
 	}
 
 	/**
 	 * Creates an {@code Atom}.
 	 *
-	 * @param predicateName
+	 * @param predicate
 	 *            non-blank predicate name
-	 * @param arguments
+	 * @param terms
 	 *            non-empty array of non-null terms
 	 * @return an {@link Atom} corresponding to the input
 	 */
-	public static Atom makeAtom(final String predicateName, final Term... arguments) {
-		return new AtomImpl(predicateName, Arrays.asList(arguments));
+	public static Atom makeAtom(final String predicate, final Term... terms) {
+		return new AtomImpl(predicate, Arrays.asList(terms));
 	}
 
 	/**

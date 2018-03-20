@@ -32,7 +32,7 @@ public interface Term {
 	/**
 	 * Returns a unique string identifier for this term.
 	 * 
-	 * @return non-empty, non-null String
+	 * @return a non-blank String (not null, nor empty or whitespace).
 	 */
 	String getName();
 

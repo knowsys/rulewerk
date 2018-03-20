@@ -57,15 +57,22 @@ public class TermImplTest {
 		assertEquals("v", v.getName());
 		assertEquals(TermType.VARIABLE, v.getType());
 	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void constantNameNonBlankTest() {
-		new ConstantImpl("");
-	}
-
+	
 	@Test(expected = NullPointerException.class)
 	public void constantNameNonNullTest() {
 		new ConstantImpl((String)null);
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void constantNameNonEmptyTest() {
+		new ConstantImpl("");
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void constantNameNonWhitespaceTest() {
+		new ConstantImpl(" ");
+	}
+
+	
 
 }

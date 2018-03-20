@@ -23,27 +23,22 @@ package org.semanticweb.vlog4j.core.model.impl;
 import org.semanticweb.vlog4j.core.model.api.Blank;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.TermVisitor;
-import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 /**
- * Implements {@link TermType#BLANK} terms. A blank is an entity used to
- * represent anonymous domain elements introduced during the reasoning process
- * to satisfy existential restrictions.
+ * Implements {@link TermType#BLANK} terms. A blank is an entity used to represent anonymous domain elements introduced during the reasoning process to satisfy
+ * existential restrictions.
  *
  * @author david.carral@tu-dresden.de
  */
 public class BlankImpl extends AbstractTermImpl implements Blank {
 
 	/**
-	 * Instantiates a <b>{@code BlankImpl}</b> object with the name
-	 * <b>{@code name}</b>.
+	 * Instantiates a <b>{@code BlankImpl}</b> object with the name <b>{@code name}</b>.
 	 *
 	 * @param name
-	 *            cannot be a blank String (null, " ", empty string...).
-	 * @throws IllegalEntityNameException
-	 *             if the given name <b>{@code name}</b> is a blank String.
+	 *            cannot be a blank String (null, empty or whitespace).
 	 */
-	public BlankImpl(final String name) throws IllegalEntityNameException {
+	public BlankImpl(final String name) {
 		super(name);
 	}
 

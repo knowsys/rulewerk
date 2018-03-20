@@ -15,8 +15,6 @@ import java.util.Set;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
-import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
 
 import karmaresearch.vlog.AlreadyStartedException;
@@ -86,12 +84,12 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public void addFacts(final Atom... facts) throws AtomValidationException, IllegalEntityNameException {
+	public void addFacts(final Atom... facts) {
 		addFacts(Arrays.asList(facts));
 	}
 
 	@Override
-	public void addFacts(final Collection<Atom> facts) throws AtomValidationException, IllegalEntityNameException {
+	public void addFacts(final Collection<Atom> facts) {
 		if (!this.loaded) {
 			for (final Atom fact : facts) {
 				if (fact.getVariables().isEmpty()) {
@@ -160,14 +158,12 @@ public class ReasonerImpl implements Reasoner {
 		final StringBuilder edbPredicatesConfigSB = new StringBuilder();
 		for (int i = 0; i < this.edbPredicatesConfig.size(); i++) {
 			final EDBPredicateConfig currenEDBPredicateConfig = this.edbPredicatesConfig.get(i);
-			edbPredicatesConfigSB.append("EDB").append(i).append("_predname=")
-					.append(currenEDBPredicateConfig.getPredicate()).append("\n");
+			edbPredicatesConfigSB.append("EDB").append(i).append("_predname=").append(currenEDBPredicateConfig.getPredicate()).append("\n");
 			edbPredicatesConfigSB.append("EDB").append(i).append("_type=INMEMORY" + "\n");
 			final File sourceFile = currenEDBPredicateConfig.getSourceFile();
-			edbPredicatesConfigSB.append("EDB").append(i).append("_param0=").append(sourceFile.getParent())
-					.append("\n");
-			edbPredicatesConfigSB.append("EDB").append(i).append("_param1=")
-					.append(sourceFile.getName().substring(0, sourceFile.getName().length() - 3)).append("\n" + "\n");
+			edbPredicatesConfigSB.append("EDB").append(i).append("_param0=").append(sourceFile.getParent()).append("\n");
+			edbPredicatesConfigSB.append("EDB").append(i).append("_param1=").append(sourceFile.getName().substring(0, sourceFile.getName().length() - 3))
+					.append("\n" + "\n");
 		}
 		return edbPredicatesConfigSB.toString();
 	}
@@ -176,7 +172,7 @@ public class ReasonerImpl implements Reasoner {
 		final Map<String, List<List<Term>>> factsMap = new HashMap<>();
 		for (final Atom fact : this.facts) {
 			factsMap.putIfAbsent(fact.getPredicate(), new ArrayList<>());
-			factsMap.get(fact.getPredicate()).add(fact.getArguments());
+			factsMap.get(fact.getPredicate()).add(fact.getTerms());
 		}
 		for (final String predName : factsMap.keySet()) {
 			final List<List<Term>> predNameArgs = factsMap.get(predName);

@@ -39,41 +39,41 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
  */
 public class AtomImpl implements Atom {
 
-	private final String predicateName;
-	private final List<Term> arguments;
+	private final String predicate;
+	private final List<Term> terms;
 
 	/**
 	 * Creates an {@link Atom} of the form
-	 * "{@code predicateName}({@code arguments})".
+	 * "{@code predicate}({@code terms})".
 	 *
-	 * @param predicateName
+	 * @param predicate 
 	 *            non-blank predicate name
-	 * @param arguments
+	 * @param terms
 	 *            non-empty list of non-null terms
 	 */
-	public AtomImpl(final String predicateName, final List<Term> arguments) {
-		Validate.notBlank(predicateName, "Predicates cannot be named by blank strings");
-		Validate.notEmpty(arguments, "Atoms of arity zero are not supported: please specify at least one parameter.");
-		Validate.noNullElements(arguments, "Null cannot be used as a parameter in atoms");
+	public AtomImpl(final String predicate, final List<Term> terms) {
+		Validate.notBlank(predicate, "Predicates cannot be named by blank Strings.");
+		Validate.notEmpty(terms, "Atoms of arity zero are not supported: please specify at least one term.");
+		Validate.noNullElements(terms, "Null terms cannot appear in atoms");
 
-		this.predicateName = predicateName;
-		this.arguments = arguments;
+		this.predicate = predicate;
+		this.terms = terms;
 	}
 
 	@Override
 	public String getPredicate() {
-		return this.predicateName;
+		return this.predicate;
 	}
 
 	@Override
-	public List<Term> getArguments() {
-		return Collections.unmodifiableList(this.arguments);
+	public List<Term> getTerms() {
+		return Collections.unmodifiableList(this.terms);
 	}
 
 	@Override
 	public Set<Variable> getVariables() {
 		TermFilter termFilter = new TermFilter(TermType.VARIABLE);
-		for (Term term : this.arguments) {
+		for (Term term : this.terms) {
 			term.accept(termFilter);
 		}
 		return termFilter.getVariables();
@@ -82,8 +82,8 @@ public class AtomImpl implements Atom {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = this.predicateName.hashCode();
-		result = prime * result + this.arguments.hashCode();
+		int result = this.predicate.hashCode();
+		result = prime * result + this.terms.hashCode();
 		return result;
 	}
 
@@ -100,12 +100,12 @@ public class AtomImpl implements Atom {
 		}
 		final Atom other = (Atom) obj;
 
-		return (this.predicateName.equals(other.getPredicate())) && this.arguments.equals(other.getArguments());
+		return (this.predicate.equals(other.getPredicate())) && this.terms.equals(other.getTerms());
 	}
 
 	@Override
 	public String toString() {
-		return "AtomImpl [predicateName=" + this.predicateName + ", arguments=" + this.arguments + "]";
+		return "AtomImpl [predicate=" + this.predicate + ", terms=" + this.terms + "]";
 	}
 
 }

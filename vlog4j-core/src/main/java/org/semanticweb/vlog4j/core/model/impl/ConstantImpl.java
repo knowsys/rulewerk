@@ -3,7 +3,6 @@ package org.semanticweb.vlog4j.core.model.impl;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.TermVisitor;
-import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 /*
  * #%L
@@ -26,21 +25,17 @@ import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
  */
 
 /**
- * Implements {@link #CONSTANT} terms. A constant is an entity used to represent
- * named domain elements in the domain.
+ * Implements {@link #CONSTANT} terms. A constant is an entity used to represent named domain elements in the domain.
  *
  * @author david.carral@tu-dresden.de
  */
 public class ConstantImpl extends AbstractTermImpl implements Constant {
 
 	/**
-	 * Instantiates a <b>{@code ConstantImpl}</b> object with the name
-	 * <b>{@code name}</b>.
+	 * Instantiates a <b>{@code ConstantImpl}</b> object with the name <b>{@code name}</b>.
 	 *
 	 * @param name
-	 *            cannot be a blank String (null, " ", empty string...).
-	 * @throws IllegalEntityNameException
-	 *             if the given name <b>{@code name}</b> is a blank String.
+	 *            cannot be a blank String (null, empty or whitespace).
 	 */
 	public ConstantImpl(final String name) {
 		super(name);
@@ -50,7 +45,7 @@ public class ConstantImpl extends AbstractTermImpl implements Constant {
 	public TermType getType() {
 		return TermType.CONSTANT;
 	}
-	
+
 	@Override
 	public <T> T accept(TermVisitor<T> termVisitor) {
 		return termVisitor.visit(this);

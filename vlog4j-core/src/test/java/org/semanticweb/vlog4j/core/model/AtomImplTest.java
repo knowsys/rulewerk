@@ -49,7 +49,7 @@ public class AtomImplTest {
 
 		assertEquals("p", atom.getPredicate());
 		assertEquals(variables, atom.getVariables());
-		assertEquals(Arrays.asList(x, c, d, y), atom.getArguments());
+		assertEquals(Arrays.asList(x, c, d, y), atom.getTerms());
 	}
 
 	@Test
@@ -76,6 +76,12 @@ public class AtomImplTest {
 	public void termsNotNull() {
 		new AtomImpl("p", null);
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void termsNoNullElements() {
+		Variable x = Expressions.makeVariable("X");
+		new AtomImpl("p",  Arrays.asList(x, null));
+	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void temrsNonEmpty() {
@@ -88,8 +94,13 @@ public class AtomImplTest {
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void predicateNotBlank() {
+	public void predicateNotEmpty() {
 		Expressions.makeAtom("", Expressions.makeConstant("c"));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void predicateNotWhitespace() {
+		Expressions.makeAtom("  ", Expressions.makeConstant("c"));
 	}
 
 }

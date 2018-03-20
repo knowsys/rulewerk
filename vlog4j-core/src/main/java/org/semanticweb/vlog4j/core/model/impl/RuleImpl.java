@@ -28,13 +28,6 @@ import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
-import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
-import org.semanticweb.vlog4j.core.model.validation.PredicateNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
-import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
 
 public class RuleImpl implements Rule {
 
@@ -42,22 +35,13 @@ public class RuleImpl implements Rule {
 	final Conjunction head;
 
 	/**
-	 * Creates a Rule with a non-empty body and an non-empty head. The variables
-	 * that occur only in the rule head (and not in the rule body) are considered to
-	 * be existentially quantified. The variables that are not existentially
-	 * quantified are considered to be universally quantified.
+	 * Creates a Rule with a non-empty body and an non-empty head. All variables in the body are considered universally quantified; all variables in the head
+	 * that do not occur in the body are considered existentially quantified.
 	 *
 	 * @param head
 	 *            list of Atoms representing the rule body conjuncts.
 	 * @param body
 	 *            list of Atoms representing the rule head conjuncts.
-	 * @throws RuleValidationException
-	 * @throws AtomValidationException
-	 * @throws PredicateNameValidationException
-	 * @throws BlankNameValidationException
-	 * @throws ConstantNameValidationException
-	 * @throws VariableNameValidationException
-	 * @throws IllegalEntityNameException
 	 */
 	public RuleImpl(final Conjunction head, final Conjunction body) {
 		Validate.notNull(head);
@@ -115,7 +99,7 @@ public class RuleImpl implements Rule {
 
 	@Override
 	public Set<Variable> getExistentiallyQuantifiedVariables() {
-		Set<Variable> result = new HashSet<Variable>(this.head.getVariables());
+		final Set<Variable> result = new HashSet<>(this.head.getVariables());
 		result.removeAll(this.body.getVariables());
 		return result;
 	}

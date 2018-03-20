@@ -34,22 +34,21 @@ import java.util.Set;
 public interface Atom {
 
 	/**
-	 * @return this method may not return a blank String (null, " ", empty
-	 *         string...).
+	 * The atom predicate.
+	 * 
+	 * @return this method may not return a blank String (null, empty or whitespace).
 	 */
 	public String getPredicate();
 
 	/**
-	 * The atom arguments as an unmodifiableList. An
-	 * {@link UnsupportedOperationException} is thrown, when an attempt to modify
-	 * the list occurs.
+	 * The list of terms representing the tuple arguments.
 	 *
-	 * @return a non-empty unmodifiableList representing the predicate arguments
+	 * @return a non-empty, unmodifiable list of terms with no null elements.
 	 */
-	public List<Term> getArguments();
+	public List<Term> getTerms();
 
 	/**
-	 * Returns the {@link Variable}s that occur among the predicate arguments.
+	 * Returns the {@link Variable}s that occur among the predicate terms.
 	 *
 	 * @return a set of variables
 	 */

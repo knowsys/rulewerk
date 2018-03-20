@@ -3,7 +3,6 @@ package org.semanticweb.vlog4j.core.model.impl;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.TermVisitor;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 
 /*
  * #%L
@@ -26,21 +25,17 @@ import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
  */
 
 /**
- * Implements {@link #VARIABLE} terms. A variable is a parameter that stands for
- * an arbitrary domain element.
+ * Implements {@link #VARIABLE} terms. A variable is a parameter that stands for an arbitrary domain element.
  *
  * @author david.carral@tu-dresden.de
  */
 public class VariableImpl extends AbstractTermImpl implements Variable {
 
 	/**
-	 * Instantiates a <b>{@code VariableImpl}</b> object with the name
-	 * <b>{@code name}</b>.
+	 * Instantiates a <b>{@code VariableImpl}</b> object with the name <b>{@code name}</b>.
 	 *
 	 * @param name
-	 *            cannot be a blank String (null, " ", empty string...).
-	 * @throws IllegalEntityNameException
-	 *             if the given name <b>{@code name}</b> is a blank String.
+	 *            cannot be a blank String (null, empty or whitespace).
 	 */
 	public VariableImpl(final String name) {
 		super(name);
@@ -50,7 +45,7 @@ public class VariableImpl extends AbstractTermImpl implements Variable {
 	public TermType getType() {
 		return TermType.VARIABLE;
 	}
-	
+
 	@Override
 	public <T> T accept(TermVisitor<T> termVisitor) {
 		return termVisitor.visit(this);

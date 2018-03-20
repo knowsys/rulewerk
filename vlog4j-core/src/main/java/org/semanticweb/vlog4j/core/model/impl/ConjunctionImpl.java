@@ -48,10 +48,10 @@ public class ConjunctionImpl implements Conjunction {
 	 * Constructor.
 	 * 
 	 * @param atoms
-	 *            a non-empty list of atoms
+	 *            a non-null list of atoms, that cannot contain null elements.
 	 */
 	public ConjunctionImpl(List<Atom> atoms) {
-		Validate.notEmpty(atoms);
+		Validate.noNullElements(atoms);
 		this.atoms = atoms;
 	}
 
@@ -70,8 +70,8 @@ public class ConjunctionImpl implements Conjunction {
 	 */
 	TermFilter getTermFilter(TermType termType) {
 		final TermFilter termFilter = new TermFilter(termType);
-		for (Atom atom : this.atoms) {
-			for (Term term : atom.getArguments()) {
+		for (final Atom atom : this.atoms) {
+			for (final Term term : atom.getTerms()) {
 				term.accept(termFilter);
 			}
 		}
@@ -95,7 +95,7 @@ public class ConjunctionImpl implements Conjunction {
 
 	@Override
 	public int hashCode() {
-		return atoms.hashCode();
+		return this.atoms.hashCode();
 	}
 
 	@Override
@@ -109,8 +109,8 @@ public class ConjunctionImpl implements Conjunction {
 		if (!(obj instanceof Conjunction)) {
 			return false;
 		}
-		Conjunction other = (Conjunction) obj;
-		return atoms.equals(other.getAtoms());
+		final Conjunction other = (Conjunction) obj;
+		return this.atoms.equals(other.getAtoms());
 	}
 
 	@Override

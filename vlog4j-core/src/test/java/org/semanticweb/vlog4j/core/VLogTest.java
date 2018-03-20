@@ -25,9 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
-import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
-
 import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -38,8 +35,7 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 public class VLogTest extends TestCase {
 
-	public void testVLogSimpleInference()
-			throws AlreadyStartedException, EDBConfigurationException, IOException, AtomValidationException, RuleValidationException, NotStartedException {
+	public void testVLogSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 
 		// Creating rules and facts
 		final String constantNameA = "a";

@@ -58,7 +58,7 @@ public class ModelToVLogConverter {
 
 	public static karmaresearch.vlog.Atom toVLogAtom(final Atom atom) {
 		// TODO treat null case: throw exception or return null?
-		final karmaresearch.vlog.Term[] terms = toVLogTermArray(atom.getArguments());
+		final karmaresearch.vlog.Term[] terms = toVLogTermArray(atom.getTerms());
 		// FIXME: Append arity at the end of the predicate name (punning)
 		// FIXME: should we generate predicate names by appending the terms arity to the
 		// given name?

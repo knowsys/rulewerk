@@ -28,13 +28,6 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
-import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
-import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
-import org.semanticweb.vlog4j.core.model.validation.PredicateNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
-import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerImpl;
 
@@ -46,9 +39,7 @@ import karmaresearch.vlog.StringQueryResultEnumeration;
 
 public class ReasonerTest extends TestCase {
 
-	public void testSimpleInference() throws AtomValidationException, IllegalEntityNameException, RuleValidationException, PredicateNameValidationException,
-			BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException, AlreadyStartedException, EDBConfigurationException,
-			IOException, NotStartedException {
+	public void testSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 		final String constantNameC = "c";
 		final String constantNameD = "d";
 
