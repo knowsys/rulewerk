@@ -6,7 +6,6 @@ jdk:
   
 before_install:
   - sh ./build-vlog-library.sh
-  - mvn initialize
 
 after_success:
   - mvn clean cobertura:cobertura coveralls:cobertura
@@ -16,4 +15,5 @@ sudo: false
 
 cache:
   directories:
+    - ./local_builds
     - $HOME/.m2
