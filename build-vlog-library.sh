@@ -5,7 +5,7 @@ rm -rf build-vlog
 mkdir build-vlog
 cd build-vlog
 git clone https://github.com/karmaresearch/vlog.git
-# cd vlog
+cd vlog
 # git pull
 mkdir build
 cd build
