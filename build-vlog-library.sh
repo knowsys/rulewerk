@@ -11,4 +11,4 @@ mkdir build
 cd build
 cmake -DJAVA=1 ..
 make
-cp jvlog.jar ../../../lib/jvlog.jar
+cp jvlog.jar ../../../vlog4j-core/lib/jvlog.jar
