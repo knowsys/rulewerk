@@ -23,6 +23,7 @@ package org.semanticweb.vlog4j.core.reasoner.util;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
@@ -34,10 +35,13 @@ public class ModelToVLogConverter {
 		// TODO visitor pattern
 		// FIXME perhaps declare enum class only in VLog project, and use
 		// karmaresearch.vlog.Term.EnumType dependency
-		// FIXME The names of variables and constants need to be appropriately modified so VLog recognises them as such.
-		// Notes: Upper case for variables; lower case for constants? enclose constants with <>?
+		// FIXME The names of variables and constants need to be appropriately modified
+		// so VLog recognises them as such.
+		// Notes: Upper case for variables; lower case for constants? enclose constants
+		// with <>?
 		final TermType type = term.getType();
-		final karmaresearch.vlog.Term.TermType vlogTermType = type == TermType.CONSTANT ? karmaresearch.vlog.Term.TermType.CONSTANT
+		final karmaresearch.vlog.Term.TermType vlogTermType = type == TermType.CONSTANT
+				? karmaresearch.vlog.Term.TermType.CONSTANT
 				: karmaresearch.vlog.Term.TermType.VARIABLE;
 		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(vlogTermType, term.getName());
 		return vLogTerm;
@@ -54,7 +58,7 @@ public class ModelToVLogConverter {
 
 	public static karmaresearch.vlog.Atom toVLogAtom(final Atom atom) {
 		// TODO treat null case: throw exception or return null?
-		final karmaresearch.vlog.Term[] terms = toVLogTermArray(atom.getArguments());
+		final karmaresearch.vlog.Term[] terms = toVLogTermArray(atom.getTerms());
 		// FIXME: Append arity at the end of the predicate name (punning)
 		// FIXME: should we generate predicate names by appending the terms arity to the
 		// given name?
@@ -62,11 +66,13 @@ public class ModelToVLogConverter {
 		return vLogAtom;
 	}
 
-	public static karmaresearch.vlog.Atom[] toVLogAtomArray(final List<Atom> atoms) {
+	public static karmaresearch.vlog.Atom[] toVLogAtomArray(final Conjunction atoms) {
 		// TODO treat null case: throw exception or return null?
-		final karmaresearch.vlog.Atom[] vlogAtoms = new karmaresearch.vlog.Atom[atoms.size()];
-		for (int i = 0; i < atoms.size(); i++) {
-			vlogAtoms[i] = toVLogAtom(atoms.get(i));
+		final karmaresearch.vlog.Atom[] vlogAtoms = new karmaresearch.vlog.Atom[atoms.getAtoms().size()];
+		int i = 0;
+		for (Atom atom : atoms) {
+			vlogAtoms[i] = toVLogAtom(atom);
+			i++;
 		}
 		return vlogAtoms;
 	}

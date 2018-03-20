@@ -2,7 +2,7 @@ package org.semanticweb.vlog4j.core.model.impl;
 
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
+import org.semanticweb.vlog4j.core.model.api.TermVisitor;
 
 /*
  * #%L
@@ -29,29 +29,25 @@ import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
  *
  * @author david.carral@tu-dresden.de
  */
-public class ConstantImpl extends AbstractTerm implements Constant {
+public class ConstantImpl extends AbstractTermImpl implements Constant {
 
 	/**
 	 * Instantiates a <b>{@code ConstantImpl}</b> object with the name <b>{@code name}</b>.
 	 *
 	 * @param name
-	 *            cannot be a blank String (null, " ", empty string...).
-	 * @throws IllegalEntityNameException
-	 *             if the given name <b>{@code name}</b> is a blank String.
+	 *            cannot be a blank String (null, empty or whitespace).
 	 */
-	public ConstantImpl(final String name) throws IllegalEntityNameException {
+	public ConstantImpl(final String name) {
 		super(name);
-	}
-
-	/**
-	 * Deep copy constructor (the newly instantiated object does not contain any reference to original fields in the copied object).
-	 */
-	public ConstantImpl(final Constant copyConstant) throws IllegalEntityNameException {
-		super(new String(copyConstant.getName()));
 	}
 
 	@Override
 	public TermType getType() {
 		return TermType.CONSTANT;
+	}
+
+	@Override
+	public <T> T accept(TermVisitor<T> termVisitor) {
+		return termVisitor.visit(this);
 	}
 }

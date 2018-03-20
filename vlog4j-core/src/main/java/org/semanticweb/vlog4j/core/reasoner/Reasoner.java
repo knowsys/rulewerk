@@ -5,12 +5,6 @@ import java.util.Collection;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
-import org.semanticweb.vlog4j.core.model.validation.BlankNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
-import org.semanticweb.vlog4j.core.model.validation.PredicateNameValidationException;
-import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -46,11 +40,9 @@ public interface Reasoner {
 
 	void addRules(Collection<Rule> rules);
 
-	void addFacts(Atom... fact) throws AtomValidationException, PredicateNameValidationException, BlankNameValidationException, ConstantNameValidationException,
-			VariableNameValidationException, IllegalEntityNameException;
+	void addFacts(Atom... fact);
 
-	void addFacts(Collection<Atom> facts) throws AtomValidationException, PredicateNameValidationException, BlankNameValidationException,
-			ConstantNameValidationException, VariableNameValidationException, IllegalEntityNameException;
+	void addFacts(Collection<Atom> facts);
 
 	void addEDBConfigInfo(EDBPredicateConfig... edbConfig);
 

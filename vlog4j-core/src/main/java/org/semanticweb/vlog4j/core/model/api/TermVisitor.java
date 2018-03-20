@@ -1,6 +1,6 @@
 package org.semanticweb.vlog4j.core.model.api;
 
-/*
+/*-
  * #%L
  * VLog4j Core Components
  * %%
@@ -21,35 +21,37 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Interface for terms. A term is characterized by a string name and a
- * {@link TermType}.
- *
- * @author david.carral@tu-dresden.de
+ * A visitor for the various types of {@link: Term}s in the data model. Should
+ * be used to avoid any type casting or instanceof checks when processing terms.
+ * 
  * @author Markus Krötzsch
  */
-public interface Term {
+public interface TermVisitor<T> {
 
 	/**
-	 * Returns a unique string identifier for this term.
+	 * Visits a {@link Constant} and returns a result
 	 * 
-	 * @return a non-blank String (not null, nor empty or whitespace).
+	 * @param term
+	 *            the term to visit
+	 * @return some result
 	 */
-	String getName();
+	T visit(Constant term);
 
 	/**
-	 * Return the type of this term.
+	 * Visits a {@link Variable} and returns a result
 	 * 
-	 * @return the type of this term
+	 * @param term
+	 *            the term to visit
+	 * @return some result
 	 */
-	TermType getType();
-
+	T visit(Variable term);
+	
 	/**
-	 * Accept a {@link: TermVisitor} and return its output.
-	 *
-	 * @param termVisitor
-	 *            the TermVisitor
-	 * @return output of the visitor
+	 * Visits a {@link Blank} and returns a result
+	 * 
+	 * @param term
+	 *            the term to visit
+	 * @return some result
 	 */
-	<T> T accept(TermVisitor<T> termVisitor);
-
+	T visit(Blank term);
 }
