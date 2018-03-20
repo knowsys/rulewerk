@@ -40,6 +40,7 @@ import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
 import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerImpl;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;
@@ -51,7 +52,7 @@ public class ReasonerTest extends TestCase {
 
 	public void testSimpleInference() throws AtomValidationException, IllegalEntityNameException, RuleValidationException, PredicateNameValidationException,
 			BlankNameValidationException, ConstantNameValidationException, VariableNameValidationException, AlreadyStartedException, EDBConfigurationException,
-			IOException, NotStartedException {
+			IOException, NotStartedException, ReasonerStateException {
 		final String constantNameC = "c";
 		final String constantNameD = "d";
 		final Atom factAc = new AtomImpl("A", new ConstantImpl(constantNameC));

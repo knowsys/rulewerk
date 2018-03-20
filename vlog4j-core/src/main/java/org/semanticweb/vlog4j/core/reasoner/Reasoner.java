@@ -11,6 +11,7 @@ import org.semanticweb.vlog4j.core.model.validation.ConstantNameValidationExcept
 import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 import org.semanticweb.vlog4j.core.model.validation.PredicateNameValidationException;
 import org.semanticweb.vlog4j.core.model.validation.VariableNameValidationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -42,27 +43,28 @@ public interface Reasoner {
 
 	void setAlgorithm(Algorithm algorithmType);
 
-	void addRules(Rule... rules);
+	void addRules(Rule... rules) throws ReasonerStateException;
 
-	void addRules(Collection<Rule> rules);
+	void addRules(Collection<Rule> rules) throws ReasonerStateException;
 
 	void addFacts(Atom... fact) throws AtomValidationException, PredicateNameValidationException, BlankNameValidationException, ConstantNameValidationException,
-			VariableNameValidationException, IllegalEntityNameException;
+			VariableNameValidationException, IllegalEntityNameException, ReasonerStateException;
 
 	void addFacts(Collection<Atom> facts) throws AtomValidationException, PredicateNameValidationException, BlankNameValidationException,
-			ConstantNameValidationException, VariableNameValidationException, IllegalEntityNameException;
+			ConstantNameValidationException, VariableNameValidationException, IllegalEntityNameException, ReasonerStateException;
 
-	void addEDBConfigInfo(EDBPredicateConfig... edbConfig);
+	void addFactsSource(FactsSourceConfig... factsSourceConfig) throws ReasonerStateException;
 
-	void addEDBConfigInfo(Collection<EDBPredicateConfig> edbConfig);
+	void addFactsSource(Collection<FactsSourceConfig> factsSourceConfig) throws ReasonerStateException;
 
 	void load() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException;
 
-	void reason() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException;
+	void reason() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException, ReasonerStateException;
 
-	StringQueryResultEnumeration compileQueryIterator(Atom query) throws NotStartedException;
+	// TODO remove
+	StringQueryResultEnumeration compileQueryIterator(Atom query) throws NotStartedException, ReasonerStateException;
 
-	void exportAtomicQueryAnswers(Atom atom, String outputFilePath);
+	void exportAtomicQueryAnswers(Atom atom, String outputFilePath) throws ReasonerStateException;
 
 	// TODO arity should be in the EDB config file,
 	// do not read the files, have low-level API check if the file content corresponds the arity

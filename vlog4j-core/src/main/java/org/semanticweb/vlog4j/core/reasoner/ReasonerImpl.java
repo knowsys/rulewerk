@@ -18,6 +18,7 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
 import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
 import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
 
 import karmaresearch.vlog.AlreadyStartedException;
@@ -50,20 +51,19 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 public class ReasonerImpl implements Reasoner {
 
 	private final VLog vlog = new VLog();
+	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
+
 	private Algorithm algorithm = Algorithm.SKOLEM_CHASE;
 
 	private final List<Rule> rules = new ArrayList<>();
 	private final List<Atom> facts = new ArrayList<>();
-	private final List<EDBPredicateConfig> edbPredicatesConfig = new ArrayList<>();
-
-	private boolean loaded = false;
-	private boolean reasoned = false;
+	private final List<FactsSourceConfig> edbPredicatesConfig = new ArrayList<>();
 
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
 		this.algorithm = algorithm;
-		if (this.reasoned) {
-			// TODO Log Warning: VLog was already reasoned
+		if (this.reasonerState.equals(ReasonerState.AFTER_REASONING)) {
+			// TODO Log Warning: VLog was already reasoned, this call is ineffective
 		}
 	}
 
@@ -73,72 +73,71 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public void addRules(final Rule... rules) {
+	public void addRules(final Rule... rules) throws ReasonerStateException {
 		addRules(Arrays.asList(rules));
 	}
 
 	@Override
-	public void addRules(final Collection<Rule> rules) {
-		if (!this.loaded) {
-			this.rules.addAll(new ArrayList<>(rules));
-		} else {
-			// TODO Throw Exception: VLog has already loaded
+	public void addRules(final Collection<Rule> rules) throws ReasonerStateException {
+		if (!this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
+			throw new ReasonerStateException(this.reasonerState, "Rules cannot be added after the reasoner was loaded!");
 		}
+		this.rules.addAll(new ArrayList<>(rules));
 	}
 
 	@Override
-	public void addFacts(final Atom... facts) throws AtomValidationException, IllegalEntityNameException {
+	public void addFacts(final Atom... facts) throws AtomValidationException, IllegalEntityNameException, ReasonerStateException {
 		addFacts(Arrays.asList(facts));
 	}
 
 	@Override
-	public void addFacts(final Collection<Atom> facts) throws AtomValidationException, IllegalEntityNameException {
-		if (!this.loaded) {
-			for (final Atom fact : facts) {
-				if (fact.getVariables().isEmpty()) {
-					this.facts.add(new AtomImpl(fact));
-				} else {
-					// TODO Throw Exception: not a fact
-				}
+	public void addFacts(final Collection<Atom> facts) throws AtomValidationException, IllegalEntityNameException, ReasonerStateException {
+		if (!this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
+			throw new ReasonerStateException(this.reasonerState, "Facts cannot be added after the reasoner was loaded!");
+		}
+		for (final Atom fact : facts) {
+			if (fact.getVariables().isEmpty()) {
+				this.facts.add(new AtomImpl(fact));
+			} else {
+				// TODO Throw Exception: not a fact
 			}
-		} else {
-			// TODO Throw Exception: VLog was already loaded
 		}
 	}
 
 	@Override
-	public void addEDBConfigInfo(final EDBPredicateConfig... edbConfig) {
-		addEDBConfigInfo(Arrays.asList(edbConfig));
+	public void addFactsSource(final FactsSourceConfig... factsSourceConfigs) throws ReasonerStateException {
+		addFactsSource(Arrays.asList(factsSourceConfigs));
 	}
 
 	@Override
-	public void addEDBConfigInfo(final Collection<EDBPredicateConfig> edbConfig) {
-		if (!this.loaded) {
-			this.edbPredicatesConfig.addAll(edbConfig);
-		} else {
-			// TODO Throw Exception: VLog was already loaded
+	public void addFactsSource(final Collection<FactsSourceConfig> factsSourceConfigs) throws ReasonerStateException {
+		if (!this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
+			throw new ReasonerStateException(this.reasonerState, "Facts source configurations cannot be added after the reasoner was loaded!");
 		}
+		this.edbPredicatesConfig.addAll(factsSourceConfigs);
 	}
 
 	@Override
 	public void load() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
-		if (!this.loaded) {
+		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
 			if (!Collections.disjoint(collectEDBPredicates(), collectIDBPredicates())) {
 				// TODO Throw Exception: The program violates EDB/IDB separation
 				return;
 			}
+			this.reasonerState = ReasonerState.AFTER_LOADING;
+
 			this.vlog.start(edbPredicatesConfigToString(), false);
 			loadInMemoryFacts();
 			this.vlog.setRules(ModelToVLogConverter.toVLogRuleArray(this.rules), RuleRewriteStrategy.NONE);
-			this.loaded = true;
+
 		} else {
-			// TODO Log Warning: VLog was already loaded
+			// TODO Log Warning: VLog was already loaded, this call is ineffective
 		}
 	}
 
 	private Set<String> collectEDBPredicates() {
 		final Set<String> edbPredicates = new HashSet<>();
-		for (final EDBPredicateConfig edbPredConfig : this.edbPredicatesConfig) {
+		for (final FactsSourceConfig edbPredConfig : this.edbPredicatesConfig) {
 			edbPredicates.add(edbPredConfig.getPredicate());
 		}
 		for (final Atom fact : this.facts) {
@@ -160,7 +159,7 @@ public class ReasonerImpl implements Reasoner {
 	private String edbPredicatesConfigToString() {
 		final StringBuilder edbPredicatesConfigSB = new StringBuilder();
 		for (int i = 0; i < this.edbPredicatesConfig.size(); i++) {
-			final EDBPredicateConfig currenEDBPredicateConfig = this.edbPredicatesConfig.get(i);
+			final FactsSourceConfig currenEDBPredicateConfig = this.edbPredicatesConfig.get(i);
 			edbPredicatesConfigSB.append("EDB").append(i).append("_predname=").append(currenEDBPredicateConfig.getPredicate()).append("\n");
 			edbPredicatesConfigSB.append("EDB").append(i).append("_type=INMEMORY" + "\n");
 			final File sourceFile = currenEDBPredicateConfig.getSourceFile();
@@ -191,28 +190,43 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public void reason() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
-		if (!this.reasoned) {
+	public void reason() throws EDBConfigurationException, IOException, NotStartedException, ReasonerStateException {
+		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
+			// TODO exception message
+			throw new ReasonerStateException(this.reasonerState, "Reasoning is not alowed before loading!");
+		} else if (this.reasonerState.equals(ReasonerState.AFTER_REASONING)) {
+			// TODO Log Warning: VLog already materialised.
+		} else {
+			this.reasonerState = ReasonerState.AFTER_REASONING;
+
 			final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
 			this.vlog.materialize(skolemChase);
-			this.reasoned = true;
-		} else {
-			// TODO Log Warning: VLog already materialised- ok
 		}
 	}
 
+	// TODO remove
 	@Override
-	public StringQueryResultEnumeration compileQueryIterator(final Atom atom) throws NotStartedException {
-		if (this.loaded) {
-			return this.vlog.query(ModelToVLogConverter.toVLogAtom(atom));
-		} else {
-			// TODO throw exception
-			return null;
+	public StringQueryResultEnumeration compileQueryIterator(final Atom atom) throws NotStartedException, ReasonerStateException {
+		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
+			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
+		return this.vlog.query(ModelToVLogConverter.toVLogAtom(atom));
+	}
+
+	public QueryResultIterator answerQuery(final Atom atom) throws NotStartedException, ReasonerStateException {
+		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
+			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
+		}
+		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(atom);
+		final StringQueryResultEnumeration stringQueryResultEnumeration = this.vlog.query(vLogAtom);
+		return new QueryResultIterator(stringQueryResultEnumeration);
 	}
 
 	@Override
-	public void exportAtomicQueryAnswers(final Atom queryAtom, final String outputFilePath) {
+	public void exportAtomicQueryAnswers(final Atom queryAtom, final String outputFilePath) throws ReasonerStateException {
+		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
+			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
+		}
 		// vlog.writePredicateToCsv(arg0, arg1);
 		// TODO Auto-generated method stub
 
@@ -221,7 +235,6 @@ public class ReasonerImpl implements Reasoner {
 	@Override
 	public void dispose() {
 		this.vlog.stop();
-
 	}
 
 }
