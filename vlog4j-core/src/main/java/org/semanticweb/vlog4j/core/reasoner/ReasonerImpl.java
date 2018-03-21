@@ -207,15 +207,7 @@ public class ReasonerImpl implements Reasoner {
 		}
 	}
 
-	// TODO remove
 	@Override
-	public StringQueryResultEnumeration compileQueryIterator(final Atom atom) throws NotStartedException, ReasonerStateException {
-		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		}
-		return this.vlog.query(ModelToVLogConverter.toVLogAtom(atom));
-	}
-
 	public QueryResultIterator answerQuery(final Atom atom) throws NotStartedException, ReasonerStateException {
 		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");

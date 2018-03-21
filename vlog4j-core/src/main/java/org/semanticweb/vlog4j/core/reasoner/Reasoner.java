@@ -10,7 +10,6 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
-import karmaresearch.vlog.StringQueryResultEnumeration;
 
 /*
  * #%L
@@ -54,8 +53,6 @@ public interface Reasoner {
 	void reason() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException,
 			ReasonerStateException;
 
-	StringQueryResultEnumeration compileQueryIterator(Atom query) throws NotStartedException, ReasonerStateException;
-
 	void exportAtomicQueryAnswers(Atom atom, String outputFilePath) throws ReasonerStateException;
 
 	// TODO arity should be in the EDB config file,
@@ -66,4 +63,6 @@ public interface Reasoner {
 	// Set<EDBPredicateConfig> exportDBToFolder(File location);
 
 	void dispose();
+
+	QueryResultIterator answerQuery(Atom atom) throws NotStartedException, ReasonerStateException;
 }

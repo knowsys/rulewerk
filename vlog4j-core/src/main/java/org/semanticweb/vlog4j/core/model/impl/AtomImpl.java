@@ -56,10 +56,10 @@ public class AtomImpl implements Atom {
 	 */
 	public AtomImpl(final Predicate predicate, final List<Term> terms) {
 		Validate.notNull(predicate, "Atom predicates cannot be null.");
-		Validate.noNullElements(terms, "Null terms cannot appear in atoms");
+		Validate.noNullElements(terms, "Null terms cannot appear in atoms. The list contains a null at position [%d]");
 		Validate.notEmpty(terms, "Atoms of arity zero are not supported: please specify at least one term.");
 
-		Validate.isTrue(terms.size() == predicate.getArity(), "Terms size [%d] does not match predicate arity [%].",
+		Validate.isTrue(terms.size() == predicate.getArity(), "Terms size [%d] does not match predicate arity [%d].",
 				terms.size(), predicate.getArity());
 
 		this.predicate = predicate;

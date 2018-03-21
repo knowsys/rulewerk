@@ -23,24 +23,26 @@ package org.semanticweb.vlog4j.core.reasoner.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.impl.ConstantImpl;
-import org.semanticweb.vlog4j.core.reasoner.QueryResult;
+import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.QueryResult;
+import org.semanticweb.vlog4j.core.model.impl.Expressions;
+import org.semanticweb.vlog4j.core.model.impl.QueryResultImpl;
 
 public class VLogToModelConverter {
 
 	public static QueryResult toQueryResult(String[] vlogQueryResult) {
-		return new QueryResult(toGroundTermsArray(vlogQueryResult));
+		return new QueryResultImpl(toConstantList(vlogQueryResult));
 	}
 
-	private static List<Term> toGroundTermsArray(String[] vlogGroundTerms) {
-		// TODO support blanks
-		final List<Term> groundTerms = new ArrayList<>();
+	private static List<Constant> toConstantList(String[] vlogGroundTerms) {
+		// TODO support blanks (now we assume every query result term is a named
+		// individual)
+		final List<Constant> constants = new ArrayList<>();
 		for (final String term : vlogGroundTerms) {
-			final Term groundTerm = new ConstantImpl(term);
-			groundTerms.add(groundTerm);
+			final Constant groundTerm = Expressions.makeConstant(term);
+			constants.add(groundTerm);
 		}
-		return groundTerms;
+		return constants;
 	}
 
 }

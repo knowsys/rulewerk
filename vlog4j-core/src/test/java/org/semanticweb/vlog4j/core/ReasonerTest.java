@@ -21,13 +21,17 @@ package org.semanticweb.vlog4j.core;
  */
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerImpl;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -36,7 +40,6 @@ import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
-import karmaresearch.vlog.StringQueryResultEnumeration;
 
 public class ReasonerTest extends TestCase {
 
@@ -45,9 +48,11 @@ public class ReasonerTest extends TestCase {
 		final String constantNameC = "c";
 		final String constantNameD = "d";
 
+		final Constant constantC = Expressions.makeConstant(constantNameC);
+		final Constant constantD = Expressions.makeConstant(constantNameD);
 		final Variable x = Expressions.makeVariable("x");
-		final Atom factAc = Expressions.makeAtom("A", Expressions.makeConstant(constantNameC));
-		final Atom factAd = Expressions.makeAtom("A", Expressions.makeConstant(constantNameD));
+		final Atom factAc = Expressions.makeAtom("A", constantC);
+		final Atom factAd = Expressions.makeAtom("A", constantD);
 		final Atom atomAx = Expressions.makeAtom("A", x);
 		final Atom atomBx = Expressions.makeAtom("B", x);
 		final Atom atomCx = Expressions.makeAtom("C", x);
@@ -59,25 +64,27 @@ public class ReasonerTest extends TestCase {
 		reasoner.addRules(ruleBxAx, ruleCxBx);
 		reasoner.load();
 
-		final StringQueryResultEnumeration cxQueryResultEnumBeforeReasoning = reasoner.compileQueryIterator(atomCx);
-		assertFalse(cxQueryResultEnumBeforeReasoning.hasMoreElements());
+		final QueryResultIterator cxQueryResultEnumBeforeReasoning = reasoner.answerQuery(atomCx);
+		assertFalse(cxQueryResultEnumBeforeReasoning.hasNext());
 
 		reasoner.reason();
 
-		final StringQueryResultEnumeration cxQueryResultEnumAfterReasoning = reasoner.compileQueryIterator(atomCx);
-		final List<List<String>> actualQueryResults = VLogTest.getAnswers(cxQueryResultEnumAfterReasoning);
+		final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx);
+		final Set<QueryResult> actualResults = gatherQueryResults(cxQueryResultEnumAfterReasoning);
 
-		final List<List<String>> expectedQueryResults = new ArrayList<>();
-		final List<String> answer1 = new ArrayList<>();
-		answer1.add(constantNameC);
-		expectedQueryResults.add(answer1);
-		final List<String> answer2 = new ArrayList<>();
-		answer2.add(constantNameD);
-		expectedQueryResults.add(answer2);
-
-		assertEquals(expectedQueryResults, actualQueryResults);
+		final QueryResult queryResultC = Expressions.makeQueryResult(constantC);
+		final QueryResult queryResultD = Expressions.makeQueryResult(constantD);
+		final Set<QueryResult> expectedResults = new HashSet<>(Arrays.asList(queryResultC, queryResultD));
+		assertEquals(expectedResults, actualResults);
 
 		reasoner.dispose();
+	}
+
+	private static Set<QueryResult> gatherQueryResults(QueryResultIterator queryResultIterator) {
+		final Set<QueryResult> results = new HashSet<>();
+		queryResultIterator.forEachRemaining(results::add);
+		queryResultIterator.dispose();
+		return results;
 	}
 
 }

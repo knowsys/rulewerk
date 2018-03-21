@@ -23,6 +23,7 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.util.Iterator;
 
+import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.reasoner.util.VLogToModelConverter;
 
 import karmaresearch.vlog.StringQueryResultEnumeration;
@@ -43,8 +44,8 @@ public class QueryResultIterator implements Iterator<QueryResult> {
 
 	@Override
 	public QueryResult next() {
-		final String[] nextElement = this.stringQueryResultEnumeration.nextElement();
-		final QueryResult queryResult = VLogToModelConverter.toQueryResult(nextElement);
+		final String[] vlogQueryResult = this.stringQueryResultEnumeration.nextElement();
+		final QueryResult queryResult = VLogToModelConverter.toQueryResult(vlogQueryResult);
 		return queryResult;
 	}
 
