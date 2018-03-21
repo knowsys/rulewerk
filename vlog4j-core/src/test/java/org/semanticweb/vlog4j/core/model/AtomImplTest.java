@@ -62,8 +62,8 @@ public class AtomImplTest {
 		final Variable x = Expressions.makeVariable("X");
 		final Constant c = Expressions.makeConstant("c");
 
-		final Predicate predicateP = new PredicateImpl("p", Arrays.asList(x, c).size());
-		final Predicate predicateQ = new PredicateImpl("q", Arrays.asList(x, c).size());
+		final Predicate predicateP = new PredicateImpl("p", 2);
+		final Predicate predicateQ = new PredicateImpl("q", 2);
 
 		final Atom atom1 = Expressions.makeAtom("p", Arrays.asList(x, c));
 		final Atom atom2 = Expressions.makeAtom("p", x, c);
