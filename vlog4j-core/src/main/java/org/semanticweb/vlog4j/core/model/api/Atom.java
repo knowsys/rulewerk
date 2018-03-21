@@ -26,7 +26,8 @@ import java.util.Set;
 /**
  * Interface for atoms. An atom is predicate applied to a tuple of terms; that
  * is, an atomic formula is a formula of the form P(t1,...,tn) for P a
- * predicate, and t1,...,tn some terms.
+ * {@link Predicate} name, and t1,...,tn some {@link Term}s. The number of terms
+ * in the tuple corresponds to the {@link Predicate} arity.
  *
  * @author david.carral@tu-dresden.de
  */
@@ -36,19 +37,20 @@ public interface Atom {
 	/**
 	 * The atom predicate.
 	 * 
-	 * @return this method may not return a blank String (null, empty or whitespace).
+	 * @return the atom predicate.
 	 */
-	public String getPredicate();
+	public Predicate getPredicate();
 
 	/**
 	 * The list of terms representing the tuple arguments.
 	 *
-	 * @return a non-empty, unmodifiable list of terms with no null elements.
+	 * @return an unmodifiable list of terms with the same size as the
+	 *         {@link Predicate} arity.
 	 */
 	public List<Term> getTerms();
 
 	/**
-	 * Returns the {@link Variable}s that occur among the predicate terms.
+	 * Returns the {@link Variable}s that occur among the atom terms.
 	 *
 	 * @return a set of variables
 	 */

@@ -26,42 +26,48 @@ import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 
 /**
- * Implements {@link Atom} objects. An atom is an atomic formula is a formula of
- * the form P(t1,...,tn) for P a predicate and t1,...,tn some {@link Term}s.
+ * Implements {@link Atom} objects. An atom is a formula of the form
+ * P(t1,...,tn) for P a {@link Predicate} name, and t1,...,tn some
+ * {@link Term}s. The number of terms corresponds to the {@link Predicate}
+ * arity.
  *
  * @author david.carral@tu-dresden.de
  * @author Markus Krötzsch
  */
 public class AtomImpl implements Atom {
 
-	private final String predicate;
+	private final Predicate predicate;
 	private final List<Term> terms;
 
 	/**
-	 * Creates an {@link Atom} of the form
-	 * "{@code predicate}({@code terms})".
+	 * Creates an {@link Atom} of the form "{@code predicate}({@code terms})".
 	 *
-	 * @param predicate 
+	 * @param predicate
 	 *            non-blank predicate name
 	 * @param terms
-	 *            non-empty list of non-null terms
+	 *            non-empty list of non-null terms. List size must be the same as
+	 *            the <b>predicate</b> arity.
 	 */
-	public AtomImpl(final String predicate, final List<Term> terms) {
-		Validate.notBlank(predicate, "Predicates cannot be named by blank Strings.");
-		Validate.notEmpty(terms, "Atoms of arity zero are not supported: please specify at least one term.");
+	public AtomImpl(final Predicate predicate, final List<Term> terms) {
+		Validate.notNull(predicate, "Atom predicates cannot be null.");
 		Validate.noNullElements(terms, "Null terms cannot appear in atoms");
+		Validate.notEmpty(terms, "Atoms of arity zero are not supported: please specify at least one term.");
+
+		Validate.isTrue(terms.size() == predicate.getArity(), "Terms size [%d] does not match predicate arity [%].",
+				terms.size(), predicate.getArity());
 
 		this.predicate = predicate;
 		this.terms = terms;
 	}
 
 	@Override
-	public String getPredicate() {
+	public Predicate getPredicate() {
 		return this.predicate;
 	}
 
@@ -72,8 +78,8 @@ public class AtomImpl implements Atom {
 
 	@Override
 	public Set<Variable> getVariables() {
-		TermFilter termFilter = new TermFilter(TermType.VARIABLE);
-		for (Term term : this.terms) {
+		final TermFilter termFilter = new TermFilter(TermType.VARIABLE);
+		for (final Term term : this.terms) {
 			term.accept(termFilter);
 		}
 		return termFilter.getVariables();
@@ -100,7 +106,7 @@ public class AtomImpl implements Atom {
 		}
 		final Atom other = (Atom) obj;
 
-		return (this.predicate.equals(other.getPredicate())) && this.terms.equals(other.getTerms());
+		return this.predicate.equals(other.getPredicate()) && this.terms.equals(other.getTerms());
 	}
 
 	@Override

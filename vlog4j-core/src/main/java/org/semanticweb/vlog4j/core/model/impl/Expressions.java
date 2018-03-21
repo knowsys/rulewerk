@@ -26,6 +26,7 @@ import java.util.List;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -43,7 +44,7 @@ public class Expressions {
 	 * 
 	 * @param name
 	 *            name of the variable
-	 * @return a {@link Variable} corresponding to the input
+	 * @return a {@link Variable} corresponding to the input.
 	 */
 	public static Variable makeVariable(String name) {
 		return new VariableImpl(name);
@@ -54,22 +55,70 @@ public class Expressions {
 	 * 
 	 * @param name
 	 *            name of the constant
-	 * @return a {@link Constant} corresponding to the input
+	 * @return a {@link Constant} corresponding to the input.
 	 */
 	public static Constant makeConstant(String name) {
 		return new ConstantImpl(name);
 	}
 
 	/**
+	 * Creates a {@link Predicate}.
+	 * 
+	 * @param name
+	 *            non-blank predicate name
+	 * @param arity
+	 *            predicate arity, strictly greater than 0
+	 * @return a {@link Predicate} corresponding to the input.
+	 */
+	public static Predicate makePredicate(String name, int arity) {
+		return new PredicateImpl(name, arity);
+	}
+
+	/**
+	 * Creates an {@code Atom}.
+	 *
+	 * @param predicateName
+	 *            non-blank {@link Predicate} name
+	 * @param terms
+	 *            non-empty, non-null list of non-null terms
+	 * @return an {@link Atom} with given {@code terms} and {@link Predicate}
+	 *         constructed from name given {@code predicateName} and {@code arity}
+	 *         given {@code terms} size.
+	 */
+	public static Atom makeAtom(final String predicateName, final List<Term> terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.size());
+
+		return new AtomImpl(predicate, terms);
+	}
+
+	/**
+	 * Creates an {@code Atom}.
+	 *
+	 * @param predicateName
+	 *            non-blank {@link Predicate} name
+	 * @param terms
+	 *            non-empty, non-null array of non-null terms
+	 * @return an {@link Atom} with given {@code terms} and {@link Predicate}
+	 *         constructed from name given {@code predicateName} and {@code arity}
+	 *         given {@code terms} length.
+	 */
+	public static Atom makeAtom(final String predicateName, final Term... terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.length);
+
+		return new AtomImpl(predicate, Arrays.asList(terms));
+	}
+
+	/**
 	 * Creates an {@code Atom}.
 	 *
 	 * @param predicate
-	 *            non-blank predicate name
+	 *            a non-null {@link Predicate}
 	 * @param terms
-	 *            non-empty, non-null list of non-null terms
-	 * @return an {@link Atom} corresponding to the input
+	 *            non-empty, non-null list of non-null terms. List size must be the
+	 *            same as the given {@code predicate} arity.
+	 * @return an {@link Atom} corresponding to the input.
 	 */
-	public static Atom makeAtom(final String predicate, final List<Term> terms) {
+	public static Atom makeAtom(final Predicate predicate, final List<Term> terms) {
 		return new AtomImpl(predicate, terms);
 	}
 
@@ -77,12 +126,13 @@ public class Expressions {
 	 * Creates an {@code Atom}.
 	 *
 	 * @param predicate
-	 *            non-blank predicate name
+	 *            a non-null {@link Predicate}
 	 * @param terms
-	 *            non-empty array of non-null terms
+	 *            non-empty, non-null array of non-null terms. Aray size must be the
+	 *            same as the given {@code predicate} arity.
 	 * @return an {@link Atom} corresponding to the input
 	 */
-	public static Atom makeAtom(final String predicate, final Term... terms) {
+	public static Atom makeAtom(final Predicate predicate, final Term... terms) {
 		return new AtomImpl(predicate, Arrays.asList(terms));
 	}
 

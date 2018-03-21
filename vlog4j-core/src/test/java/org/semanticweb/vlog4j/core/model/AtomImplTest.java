@@ -19,8 +19,9 @@ package org.semanticweb.vlog4j.core.model;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,78 +30,103 @@ import java.util.Set;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
+import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
 
 public class AtomImplTest {
 
 	@Test
 	public void testGetters() {
-		Variable x = Expressions.makeVariable("X");
-		Variable y = Expressions.makeVariable("Y");
-		Constant c = Expressions.makeConstant("c");
-		Constant d = Expressions.makeConstant("d");
-		Atom atom = Expressions.makeAtom("p", x, c, d, y);
+		final Variable x = Expressions.makeVariable("X");
+		final Variable y = Expressions.makeVariable("Y");
+		final Constant c = Expressions.makeConstant("c");
+		final Constant d = Expressions.makeConstant("d");
+		final Atom atom = Expressions.makeAtom("p", x, c, d, y);
 
-		Set<Variable> variables = new HashSet<Variable>();
+		final Set<Variable> variables = new HashSet<>();
 		variables.add(x);
 		variables.add(y);
 
-		assertEquals("p", atom.getPredicate());
+		assertEquals("p", atom.getPredicate().getName());
+		assertEquals(atom.getTerms().size(), atom.getPredicate().getArity());
+
 		assertEquals(variables, atom.getVariables());
 		assertEquals(Arrays.asList(x, c, d, y), atom.getTerms());
 	}
 
 	@Test
 	public void testEquals() {
-		Variable x = Expressions.makeVariable("X");
-		Constant c = Expressions.makeConstant("c");
-		Atom atom1 = Expressions.makeAtom("p", Arrays.asList(x, c));
-		Atom atom2 = Expressions.makeAtom("p", x, c);
-		Atom atom3 = new AtomImpl("q", Arrays.asList(x, c));
-		Atom atom4 = new AtomImpl("p", Arrays.asList(c, x));
+		final Variable x = Expressions.makeVariable("X");
+		final Constant c = Expressions.makeConstant("c");
+
+		final Predicate predicateP = new PredicateImpl("p", 2);
+		final Predicate predicateQ = new PredicateImpl("q", 2);
+
+		final Atom atom1 = Expressions.makeAtom("p", Arrays.asList(x, c));
+		final Atom atom2 = Expressions.makeAtom("p", x, c);
+		final Atom atom3 = new AtomImpl(predicateP, Arrays.asList(x, c));
+		final Atom atom4 = new AtomImpl(predicateQ, Arrays.asList(x, c));
+		final Atom atom5 = new AtomImpl(predicateP, Arrays.asList(c, x));
 
 		assertEquals(atom1, atom1);
 		assertEquals(atom1, atom2);
-		assertEquals(atom1.hashCode(), atom2.hashCode());
-		assertNotEquals(atom3, atom2);
-		assertNotEquals(atom3.hashCode(), atom2.hashCode());
-		assertNotEquals(atom4, atom2);
-		assertNotEquals(atom4.hashCode(), atom2.hashCode());
-		assertFalse(atom2.equals(null));
-		assertFalse(atom2.equals(c));
+		assertEquals(atom1, atom3);
+		assertEquals(atom1.hashCode(), atom1.hashCode());
+		assertNotEquals(atom4, atom1);
+		assertNotEquals(atom4.hashCode(), atom1.hashCode());
+		assertNotEquals(atom5, atom1);
+		assertNotEquals(atom5.hashCode(), atom1.hashCode());
+		assertFalse(atom1.equals(null));
+		assertFalse(atom1.equals(c));
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void termsNotNull() {
-		new AtomImpl("p", null);
+		final Predicate predicate1 = Expressions.makePredicate("p", 1);
+		new AtomImpl(predicate1, null);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void termsNoNullElements() {
-		Variable x = Expressions.makeVariable("X");
-		new AtomImpl("p",  Arrays.asList(x, null));
+		final Predicate predicate1 = Expressions.makePredicate("p", 1);
+		final Variable x = Expressions.makeVariable("X");
+		new AtomImpl(predicate1, Arrays.asList(x, null));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void temrsNonEmpty() {
+	public void termsNonEmpty() {
 		Expressions.makeAtom("p");
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void predicateNotNull() {
-		Expressions.makeAtom(null, Expressions.makeConstant("c"));
+		final Predicate nullPredicate = null;
+		Expressions.makeAtom(nullPredicate, Expressions.makeConstant("c"));
 	}
 	
+	@Test(expected = NullPointerException.class)
+	public void predicateNameNotNull() {
+		final String nullPredicateName = null;
+		Expressions.makeAtom(nullPredicateName, Expressions.makeConstant("c"));
+	}
+
 	@Test(expected = IllegalArgumentException.class)
-	public void predicateNotEmpty() {
+	public void predicateNameNotEmpty() {
 		Expressions.makeAtom("", Expressions.makeConstant("c"));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void predicateNotWhitespace() {
+	public void predicateNameNotWhitespace() {
 		Expressions.makeAtom("  ", Expressions.makeConstant("c"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void termSizeMatchesPredicateArity() {
+		final Predicate predicateArity1 = Expressions.makePredicate("p", 1);
+		Expressions.makeAtom(predicateArity1, Expressions.makeConstant("c"), Expressions.makeVariable("X"));
 	}
 
 }

@@ -30,7 +30,8 @@ package org.semanticweb.vlog4j.core.model.api;
 public interface Term {
 
 	/**
-	 * Returns a unique string identifier for this term.
+	 * Returns the name this term. The name uniquely identifies terms of the same
+	 * {@link TermType}.
 	 * 
 	 * @return a non-blank String (not null, nor empty or whitespace).
 	 */
