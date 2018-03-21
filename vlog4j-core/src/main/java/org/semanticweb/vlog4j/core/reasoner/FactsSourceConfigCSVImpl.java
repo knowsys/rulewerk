@@ -2,6 +2,9 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.File;
 
+import org.apache.commons.lang3.Validate;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.FactsSourceConfigException;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -23,13 +26,17 @@ import java.io.File;
  */
 
 public class FactsSourceConfigCSVImpl implements FactsSourceConfig {
+	private static final String CSV_FILE_EXTENSION = ".csv";
 	private final String predicate;
 	private final File sourceFile;
 
-	public FactsSourceConfigCSVImpl(final String predName, final File sourceFile) {
-		if (!predName.endsWith(".csv")) {
-			// TODO Throw Exception: File must end with .csv
+	public FactsSourceConfigCSVImpl(final String predName, final File sourceFile) throws FactsSourceConfigException {
+		Validate.notNull(sourceFile);
+		if (!predName.endsWith(CSV_FILE_EXTENSION)) {
+			throw new FactsSourceConfigException("Expected .csv extension for source file [" + sourceFile + "]!");
 		}
+		Validate.notBlank(predName, "Predicate cannot be blank");
+
 		this.predicate = predName;
 		this.sourceFile = sourceFile;
 	}
@@ -43,4 +50,15 @@ public class FactsSourceConfigCSVImpl implements FactsSourceConfig {
 	public File getSourceFile() {
 		return this.sourceFile;
 	}
+
+	// String example = "EDB0_predname=hospital\r\n" +
+	// "EDB0_type=INMEMORY\r\n" +
+	// "EDB0_param0=/Users/dragoste/Documents/vlog/VLOG_chase_test/db-1m\r\n" +
+	// "EDB0_param1=hospital\r\n";
+	//
+	// String format = "EDBB%1$_predname=hospital\r\n" +
+	// "EDB%1$_type=INMEMORY\r\n" +
+	// "EDB%1$_param0=/Users/dragoste/Documents/vlog/VLOG_chase_test/db-1m\r\n" + "EDB%1$_param1=hospital\r\n";
+
+
 }

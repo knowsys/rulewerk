@@ -135,6 +135,23 @@ public class ReasonerImpl implements Reasoner {
 		}
 	}
 
+	private String edbPredicatesConfigToString() {
+		final StringBuilder edbPredicatesConfigSB = new StringBuilder();
+		final int i = 0;
+		for (int j = 0; j < this.edbPredicatesConfig.size(); j++) {
+			final FactsSourceConfig factsSourceConfig = this.edbPredicatesConfig.get(i);
+			final String predicate = factsSourceConfig.getPredicate();
+			final File sourceFile = factsSourceConfig.getSourceFile();
+
+			edbPredicatesConfigSB.append("EDB").append(i).append("_predname=").append(predicate).append("\n");
+			edbPredicatesConfigSB.append("EDB").append(i).append("_type=INMEMORY" + "\n");
+			edbPredicatesConfigSB.append("EDB").append(i).append("_param0=").append(sourceFile.getParent()).append("\n");
+			edbPredicatesConfigSB.append("EDB").append(i).append("_param1=").append(sourceFile.getName().substring(0, sourceFile.getName().length() - 3))
+					.append("\n" + "\n");
+		}
+		return edbPredicatesConfigSB.toString();
+	}
+
 	private Set<String> collectEDBPredicates() {
 		final Set<String> edbPredicates = new HashSet<>();
 		for (final FactsSourceConfig edbPredConfig : this.edbPredicatesConfig) {
@@ -156,19 +173,7 @@ public class ReasonerImpl implements Reasoner {
 		return idbPredicates;
 	}
 
-	private String edbPredicatesConfigToString() {
-		final StringBuilder edbPredicatesConfigSB = new StringBuilder();
-		for (int i = 0; i < this.edbPredicatesConfig.size(); i++) {
-			final FactsSourceConfig currenEDBPredicateConfig = this.edbPredicatesConfig.get(i);
-			edbPredicatesConfigSB.append("EDB").append(i).append("_predname=").append(currenEDBPredicateConfig.getPredicate()).append("\n");
-			edbPredicatesConfigSB.append("EDB").append(i).append("_type=INMEMORY" + "\n");
-			final File sourceFile = currenEDBPredicateConfig.getSourceFile();
-			edbPredicatesConfigSB.append("EDB").append(i).append("_param0=").append(sourceFile.getParent()).append("\n");
-			edbPredicatesConfigSB.append("EDB").append(i).append("_param1=").append(sourceFile.getName().substring(0, sourceFile.getName().length() - 3))
-					.append("\n" + "\n");
-		}
-		return edbPredicatesConfigSB.toString();
-	}
+
 
 	private void loadInMemoryFacts() throws EDBConfigurationException {
 		final Map<String, List<List<Term>>> factsMap = new HashMap<>();
