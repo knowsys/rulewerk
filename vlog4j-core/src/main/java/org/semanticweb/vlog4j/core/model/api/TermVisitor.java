@@ -45,7 +45,7 @@ public interface TermVisitor<T> {
 	 * @return some result
 	 */
 	T visit(Variable term);
-	
+
 	/**
 	 * Visits a {@link Blank} and returns a result
 	 * 
