@@ -29,6 +29,13 @@ import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 
+/**
+ * Implementation for {@link Rule}. Represents rules with non-empty heads and
+ * bodies.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public class RuleImpl implements Rule {
 
 	final Conjunction body;

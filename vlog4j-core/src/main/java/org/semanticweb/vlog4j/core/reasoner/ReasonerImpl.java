@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
@@ -139,7 +140,7 @@ public class ReasonerImpl implements Reasoner {
 			edbPredicates.add(edbPredConfig.getPredicate());
 		}
 		for (final Atom fact : this.facts) {
-			edbPredicates.add(fact.getPredicate());
+			edbPredicates.add(fact.getPredicate().getName());
 		}
 		return edbPredicates;
 	}
@@ -148,7 +149,7 @@ public class ReasonerImpl implements Reasoner {
 		final Set<String> idbPredicates = new HashSet<>();
 		for (final Rule rule : this.rules) {
 			for (final Atom headAtom : rule.getHead()) {
-				idbPredicates.add(headAtom.getPredicate());
+				idbPredicates.add(headAtom.getPredicate().getName());
 			}
 		}
 		return idbPredicates;
@@ -169,21 +170,21 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	private void loadInMemoryFacts() throws EDBConfigurationException {
-		final Map<String, List<List<Term>>> factsMap = new HashMap<>();
+		final Map<Predicate, List<List<Term>>> factsMap = new HashMap<>();
 		for (final Atom fact : this.facts) {
 			factsMap.putIfAbsent(fact.getPredicate(), new ArrayList<>());
 			factsMap.get(fact.getPredicate()).add(fact.getTerms());
 		}
-		for (final String predName : factsMap.keySet()) {
-			final List<List<Term>> predNameArgs = factsMap.get(predName);
-			final int arity = predNameArgs.get(0).size();
-			final String[][] tuplesMatrix = new String[predNameArgs.size()][arity];
-			for (int i = 0; i < predNameArgs.size(); i++) {
+		for (final Predicate pred : factsMap.keySet()) {
+			final List<List<Term>> predArgs = factsMap.get(pred);
+			final int arity = predArgs.get(0).size();
+			final String[][] tuplesMatrix = new String[predArgs.size()][arity];
+			for (int i = 0; i < predArgs.size(); i++) {
 				for (int j = 0; j < arity; j++) {
-					tuplesMatrix[i][j] = predNameArgs.get(i).get(j).getName();
+					tuplesMatrix[i][j] = predArgs.get(i).get(j).getName();
 				}
 			}
-			this.vlog.addData(predName, tuplesMatrix);
+			this.vlog.addData(pred.getName(), tuplesMatrix);
 		}
 	}
 
