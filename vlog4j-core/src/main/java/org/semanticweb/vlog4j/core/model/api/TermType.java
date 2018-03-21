@@ -21,7 +21,8 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Enumeration listing the different types of terms ({@link #CONSTANT}, {@link #BLANK}, and {@link #VARIABLE}).
+ * Enumeration listing the different types of terms ({@link #CONSTANT},
+ * {@link #BLANK}, and {@link #VARIABLE}).
  *
  * @author david.carral@tu-dresden.de
  *
@@ -32,7 +33,8 @@ public enum TermType {
 	 */
 	CONSTANT,
 	/**
-	 * A blank is an entity used to represent anonymous domain elements introduced during the reasoning process to satisfy existential restrictions.
+	 * A blank is an entity used to represent anonymous domain elements introduced
+	 * during the reasoning process to satisfy existential restrictions.
 	 */
 	BLANK,
 	/**

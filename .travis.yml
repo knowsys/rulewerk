@@ -1,11 +1,11 @@
 language: java
 jdk:
   - openjdk8
-  - oraclejdk8
-  - oraclejdk9
+#  - oraclejdk8
+#  - oraclejdk9
   
 before_install:
-  - mvn initialize
+  - sh ./build-vlog-library.sh
 
 after_success:
   - mvn clean cobertura:cobertura coveralls:cobertura
@@ -15,4 +15,5 @@ sudo: false
 
 cache:
   directories:
+    - ./local_builds
     - $HOME/.m2

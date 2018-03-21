@@ -1,5 +1,7 @@
 VLog4J
 ======
+[![Build Status](https://travis-ci.org/mkroetzsch/vlog4j.png?branch=master)](https://travis-ci.org/mkroetzsch/vlog4j)
+[![Coverage Status](https://coveralls.io/repos/github/mkroetzsch/vlog4j/badge.svg?branch=master)](https://coveralls.io/github/mkroetzsch/vlog4j?branch=master)
 
 A Java library based on the [VLog rule engine](https://github.com/karmaresearch/vlog)
 

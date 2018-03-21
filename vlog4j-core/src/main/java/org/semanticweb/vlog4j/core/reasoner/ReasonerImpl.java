@@ -15,9 +15,6 @@ import java.util.Set;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
-import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
-import org.semanticweb.vlog4j.core.model.validation.IllegalEntityNameException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
 
@@ -86,18 +83,18 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public void addFacts(final Atom... facts) throws AtomValidationException, IllegalEntityNameException, ReasonerStateException {
+	public void addFacts(final Atom... facts) throws ReasonerStateException {
 		addFacts(Arrays.asList(facts));
 	}
 
 	@Override
-	public void addFacts(final Collection<Atom> facts) throws AtomValidationException, IllegalEntityNameException, ReasonerStateException {
+	public void addFacts(final Collection<Atom> facts) throws ReasonerStateException {
 		if (!this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
 			throw new ReasonerStateException(this.reasonerState, "Facts cannot be added after the reasoner was loaded!");
 		}
 		for (final Atom fact : facts) {
 			if (fact.getVariables().isEmpty()) {
-				this.facts.add(new AtomImpl(fact));
+				this.facts.add(fact);
 			} else {
 				// TODO Throw Exception: not a fact
 			}
@@ -179,7 +176,7 @@ public class ReasonerImpl implements Reasoner {
 		final Map<String, List<List<Term>>> factsMap = new HashMap<>();
 		for (final Atom fact : this.facts) {
 			factsMap.putIfAbsent(fact.getPredicate(), new ArrayList<>());
-			factsMap.get(fact.getPredicate()).add(fact.getArguments());
+			factsMap.get(fact.getPredicate()).add(fact.getTerms());
 		}
 		for (final String predName : factsMap.keySet()) {
 			final List<List<Term>> predNameArgs = factsMap.get(predName);

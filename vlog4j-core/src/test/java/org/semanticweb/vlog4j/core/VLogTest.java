@@ -26,8 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Ignore;
-import org.semanticweb.vlog4j.core.model.validation.AtomValidationException;
-import org.semanticweb.vlog4j.core.model.validation.RuleValidationException;
 
 import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;
@@ -41,13 +39,14 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 public class VLogTest extends TestCase {
 
 	public void testVLogSimpleInference()
-			throws AlreadyStartedException, EDBConfigurationException, IOException, AtomValidationException, RuleValidationException, NotStartedException {
+			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 
 		// Creating rules and facts
 		final String constantNameA = "a";
 		final String constantNameB = "b";
 		final String[][] argsAMatrix = { { constantNameA }, { constantNameB } };
-		final karmaresearch.vlog.Term[] varX = { new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
+		final karmaresearch.vlog.Term[] varX = {
+				new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
 		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("B", varX);
 		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX);
 		final karmaresearch.vlog.Atom[] headAtoms = { atomBx };
@@ -80,13 +79,15 @@ public class VLogTest extends TestCase {
 		vlog.stop();
 	}
 
-	public void testVLogQueryBeforeMaterialize() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testVLogQueryBeforeMaterialize()
+			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 
 		// Creating rules and facts
 		final String constantNameA = "a";
 		final String constantNameB = "b";
 		final String[][] argsAMatrix = { { constantNameA }, { constantNameB } };
-		final karmaresearch.vlog.Term[] varX = { new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
+		final karmaresearch.vlog.Term[] varX = {
+				new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
 		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX);
 
 		// Start VLog
@@ -114,7 +115,8 @@ public class VLogTest extends TestCase {
 		vlog.stop();
 	}
 
-	public void testSupportedConstantNames() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testSupportedConstantNames()
+			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 		// final String constantNameNumber = "a";
 		// final String constantNameStartsWithNumber = "b";
 
@@ -131,7 +133,8 @@ public class VLogTest extends TestCase {
 		answer2.add(constantNameStartsWithNumber);
 		expectedQueryResultsA.add(answer2);
 
-		final karmaresearch.vlog.Term[] varX = { new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
+		final karmaresearch.vlog.Term[] varX = {
+				new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
 		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX);
 
 		// Start VLog
@@ -141,9 +144,11 @@ public class VLogTest extends TestCase {
 		vlog.addData("A", argsAMatrix);
 
 		// final Query VLog: A(?X)?
-		// final StringQueryResultEnumeration queryResultEnnumerationABeforeMat = vlog.query(atomAx);
+		// final StringQueryResultEnumeration queryResultEnnumerationABeforeMat =
+		// vlog.query(atomAx);
 		// assertTrue(queryResultEnnumerationABeforeMat.hasMoreElements());
-		// final List<List<String>> actualQueryResultABeforeMat = getAnswers(queryResultEnnumerationABeforeMat);
+		// final List<List<String>> actualQueryResultABeforeMat =
+		// getAnswers(queryResultEnnumerationABeforeMat);
 		// assertEquals(expectedQueryResultsA, actualQueryResultABeforeMat);
 
 		// add rule A(x) -> B(x)
@@ -157,9 +162,11 @@ public class VLogTest extends TestCase {
 		vlog.materialize(true);
 
 		// // Query VLog: A(?X)?
-		// final StringQueryResultEnumeration queryResultEnnumerationAAfterMat = vlog.query(atomAx);
+		// final StringQueryResultEnumeration queryResultEnnumerationAAfterMat =
+		// vlog.query(atomAx);
 		// assertTrue(queryResultEnnumerationAAfterMat.hasMoreElements());
-		// final List<List<String>> actualQueryResultAAfterMat = getAnswers(queryResultEnnumerationAAfterMat);
+		// final List<List<String>> actualQueryResultAAfterMat =
+		// getAnswers(queryResultEnnumerationAAfterMat);
 		// System.out.println(actualQueryResultAAfterMat);
 		// assertEquals(expectedQueryResultsA, actualQueryResultAAfterMat);
 
