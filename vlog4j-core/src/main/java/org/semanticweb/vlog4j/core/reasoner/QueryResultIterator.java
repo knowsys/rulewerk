@@ -26,31 +26,31 @@ import java.util.Iterator;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.reasoner.util.VLogToModelConverter;
 
-import karmaresearch.vlog.StringQueryResultEnumeration;
+import karmaresearch.vlog.StringQueryResultIterator;
 
 public class QueryResultIterator implements Iterator<QueryResult> {
 
-	private final StringQueryResultEnumeration stringQueryResultEnumeration;
+	private final StringQueryResultIterator stringQueryResultIterator;
 
-	public QueryResultIterator(StringQueryResultEnumeration stringQueryResultEnumeration) {
-		this.stringQueryResultEnumeration = stringQueryResultEnumeration;
+	public QueryResultIterator(StringQueryResultIterator stringQueryResultIterator) {
+		this.stringQueryResultIterator = stringQueryResultIterator;
 	}
 
 	@Override
 	public boolean hasNext() {
-		final boolean hasNext = this.stringQueryResultEnumeration.hasMoreElements();
+		final boolean hasNext = this.stringQueryResultIterator.hasNext();
 		return hasNext;
 	}
 
 	@Override
 	public QueryResult next() {
-		final String[] vlogQueryResult = this.stringQueryResultEnumeration.nextElement();
+		final String[] vlogQueryResult = this.stringQueryResultIterator.next();
 		final QueryResult queryResult = VLogToModelConverter.toQueryResult(vlogQueryResult);
 		return queryResult;
 	}
 
 	public void dispose() {
-		this.stringQueryResultEnumeration.cleanup();
+		this.stringQueryResultIterator.cleanup();
 	}
 
 }

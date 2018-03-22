@@ -1,10 +1,6 @@
-package org.semanticweb.vlog4j.core.reasoner;
+package org.semanticweb.vlog4j.core.reasoner.exceptions;
 
-import java.io.File;
-
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-
-/*
+/*-
  * #%L
  * VLog4j Core Components
  * %%
@@ -24,9 +20,14 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
  * #L%
  */
 
-public interface FactsSourceConfig {
+import java.util.Set;
 
-	public Predicate getPredicate();
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 
-	public File getSourceFile();
+public class EdbIdbSeparationException extends Exception {
+
+	public EdbIdbSeparationException(Set<Predicate> intersection) {
+		// TODO Auto-generated constructor stub
+	}
+
 }

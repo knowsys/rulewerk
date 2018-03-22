@@ -37,7 +37,7 @@ import org.junit.Test;
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
-import karmaresearch.vlog.StringQueryResultEnumeration;
+import karmaresearch.vlog.StringQueryResultIterator;
 import karmaresearch.vlog.VLog;
 import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
@@ -51,8 +51,8 @@ public class VLogTest {
 		final String constantNameA = "a";
 		final String constantNameB = "b";
 		final String[][] argsAMatrix = { { constantNameA }, { constantNameB } };
-		final karmaresearch.vlog.Term[] varX = {
-				new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
+		final karmaresearch.vlog.Term varX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
+				"X");
 		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("B", varX);
 		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX);
 		final karmaresearch.vlog.Atom[] headAtoms = { atomBx };
@@ -67,7 +67,7 @@ public class VLogTest {
 		vlog.materialize(true);
 
 		// Querying B(?X)
-		final StringQueryResultEnumeration queryResultEnnumeration = vlog.query(atomBx);
+		final StringQueryResultIterator queryResultEnnumeration = vlog.query(atomBx);
 
 		// expected query result: [[a], [b]]
 		final List<List<String>> expectedQueryResults = new ArrayList<>();
@@ -96,10 +96,8 @@ public class VLogTest {
 				"X");
 		final karmaresearch.vlog.Term varY = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
 				"Y");
-		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("B",
-				new karmaresearch.vlog.Term[] { varX, varY });
-		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A",
-				new karmaresearch.vlog.Term[] { varX, varY });
+		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("B", varX, varY);
+		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX, varY);
 		final karmaresearch.vlog.Atom[] headAtoms = { atomBx };
 		final karmaresearch.vlog.Atom[] bodyAtoms = { atomAx };
 		final karmaresearch.vlog.Rule[] rules = { new karmaresearch.vlog.Rule(headAtoms, bodyAtoms) };
@@ -114,15 +112,14 @@ public class VLogTest {
 		// Querying B(a)
 		final karmaresearch.vlog.Term constantA = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
 				constantNameA);
-		final karmaresearch.vlog.Atom booleanQueryAtomBa = new karmaresearch.vlog.Atom("B",
-				new karmaresearch.vlog.Term[] { constantA, constantA });
+		final karmaresearch.vlog.Atom booleanQueryAtomBa = new karmaresearch.vlog.Atom("B", constantA, constantA);
 
-		final StringQueryResultEnumeration queryResultEnnumeration = vlog.query(booleanQueryAtomBa);
-		assertTrue(queryResultEnnumeration.hasMoreElements());
-		final String[] actualQueryResult = queryResultEnnumeration.nextElement();
+		final StringQueryResultIterator queryResultEnnumeration = vlog.query(booleanQueryAtomBa);
+		assertTrue(queryResultEnnumeration.hasNext());
+		final String[] actualQueryResult = queryResultEnnumeration.next();
 		final String[] expectedQueryResult = { constantNameA, constantNameA };
 		Assert.assertArrayEquals(expectedQueryResult, actualQueryResult);
-		assertFalse(queryResultEnnumeration.hasMoreElements());
+		assertFalse(queryResultEnnumeration.hasNext());
 
 		queryResultEnnumeration.cleanup();
 		vlog.stop();
@@ -132,8 +129,8 @@ public class VLogTest {
 	public void testBooleanQueryFalse()
 			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 		final String[][] argsAMatrix = { { "a" } };
-		final karmaresearch.vlog.Term[] varX = {
-				new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
+		final karmaresearch.vlog.Term varX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
+				"X");
 		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("B", varX);
 		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX);
 		final karmaresearch.vlog.Atom[] headAtoms = { atomBx };
@@ -152,8 +149,8 @@ public class VLogTest {
 				new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, "b") };
 		final karmaresearch.vlog.Atom booleanQueryAtomBb = new karmaresearch.vlog.Atom("B", constantB);
 
-		final StringQueryResultEnumeration queryResultEnnumeration = vlog.query(booleanQueryAtomBb);
-		assertFalse(queryResultEnnumeration.hasMoreElements());
+		final StringQueryResultIterator queryResultEnnumeration = vlog.query(booleanQueryAtomBb);
+		assertFalse(queryResultEnnumeration.hasNext());
 
 		queryResultEnnumeration.cleanup();
 		vlog.stop();
@@ -167,8 +164,8 @@ public class VLogTest {
 		final String constantNameA = "a";
 		final String constantNameB = "b";
 		final String[][] argsAMatrix = { { constantNameA }, { constantNameB } };
-		final karmaresearch.vlog.Term[] varX = {
-				new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
+		final karmaresearch.vlog.Term varX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
+				"X");
 		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX);
 
 		// Start VLog
@@ -177,7 +174,7 @@ public class VLogTest {
 		vlog.addData("A", argsAMatrix);
 
 		// Querying A(?X)
-		final StringQueryResultEnumeration queryResultEnnumeration = vlog.query(atomAx);
+		final StringQueryResultIterator queryResultEnnumeration = vlog.query(atomAx);
 
 		// expected query result: [[a], [b]]
 		final List<List<String>> expectedQueryResults = new ArrayList<>();
@@ -216,8 +213,8 @@ public class VLogTest {
 		answer2.add(constantNameStartsWithNumber);
 		expectedQueryResultsA.add(answer2);
 
-		final karmaresearch.vlog.Term[] varX = {
-				new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X") };
+		final karmaresearch.vlog.Term varX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
+				"X");
 		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX);
 
 		// Start VLog
@@ -254,8 +251,8 @@ public class VLogTest {
 		// assertEquals(expectedQueryResultsA, actualQueryResultAAfterMat);
 
 		// // Query VLog: B(?X)?
-		final StringQueryResultEnumeration queryResultEnnumerationBAfterMat = vlog.query(atomBx);
-		assertTrue(queryResultEnnumerationBAfterMat.hasMoreElements());
+		final StringQueryResultIterator queryResultEnnumerationBAfterMat = vlog.query(atomBx);
+		assertTrue(queryResultEnnumerationBAfterMat.hasNext());
 		final Set<List<String>> actualQueryResultBAfterMat = getAnswers(queryResultEnnumerationBAfterMat);
 		assertEquals(expectedQueryResultsA, actualQueryResultBAfterMat);
 
@@ -263,14 +260,12 @@ public class VLogTest {
 		vlog.stop();
 	}
 
-	private static Set<List<String>> getAnswers(final StringQueryResultEnumeration queryResult) {
+	private static Set<List<String>> getAnswers(final StringQueryResultIterator queryResultIterator) {
 		final Set<List<String>> answers = new HashSet<>();
-		while (queryResult.hasMoreElements()) {
-			answers.add(Arrays.asList(queryResult.nextElement()));
+		while (queryResultIterator.hasNext()) {
+			answers.add(Arrays.asList(queryResultIterator.next()));
 		}
-
-		queryResult.cleanup();
-
+		queryResultIterator.cleanup();
 		return answers;
 	}
 }
