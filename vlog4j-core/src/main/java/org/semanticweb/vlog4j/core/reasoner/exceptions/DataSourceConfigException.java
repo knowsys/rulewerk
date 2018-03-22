@@ -20,11 +20,16 @@ package org.semanticweb.vlog4j.core.reasoner.exceptions;
  * #L%
  */
 
-
-public class DataSourceConfigException extends Exception {
+/**
+ * Thrown when invalid data source configuration information is provided.
+ * 
+ * @author Irina Dragoste
+ *
+ */
+public class DataSourceConfigException extends Vlog4jException {
 
 	/**
-	 * 
+	 * generated serial version UID
 	 */
 	private static final long serialVersionUID = -4307961189601115100L;
 

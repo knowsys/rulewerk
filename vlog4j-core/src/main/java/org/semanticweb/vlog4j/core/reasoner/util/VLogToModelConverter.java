@@ -29,7 +29,6 @@ import org.semanticweb.vlog4j.core.model.impl.Expressions;
 import org.semanticweb.vlog4j.core.model.impl.QueryResultImpl;
 
 public class VLogToModelConverter {
-	public static final String PREDICATE_ARITY_SUFFIX_SEPARATOR = "-";
 
 	public static QueryResult toQueryResult(String[] vlogQueryResult) {
 		return new QueryResultImpl(toConstantList(vlogQueryResult));

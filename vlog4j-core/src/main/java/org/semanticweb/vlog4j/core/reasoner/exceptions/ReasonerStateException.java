@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.core.reasoner.exceptions;
 
-import java.text.MessageFormat;
-
 /*
  * #%L
  * VLog4j Core Components
@@ -23,7 +21,15 @@ import java.text.MessageFormat;
  */
 
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
+import java.text.MessageFormat;
 
+/**
+ * Thrown when an operation that is invalid in current reasoner state is
+ * attempted.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public class ReasonerStateException extends Vlog4jException {
 
 	/**
