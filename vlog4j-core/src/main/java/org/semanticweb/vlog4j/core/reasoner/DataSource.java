@@ -1,10 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
-import java.io.File;
-
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-
-/*
+/*-
  * #%L
  * VLog4j Core Components
  * %%
@@ -24,9 +20,8 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
  * #L%
  */
 
-public interface FactsSourceConfig {
+public interface DataSource {
 
-	public Predicate getPredicate();
+	String getLocation();
 
-	public File getSourceFile();
 }

@@ -3,6 +3,7 @@ package org.semanticweb.vlog4j.core.reasoner;
 import java.io.File;
 
 import org.apache.commons.lang3.Validate;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactsSourceConfigException;
 
 /*
@@ -27,22 +28,23 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.FactsSourceConfigExceptio
 
 public class FactsSourceConfigCSVImpl implements FactsSourceConfig {
 	private static final String CSV_FILE_EXTENSION = ".csv";
-	private final String predicate;
+	private final Predicate predicate;
 	private final File sourceFile;
 
-	public FactsSourceConfigCSVImpl(final String predName, final File sourceFile) throws FactsSourceConfigException {
+	public FactsSourceConfigCSVImpl(final Predicate predicate, final File sourceFile)
+			throws FactsSourceConfigException {
 		Validate.notNull(sourceFile);
-		if (!predName.endsWith(CSV_FILE_EXTENSION)) {
+		if (!sourceFile.getName().endsWith(CSV_FILE_EXTENSION)) {
 			throw new FactsSourceConfigException("Expected .csv extension for source file [" + sourceFile + "]!");
 		}
-		Validate.notBlank(predName, "Predicate cannot be blank");
+		Validate.notNull(predicate);
 
-		this.predicate = predName;
+		this.predicate = predicate;
 		this.sourceFile = sourceFile;
 	}
 
 	@Override
-	public String getPredicate() {
+	public Predicate getPredicate() {
 		return this.predicate;
 	}
 
@@ -50,6 +52,25 @@ public class FactsSourceConfigCSVImpl implements FactsSourceConfig {
 	public File getSourceFile() {
 		return this.sourceFile;
 	}
+
+	// private String edbPredicatesConfigToString() {
+	// final StringBuilder edbPredicatesConfigSB = new StringBuilder();
+	// final int i = 0;
+	// for (int j = 0; j < this.edbPredicatesConfig.size(); j++) {
+	// final FactsSourceConfig factsSourceConfig = this.edbPredicatesConfig.get(i);
+	// final String predicate = factsSourceConfig.getPredicate();
+	// final File sourceFile = factsSourceConfig.getSourceFile();
+	//
+	// edbPredicatesConfigSB.append("EDB").append(i).append("_predname=").append(predicate).append("\n");
+	// edbPredicatesConfigSB.append("EDB").append(i).append("_type=INMEMORY" +
+	// "\n");
+	// edbPredicatesConfigSB.append("EDB").append(i).append("_param0=").append(sourceFile.getParent()).append("\n");
+	// edbPredicatesConfigSB.append("EDB").append(i).append("_param1=").append(sourceFile.getName().substring(0,
+	// sourceFile.getName().length() - 3))
+	// .append("\n" + "\n");
+	// }
+	// return edbPredicatesConfigSB.toString();
+	// }
 
 	// String example = "EDB0_predname=hospital\r\n" +
 	// "EDB0_type=INMEMORY\r\n" +

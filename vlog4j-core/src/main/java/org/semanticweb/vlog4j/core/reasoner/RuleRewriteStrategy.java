@@ -1,10 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
-import java.io.File;
-
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-
-/*
+/*-
  * #%L
  * VLog4j Core Components
  * %%
@@ -24,9 +20,13 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
  * #L%
  */
 
-public interface FactsSourceConfig {
-
-	public Predicate getPredicate();
-
-	public File getSourceFile();
+public enum RuleRewritingStrategy {
+	/**
+	 * Rules are not re-written
+	 */
+	NONE,
+	/**
+	 * Rule heads are split into head pieces whenever possible
+	 */
+	SPLIT_HEAD_PIECES_AGGRESIVE
 }

@@ -1,21 +1,21 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.FactsSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
 
@@ -52,17 +52,22 @@ public class ReasonerImpl implements Reasoner {
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
 
 	private Algorithm algorithm = Algorithm.SKOLEM_CHASE;
+	private RuleRewritingStrategy ruleRewritingStrategy = RuleRewritingStrategy.NONE;
 
 	private final List<Rule> rules = new ArrayList<>();
-	private final List<Atom> facts = new ArrayList<>();
-	private final List<FactsSourceConfig> edbPredicatesConfig = new ArrayList<>();
+	private final Map<Predicate, List<Atom>> factsForPredicate = new HashMap<>();
+	// private final List<FactsSourceConfig> edbPredicatesConfig = new
+	// ArrayList<>();
+	// private final Map<Predicate, DataSource> dataSourceConfiguration = new
+	// HashMap<>();
 
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
-		this.algorithm = algorithm;
-		if (this.reasonerState.equals(ReasonerState.AFTER_REASONING)) {
-			// TODO Log Warning: VLog was already reasoned, this call is ineffective
+		Validate.notNull(this.ruleRewritingStrategy);
+		if (this.reasonerState == ReasonerState.AFTER_REASONING) {
+			// TODO Log Warning: VLog was already reasoned
 		}
+		this.algorithm = algorithm;
 	}
 
 	@Override
@@ -77,10 +82,27 @@ public class ReasonerImpl implements Reasoner {
 
 	@Override
 	public void addRules(final Collection<Rule> rules) throws ReasonerStateException {
-		if (!this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
-			throw new ReasonerStateException(this.reasonerState, "Rules cannot be added after the reasoner was loaded!");
+		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
+			throw new ReasonerStateException(this.reasonerState,
+					"Rules cannot be added after the reasoner was loaded!");
 		}
+		Validate.noNullElements(rules, "Null rules are not alowed! The list contains a null at position [%d].");
 		this.rules.addAll(new ArrayList<>(rules));
+	}
+
+	@Override
+	public void setRuleRewritingStrategy(RuleRewritingStrategy ruleRewritingStrategy) throws ReasonerStateException {
+		Validate.notNull(ruleRewritingStrategy);
+		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
+			throw new ReasonerStateException(this.reasonerState,
+					"Rules cannot be re-writen after the reasoner was loaded!");
+		}
+		this.ruleRewritingStrategy = ruleRewritingStrategy;
+	}
+
+	@Override
+	public RuleRewritingStrategy getRuleRewritingStrategy() {
+		return this.ruleRewritingStrategy;
 	}
 
 	@Override
@@ -90,12 +112,17 @@ public class ReasonerImpl implements Reasoner {
 
 	@Override
 	public void addFacts(final Collection<Atom> facts) throws ReasonerStateException {
-		if (!this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
-			throw new ReasonerStateException(this.reasonerState, "Facts cannot be added after the reasoner was loaded!");
+		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
+			throw new ReasonerStateException(this.reasonerState,
+					"Facts cannot be added after the reasoner was loaded!");
 		}
+		Validate.noNullElements(this.rules, "Null facts are not alowed! The list contains a fact at position [%d].");
 		for (final Atom fact : facts) {
+			// TODO validate Term does not have Blanks
 			if (fact.getVariables().isEmpty()) {
-				this.facts.add(fact);
+				final Predicate predicate = fact.getPredicate();
+				this.factsForPredicate.putIfAbsent(predicate, new ArrayList<>());
+				this.factsForPredicate.get(predicate).add(fact);
 			} else {
 				// TODO Throw Exception: not a fact
 			}
@@ -103,101 +130,28 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public void addFactsSource(final FactsSourceConfig... factsSourceConfigs) throws ReasonerStateException {
-		addFactsSource(Arrays.asList(factsSourceConfigs));
-	}
+	public void load() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException,
+			EdbIdbSeparationException {
+		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+			validateEdbIdbSeparation();
 
-	@Override
-	public void addFactsSource(final Collection<FactsSourceConfig> factsSourceConfigs) throws ReasonerStateException {
-		if (!this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
-			throw new ReasonerStateException(this.reasonerState, "Facts source configurations cannot be added after the reasoner was loaded!");
-		}
-		this.edbPredicatesConfig.addAll(factsSourceConfigs);
-	}
-
-	@Override
-	public void load() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
-		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
-			if (!Collections.disjoint(collectEDBPredicates(), collectIDBPredicates())) {
-				// TODO Throw Exception: The program violates EDB/IDB separation
-				return;
-			}
 			this.reasonerState = ReasonerState.AFTER_LOADING;
 
-			this.vlog.start(edbPredicatesConfigToString(), false);
+			// this.vlog.start(edbPredicatesConfigToString(), false);
 			loadInMemoryFacts();
-			this.vlog.setRules(ModelToVLogConverter.toVLogRuleArray(this.rules), RuleRewriteStrategy.NONE);
+			loadRules();
 
 		} else {
 			// TODO Log Warning: VLog was already loaded, this call is ineffective
 		}
 	}
 
-	private String edbPredicatesConfigToString() {
-		final StringBuilder edbPredicatesConfigSB = new StringBuilder();
-		final int i = 0;
-		for (int j = 0; j < this.edbPredicatesConfig.size(); j++) {
-			final FactsSourceConfig factsSourceConfig = this.edbPredicatesConfig.get(i);
-			final String predicate = factsSourceConfig.getPredicate();
-			final File sourceFile = factsSourceConfig.getSourceFile();
-
-			edbPredicatesConfigSB.append("EDB").append(i).append("_predname=").append(predicate).append("\n");
-			edbPredicatesConfigSB.append("EDB").append(i).append("_type=INMEMORY" + "\n");
-			edbPredicatesConfigSB.append("EDB").append(i).append("_param0=").append(sourceFile.getParent()).append("\n");
-			edbPredicatesConfigSB.append("EDB").append(i).append("_param1=").append(sourceFile.getName().substring(0, sourceFile.getName().length() - 3))
-					.append("\n" + "\n");
-		}
-		return edbPredicatesConfigSB.toString();
-	}
-
-	private Set<String> collectEDBPredicates() {
-		final Set<String> edbPredicates = new HashSet<>();
-		for (final FactsSourceConfig edbPredConfig : this.edbPredicatesConfig) {
-			edbPredicates.add(edbPredConfig.getPredicate());
-		}
-		for (final Atom fact : this.facts) {
-			edbPredicates.add(fact.getPredicate().getName());
-		}
-		return edbPredicates;
-	}
-
-	private Set<String> collectIDBPredicates() {
-		final Set<String> idbPredicates = new HashSet<>();
-		for (final Rule rule : this.rules) {
-			for (final Atom headAtom : rule.getHead()) {
-				idbPredicates.add(headAtom.getPredicate().getName());
-			}
-		}
-		return idbPredicates;
-	}
-
-
-
-	private void loadInMemoryFacts() throws EDBConfigurationException {
-		final Map<Predicate, List<List<Term>>> factsMap = new HashMap<>();
-		for (final Atom fact : this.facts) {
-			factsMap.putIfAbsent(fact.getPredicate(), new ArrayList<>());
-			factsMap.get(fact.getPredicate()).add(fact.getTerms());
-		}
-		for (final Predicate pred : factsMap.keySet()) {
-			final List<List<Term>> predArgs = factsMap.get(pred);
-			final int arity = predArgs.get(0).size();
-			final String[][] tuplesMatrix = new String[predArgs.size()][arity];
-			for (int i = 0; i < predArgs.size(); i++) {
-				for (int j = 0; j < arity; j++) {
-					tuplesMatrix[i][j] = predArgs.get(i).get(j).getName();
-				}
-			}
-			this.vlog.addData(pred.getName(), tuplesMatrix);
-		}
-	}
-
 	@Override
 	public void reason() throws EDBConfigurationException, IOException, NotStartedException, ReasonerStateException {
-		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
+		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			// TODO exception message
 			throw new ReasonerStateException(this.reasonerState, "Reasoning is not alowed before loading!");
-		} else if (this.reasonerState.equals(ReasonerState.AFTER_REASONING)) {
+		} else if (this.reasonerState == ReasonerState.AFTER_REASONING) {
 			// TODO Log Warning: VLog already materialised.
 		} else {
 			this.reasonerState = ReasonerState.AFTER_REASONING;
@@ -208,28 +162,85 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public QueryResultIterator answerQuery(final Atom atom) throws NotStartedException, ReasonerStateException {
-		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
+	public QueryResultIterator answerQuery(final Atom queryAtom) throws NotStartedException, ReasonerStateException {
+		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
-		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(atom);
+		Validate.notNull(queryAtom, "Query atom must not be null!");
+
+		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
 		final StringQueryResultEnumeration stringQueryResultEnumeration = this.vlog.query(vLogAtom);
 		return new QueryResultIterator(stringQueryResultEnumeration);
 	}
 
 	@Override
-	public void exportAtomicQueryAnswers(final Atom queryAtom, final String outputFilePath) throws ReasonerStateException {
-		if (this.reasonerState.equals(ReasonerState.BEFORE_LOADING)) {
+	public void exportQueryAnswersToCSV(final Atom queryAtom, final String csvFilePath)
+			throws ReasonerStateException, NotStartedException, IOException, FactsSourceConfigException {
+		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
-		// vlog.writePredicateToCsv(arg0, arg1);
-		// TODO Auto-generated method stub
+		Validate.notNull(queryAtom, "Query atom must not be null!");
+		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
+		if (!csvFilePath.endsWith(CSVFileDataSource.CSV_FILE_EXTENSION)) {
+			throw new FactsSourceConfigException("Expected .csv extension for data source file [" + csvFilePath + "]!");
+		}
 
+		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
+		this.vlog.writeQueryResultsToCsv(vLogAtom, csvFilePath);
 	}
 
 	@Override
 	public void dispose() {
 		this.vlog.stop();
 	}
+
+	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
+		final Set<Predicate> EdbPredicates = collectEDBPredicates();
+		final Set<Predicate> IdbPredicates = collectIDBPredicates();
+		final Set<Predicate> intersection = new HashSet<>(EdbPredicates);
+		intersection.retainAll(IdbPredicates);
+		if (!intersection.isEmpty()) {
+			// TODO exception message
+			throw new EdbIdbSeparationException(intersection);
+		}
+	}
+
+	private Set<Predicate> collectEDBPredicates() {
+		final Set<Predicate> edbPredicates = new HashSet<>();
+		// for (final FactsSourceConfig edbPredConfig : this.edbPredicatesConfig) {
+		// edbPredicates.add(edbPredConfig.getPredicate());
+		// }
+		edbPredicates.addAll(this.factsForPredicate.keySet());
+		return edbPredicates;
+	}
+
+	private Set<Predicate> collectIDBPredicates() {
+		final Set<Predicate> idbPredicates = new HashSet<>();
+		for (final Rule rule : this.rules) {
+			for (final Atom headAtom : rule.getHead()) {
+				idbPredicates.add(headAtom.getPredicate());
+			}
+		}
+		return idbPredicates;
+	}
+
+	private void loadInMemoryFacts() throws EDBConfigurationException {
+		for (final Predicate predicate : this.factsForPredicate.keySet()) {
+			final List<Atom> factsForPredicate = this.factsForPredicate.get(predicate);
+
+			final String vlogPredicate = ModelToVLogConverter.toVlogPredicate(predicate);
+			final String[][] tuplesForPredicate = ModelToVLogConverter.toVLogFactTuples(factsForPredicate);
+			this.vlog.addData(vlogPredicate, tuplesForPredicate);
+		}
+	}
+
+	private void loadRules() throws NotStartedException {
+		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(this.rules);
+		final RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
+				.toVLogRuleRewriteStrategy(this.ruleRewritingStrategy);
+		this.vlog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
+	}
+
+
 
 }

@@ -5,6 +5,8 @@ import java.util.Collection;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.FactsSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import karmaresearch.vlog.AlreadyStartedException;
@@ -40,20 +42,30 @@ public interface Reasoner {
 
 	void addRules(Collection<Rule> rules) throws ReasonerStateException;
 
+	RuleRewritingStrategy getRuleRewritingStrategy();
+
+	void setRuleRewritingStrategy(RuleRewritingStrategy ruleRewritingStrategy) throws ReasonerStateException;
+
 	void addFacts(Atom... fact) throws ReasonerStateException;
 
 	void addFacts(Collection<Atom> facts) throws ReasonerStateException;
 
-	void addFactsSource(FactsSourceConfig... edbConfig) throws ReasonerStateException;
+	// void addFactsSource(FactsSourceConfig... edbConfig) throws
+	// ReasonerStateException;
 
-	void addFactsSource(Collection<FactsSourceConfig> edbConfig) throws ReasonerStateException;
+	// void addFactsSource(Collection<FactsSourceConfig> edbConfig) throws
+	// ReasonerStateException;
 
-	void load() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException;
+	void load() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException,
+			EdbIdbSeparationException;
 
 	void reason() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException,
 			ReasonerStateException;
 
-	void exportAtomicQueryAnswers(Atom atom, String outputFilePath) throws ReasonerStateException;
+	QueryResultIterator answerQuery(Atom atom) throws NotStartedException, ReasonerStateException;
+
+	void exportQueryAnswersToCSV(Atom atom, String outputFilePath)
+			throws ReasonerStateException, NotStartedException, IOException, FactsSourceConfigException;
 
 	// TODO arity should be in the EDB config file,
 	// do not read the files, have low-level API check if the file content
@@ -64,5 +76,6 @@ public interface Reasoner {
 
 	void dispose();
 
-	QueryResultIterator answerQuery(Atom atom) throws NotStartedException, ReasonerStateException;
+
+
 }
