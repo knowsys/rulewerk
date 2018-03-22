@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner.util;
 
+import java.util.Collection;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -64,7 +66,7 @@ public final class ModelToVLogConverter {
 		return vlogTerms;
 	}
 
-	public static String[][] toVLogFactTuples(final List<Atom> facts) {
+	public static String[][] toVLogFactTuples(final Collection<Atom> facts) {
 		Validate.noNullElements(facts);
 		final String[][] tuples = new String[facts.size()][];
 		int i = 0;

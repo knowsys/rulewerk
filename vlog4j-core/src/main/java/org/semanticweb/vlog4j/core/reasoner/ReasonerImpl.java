@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -18,6 +19,8 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactsSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -46,6 +49,7 @@ import karmaresearch.vlog.VLog;
  */
 
 public class ReasonerImpl implements Reasoner {
+	private static Logger LOGGER = LoggerFactory.getLogger(ReasonerImpl.class);
 
 	private final VLog vlog = new VLog();
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
@@ -54,7 +58,7 @@ public class ReasonerImpl implements Reasoner {
 	private RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
 
 	private final List<Rule> rules = new ArrayList<>();
-	private final Map<Predicate, List<Atom>> factsForPredicate = new HashMap<>();
+	private final Map<Predicate, Set<Atom>> factsForPredicate = new HashMap<>();
 	// private final List<FactsSourceConfig> edbPredicatesConfig = new
 	// ArrayList<>();
 	// private final Map<Predicate, DataSource> dataSourceConfiguration = new
@@ -65,7 +69,8 @@ public class ReasonerImpl implements Reasoner {
 		Validate.notNull(algorithm);
 
 		if (this.reasonerState == ReasonerState.AFTER_REASONING) {
-			// TODO Log Warning: VLog was already reasoned
+			LOGGER.warn(
+					"Argument algorithm will not be used: this Reasoner has already reasoned. Successive reason() calls are not supported.");
 		}
 		this.algorithm = algorithm;
 	}
@@ -121,7 +126,7 @@ public class ReasonerImpl implements Reasoner {
 			// TODO validate Term does not have Blanks
 			if (fact.getVariables().isEmpty()) {
 				final Predicate predicate = fact.getPredicate();
-				this.factsForPredicate.putIfAbsent(predicate, new ArrayList<>());
+				this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
 				this.factsForPredicate.get(predicate).add(fact);
 			} else {
 				// TODO Throw Exception: not a fact
@@ -136,13 +141,20 @@ public class ReasonerImpl implements Reasoner {
 			validateEdbIdbSeparation();
 
 			this.reasonerState = ReasonerState.AFTER_LOADING;
-
 			// this.vlog.start(edbPredicatesConfigToString(), false);
+			if (factsForPredicate.isEmpty()) {
+				this.vlog.start(StringUtils.EMPTY, false);
+			}
+			// TODO log warning if both in memory and on disk facts are empty.
 			loadInMemoryFacts();
+			if (this.rules.isEmpty()) {
+				LOGGER.warn("No rules have been provided for reasoning.");
+			}
 			loadRules();
 
 		} else {
-			// TODO Log Warning: VLog was already loaded, this call is ineffective
+			LOGGER.warn(
+					"This method call is ineffective: the Reasoner was already loaded. Successive load() calls are not supported.");
 		}
 	}
 
@@ -152,7 +164,8 @@ public class ReasonerImpl implements Reasoner {
 			// TODO exception message
 			throw new ReasonerStateException(this.reasonerState, "Reasoning is not alowed before loading!");
 		} else if (this.reasonerState == ReasonerState.AFTER_REASONING) {
-			// TODO Log Warning: VLog already materialised.
+			LOGGER.warn(
+					"This method call is ineffective: this Reasoner was already reasoned. Successive reason() calls are not supported.");
 		} else {
 			this.reasonerState = ReasonerState.AFTER_REASONING;
 
@@ -226,7 +239,7 @@ public class ReasonerImpl implements Reasoner {
 
 	private void loadInMemoryFacts() throws EDBConfigurationException {
 		for (final Predicate predicate : this.factsForPredicate.keySet()) {
-			final List<Atom> factsForPredicate = this.factsForPredicate.get(predicate);
+			final Set<Atom> factsForPredicate = this.factsForPredicate.get(predicate);
 
 			final String vlogPredicate = ModelToVLogConverter.toVlogPredicate(predicate);
 			final String[][] tuplesForPredicate = ModelToVLogConverter.toVLogFactTuples(factsForPredicate);
