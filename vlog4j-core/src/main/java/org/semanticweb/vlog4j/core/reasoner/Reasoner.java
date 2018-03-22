@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactsSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
@@ -46,9 +47,9 @@ public interface Reasoner {
 
 	void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
 
-	void addFacts(Atom... fact) throws ReasonerStateException;
+	void addFacts(Atom... fact) throws ReasonerStateException, FactTermTypeException;
 
-	void addFacts(Collection<Atom> facts) throws ReasonerStateException;
+	void addFacts(Collection<Atom> facts) throws ReasonerStateException, FactTermTypeException;
 
 	// void addFactsSource(FactsSourceConfig... edbConfig) throws
 	// ReasonerStateException;

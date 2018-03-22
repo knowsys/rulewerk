@@ -28,7 +28,7 @@ import org.semanticweb.vlog4j.core.reasoner.util.VLogToModelConverter;
 
 import karmaresearch.vlog.StringQueryResultIterator;
 
-public class QueryResultIterator implements Iterator<QueryResult> {
+public class QueryResultIterator implements Iterator<QueryResult>, AutoCloseable {
 
 	private final StringQueryResultIterator stringQueryResultIterator;
 
@@ -49,7 +49,8 @@ public class QueryResultIterator implements Iterator<QueryResult> {
 		return queryResult;
 	}
 
-	public void dispose() {
+	@Override
+	public void close()  {
 		this.stringQueryResultIterator.cleanup();
 	}
 

@@ -1,8 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner.exceptions;
 
-import java.text.MessageFormat;
-
-/*
+/*-
  * #%L
  * VLog4j Core Components
  * %%
@@ -22,18 +20,21 @@ import java.text.MessageFormat;
  * #L%
  */
 
-import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
-
-public class ReasonerStateException extends Vlog4jException {
+public class Vlog4jException extends Exception {
 
 	/**
 	 * generated serial version UID
 	 */
-	private static final long serialVersionUID = -5720169752588784690L;
+	private static final long serialVersionUID = 8305375071519734590L;
 
-	private static final String messagePrefix = "Invalid operation for current reasoner state {0}! {1}";
-
-	public ReasonerStateException(ReasonerState state, String message) {
-		super(MessageFormat.format(messagePrefix, state, message));
+	public Vlog4jException(String message, Throwable cause) {
+		super(message, cause);
 	}
+
+	public Vlog4jException(String message) {
+		super(message);
+	}
+	
+	
+
 }

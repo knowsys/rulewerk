@@ -22,62 +22,48 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
 
-public class QueryDataFromMemoryTest {
-	
-	@Test
-	public void queryEmptyKnowledgeBase() throws AlreadyStartedException, EDBConfigurationException, IOException,
-			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
+public class LoadDataFromMemoryTest {
+
+	@Test(expected = EdbIdbSeparationException.class)
+	public void loadEdbIdbNotSeparated() throws AlreadyStartedException, EDBConfigurationException, IOException,
+			NotStartedException, EdbIdbSeparationException, ReasonerStateException, FactTermTypeException {
+		Variable vx = Expressions.makeVariable("x");
+		Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
+		Atom factIDBpred = Expressions.makeAtom("q", Expressions.makeConstant("c"));
+		Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"), Expressions.makeConstant("d"));
+
 		Reasoner reasoner = new ReasonerImpl();
-
+		reasoner.addRules(rule);
+		reasoner.addFacts(factIDBpred, factEDBpred);
 		reasoner.load();
-
-		Atom queryAtom = Expressions.makeAtom("P", Expressions.makeVariable("?x"));
-		QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom);
-		Assert.assertFalse(queryResultIterator.hasNext());
-		queryResultIterator.close();
-
-		reasoner.reason();
-
-		QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom);
-		Assert.assertFalse(queryResultIteratorAfterReason.hasNext());
-		queryResultIteratorAfterReason.close();
 
 		reasoner.dispose();
 	}
 
 	@Test
-	public void queryEmptyFacts() throws AlreadyStartedException, EDBConfigurationException, IOException,
-			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
+	public void loadEdbIdbSeparated() throws AlreadyStartedException, EDBConfigurationException, IOException,
+			NotStartedException, EdbIdbSeparationException, ReasonerStateException, FactTermTypeException {
 		Variable vx = Expressions.makeVariable("x");
 		Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
+		Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"), Expressions.makeConstant("d"));
 
 		Reasoner reasoner = new ReasonerImpl();
 		reasoner.addRules(rule);
+		reasoner.addFacts(factEDBpred);
 		reasoner.load();
-
-		Atom queryAtom = Expressions.makeAtom("P", Expressions.makeVariable("?x"));
-		QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom);
-		Assert.assertFalse(queryResultIterator.hasNext());
-		queryResultIterator.close();
-
-		reasoner.reason();
-
-		QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom);
-		Assert.assertFalse(queryResultIteratorAfterReason.hasNext());
-		queryResultIteratorAfterReason.close();
 
 		reasoner.dispose();
 	}

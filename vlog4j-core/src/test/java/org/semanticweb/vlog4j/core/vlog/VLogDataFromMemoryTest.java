@@ -31,7 +31,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import karmaresearch.vlog.AlreadyStartedException;
@@ -196,7 +195,6 @@ public class VLogDataFromMemoryTest {
 		vlog.stop();
 	}
 
-	@Ignore
 	@Test
 	public void queryEmptyKnowledgeBase()
 			throws NotStartedException, AlreadyStartedException, EDBConfigurationException, IOException {
@@ -219,7 +217,6 @@ public class VLogDataFromMemoryTest {
 		vlog.stop();
 	}
 
-	@Ignore
 	@Test
 	public void queryEmptyKnowledgeBaseSetRules()
 			throws NotStartedException, AlreadyStartedException, EDBConfigurationException, IOException {

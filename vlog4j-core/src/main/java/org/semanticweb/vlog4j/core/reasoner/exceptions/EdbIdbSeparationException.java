@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner.exceptions;
 
+import java.text.MessageFormat;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -24,10 +26,17 @@ import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 
-public class EdbIdbSeparationException extends Exception {
+public class EdbIdbSeparationException extends Vlog4jException {
 
-	public EdbIdbSeparationException(Set<Predicate> intersection) {
-		// TODO Auto-generated constructor stub
+	/**
+	 * generated serial version UID
+	 */
+	private static final long serialVersionUID = -6731598892649856691L;
+
+	private static final String messagePattern = "The following predicates occur both in facts (EDBs) and rule heads (IDBs): {0}!";
+
+	public EdbIdbSeparationException(Set<Predicate> commonPredicates) {
+		super(MessageFormat.format(messagePattern, commonPredicates));
 	}
 
 }

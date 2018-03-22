@@ -35,6 +35,7 @@ import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerImpl;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import junit.framework.TestCase;
@@ -45,7 +46,7 @@ import karmaresearch.vlog.NotStartedException;
 public class ReasonerTest extends TestCase {
 
 	public void testSimpleInference() throws AlreadyStartedException, EDBConfigurationException,
-			IOException, NotStartedException, ReasonerStateException, EdbIdbSeparationException {
+			IOException, NotStartedException, ReasonerStateException, EdbIdbSeparationException, FactTermTypeException {
 		final String constantNameC = "c";
 		final String constantNameD = "d";
 
@@ -84,7 +85,7 @@ public class ReasonerTest extends TestCase {
 	private static Set<QueryResult> gatherQueryResults(QueryResultIterator queryResultIterator) {
 		final Set<QueryResult> results = new HashSet<>();
 		queryResultIterator.forEachRemaining(results::add);
-		queryResultIterator.dispose();
+		queryResultIterator.close();
 		return results;
 	}
 

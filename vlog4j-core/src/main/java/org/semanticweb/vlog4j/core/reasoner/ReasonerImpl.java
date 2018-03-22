@@ -15,7 +15,9 @@ import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactsSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
@@ -111,28 +113,33 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public void addFacts(final Atom... facts) throws ReasonerStateException {
+	public void addFacts(final Atom... facts) throws ReasonerStateException, FactTermTypeException {
 		addFacts(Arrays.asList(facts));
 	}
 
 	@Override
-	public void addFacts(final Collection<Atom> facts) throws ReasonerStateException {
+	public void addFacts(final Collection<Atom> facts) throws ReasonerStateException, FactTermTypeException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
 					"Facts cannot be added after the reasoner was loaded!");
 		}
 		Validate.noNullElements(this.rules, "Null facts are not alowed! The list contains a fact at position [%d].");
 		for (final Atom fact : facts) {
-			// TODO validate has only constants
-			if (!fact.getConstants().containsAll(fact.getTerms())) {
-				throw new IllegalArgumentException("Not a fact");
-			}
+			validateTermsAreConstant(fact);
 
 			final Predicate predicate = fact.getPredicate();
 			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
 			this.factsForPredicate.get(predicate).add(fact);
 		}
 
+	}
+
+	private void validateTermsAreConstant(Atom fact) throws FactTermTypeException {
+		final Set<Term> nonConstantTerms = new HashSet<>(fact.getTerms());
+		nonConstantTerms.removeAll(fact.getConstants());
+		if (!nonConstantTerms.isEmpty()) {
+			throw new FactTermTypeException(nonConstantTerms, fact);
+		}
 	}
 
 	@Override
@@ -209,17 +216,17 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
-		final Set<Predicate> EdbPredicates = collectEDBPredicates();
-		final Set<Predicate> IdbPredicates = collectIDBPredicates();
-		final Set<Predicate> intersection = new HashSet<>(EdbPredicates);
-		intersection.retainAll(IdbPredicates);
+		final Set<Predicate> edbPredicates = collectEdbPredicates();
+		final Set<Predicate> idbPredicates = collectIdbPredicates();
+		final Set<Predicate> intersection = new HashSet<>(edbPredicates);
+		intersection.retainAll(idbPredicates);
+		
 		if (!intersection.isEmpty()) {
-			// TODO exception message
 			throw new EdbIdbSeparationException(intersection);
 		}
 	}
 
-	private Set<Predicate> collectEDBPredicates() {
+	private Set<Predicate> collectEdbPredicates() {
 		final Set<Predicate> edbPredicates = new HashSet<>();
 		// for (final FactsSourceConfig edbPredConfig : this.edbPredicatesConfig) {
 		// edbPredicates.add(edbPredConfig.getPredicate());
@@ -228,7 +235,7 @@ public class ReasonerImpl implements Reasoner {
 		return edbPredicates;
 	}
 
-	private Set<Predicate> collectIDBPredicates() {
+	private Set<Predicate> collectIdbPredicates() {
 		final Set<Predicate> idbPredicates = new HashSet<>();
 		for (final Rule rule : this.rules) {
 			for (final Atom headAtom : rule.getHead()) {

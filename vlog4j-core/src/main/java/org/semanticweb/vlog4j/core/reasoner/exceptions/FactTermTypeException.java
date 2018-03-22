@@ -1,8 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner.exceptions;
 
-import java.text.MessageFormat;
-
-/*
+/*-
  * #%L
  * VLog4j Core Components
  * %%
@@ -22,18 +20,23 @@ import java.text.MessageFormat;
  * #L%
  */
 
-import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
+import java.text.MessageFormat;
+import java.util.Set;
 
-public class ReasonerStateException extends Vlog4jException {
+import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Term;
+
+public class FactTermTypeException extends Vlog4jException {
 
 	/**
 	 * generated serial version UID
 	 */
-	private static final long serialVersionUID = -5720169752588784690L;
+	private static final long serialVersionUID = -840382271107281366L;
 
-	private static final String messagePrefix = "Invalid operation for current reasoner state {0}! {1}";
+	private static final String messagePattern = "Only Constant terms alowed in Fact atoms! The following non-constant terms {0} appear for fact with predicate [{1}]!";
 
-	public ReasonerStateException(ReasonerState state, String message) {
-		super(MessageFormat.format(messagePrefix, state, message));
+	public FactTermTypeException(final Set<Term> nonConstantTerms, final Atom fact) {
+		super(MessageFormat.format(messagePattern, nonConstantTerms, fact.getPredicate()));
 	}
+
 }
