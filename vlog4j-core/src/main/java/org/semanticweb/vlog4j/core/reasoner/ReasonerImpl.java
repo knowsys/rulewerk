@@ -51,7 +51,7 @@ public class ReasonerImpl implements Reasoner {
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
 
 	private Algorithm algorithm = Algorithm.SKOLEM_CHASE;
-	private org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
+	private RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
 
 	private final List<Rule> rules = new ArrayList<>();
 	private final Map<Predicate, List<Atom>> factsForPredicate = new HashMap<>();
@@ -62,7 +62,8 @@ public class ReasonerImpl implements Reasoner {
 
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
-		Validate.notNull(this.ruleRewriteStrategy);
+		Validate.notNull(algorithm);
+
 		if (this.reasonerState == ReasonerState.AFTER_REASONING) {
 			// TODO Log Warning: VLog was already reasoned
 		}
@@ -100,7 +101,7 @@ public class ReasonerImpl implements Reasoner {
 	}
 
 	@Override
-	public RuleRewriteStrategy getRuleRewritegStrategy() {
+	public RuleRewriteStrategy getRuleRewriteStrategy() {
 		return this.ruleRewriteStrategy;
 	}
 
@@ -168,8 +169,8 @@ public class ReasonerImpl implements Reasoner {
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
-		final StringQueryResultIterator stringQueryResultEnumeration = this.vlog.query(vLogAtom);
-		return new QueryResultIterator(stringQueryResultEnumeration);
+		final StringQueryResultIterator stringQueryResultIterator = this.vlog.query(vLogAtom);
+		return new QueryResultIterator(stringQueryResultIterator);
 	}
 
 	@Override

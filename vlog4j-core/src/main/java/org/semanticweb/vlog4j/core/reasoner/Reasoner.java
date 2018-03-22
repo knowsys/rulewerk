@@ -42,7 +42,7 @@ public interface Reasoner {
 
 	void addRules(Collection<Rule> rules) throws ReasonerStateException;
 
-	RuleRewriteStrategy getRuleRewritegStrategy();
+	RuleRewriteStrategy getRuleRewriteStrategy();
 
 	void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
 

@@ -30,6 +30,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 
+
 /**
  * Utility class with static methods for converting from
  * {@code org.semanticweb.vlog4j.core.model} model objects to

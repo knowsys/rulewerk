@@ -185,7 +185,8 @@ public class ModelToVLogConverterTest {
 				new karmaresearch.vlog.Atom[] { expectedAtom2, expectedAtom3 });
 		final karmaresearch.vlog.Rule expectedRule2 = new karmaresearch.vlog.Rule(
 				new karmaresearch.vlog.Atom[] { expectedAtom3 }, new karmaresearch.vlog.Atom[] { expectedAtom2 });
-		final karmaresearch.vlog.Rule[] expectedRuleArray = new karmaresearch.vlog.Rule[] {expectedRule1, expectedRule2};
+		final karmaresearch.vlog.Rule[] expectedRuleArray = new karmaresearch.vlog.Rule[] { expectedRule1,
+				expectedRule2 };
 
 		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter
 				.toVLogRuleArray(Arrays.asList(rule1, rule2));
