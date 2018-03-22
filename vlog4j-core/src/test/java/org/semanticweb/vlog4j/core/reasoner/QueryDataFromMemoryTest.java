@@ -36,8 +36,9 @@ import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
 
+@Ignore
 public class QueryDataFromMemoryTest {
-	@Ignore
+	
 	@Test
 	public void queryEmptyKnowledgeBase() throws AlreadyStartedException, EDBConfigurationException, IOException,
 			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
@@ -59,7 +60,6 @@ public class QueryDataFromMemoryTest {
 		reasoner.dispose();
 	}
 
-	@Ignore
 	@Test
 	public void queryEmptyFacts() throws AlreadyStartedException, EDBConfigurationException, IOException,
 			NotStartedException, EdbIdbSeparationException, ReasonerStateException {

@@ -68,12 +68,28 @@ public class TermFilter implements TermVisitor<Void> {
 	 * terms collected are not variables. The method will also return an empty set
 	 * if anything other than variables are being collected.
 	 * 
-	 * @return set of variables
+	 * @return set of variables (see {@link Variable}).
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Variable> getVariables() {
 		if (termType.equals(TermType.VARIABLE)) {
 			return (Set<Variable>) ((Set<? extends Term>) Collections.unmodifiableSet(this.terms));
+		} else {
+			return Collections.emptySet();
+		}
+	}
+
+	/**
+	 * Returns the set of constants collected so far, which might be empty if the
+	 * terms collected are not constants. The method will also return an empty set if
+	 * anything other than constants are being collected.
+	 * 
+	 * @return set of blanks (see {@link Constant}).
+	 */
+	@SuppressWarnings("unchecked")
+	public Set<Constant> getConstants() {
+		if (termType.equals(TermType.CONSTANT)) {
+			return (Set<Constant>) ((Set<? extends Term>) Collections.unmodifiableSet(this.terms));
 		} else {
 			return Collections.emptySet();
 		}

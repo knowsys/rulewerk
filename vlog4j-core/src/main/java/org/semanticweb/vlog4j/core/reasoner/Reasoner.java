@@ -76,6 +76,4 @@ public interface Reasoner {
 
 	void dispose();
 
-
-
 }

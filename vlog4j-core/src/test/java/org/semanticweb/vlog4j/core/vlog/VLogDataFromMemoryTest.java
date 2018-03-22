@@ -29,7 +29,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import karmaresearch.vlog.AlreadyStartedException;
@@ -191,6 +193,54 @@ public class VLogDataFromMemoryTest {
 		assertEquals(expectedQueryResultsA, actualQueryResultBAfterMat);
 
 		queryResultEnnumerationBAfterMat.cleanup();
+		vlog.stop();
+	}
+
+	@Ignore
+	@Test
+	public void queryEmptyKnowledgeBase()
+			throws NotStartedException, AlreadyStartedException, EDBConfigurationException, IOException {
+		// Start VLog
+		final VLog vlog = new VLog();
+		vlog.start(StringUtils.EMPTY, false);
+
+		karmaresearch.vlog.Atom queryAtom = new karmaresearch.vlog.Atom("P", VLogExpressions.makeVariable("?x"));
+
+		StringQueryResultIterator stringQueryResultIterator = vlog.query(queryAtom);
+		Assert.assertFalse(stringQueryResultIterator.hasNext());
+		stringQueryResultIterator.cleanup();
+
+		vlog.materialize(true);
+
+		StringQueryResultIterator queryResultIteratorAfterReason = vlog.query(queryAtom);
+		Assert.assertFalse(queryResultIteratorAfterReason.hasNext());
+		queryResultIteratorAfterReason.cleanup();
+
+		vlog.stop();
+	}
+
+	@Ignore
+	@Test
+	public void queryEmptyKnowledgeBaseSetRules()
+			throws NotStartedException, AlreadyStartedException, EDBConfigurationException, IOException {
+		// Start VLog
+		final VLog vlog = new VLog();
+		vlog.start(StringUtils.EMPTY, false);
+
+		vlog.setRules(new Rule[] {}, VLog.RuleRewriteStrategy.NONE);
+
+		karmaresearch.vlog.Atom queryAtom = new karmaresearch.vlog.Atom("P", VLogExpressions.makeVariable("?x"));
+
+		StringQueryResultIterator stringQueryResultIterator = vlog.query(queryAtom);
+		Assert.assertFalse(stringQueryResultIterator.hasNext());
+		stringQueryResultIterator.cleanup();
+
+		vlog.materialize(true);
+
+		StringQueryResultIterator queryResultIteratorAfterReason = vlog.query(queryAtom);
+		Assert.assertFalse(queryResultIteratorAfterReason.hasNext());
+		queryResultIteratorAfterReason.cleanup();
+
 		vlog.stop();
 	}
 

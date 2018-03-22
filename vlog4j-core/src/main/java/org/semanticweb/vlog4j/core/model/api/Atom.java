@@ -56,4 +56,10 @@ public interface Atom {
 	 */
 	public Set<Variable> getVariables();
 
+	/**
+	 * Returns the {@link Constant}s that occur among the atom terms.
+	 * 
+	 * @return
+	 */
+	public Set<Constant> getConstants();
 }

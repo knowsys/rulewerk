@@ -123,15 +123,16 @@ public class ReasonerImpl implements Reasoner {
 		}
 		Validate.noNullElements(this.rules, "Null facts are not alowed! The list contains a fact at position [%d].");
 		for (final Atom fact : facts) {
-			// TODO validate Term does not have Blanks
-			if (fact.getVariables().isEmpty()) {
-				final Predicate predicate = fact.getPredicate();
-				this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
-				this.factsForPredicate.get(predicate).add(fact);
-			} else {
-				// TODO Throw Exception: not a fact
+			// TODO validate has only constants
+			if (!fact.getConstants().containsAll(fact.getTerms())) {
+				throw new IllegalArgumentException("Not a fact");
 			}
+
+			final Predicate predicate = fact.getPredicate();
+			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
+			this.factsForPredicate.get(predicate).add(fact);
 		}
+
 	}
 
 	@Override
