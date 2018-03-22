@@ -7,7 +7,7 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.FactsSourceConfigException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import karmaresearch.vlog.AlreadyStartedException;
@@ -66,7 +66,7 @@ public interface Reasoner {
 	QueryResultIterator answerQuery(Atom atom) throws NotStartedException, ReasonerStateException;
 
 	void exportQueryAnswersToCSV(Atom atom, String outputFilePath)
-			throws ReasonerStateException, NotStartedException, IOException, FactsSourceConfigException;
+			throws ReasonerStateException, NotStartedException, IOException, DataSourceConfigException;
 
 	// TODO arity should be in the EDB config file,
 	// do not read the files, have low-level API check if the file content

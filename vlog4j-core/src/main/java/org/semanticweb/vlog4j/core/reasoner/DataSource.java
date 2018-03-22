@@ -22,6 +22,4 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 public interface DataSource {
 
-	String getLocation();
-
 }

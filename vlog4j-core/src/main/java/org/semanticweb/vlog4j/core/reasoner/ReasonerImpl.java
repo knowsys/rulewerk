@@ -18,7 +18,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.FactsSourceConfigException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
 import org.slf4j.Logger;
@@ -196,14 +196,14 @@ public class ReasonerImpl implements Reasoner {
 
 	@Override
 	public void exportQueryAnswersToCSV(final Atom queryAtom, final String csvFilePath)
-			throws ReasonerStateException, NotStartedException, IOException, FactsSourceConfigException {
+			throws ReasonerStateException, NotStartedException, IOException, DataSourceConfigException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
-		if (!csvFilePath.endsWith(CSVFileDataSource.CSV_FILE_EXTENSION)) {
-			throw new FactsSourceConfigException("Expected .csv extension for data source file [" + csvFilePath + "]!");
+		if (!csvFilePath.endsWith(CsvFileDataSource.CSV_FILE_EXTENSION)) {
+			throw new DataSourceConfigException("Expected .csv extension for data source file [" + csvFilePath + "]!");
 		}
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);

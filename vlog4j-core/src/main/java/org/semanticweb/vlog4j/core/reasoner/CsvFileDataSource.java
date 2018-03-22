@@ -1,10 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
-import java.io.File;
-
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-
-/*
+/*-
  * #%L
  * VLog4j Core Components
  * %%
@@ -24,9 +20,26 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
  * #L%
  */
 
-public interface FactsSourceConfig {
+import java.io.File;
 
-	public Predicate getPredicate();
+import org.apache.commons.lang3.Validate;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 
-	public File getSourceFile();
+public class CsvFileDataSource implements DataSource {
+	public static final String CSV_FILE_EXTENSION = ".csv";
+
+	private final File csvFile;
+
+	public File getCsvFile() {
+		return this.csvFile;
+	}
+
+	public CsvFileDataSource(final File csvFile) throws DataSourceConfigException {
+		Validate.notNull(csvFile);
+		if (!csvFile.getName().endsWith(CSV_FILE_EXTENSION)) {
+			throw new DataSourceConfigException("Expected .csv extension for data source file [" + csvFile + "]!");
+		}
+		this.csvFile = csvFile;
+	}
+
 }
