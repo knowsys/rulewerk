@@ -51,7 +51,7 @@ public class QueryResultIterator implements Iterator<QueryResult>, AutoCloseable
 
 	@Override
 	public void close()  {
-		this.stringQueryResultIterator.cleanup();
+		this.stringQueryResultIterator.close();
 	}
 
 }

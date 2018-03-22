@@ -75,7 +75,7 @@ public class VLogDataFromMemoryTest {
 		// Querying B(?X) before materialize
 		final StringQueryResultIterator queryResultIteratorBx1 = vlog.query(atomBx);
 		assertFalse(queryResultIteratorBx1.hasNext());
-		queryResultIteratorBx1.cleanup();
+		queryResultIteratorBx1.close();
 
 		vlog.materialize(true);
 
@@ -92,7 +92,7 @@ public class VLogDataFromMemoryTest {
 	}
 
 	@Test
-	public void testBooleanQueryTrue()
+	public void testBooleanQueryTrueIncludeConstantsFalse()
 			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 		// Creating rules and facts
 		final String[][] argsAMatrix = { { "a", "a" } };
@@ -118,15 +118,55 @@ public class VLogDataFromMemoryTest {
 		final String[] expectedQueryResult = { "a", "a" };
 		Assert.assertArrayEquals(expectedQueryResult, actualQueryResult);
 		assertFalse(queryResultIterator.hasNext());
-		queryResultIterator.cleanup();
+		queryResultIterator.close();
 
-		StringQueryResultIterator queryResultIteratorNoConstants = vlog.query(booleanQueryAtomBa, false);
+		StringQueryResultIterator queryResultIteratorNoConstants = vlog.query(booleanQueryAtomBa, false, false);
 		assertTrue(queryResultIteratorNoConstants.hasNext());
 		assertTrue(queryResultIteratorNoConstants.next().length == 0);
-		queryResultIteratorNoConstants.cleanup();
+		queryResultIteratorNoConstants.close();
 
 		vlog.stop();
 	}
+	
+	@Test
+	public void testBooleanQueryTrueIncludeConstantsTrue()
+			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+		// Creating rules and facts
+		final String[][] argsAMatrix = { { "a", "a" } };
+		final karmaresearch.vlog.Term varX = VLogExpressions.makeVariable("X");
+		final karmaresearch.vlog.Term varY = VLogExpressions.makeVariable("Y");
+		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("B", varX, varY);
+		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX, varY);
+		final Rule rule = VLogExpressions.makeRule(atomBx, atomAx);
+
+		// Start VLog
+		final VLog vlog = new VLog();
+		vlog.addData("A", argsAMatrix);
+		vlog.setRules(new Rule[] { rule }, RuleRewriteStrategy.NONE);
+		vlog.materialize(true);
+
+		// Querying B(a)
+		final karmaresearch.vlog.Term constantA = VLogExpressions.makeConstant("a");
+		final karmaresearch.vlog.Atom booleanQueryAtomBa = new karmaresearch.vlog.Atom("B", constantA, constantA);
+
+		final StringQueryResultIterator queryResultIterator = vlog.query(booleanQueryAtomBa);
+		assertTrue(queryResultIterator.hasNext());
+		final String[] actualQueryResult = queryResultIterator.next();
+		final String[] expectedQueryResult = { "a", "a" };
+		Assert.assertArrayEquals(expectedQueryResult, actualQueryResult);
+		assertFalse(queryResultIterator.hasNext());
+		queryResultIterator.close();
+
+		StringQueryResultIterator queryResultIteratorWithConstants = vlog.query(booleanQueryAtomBa, true, false);
+		assertTrue(queryResultIteratorWithConstants.hasNext());
+		final String[] actualQueryResult2 = queryResultIterator.next();
+		Assert.assertArrayEquals(expectedQueryResult, actualQueryResult2);
+		queryResultIteratorWithConstants.close();
+
+		vlog.stop();
+	}
+	
+	
 
 	@Test
 	public void testBooleanQueryFalse()
@@ -150,7 +190,7 @@ public class VLogDataFromMemoryTest {
 		final StringQueryResultIterator queryResultEnnumeration = vlog.query(booleanQueryAtomBb);
 		assertFalse(queryResultEnnumeration.hasNext());
 
-		queryResultEnnumeration.cleanup();
+		queryResultEnnumeration.close();
 		vlog.stop();
 	}
 
@@ -191,7 +231,7 @@ public class VLogDataFromMemoryTest {
 		final Set<List<String>> actualQueryResultBAfterMat = collectAnswers(queryResultEnnumerationBAfterMat);
 		assertEquals(expectedQueryResultsA, actualQueryResultBAfterMat);
 
-		queryResultEnnumerationBAfterMat.cleanup();
+		queryResultEnnumerationBAfterMat.close();
 		vlog.stop();
 	}
 
@@ -206,13 +246,13 @@ public class VLogDataFromMemoryTest {
 
 		StringQueryResultIterator stringQueryResultIterator = vlog.query(queryAtom);
 		Assert.assertFalse(stringQueryResultIterator.hasNext());
-		stringQueryResultIterator.cleanup();
+		stringQueryResultIterator.close();
 
 		vlog.materialize(true);
 
 		StringQueryResultIterator queryResultIteratorAfterReason = vlog.query(queryAtom);
 		Assert.assertFalse(queryResultIteratorAfterReason.hasNext());
-		queryResultIteratorAfterReason.cleanup();
+		queryResultIteratorAfterReason.close();
 
 		vlog.stop();
 	}
@@ -230,13 +270,13 @@ public class VLogDataFromMemoryTest {
 
 		StringQueryResultIterator stringQueryResultIterator = vlog.query(queryAtom);
 		Assert.assertFalse(stringQueryResultIterator.hasNext());
-		stringQueryResultIterator.cleanup();
+		stringQueryResultIterator.close();
 
 		vlog.materialize(true);
 
 		StringQueryResultIterator queryResultIteratorAfterReason = vlog.query(queryAtom);
 		Assert.assertFalse(queryResultIteratorAfterReason.hasNext());
-		queryResultIteratorAfterReason.cleanup();
+		queryResultIteratorAfterReason.close();
 
 		vlog.stop();
 	}
@@ -246,7 +286,7 @@ public class VLogDataFromMemoryTest {
 		while (queryResultIterator.hasNext()) {
 			answers.add(Arrays.asList(queryResultIterator.next()));
 		}
-		queryResultIterator.cleanup();
+		queryResultIterator.close();
 		return answers;
 	}
 }
