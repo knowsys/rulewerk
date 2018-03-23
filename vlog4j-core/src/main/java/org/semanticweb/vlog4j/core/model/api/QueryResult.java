@@ -27,3 +27,4 @@ public interface QueryResult {
 	List<Constant> getConstants();
 
 }
+

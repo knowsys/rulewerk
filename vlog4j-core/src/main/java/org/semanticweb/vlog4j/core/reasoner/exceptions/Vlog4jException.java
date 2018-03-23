@@ -34,7 +34,5 @@ public class Vlog4jException extends Exception {
 	public Vlog4jException(String message) {
 		super(message);
 	}
-	
-	
 
 }

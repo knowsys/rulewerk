@@ -16,9 +16,9 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
 import org.slf4j.Logger;
@@ -150,7 +150,7 @@ public class ReasonerImpl implements Reasoner {
 
 			this.reasonerState = ReasonerState.AFTER_LOADING;
 			// this.vlog.start(edbPredicatesConfigToString(), false);
-			if (factsForPredicate.isEmpty()) {
+			if (this.factsForPredicate.isEmpty()) {
 				this.vlog.start(StringUtils.EMPTY, false);
 			}
 			// TODO log warning if both in memory and on disk facts are empty.
@@ -220,7 +220,7 @@ public class ReasonerImpl implements Reasoner {
 		final Set<Predicate> idbPredicates = collectIdbPredicates();
 		final Set<Predicate> intersection = new HashSet<>(edbPredicates);
 		intersection.retainAll(idbPredicates);
-		
+
 		if (!intersection.isEmpty()) {
 			throw new EdbIdbSeparationException(intersection);
 		}

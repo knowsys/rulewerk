@@ -5,9 +5,9 @@ import java.util.Collection;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import karmaresearch.vlog.AlreadyStartedException;
