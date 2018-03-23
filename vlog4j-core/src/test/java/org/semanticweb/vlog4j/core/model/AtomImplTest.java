@@ -25,10 +25,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -48,13 +48,8 @@ public class AtomImplTest {
 		final Atom atomP = Expressions.makeAtom("p", x, c, d, y);
 		final Atom atomQ = Expressions.makeAtom("q", c, d);
 
-		final Set<Variable> variables = new HashSet<>();
-		variables.add(x);
-		variables.add(y);
-
-		final Set<Constant> constants = new HashSet<>();
-		constants.add(c);
-		constants.add(d);
+		final Set<Variable> variables = Sets.newSet(x, y);
+		final Set<Constant> constants = Sets.newSet(c, d);
 
 		assertEquals("p", atomP.getPredicate().getName());
 		assertEquals(atomP.getTerms().size(), atomP.getPredicate().getArity());
