@@ -26,7 +26,7 @@ package org.semanticweb.vlog4j.core.reasoner.exceptions;
  * @author Irina Dragoste
  *
  */
-public class DataSourceConfigException extends Vlog4jException {
+public class DataSourceConfigException extends VLog4jException {
 
 	/**
 	 * generated serial version UID

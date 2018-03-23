@@ -20,7 +20,6 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 
-
 import java.util.Iterator;
 
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
@@ -38,19 +37,18 @@ public class QueryResultIterator implements Iterator<QueryResult>, AutoCloseable
 
 	@Override
 	public boolean hasNext() {
-		final boolean hasNext = this.stringQueryResultIterator.hasNext();
-		return hasNext;
+		return this.stringQueryResultIterator.hasNext();
 	}
 
 	@Override
 	public QueryResult next() {
-		final String[] vlogQueryResult = this.stringQueryResultIterator.next();
-		final QueryResult queryResult = VLogToModelConverter.toQueryResult(vlogQueryResult);
+		final String[] vLogQueryResult = this.stringQueryResultIterator.next();
+		final QueryResult queryResult = VLogToModelConverter.toQueryResult(vLogQueryResult);
 		return queryResult;
 	}
 
 	@Override
-	public void close()  {
+	public void close() {
 		this.stringQueryResultIterator.close();
 	}
 

@@ -30,7 +30,7 @@ import java.text.MessageFormat;
  * @author Irina Dragoste
  *
  */
-public class ReasonerStateException extends Vlog4jException {
+public class ReasonerStateException extends VLog4jException {
 
 	/**
 	 * generated serial version UID

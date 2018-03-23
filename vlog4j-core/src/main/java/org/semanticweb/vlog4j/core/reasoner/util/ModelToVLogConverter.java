@@ -50,20 +50,20 @@ public final class ModelToVLogConverter {
 
 	public static karmaresearch.vlog.Term toVLogTerm(final Term term) {
 		Validate.notNull(term);
-		final TermToVLogConverter termToVlogConverter = new TermToVLogConverter();
-		term.accept(termToVlogConverter);
-		return termToVlogConverter.getVlogTerm();
+		final TermToVLogConverter termToVLogConverter = new TermToVLogConverter();
+		term.accept(termToVLogConverter);
+		return termToVLogConverter.getVLogTerm();
 	}
 
 	public static karmaresearch.vlog.Term[] toVLogTermArray(final List<Term> terms) {
 		Validate.noNullElements(terms);
-		final karmaresearch.vlog.Term[] vlogTerms = new karmaresearch.vlog.Term[terms.size()];
+		final karmaresearch.vlog.Term[] vLogTerms = new karmaresearch.vlog.Term[terms.size()];
 		int i = 0;
 		for (final Term term : terms) {
-			vlogTerms[i] = toVLogTerm(term);
+			vLogTerms[i] = toVLogTerm(term);
 			i++;
 		}
-		return vlogTerms;
+		return vLogTerms;
 	}
 
 	public static String[][] toVLogFactTuples(final Collection<Atom> facts) {
@@ -80,14 +80,14 @@ public final class ModelToVLogConverter {
 
 	private static String[] toVLogFactTuple(final Atom fact) {
 		final List<Term> terms = fact.getTerms();
-		final String[] vlogFactTuple = new String[terms.size()];
+		final String[] vLogFactTuple = new String[terms.size()];
 		int i = 0;
 		for (final Term term : terms) {
-			final String vlogTupleTerm = term.getName();
-			vlogFactTuple[i] = vlogTupleTerm;
+			final String vLogTupleTerm = term.getName();
+			vLogFactTuple[i] = vLogTupleTerm;
 			i++;
 		}
-		return vlogFactTuple;
+		return vLogFactTuple;
 	}
 
 	/**
@@ -98,7 +98,7 @@ public final class ModelToVLogConverter {
 	 * @return String representation corresponding to given predicate name and
 	 *         arity.
 	 */
-	public static String toVlogPredicate(Predicate predicate) {
+	public static String toVLogPredicate(Predicate predicate) {
 		Validate.notNull(predicate);
 		final String vLogPredicate = predicate.getName() + PREDICATE_ARITY_SUFFIX_SEPARATOR + predicate.getArity();
 		return vLogPredicate;
@@ -106,38 +106,38 @@ public final class ModelToVLogConverter {
 
 	public static karmaresearch.vlog.Atom toVLogAtom(final Atom atom) {
 		Validate.notNull(atom);
-		final karmaresearch.vlog.Term[] vlogTerms = toVLogTermArray(atom.getTerms());
-		final String vLogPredicate = toVlogPredicate(atom.getPredicate());
-		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(vLogPredicate, vlogTerms);
+		final karmaresearch.vlog.Term[] vLogTerms = toVLogTermArray(atom.getTerms());
+		final String vLogPredicate = toVLogPredicate(atom.getPredicate());
+		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(vLogPredicate, vLogTerms);
 		return vLogAtom;
 	}
 
 	private static karmaresearch.vlog.Atom[] toVLogAtomArray(final Conjunction conjunction) {
-		final karmaresearch.vlog.Atom[] vlogAtoms = new karmaresearch.vlog.Atom[conjunction.getAtoms().size()];
+		final karmaresearch.vlog.Atom[] vLogAtoms = new karmaresearch.vlog.Atom[conjunction.getAtoms().size()];
 		int i = 0;
 		for (final Atom atom : conjunction.getAtoms()) {
-			vlogAtoms[i] = toVLogAtom(atom);
+			vLogAtoms[i] = toVLogAtom(atom);
 			i++;
 		}
-		return vlogAtoms;
+		return vLogAtoms;
 	}
 
 	private static karmaresearch.vlog.Rule toVLogRule(final Rule rule) {
 		Validate.notNull(rule);
-		final karmaresearch.vlog.Atom[] vlogHead = toVLogAtomArray(rule.getHead());
-		final karmaresearch.vlog.Atom[] vlogBody = toVLogAtomArray(rule.getBody());
-		return new karmaresearch.vlog.Rule(vlogHead, vlogBody);
+		final karmaresearch.vlog.Atom[] vLogHead = toVLogAtomArray(rule.getHead());
+		final karmaresearch.vlog.Atom[] vLogBody = toVLogAtomArray(rule.getBody());
+		return new karmaresearch.vlog.Rule(vLogHead, vLogBody);
 	}
 
 	public static karmaresearch.vlog.Rule[] toVLogRuleArray(final List<Rule> rules) {
 		Validate.noNullElements(rules);
-		final karmaresearch.vlog.Rule[] vlogRules = new karmaresearch.vlog.Rule[rules.size()];
+		final karmaresearch.vlog.Rule[] vLogRules = new karmaresearch.vlog.Rule[rules.size()];
 		int i = 0;
 		for (final Rule rule : rules) {
-			vlogRules[i] = toVLogRule(rule);
+			vLogRules[i] = toVLogRule(rule);
 			i++;
 		}
-		return vlogRules;
+		return vLogRules;
 	}
 
 	public static karmaresearch.vlog.VLog.RuleRewriteStrategy toVLogRuleRewriteStrategy(
@@ -145,7 +145,7 @@ public final class ModelToVLogConverter {
 		Validate.notNull(ruleRewriteStrategy);
 		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy;
 		switch (ruleRewriteStrategy) {
-		case SPLIT_HEAD_PIECES_AGGRESIVE:
+		case SPLIT_HEAD_PIECES:
 			vLogRuleRewriteStrategy = karmaresearch.vlog.VLog.RuleRewriteStrategy.AGGRESSIVE;
 			break;
 		case NONE:

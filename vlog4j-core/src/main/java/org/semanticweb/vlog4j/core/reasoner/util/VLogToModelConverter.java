@@ -29,15 +29,15 @@ import org.semanticweb.vlog4j.core.model.impl.Expressions;
 
 public class VLogToModelConverter {
 
-	public static QueryResult toQueryResult(String[] vlogQueryResult) {
-		return new QueryResultImpl(toConstantList(vlogQueryResult));
+	public static QueryResult toQueryResult(String[] vLogQueryResult) {
+		return new QueryResultImpl(toConstantList(vLogQueryResult));
 	}
 
-	private static List<Constant> toConstantList(String[] vlogGroundTerms) {
+	private static List<Constant> toConstantList(String[] vLogGroundTerms) {
 		// TODO support blanks (now we assume every query result term is a named
 		// individual)
 		final List<Constant> constants = new ArrayList<>();
-		for (final String term : vlogGroundTerms) {
+		for (final String term : vLogGroundTerms) {
 			final Constant groundTerm = Expressions.makeConstant(term);
 			constants.add(groundTerm);
 		}

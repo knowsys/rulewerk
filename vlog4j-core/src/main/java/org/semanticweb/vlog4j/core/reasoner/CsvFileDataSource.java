@@ -23,7 +23,6 @@ package org.semanticweb.vlog4j.core.reasoner;
 import java.io.File;
 
 import org.apache.commons.lang3.Validate;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 
 public class CsvFileDataSource implements DataSource {
 	public static final String CSV_FILE_EXTENSION = ".csv";
@@ -34,11 +33,10 @@ public class CsvFileDataSource implements DataSource {
 		return this.csvFile;
 	}
 
-	public CsvFileDataSource(final File csvFile) throws DataSourceConfigException {
-		Validate.notNull(csvFile);
-		if (!csvFile.getName().endsWith(CSV_FILE_EXTENSION)) {
-			throw new DataSourceConfigException("Expected .csv extension for data source file [" + csvFile + "]!");
-		}
+	public CsvFileDataSource(final File csvFile) {
+		Validate.notNull(csvFile, "Data source file cannot be null!");
+		Validate.isTrue(csvFile.getName().endsWith(CSV_FILE_EXTENSION),
+				"Expected .csv extension for data source file [%s]!", csvFile);
 		this.csvFile = csvFile;
 	}
 

@@ -27,28 +27,28 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 
 public class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 
-	private karmaresearch.vlog.Term vlogTerm;
+	private karmaresearch.vlog.Term vLogTerm;
 
-	public karmaresearch.vlog.Term getVlogTerm() {
-		return this.vlogTerm;
+	public karmaresearch.vlog.Term getVLogTerm() {
+		return this.vLogTerm;
 	}
 
 	@Override
 	public karmaresearch.vlog.Term visit(Constant term) {
-		this.vlogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
-		return this.vlogTerm;
+		this.vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
+		return this.vLogTerm;
 	}
 
 	@Override
 	public karmaresearch.vlog.Term visit(Variable term) {
-		this.vlogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, term.getName());
-		return this.vlogTerm;
+		this.vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, term.getName());
+		return this.vLogTerm;
 	}
 
 	@Override
 	public karmaresearch.vlog.Term visit(Blank term) {
-		this.vlogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
-		return this.vlogTerm;
+		this.vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
+		return this.vLogTerm;
 	}
 
 }

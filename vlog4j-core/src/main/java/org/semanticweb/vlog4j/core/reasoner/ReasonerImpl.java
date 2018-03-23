@@ -53,7 +53,7 @@ import karmaresearch.vlog.VLog;
 public class ReasonerImpl implements Reasoner {
 	private static Logger LOGGER = LoggerFactory.getLogger(ReasonerImpl.class);
 
-	private final VLog vlog = new VLog();
+	private final VLog vLog = new VLog();
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
 
 	private Algorithm algorithm = Algorithm.SKOLEM_CHASE;
@@ -149,9 +149,9 @@ public class ReasonerImpl implements Reasoner {
 			validateEdbIdbSeparation();
 
 			this.reasonerState = ReasonerState.AFTER_LOADING;
-			// this.vlog.start(edbPredicatesConfigToString(), false);
+			// this.vLog.start(edbPredicatesConfigToString(), false);
 			if (this.factsForPredicate.isEmpty()) {
-				this.vlog.start(StringUtils.EMPTY, false);
+				this.vLog.start(StringUtils.EMPTY, false);
 			}
 			// TODO log warning if both in memory and on disk facts are empty.
 			loadInMemoryFacts();
@@ -178,7 +178,7 @@ public class ReasonerImpl implements Reasoner {
 			this.reasonerState = ReasonerState.AFTER_REASONING;
 
 			final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
-			this.vlog.materialize(skolemChase);
+			this.vLog.materialize(skolemChase);
 		}
 	}
 
@@ -190,7 +190,7 @@ public class ReasonerImpl implements Reasoner {
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
-		final StringQueryResultIterator stringQueryResultIterator = this.vlog.query(vLogAtom);
+		final StringQueryResultIterator stringQueryResultIterator = this.vLog.query(vLogAtom);
 		return new QueryResultIterator(stringQueryResultIterator);
 	}
 
@@ -207,12 +207,12 @@ public class ReasonerImpl implements Reasoner {
 		}
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
-		this.vlog.writeQueryResultsToCsv(vLogAtom, csvFilePath);
+		this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath);
 	}
 
 	@Override
 	public void dispose() {
-		this.vlog.stop();
+		this.vLog.stop();
 	}
 
 	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
@@ -249,9 +249,9 @@ public class ReasonerImpl implements Reasoner {
 		for (final Predicate predicate : this.factsForPredicate.keySet()) {
 			final Set<Atom> factsForPredicate = this.factsForPredicate.get(predicate);
 
-			final String vlogPredicate = ModelToVLogConverter.toVlogPredicate(predicate);
+			final String vLogPredicate = ModelToVLogConverter.toVLogPredicate(predicate);
 			final String[][] tuplesForPredicate = ModelToVLogConverter.toVLogFactTuples(factsForPredicate);
-			this.vlog.addData(vlogPredicate, tuplesForPredicate);
+			this.vLog.addData(vLogPredicate, tuplesForPredicate);
 		}
 	}
 
@@ -259,7 +259,7 @@ public class ReasonerImpl implements Reasoner {
 		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(this.rules);
 		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
 				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
-		this.vlog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
+		this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
 	}
 
 }

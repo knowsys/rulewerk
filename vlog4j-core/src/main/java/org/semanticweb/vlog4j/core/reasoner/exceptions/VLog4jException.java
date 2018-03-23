@@ -20,18 +20,18 @@ package org.semanticweb.vlog4j.core.reasoner.exceptions;
  * #L%
  */
 
-public class Vlog4jException extends Exception {
+public class VLog4jException extends Exception {
 
 	/**
 	 * generated serial version UID
 	 */
 	private static final long serialVersionUID = 8305375071519734590L;
 
-	public Vlog4jException(String message, Throwable cause) {
+	public VLog4jException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public Vlog4jException(String message) {
+	public VLog4jException(String message) {
 		super(message);
 	}
 

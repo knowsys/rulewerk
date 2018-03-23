@@ -73,7 +73,7 @@ public class ModelToVLogConverterTest {
 	}
 
 	@Test
-	public void testToVlogTermBlank() {
+	public void testToVLogTermBlank() {
 		final Blank blank = new BlankImpl("blank");
 		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
 				karmaresearch.vlog.Term.TermType.CONSTANT, "blank");
@@ -132,10 +132,10 @@ public class ModelToVLogConverterTest {
 	}
 
 	@Test
-	public void testToVlogPredicate() {
+	public void testToVLogPredicate() {
 		final Predicate predicate = Expressions.makePredicate("pred", 1);
-		final String vlogPredicate = ModelToVLogConverter.toVlogPredicate(predicate);
-		assertEquals("pred-1", vlogPredicate);
+		final String vLogPredicate = ModelToVLogConverter.toVLogPredicate(predicate);
+		assertEquals("pred-1", vLogPredicate);
 	}
 
 	@Test
@@ -198,7 +198,7 @@ public class ModelToVLogConverterTest {
 		assertEquals(karmaresearch.vlog.VLog.RuleRewriteStrategy.NONE,
 				ModelToVLogConverter.toVLogRuleRewriteStrategy(RuleRewriteStrategy.NONE));
 		assertEquals(karmaresearch.vlog.VLog.RuleRewriteStrategy.AGGRESSIVE,
-				ModelToVLogConverter.toVLogRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES_AGGRESIVE));
+				ModelToVLogConverter.toVLogRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES));
 	}
 
 }

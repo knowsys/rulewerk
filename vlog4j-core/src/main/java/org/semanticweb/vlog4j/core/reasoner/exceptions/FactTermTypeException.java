@@ -26,7 +26,7 @@ import java.util.Set;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Term;
 
-public class FactTermTypeException extends Vlog4jException {
+public class FactTermTypeException extends VLog4jException {
 
 	/**
 	 * generated serial version UID

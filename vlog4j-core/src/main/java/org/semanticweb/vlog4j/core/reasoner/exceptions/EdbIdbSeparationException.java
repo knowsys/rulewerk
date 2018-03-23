@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 
-public class EdbIdbSeparationException extends Vlog4jException {
+public class EdbIdbSeparationException extends VLog4jException {
 
 	/**
 	 * generated serial version UID
