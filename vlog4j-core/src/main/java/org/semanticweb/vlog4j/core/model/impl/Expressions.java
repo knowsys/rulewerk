@@ -27,7 +27,6 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -189,28 +188,6 @@ public final class Expressions {
 	public static Rule makeRule(final Atom headAtom, final Atom... bodyAtoms) {
 		return new RuleImpl(new ConjunctionImpl(Arrays.asList(headAtom)),
 				new ConjunctionImpl(Arrays.asList(bodyAtoms)));
-	}
-
-	/**
-	 * Creates a {@code QueryResult}.
-	 * 
-	 * @param constants
-	 *            list of non-null constants.
-	 * @return a {@link QueryResult} corresponding to the input.
-	 */
-	public static QueryResult makeQueryResult(final List<Constant> constants) {
-		return new QueryResultImpl(constants);
-	}
-
-	/**
-	 * Creates a {@code QueryResult}.
-	 * 
-	 * @param constants
-	 *            list of non-null constants.
-	 * @return a {@link QueryResult} corresponding to the input.
-	 */
-	public static QueryResult makeQueryResult(final Constant... constants) {
-		return new QueryResultImpl(Arrays.asList(constants));
 	}
 
 }

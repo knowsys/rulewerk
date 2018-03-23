@@ -26,7 +26,6 @@ import java.util.List;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
-import org.semanticweb.vlog4j.core.model.impl.QueryResultImpl;
 
 public class VLogToModelConverter {
 

@@ -1,6 +1,4 @@
-package org.semanticweb.vlog4j.core.model.impl;
-
-import java.util.Collections;
+package org.semanticweb.vlog4j.core.reasoner.util;
 
 /*
  * #%L
@@ -24,27 +22,28 @@ import java.util.Collections;
 
 import java.util.List;
 
-import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 
-public final class QueryResultImpl implements QueryResult {
+final class QueryResultImpl implements QueryResult {
 
 	private final List<Constant> constants;
 
-	public QueryResultImpl(List<Constant> constants) {
-		Validate.noNullElements(constants);
+	QueryResultImpl(List<Constant> constants) {
 		this.constants = constants;
 	}
 
 	@Override
 	public List<Constant> getConstants() {
-		return Collections.unmodifiableList(this.constants);
+		return this.constants;
 	}
 
 	@Override
 	public int hashCode() {
-		return this.constants.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (this.constants == null ? 0 : this.constants.hashCode());
+		return result;
 	}
 
 	@Override
@@ -55,11 +54,15 @@ public final class QueryResultImpl implements QueryResult {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof QueryResult)) {
+		if (!(obj instanceof QueryResultImpl)) {
 			return false;
 		}
-		final QueryResult other = (QueryResult) obj;
-		return this.constants.equals(other.getConstants());
+		final QueryResultImpl other = (QueryResultImpl) obj;
+		if (this.constants == null) {
+			return other.constants == null;
+		} else {
+			return this.constants.equals(other.getConstants());
+		}
 	}
 
 	@Override

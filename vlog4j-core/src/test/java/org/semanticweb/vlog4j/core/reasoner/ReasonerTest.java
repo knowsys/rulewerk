@@ -23,17 +23,14 @@ package org.semanticweb.vlog4j.core.reasoner;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
-import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.ReasonerImpl;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -45,8 +42,8 @@ import karmaresearch.vlog.NotStartedException;
 
 public class ReasonerTest extends TestCase {
 
-	public void testSimpleInference() throws AlreadyStartedException, EDBConfigurationException,
-			IOException, NotStartedException, ReasonerStateException, EdbIdbSeparationException, FactTermTypeException {
+	public void testSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException,
+			NotStartedException, ReasonerStateException, EdbIdbSeparationException, FactTermTypeException {
 		final String constantNameC = "c";
 		final String constantNameD = "d";
 
@@ -72,19 +69,18 @@ public class ReasonerTest extends TestCase {
 		reasoner.reason();
 
 		final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx);
-		final Set<QueryResult> actualResults = gatherQueryResults(cxQueryResultEnumAfterReasoning);
+		final Set<List<Constant>> actualResults = gatherQueryResults(cxQueryResultEnumAfterReasoning);
 
-		final QueryResult queryResultC = Expressions.makeQueryResult(constantC);
-		final QueryResult queryResultD = Expressions.makeQueryResult(constantD);
-		final Set<QueryResult> expectedResults = new HashSet<>(Arrays.asList(queryResultC, queryResultD));
+		final Set<List<Constant>> expectedResults = new HashSet<>(
+				Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));
 		assertEquals(expectedResults, actualResults);
 
 		reasoner.dispose();
 	}
 
-	private static Set<QueryResult> gatherQueryResults(QueryResultIterator queryResultIterator) {
-		final Set<QueryResult> results = new HashSet<>();
-		queryResultIterator.forEachRemaining(results::add);
+	private static Set<List<Constant>> gatherQueryResults(QueryResultIterator queryResultIterator) {
+		final Set<List<Constant>> results = new HashSet<>();
+		queryResultIterator.forEachRemaining(queryResult -> results.add(queryResult.getConstants()));
 		queryResultIterator.close();
 		return results;
 	}

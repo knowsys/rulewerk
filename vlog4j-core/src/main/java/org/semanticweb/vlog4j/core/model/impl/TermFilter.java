@@ -41,7 +41,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 public class TermFilter implements TermVisitor<Void> {
 
 	final TermType termType;
-	final Set<Term> terms = new HashSet<Term>();
+	final Set<Term> terms = new HashSet<>();
 
 	/**
 	 * Creates a new term filter.
@@ -72,8 +72,8 @@ public class TermFilter implements TermVisitor<Void> {
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Variable> getVariables() {
-		if (termType.equals(TermType.VARIABLE)) {
-			return (Set<Variable>) ((Set<? extends Term>) Collections.unmodifiableSet(this.terms));
+		if (this.termType.equals(TermType.VARIABLE)) {
+			return (Set<Variable>) (Set<? extends Term>) Collections.unmodifiableSet(this.terms);
 		} else {
 			return Collections.emptySet();
 		}
@@ -81,15 +81,15 @@ public class TermFilter implements TermVisitor<Void> {
 
 	/**
 	 * Returns the set of constants collected so far, which might be empty if the
-	 * terms collected are not constants. The method will also return an empty set if
-	 * anything other than constants are being collected.
+	 * terms collected are not constants. The method will also return an empty set
+	 * if anything other than constants are being collected.
 	 * 
-	 * @return set of blanks (see {@link Constant}).
+	 * @return set of constants (see {@link Constant}).
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Constant> getConstants() {
-		if (termType.equals(TermType.CONSTANT)) {
-			return (Set<Constant>) ((Set<? extends Term>) Collections.unmodifiableSet(this.terms));
+		if (this.termType.equals(TermType.CONSTANT)) {
+			return (Set<Constant>) (Set<? extends Term>) Collections.unmodifiableSet(this.terms);
 		} else {
 			return Collections.emptySet();
 		}
@@ -97,7 +97,7 @@ public class TermFilter implements TermVisitor<Void> {
 
 	@Override
 	public Void visit(Constant term) {
-		if (termType == null || termType.equals(TermType.CONSTANT)) {
+		if (this.termType == null || this.termType.equals(TermType.CONSTANT)) {
 			this.terms.add(term);
 		}
 		return null;
@@ -105,16 +105,16 @@ public class TermFilter implements TermVisitor<Void> {
 
 	@Override
 	public Void visit(Variable term) {
-		if (termType == null || termType.equals(TermType.VARIABLE)) {
-			terms.add(term);
+		if (this.termType == null || this.termType.equals(TermType.VARIABLE)) {
+			this.terms.add(term);
 		}
 		return null;
 	}
 
 	@Override
 	public Void visit(Blank term) {
-		if (termType == null || termType.equals(TermType.BLANK)) {
-			terms.add(term);
+		if (this.termType == null || this.termType.equals(TermType.BLANK)) {
+			this.terms.add(term);
 		}
 		return null;
 	}

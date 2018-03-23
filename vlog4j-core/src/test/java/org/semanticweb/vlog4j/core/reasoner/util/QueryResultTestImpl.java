@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model;
+package org.semanticweb.vlog4j.core.reasoner.util;
 
 /*-
  * #%L
@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
-import org.semanticweb.vlog4j.core.model.impl.QueryResultImpl;
 
 public class QueryResultTestImpl {
 
@@ -42,26 +41,18 @@ public class QueryResultTestImpl {
 		final List<Constant> constantList = Arrays.asList(c1, c1, c2);
 
 		final QueryResult queryResult1 = new QueryResultImpl(constantList);
-		final QueryResult queryResult2 = Expressions.makeQueryResult(c1, c1, c2);
-		final QueryResult queryResult3 = Expressions.makeQueryResult(c1, c2, c1);
+		final QueryResult queryResult2 = new QueryResultImpl(Arrays.asList(c1, c1, c2));
+		final QueryResult queryResult3 = new QueryResultImpl(Arrays.asList(c1, c2, c1));
 
 		assertEquals(queryResult1, queryResult1);
 		assertEquals(queryResult2, queryResult1);
 		assertEquals(queryResult2.hashCode(), queryResult1.hashCode());
 		assertNotEquals(queryResult3, queryResult1);
 		assertNotEquals(queryResult3.hashCode(), queryResult1.hashCode());
+		assertNotEquals(new QueryResultImpl(null), queryResult1);
+		assertEquals(new QueryResultImpl(null), new QueryResultImpl(null));
 		assertFalse(queryResult1.equals(null));
 		assertFalse(queryResult1.equals(constantList));
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void atomsNotNull() {
-		new QueryResultImpl(null);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void atomsNoNullElements() {
-		final Constant constant = Expressions.makeConstant("C");
-		Expressions.makeQueryResult(constant, null);
-	}
 }
