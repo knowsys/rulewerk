@@ -49,8 +49,7 @@ public final class ModelToVLogConverter {
 
 	public static karmaresearch.vlog.Term toVLogTerm(final Term term) {
 		final TermToVLogConverter termToVLogConverter = new TermToVLogConverter();
-		term.accept(termToVLogConverter);
-		return termToVLogConverter.getVLogTerm();
+		return term.accept(termToVLogConverter);
 	}
 
 	public static karmaresearch.vlog.Term[] toVLogTermArray(final List<Term> terms) {
