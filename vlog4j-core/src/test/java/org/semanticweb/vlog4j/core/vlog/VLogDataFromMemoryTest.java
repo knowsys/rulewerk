@@ -21,6 +21,7 @@ package org.semanticweb.vlog4j.core.vlog;
  */
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -49,12 +50,13 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
  *
  */
 public class VLogDataFromMemoryTest {
+
 	@Test
 	public void testVLogSimpleInference()
 			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 
 		final String[][] argsAMatrix = { { "a" }, { "b" } };
-		final karmaresearch.vlog.Term varX = VLogExpressions.makeVariable("X");
+		final karmaresearch.vlog.Term varX = VLogExpressions.makeVariable("x");
 		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("B", varX);
 		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX);
 		final Rule rule = VLogExpressions.makeRule(atomBx, atomAx);
@@ -70,7 +72,7 @@ public class VLogDataFromMemoryTest {
 
 		// Querying A(?X) before materialize
 		final TermQueryResultIterator queryResultIteratorAx1 = vLog.query(atomAx);
-		final Set<List<Term>> queryAxResults1 = collectAnswers(queryResultIteratorAx1);
+		final Set<List<Term>> queryAxResults1 = QueryResultUtils.collectResults(queryResultIteratorAx1);
 		assertEquals(tuples, queryAxResults1);
 
 		// Querying B(?X) before materialize
@@ -82,11 +84,11 @@ public class VLogDataFromMemoryTest {
 
 		// Querying B(?X) after materialize
 		final TermQueryResultIterator queryResultIteratorBx2 = vLog.query(atomBx);
-		final Set<List<Term>> queryResultsBx = collectAnswers(queryResultIteratorBx2);
+		final Set<List<Term>> queryResultsBx = QueryResultUtils.collectResults(queryResultIteratorBx2);
 		assertEquals(tuples, queryResultsBx);
 
 		final TermQueryResultIterator queryResultIteratorAx2 = vLog.query(atomAx);
-		final Set<List<Term>> queryAxResults2 = collectAnswers(queryResultIteratorAx2);
+		final Set<List<Term>> queryAxResults2 = QueryResultUtils.collectResults(queryResultIteratorAx2);
 		assertEquals(tuples, queryAxResults2);
 
 		vLog.stop();
@@ -209,47 +211,6 @@ public class VLogDataFromMemoryTest {
 	}
 
 	@Test
-	public void testSupportedConstantNames()
-			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
-		final String constantNameNumber = "1";
-		final String constantNameStartsWithNumber = "12_13_14";
-		final String[][] argsAMatrix = { { constantNameNumber }, { constantNameStartsWithNumber } };
-		final karmaresearch.vlog.Term varX = VLogExpressions.makeVariable("X");
-		final karmaresearch.vlog.Atom atomAx = new karmaresearch.vlog.Atom("A", varX);
-
-		final Set<List<Term>> expectedQueryResultsA = new HashSet<>();
-		expectedQueryResultsA.add(Arrays.asList(VLogExpressions.makeConstant(constantNameNumber)));
-		expectedQueryResultsA.add(Arrays.asList(VLogExpressions.makeConstant(constantNameStartsWithNumber)));
-		// Start VLog
-		final VLog vLog = new VLog();
-		// Assert: A(1), A(12_13_14).
-		vLog.addData("A", argsAMatrix);
-
-		// Query VLog: A(?X)?
-		final TermQueryResultIterator queryResultIteratorABeforeMat = vLog.query(atomAx);
-		assertTrue(queryResultIteratorABeforeMat.hasNext());
-		final Set<List<Term>> actualQueryResultABeforeMat = collectAnswers(queryResultIteratorABeforeMat);
-		assertEquals(expectedQueryResultsA, actualQueryResultABeforeMat);
-
-		// add rule A(x) -> B(x)
-		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("B", varX);
-		final Rule rule = VLogExpressions.makeRule(atomBx, atomAx);
-		vLog.setRules(new Rule[] { rule }, RuleRewriteStrategy.NONE);
-
-		// materialize
-		vLog.materialize(true);
-
-		// Query VLog: B(?X)?
-		final TermQueryResultIterator queryResultEnnumerationBAfterMat = vLog.query(atomBx);
-		assertTrue(queryResultEnnumerationBAfterMat.hasNext());
-		final Set<List<Term>> actualQueryResultBAfterMat = collectAnswers(queryResultEnnumerationBAfterMat);
-		assertEquals(expectedQueryResultsA, actualQueryResultBAfterMat);
-
-		queryResultEnnumerationBAfterMat.close();
-		vLog.stop();
-	}
-
-	@Test
 	public void queryEmptyKnowledgeBase()
 			throws NotStartedException, AlreadyStartedException, EDBConfigurationException, IOException {
 		// Start VLog
@@ -295,12 +256,4 @@ public class VLogDataFromMemoryTest {
 		vLog.stop();
 	}
 
-	private static Set<List<Term>> collectAnswers(final TermQueryResultIterator queryResultIterator) {
-		final Set<List<Term>> answers = new HashSet<>();
-		while (queryResultIterator.hasNext()) {
-			answers.add(Arrays.asList(queryResultIterator.next()));
-		}
-		queryResultIterator.close();
-		return answers;
-	}
 }

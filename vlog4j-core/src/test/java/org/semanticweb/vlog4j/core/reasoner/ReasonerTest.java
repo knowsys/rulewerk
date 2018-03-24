@@ -83,7 +83,10 @@ public class ReasonerTest extends TestCase {
 
 	private static Set<List<Term>> gatherQueryResults(QueryResultIterator queryResultIterator) {
 		final Set<List<Term>> results = new HashSet<>();
-		queryResultIterator.forEachRemaining(queryResult -> results.add(queryResult.getTerms()));
+		queryResultIterator.forEachRemaining(queryResult -> {
+			boolean isUnique = results.add(queryResult.getTerms());
+			assertTrue(isUnique);
+		});
 		queryResultIterator.close();
 		return results;
 	}
