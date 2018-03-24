@@ -50,4 +50,9 @@ public class VariableImpl extends AbstractTermImpl implements Variable {
 	public <T> T accept(TermVisitor<T> termVisitor) {
 		return termVisitor.visit(this);
 	}
+	
+	@Override
+	public String toString() {
+		return "?" + this.getName();
+	}
 }

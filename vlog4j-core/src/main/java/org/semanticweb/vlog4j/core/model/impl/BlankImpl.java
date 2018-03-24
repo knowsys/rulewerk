@@ -53,4 +53,9 @@ public class BlankImpl extends AbstractTermImpl implements Blank {
 	public <T> T accept(TermVisitor<T> termVisitor) {
 		return termVisitor.visit(this);
 	}
+	
+	@Override
+	public String toString() {
+		return "_" + this.getName();
+	}
 }
