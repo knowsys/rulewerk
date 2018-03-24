@@ -117,5 +117,10 @@ public class ConjunctionImpl implements Conjunction {
 	public Iterator<Atom> iterator() {
 		return this.atoms.iterator();
 	}
+	
+	@Override
+	public String toString() {
+		return "ConjunctionImpl [atoms=" + this.atoms + "]";
+	}
 
 }
