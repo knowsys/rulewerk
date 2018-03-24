@@ -24,7 +24,8 @@ import java.util.List;
 
 public interface QueryResult {
 
-	List<Constant> getConstants();
+	List<Term> getTerms();
 
 }
+
 

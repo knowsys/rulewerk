@@ -25,31 +25,31 @@ import java.util.Iterator;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.reasoner.util.VLogToModelConverter;
 
-import karmaresearch.vlog.StringQueryResultIterator;
+import karmaresearch.vlog.Term;
+import karmaresearch.vlog.TermQueryResultIterator;
 
 public class QueryResultIterator implements Iterator<QueryResult>, AutoCloseable {
 
-	private final StringQueryResultIterator stringQueryResultIterator;
+	private final TermQueryResultIterator vLogTermQueryResultIterator;
 
-	public QueryResultIterator(StringQueryResultIterator stringQueryResultIterator) {
-		this.stringQueryResultIterator = stringQueryResultIterator;
+	public <T> QueryResultIterator(TermQueryResultIterator termQueryResultIterator) {
+		this.vLogTermQueryResultIterator = termQueryResultIterator;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return this.stringQueryResultIterator.hasNext();
+		return this.vLogTermQueryResultIterator.hasNext();
 	}
 
 	@Override
 	public QueryResult next() {
-		final String[] vLogQueryResult = this.stringQueryResultIterator.next();
-		final QueryResult queryResult = VLogToModelConverter.toQueryResult(vLogQueryResult);
-		return queryResult;
+		final Term[] vLogQueryResult = this.vLogTermQueryResultIterator.next();
+		return VLogToModelConverter.toQueryResult(vLogQueryResult);
 	}
 
 	@Override
 	public void close() {
-		this.stringQueryResultIterator.close();
+		this.vLogTermQueryResultIterator.close();
 	}
 
 }

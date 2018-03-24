@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
-import karmaresearch.vlog.StringQueryResultIterator;
+import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
 
 /*
@@ -190,8 +190,14 @@ public class ReasonerImpl implements Reasoner {
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
-		final StringQueryResultIterator stringQueryResultIterator = this.vLog.query(vLogAtom);
+		final TermQueryResultIterator stringQueryResultIterator = this.vLog.query(vLogAtom);
 		return new QueryResultIterator(stringQueryResultIterator);
+	}
+	
+	@Override
+	public void exportQueryAnswersToCSV(final Atom queryAtom, final String csvFilePath, final boolean includeBlanks)
+			throws ReasonerStateException, NotStartedException, IOException, DataSourceConfigException {
+		
 	}
 
 	@Override
@@ -207,7 +213,6 @@ public class ReasonerImpl implements Reasoner {
 		}
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
-		this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath);
 	}
 
 	@Override

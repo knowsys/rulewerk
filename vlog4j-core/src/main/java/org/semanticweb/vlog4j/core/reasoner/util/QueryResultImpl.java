@@ -22,27 +22,27 @@ package org.semanticweb.vlog4j.core.reasoner.util;
 
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
+import org.semanticweb.vlog4j.core.model.api.Term;
 
 final class QueryResultImpl implements QueryResult {
 
-	private final List<Constant> constants;
+	private final List<Term> terms;
 
-	QueryResultImpl(List<Constant> constants) {
-		this.constants = constants;
+	QueryResultImpl(List<Term> terms) {
+		this.terms = terms;
 	}
 
 	@Override
-	public List<Constant> getConstants() {
-		return this.constants;
+	public List<Term> getTerms() {
+		return this.terms;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (this.constants == null ? 0 : this.constants.hashCode());
+		result = prime * result + ((terms == null) ? 0 : terms.hashCode());
 		return result;
 	}
 
@@ -54,20 +54,20 @@ final class QueryResultImpl implements QueryResult {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof QueryResultImpl)) {
+		if (!(obj instanceof QueryResult)) {
 			return false;
 		}
-		final QueryResultImpl other = (QueryResultImpl) obj;
-		if (this.constants == null) {
-			return other.constants == null;
+		final QueryResult other = (QueryResult) obj;
+		if (this.terms == null) {
+			return other.getTerms() == null;
 		} else {
-			return this.constants.equals(other.getConstants());
+			return this.terms.equals(other.getTerms());
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "QueryResult [constants=" + this.constants + "]";
+		return "QueryResult [terms=" + this.terms + "]";
 	}
 
 }

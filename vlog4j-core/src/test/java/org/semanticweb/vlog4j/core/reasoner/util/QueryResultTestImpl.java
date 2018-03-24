@@ -30,6 +30,7 @@ import java.util.List;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
 
 public class QueryResultTestImpl {
@@ -38,7 +39,7 @@ public class QueryResultTestImpl {
 	public void testEquals() {
 		final Constant c1 = Expressions.makeConstant("C");
 		final Constant c2 = Expressions.makeConstant("ddd");
-		final List<Constant> constantList = Arrays.asList(c1, c1, c2);
+		final List<Term> constantList = Arrays.asList(c1, c1, c2);
 
 		final QueryResult queryResult1 = new QueryResultImpl(constantList);
 		final QueryResult queryResult2 = new QueryResultImpl(Arrays.asList(c1, c1, c2));

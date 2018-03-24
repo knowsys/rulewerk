@@ -77,4 +77,7 @@ public interface Reasoner {
 
 	void dispose();
 
+	void exportQueryAnswersToCSV(Atom atom, String csvFilePath, boolean includeBlanks)
+			throws ReasonerStateException, NotStartedException, IOException, DataSourceConfigException;
+
 }

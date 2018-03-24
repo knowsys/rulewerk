@@ -23,25 +23,38 @@ package org.semanticweb.vlog4j.core.reasoner.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
-import org.semanticweb.vlog4j.core.model.impl.Expressions;
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.impl.BlankImpl;
+import org.semanticweb.vlog4j.core.model.impl.ConstantImpl;
+import org.semanticweb.vlog4j.core.model.impl.VariableImpl;
 
 public class VLogToModelConverter {
 
-	public static QueryResult toQueryResult(String[] vLogQueryResult) {
-		return new QueryResultImpl(toConstantList(vLogQueryResult));
+	public static QueryResult toQueryResult(karmaresearch.vlog.Term[] vLogQueryResult) {
+		return new QueryResultImpl(toTermList(vLogQueryResult));
 	}
 
-	private static List<Constant> toConstantList(String[] vLogGroundTerms) {
-		// TODO support blanks (now we assume every query result term is a named
-		// individual)
-		final List<Constant> constants = new ArrayList<>();
-		for (final String term : vLogGroundTerms) {
-			final Constant groundTerm = Expressions.makeConstant(term);
-			constants.add(groundTerm);
+	private static List<Term> toTermList(karmaresearch.vlog.Term[] vLogTerms) {
+		List<Term> terms = new ArrayList<>(vLogTerms.length);
+		for (karmaresearch.vlog.Term vLogTerm : vLogTerms) {
+			terms.add(toTerm(vLogTerm));
 		}
-		return constants;
+		return terms;
+	}
+
+	private static Term toTerm(karmaresearch.vlog.Term vLogTerm) {
+		String name = vLogTerm.getName();
+		switch (vLogTerm.getTermType()) {
+		case CONSTANT:
+			return new ConstantImpl(name);
+		case BLANK:
+			return new BlankImpl(name);
+		case VARIABLE:
+			return new VariableImpl(name);
+		default:
+			throw new IllegalArgumentException("Unexpected vlog term type: " + vLogTerm.getTermType());
+		}
 	}
 
 }

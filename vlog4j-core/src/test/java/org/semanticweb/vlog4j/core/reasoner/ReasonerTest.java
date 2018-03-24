@@ -29,6 +29,7 @@ import java.util.Set;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -69,7 +70,7 @@ public class ReasonerTest extends TestCase {
 		reasoner.reason();
 
 		final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx);
-		final Set<List<Constant>> actualResults = gatherQueryResults(cxQueryResultEnumAfterReasoning);
+		final Set<List<Term>> actualResults = gatherQueryResults(cxQueryResultEnumAfterReasoning);
 
 		final Set<List<Constant>> expectedResults = new HashSet<>(
 				Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));
@@ -78,9 +79,9 @@ public class ReasonerTest extends TestCase {
 		reasoner.dispose();
 	}
 
-	private static Set<List<Constant>> gatherQueryResults(QueryResultIterator queryResultIterator) {
-		final Set<List<Constant>> results = new HashSet<>();
-		queryResultIterator.forEachRemaining(queryResult -> results.add(queryResult.getConstants()));
+	private static Set<List<Term>> gatherQueryResults(QueryResultIterator queryResultIterator) {
+		final Set<List<Term>> results = new HashSet<>();
+		queryResultIterator.forEachRemaining(queryResult -> results.add(queryResult.getTerms()));
 		queryResultIterator.close();
 		return results;
 	}
