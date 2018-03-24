@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner.util;
+package org.semanticweb.vlog4j.core.reasoner.impl;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.TermVisitor;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 
-public class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
+class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 
 	@Override
 	public karmaresearch.vlog.Term visit(Constant term) {

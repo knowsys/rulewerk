@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner;
+package org.semanticweb.vlog4j.core.reasoner.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,11 +16,15 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.CsvFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
+import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
+import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.util.ModelToVLogConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +54,8 @@ import karmaresearch.vlog.VLog;
  * #L%
  */
 
-public class ReasonerImpl implements Reasoner {
-	private static Logger LOGGER = LoggerFactory.getLogger(ReasonerImpl.class);
+public class Reasoner implements ReasonerInterface {
+	private static Logger LOGGER = LoggerFactory.getLogger(Reasoner.class);
 
 	private final VLog vLog = new VLog();
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
@@ -193,11 +197,11 @@ public class ReasonerImpl implements Reasoner {
 		final TermQueryResultIterator stringQueryResultIterator = this.vLog.query(vLogAtom);
 		return new QueryResultIterator(stringQueryResultIterator);
 	}
-	
+
 	@Override
 	public void exportQueryAnswersToCSV(final Atom queryAtom, final String csvFilePath, final boolean includeBlanks)
 			throws ReasonerStateException, NotStartedException, IOException, DataSourceConfigException {
-		
+
 	}
 
 	@Override
@@ -213,6 +217,7 @@ public class ReasonerImpl implements Reasoner {
 		}
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
+		this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath);
 	}
 
 	@Override

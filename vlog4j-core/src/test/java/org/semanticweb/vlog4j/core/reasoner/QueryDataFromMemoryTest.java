@@ -30,6 +30,8 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.impl.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.impl.Reasoner;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -40,7 +42,7 @@ public class QueryDataFromMemoryTest {
 	@Test
 	public void queryEmptyKnowledgeBase() throws AlreadyStartedException, EDBConfigurationException, IOException,
 			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
-		Reasoner reasoner = new ReasonerImpl();
+		ReasonerInterface reasoner = new Reasoner();
 
 		reasoner.load();
 
@@ -64,7 +66,7 @@ public class QueryDataFromMemoryTest {
 		Variable vx = Expressions.makeVariable("x");
 		Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
 
-		Reasoner reasoner = new ReasonerImpl();
+		ReasonerInterface reasoner = new Reasoner();
 		reasoner.addRules(rule);
 		reasoner.load();
 

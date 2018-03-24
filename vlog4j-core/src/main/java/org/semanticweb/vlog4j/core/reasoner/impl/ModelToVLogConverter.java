@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner.util;
+package org.semanticweb.vlog4j.core.reasoner.impl;
 
 import java.util.Collection;
 
@@ -40,19 +40,19 @@ import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
  * @author Irina Dragoste
  *
  */
-public final class ModelToVLogConverter {
+final class ModelToVLogConverter {
 
 	public static final String PREDICATE_ARITY_SUFFIX_SEPARATOR = "-";
 
 	private ModelToVLogConverter() {
 	}
 
-	public static karmaresearch.vlog.Term toVLogTerm(final Term term) {
+	static karmaresearch.vlog.Term toVLogTerm(final Term term) {
 		final TermToVLogConverter termToVLogConverter = new TermToVLogConverter();
 		return term.accept(termToVLogConverter);
 	}
 
-	public static karmaresearch.vlog.Term[] toVLogTermArray(final List<Term> terms) {
+	static karmaresearch.vlog.Term[] toVLogTermArray(final List<Term> terms) {
 		final karmaresearch.vlog.Term[] vLogTerms = new karmaresearch.vlog.Term[terms.size()];
 		int i = 0;
 		for (final Term term : terms) {
@@ -62,7 +62,7 @@ public final class ModelToVLogConverter {
 		return vLogTerms;
 	}
 
-	public static String[][] toVLogFactTuples(final Collection<Atom> facts) {
+	static String[][] toVLogFactTuples(final Collection<Atom> facts) {
 		final String[][] tuples = new String[facts.size()][];
 		int i = 0;
 		for (final Atom atom : facts) {
@@ -73,7 +73,7 @@ public final class ModelToVLogConverter {
 		return tuples;
 	}
 
-	private static String[] toVLogFactTuple(final Atom fact) {
+	static String[] toVLogFactTuple(final Atom fact) {
 		final List<Term> terms = fact.getTerms();
 		final String[] vLogFactTuple = new String[terms.size()];
 		int i = 0;
@@ -93,19 +93,19 @@ public final class ModelToVLogConverter {
 	 * @return String representation corresponding to given predicate name and
 	 *         arity.
 	 */
-	public static String toVLogPredicate(Predicate predicate) {
+	static String toVLogPredicate(Predicate predicate) {
 		final String vLogPredicate = predicate.getName() + PREDICATE_ARITY_SUFFIX_SEPARATOR + predicate.getArity();
 		return vLogPredicate;
 	}
 
-	public static karmaresearch.vlog.Atom toVLogAtom(final Atom atom) {
+	static karmaresearch.vlog.Atom toVLogAtom(final Atom atom) {
 		final karmaresearch.vlog.Term[] vLogTerms = toVLogTermArray(atom.getTerms());
 		final String vLogPredicate = toVLogPredicate(atom.getPredicate());
 		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(vLogPredicate, vLogTerms);
 		return vLogAtom;
 	}
 
-	private static karmaresearch.vlog.Atom[] toVLogAtomArray(final Conjunction conjunction) {
+	static karmaresearch.vlog.Atom[] toVLogAtomArray(final Conjunction conjunction) {
 		final karmaresearch.vlog.Atom[] vLogAtoms = new karmaresearch.vlog.Atom[conjunction.getAtoms().size()];
 		int i = 0;
 		for (final Atom atom : conjunction.getAtoms()) {
@@ -115,13 +115,13 @@ public final class ModelToVLogConverter {
 		return vLogAtoms;
 	}
 
-	private static karmaresearch.vlog.Rule toVLogRule(final Rule rule) {
+	static karmaresearch.vlog.Rule toVLogRule(final Rule rule) {
 		final karmaresearch.vlog.Atom[] vLogHead = toVLogAtomArray(rule.getHead());
 		final karmaresearch.vlog.Atom[] vLogBody = toVLogAtomArray(rule.getBody());
 		return new karmaresearch.vlog.Rule(vLogHead, vLogBody);
 	}
 
-	public static karmaresearch.vlog.Rule[] toVLogRuleArray(final List<Rule> rules) {
+	static karmaresearch.vlog.Rule[] toVLogRuleArray(final List<Rule> rules) {
 		final karmaresearch.vlog.Rule[] vLogRules = new karmaresearch.vlog.Rule[rules.size()];
 		int i = 0;
 		for (final Rule rule : rules) {
@@ -131,7 +131,7 @@ public final class ModelToVLogConverter {
 		return vLogRules;
 	}
 
-	public static karmaresearch.vlog.VLog.RuleRewriteStrategy toVLogRuleRewriteStrategy(
+	static karmaresearch.vlog.VLog.RuleRewriteStrategy toVLogRuleRewriteStrategy(
 			final RuleRewriteStrategy ruleRewriteStrategy) {
 		Validate.notNull(ruleRewriteStrategy);
 		switch (ruleRewriteStrategy) {

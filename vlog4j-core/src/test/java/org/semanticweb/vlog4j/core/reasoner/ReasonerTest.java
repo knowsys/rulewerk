@@ -35,6 +35,8 @@ import org.semanticweb.vlog4j.core.model.impl.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.impl.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.impl.Reasoner;
 
 import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;
@@ -59,7 +61,7 @@ public class ReasonerTest extends TestCase {
 		final Rule ruleBxAx = Expressions.makeRule(atomBx, atomAx);
 		final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
 
-		final Reasoner reasoner = new ReasonerImpl();
+		final ReasonerInterface reasoner = new Reasoner();
 		reasoner.addFacts(factAc, factAd);
 		reasoner.addRules(ruleBxAx, ruleCxBx);
 		reasoner.load();

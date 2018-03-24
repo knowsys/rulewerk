@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner.util;
+package org.semanticweb.vlog4j.core.reasoner.impl;
 
 /*-
  * #%L
@@ -32,8 +32,9 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.impl.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.impl.QueryResultImpl;
 
-public class QueryResultTestImpl {
+public class QueryResultImplTest {
 
 	@Test
 	public void testEquals() {

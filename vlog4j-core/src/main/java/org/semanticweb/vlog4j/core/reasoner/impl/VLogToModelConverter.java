@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner.util;
+package org.semanticweb.vlog4j.core.reasoner.impl;
 
 /*
  * #%L
@@ -29,13 +29,13 @@ import org.semanticweb.vlog4j.core.model.impl.BlankImpl;
 import org.semanticweb.vlog4j.core.model.impl.ConstantImpl;
 import org.semanticweb.vlog4j.core.model.impl.VariableImpl;
 
-public class VLogToModelConverter {
+class VLogToModelConverter {
 
-	public static QueryResult toQueryResult(karmaresearch.vlog.Term[] vLogQueryResult) {
+	static QueryResult toQueryResult(karmaresearch.vlog.Term[] vLogQueryResult) {
 		return new QueryResultImpl(toTermList(vLogQueryResult));
 	}
 
-	private static List<Term> toTermList(karmaresearch.vlog.Term[] vLogTerms) {
+	static List<Term> toTermList(karmaresearch.vlog.Term[] vLogTerms) {
 		List<Term> terms = new ArrayList<>(vLogTerms.length);
 		for (karmaresearch.vlog.Term vLogTerm : vLogTerms) {
 			terms.add(toTerm(vLogTerm));
@@ -43,7 +43,7 @@ public class VLogToModelConverter {
 		return terms;
 	}
 
-	private static Term toTerm(karmaresearch.vlog.Term vLogTerm) {
+	static Term toTerm(karmaresearch.vlog.Term vLogTerm) {
 		String name = vLogTerm.getName();
 		switch (vLogTerm.getTermType()) {
 		case CONSTANT:

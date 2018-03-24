@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner;
+package org.semanticweb.vlog4j.core.reasoner.impl;
 
 /*
  * #%L
@@ -23,7 +23,6 @@ package org.semanticweb.vlog4j.core.reasoner;
 import java.util.Iterator;
 
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
-import org.semanticweb.vlog4j.core.reasoner.util.VLogToModelConverter;
 
 import karmaresearch.vlog.Term;
 import karmaresearch.vlog.TermQueryResultIterator;

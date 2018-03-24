@@ -30,6 +30,7 @@ import org.semanticweb.vlog4j.core.model.impl.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.impl.Reasoner;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -45,7 +46,7 @@ public class LoadDataFromMemoryTest {
 		Atom factIDBpred = Expressions.makeAtom("q", Expressions.makeConstant("c"));
 		Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"), Expressions.makeConstant("d"));
 
-		Reasoner reasoner = new ReasonerImpl();
+		ReasonerInterface reasoner = new Reasoner();
 		reasoner.addRules(rule);
 		reasoner.addFacts(factIDBpred, factEDBpred);
 		reasoner.load();
@@ -60,7 +61,7 @@ public class LoadDataFromMemoryTest {
 		Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
 		Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"), Expressions.makeConstant("d"));
 
-		Reasoner reasoner = new ReasonerImpl();
+		ReasonerInterface reasoner = new Reasoner();
 		reasoner.addRules(rule);
 		reasoner.addFacts(factEDBpred);
 		reasoner.load();

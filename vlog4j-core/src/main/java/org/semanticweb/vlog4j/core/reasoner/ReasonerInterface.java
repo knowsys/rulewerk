@@ -9,6 +9,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.impl.QueryResultIterator;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -33,7 +34,7 @@ import karmaresearch.vlog.NotStartedException;
  * limitations under the License.
  * #L%
  */
-public interface Reasoner {
+public interface ReasonerInterface {
 
 	Algorithm getAlgorithm();
 
