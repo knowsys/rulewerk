@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
 
@@ -50,15 +51,28 @@ public class OwlToRulesConversionHelper {
 		return new PredicateImpl(owlClass.getIRI().toString(), 1);
 	}
 
+	/**
+	 * Returns a {@link Predicate} to represent an {@link OWLObjectProperty} in
+	 * rules.
+	 * 
+	 * @param owlObjectProperty
+	 *            the atomic property to get a predicate for
+	 * @return a suitable binary predicate
+	 */
+	public static Predicate getObjectPropertyPredicate(OWLObjectProperty owlObjectProperty) {
+		return new PredicateImpl(owlObjectProperty.getIRI().toString(), 2);
+	}
+
 	public static Predicate getAuxiliaryClassPredicate(OWLClassExpression owlClassExpression) {
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 			byte[] digest = messageDigest.digest(owlClassExpression.toString().getBytes("UTF-8"));
-			BigInteger bigInt = new BigInteger(1,digest);
+			BigInteger bigInt = new BigInteger(1, digest);
 			String hashtext = bigInt.toString(16);
 			return new PredicateImpl("aux-" + hashtext, 1);
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
 			throw new RuntimeException("We are missing some core functionality of Java here", e);
 		}
 	}
+
 }

@@ -78,217 +78,232 @@ import org.semanticweb.vlog4j.core.model.impl.VariableImpl;
  *
  */
 public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAxiomVisitor {
-	
+
 	final Set<Rule> rules = new HashSet<>();
 	final Variable frontierVariable = new VariableImpl("X");
-	
+	int freshVariableCounter = 0;
+
 	public OwlToRulesConverter() {
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Returns a fresh variable, which can be used as auxiliary variable in the
+	 * current axiom's translation.
+	 * 
+	 * @return a variable
+	 */
+	Variable getFreshVariable() {
+		this.freshVariableCounter++;
+		return new VariableImpl("Y" + this.freshVariableCounter);
+	}
+
 	@Override
 	public void visit(OWLSubClassOfAxiom axiom) {
-		ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.frontierVariable, new ArrayList<>(),this.rules);
+		this.freshVariableCounter = 0;
+
+		ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.frontierVariable, new ArrayList<>(),
+				this.rules, this);
 		axiom.getSubClass().accept(converter);
-		
-		// TODO Superclass handling not implemented yet; placeholder class 
+
+		// TODO Superclass handling not implemented yet; placeholder class
+		// TODO we need to handle empty (tautological) bodies
 		Predicate predicate = new PredicateImpl("auxhead", 1);
 		Atom headAtom = new AtomImpl(predicate, Arrays.asList(this.frontierVariable));
 		Conjunction auxHead = new ConjunctionImpl(Arrays.asList(headAtom));
 		this.rules.add(new RuleImpl(auxHead, new ConjunctionImpl(converter.bodyConjuncts)));
-		
 	}
 
 	@Override
 	public void visit(OWLNegativeObjectPropertyAssertionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLAsymmetricObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLReflexiveObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLDisjointClassesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLDataPropertyDomainAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLObjectPropertyDomainAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLEquivalentObjectPropertiesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLNegativeDataPropertyAssertionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLDifferentIndividualsAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLDisjointDataPropertiesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLDisjointObjectPropertiesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLObjectPropertyRangeAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLObjectPropertyAssertionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLFunctionalObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLSubObjectPropertyOfAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLDisjointUnionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLSymmetricObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLDataPropertyRangeAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLFunctionalDataPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLEquivalentDataPropertiesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLClassAssertionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLEquivalentClassesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLDataPropertyAssertionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLTransitiveObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLIrreflexiveObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLSubDataPropertyOfAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLInverseFunctionalObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLSameIndividualAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLSubPropertyChainOfAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLInverseObjectPropertiesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(OWLHasKeyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(SWRLRule rule) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

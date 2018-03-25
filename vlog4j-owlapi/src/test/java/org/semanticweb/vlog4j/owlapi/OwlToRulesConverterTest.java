@@ -29,6 +29,9 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataUnionOf;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntologyFactory;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
@@ -45,21 +48,30 @@ public class OwlToRulesConverterTest {
 		IRI iB = IRI.create("http://example.org/B");
 		IRI iC = IRI.create("http://example.org/C");
 		IRI iD = IRI.create("http://example.org/D");
+		IRI iE = IRI.create("http://example.org/E");
+		IRI iR = IRI.create("http://example.org/R");
+		IRI iS = IRI.create("http://example.org/S");
 		OWLClass A = df.getOWLClass(iA);
 		OWLClass B = df.getOWLClass(iB);
 		OWLClass C = df.getOWLClass(iC);
 		OWLClass D = df.getOWLClass(iD);
-		OWLObjectUnionOf AorB = df.getOWLObjectUnionOf(A,B);
-		OWLObjectIntersectionOf AorBandC = df.getOWLObjectIntersectionOf(AorB,C);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(AorBandC, D);
-		
+		OWLClass E = df.getOWLClass(iE);
+		OWLObjectProperty R = df.getOWLObjectProperty(iR);
+		OWLObjectProperty S = df.getOWLObjectProperty(iS);
+		OWLObjectPropertyExpression Sinv = df.getOWLObjectInverseOf(S);
+		OWLObjectSomeValuesFrom SomeSinvE = df.getOWLObjectSomeValuesFrom(Sinv, E);
+		OWLObjectSomeValuesFrom SomeRSomeSinvE = df.getOWLObjectSomeValuesFrom(R, SomeSinvE);
+		OWLObjectUnionOf AorB = df.getOWLObjectUnionOf(A, B);
+		OWLObjectIntersectionOf AorBandCandSomeRSomeSinvE = df.getOWLObjectIntersectionOf(AorB, C, SomeRSomeSinvE);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(AorBandCandSomeRSomeSinvE, D);
+
 		OwlToRulesConverter converter = new OwlToRulesConverter();
 		axiom.accept(converter);
-		
+
 		for (Rule rule : converter.rules) {
-			System.out.println(rule);			
+			System.out.println(rule);
 		}
-		
+
 	}
 
 }

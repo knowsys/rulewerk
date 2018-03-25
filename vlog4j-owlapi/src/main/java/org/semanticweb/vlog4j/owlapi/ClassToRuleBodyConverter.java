@@ -43,6 +43,7 @@ import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.vlog4j.core.model.api.Atom;
@@ -59,17 +60,44 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 	final List<Atom> bodyConjuncts;
 	final Set<Rule> rules;
 	final Variable frontierVariable;
+	final OwlToRulesConverter parent;
 
-	public ClassToRuleBodyConverter(Variable frontierVariable, List<Atom> bodyConjuncts, Set<Rule> rules) {
+	/**
+	 * Set to true to indicate that an unsatisfiable body conjunct (owl:Nothing,
+	 * owl:BottomObjectProperty, ...) occurred, so that the body cannot have any
+	 * matches. In this case, no rules based on this body must be created.
+	 */
+	boolean unsatisfiable = false;
+
+	public ClassToRuleBodyConverter(Variable frontierVariable, List<Atom> bodyConjuncts, Set<Rule> rules,
+			OwlToRulesConverter parent) {
 		this.frontierVariable = frontierVariable;
 		this.bodyConjuncts = bodyConjuncts;
 		this.rules = rules;
+		this.parent = parent;
+	}
+
+	/**
+	 * Returns true if an unsatisfiable body conjunct (owl:Nothing,
+	 * owl:BottomObjectProperty, ...) has occurred, so that the body cannot have any
+	 * matches. In this case, no rules based on this body must be created.
+	 * 
+	 * @return true if the body is unsatisfiable
+	 */
+	public boolean isUnsatisfiable() {
+		return this.unsatisfiable;
 	}
 
 	@Override
 	public void visit(OWLClass ce) {
-		Predicate predicate = OwlToRulesConversionHelper.getClassPredicate(ce);
-		bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(this.frontierVariable)));
+		if (ce.isOWLNothing()) {
+			this.unsatisfiable = true;
+		} else if (ce.isOWLThing()) {
+			// irrelevant in body; omit
+		} else {
+			Predicate predicate = OwlToRulesConversionHelper.getClassPredicate(ce);
+			bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(this.frontierVariable)));
+		}
 	}
 
 	@Override
@@ -87,28 +115,49 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 		Conjunction auxHead = new ConjunctionImpl(Arrays.asList(headAtom));
 		for (OWLClassExpression conjunct : ce.getOperands()) {
 			ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.frontierVariable, new ArrayList<>(),
-					this.rules);
+					this.rules, this.parent);
 			conjunct.accept(converter);
-			this.rules.add(new RuleImpl(auxHead, new ConjunctionImpl(converter.bodyConjuncts)));
+			if (!converter.isUnsatisfiable()) {
+				// TODO handle case where no conjunctions were created (tautological subclass)
+				this.rules.add(new RuleImpl(auxHead, new ConjunctionImpl(converter.bodyConjuncts)));
+			}
 		}
 	}
 
 	@Override
 	public void visit(OWLObjectComplementOf ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("Negation in subclass positions is not supported in rules.");
 	}
 
 	@Override
 	public void visit(OWLObjectSomeValuesFrom ce) {
-		// TODO Auto-generated method stub
+		OWLObjectPropertyExpression objectPropertyExpression = ce.getProperty();
+		if (objectPropertyExpression.isOWLTopObjectProperty()) {
+			// irrelevant in body; omit
+		} else if (objectPropertyExpression.isOWLBottomObjectProperty()) {
+			this.unsatisfiable = true;
+		} else {
+			Variable variable = this.parent.getFreshVariable();
+			if (objectPropertyExpression.isAnonymous()) {
+				Predicate predicate = OwlToRulesConversionHelper.getObjectPropertyPredicate(
+						objectPropertyExpression.getInverseProperty().asOWLObjectProperty());
+				bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(variable, this.frontierVariable)));
+			} else {
+				Predicate predicate = OwlToRulesConversionHelper
+						.getObjectPropertyPredicate(objectPropertyExpression.asOWLObjectProperty());
+				bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(this.frontierVariable, variable)));
+			}
+			ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(variable, this.bodyConjuncts, this.rules,
+					this.parent);
+			ce.getFiller().accept(converter);
+		}
 
 	}
 
 	@Override
 	public void visit(OWLObjectAllValuesFrom ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"Universal quantifiers (AllValuesFrom)  in subclass positions is not supported in rules.");
 	}
 
 	@Override
@@ -125,14 +174,14 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 
 	@Override
 	public void visit(OWLObjectExactCardinality ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"Exact cardinality restrictions  in subclass positions is not supported in rules.");
 	}
 
 	@Override
 	public void visit(OWLObjectMaxCardinality ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"Maximal cardinality restrictions  in subclass positions is not supported in rules.");
 	}
 
 	@Override
@@ -149,38 +198,32 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 
 	@Override
 	public void visit(OWLDataSomeValuesFrom ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
 	public void visit(OWLDataAllValuesFrom ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
 	public void visit(OWLDataHasValue ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
 	public void visit(OWLDataMinCardinality ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
 	public void visit(OWLDataExactCardinality ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
 	public void visit(OWLDataMaxCardinality ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 }
