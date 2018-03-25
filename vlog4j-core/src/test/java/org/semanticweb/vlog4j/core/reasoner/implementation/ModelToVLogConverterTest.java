@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner.impl;
+package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 /*-
  * #%L
@@ -37,10 +37,10 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.BlankImpl;
-import org.semanticweb.vlog4j.core.model.impl.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
-import org.semanticweb.vlog4j.core.reasoner.impl.ModelToVLogConverter;
+import org.semanticweb.vlog4j.core.reasoner.implementation.ModelToVLogConverter;
 
 public class ModelToVLogConverterTest {
 

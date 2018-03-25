@@ -33,9 +33,9 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
-import org.semanticweb.vlog4j.core.model.impl.Expressions;
-import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 
 public class AtomImplTest {
 

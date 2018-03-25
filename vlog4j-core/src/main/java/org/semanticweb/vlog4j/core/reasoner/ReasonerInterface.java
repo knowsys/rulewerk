@@ -9,7 +9,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.impl.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;

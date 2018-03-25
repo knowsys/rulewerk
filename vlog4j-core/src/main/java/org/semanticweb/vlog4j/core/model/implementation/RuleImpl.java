@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model.impl;
+package org.semanticweb.vlog4j.core.model.implementation;
 
 import java.util.HashSet;
 

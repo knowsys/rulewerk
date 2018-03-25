@@ -20,6 +20,12 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 
+/**
+ * Interfaces various types of data sources for storing facts.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public interface DataSource {
 
 }

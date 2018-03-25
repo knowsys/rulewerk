@@ -20,6 +20,11 @@ package org.semanticweb.vlog4j.core.reasoner.exceptions;
  * #L%
  */
 
+/**
+ * Top-level checked exception for VLog4j system.
+ * @author Irina Dragoste
+ *
+ */
 public class VLog4jException extends Exception {
 
 	/**

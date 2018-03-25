@@ -26,6 +26,14 @@ import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 
+/**
+ * Exception thrown when attempting to load the reasoner with a knowledge base (facts and rules) that contains predicates that
+ * are both EDB (occur in facts) and IDB (occur in rule heads). Predicates that
+ * occur in facts cannot appear in rule heads.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public class EdbIdbSeparationException extends VLog4jException {
 
 	/**
@@ -35,8 +43,12 @@ public class EdbIdbSeparationException extends VLog4jException {
 
 	private static final String messagePattern = "The following predicates occur both in facts (EDBs) and rule heads (IDBs): {0}!";
 
-	public EdbIdbSeparationException(Set<Predicate> commonPredicates) {
-		super(MessageFormat.format(messagePattern, commonPredicates));
+	/**
+	 * Creates an exception with a logging message for given predicates.
+	 * @param edbIdbPredicates predicates which are both EDB (occur in facts) and IDB (occur in rule heads).
+	 */
+	public EdbIdbSeparationException(Set<Predicate> edbIdbPredicates) {
+		super(MessageFormat.format(messagePattern, edbIdbPredicates));
 	}
 
 }

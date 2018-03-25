@@ -31,12 +31,12 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.impl.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.impl.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.implementation.Reasoner;
 
 import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;

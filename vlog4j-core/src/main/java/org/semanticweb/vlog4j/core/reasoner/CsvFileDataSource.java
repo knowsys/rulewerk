@@ -24,15 +24,36 @@ import java.io.File;
 
 import org.apache.commons.lang3.Validate;
 
+/**
+ * A CsvFileDataSource stores fact terms (tuples) as lines in a ".csv" format
+ * file, each column being a predicate argument.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public class CsvFileDataSource implements DataSource {
 	public static final String CSV_FILE_EXTENSION = ".csv";
 
 	private final File csvFile;
 
+	/**
+	 * A ".csv" format file, where each line corresponds to a fact, each column
+	 * being a predicate argument.
+	 * 
+	 * @return
+	 */
 	public File getCsvFile() {
 		return this.csvFile;
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param csvFile
+	 *            must be a file of ".csv" extension and valid CSV format. The
+	 *            content of the file represents fact tuples, where each line
+	 *            corresponds to a fact, each column being a predicate argument.
+	 */
 	public CsvFileDataSource(final File csvFile) {
 		Validate.notNull(csvFile, "Data source file cannot be null!");
 		Validate.isTrue(csvFile.getName().endsWith(CSV_FILE_EXTENSION),

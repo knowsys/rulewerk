@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner.impl;
+package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 /*
  * #%L
@@ -25,9 +25,9 @@ import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.impl.BlankImpl;
-import org.semanticweb.vlog4j.core.model.impl.ConstantImpl;
-import org.semanticweb.vlog4j.core.model.impl.VariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 
 class VLogToModelConverter {
 

@@ -25,8 +25,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.impl.ConstantImpl;
-import org.semanticweb.vlog4j.core.model.impl.VariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 
 public class TermImplTest {
 

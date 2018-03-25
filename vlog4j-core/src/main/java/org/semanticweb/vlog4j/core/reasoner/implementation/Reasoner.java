@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner.impl;
+package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import java.io.IOException;
 import java.util.ArrayList;

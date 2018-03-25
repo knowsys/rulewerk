@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model.impl;
+package org.semanticweb.vlog4j.core.model.implementation;
 
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.TermType;
