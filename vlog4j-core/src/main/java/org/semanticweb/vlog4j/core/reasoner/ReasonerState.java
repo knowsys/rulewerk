@@ -20,9 +20,37 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 
-
+/**
+ * Enum for the states a {@link Reasoner} can be in. Certain operations are not
+ * allowed in some states.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public enum ReasonerState {
+	/**
+	 * State a Reasoner is in before method {@link ReasonerInterface#load()} has
+	 * been called. The Reasoner cannot reason before it has been loaded. The
+	 * Reasoner can only be loaded once. Reasoning and querying are not allowed in
+	 * this state.
+	 */
+	BEFORE_LOADING,
+	/**
+	 * State a Reasoner is in after method {@link ReasonerInterface#load()} has been
+	 * called, and before method {@link ReasonerInterface#reason()} has been called.
+	 * The Reasoner can only be loaded once. Loading in this state is ineffective.
+	 * Adding rules, fact and fact data sources and setting the rule re-writing
+	 * strategy are not allowed in this state.
+	 */
+	AFTER_LOADING,
 
-	BEFORE_LOADING, AFTER_LOADING, AFTER_REASONING
+	/**
+	 * State a Reasoner is in after method {@link ReasonerInterface#reason()} has
+	 * been called. The Reasoner cannot reason again, once it reached this state.
+	 * Loading and setting the reasoning algorithm this state are ineffective.
+	 * Reasoning, adding rules, fact and fact data sources and setting the rule
+	 * re-writing strategy are not allowed in this state.
+	 */
+	AFTER_REASONING
 
 }
