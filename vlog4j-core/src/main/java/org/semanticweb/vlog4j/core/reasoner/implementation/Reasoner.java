@@ -21,7 +21,6 @@ import org.semanticweb.vlog4j.core.reasoner.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -199,22 +198,21 @@ public class Reasoner implements ReasonerInterface {
 	}
 
 	@Override
-	public void exportQueryAnswersToCSV(final Atom queryAtom, final String csvFilePath, final boolean includeBlanks)
-			throws ReasonerStateException, NotStartedException, IOException, DataSourceConfigException {
+	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath, final boolean includeBlanks)
+			throws ReasonerStateException, NotStartedException, IOException {
 
 	}
 
 	@Override
-	public void exportQueryAnswersToCSV(final Atom queryAtom, final String csvFilePath)
-			throws ReasonerStateException, NotStartedException, IOException, DataSourceConfigException {
+	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath)
+			throws ReasonerStateException, NotStartedException, IOException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
-		if (!csvFilePath.endsWith(CsvFileDataSource.CSV_FILE_EXTENSION)) {
-			throw new DataSourceConfigException("Expected .csv extension for data source file [" + csvFilePath + "]!");
-		}
+		Validate.isTrue(csvFilePath.endsWith(CsvFileDataSource.CSV_FILE_EXTENSION),
+				"Expected .csv extension for file [%s]!", csvFilePath);
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
 		this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath);

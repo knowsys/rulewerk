@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.DataSourceConfigException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -66,8 +65,8 @@ public interface ReasonerInterface {
 
 	QueryResultIterator answerQuery(Atom atom) throws NotStartedException, ReasonerStateException;
 
-	void exportQueryAnswersToCSV(Atom atom, String outputFilePath)
-			throws ReasonerStateException, NotStartedException, IOException, DataSourceConfigException;
+	void exportQueryAnswersToCsv(Atom atom, String outputFilePath)
+			throws ReasonerStateException, NotStartedException, IOException;
 
 	// TODO arity should be in the EDB config file,
 	// do not read the files, have low-level API check if the file content
@@ -78,7 +77,7 @@ public interface ReasonerInterface {
 
 	void dispose();
 
-	void exportQueryAnswersToCSV(Atom atom, String csvFilePath, boolean includeBlanks)
-			throws ReasonerStateException, NotStartedException, IOException, DataSourceConfigException;
+	void exportQueryAnswersToCsv(Atom atom, String csvFilePath, boolean includeBlanks)
+			throws ReasonerStateException, NotStartedException, IOException;
 
 }
