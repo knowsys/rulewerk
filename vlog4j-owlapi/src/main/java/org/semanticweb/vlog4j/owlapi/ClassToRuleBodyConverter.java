@@ -56,6 +56,14 @@ import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
 import org.semanticweb.vlog4j.core.model.impl.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.impl.RuleImpl;
 
+/**
+ * Helper class for transforming OWL class expressions that occur as subclasses
+ * into suitable body atoms for rules. Auxiliary rules might be created to
+ * capture the semantics of some constructs.
+ * 
+ * @author Markus Krötzsch
+ *
+ */
 public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 
 	final List<Atom> bodyConjuncts;
@@ -132,13 +140,7 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 
 	@Override
 	public void visit(OWLObjectSomeValuesFrom ce) {
-		Variable variable = this.parent.getFreshVariable();
-		addConjunctForPropertyExpression(ce.getProperty(), this.frontierVariable, variable);
-		if (!this.unsatisfiable) {
-			ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(variable, this.bodyConjuncts, this.rules,
-					this.parent);
-			ce.getFiller().accept(converter);
-		}
+		handleObjectSomeValues(ce.getProperty(), ce.getFiller());
 	}
 
 	@Override
@@ -155,20 +157,26 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 
 	@Override
 	public void visit(OWLObjectMinCardinality ce) {
-		// TODO Auto-generated method stub
-
+		if (ce.getCardinality() == 0) {
+			// tautological, ignore
+		} else if (ce.getCardinality() == 1) {
+			handleObjectSomeValues(ce.getProperty(), ce.getFiller());
+		} else {
+			throw new OwlFeatureNotSupportedException(
+					"Min cardinality restrictions with values greater than 1 in subclass positions are not supported in rules.");
+		}
 	}
 
 	@Override
 	public void visit(OWLObjectExactCardinality ce) {
 		throw new OwlFeatureNotSupportedException(
-				"Exact cardinality restrictions  in subclass positions is not supported in rules.");
+				"Exact cardinality restrictions  in subclass positions are not supported in rules.");
 	}
 
 	@Override
 	public void visit(OWLObjectMaxCardinality ce) {
 		throw new OwlFeatureNotSupportedException(
-				"Maximal cardinality restrictions  in subclass positions is not supported in rules.");
+				"Maximal cardinality restrictions  in subclass positions are not supported in rules.");
 	}
 
 	@Override
@@ -210,6 +218,25 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 	@Override
 	public void visit(OWLDataMaxCardinality ce) {
 		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+	}
+
+	/**
+	 * Handles a OWLObjectSomeValues expression. Used also for min-cardinality
+	 * restrictions with cardinality 1.
+	 * 
+	 * @param property
+	 *            the OWL property of the expression
+	 * @param filler
+	 *            the filler class of the expression
+	 */
+	void handleObjectSomeValues(OWLObjectPropertyExpression property, OWLClassExpression filler) {
+		Variable variable = this.parent.getFreshVariable();
+		addConjunctForPropertyExpression(property, this.frontierVariable, variable);
+		if (!this.unsatisfiable) {
+			ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(variable, this.bodyConjuncts, this.rules,
+					this.parent);
+			filler.accept(converter);
+		}
 	}
 
 	/**
