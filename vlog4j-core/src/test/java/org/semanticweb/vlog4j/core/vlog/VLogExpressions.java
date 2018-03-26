@@ -32,18 +32,46 @@ final class VLogExpressions {
 	private VLogExpressions() {
 	}
 
+	/**
+	 * Creates a {@link karmaresearch.vlog.Term} object with given name and type
+	 * {@link karmaresearch.vlog.Term.TermType#VARIABLE}
+	 * 
+	 * @param name
+	 *            term name
+	 * @return a {@link karmaresearch.vlog.Term.TermType#VARIABLE} type term with
+	 *         given name.
+	 */
 	static karmaresearch.vlog.Term makeVariable(final String name) {
 		final karmaresearch.vlog.Term variable = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
 				name);
 		return variable;
 	}
 
+	/**
+	 * Creates a {@link karmaresearch.vlog.Term} object with given name and type
+	 * {@link karmaresearch.vlog.Term.TermType#CONSTANT}
+	 * 
+	 * @param name
+	 *            term name
+	 * @return a {@link karmaresearch.vlog.Term.TermType#CONSTANT} type term with
+	 *         given name.
+	 */
 	static karmaresearch.vlog.Term makeConstant(final String name) {
 		final karmaresearch.vlog.Term constant = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
 				name);
 		return constant;
 	}
 
+	/**
+	 * Creates a {@link karmaresearch.vlog.Rule} object with given head and body
+	 * conjuncts.
+	 * 
+	 * @param headAtom
+	 *            rule head atom
+	 * @param bodyAtoms
+	 *            rule body conjuncts
+	 * @return
+	 */
 	static karmaresearch.vlog.Rule makeRule(final karmaresearch.vlog.Atom headAtom,
 			final karmaresearch.vlog.Atom... bodyAtoms) {
 		return new karmaresearch.vlog.Rule(new karmaresearch.vlog.Atom[] { headAtom }, bodyAtoms);
