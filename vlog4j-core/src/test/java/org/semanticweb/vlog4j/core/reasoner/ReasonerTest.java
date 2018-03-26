@@ -33,7 +33,6 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.Reasoner;
@@ -46,7 +45,7 @@ import karmaresearch.vlog.NotStartedException;
 public class ReasonerTest extends TestCase {
 
 	public void testSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException,
-			NotStartedException, ReasonerStateException, EdbIdbSeparationException, FactTermTypeException {
+			NotStartedException, ReasonerStateException, EdbIdbSeparationException {
 		final String constantNameC = "c";
 		final String constantNameD = "d";
 

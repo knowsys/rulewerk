@@ -77,12 +77,12 @@ public class ModelToVLogConverterTest {
 	public void testToVLogTermBlank() {
 		final Blank blank = new BlankImpl("blank");
 		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
-				karmaresearch.vlog.Term.TermType.CONSTANT, "blank");
+				karmaresearch.vlog.Term.TermType.BLANK, "blank");
 
 		final karmaresearch.vlog.Term vLogTerm = ModelToVLogConverter.toVLogTerm(blank);
 
 		assertNotNull(vLogTerm);
-		assertEquals(karmaresearch.vlog.Term.TermType.CONSTANT, vLogTerm.getTermType());
+		assertEquals(karmaresearch.vlog.Term.TermType.BLANK, vLogTerm.getTermType());
 		assertEquals("blank", vLogTerm.getName());
 		assertEquals(expectedVLogTerm, vLogTerm);
 	}
@@ -102,7 +102,9 @@ public class ModelToVLogConverterTest {
 				karmaresearch.vlog.Term.TermType.VARIABLE, "y");
 		final karmaresearch.vlog.Term expectedCx = new karmaresearch.vlog.Term(
 				karmaresearch.vlog.Term.TermType.CONSTANT, "x");
-		final karmaresearch.vlog.Term[] expectedTermArray = { expectedVx, expectedCx, expectedVx, expectedCx,
+		final karmaresearch.vlog.Term expectedBx = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK,
+				"x");
+		final karmaresearch.vlog.Term[] expectedTermArray = { expectedVx, expectedCx, expectedVx, expectedBx,
 				expectedVy };
 
 		final karmaresearch.vlog.Term[] vLogTermArray = ModelToVLogConverter.toVLogTermArray(terms);
@@ -150,7 +152,7 @@ public class ModelToVLogConverterTest {
 				"c");
 		final karmaresearch.vlog.Term expectedX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
 				"x");
-		final karmaresearch.vlog.Term expectedB = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
+		final karmaresearch.vlog.Term expectedB = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK,
 				"_:b");
 
 		final String expectedPredicateName = "pred" + ModelToVLogConverter.PREDICATE_ARITY_SUFFIX_SEPARATOR + 3;

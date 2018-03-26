@@ -22,7 +22,6 @@ import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.FactTermTypeException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,12 +115,12 @@ public class Reasoner implements ReasonerInterface {
 	}
 
 	@Override
-	public void addFacts(final Atom... facts) throws ReasonerStateException, FactTermTypeException {
+	public void addFacts(final Atom... facts) throws ReasonerStateException {
 		addFacts(Arrays.asList(facts));
 	}
 
 	@Override
-	public void addFacts(final Collection<Atom> facts) throws ReasonerStateException, FactTermTypeException {
+	public void addFacts(final Collection<Atom> facts) throws ReasonerStateException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
 					"Facts cannot be added after the reasoner was loaded!");
@@ -137,12 +136,13 @@ public class Reasoner implements ReasonerInterface {
 
 	}
 
-	private void validateFactTermsAreConstant(Atom fact) throws FactTermTypeException {
+	private void validateFactTermsAreConstant(Atom fact) {
 		final Set<Term> nonConstantTerms = new HashSet<>(fact.getTerms());
 		nonConstantTerms.removeAll(fact.getConstants());
-		if (!nonConstantTerms.isEmpty()) {
-			throw new FactTermTypeException(nonConstantTerms, fact);
-		}
+		Validate.isTrue(nonConstantTerms.isEmpty(),
+				"Only Constant terms alowed in Fact atoms! The following non-constant terms [%s] appear for fact [%s]!",
+				nonConstantTerms, fact);
+
 	}
 
 	@Override
@@ -160,8 +160,9 @@ public class Reasoner implements ReasonerInterface {
 			loadInMemoryFacts();
 			if (this.rules.isEmpty()) {
 				LOGGER.warn("No rules have been provided for reasoning.");
+			} else {
+				loadRules();
 			}
-			loadRules();
 
 		} else {
 			LOGGER.warn(
