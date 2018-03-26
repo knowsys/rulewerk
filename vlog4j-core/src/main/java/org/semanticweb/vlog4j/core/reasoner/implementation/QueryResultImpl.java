@@ -25,6 +25,11 @@ import java.util.List;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Term;
 
+/**
+ * Implements {@link QueryResult}s. 
+ * @author Irina Dragoste
+ *
+ */
 final class QueryResultImpl implements QueryResult {
 
 	private final List<Term> terms;

@@ -34,7 +34,7 @@ public enum ReasonerState {
 	 * Reasoner can only be loaded once. Reasoning and querying are not allowed in
 	 * this state.
 	 */
-	BEFORE_LOADING,
+	BEFORE_LOADING("before loading"),
 	/**
 	 * State a Reasoner is in after method {@link ReasonerInterface#load()} has been
 	 * called, and before method {@link ReasonerInterface#reason()} has been called.
@@ -42,7 +42,7 @@ public enum ReasonerState {
 	 * Adding rules, fact and fact data sources and setting the rule re-writing
 	 * strategy are not allowed in this state.
 	 */
-	AFTER_LOADING,
+	AFTER_LOADING("loaded"),
 
 	/**
 	 * State a Reasoner is in after method {@link ReasonerInterface#reason()} has
@@ -51,6 +51,17 @@ public enum ReasonerState {
 	 * Reasoning, adding rules, fact and fact data sources and setting the rule
 	 * re-writing strategy are not allowed in this state.
 	 */
-	AFTER_REASONING
+	AFTER_REASONING("completed reasoning");
+
+	private final String name;
+
+	private ReasonerState(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 
 }

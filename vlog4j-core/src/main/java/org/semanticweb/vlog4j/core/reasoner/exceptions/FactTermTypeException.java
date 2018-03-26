@@ -25,7 +25,16 @@ import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.TermType;
 
+/**
+ * Exception thrown when attempting to add {@link Atom} facts with terms that
+ * are not of type {@link TermType#CONSTANT}. A fact can only have constant
+ * terms.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public class FactTermTypeException extends VLog4jException {
 
 	/**
@@ -33,10 +42,20 @@ public class FactTermTypeException extends VLog4jException {
 	 */
 	private static final long serialVersionUID = -840382271107281366L;
 
-	private static final String messagePattern = "Only Constant terms alowed in Fact atoms! The following non-constant terms {0} appear for fact with predicate [{1}]!";
+	private static final String messagePattern = "Only Constant terms alowed in Fact atoms! The following non-constant terms {0} appear for fact [{1}]!";
 
+	/**
+	 * Creates an exception with a logging message for given fact and its
+	 * non-constant terms.
+	 * 
+	 * @param nonConstantTerms
+	 *            the set of terms in given {@code fact} which are not of type
+	 *            {@link TermType#CONSTANT}.
+	 * @param fact
+	 *            fact to be added to the knowledge base.
+	 */
 	public FactTermTypeException(final Set<Term> nonConstantTerms, final Atom fact) {
-		super(MessageFormat.format(messagePattern, nonConstantTerms, fact.getPredicate()));
+		super(MessageFormat.format(messagePattern, nonConstantTerms, fact));
 	}
 
 }

@@ -128,7 +128,7 @@ public class Reasoner implements ReasonerInterface {
 		}
 		Validate.noNullElements(this.rules, "Null facts are not alowed! The list contains a fact at position [%d].");
 		for (final Atom fact : facts) {
-			validateTermsAreConstant(fact);
+			validateFactTermsAreConstant(fact);
 
 			final Predicate predicate = fact.getPredicate();
 			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
@@ -137,7 +137,7 @@ public class Reasoner implements ReasonerInterface {
 
 	}
 
-	private void validateTermsAreConstant(Atom fact) throws FactTermTypeException {
+	private void validateFactTermsAreConstant(Atom fact) throws FactTermTypeException {
 		final Set<Term> nonConstantTerms = new HashSet<>(fact.getTerms());
 		nonConstantTerms.removeAll(fact.getConstants());
 		if (!nonConstantTerms.isEmpty()) {
@@ -173,7 +173,7 @@ public class Reasoner implements ReasonerInterface {
 	public void reason() throws EDBConfigurationException, IOException, NotStartedException, ReasonerStateException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			// TODO exception message
-			throw new ReasonerStateException(this.reasonerState, "Reasoning is not alowed before loading!");
+			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed before loading!");
 		} else if (this.reasonerState == ReasonerState.AFTER_REASONING) {
 			LOGGER.warn(
 					"This method call is ineffective: this Reasoner was already reasoned. Successive reason() calls are not supported.");
