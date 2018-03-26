@@ -22,19 +22,20 @@ package org.semanticweb.vlog4j.core.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
-import org.semanticweb.vlog4j.core.model.impl.Expressions;
-import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 
 public class AtomImplTest {
 
@@ -44,17 +45,25 @@ public class AtomImplTest {
 		final Variable y = Expressions.makeVariable("Y");
 		final Constant c = Expressions.makeConstant("c");
 		final Constant d = Expressions.makeConstant("d");
-		final Atom atom = Expressions.makeAtom("p", x, c, d, y);
+		final Atom atomP = Expressions.makeAtom("p", x, c, d, y);
+		final Atom atomQ = Expressions.makeAtom("q", c, d);
 
-		final Set<Variable> variables = new HashSet<>();
-		variables.add(x);
-		variables.add(y);
+		final Set<Variable> variables = Sets.newSet(x, y);
+		final Set<Constant> constants = Sets.newSet(c, d);
 
-		assertEquals("p", atom.getPredicate().getName());
-		assertEquals(atom.getTerms().size(), atom.getPredicate().getArity());
+		assertEquals("p", atomP.getPredicate().getName());
+		assertEquals(atomP.getTerms().size(), atomP.getPredicate().getArity());
 
-		assertEquals(variables, atom.getVariables());
-		assertEquals(Arrays.asList(x, c, d, y), atom.getTerms());
+		assertEquals(variables, atomP.getVariables());
+		assertEquals(constants, atomP.getConstants());
+		assertEquals(Arrays.asList(x, c, d, y), atomP.getTerms());
+
+		assertEquals("q", atomQ.getPredicate().getName());
+		assertEquals(atomQ.getTerms().size(), atomQ.getPredicate().getArity());
+
+		assertTrue(atomQ.getVariables().isEmpty());
+		assertEquals(constants, atomQ.getConstants());
+		assertEquals(Arrays.asList(c, d), atomQ.getTerms());
 	}
 
 	@Test
@@ -88,7 +97,7 @@ public class AtomImplTest {
 		final Predicate predicate1 = Expressions.makePredicate("p", 1);
 		new AtomImpl(predicate1, null);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void termsNoNullElements() {
 		final Predicate predicate1 = Expressions.makePredicate("p", 1);
@@ -100,13 +109,13 @@ public class AtomImplTest {
 	public void termsNonEmpty() {
 		Expressions.makeAtom("p");
 	}
-	
+
 	@Test(expected = NullPointerException.class)
 	public void predicateNotNull() {
 		final Predicate nullPredicate = null;
 		Expressions.makeAtom(nullPredicate, Expressions.makeConstant("c"));
 	}
-	
+
 	@Test(expected = NullPointerException.class)
 	public void predicateNameNotNull() {
 		final String nullPredicateName = null;
@@ -117,7 +126,7 @@ public class AtomImplTest {
 	public void predicateNameNotEmpty() {
 		Expressions.makeAtom("", Expressions.makeConstant("c"));
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void predicateNameNotWhitespace() {
 		Expressions.makeAtom("  ", Expressions.makeConstant("c"));

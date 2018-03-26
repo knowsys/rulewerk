@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model.impl;
+package org.semanticweb.vlog4j.core.model.implementation;
 
 /*-
  * #%L
@@ -32,12 +32,18 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 
 /**
- * This class provides static methods for creating terms and formulas in vlog4j.
+ * This utilities class provides static methods for creating terms and formulas
+ * in vlog4j.
  * 
  * @author Markus Krötzsch
  *
  */
-public class Expressions {
+public final class Expressions {
+	/**
+	 * Private constructor prevents this utilities class to be instantiated.
+	 */
+	private Expressions() {
+	}
 
 	/**
 	 * Creates a {@link Variable}.

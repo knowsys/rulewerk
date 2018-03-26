@@ -33,9 +33,9 @@ import java.util.Set;
  *
  */
 public interface Rule {
-	
+
 	/**
-	 * Returns the conjunction of head atoms (the consequence of the rule). 
+	 * Returns the conjunction of head atoms (the consequence of the rule).
 	 *
 	 * @return conjunction of atoms
 	 */
@@ -47,7 +47,6 @@ public interface Rule {
 	 * @return conjunction of atoms
 	 */
 	public Conjunction getBody();
-
 
 	/**
 	 * Returns the existentially quantified head variables of this rule.

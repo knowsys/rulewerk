@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model.impl;
+package org.semanticweb.vlog4j.core.model.implementation;
 
 /*
  * #%L
@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
@@ -56,10 +57,10 @@ public class AtomImpl implements Atom {
 	 */
 	public AtomImpl(final Predicate predicate, final List<Term> terms) {
 		Validate.notNull(predicate, "Atom predicates cannot be null.");
-		Validate.noNullElements(terms, "Null terms cannot appear in atoms");
+		Validate.noNullElements(terms, "Null terms cannot appear in atoms. The list contains a null at position [%d].");
 		Validate.notEmpty(terms, "Atoms of arity zero are not supported: please specify at least one term.");
 
-		Validate.isTrue(terms.size() == predicate.getArity(), "Terms size [%d] does not match predicate arity [%].",
+		Validate.isTrue(terms.size() == predicate.getArity(), "Terms size [%d] does not match predicate arity [%d].",
 				terms.size(), predicate.getArity());
 
 		this.predicate = predicate;
@@ -83,6 +84,15 @@ public class AtomImpl implements Atom {
 			term.accept(termFilter);
 		}
 		return termFilter.getVariables();
+	}
+
+	@Override
+	public Set<Constant> getConstants() {
+		final TermFilter termFilter = new TermFilter(TermType.CONSTANT);
+		for (final Term term : this.terms) {
+			term.accept(termFilter);
+		}
+		return termFilter.getConstants();
 	}
 
 	@Override

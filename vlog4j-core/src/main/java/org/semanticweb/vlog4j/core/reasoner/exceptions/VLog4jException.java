@@ -1,6 +1,6 @@
-package org.semanticweb.vlog4j.core.reasoner;
+package org.semanticweb.vlog4j.core.reasoner.exceptions;
 
-/*
+/*-
  * #%L
  * VLog4j Core Components
  * %%
@@ -20,6 +20,24 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 
-public enum DataFormat {
-	SKOLEM_CHASE, RESTRICTED_CHASE
+/**
+ * Top-level checked exception for VLog4j system.
+ * @author Irina Dragoste
+ *
+ */
+public class VLog4jException extends Exception {
+
+	/**
+	 * generated serial version UID
+	 */
+	private static final long serialVersionUID = 8305375071519734590L;
+
+	public VLog4jException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public VLog4jException(String message) {
+		super(message);
+	}
+
 }

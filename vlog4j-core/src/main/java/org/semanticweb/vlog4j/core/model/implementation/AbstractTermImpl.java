@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model.impl;
+package org.semanticweb.vlog4j.core.model.implementation;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Term;
