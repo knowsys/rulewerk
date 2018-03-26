@@ -27,11 +27,18 @@ import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import karmaresearch.vlog.Term;
 import karmaresearch.vlog.TermQueryResultIterator;
 
+/**
+ * Iterates trough all answers to a query. An answer to a query is a
+ * {@link QueryResult}. Each query answer is distinct.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public class QueryResultIterator implements Iterator<QueryResult>, AutoCloseable {
 
 	private final TermQueryResultIterator vLogTermQueryResultIterator;
 
-	public <T> QueryResultIterator(TermQueryResultIterator termQueryResultIterator) {
+	public QueryResultIterator(TermQueryResultIterator termQueryResultIterator) {
 		this.vLogTermQueryResultIterator = termQueryResultIterator;
 	}
 

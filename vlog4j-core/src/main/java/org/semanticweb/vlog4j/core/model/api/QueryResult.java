@@ -22,10 +22,22 @@ package org.semanticweb.vlog4j.core.model.api;
 
 import java.util.List;
 
+/**
+ * A Query Result represents a list of terms that match the terms of the asked
+ * query. The terms can be named individuals (constants) and anonymous
+ * individuals (blanks).
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public interface QueryResult {
 
+	/**
+	 * Getter for the terms that represent a query answer.
+	 * 
+	 * @return the terms that represent a query answer. They can be named
+	 *         individuals (constants) and anonymous individuals (blanks).
+	 */
 	List<Term> getTerms();
 
 }
-
-
