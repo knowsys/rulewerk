@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.semanticweb.owlapi.model.OWLAnonymousIndividual;
+
 /*-
  * #%L
  * VLog4j OWL API Support
@@ -27,8 +29,13 @@ import java.security.NoSuchAlgorithmException;
 
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.impl.BlankImpl;
+import org.semanticweb.vlog4j.core.model.impl.ConstantImpl;
 import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
 
 /**
@@ -39,6 +46,24 @@ import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
  *
  */
 public class OwlToRulesConversionHelper {
+
+	/**
+	 * Returns a {@link Term} to represent an {@link OWLIndividual} in rules.
+	 * 
+	 * @param owlIndividual
+	 *            the individual to get a term for
+	 * @return a suitable term
+	 */
+	public static Term getIndividualTerm(OWLIndividual owlIndividual) {
+		if (owlIndividual instanceof OWLNamedIndividual) {
+			return new ConstantImpl(((OWLNamedIndividual) owlIndividual).getIRI().toString());
+		} else if (owlIndividual instanceof OWLAnonymousIndividual) {
+			return new BlankImpl(((OWLAnonymousIndividual) owlIndividual).getID().toString());
+		} else {
+			throw new OwlFeatureNotSupportedException(
+					"Could not convert OWL individual '" + owlIndividual.toString() + "' to a term.");
+		}
+	}
 
 	/**
 	 * Returns a {@link Predicate} to represent an {@link OWLClass} in rules.

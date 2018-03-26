@@ -50,6 +50,7 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
 import org.semanticweb.vlog4j.core.model.impl.ConjunctionImpl;
@@ -131,27 +132,13 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 
 	@Override
 	public void visit(OWLObjectSomeValuesFrom ce) {
-		OWLObjectPropertyExpression objectPropertyExpression = ce.getProperty();
-		if (objectPropertyExpression.isOWLTopObjectProperty()) {
-			// irrelevant in body; omit
-		} else if (objectPropertyExpression.isOWLBottomObjectProperty()) {
-			this.unsatisfiable = true;
-		} else {
-			Variable variable = this.parent.getFreshVariable();
-			if (objectPropertyExpression.isAnonymous()) {
-				Predicate predicate = OwlToRulesConversionHelper.getObjectPropertyPredicate(
-						objectPropertyExpression.getInverseProperty().asOWLObjectProperty());
-				bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(variable, this.frontierVariable)));
-			} else {
-				Predicate predicate = OwlToRulesConversionHelper
-						.getObjectPropertyPredicate(objectPropertyExpression.asOWLObjectProperty());
-				bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(this.frontierVariable, variable)));
-			}
+		Variable variable = this.parent.getFreshVariable();
+		addConjunctForPropertyExpression(ce.getProperty(), this.frontierVariable, variable);
+		if (!this.unsatisfiable) {
 			ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(variable, this.bodyConjuncts, this.rules,
 					this.parent);
 			ce.getFiller().accept(converter);
 		}
-
 	}
 
 	@Override
@@ -162,8 +149,8 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 
 	@Override
 	public void visit(OWLObjectHasValue ce) {
-		// TODO Auto-generated method stub
-
+		Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller());
+		addConjunctForPropertyExpression(ce.getProperty(), this.frontierVariable, term);
 	}
 
 	@Override
@@ -186,8 +173,7 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 
 	@Override
 	public void visit(OWLObjectHasSelf ce) {
-		// TODO Auto-generated method stub
-
+		addConjunctForPropertyExpression(ce.getProperty(), this.frontierVariable, this.frontierVariable);
 	}
 
 	@Override
@@ -224,6 +210,39 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 	@Override
 	public void visit(OWLDataMaxCardinality ce) {
 		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+	}
+
+	/**
+	 * Adds a binary predicate for a given OWL object property expression to the
+	 * body. If the expression is an inverse, source and target terms are swapped.
+	 * If the expression is top or bottom, it is handled appropriately.
+	 * 
+	 * @param owlObjectPropertyExpression
+	 *            the property expression
+	 * @param sourceTerm
+	 *            the term that should be in the first parameter position of the
+	 *            original expression
+	 * @param targetTerm
+	 *            the term that should be in the second parameter position of the
+	 *            original expression
+	 */
+	void addConjunctForPropertyExpression(OWLObjectPropertyExpression owlObjectPropertyExpression, Term sourceTerm,
+			Term targetTerm) {
+		if (owlObjectPropertyExpression.isOWLTopObjectProperty()) {
+			// irrelevant in body; omit
+		} else if (owlObjectPropertyExpression.isOWLBottomObjectProperty()) {
+			this.unsatisfiable = true;
+		} else {
+			if (owlObjectPropertyExpression.isAnonymous()) {
+				Predicate predicate = OwlToRulesConversionHelper.getObjectPropertyPredicate(
+						owlObjectPropertyExpression.getInverseProperty().asOWLObjectProperty());
+				bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(targetTerm, sourceTerm)));
+			} else {
+				Predicate predicate = OwlToRulesConversionHelper
+						.getObjectPropertyPredicate(owlObjectPropertyExpression.asOWLObjectProperty());
+				bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(sourceTerm, targetTerm)));
+			}
+		}
 	}
 
 }
