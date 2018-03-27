@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.vlog;
+package org.semanticweb.vlog4j.core.reasoner.vlog;
 
 /*-
  * #%L
@@ -36,9 +36,9 @@ import karmaresearch.vlog.TermQueryResultIterator;
  * @author Irina Dragoste
  *
  */
-final class QueryResultUtils {
+final class VLogQueryResultUtils {
 
-	private QueryResultUtils() {
+	private VLogQueryResultUtils() {
 	}
 
 	/**

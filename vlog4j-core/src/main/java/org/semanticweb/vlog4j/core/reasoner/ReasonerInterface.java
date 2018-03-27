@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -78,5 +79,7 @@ public interface ReasonerInterface {
 
 	void exportQueryAnswersToCsv(Atom atom, String csvFilePath, boolean includeBlanks)
 			throws ReasonerStateException, NotStartedException, IOException;
+
+	void addDataSource(Predicate predicate, DataSource dataSource) throws ReasonerStateException;
 
 }

@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner;
+package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 /*
  * #%L
@@ -32,6 +32,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
@@ -71,23 +72,13 @@ public class ReasonerTest extends TestCase {
 		reasoner.reason();
 
 		final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx);
-		final Set<List<Term>> actualResults = gatherQueryResults(cxQueryResultEnumAfterReasoning);
+		final Set<List<Term>> actualResults = QueryResultUtils.gatherQueryResults(cxQueryResultEnumAfterReasoning);
 
 		final Set<List<Constant>> expectedResults = new HashSet<>(
 				Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));
 		assertEquals(expectedResults, actualResults);
 
 		reasoner.dispose();
-	}
-
-	private static Set<List<Term>> gatherQueryResults(QueryResultIterator queryResultIterator) {
-		final Set<List<Term>> results = new HashSet<>();
-		queryResultIterator.forEachRemaining(queryResult -> {
-			boolean isUnique = results.add(queryResult.getTerms());
-			assertTrue(isUnique);
-		});
-		queryResultIterator.close();
-		return results;
 	}
 
 }

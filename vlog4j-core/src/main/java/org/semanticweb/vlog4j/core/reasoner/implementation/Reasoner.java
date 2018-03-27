@@ -4,20 +4,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.CsvFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
@@ -63,10 +63,7 @@ public class Reasoner implements ReasonerInterface {
 
 	private final List<Rule> rules = new ArrayList<>();
 	private final Map<Predicate, Set<Atom>> factsForPredicate = new HashMap<>();
-	// private final List<FactsSourceConfig> edbPredicatesConfig = new
-	// ArrayList<>();
-	// private final Map<Predicate, DataSource> dataSourceConfiguration = new
-	// HashMap<>();
+	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
 
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
@@ -130,10 +127,27 @@ public class Reasoner implements ReasonerInterface {
 			validateFactTermsAreConstant(fact);
 
 			final Predicate predicate = fact.getPredicate();
+			validateNoDataSourceForPredicate(predicate);
+
 			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
 			this.factsForPredicate.get(predicate).add(fact);
 		}
+	}
 
+	@Override
+	public void addDataSource(final Predicate predicate, final DataSource dataSource) throws ReasonerStateException {
+		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
+			throw new ReasonerStateException(this.reasonerState,
+					"Data sources cannot be added after the reasoner was loaded!");
+		}
+		Validate.notNull(predicate, "Null predicates are not allowed!");
+		Validate.notNull(dataSource, "Null dataSources are not allowed!");
+		validateNoDataSourceForPredicate(predicate);
+		Validate.isTrue(!factsForPredicate.containsKey(predicate),
+				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added in memory: %s",
+				predicate, factsForPredicate.get(predicate));
+
+		dataSourceForPredicate.put(predicate, dataSource);
 	}
 
 	private void validateFactTermsAreConstant(Atom fact) {
@@ -145,19 +159,26 @@ public class Reasoner implements ReasonerInterface {
 
 	}
 
+	private void validateNoDataSourceForPredicate(final Predicate predicate) {
+		Validate.isTrue(!dataSourceForPredicate.containsKey(predicate),
+				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added from data source: %s",
+				predicate, dataSourceForPredicate.get(predicate));
+	}
+
 	@Override
-	public void load() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException,
-			EdbIdbSeparationException {
+	public void load() throws AlreadyStartedException, EDBConfigurationException, NotStartedException,
+			EdbIdbSeparationException, IOException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			validateEdbIdbSeparation();
 
 			this.reasonerState = ReasonerState.AFTER_LOADING;
-			// this.vLog.start(edbPredicatesConfigToString(), false);
-			if (this.factsForPredicate.isEmpty()) {
-				this.vLog.start(StringUtils.EMPTY, false);
+
+			if (this.dataSourceForPredicate.isEmpty() && this.factsForPredicate.isEmpty()) {
+				LOGGER.warn("No facts have been provided.");
 			}
-			// TODO log warning if both in memory and on disk facts are empty.
+			this.vLog.start(generateDataSourcesConfig(), false);
 			loadInMemoryFacts();
+
 			if (this.rules.isEmpty()) {
 				LOGGER.warn("No rules have been provided for reasoning.");
 			} else {
@@ -237,9 +258,7 @@ public class Reasoner implements ReasonerInterface {
 
 	private Set<Predicate> collectEdbPredicates() {
 		final Set<Predicate> edbPredicates = new HashSet<>();
-		// for (final FactsSourceConfig edbPredConfig : this.edbPredicatesConfig) {
-		// edbPredicates.add(edbPredConfig.getPredicate());
-		// }
+		edbPredicates.addAll(this.dataSourceForPredicate.keySet());
 		edbPredicates.addAll(this.factsForPredicate.keySet());
 		return edbPredicates;
 	}
@@ -252,6 +271,20 @@ public class Reasoner implements ReasonerInterface {
 			}
 		}
 		return idbPredicates;
+	}
+
+	String generateDataSourcesConfig() {
+		final StringBuilder configStringBuilder = new StringBuilder();
+		int dataSourceIndex = 0;
+		for (final Predicate predicate : dataSourceForPredicate.keySet()) {
+			final DataSource dataSource = dataSourceForPredicate.get(predicate);
+			try (final Formatter formatter = new Formatter(configStringBuilder);) {
+				formatter.format(dataSource.toConfigString(), dataSourceIndex,
+						ModelToVLogConverter.toVLogPredicate(predicate));
+			}
+			dataSourceIndex++;
+		}
+		return configStringBuilder.toString();
 	}
 
 	private void loadInMemoryFacts() throws EDBConfigurationException {
