@@ -217,11 +217,6 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public QueryResultIterator answerQuery(final Atom queryAtom) throws ReasonerStateException {
-		return answerQuery(queryAtom, true);
-	}
-
-	@Override
 	public QueryResultIterator answerQuery(Atom queryAtom, boolean includeBlanks) throws ReasonerStateException {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
@@ -237,12 +232,6 @@ public class VLogReasoner implements Reasoner {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
 		return new QueryResultIterator(stringQueryResultIterator);
-	}
-
-	@Override
-	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath)
-			throws ReasonerStateException, IOException {
-		exportQueryAnswersToCsv(queryAtom, csvFilePath, true);
 	}
 
 	@Override

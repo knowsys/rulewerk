@@ -78,12 +78,12 @@ public class ReasonerTest {
 			reasoner.addRules(ruleBxAx, ruleCxBx);
 			reasoner.load();
 
-			final QueryResultIterator cxQueryResultEnumBeforeReasoning = reasoner.answerQuery(atomCx);
+			final QueryResultIterator cxQueryResultEnumBeforeReasoning = reasoner.answerQuery(atomCx, true);
 			assertFalse(cxQueryResultEnumBeforeReasoning.hasNext());
 
 			reasoner.reason();
 
-			final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx);
+			final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx, true);
 			final Set<List<Term>> actualResults = QueryResultUtils.gatherQueryResults(cxQueryResultEnumAfterReasoning);
 
 			final Set<List<Constant>> expectedResults = new HashSet<>(

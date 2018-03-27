@@ -57,12 +57,8 @@ public interface Reasoner extends AutoCloseable{
 	void load() throws IOException, EdbIdbSeparationException;
 
 	void reason() throws IOException, ReasonerStateException;
-
-	QueryResultIterator answerQuery(Atom atom) throws ReasonerStateException;
 	
 	QueryResultIterator answerQuery(Atom atom,  boolean includeBlanks) throws ReasonerStateException;
-
-	void exportQueryAnswersToCsv(Atom atom, String outputFilePath) throws ReasonerStateException, IOException;
 
 	void exportQueryAnswersToCsv(Atom atom, String csvFilePath, boolean includeBlanks)
 			throws ReasonerStateException, IOException;
