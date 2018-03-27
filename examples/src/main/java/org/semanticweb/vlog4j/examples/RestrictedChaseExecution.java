@@ -3,7 +3,6 @@ package org.semanticweb.vlog4j.examples;
 import java.io.IOException;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
-import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -14,7 +13,6 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 /*-
  * #%L
@@ -94,32 +92,22 @@ public class RestrictedChaseExecution {
 		// BicycleEDB(b) .
 		Atom fact4 = Expressions.makeAtom(bicycleEDB, bicycle2);
 
-		// Setting up a reasoner that will compute the restricted chase
+		// Loading, reasoning, and querying.
 		Reasoner reasoner = Reasoner.getInstance();
 		reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
-
-		// Loading
 		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 		reasoner.addFacts(fact1, fact2, fact3, fact4);
 		reasoner.load();
-
-		// Querying
 		System.out.println("\n" + "Answers to query " + hasPartEDBXY + " before materialisation:");
 		QueryResultIterator answersBeforeMaterialisation = reasoner.answerQuery(hasPartEDBXY, true);
-		while (answersBeforeMaterialisation.hasNext()) {
+		while (answersBeforeMaterialisation.hasNext())
 			System.out.println(answersBeforeMaterialisation.next());
-		}
 		System.out.println();
-
-		// Reasoning
 		reasoner.reason();
-
-		// Querying
 		System.out.println("\n" + "Answers to query " + hasPartIDBXY + " after materialisation:");
 		QueryResultIterator answersAfterMaterialisation = reasoner.answerQuery(hasPartIDBXY, true);
-		while (answersAfterMaterialisation.hasNext()) {
+		while (answersAfterMaterialisation.hasNext())
 			System.out.println(answersAfterMaterialisation.next());
-		}
 		System.out.println();
 	}
 }
