@@ -9,8 +9,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-
-import karmaresearch.vlog.EDBConfigurationException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 /*
  * #%L
@@ -31,7 +30,11 @@ import karmaresearch.vlog.EDBConfigurationException;
  * limitations under the License.
  * #L%
  */
-public interface ReasonerInterface {
+public interface Reasoner extends AutoCloseable{
+	
+	public static VLogReasoner getInstance() {
+		return new VLogReasoner();
+	}
 
 	Algorithm getAlgorithm();
 
@@ -51,19 +54,16 @@ public interface ReasonerInterface {
 
 	void addDataSource(Predicate predicate, DataSource dataSource) throws ReasonerStateException;
 
-	// void addFactsSource(FactsSourceConfig... edbConfig) throws
-	// ReasonerStateException;
+	void load() throws IOException, EdbIdbSeparationException;
 
-	// void addFactsSource(Collection<FactsSourceConfig> edbConfig) throws
-	// ReasonerStateException;
-
-	void load() throws EDBConfigurationException, IOException, EdbIdbSeparationException;
-
-	void reason() throws EDBConfigurationException, IOException, ReasonerStateException;
+	void reason() throws IOException, ReasonerStateException;
 
 	QueryResultIterator answerQuery(Atom atom) throws ReasonerStateException;
 
 	void exportQueryAnswersToCsv(Atom atom, String outputFilePath) throws ReasonerStateException, IOException;
+
+	void exportQueryAnswersToCsv(Atom atom, String csvFilePath, boolean includeBlanks)
+			throws ReasonerStateException, IOException;
 
 	// TODO arity should be in the EDB config file,
 	// do not read the files, have low-level API check if the file content
@@ -72,9 +72,7 @@ public interface ReasonerInterface {
 	// TODO check if URIs can be file names
 	// Set<EDBPredicateConfig> exportDBToFolder(File location);
 
-	void dispose();
-
-	void exportQueryAnswersToCsv(Atom atom, String csvFilePath, boolean includeBlanks)
-			throws ReasonerStateException, IOException;
+	@Override
+	void close();
 
 }

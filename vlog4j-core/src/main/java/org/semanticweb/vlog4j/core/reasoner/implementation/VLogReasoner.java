@@ -18,7 +18,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
-import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -52,8 +52,8 @@ import karmaresearch.vlog.VLog;
  * #L%
  */
 
-public class Reasoner implements ReasonerInterface {
-	private static Logger LOGGER = LoggerFactory.getLogger(Reasoner.class);
+public class VLogReasoner implements Reasoner {
+	private static Logger LOGGER = LoggerFactory.getLogger(VLogReasoner.class);
 
 	private final VLog vLog = new VLog();
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
@@ -166,7 +166,7 @@ public class Reasoner implements ReasonerInterface {
 	}
 
 	@Override
-	public void load() throws EDBConfigurationException, EdbIdbSeparationException, IOException {
+	public void load() throws EdbIdbSeparationException, IOException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			validateEdbIdbSeparation();
 
@@ -179,6 +179,8 @@ public class Reasoner implements ReasonerInterface {
 				this.vLog.start(generateDataSourcesConfig(), false);
 			} catch (final AlreadyStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
+			} catch (final EDBConfigurationException e) {
+				throw new RuntimeException("Invalid data sources configuration.", e);
 			}
 			loadInMemoryFacts();
 
@@ -195,7 +197,7 @@ public class Reasoner implements ReasonerInterface {
 	}
 
 	@Override
-	public void reason() throws EDBConfigurationException, IOException, ReasonerStateException {
+	public void reason() throws IOException, ReasonerStateException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			// TODO exception message
 			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed before loading!");
@@ -256,11 +258,6 @@ public class Reasoner implements ReasonerInterface {
 		}
 	}
 
-	@Override
-	public void dispose() {
-		this.vLog.stop();
-	}
-
 	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
 		final Set<Predicate> edbPredicates = collectEdbPredicates();
 		final Set<Predicate> idbPredicates = collectIdbPredicates();
@@ -303,13 +300,17 @@ public class Reasoner implements ReasonerInterface {
 		return configStringBuilder.toString();
 	}
 
-	private void loadInMemoryFacts() throws EDBConfigurationException {
+	private void loadInMemoryFacts() {
 		for (final Predicate predicate : this.factsForPredicate.keySet()) {
 			final Set<Atom> factsForPredicate = this.factsForPredicate.get(predicate);
 
 			final String vLogPredicate = ModelToVLogConverter.toVLogPredicate(predicate);
 			final String[][] tuplesForPredicate = ModelToVLogConverter.toVLogFactTuples(factsForPredicate);
-			this.vLog.addData(vLogPredicate, tuplesForPredicate);
+			try {
+				this.vLog.addData(vLogPredicate, tuplesForPredicate);
+			} catch (final EDBConfigurationException e) {
+				throw new RuntimeException("Invalid data sources configuration.", e);
+			}
 		}
 	}
 
@@ -322,6 +323,11 @@ public class Reasoner implements ReasonerInterface {
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
+	}
+
+	@Override
+	public void close() {
+		this.vLog.stop();
 	}
 
 }

@@ -46,24 +46,11 @@ public class LoadDataFromCsvTest {
 
 	@Test
 	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
-		final Reasoner reasoner = new Reasoner();
-		final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
-		assertTrue(dataSourcesConfig.isEmpty());
-		reasoner.dispose();
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
+			assertTrue(dataSourcesConfig.isEmpty());
+		}
 	}
-	//
-	// @Test
-	// public void testGenerateDataSourcesConfig() throws ReasonerStateException,
-	// IOException {
-	// final Predicate predicate = Expressions.makePredicate("p", 1);
-	// final DataSource dataSource = new CsvFileDataSource(UNARY_FACTS_CSV_FILE);
-	// final Reasoner reasoner = new Reasoner();
-	// reasoner.addDataSource(predicate, dataSource);
-	// final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
-	//// TODO query
-	// System.out.println(dataSourcesConfig);
-	// reasoner.dispose();
-	// }
 
 	@Test
 	public void testLoadUnaryFactsFromCsv()
@@ -74,15 +61,15 @@ public class LoadDataFromCsvTest {
 		@SuppressWarnings("unchecked")
 		final Set<List<Term>> expectedPQueryResults = Sets.newSet(Arrays.asList(Expressions.makeConstant("c1")),
 				Arrays.asList(Expressions.makeConstant("c2")));
-		final Reasoner reasoner = new Reasoner();
-		reasoner.addDataSource(predicateP, dataSource);
-		reasoner.addDataSource(predicateQ, dataSource);
-		reasoner.load();
-		final QueryResultIterator pQueryResultIterator = reasoner
-				.answerQuery(Expressions.makeAtom(predicateP, Expressions.makeVariable("x")));
-		final Set<List<Term>> pQueryResults = QueryResultUtils.gatherQueryResults(pQueryResultIterator);
-		assertEquals(expectedPQueryResults, pQueryResults);
-		reasoner.dispose();
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addDataSource(predicateP, dataSource);
+			reasoner.addDataSource(predicateQ, dataSource);
+			reasoner.load();
+			final QueryResultIterator pQueryResultIterator = reasoner
+					.answerQuery(Expressions.makeAtom(predicateP, Expressions.makeVariable("x")));
+			final Set<List<Term>> pQueryResults = QueryResultUtils.gatherQueryResults(pQueryResultIterator);
+			assertEquals(expectedPQueryResults, pQueryResults);
+		}
 	}
 
 }

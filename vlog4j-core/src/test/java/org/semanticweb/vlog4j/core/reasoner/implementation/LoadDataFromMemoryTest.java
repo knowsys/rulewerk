@@ -28,7 +28,6 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
@@ -44,13 +43,10 @@ public class LoadDataFromMemoryTest {
 		final Atom factIDBpred = Expressions.makeAtom("q", Expressions.makeConstant("c"));
 		final Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
-		final ReasonerInterface reasoner = new Reasoner();
-		reasoner.addRules(rule);
-		reasoner.addFacts(factIDBpred, factEDBpred);
-		try {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addRules(rule);
+			reasoner.addFacts(factIDBpred, factEDBpred);
 			reasoner.load();
-		} finally {
-			reasoner.dispose();
 		}
 	}
 
@@ -62,13 +58,10 @@ public class LoadDataFromMemoryTest {
 		final Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
 
-		final ReasonerInterface reasoner = new Reasoner();
-		reasoner.addRules(rule);
-		reasoner.addFacts(factEDBpred);
-		try {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addRules(rule);
+			reasoner.addFacts(factEDBpred);
 			reasoner.load();
-		} finally {
-			reasoner.dispose();
 		}
 	}
 
@@ -77,11 +70,8 @@ public class LoadDataFromMemoryTest {
 		final Atom factWithVariableTerms = Expressions.makeAtom("q", Expressions.makeConstant("d"),
 				Expressions.makeVariable("x"));
 
-		final ReasonerInterface reasoner = new Reasoner();
-		try {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(factWithVariableTerms);
-		} finally {
-			reasoner.dispose();
 		}
 	}
 
@@ -89,12 +79,8 @@ public class LoadDataFromMemoryTest {
 	public void addFactsWithBlankTerms() throws ReasonerStateException {
 		final Atom factWithBlankTerms = Expressions.makeAtom("q", Expressions.makeConstant("d"), new BlankImpl("b"));
 
-		final ReasonerInterface reasoner = new Reasoner();
-
-		try {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(factWithBlankTerms);
-		} finally {
-			reasoner.dispose();
 		}
 	}
 

@@ -47,12 +47,12 @@ public class AddDataSourceTest {
 		final Atom factPredicateQarity1 = Expressions.makeAtom("q", constantA);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
-		final Reasoner reasoner = new Reasoner();
-		reasoner.addFacts(factPredicateParity2, factPredicateQarity1);
-		reasoner.addDataSource(Expressions.makePredicate("p", 3), dataSource);
-		reasoner.addDataSource(predicateParity1, dataSource);
-		reasoner.load();
-		reasoner.dispose();
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addFacts(factPredicateParity2, factPredicateQarity1);
+			reasoner.addDataSource(Expressions.makePredicate("p", 3), dataSource);
+			reasoner.addDataSource(predicateParity1, dataSource);
+			reasoner.load();
+		}
 	}
 
 	public void testAddDataSourceBeforeLoading()
@@ -60,11 +60,11 @@ public class AddDataSourceTest {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		final Reasoner reasoner = new Reasoner();
-		reasoner.addDataSource(predicateP, dataSource);
-		reasoner.addDataSource(predicateQ, dataSource);
-		reasoner.load();
-		reasoner.dispose();
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addDataSource(predicateP, dataSource);
+			reasoner.addDataSource(predicateQ, dataSource);
+			reasoner.load();
+		}
 	}
 
 	@Test(expected = ReasonerStateException.class)
@@ -73,13 +73,10 @@ public class AddDataSourceTest {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		final Reasoner reasoner = new Reasoner();
-		reasoner.addDataSource(predicateP, dataSource);
-		reasoner.load();
-		try {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addDataSource(predicateP, dataSource);
+			reasoner.load();
 			reasoner.addDataSource(predicateQ, dataSource);
-		} finally {
-			reasoner.dispose();
 		}
 	}
 
@@ -89,14 +86,11 @@ public class AddDataSourceTest {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		final Reasoner reasoner = new Reasoner();
-		reasoner.addDataSource(predicateP, dataSource);
-		reasoner.load();
-		reasoner.reason();
-		try {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addDataSource(predicateP, dataSource);
+			reasoner.load();
+			reasoner.reason();
 			reasoner.addDataSource(predicateQ, dataSource);
-		} finally {
-			reasoner.dispose();
 		}
 	}
 
@@ -104,12 +98,9 @@ public class AddDataSourceTest {
 	public void testAddDataSourceNoMultipleDataSourcesForPredicate() throws ReasonerStateException, IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		final Reasoner reasoner = new Reasoner();
-		reasoner.addDataSource(predicate, dataSource);
-		try {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addDataSource(predicate, dataSource);
-		} finally {
-			reasoner.dispose();
+			reasoner.addDataSource(predicate, dataSource);
 		}
 	}
 
@@ -118,34 +109,25 @@ public class AddDataSourceTest {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		final Atom fact = Expressions.makeAtom(Expressions.makePredicate("p", 1), Expressions.makeConstant("a"));
-		final Reasoner reasoner = new Reasoner();
-		reasoner.addFacts(fact);
-		try {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addFacts(fact);
 			reasoner.addDataSource(predicate, dataSource);
-		} finally {
-			reasoner.dispose();
 		}
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testAddDataSourcePredicateNotNull() throws ReasonerStateException, IOException {
 		final DataSource dataSource = new CsvFileDataSource(new File("src/test/data/unaryFacts.csv"));
-		final Reasoner reasoner = new Reasoner();
-		try {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addDataSource(null, dataSource);
-		} finally {
-			reasoner.dispose();
 		}
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testAddDataSourceNotNullDataSource() throws ReasonerStateException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
-		final Reasoner reasoner = new Reasoner();
-		try {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addDataSource(predicate, null);
-		} finally {
-			reasoner.dispose();
 		}
 	}
 
