@@ -31,7 +31,6 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.Reasoner;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -42,11 +41,12 @@ public class LoadDataFromMemoryTest {
 	@Test(expected = EdbIdbSeparationException.class)
 	public void loadEdbIdbNotSeparated() throws AlreadyStartedException, EDBConfigurationException, IOException,
 			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
-		Variable vx = Expressions.makeVariable("x");
-		Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
-		Atom factIDBpred = Expressions.makeAtom("q", Expressions.makeConstant("c"));
-		Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"), Expressions.makeConstant("d"));
-		ReasonerInterface reasoner = new Reasoner();
+		final Variable vx = Expressions.makeVariable("x");
+		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
+		final Atom factIDBpred = Expressions.makeAtom("q", Expressions.makeConstant("c"));
+		final Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"),
+				Expressions.makeConstant("d"));
+		final ReasonerInterface reasoner = new Reasoner();
 		reasoner.addRules(rule);
 		reasoner.addFacts(factIDBpred, factEDBpred);
 		try {
@@ -59,11 +59,12 @@ public class LoadDataFromMemoryTest {
 	@Test
 	public void loadEdbIdbSeparated() throws AlreadyStartedException, EDBConfigurationException, IOException,
 			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
-		Variable vx = Expressions.makeVariable("x");
-		Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
-		Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"), Expressions.makeConstant("d"));
+		final Variable vx = Expressions.makeVariable("x");
+		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
+		final Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"),
+				Expressions.makeConstant("d"));
 
-		ReasonerInterface reasoner = new Reasoner();
+		final ReasonerInterface reasoner = new Reasoner();
 		reasoner.addRules(rule);
 		reasoner.addFacts(factEDBpred);
 		try {
@@ -75,23 +76,22 @@ public class LoadDataFromMemoryTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void addFactsWithVariableTerms() throws ReasonerStateException {
-		Atom factWithVariableTerms = Expressions.makeAtom("q", Expressions.makeConstant("d"),
+		final Atom factWithVariableTerms = Expressions.makeAtom("q", Expressions.makeConstant("d"),
 				Expressions.makeVariable("x"));
 
-		ReasonerInterface reasoner = new Reasoner();
+		final ReasonerInterface reasoner = new Reasoner();
 		try {
 			reasoner.addFacts(factWithVariableTerms);
 		} finally {
 			reasoner.dispose();
 		}
 	}
-	
 
 	@Test(expected = IllegalArgumentException.class)
 	public void addFactsWithBlankTerms() throws ReasonerStateException {
-		Atom factWithBlankTerms = Expressions.makeAtom("q", Expressions.makeConstant("d"), new BlankImpl("b"));
+		final Atom factWithBlankTerms = Expressions.makeAtom("q", Expressions.makeConstant("d"), new BlankImpl("b"));
 
-		ReasonerInterface reasoner = new Reasoner();
+		final ReasonerInterface reasoner = new Reasoner();
 		try {
 			reasoner.addFacts(factWithBlankTerms);
 		} finally {

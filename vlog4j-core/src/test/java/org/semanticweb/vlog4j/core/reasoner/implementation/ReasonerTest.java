@@ -35,8 +35,6 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.Reasoner;
 
 import junit.framework.TestCase;
 import karmaresearch.vlog.AlreadyStartedException;
@@ -80,5 +78,4 @@ public class ReasonerTest extends TestCase {
 
 		reasoner.dispose();
 	}
-
 }

@@ -1,3 +1,4 @@
+
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 /*-
@@ -31,8 +32,6 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.Reasoner;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -43,18 +42,18 @@ public class QueryDataFromMemoryTest {
 	@Test
 	public void queryEmptyKnowledgeBase() throws AlreadyStartedException, EDBConfigurationException, IOException,
 			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
-		ReasonerInterface reasoner = new Reasoner();
+		final ReasonerInterface reasoner = new Reasoner();
 
 		reasoner.load();
 
-		Atom queryAtom = Expressions.makeAtom("P", Expressions.makeVariable("?x"));
-		QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom);
+		final Atom queryAtom = Expressions.makeAtom("P", Expressions.makeVariable("?x"));
+		final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom);
 		Assert.assertFalse(queryResultIterator.hasNext());
 		queryResultIterator.close();
 
 		reasoner.reason();
 
-		QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom);
+		final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom);
 		Assert.assertFalse(queryResultIteratorAfterReason.hasNext());
 		queryResultIteratorAfterReason.close();
 
@@ -64,21 +63,21 @@ public class QueryDataFromMemoryTest {
 	@Test
 	public void queryEmptyFacts() throws AlreadyStartedException, EDBConfigurationException, IOException,
 			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
-		Variable vx = Expressions.makeVariable("x");
-		Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
+		final Variable vx = Expressions.makeVariable("x");
+		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
 
-		ReasonerInterface reasoner = new Reasoner();
+		final ReasonerInterface reasoner = new Reasoner();
 		reasoner.addRules(rule);
 		reasoner.load();
 
-		Atom queryAtom = Expressions.makeAtom("P", Expressions.makeVariable("?x"));
-		QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom);
+		final Atom queryAtom = Expressions.makeAtom("P", Expressions.makeVariable("?x"));
+		final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom);
 		Assert.assertFalse(queryResultIterator.hasNext());
 		queryResultIterator.close();
 
 		reasoner.reason();
 
-		QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom);
+		final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom);
 		Assert.assertFalse(queryResultIteratorAfterReason.hasNext());
 		queryResultIteratorAfterReason.close();
 

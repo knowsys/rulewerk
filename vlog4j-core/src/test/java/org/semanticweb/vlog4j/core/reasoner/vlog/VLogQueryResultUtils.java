@@ -53,7 +53,7 @@ final class VLogQueryResultUtils {
 	static Set<List<Term>> collectResults(final TermQueryResultIterator queryResultIterator) {
 		final Set<List<Term>> answers = new HashSet<>();
 		queryResultIterator.forEachRemaining(result -> {
-			boolean isUnique = answers.add(Arrays.asList(result));
+			final boolean isUnique = answers.add(Arrays.asList(result));
 			assertTrue(isUnique);
 		});
 		queryResultIterator.close();

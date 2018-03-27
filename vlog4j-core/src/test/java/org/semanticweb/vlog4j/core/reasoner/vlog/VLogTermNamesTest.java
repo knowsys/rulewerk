@@ -42,7 +42,7 @@ import karmaresearch.vlog.VLog;
 import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 public class VLogTermNamesTest {
-	
+
 	@Test
 	public void testTermCase() throws EDBConfigurationException, NotStartedException {
 		final String[][] argsAMatrix = { { "A" }, { "a" } };
