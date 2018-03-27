@@ -1,4 +1,7 @@
-package org.semanticweb.vlog4j.core.reasoner;
+package org.semanticweb.vlog4j.core.reasoner.implementation;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /*
  * #%L
@@ -26,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -34,18 +38,27 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.Reasoner;
 
-import junit.framework.TestCase;
-import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
-import karmaresearch.vlog.NotStartedException;
 
-public class ReasonerTest extends TestCase {
+public class ReasonerTest {
 
-	public void testSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException,
-			NotStartedException, ReasonerStateException, EdbIdbSeparationException {
+	@Test
+	public void testCloseRepeatedly() throws EdbIdbSeparationException, IOException {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.close();
+		}
+
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.load();
+			reasoner.close();
+			reasoner.close();
+		}
+	}
+
+	@Test
+	public void testSimpleInference()
+			throws EDBConfigurationException, IOException, ReasonerStateException, EdbIdbSeparationException {
 		final String constantNameC = "c";
 		final String constantNameD = "d";
 
@@ -60,34 +73,23 @@ public class ReasonerTest extends TestCase {
 		final Rule ruleBxAx = Expressions.makeRule(atomBx, atomAx);
 		final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
 
-		final ReasonerInterface reasoner = new Reasoner();
-		reasoner.addFacts(factAc, factAd);
-		reasoner.addRules(ruleBxAx, ruleCxBx);
-		reasoner.load();
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addFacts(factAc, factAd);
+			reasoner.addRules(ruleBxAx, ruleCxBx);
+			reasoner.load();
 
-		final QueryResultIterator cxQueryResultEnumBeforeReasoning = reasoner.answerQuery(atomCx);
-		assertFalse(cxQueryResultEnumBeforeReasoning.hasNext());
+			final QueryResultIterator cxQueryResultEnumBeforeReasoning = reasoner.answerQuery(atomCx, true);
+			assertFalse(cxQueryResultEnumBeforeReasoning.hasNext());
 
-		reasoner.reason();
+			reasoner.reason();
 
-		final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx);
-		final Set<List<Term>> actualResults = gatherQueryResults(cxQueryResultEnumAfterReasoning);
+			final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx, true);
+			final Set<List<Term>> actualResults = QueryResultUtils.gatherQueryResults(cxQueryResultEnumAfterReasoning);
 
-		final Set<List<Constant>> expectedResults = new HashSet<>(
-				Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));
-		assertEquals(expectedResults, actualResults);
+			final Set<List<Constant>> expectedResults = new HashSet<>(
+					Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));
+			assertEquals(expectedResults, actualResults);
 
-		reasoner.dispose();
+		}
 	}
-
-	private static Set<List<Term>> gatherQueryResults(QueryResultIterator queryResultIterator) {
-		final Set<List<Term>> results = new HashSet<>();
-		queryResultIterator.forEachRemaining(queryResult -> {
-			boolean isUnique = results.add(queryResult.getTerms());
-			assertTrue(isUnique);
-		});
-		queryResultIterator.close();
-		return results;
-	}
-
 }
