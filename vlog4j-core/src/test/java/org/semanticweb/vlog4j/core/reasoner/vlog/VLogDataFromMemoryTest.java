@@ -88,7 +88,6 @@ public class VLogDataFromMemoryTest {
 
 		final TermQueryResultIterator queryResultIteratorAx2 = vLog.query(atomAx);
 		final Set<List<Term>> queryAxResults2 = VLogQueryResultUtils.collectResults(queryResultIteratorAx2);
-
 		assertEquals(tuples, queryAxResults2);
 
 		vLog.stop();

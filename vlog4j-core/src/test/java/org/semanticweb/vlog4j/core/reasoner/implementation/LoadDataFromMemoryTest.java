@@ -92,6 +92,7 @@ public class LoadDataFromMemoryTest {
 		final Atom factWithBlankTerms = Expressions.makeAtom("q", Expressions.makeConstant("d"), new BlankImpl("b"));
 
 		final ReasonerInterface reasoner = new Reasoner();
+
 		try {
 			reasoner.addFacts(factWithBlankTerms);
 		} finally {

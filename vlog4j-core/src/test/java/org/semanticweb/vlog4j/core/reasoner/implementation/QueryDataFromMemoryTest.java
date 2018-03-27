@@ -1,4 +1,3 @@
-
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 /*-
@@ -38,7 +37,7 @@ import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
 
 public class QueryDataFromMemoryTest {
-	
+
 	@Test
 	public void queryEmptyKnowledgeBase() throws AlreadyStartedException, EDBConfigurationException, IOException,
 			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
