@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -26,11 +27,11 @@
 
 	<inceptionYear>2018</inceptionYear>
 
-	
+
 	<organization>
 		<name>VLog4j Developers</name>
 	</organization>
-	
+
 	<developers>
 		<developer>
 			<id>markus</id>
@@ -56,7 +57,7 @@
 		<slf4jVersion>1.7.10</slf4jVersion>
 		<apacheCommonsLangVersion>3.7</apacheCommonsLangVersion>
 		<mavenJavaDocVersion>3.0.0</mavenJavaDocVersion>
-		
+
 		<apacheCommonsCompressVersion>1.15</apacheCommonsCompressVersion>
 		<apacheHttpVersion>4.5.4</apacheHttpVersion>
 		<commonsCliVersion>1.4</commonsCliVersion>
@@ -87,7 +88,13 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${apacheCommonsLangVersion}</version>
-		</dependency>		
+		</dependency>
+		<dependency>
+			<!-- Useful for testing generated csv files -->
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.5</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -118,7 +125,7 @@
 				</plugin>
 				<plugin>
 					<!-- This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build. -->
+						only. It has no influence on the Maven build. -->
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
 					<version>1.0.0</version>
@@ -139,7 +146,7 @@
 										<ignore/>
 									</action>
 								</pluginExecution>
-								
+
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.codehaus.mojo</groupId>
@@ -175,7 +182,7 @@
 										</execute>
 									</action>
 								</pluginExecution>
-								
+
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -189,7 +196,7 @@
 			</plugin>
 			<plugin>
 				<!-- Used to set JRE version; will be used by IDEs like Eclipse as the 
-				target JRE (default is 1.5) -->
+					target JRE (default is 1.5) -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
@@ -206,7 +213,8 @@
 			</plugin>
 			<plugin>
 				<!-- Plugin for actually computing code coverage. -->
-				<!-- Change format to html and call mvn cobertura:cobertura to generate HTML report locally. -->
+				<!-- Change format to html and call mvn cobertura:cobertura to generate 
+					HTML report locally. -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
 				<version>2.7</version>
@@ -219,7 +227,8 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- Plugin for creating Javadocs; goal for preparing docs for upload to github: javadoc:aggregate -->
+				<!-- Plugin for creating Javadocs; goal for preparing docs for upload 
+					to github: javadoc:aggregate -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${mavenJavaDocVersion}</version>
@@ -234,7 +243,8 @@
 				<version>3.0.0</version>
 				<configuration>
 					<checkoutDirectory>${project.build.directory}/scmpublish</checkoutDirectory>
-					<checkinComment>Publishing javadoc for ${project.artifactId}:${project.version}</checkinComment>
+					<checkinComment>Publishing javadoc for
+						${project.artifactId}:${project.version}</checkinComment>
 					<content>${project.reporting.outputDirectory}/apidocs</content>
 					<pubScmUrl>scm:git:https://github.com/mkroetzsch/vlog4j.git</pubScmUrl>
 					<scmBranch>gh-pages</scmBranch>

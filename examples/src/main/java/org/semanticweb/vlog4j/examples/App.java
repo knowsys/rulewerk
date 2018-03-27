@@ -1,6 +1,6 @@
 package org.semanticweb.vlog4j.examples;
 
-import org.semanticweb.vlog4j.core.reasoner.implementation.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 
 /*-
  * #%L
@@ -29,6 +29,6 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.Reasoner;
 public class App {
 	public static void main(String[] args) {
 		System.out.println("Hello World!");
-		Reasoner a;
+		Reasoner a = null;
 	}
 }

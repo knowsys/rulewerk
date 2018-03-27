@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.vlog;
+package org.semanticweb.vlog4j.core.reasoner.vlog;
 
 /*-
  * #%L
@@ -36,9 +36,9 @@ import karmaresearch.vlog.TermQueryResultIterator;
  * @author Irina Dragoste
  *
  */
-final class QueryResultUtils {
+final class VLogQueryResultUtils {
 
-	private QueryResultUtils() {
+	private VLogQueryResultUtils() {
 	}
 
 	/**
@@ -53,7 +53,7 @@ final class QueryResultUtils {
 	static Set<List<Term>> collectResults(final TermQueryResultIterator queryResultIterator) {
 		final Set<List<Term>> answers = new HashSet<>();
 		queryResultIterator.forEachRemaining(result -> {
-			boolean isUnique = answers.add(Arrays.asList(result));
+			final boolean isUnique = answers.add(Arrays.asList(result));
 			assertTrue(isUnique);
 		});
 		queryResultIterator.close();

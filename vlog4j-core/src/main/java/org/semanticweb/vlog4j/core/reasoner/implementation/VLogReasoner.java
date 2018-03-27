@@ -4,21 +4,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.CsvFileDataSource;
-import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
+import org.semanticweb.vlog4j.core.reasoner.DataSource;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -52,8 +52,8 @@ import karmaresearch.vlog.VLog;
  * #L%
  */
 
-public class Reasoner implements ReasonerInterface {
-	private static Logger LOGGER = LoggerFactory.getLogger(Reasoner.class);
+public class VLogReasoner implements Reasoner {
+	private static Logger LOGGER = LoggerFactory.getLogger(VLogReasoner.class);
 
 	private final VLog vLog = new VLog();
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
@@ -63,10 +63,7 @@ public class Reasoner implements ReasonerInterface {
 
 	private final List<Rule> rules = new ArrayList<>();
 	private final Map<Predicate, Set<Atom>> factsForPredicate = new HashMap<>();
-	// private final List<FactsSourceConfig> edbPredicatesConfig = new
-	// ArrayList<>();
-	// private final Map<Predicate, DataSource> dataSourceConfiguration = new
-	// HashMap<>();
+	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
 
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
@@ -130,10 +127,27 @@ public class Reasoner implements ReasonerInterface {
 			validateFactTermsAreConstant(fact);
 
 			final Predicate predicate = fact.getPredicate();
+			validateNoDataSourceForPredicate(predicate);
+
 			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
 			this.factsForPredicate.get(predicate).add(fact);
 		}
+	}
 
+	@Override
+	public void addDataSource(final Predicate predicate, final DataSource dataSource) throws ReasonerStateException {
+		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
+			throw new ReasonerStateException(this.reasonerState,
+					"Data sources cannot be added after the reasoner was loaded!");
+		}
+		Validate.notNull(predicate, "Null predicates are not allowed!");
+		Validate.notNull(dataSource, "Null dataSources are not allowed!");
+		validateNoDataSourceForPredicate(predicate);
+		Validate.isTrue(!factsForPredicate.containsKey(predicate),
+				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added in memory: %s",
+				predicate, factsForPredicate.get(predicate));
+
+		dataSourceForPredicate.put(predicate, dataSource);
 	}
 
 	private void validateFactTermsAreConstant(Atom fact) {
@@ -145,19 +159,31 @@ public class Reasoner implements ReasonerInterface {
 
 	}
 
+	private void validateNoDataSourceForPredicate(final Predicate predicate) {
+		Validate.isTrue(!dataSourceForPredicate.containsKey(predicate),
+				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added from data source: %s",
+				predicate, dataSourceForPredicate.get(predicate));
+	}
+
 	@Override
-	public void load() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException,
-			EdbIdbSeparationException {
+	public void load() throws EdbIdbSeparationException, IOException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			validateEdbIdbSeparation();
 
 			this.reasonerState = ReasonerState.AFTER_LOADING;
-			// this.vLog.start(edbPredicatesConfigToString(), false);
-			if (this.factsForPredicate.isEmpty()) {
-				this.vLog.start(StringUtils.EMPTY, false);
+
+			if (this.dataSourceForPredicate.isEmpty() && this.factsForPredicate.isEmpty()) {
+				LOGGER.warn("No facts have been provided.");
 			}
-			// TODO log warning if both in memory and on disk facts are empty.
+			try {
+				this.vLog.start(generateDataSourcesConfig(), false);
+			} catch (final AlreadyStartedException e) {
+				throw new RuntimeException("Inconsistent reasoner state.", e);
+			} catch (final EDBConfigurationException e) {
+				throw new RuntimeException("Invalid data sources configuration.", e);
+			}
 			loadInMemoryFacts();
+
 			if (this.rules.isEmpty()) {
 				LOGGER.warn("No rules have been provided for reasoning.");
 			} else {
@@ -171,7 +197,7 @@ public class Reasoner implements ReasonerInterface {
 	}
 
 	@Override
-	public void reason() throws EDBConfigurationException, IOException, NotStartedException, ReasonerStateException {
+	public void reason() throws IOException, ReasonerStateException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			// TODO exception message
 			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed before loading!");
@@ -182,31 +208,36 @@ public class Reasoner implements ReasonerInterface {
 			this.reasonerState = ReasonerState.AFTER_REASONING;
 
 			final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
-			this.vLog.materialize(skolemChase);
+			try {
+				this.vLog.materialize(skolemChase);
+			} catch (final NotStartedException e) {
+				throw new RuntimeException("Inconsistent reasoner state.", e);
+			}
 		}
 	}
 
 	@Override
-	public QueryResultIterator answerQuery(final Atom queryAtom) throws NotStartedException, ReasonerStateException {
+	public QueryResultIterator answerQuery(Atom queryAtom, boolean includeBlanks) throws ReasonerStateException {
+		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
-		final TermQueryResultIterator stringQueryResultIterator = this.vLog.query(vLogAtom);
+		TermQueryResultIterator stringQueryResultIterator;
+		try {
+			stringQueryResultIterator = this.vLog.query(vLogAtom, true, filterBlanks);
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		}
 		return new QueryResultIterator(stringQueryResultIterator);
 	}
 
 	@Override
 	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath, final boolean includeBlanks)
-			throws ReasonerStateException, NotStartedException, IOException {
-
-	}
-
-	@Override
-	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath)
-			throws ReasonerStateException, NotStartedException, IOException {
+			throws ReasonerStateException, IOException {
+		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
@@ -216,12 +247,11 @@ public class Reasoner implements ReasonerInterface {
 				"Expected .csv extension for file [%s]!", csvFilePath);
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
-		this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath);
-	}
-
-	@Override
-	public void dispose() {
-		this.vLog.stop();
+		try {
+			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath, filterBlanks);
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		}
 	}
 
 	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
@@ -237,9 +267,7 @@ public class Reasoner implements ReasonerInterface {
 
 	private Set<Predicate> collectEdbPredicates() {
 		final Set<Predicate> edbPredicates = new HashSet<>();
-		// for (final FactsSourceConfig edbPredConfig : this.edbPredicatesConfig) {
-		// edbPredicates.add(edbPredConfig.getPredicate());
-		// }
+		edbPredicates.addAll(this.dataSourceForPredicate.keySet());
 		edbPredicates.addAll(this.factsForPredicate.keySet());
 		return edbPredicates;
 	}
@@ -254,21 +282,48 @@ public class Reasoner implements ReasonerInterface {
 		return idbPredicates;
 	}
 
-	private void loadInMemoryFacts() throws EDBConfigurationException {
+	String generateDataSourcesConfig() {
+		final StringBuilder configStringBuilder = new StringBuilder();
+		int dataSourceIndex = 0;
+		for (final Predicate predicate : dataSourceForPredicate.keySet()) {
+			final DataSource dataSource = dataSourceForPredicate.get(predicate);
+			try (final Formatter formatter = new Formatter(configStringBuilder);) {
+				formatter.format(dataSource.toConfigString(), dataSourceIndex,
+						ModelToVLogConverter.toVLogPredicate(predicate));
+			}
+			dataSourceIndex++;
+		}
+		return configStringBuilder.toString();
+	}
+
+	private void loadInMemoryFacts() {
 		for (final Predicate predicate : this.factsForPredicate.keySet()) {
 			final Set<Atom> factsForPredicate = this.factsForPredicate.get(predicate);
 
 			final String vLogPredicate = ModelToVLogConverter.toVLogPredicate(predicate);
 			final String[][] tuplesForPredicate = ModelToVLogConverter.toVLogFactTuples(factsForPredicate);
-			this.vLog.addData(vLogPredicate, tuplesForPredicate);
+			try {
+				this.vLog.addData(vLogPredicate, tuplesForPredicate);
+			} catch (final EDBConfigurationException e) {
+				throw new RuntimeException("Invalid data sources configuration.", e);
+			}
 		}
 	}
 
-	private void loadRules() throws NotStartedException {
+	private void loadRules() {
 		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(this.rules);
 		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
 				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
-		this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
+		try {
+			this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		}
+	}
+
+	@Override
+	public void close() {
+		this.vLog.stop();
 	}
 
 }

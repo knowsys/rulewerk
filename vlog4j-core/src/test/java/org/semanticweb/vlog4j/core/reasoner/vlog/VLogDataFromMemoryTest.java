@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.vlog;
+package org.semanticweb.vlog4j.core.reasoner.vlog;
 
 /*
  * #%L
@@ -71,7 +71,7 @@ public class VLogDataFromMemoryTest {
 
 		// Querying A(?X) before materialize
 		final TermQueryResultIterator queryResultIteratorAx1 = vLog.query(atomAx);
-		final Set<List<Term>> queryAxResults1 = QueryResultUtils.collectResults(queryResultIteratorAx1);
+		final Set<List<Term>> queryAxResults1 = VLogQueryResultUtils.collectResults(queryResultIteratorAx1);
 		assertEquals(tuples, queryAxResults1);
 
 		// Querying B(?X) before materialize
@@ -83,11 +83,11 @@ public class VLogDataFromMemoryTest {
 
 		// Querying B(?X) after materialize
 		final TermQueryResultIterator queryResultIteratorBx2 = vLog.query(atomBx);
-		final Set<List<Term>> queryResultsBx = QueryResultUtils.collectResults(queryResultIteratorBx2);
+		final Set<List<Term>> queryResultsBx = VLogQueryResultUtils.collectResults(queryResultIteratorBx2);
 		assertEquals(tuples, queryResultsBx);
 
 		final TermQueryResultIterator queryResultIteratorAx2 = vLog.query(atomAx);
-		final Set<List<Term>> queryAxResults2 = QueryResultUtils.collectResults(queryResultIteratorAx2);
+		final Set<List<Term>> queryAxResults2 = VLogQueryResultUtils.collectResults(queryResultIteratorAx2);
 		assertEquals(tuples, queryAxResults2);
 
 		vLog.stop();
