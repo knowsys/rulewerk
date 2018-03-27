@@ -37,14 +37,12 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import junit.framework.TestCase;
-import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
-import karmaresearch.vlog.NotStartedException;
 
 public class ReasonerTest extends TestCase {
 
-	public void testSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException,
-			NotStartedException, ReasonerStateException, EdbIdbSeparationException {
+	public void testSimpleInference()
+			throws EDBConfigurationException, IOException, ReasonerStateException, EdbIdbSeparationException {
 		final String constantNameC = "c";
 		final String constantNameD = "d";
 

@@ -21,6 +21,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,47 +38,41 @@ import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
-import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
-import karmaresearch.vlog.NotStartedException;
 
 public class LoadDataFromCsvTest {
-	
+
 	private static final File UNARY_FACTS_CSV_FILE = new File("src/test/data/input/unaryFacts.csv");
 
-//	@Test
-//	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
-//		final Predicate predicate = Expressions.makePredicate("p", 1);
-//		final DataSource dataSource = new CsvFileDataSource(UNARY_FACTS_CSV_FILE);
-//		final Reasoner reasoner = new Reasoner();
-//		reasoner.addDataSource(predicate, dataSource);
-//		final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
-////		TODO query
-//		System.out.println(dataSourcesConfig);
-//		reasoner.dispose();
-//	}
-//	
-//	@Test
-//	public void testGenerateDataSourcesConfig() throws ReasonerStateException, IOException {
-//		final Predicate predicate = Expressions.makePredicate("p", 1);
-//		final DataSource dataSource = new CsvFileDataSource(UNARY_FACTS_CSV_FILE);
-//		final Reasoner reasoner = new Reasoner();
-//		reasoner.addDataSource(predicate, dataSource);
-//		final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
-////		TODO query
-//		System.out.println(dataSourcesConfig);
-//		reasoner.dispose();
-//	}
+	@Test
+	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
+		final Reasoner reasoner = new Reasoner();
+		final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
+		assertTrue(dataSourcesConfig.isEmpty());
+		reasoner.dispose();
+	}
+	//
+	// @Test
+	// public void testGenerateDataSourcesConfig() throws ReasonerStateException,
+	// IOException {
+	// final Predicate predicate = Expressions.makePredicate("p", 1);
+	// final DataSource dataSource = new CsvFileDataSource(UNARY_FACTS_CSV_FILE);
+	// final Reasoner reasoner = new Reasoner();
+	// reasoner.addDataSource(predicate, dataSource);
+	// final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
+	//// TODO query
+	// System.out.println(dataSourcesConfig);
+	// reasoner.dispose();
+	// }
 
 	@Test
-	public void testLoadUnaryFactsFromCsv() throws ReasonerStateException, EdbIdbSeparationException,
-			AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testLoadUnaryFactsFromCsv()
+			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(UNARY_FACTS_CSV_FILE);
 		@SuppressWarnings("unchecked")
-		final
-		Set<List<Term>> expectedPQueryResults = Sets.newSet(Arrays.asList(Expressions.makeConstant("c1")),
+		final Set<List<Term>> expectedPQueryResults = Sets.newSet(Arrays.asList(Expressions.makeConstant("c1")),
 				Arrays.asList(Expressions.makeConstant("c2")));
 		final Reasoner reasoner = new Reasoner();
 		reasoner.addDataSource(predicateP, dataSource);

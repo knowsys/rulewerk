@@ -32,9 +32,7 @@ import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
-import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
-import karmaresearch.vlog.NotStartedException;
 
 public class AddDataSourceTest {
 
@@ -42,8 +40,7 @@ public class AddDataSourceTest {
 
 	@Test
 	public void testAddDataSourceExistentDataForDifferentPredicates()
-			throws ReasonerStateException, EdbIdbSeparationException, AlreadyStartedException,
-			EDBConfigurationException, IOException, NotStartedException {
+			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException {
 		final Predicate predicateParity1 = Expressions.makePredicate("p", 1);
 		final Constant constantA = Expressions.makeConstant("a");
 		final Atom factPredicateParity2 = Expressions.makeAtom("p", constantA, constantA);
@@ -58,8 +55,8 @@ public class AddDataSourceTest {
 		reasoner.dispose();
 	}
 
-	public void testAddDataSourceBeforeLoading() throws ReasonerStateException, EdbIdbSeparationException,
-			AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testAddDataSourceBeforeLoading()
+			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
@@ -71,8 +68,8 @@ public class AddDataSourceTest {
 	}
 
 	@Test(expected = ReasonerStateException.class)
-	public void testAddDataSourceAfterLoading() throws ReasonerStateException, EdbIdbSeparationException,
-			AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testAddDataSourceAfterLoading()
+			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
@@ -87,8 +84,8 @@ public class AddDataSourceTest {
 	}
 
 	@Test(expected = ReasonerStateException.class)
-	public void testAddDataSourceAfterReasoning() throws ReasonerStateException, EdbIdbSeparationException,
-			AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testAddDataSourceAfterReasoning()
+			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));

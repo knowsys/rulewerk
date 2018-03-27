@@ -32,15 +32,13 @@ import org.semanticweb.vlog4j.core.reasoner.ReasonerInterface;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
-import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
-import karmaresearch.vlog.NotStartedException;
 
 public class LoadDataFromMemoryTest {
 
 	@Test(expected = EdbIdbSeparationException.class)
-	public void loadEdbIdbNotSeparated() throws AlreadyStartedException, EDBConfigurationException, IOException,
-			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
+	public void loadEdbIdbNotSeparated()
+			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException {
 		final Variable vx = Expressions.makeVariable("x");
 		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
 		final Atom factIDBpred = Expressions.makeAtom("q", Expressions.makeConstant("c"));
@@ -57,8 +55,8 @@ public class LoadDataFromMemoryTest {
 	}
 
 	@Test
-	public void loadEdbIdbSeparated() throws AlreadyStartedException, EDBConfigurationException, IOException,
-			NotStartedException, EdbIdbSeparationException, ReasonerStateException {
+	public void loadEdbIdbSeparated()
+			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException {
 		final Variable vx = Expressions.makeVariable("x");
 		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
 		final Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"),

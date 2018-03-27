@@ -166,8 +166,7 @@ public class Reasoner implements ReasonerInterface {
 	}
 
 	@Override
-	public void load() throws AlreadyStartedException, EDBConfigurationException, NotStartedException,
-			EdbIdbSeparationException, IOException {
+	public void load() throws EDBConfigurationException, EdbIdbSeparationException, IOException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			validateEdbIdbSeparation();
 
@@ -176,7 +175,11 @@ public class Reasoner implements ReasonerInterface {
 			if (this.dataSourceForPredicate.isEmpty() && this.factsForPredicate.isEmpty()) {
 				LOGGER.warn("No facts have been provided.");
 			}
-			this.vLog.start(generateDataSourcesConfig(), false);
+			try {
+				this.vLog.start(generateDataSourcesConfig(), false);
+			} catch (final AlreadyStartedException e) {
+				throw new RuntimeException("Inconsistent reasoner state.", e);
+			}
 			loadInMemoryFacts();
 
 			if (this.rules.isEmpty()) {
@@ -192,7 +195,7 @@ public class Reasoner implements ReasonerInterface {
 	}
 
 	@Override
-	public void reason() throws EDBConfigurationException, IOException, NotStartedException, ReasonerStateException {
+	public void reason() throws EDBConfigurationException, IOException, ReasonerStateException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			// TODO exception message
 			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed before loading!");
@@ -203,31 +206,40 @@ public class Reasoner implements ReasonerInterface {
 			this.reasonerState = ReasonerState.AFTER_REASONING;
 
 			final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
-			this.vLog.materialize(skolemChase);
+			try {
+				this.vLog.materialize(skolemChase);
+			} catch (final NotStartedException e) {
+				throw new RuntimeException("Inconsistent reasoner state.", e);
+			}
 		}
 	}
 
 	@Override
-	public QueryResultIterator answerQuery(final Atom queryAtom) throws NotStartedException, ReasonerStateException {
+	public QueryResultIterator answerQuery(final Atom queryAtom) throws ReasonerStateException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
-		final TermQueryResultIterator stringQueryResultIterator = this.vLog.query(vLogAtom);
+		TermQueryResultIterator stringQueryResultIterator;
+		try {
+			stringQueryResultIterator = this.vLog.query(vLogAtom);
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		}
 		return new QueryResultIterator(stringQueryResultIterator);
 	}
 
 	@Override
 	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath, final boolean includeBlanks)
-			throws ReasonerStateException, NotStartedException, IOException {
+			throws ReasonerStateException, IOException {
 
 	}
 
 	@Override
 	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath)
-			throws ReasonerStateException, NotStartedException, IOException {
+			throws ReasonerStateException, IOException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
@@ -237,7 +249,11 @@ public class Reasoner implements ReasonerInterface {
 				"Expected .csv extension for file [%s]!", csvFilePath);
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
-		this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath);
+		try {
+			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath);
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		}
 	}
 
 	@Override
@@ -297,11 +313,15 @@ public class Reasoner implements ReasonerInterface {
 		}
 	}
 
-	private void loadRules() throws NotStartedException {
+	private void loadRules() {
 		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(this.rules);
 		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
 				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
-		this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
+		try {
+			this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		}
 	}
 
 }
