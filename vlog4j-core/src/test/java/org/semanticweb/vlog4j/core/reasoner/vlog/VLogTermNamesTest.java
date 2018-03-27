@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.vlog;
+package org.semanticweb.vlog4j.core.reasoner.vlog;
 
 /*-
  * #%L
@@ -42,7 +42,7 @@ import karmaresearch.vlog.VLog;
 import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 public class VLogTermNamesTest {
-	
+
 	@Test
 	public void testTermCase() throws EDBConfigurationException, NotStartedException {
 		final String[][] argsAMatrix = { { "A" }, { "a" } };
@@ -62,7 +62,7 @@ public class VLogTermNamesTest {
 
 		// Querying A(?X) before materialize
 		final TermQueryResultIterator queryResultIteratorAx1 = vLog.query(atomAx);
-		final Set<List<Term>> queryAxResults1 = QueryResultUtils.collectResults(queryResultIteratorAx1);
+		final Set<List<Term>> queryAxResults1 = VLogQueryResultUtils.collectResults(queryResultIteratorAx1);
 		assertEquals(tuples, queryAxResults1);
 
 		// Querying b(?X) before materialize
@@ -79,12 +79,12 @@ public class VLogTermNamesTest {
 
 		// Querying b(?X) after materialize
 		final TermQueryResultIterator queryResultIteratorBx2 = vLog.query(atomBx);
-		final Set<List<Term>> queryResultsBx = QueryResultUtils.collectResults(queryResultIteratorBx2);
+		final Set<List<Term>> queryResultsBx = VLogQueryResultUtils.collectResults(queryResultIteratorBx2);
 		assertEquals(tuples, queryResultsBx);
 
 		// Querying A(?X) after materialize
 		final TermQueryResultIterator queryResultIteratorAx12 = vLog.query(atomAx);
-		final Set<List<Term>> queryAxResults2 = QueryResultUtils.collectResults(queryResultIteratorAx12);
+		final Set<List<Term>> queryAxResults2 = VLogQueryResultUtils.collectResults(queryResultIteratorAx12);
 		assertEquals(tuples, queryAxResults2);
 
 	}
@@ -109,7 +109,7 @@ public class VLogTermNamesTest {
 		// Query VLog: A(?X)?
 		final TermQueryResultIterator queryResultIteratorABeforeMat = vLog.query(atomAx);
 		assertTrue(queryResultIteratorABeforeMat.hasNext());
-		final Set<List<Term>> actualQueryResultABeforeMat = QueryResultUtils
+		final Set<List<Term>> actualQueryResultABeforeMat = VLogQueryResultUtils
 				.collectResults(queryResultIteratorABeforeMat);
 		assertEquals(expectedQueryResultsA, actualQueryResultABeforeMat);
 
@@ -124,7 +124,7 @@ public class VLogTermNamesTest {
 		// Query VLog: B(?X)?
 		final TermQueryResultIterator queryResultEnnumerationBAfterMat = vLog.query(atomBx);
 		assertTrue(queryResultEnnumerationBAfterMat.hasNext());
-		final Set<List<Term>> actualQueryResultBAfterMat = QueryResultUtils
+		final Set<List<Term>> actualQueryResultBAfterMat = VLogQueryResultUtils
 				.collectResults(queryResultEnnumerationBAfterMat);
 		assertEquals(expectedQueryResultsA, actualQueryResultBAfterMat);
 

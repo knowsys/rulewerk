@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-
-import karmaresearch.vlog.AlreadyStartedException;
-import karmaresearch.vlog.EDBConfigurationException;
-import karmaresearch.vlog.NotStartedException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 /*
  * #%L
@@ -32,7 +30,11 @@ import karmaresearch.vlog.NotStartedException;
  * limitations under the License.
  * #L%
  */
-public interface ReasonerInterface {
+public interface Reasoner extends AutoCloseable{
+	
+	public static VLogReasoner getInstance() {
+		return new VLogReasoner();
+	}
 
 	Algorithm getAlgorithm();
 
@@ -50,22 +52,16 @@ public interface ReasonerInterface {
 
 	void addFacts(Collection<Atom> facts) throws ReasonerStateException;
 
-	// void addFactsSource(FactsSourceConfig... edbConfig) throws
-	// ReasonerStateException;
+	void addDataSource(Predicate predicate, DataSource dataSource) throws ReasonerStateException;
 
-	// void addFactsSource(Collection<FactsSourceConfig> edbConfig) throws
-	// ReasonerStateException;
+	void load() throws IOException, EdbIdbSeparationException;
 
-	void load() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException,
-			EdbIdbSeparationException;
+	void reason() throws IOException, ReasonerStateException;
+	
+	QueryResultIterator answerQuery(Atom atom,  boolean includeBlanks) throws ReasonerStateException;
 
-	void reason() throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException,
-			ReasonerStateException;
-
-	QueryResultIterator answerQuery(Atom atom) throws NotStartedException, ReasonerStateException;
-
-	void exportQueryAnswersToCsv(Atom atom, String outputFilePath)
-			throws ReasonerStateException, NotStartedException, IOException;
+	void exportQueryAnswersToCsv(Atom atom, String csvFilePath, boolean includeBlanks)
+			throws ReasonerStateException, IOException;
 
 	// TODO arity should be in the EDB config file,
 	// do not read the files, have low-level API check if the file content
@@ -74,9 +70,7 @@ public interface ReasonerInterface {
 	// TODO check if URIs can be file names
 	// Set<EDBPredicateConfig> exportDBToFolder(File location);
 
-	void dispose();
-
-	void exportQueryAnswersToCsv(Atom atom, String csvFilePath, boolean includeBlanks)
-			throws ReasonerStateException, NotStartedException, IOException;
+	@Override
+	void close();
 
 }

@@ -21,7 +21,7 @@ package org.semanticweb.vlog4j.core.reasoner;
  */
 
 /**
- * Enum for the states a {@link Reasoner} can be in. Certain operations are not
+ * Enum for the states a {@link VLogReasoner} can be in. Certain operations are not
  * allowed in some states.
  * 
  * @author Irina Dragoste
