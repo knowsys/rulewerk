@@ -59,6 +59,8 @@ public interface Reasoner extends AutoCloseable{
 	void reason() throws IOException, ReasonerStateException;
 
 	QueryResultIterator answerQuery(Atom atom) throws ReasonerStateException;
+	
+	QueryResultIterator answerQuery(Atom atom,  boolean includeBlanks) throws ReasonerStateException;
 
 	void exportQueryAnswersToCsv(Atom atom, String outputFilePath) throws ReasonerStateException, IOException;
 

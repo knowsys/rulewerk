@@ -218,6 +218,12 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public QueryResultIterator answerQuery(final Atom queryAtom) throws ReasonerStateException {
+		return answerQuery(queryAtom, true);
+	}
+
+	@Override
+	public QueryResultIterator answerQuery(Atom queryAtom, boolean includeBlanks) throws ReasonerStateException {
+		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
@@ -226,7 +232,7 @@ public class VLogReasoner implements Reasoner {
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
 		TermQueryResultIterator stringQueryResultIterator;
 		try {
-			stringQueryResultIterator = this.vLog.query(vLogAtom);
+			stringQueryResultIterator = this.vLog.query(vLogAtom, true, filterBlanks);
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
@@ -234,14 +240,15 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath, final boolean includeBlanks)
+	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath)
 			throws ReasonerStateException, IOException {
-
+		exportQueryAnswersToCsv(queryAtom, csvFilePath, true);
 	}
 
 	@Override
-	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath)
+	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath, final boolean includeBlanks)
 			throws ReasonerStateException, IOException {
+		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
@@ -252,7 +259,7 @@ public class VLogReasoner implements Reasoner {
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
 		try {
-			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath);
+			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath, filterBlanks);
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
