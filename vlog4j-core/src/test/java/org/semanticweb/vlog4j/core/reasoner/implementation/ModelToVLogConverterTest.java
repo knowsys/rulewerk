@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,15 +40,13 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
-import org.semanticweb.vlog4j.core.reasoner.implementation.ModelToVLogConverter;
 
 public class ModelToVLogConverterTest {
 
 	@Test
 	public void testToVLogTermVariable() {
 		final Variable variable = Expressions.makeVariable("var");
-		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
-				karmaresearch.vlog.Term.TermType.VARIABLE, "var");
+		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "var");
 
 		final karmaresearch.vlog.Term vLogTerm = ModelToVLogConverter.toVLogTerm(variable);
 
@@ -61,8 +59,7 @@ public class ModelToVLogConverterTest {
 	@Test
 	public void testToVLogTermConstant() {
 		final Constant constant = Expressions.makeConstant("const");
-		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
-				karmaresearch.vlog.Term.TermType.CONSTANT, "const");
+		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, "const");
 
 		final karmaresearch.vlog.Term vLogTerm = ModelToVLogConverter.toVLogTerm(constant);
 
@@ -76,8 +73,7 @@ public class ModelToVLogConverterTest {
 	@Test
 	public void testToVLogTermBlank() {
 		final Blank blank = new BlankImpl("blank");
-		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
-				karmaresearch.vlog.Term.TermType.BLANK, "blank");
+		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK, "blank");
 
 		final karmaresearch.vlog.Term vLogTerm = ModelToVLogConverter.toVLogTerm(blank);
 
@@ -96,16 +92,11 @@ public class ModelToVLogConverterTest {
 		final Blank bx = new BlankImpl("x");
 		final List<Term> terms = Arrays.asList(vx, cx, vxToo, bx, vy);
 
-		final karmaresearch.vlog.Term expectedVx = new karmaresearch.vlog.Term(
-				karmaresearch.vlog.Term.TermType.VARIABLE, "x");
-		final karmaresearch.vlog.Term expectedVy = new karmaresearch.vlog.Term(
-				karmaresearch.vlog.Term.TermType.VARIABLE, "y");
-		final karmaresearch.vlog.Term expectedCx = new karmaresearch.vlog.Term(
-				karmaresearch.vlog.Term.TermType.CONSTANT, "x");
-		final karmaresearch.vlog.Term expectedBx = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK,
-				"x");
-		final karmaresearch.vlog.Term[] expectedTermArray = { expectedVx, expectedCx, expectedVx, expectedBx,
-				expectedVy };
+		final karmaresearch.vlog.Term expectedVx = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "x");
+		final karmaresearch.vlog.Term expectedVy = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "y");
+		final karmaresearch.vlog.Term expectedCx = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, "x");
+		final karmaresearch.vlog.Term expectedBx = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK, "x");
+		final karmaresearch.vlog.Term[] expectedTermArray = { expectedVx, expectedCx, expectedVx, expectedBx, expectedVy };
 
 		final karmaresearch.vlog.Term[] vLogTermArray = ModelToVLogConverter.toVLogTermArray(terms);
 		assertArrayEquals(expectedTermArray, vLogTermArray);
@@ -148,12 +139,9 @@ public class ModelToVLogConverterTest {
 		final Blank b = new BlankImpl("_:b");
 		final Atom atom = Expressions.makeAtom("pred", c, x, b);
 
-		final karmaresearch.vlog.Term expectedC = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
-				"c");
-		final karmaresearch.vlog.Term expectedX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
-				"x");
-		final karmaresearch.vlog.Term expectedB = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK,
-				"_:b");
+		final karmaresearch.vlog.Term expectedC = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, "c");
+		final karmaresearch.vlog.Term expectedX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "x");
+		final karmaresearch.vlog.Term expectedB = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK, "_:b");
 
 		final String expectedPredicateName = "pred" + ModelToVLogConverter.PREDICATE_ARITY_SUFFIX_SEPARATOR + 3;
 		final karmaresearch.vlog.Term[] expectedTerms = { expectedC, expectedX, expectedB };
@@ -168,38 +156,43 @@ public class ModelToVLogConverterTest {
 		final Variable x = Expressions.makeVariable("x");
 		final Variable y = Expressions.makeVariable("y");
 		final Variable z = Expressions.makeVariable("z");
-		final Atom atom1 = Expressions.makeAtom("p1", x);
-		final Atom atom2 = Expressions.makeAtom("p2", x, y);
-		final Atom atom3 = Expressions.makeAtom("p3", y, z);
-		final Rule rule1 = Expressions.makeRule(atom1, atom2, atom3);
-		final Rule rule2 = Expressions.makeRule(atom3, atom2);
+		final Variable w = Expressions.makeVariable("w");
+		final Variable v = Expressions.makeVariable("v");
+		final Atom atomP1X = Expressions.makeAtom("p1", x);
+		final Atom atomP2XY = Expressions.makeAtom("p2", x, y);
+		final Atom atomP3YZ = Expressions.makeAtom("p3", y, z);
+		final Rule rule1 = Expressions.makeRule(atomP1X, atomP2XY, atomP3YZ);
+		final Atom atomQXYZ = Expressions.makeAtom("q", x, y, z);
+		final Atom atomQYW = Expressions.makeAtom("q", y, w);
+		final Atom atomQ1XWZ = Expressions.makeAtom("q1", x, w, z);
+		final Atom atomQ2XV = Expressions.makeAtom("q2", x, v);
+		final Rule rule2 = Expressions.makeRule(atomQ2XV, atomQ1XWZ, atomQYW, atomQXYZ);
 
-		final karmaresearch.vlog.Term expX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
-				"x");
-		final karmaresearch.vlog.Term expY = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
-				"y");
-		final karmaresearch.vlog.Term expZ = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
-				"z");
-		final karmaresearch.vlog.Atom expectedAtom1 = new karmaresearch.vlog.Atom("p1-1", expX);
-		final karmaresearch.vlog.Atom expectedAtom2 = new karmaresearch.vlog.Atom("p2-2", expX, expY);
-		final karmaresearch.vlog.Atom expectedAtom3 = new karmaresearch.vlog.Atom("p3-2", expY, expZ);
-		final karmaresearch.vlog.Rule expectedRule1 = new karmaresearch.vlog.Rule(
-				new karmaresearch.vlog.Atom[] { expectedAtom1 },
-				new karmaresearch.vlog.Atom[] { expectedAtom2, expectedAtom3 });
-		final karmaresearch.vlog.Rule expectedRule2 = new karmaresearch.vlog.Rule(
-				new karmaresearch.vlog.Atom[] { expectedAtom3 }, new karmaresearch.vlog.Atom[] { expectedAtom2 });
-		final karmaresearch.vlog.Rule[] expectedRuleArray = new karmaresearch.vlog.Rule[] { expectedRule1,
-				expectedRule2 };
+		final karmaresearch.vlog.Term expX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "x");
+		final karmaresearch.vlog.Term expY = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "y");
+		final karmaresearch.vlog.Term expZ = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "z");
+		final karmaresearch.vlog.Term expW = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "w");
+		final karmaresearch.vlog.Term expV = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "v");
+		final karmaresearch.vlog.Atom expAtomP1X = new karmaresearch.vlog.Atom("p1-1", expX);
+		final karmaresearch.vlog.Atom expAtomP2XY = new karmaresearch.vlog.Atom("p2-2", expX, expY);
+		final karmaresearch.vlog.Atom expAtomP3YZ = new karmaresearch.vlog.Atom("p3-2", expY, expZ);
+		final karmaresearch.vlog.Rule expectedRule1 = new karmaresearch.vlog.Rule(new karmaresearch.vlog.Atom[] { expAtomP1X },
+				new karmaresearch.vlog.Atom[] { expAtomP2XY, expAtomP3YZ });
+		final karmaresearch.vlog.Atom expAtomQXYZ = new karmaresearch.vlog.Atom("q-3", expX, expY, expZ);
+		final karmaresearch.vlog.Atom expAtomQYW = new karmaresearch.vlog.Atom("q-2", expY, expW);
+		final karmaresearch.vlog.Atom expAtomQ1XWZ = new karmaresearch.vlog.Atom("q1-3", expX, expW, expZ);
+		final karmaresearch.vlog.Atom expAtomQ2XV = new karmaresearch.vlog.Atom("q2-2", expX, expV);
+		final karmaresearch.vlog.Rule expectedRule2 = new karmaresearch.vlog.Rule(new karmaresearch.vlog.Atom[] { expAtomQ2XV },
+				new karmaresearch.vlog.Atom[] { expAtomQ1XWZ, expAtomQYW, expAtomQXYZ });
 
-		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter
-				.toVLogRuleArray(Arrays.asList(rule1, rule2));
+		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(Arrays.asList(rule1, rule2));
+		final karmaresearch.vlog.Rule[] expectedRuleArray = new karmaresearch.vlog.Rule[] { expectedRule1, expectedRule2 };
 		assertArrayEquals(expectedRuleArray, vLogRuleArray);
 	}
 
 	@Test
 	public void testVLogRuleRewritingStrategy() {
-		assertEquals(karmaresearch.vlog.VLog.RuleRewriteStrategy.NONE,
-				ModelToVLogConverter.toVLogRuleRewriteStrategy(RuleRewriteStrategy.NONE));
+		assertEquals(karmaresearch.vlog.VLog.RuleRewriteStrategy.NONE, ModelToVLogConverter.toVLogRuleRewriteStrategy(RuleRewriteStrategy.NONE));
 		assertEquals(karmaresearch.vlog.VLog.RuleRewriteStrategy.AGGRESSIVE,
 				ModelToVLogConverter.toVLogRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES));
 	}
