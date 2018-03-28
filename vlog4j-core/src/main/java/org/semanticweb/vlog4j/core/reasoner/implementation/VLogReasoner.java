@@ -254,6 +254,18 @@ public class VLogReasoner implements Reasoner {
 		}
 	}
 
+	@Override
+	public void reset() {
+		this.reasonerState = ReasonerState.BEFORE_LOADING;
+		this.vLog.stop();
+		// TODO do I need to create a new vLog instance?
+	}
+
+	@Override
+	public void close() {
+		this.vLog.stop();
+	}
+
 	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
 		final Set<Predicate> edbPredicates = collectEdbPredicates();
 		final Set<Predicate> idbPredicates = collectIdbPredicates();
@@ -319,11 +331,6 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
-	}
-
-	@Override
-	public void close() {
-		this.vLog.stop();
 	}
 
 }

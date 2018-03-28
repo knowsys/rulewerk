@@ -30,8 +30,8 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
  * limitations under the License.
  * #L%
  */
-public interface Reasoner extends AutoCloseable{
-	
+public interface Reasoner extends AutoCloseable {
+
 	public static VLogReasoner getInstance() {
 		return new VLogReasoner();
 	}
@@ -42,6 +42,7 @@ public interface Reasoner extends AutoCloseable{
 
 	void addRules(Rule... rules) throws ReasonerStateException;
 
+	
 	void addRules(Collection<Rule> rules) throws ReasonerStateException;
 
 	RuleRewriteStrategy getRuleRewriteStrategy();
@@ -57,19 +58,28 @@ public interface Reasoner extends AutoCloseable{
 	void load() throws IOException, EdbIdbSeparationException;
 
 	void reason() throws IOException, ReasonerStateException;
-	
-	QueryResultIterator answerQuery(Atom atom,  boolean includeBlanks) throws ReasonerStateException;
+
+	QueryResultIterator answerQuery(Atom atom, boolean includeBlanks) throws ReasonerStateException;
 
 	void exportQueryAnswersToCsv(Atom atom, String csvFilePath, boolean includeBlanks)
 			throws ReasonerStateException, IOException;
+
+	/**
+	 * Resets the reasoner to the state it had before loading (before the call of
+	 * {@link Reasoner#load()} method). All facts inferred by reasoning are
+	 * discarded. Calling {@link Reasoner#load()} again after
+	 * {@link Reasoner#reset()} reloads the reasoner with {@link Reasoner#load()}the current given knowledge
+	 * base (added facts, data sources and rules).
+	 */
+	void reset();
 
 	// TODO arity should be in the EDB config file,
 	// do not read the files, have low-level API check if the file content
 	// corresponds the arity
 
-	// TODO check if URIs can be file names
-	// Set<EDBPredicateConfig> exportDBToFolder(File location);
+	// TODO Set<EDBPredicateConfig> exportDBToFolder(File location);
 
+	// TODO not allow any operation after closing, except close();
 	@Override
 	void close();
 
