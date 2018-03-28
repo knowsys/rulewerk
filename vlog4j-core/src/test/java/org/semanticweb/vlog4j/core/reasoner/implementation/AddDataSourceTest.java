@@ -28,6 +28,7 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -36,7 +37,7 @@ import karmaresearch.vlog.EDBConfigurationException;
 
 public class AddDataSourceTest {
 
-	private static final String CSV_FILE_PATH = "src/test/data/input/unaryFacts.csv";
+	private static final String CSV_FILE_PATH = CsvFileUtils.CSV_INPORT_FOLDER + "unaryFacts.csv";
 
 	@Test
 	public void testAddDataSourceExistentDataForDifferentPredicates()
@@ -117,7 +118,7 @@ public class AddDataSourceTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testAddDataSourcePredicateNotNull() throws ReasonerStateException, IOException {
-		final DataSource dataSource = new CsvFileDataSource(new File("src/test/data/unaryFacts.csv"));
+		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addDataSource(null, dataSource);
 		}
