@@ -63,6 +63,22 @@ final class VLogExpressions {
 	}
 
 	/**
+	 * Creates an {@link karmaresearch.vlog.Atom} object with given predicate name
+	 * and terms.
+	 * 
+	 * @param predicateName
+	 *            the name of the internal vlog atom predicate.
+	 * @param terms
+	 *            atom terms.
+	 * @return an {@link karmaresearch.vlog.Atom} object with given
+	 *         {@code predicateName} and {@link karmaresearch.vlog.Term}
+	 *         {@code terms}.
+	 */
+	static karmaresearch.vlog.Atom makeAtom(final String predicateName, final karmaresearch.vlog.Term... terms) {
+		return new karmaresearch.vlog.Atom(predicateName, terms);
+	}
+
+	/**
 	 * Creates a {@link karmaresearch.vlog.Rule} object with given head and body
 	 * conjuncts.
 	 * 
@@ -70,7 +86,8 @@ final class VLogExpressions {
 	 *            rule head atom
 	 * @param bodyAtoms
 	 *            rule body conjuncts
-	 * @return
+	 * @return a {@link karmaresearch.vlog.Rule} object with given {@code headAtom}
+	 *         and body conjuncts ({@code bodyAtoms}).
 	 */
 	static karmaresearch.vlog.Rule makeRule(final karmaresearch.vlog.Atom headAtom,
 			final karmaresearch.vlog.Atom... bodyAtoms) {

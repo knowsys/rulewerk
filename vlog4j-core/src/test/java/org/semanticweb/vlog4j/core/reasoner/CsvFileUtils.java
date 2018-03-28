@@ -36,15 +36,20 @@ import org.apache.commons.csv.CSVParser;
  *
  */
 public final class CsvFileUtils {
+	public static final String CSV_EXPORT_FOLDER = "src/test/data/output/";
+	public static final String CSV_INPORT_FOLDER = "src/test/data/input/";
 
 	private CsvFileUtils() {
 	}
 
 	/**
+	 * Collects the content of given {@code csvFile} into a List of lines, where
+	 * each line is represented as a List of String entries.
 	 * 
 	 * @param csvFile
 	 *            file to be read
-	 * @return
+	 * @return content of given {@code csvFile} as a List of lines, where each line
+	 *         is represented as a List of String entries.
 	 * @throws IOException
 	 *             if an I/O error occurs regarding given {@code csvFile}
 	 */

@@ -92,7 +92,7 @@ public class VLogDataFromMemoryTest {
 
 		vLog.stop();
 	}
-
+	
 	@Test
 	public void testBooleanQueryTrueIncludeConstantsFalse()
 			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
