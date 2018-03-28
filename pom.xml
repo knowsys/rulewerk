@@ -56,6 +56,7 @@
 		<mockitoVersion>1.10.19</mockitoVersion>
 		<slf4jVersion>1.7.10</slf4jVersion>
 		<apacheCommonsLangVersion>3.7</apacheCommonsLangVersion>
+		<apacheCommonsCsvVersion>1.5</apacheCommonsCsvVersion>
 		<mavenJavaDocVersion>3.0.0</mavenJavaDocVersion>
 
 		<apacheCommonsCompressVersion>1.15</apacheCommonsCompressVersion>
@@ -93,7 +94,7 @@
 			<!-- Useful for testing generated csv files -->
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
-			<version>1.5</version>
+			<version>${apacheCommonsCsvVersion}</version>
 		</dependency>
 	</dependencies>
 
