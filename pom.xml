@@ -15,7 +15,7 @@
 
 	<modules>
 		<module>vlog4j-core</module>
-    <module>examples</module>
+    		<module>vlog4j-examples</module>
   </modules>
 
 	<licenses>
