@@ -84,7 +84,7 @@ public class ReasonerTest {
 			reasoner.reason();
 
 			final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx, true);
-			final Set<List<Term>> actualResults = QueryResultUtils.gatherQueryResults(cxQueryResultEnumAfterReasoning);
+			final Set<List<Term>> actualResults = QueryResultUtils.collectQueryResults(cxQueryResultEnumAfterReasoning);
 
 			final Set<List<Constant>> expectedResults = new HashSet<>(
 					Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));

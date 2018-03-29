@@ -26,15 +26,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
-public class QueryResultUtils {
+/**
+ * Utility class with static methods for collecting the results of a query for
+ * testing purposes.
+ * 
+ * @author Irina Dragoste
+ *
+ */
+final class QueryResultUtils {
 
-	static Set<List<Term>> gatherQueryResults(QueryResultIterator queryResultIterator) {
+	private QueryResultUtils() {
+	}
+
+	/**
+	 * Iterates trough all the the results and collects their term lists in a Set.
+	 * Asserts that there are no duplicate results. Closes the iterator after
+	 * collecting the last result.
+	 * 
+	 * @param queryResultIterator
+	 *            iterator for all {@link QueryResult}s of a query.
+	 * @return a set of all query results terms ({@link QueryResult#getTerms()}).
+	 */
+	static Set<List<Term>> collectQueryResults(QueryResultIterator queryResultIterator) {
 		final Set<List<Term>> results = new HashSet<>();
 		queryResultIterator.forEachRemaining(queryResult -> {
-			boolean isUnique = results.add(queryResult.getTerms());
+			final boolean isUnique = results.add(queryResult.getTerms());
 			assertTrue(isUnique);
 		});
 		queryResultIterator.close();
