@@ -52,9 +52,9 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
-import org.semanticweb.vlog4j.core.model.impl.ConjunctionImpl;
-import org.semanticweb.vlog4j.core.model.impl.RuleImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
+import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
 
 /**
  * Helper class for transforming OWL class expressions that occur as subclasses
@@ -104,27 +104,27 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 		} else if (ce.isOWLThing()) {
 			// irrelevant in body; omit
 		} else {
-			Predicate predicate = OwlToRulesConversionHelper.getClassPredicate(ce);
+			final Predicate predicate = OwlToRulesConversionHelper.getClassPredicate(ce);
 			bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(this.frontierVariable)));
 		}
 	}
 
 	@Override
 	public void visit(OWLObjectIntersectionOf ce) {
-		for (OWLClassExpression conjunct : ce.getOperands()) {
+		for (final OWLClassExpression conjunct : ce.getOperands()) {
 			conjunct.accept(this);
 		}
 	}
 
 	@Override
 	public void visit(OWLObjectUnionOf ce) {
-		Predicate predicate = OwlToRulesConversionHelper.getAuxiliaryClassPredicate(ce);
-		Atom headAtom = new AtomImpl(predicate, Arrays.asList(this.frontierVariable));
+		final Predicate predicate = OwlToRulesConversionHelper.getAuxiliaryClassPredicate(ce);
+		final Atom headAtom = new AtomImpl(predicate, Arrays.asList(this.frontierVariable));
 		this.bodyConjuncts.add(headAtom);
-		Conjunction auxHead = new ConjunctionImpl(Arrays.asList(headAtom));
-		for (OWLClassExpression conjunct : ce.getOperands()) {
-			ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.frontierVariable, new ArrayList<>(),
-					this.rules, this.parent);
+		final Conjunction auxHead = new ConjunctionImpl(Arrays.asList(headAtom));
+		for (final OWLClassExpression conjunct : ce.getOperands()) {
+			final ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.frontierVariable,
+					new ArrayList<>(), this.rules, this.parent);
 			conjunct.accept(converter);
 			if (!converter.isUnsatisfiable()) {
 				// TODO handle case where no conjunctions were created (tautological subclass)
@@ -151,7 +151,7 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 
 	@Override
 	public void visit(OWLObjectHasValue ce) {
-		Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller());
+		final Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller());
 		addConjunctForPropertyExpression(ce.getProperty(), this.frontierVariable, term);
 	}
 
@@ -230,11 +230,11 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 	 *            the filler class of the expression
 	 */
 	void handleObjectSomeValues(OWLObjectPropertyExpression property, OWLClassExpression filler) {
-		Variable variable = this.parent.getFreshVariable();
+		final Variable variable = this.parent.getFreshVariable();
 		addConjunctForPropertyExpression(property, this.frontierVariable, variable);
 		if (!this.unsatisfiable) {
-			ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(variable, this.bodyConjuncts, this.rules,
-					this.parent);
+			final ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(variable, this.bodyConjuncts,
+					this.rules, this.parent);
 			filler.accept(converter);
 		}
 	}
@@ -261,11 +261,11 @@ public class ClassToRuleBodyConverter implements OWLClassExpressionVisitor {
 			this.unsatisfiable = true;
 		} else {
 			if (owlObjectPropertyExpression.isAnonymous()) {
-				Predicate predicate = OwlToRulesConversionHelper.getObjectPropertyPredicate(
+				final Predicate predicate = OwlToRulesConversionHelper.getObjectPropertyPredicate(
 						owlObjectPropertyExpression.getInverseProperty().asOWLObjectProperty());
 				bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(targetTerm, sourceTerm)));
 			} else {
-				Predicate predicate = OwlToRulesConversionHelper
+				final Predicate predicate = OwlToRulesConversionHelper
 						.getObjectPropertyPredicate(owlObjectPropertyExpression.asOWLObjectProperty());
 				bodyConjuncts.add(new AtomImpl(predicate, Arrays.asList(sourceTerm, targetTerm)));
 			}

@@ -31,8 +31,8 @@ import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.Expressions;
-import org.semanticweb.vlog4j.core.model.impl.RuleImpl;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
 
 public class RuleImplTest {
 

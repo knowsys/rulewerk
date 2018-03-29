@@ -34,9 +34,9 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.impl.BlankImpl;
-import org.semanticweb.vlog4j.core.model.impl.ConstantImpl;
-import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
+import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 
 /**
  * Utility class for helper functions that are used to convert OWL API objects
@@ -90,10 +90,10 @@ public class OwlToRulesConversionHelper {
 
 	public static Predicate getAuxiliaryClassPredicate(OWLClassExpression owlClassExpression) {
 		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-			byte[] digest = messageDigest.digest(owlClassExpression.toString().getBytes("UTF-8"));
-			BigInteger bigInt = new BigInteger(1, digest);
-			String hashtext = bigInt.toString(16);
+			final MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			final byte[] digest = messageDigest.digest(owlClassExpression.toString().getBytes("UTF-8"));
+			final BigInteger bigInt = new BigInteger(1, digest);
+			final String hashtext = bigInt.toString(16);
 			return new PredicateImpl("aux-" + hashtext, 1);
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
 			throw new RuntimeException("We are missing some core functionality of Java here", e);

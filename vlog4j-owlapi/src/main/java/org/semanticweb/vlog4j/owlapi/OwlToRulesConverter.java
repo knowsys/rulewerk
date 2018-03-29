@@ -65,11 +65,11 @@ import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
-import org.semanticweb.vlog4j.core.model.impl.ConjunctionImpl;
-import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
-import org.semanticweb.vlog4j.core.model.impl.RuleImpl;
-import org.semanticweb.vlog4j.core.model.impl.VariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
+import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
+import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
+import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 
 /**
  * Class for converting OWL axioms to rules.
@@ -102,15 +102,15 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 	public void visit(OWLSubClassOfAxiom axiom) {
 		this.freshVariableCounter = 0;
 
-		ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.frontierVariable, new ArrayList<>(),
-				this.rules, this);
+		final ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.frontierVariable,
+				new ArrayList<>(), this.rules, this);
 		axiom.getSubClass().accept(converter);
 
 		// TODO Superclass handling not implemented yet; placeholder class
 		// TODO we need to handle empty (tautological) bodies
-		Predicate predicate = new PredicateImpl("auxhead", 1);
-		Atom headAtom = new AtomImpl(predicate, Arrays.asList(this.frontierVariable));
-		Conjunction auxHead = new ConjunctionImpl(Arrays.asList(headAtom));
+		final Predicate predicate = new PredicateImpl("auxhead", 1);
+		final Atom headAtom = new AtomImpl(predicate, Arrays.asList(this.frontierVariable));
+		final Conjunction auxHead = new ConjunctionImpl(Arrays.asList(headAtom));
 		this.rules.add(new RuleImpl(auxHead, new ConjunctionImpl(converter.bodyConjuncts)));
 	}
 

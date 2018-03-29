@@ -50,10 +50,6 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
-import karmaresearch.vlog.AlreadyStartedException;
-import karmaresearch.vlog.EDBConfigurationException;
-import karmaresearch.vlog.NotStartedException;
-
 public class VLogReasoner implements OWLReasoner {
 
 	private final Reasoner reasoner;
@@ -386,8 +382,7 @@ public class VLogReasoner implements OWLReasoner {
 			// level)
 			reasoner.load();
 			reasoner.reason();
-		} catch (EdbIdbSeparationException | AlreadyStartedException | EDBConfigurationException | IOException
-				| NotStartedException | ReasonerStateException e) {
+		} catch (EdbIdbSeparationException | IOException | ReasonerStateException e) {
 			// TODO convert properly
 			throw new OWLRuntimeException("Unexpected exception during reasoning", e);
 		}
