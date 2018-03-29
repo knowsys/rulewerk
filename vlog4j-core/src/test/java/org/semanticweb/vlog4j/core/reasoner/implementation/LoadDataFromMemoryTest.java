@@ -40,12 +40,12 @@ public class LoadDataFromMemoryTest {
 			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException {
 		final Variable vx = Expressions.makeVariable("x");
 		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
-		final Atom factIDBpred = Expressions.makeAtom("q", Expressions.makeConstant("c"));
-		final Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"),
+		final Atom factIDBpredQ1 = Expressions.makeAtom("q", Expressions.makeConstant("c"));
+		final Atom factEDBpredQ2 = Expressions.makeAtom("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addRules(rule);
-			reasoner.addFacts(factIDBpred, factEDBpred);
+			reasoner.addFacts(factIDBpredQ1, factEDBpredQ2);
 			reasoner.load();
 		}
 	}
