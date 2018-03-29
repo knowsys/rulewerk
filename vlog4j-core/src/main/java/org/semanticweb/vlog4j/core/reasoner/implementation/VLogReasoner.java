@@ -61,6 +61,7 @@ public class VLogReasoner implements Reasoner {
 
 	private LogLevel internalLogLevel = LogLevel.WARNING;
 	private Algorithm algorithm = Algorithm.SKOLEM_CHASE;
+	private Integer timeoutAfterSeconds;
 	private RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
 
 	private final List<Rule> rules = new ArrayList<>();
@@ -70,17 +71,25 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm);
-
-		if (this.reasonerState == ReasonerState.AFTER_REASONING) {
-			LOGGER.warn(
-					"Argument algorithm will not be used: this Reasoner has already reasoned. Successive reason() calls are not supported.");
-		}
 		this.algorithm = algorithm;
 	}
 
 	@Override
 	public Algorithm getAlgorithm() {
 		return this.algorithm;
+	}
+
+	@Override
+	public void setReasoningTimeout(Integer seconds) {
+		if (seconds != null) {
+			Validate.isTrue(seconds > 0, "Only strictly positive timeout period alowed!", seconds);
+		}
+		timeoutAfterSeconds = seconds;
+	}
+
+	@Override
+	public Integer getReasoningTimeout() {
+		return timeoutAfterSeconds;
 	}
 
 	@Override
@@ -92,7 +101,7 @@ public class VLogReasoner implements Reasoner {
 	public void addRules(final Collection<Rule> rules) throws ReasonerStateException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
-					"Rules cannot be added after the reasoner was loaded!");
+					"Rules cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
 		}
 		Validate.noNullElements(rules, "Null rules are not alowed! The list contains a null at position [%d].");
 		this.rules.addAll(new ArrayList<>(rules));
@@ -103,7 +112,7 @@ public class VLogReasoner implements Reasoner {
 		Validate.notNull(ruleRewritingStrategy);
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
-					"Rules cannot be re-writen after the reasoner was loaded!");
+					"Rules cannot be re-writen after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
 		}
 		this.ruleRewriteStrategy = ruleRewritingStrategy;
 	}
@@ -122,7 +131,7 @@ public class VLogReasoner implements Reasoner {
 	public void addFacts(final Collection<Atom> facts) throws ReasonerStateException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
-					"Facts cannot be added after the reasoner was loaded!");
+					"Facts cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
 		}
 		Validate.noNullElements(this.rules, "Null facts are not alowed! The list contains a fact at position [%d].");
 		for (final Atom fact : facts) {
@@ -140,7 +149,7 @@ public class VLogReasoner implements Reasoner {
 	public void addDataSource(final Predicate predicate, final DataSource dataSource) throws ReasonerStateException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
-					"Data sources cannot be added after the reasoner was loaded!");
+					"Data sources cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
 		}
 		Validate.notNull(predicate, "Null predicates are not allowed!");
 		Validate.notNull(dataSource, "Null dataSources are not allowed!");
@@ -170,8 +179,7 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void load() throws EdbIdbSeparationException, IOException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
-			LOGGER.warn(
-					"This method call is ineffective: the Reasoner was already loaded. Successive load() calls are not supported.");
+			LOGGER.warn("This method call is ineffective: the Reasoner has already been loaded.");
 		} else {
 			validateEdbIdbSeparation();
 
@@ -199,23 +207,32 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void reason() throws IOException, ReasonerStateException {
+	public boolean reason() throws IOException, ReasonerStateException {
+		final boolean completed;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
-			// TODO exception message
 			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed before loading!");
 		} else if (this.reasonerState == ReasonerState.AFTER_REASONING) {
 			LOGGER.warn(
-					"This method call is ineffective: this Reasoner was already reasoned. Successive reason() calls are not supported.");
+					"This method call is ineffective: this Reasoner has already reasoned. Successive reason() calls are not supported. Call reset() to undo loading and reasoning and reload to be able to reason again");
+			// TODO what should be returned in this case? true, false or the previously
+			// returned method? Or should we throw a ReasonerStateException instead?
+			completed = true;
 		} else {
 			this.reasonerState = ReasonerState.AFTER_REASONING;
 
 			final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
 			try {
-				this.vLog.materialize(skolemChase);
+				if (timeoutAfterSeconds == null) {
+					this.vLog.materialize(skolemChase);
+					completed = true;
+				} else {
+					completed = this.vLog.materialize(skolemChase, timeoutAfterSeconds);
+				}
 			} catch (final NotStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
 			}
 		}
+		return completed;
 	}
 
 	@Override
@@ -260,7 +277,8 @@ public class VLogReasoner implements Reasoner {
 	public void reset() {
 		this.reasonerState = ReasonerState.BEFORE_LOADING;
 		this.vLog.stop();
-		// TODO do I need to create a new vLog instance?
+		LOGGER.warn(
+				"Reasoner has been reset. All inferences computed during reasoning have been discarded. More data and rules can be added after resetting. The reasoner needs to be loaded again to perform querying and reasoning.");
 	}
 
 	@Override

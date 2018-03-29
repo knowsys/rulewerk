@@ -1,4 +1,4 @@
-[0x73191bebc3af74e7 2018-03-29 16:38:27] INFO  Starting full materialization
-[0x73191bebc3af74e7 2018-03-29 16:38:27] INFO  Finished process. Iterations=2
-[0x73191bebc3af74e7 2018-03-29 16:38:27] INFO  Runtime materialization = 0.170000 milliseconds
-[0x73191bebc3af74e7 2018-03-29 16:38:27] INFO  Total # derivations: 1
+[0x31d350c1b29d5925 2018-03-29 20:16:46] INFO  Starting full materialization
+[0x31d350c1b29d5925 2018-03-29 20:16:46] INFO  Finished process. Iterations=2
+[0x31d350c1b29d5925 2018-03-29 20:16:46] INFO  Runtime materialization = 0.074000 milliseconds
+[0x31d350c1b29d5925 2018-03-29 20:16:46] INFO  Total # derivations: 1

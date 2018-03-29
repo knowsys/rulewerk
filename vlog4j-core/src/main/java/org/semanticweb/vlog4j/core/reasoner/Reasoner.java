@@ -40,6 +40,31 @@ public interface Reasoner extends AutoCloseable {
 
 	Algorithm getAlgorithm();
 
+	/**
+	 * In some cases, reasoning may not terminate. We recommend reasoning with
+	 * algorithm {@link Algorithm#RESTRICTED_CHASE}, as it leads to termination in
+	 * more cases. <br>
+	 * This method sets a timeout (in seconds) after which reasoning can be
+	 * artificially interrupted if it has not reached completion.
+	 * 
+	 * @param seconds
+	 *            interval after which reasoning will be interrupted, in seconds. If
+	 *            {@code null}, reasoning will not be interrupted and will return
+	 *            only after (if) it has reached completion.
+	 */
+	void setReasoningTimeout(Integer seconds);
+
+	/**
+	 * This method returns the reasoning timeout, representing the interval (in
+	 * {@code seconds}) after which reasoning will be interrupted if it has not
+	 * reached completion. The default value is {@code null}, in which case
+	 * reasoning terminates only after (if) it reaches completion.
+	 * 
+	 * @return if not {@code null}, number of seconds after which the reasoning will
+	 *         be interrupted, if it has not reached completion.
+	 */
+	Integer getReasoningTimeout();
+
 	void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
 
 	RuleRewriteStrategy getRuleRewriteStrategy();
@@ -83,7 +108,7 @@ public interface Reasoner extends AutoCloseable {
 
 	void load() throws IOException, EdbIdbSeparationException;
 
-	void reason() throws IOException, ReasonerStateException;
+	boolean reason() throws IOException, ReasonerStateException;
 
 	QueryResultIterator answerQuery(Atom atom, boolean includeBlanks) throws ReasonerStateException;
 
