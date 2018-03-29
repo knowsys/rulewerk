@@ -68,6 +68,12 @@ public class VLogReasoner implements Reasoner {
 	private final Map<Predicate, Set<Atom>> factsForPredicate = new HashMap<>();
 	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
 
+	/**
+	 * Holds the state of the reasoning result. Has value {@code true} if reasoning
+	 * has completed, {@code false} if it has been interrupted.
+	 */
+	private boolean reasoningCompleted;
+
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm);
@@ -208,15 +214,11 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public boolean reason() throws IOException, ReasonerStateException {
-		final boolean completed;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed before loading!");
 		} else if (this.reasonerState == ReasonerState.AFTER_REASONING) {
 			LOGGER.warn(
 					"This method call is ineffective: this Reasoner has already reasoned. Successive reason() calls are not supported. Call reset() to undo loading and reasoning and reload to be able to reason again");
-			// TODO what should be returned in this case? true, false or the previously
-			// returned method? Or should we throw a ReasonerStateException instead?
-			completed = true;
 		} else {
 			this.reasonerState = ReasonerState.AFTER_REASONING;
 
@@ -224,15 +226,15 @@ public class VLogReasoner implements Reasoner {
 			try {
 				if (timeoutAfterSeconds == null) {
 					this.vLog.materialize(skolemChase);
-					completed = true;
+					reasoningCompleted = true;
 				} else {
-					completed = this.vLog.materialize(skolemChase, timeoutAfterSeconds);
+					reasoningCompleted = this.vLog.materialize(skolemChase, timeoutAfterSeconds);
 				}
 			} catch (final NotStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
 			}
 		}
-		return completed;
+		return reasoningCompleted;
 	}
 
 	@Override

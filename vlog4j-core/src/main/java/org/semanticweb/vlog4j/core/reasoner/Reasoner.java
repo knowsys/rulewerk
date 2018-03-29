@@ -108,6 +108,22 @@ public interface Reasoner extends AutoCloseable {
 
 	void load() throws IOException, EdbIdbSeparationException;
 
+	/**
+	 * 
+	 * @return
+	 *         <ul>
+	 *         <li>the value returned by the previous {@link Reasoner#reason()}
+	 *         call, if successive reasoning is attempted before a
+	 *         {@link Reasoner#reset()}.</li>
+	 *         <li>{@code true}, if reasoning reached completion.</li>
+	 *         <li>{@code false}, if reasoning has been interrupted before
+	 *         completion.</li>
+	 *         </ul>
+	 * @throws IOException
+	 *             if I/O exceptions occur during reasoning.
+	 * @throws ReasonerStateException
+	 *             if this method is called before loading ({@link Reasoner#load()}.
+	 */
 	boolean reason() throws IOException, ReasonerStateException;
 
 	QueryResultIterator answerQuery(Atom atom, boolean includeBlanks) throws ReasonerStateException;
