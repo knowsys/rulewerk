@@ -36,18 +36,44 @@ public interface Reasoner extends AutoCloseable {
 		return new VLogReasoner();
 	}
 
-	Algorithm getAlgorithm();
-
 	void setAlgorithm(Algorithm algorithmType);
 
-	void addRules(Rule... rules) throws ReasonerStateException;
+	Algorithm getAlgorithm();
 
-	
-	void addRules(Collection<Rule> rules) throws ReasonerStateException;
+	void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
 
 	RuleRewriteStrategy getRuleRewriteStrategy();
 
-	void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
+	/**
+	 * Sets the logging level of the internal VLog C++ resource. Default value is
+	 * {@link LogLevel#WARNING}
+	 * 
+	 * @param logLevel
+	 *            the logging level to be set for VLog C++ resource.
+	 */
+	void setLogLevel(LogLevel logLevel);
+
+	/**
+	 * Returns the logging level of the internal VLog C++ resource. If no value has
+	 * been set, the default is {@link LogLevel#WARNING}.
+	 * 
+	 * @return the logging level of the VLog C++ resource.
+	 */
+	LogLevel getLogLevel();
+
+	/**
+	 * Redirects the logs of the internal VLog C++ resource to given file. If no log
+	 * file is set or the given {@code filePath} is not a valid file path, VLog will
+	 * only log to the default system output.
+	 * 
+	 * @param filePath
+	 *            the file for the internal VLog C++ resource to log to.
+	 */
+	void setLogFile(String filePath);
+
+	void addRules(Rule... rules) throws ReasonerStateException;
+
+	void addRules(Collection<Rule> rules) throws ReasonerStateException;
 
 	void addFacts(Atom... fact) throws ReasonerStateException;
 
@@ -68,8 +94,8 @@ public interface Reasoner extends AutoCloseable {
 	 * Resets the reasoner to the state it had before loading (before the call of
 	 * {@link Reasoner#load()} method). All facts inferred by reasoning are
 	 * discarded. Calling {@link Reasoner#load()} again after
-	 * {@link Reasoner#reset()} reloads the reasoner with {@link Reasoner#load()}the current given knowledge
-	 * base (added facts, data sources and rules).
+	 * {@link Reasoner#reset()} reloads the reasoner with {@link Reasoner#load()}the
+	 * current given knowledge base (added facts, data sources and rules).
 	 */
 	void reset();
 
