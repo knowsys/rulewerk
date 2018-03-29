@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.semanticweb.vlog4j</groupId>
+		<artifactId>vlog4j-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>vlog4j-rdf</artifactId>
+	<packaging>jar</packaging>
+
+	<name>VLog4j RDF Support</name>
+	<description>Bindings and utilities for working with RDF data</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+
+</project>
