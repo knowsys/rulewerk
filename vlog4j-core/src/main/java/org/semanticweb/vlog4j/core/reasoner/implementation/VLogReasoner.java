@@ -104,7 +104,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void addRules(final Collection<Rule> rules) throws ReasonerStateException {
+	public void addRules(final List<Rule> rules) throws ReasonerStateException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
 					"Rules cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
@@ -152,7 +152,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void addDataSource(final Predicate predicate, final DataSource dataSource) throws ReasonerStateException {
+	public void addFactsFromDataSource(final Predicate predicate, final DataSource dataSource) throws ReasonerStateException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
 					"Data sources cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");

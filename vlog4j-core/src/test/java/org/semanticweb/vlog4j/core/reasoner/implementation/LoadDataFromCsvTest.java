@@ -63,8 +63,8 @@ public class LoadDataFromCsvTest {
 		final Set<List<Term>> expectedPQueryResults = Sets.newSet(Arrays.asList(Expressions.makeConstant("c1")),
 				Arrays.asList(Expressions.makeConstant("c2")));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicateP, dataSource);
-			reasoner.addDataSource(predicateQ, dataSource);
+			reasoner.addFactsFromDataSource(predicateP, dataSource);
+			reasoner.addFactsFromDataSource(predicateQ, dataSource);
 			reasoner.load();
 			final QueryResultIterator pQueryResultIterator = reasoner
 					.answerQuery(Expressions.makeAtom(predicateP, Expressions.makeVariable("x")), true);

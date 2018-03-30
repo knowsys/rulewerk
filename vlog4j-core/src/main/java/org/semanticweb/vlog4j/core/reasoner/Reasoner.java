@@ -2,10 +2,12 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
@@ -30,20 +32,77 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
  * limitations under the License.
  * #L%
  */
+
+/**
+ * Interface that exposes the existential rule reasoning capabilities of VLog.
+ * <br>
+ * The <b>knowledge base</b> of the reasoner can be loaded with explicit facts
+ * and <b>existential rules</b> that would infer implicit <b>facts</b> trough
+ * reasoning. <br>
+ * <b>Facts</b> can be added to the knowledge base:
+ * <ul>
+ * <li>as in-memory Java objects ({@link #addFacts(Atom...)}</li>
+ * <li>from a persistent data source
+ * ({@link #addFactsFromDataSource(Predicate, DataSource)})</li>
+ * </ul>
+ * Note that facts with the same predicate cannot come from multiple sources
+ * (where a source can be a collection of in-memory {@link Atom} objects, or a
+ * {@link DataSource} .<br>
+ * <b>Rules</b> added to the knowledge base ({@link #addRules(Rule...)}) can be
+ * re-written internally by VLog, using the corresponding set
+ * {@link RuleRewriteStrategy}. <br>
+ * <br>
+ * Once adding facts and rules to the knowledge base has been completed, the
+ * <b>knowledge base</b> can be <b>loaded</b> into the reasoner. The following
+ * <b>pre-condition</b> must be respected: the {@link Predicate}s appearing in
+ * {@link Rule} heads (called IDBs) cannot also appear in knowledge base
+ * <b>facts</b> (called EDBs). An {@link EdbIdbSeparationException} would be
+ * thrown when loading the knowledge base.<br>
+ * 
+ * <br>
+ * The loaded reasoner can perform <b>atomic queries</b> on explicit facts
+ * before reasoning, and all implicit and explicit facts after calling
+ * {@link Reasoner#reason()}. Queries can provide an iterator for the results
+ * ({@link #answerQuery(Atom, boolean)}, or the results can be exported to a
+ * file ({@link #exportQueryAnswersToCsv(Atom, String, boolean)}). <br>
+ * <br>
+ * <b>Reasoning</b> with various {@link Algorithm}s is supported, that can lead
+ * to different sets of inferred facts and different termination behavior. In
+ * some cases, reasoning with rules with existentially quantified variables
+ * {@link Rule#getExistentiallyQuantifiedVariables()} may not terminate. We
+ * recommend reasoning with algorithm {@link Algorithm#RESTRICTED_CHASE}, as it
+ * leads to termination in more cases. To avoid non-termination, a reasoning
+ * timeout can be set ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
+ * <b>Incremental reasoning</b> is not supported. To add more facts and rule to
+ * the <b>knowledge base</b> and reason again, the reasoner needs to be
+ * <b>reset</b> ({@link #reset()}) to the state of its knowledge base before
+ * loading. Then, more information can be added to the knowledge base, the
+ * reasoner can be loaded again, and querying and reasoning can be performed.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public interface Reasoner extends AutoCloseable {
 
-	public static VLogReasoner getInstance() {
+	/**
+	 * Factory method that to instantiate a Reasoner.
+	 * 
+	 * @return a {@link VLogReasoner} instance.
+	 */
+	public static Reasoner getInstance() {
 		return new VLogReasoner();
 	}
 
+	// TODO shouldn't RESTRICTED_CHASE be the default algorithm?
 	void setAlgorithm(Algorithm algorithmType);
 
 	Algorithm getAlgorithm();
 
 	/**
-	 * In some cases, reasoning may not terminate. We recommend reasoning with
-	 * algorithm {@link Algorithm#RESTRICTED_CHASE}, as it leads to termination in
-	 * more cases. <br>
+	 * In some cases, reasoning with rules with existentially quantified variables
+	 * {@link Rule#getExistentiallyQuantifiedVariables()} may not terminate. We
+	 * recommend reasoning with algorithm {@link Algorithm#RESTRICTED_CHASE}, as it
+	 * leads to termination in more cases. <br>
 	 * This method sets a timeout (in seconds) after which reasoning can be
 	 * artificially interrupted if it has not reached completion.
 	 * 
@@ -96,19 +155,152 @@ public interface Reasoner extends AutoCloseable {
 	 */
 	void setLogFile(String filePath);
 
+	/**
+	 * Adds rules to the reasoner <b>knowledge base</b> in the given order. After
+	 * the reasoner has been loaded ({@link #load()}), the rules may be rewritten
+	 * internally according to the set {@link RuleRewriteStrategy}.
+	 * 
+	 * @param rules
+	 *            non-null rules to be added to the <b>knowledge base</b> for
+	 *            reasoning.
+	 * @throws ReasonerStateException
+	 *             if the reasoner has already been loaded.
+	 * @throws IllegalArgumentException
+	 *             if the {@code rules} atoms contain terms which are not of type
+	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
+	 */
 	void addRules(Rule... rules) throws ReasonerStateException;
 
-	void addRules(Collection<Rule> rules) throws ReasonerStateException;
+	/**
+	 * Adds rules to the reasoner <b>knowledge base</b> in the given order. Rules
+	 * can only be added before loading ({@link #load()}). After the reasoner has
+	 * been loaded, the rules may be rewritten internally according to the set
+	 * {@link RuleRewriteStrategy}.
+	 * 
+	 * @param rules
+	 *            non-null rules to be added to the <b>knowledge base</b> for
+	 *            reasoning.
+	 * @throws ReasonerStateException
+	 *             if the reasoner has already been loaded.
+	 * @throws IllegalArgumentException
+	 *             if the {@code rules} atoms contain terms which are not of type
+	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
+	 */
+	void addRules(List<Rule> rules) throws ReasonerStateException;
 
-	void addFacts(Atom... fact) throws ReasonerStateException;
+	/**
+	 * Adds non-null facts to the reasoner <b>knowledge base</b>. A <b>fact</b> is
+	 * an {@link Atom} with all terms ({@link Atom#getTerms()}) of type
+	 * {@link TermType#CONSTANT}. <br>
+	 * Facts can only be added before loading ({@link #load()}). <br>
+	 * Facts predicates ({@link Atom#getPredicate()}) cannot have multiple data
+	 * sources.
+	 * 
+	 * @param facts
+	 *            facts to be added to the <b>knowledge base</b>. The given order is
+	 *            not maintained.
+	 * @throws ReasonerStateException
+	 *             if the reasoner has already been loaded ({@link #load()}).
+	 * @throws IllegalArgumentException
+	 *             if the <b>knowledge base</b> contains facts from a data source
+	 *             with the same predicate ({@link Atom#getPredicate()}) as an
+	 *             {@link Atom} among given {@code facts}.
+	 * @throws IllegalArgumentException
+	 *             if the {@code facts} atoms contain terms which are not of type
+	 *             {@link TermType#CONSTANT}.
+	 */
+	// TODO add example to javadoc For example, the last instruction of the
+	// following code will throw
+	// * {@link IllegalArgumentException}: {@code }
+	// *
+	void addFacts(Atom... facts) throws ReasonerStateException;
 
+	/**
+	 * Adds non-null facts to the reasoner <b>knowledge base</b>. A <b>fact</b> is
+	 * an {@link Atom} with all terms ({@link Atom#getTerms()}) of type
+	 * {@link TermType#CONSTANT}. <br>
+	 * Facts can only be added before loading ({@link #load()}). <br>
+	 * Facts predicates ({@link Atom#getPredicate()}) cannot have multiple data
+	 * sources.
+	 * 
+	 * @param facts
+	 *            facts to be added to the <b>knowledge base</b>.
+	 * @throws ReasonerStateException
+	 *             if the reasoner has already been loaded ({@link #load()}).
+	 * @throws IllegalArgumentException
+	 *             if the <b>knowledge base</b> contains facts from a data source
+	 *             with the same predicate ({@link Atom#getPredicate()}) as an
+	 *             {@link Atom} among given {@code facts}.
+	 * @throws IllegalArgumentException
+	 *             if the {@code facts} atoms contain terms which are not of type
+	 *             {@link TermType#CONSTANT}.
+	 */
+	// TODO add example to javadoc For example, the last instruction of the
+	// following code will throw
+	// * {@link IllegalArgumentException}: {@code }
+	// *
 	void addFacts(Collection<Atom> facts) throws ReasonerStateException;
 
-	void addDataSource(Predicate predicate, DataSource dataSource) throws ReasonerStateException;
+	/**
+	 * Adds facts stored in given {@code dataSource} for given {@code predicate} to
+	 * the reasoner <b>knowledge base</b>. Facts predicates cannot have multiple
+	 * data sources, including in-memory {@link Atom} objects added trough
+	 * {@link #addFacts}.
+	 * 
+	 * @param predicate
+	 *            the {@link Predicate} for which the given {@code dataSource}
+	 *            contains <b>facts</b>.
+	 * @param dataSource
+	 * @throws ReasonerStateException
+	 *             if the reasoner has already been loaded ({@link #load()}).
+	 * @throws IllegalArgumentException
+	 *             if the <b>knowledge base</b> contains facts in memory (added
+	 *             using {@link #addFacts}) or from a data source with the same
+	 *             {@link Predicate} as given {@code predicate}.
+	 */
+	// FIXME what if user tries to adds the same data source and predicate?
+	// TODO add example to javadoc with two datasources and with in-memory facts for
+	// the same predicate.
+	// TODO validate predicate arity corresponds to the dataSource facts arity
+	void addFactsFromDataSource(Predicate predicate, DataSource dataSource) throws ReasonerStateException;
 
+	/**
+	 * Loads the <b>knowledge base</b> into the reasoner (if it has not been loaded
+	 * yet). If the reasoner has already been loaded, this call does nothing. <br>
+	 * Loading <b>pre-condition</b>: the {@link Predicate}s appearing in
+	 * {@link Rule} heads ({@link Rule#getHead()}), called IDB predicates, cannot
+	 * also appear in knowledge base <b>facts</b>, called EDB predicates. An
+	 * {@link EdbIdbSeparationException} would be thrown in this case.
+	 * 
+	 * @throws IOException
+	 *             if an I/O error occurs related to the resources in the
+	 *             <b>knowledge base</b> to be loaded.
+	 * @throws EdbIdbSeparationException
+	 *             if a {@link Predicate} appearing in a {@link Rule} <b>head</b>
+	 *             (IDB predicate) also appears in a knowledge base <b>fact</b> (EDB
+	 *             predicate).
+	 */
+	// FIXME should EdbIdbSeparationException be thrown when users try to add
+	// facts/rules?
 	void load() throws IOException, EdbIdbSeparationException;
 
 	/**
+	 * Performs reasoning on the loaded <b>knowledge base</b>, depending on the set
+	 * {@link Algorithm}. Reasoning implies extending the set of explicit facts in
+	 * the knowledge base with implicit facts inferred by knowledge base rules. <br>
+	 * <br>
+	 * In some cases, reasoning with rules with existentially quantified variables
+	 * {@link Rule#getExistentiallyQuantifiedVariables()} may not terminate. We
+	 * recommend reasoning with algorithm {@link Algorithm#RESTRICTED_CHASE}, as it
+	 * leads to termination in more cases. <br>
+	 * To avoid non-termination, a reasoning timeout can be set
+	 * ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
+	 * <br>
+	 * <b>Incremental reasoning</b> is not supported. To add more facts and rule to
+	 * the <b>knowledge base</b> and reason again, the reasoner needs to be
+	 * <b>reset</b> ({@link #reset()}) to the state of its knowledge base before
+	 * loading. Then, more information can be added to the knowledge base, the
+	 * reasoner can be loaded again, and querying and reasoning can be performed.
 	 * 
 	 * @return
 	 *         <ul>
@@ -126,7 +318,25 @@ public interface Reasoner extends AutoCloseable {
 	 */
 	boolean reason() throws IOException, ReasonerStateException;
 
-	QueryResultIterator answerQuery(Atom atom, boolean includeBlanks) throws ReasonerStateException;
+	// TODO query javadoc
+	/**
+	 * 
+	 * @param queryAtom
+	 * @param includeBlanks
+	 *            if {@code true}, anonymous individuals introduced to satisfy rule
+	 *            existentially quantified variables will be included into the query
+	 *            result as terms of type {@link TermType#BLANK}. If {@code false},
+	 *            only named individuals will be contained in the result, as terms
+	 *            of type {@link TermType#CONSTANT}.
+	 * @return
+	 * @throws ReasonerStateException
+	 *             if this method is called before loading ({@link Reasoner#load()}.
+	 * @throws IllegalArgumentException
+	 *             if the given {@code atom} contains terms
+	 *             ({@link Atom#getTerms()}) which are not of type
+	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
+	 */
+	QueryResultIterator answerQuery(Atom queryAtom, boolean includeBlanks) throws ReasonerStateException;
 
 	void exportQueryAnswersToCsv(Atom atom, String csvFilePath, boolean includeBlanks)
 			throws ReasonerStateException, IOException;
@@ -139,10 +349,6 @@ public interface Reasoner extends AutoCloseable {
 	 * current given knowledge base (added facts, data sources and rules).
 	 */
 	void reset();
-
-	// TODO arity should be in the EDB config file,
-	// do not read the files, have low-level API check if the file content
-	// corresponds the arity
 
 	// TODO Set<EDBPredicateConfig> exportDBToFolder(File location);
 

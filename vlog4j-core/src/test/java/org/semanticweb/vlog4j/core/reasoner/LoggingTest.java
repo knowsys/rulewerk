@@ -30,9 +30,8 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
-public class VLogLogginglTest {
+public class LoggingTest {
 
 	private static final Variable vx = Expressions.makeVariable("x");
 
@@ -46,7 +45,7 @@ public class VLogLogginglTest {
 
 	@Test
 	public void testSetLogFile() throws EdbIdbSeparationException, IOException, ReasonerStateException {
-		try (final VLogReasoner instance = Reasoner.getInstance()) {
+		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.addFacts(factPc);
 			instance.addRules(rule);
 			instance.setLogLevel(LogLevel.INFO);

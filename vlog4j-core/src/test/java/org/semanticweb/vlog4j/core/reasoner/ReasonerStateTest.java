@@ -91,7 +91,7 @@ public class ReasonerStateTest {
 			reasoner.addFacts(factPc);
 			// assert r(d)
 			final Predicate predicateR1 = Expressions.makePredicate("r", 1);
-			reasoner.addDataSource(predicateR1,
+			reasoner.addFactsFromDataSource(predicateR1,
 					new CsvFileDataSource(new File(CsvFileUtils.CSV_INPORT_FOLDER, "constantD.csv")));
 			// p(?x) -> q(?x)
 			reasoner.addRules(rule);
