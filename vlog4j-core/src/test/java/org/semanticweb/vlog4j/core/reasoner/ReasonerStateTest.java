@@ -55,7 +55,7 @@ public class ReasonerStateTest {
 	@Test
 	public void testResetBeforeLoad() {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.reset();
+			reasoner.resetReasoner();
 		}
 	}
 
@@ -75,7 +75,7 @@ public class ReasonerStateTest {
 					assertFalse(queryResultIterator.hasNext());
 				}
 
-				reasoner.reset();
+				reasoner.resetReasoner();
 				reasoner.load();
 				try (final QueryResultIterator queryResultIteratorAfterReset = reasoner.answerQuery(ruleHeadQx, true)) {
 					assertFalse(queryResultIteratorAfterReset.hasNext());
@@ -98,7 +98,7 @@ public class ReasonerStateTest {
 			reasoner.load();
 			checkExplicitFacts(reasoner, predicateR1);
 
-			reasoner.reset();
+			reasoner.resetReasoner();
 			reasoner.load();
 			checkExplicitFacts(reasoner, predicateR1);
 
@@ -140,14 +140,14 @@ public class ReasonerStateTest {
 		try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(exampleQueryAtom, true)) {
 			assertFalse(queryResultIterator.hasNext());
 		}
-		reasoner.reset();
+		reasoner.resetReasoner();
 
 		// 2. load again
 		reasoner.load();
 		try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(exampleQueryAtom, true)) {
 			assertFalse(queryResultIterator.hasNext());
 		}
-		reasoner.reset();
+		reasoner.resetReasoner();
 
 		// 3. load and reason again
 		reasoner.load();

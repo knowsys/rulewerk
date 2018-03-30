@@ -76,9 +76,10 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
  * timeout can be set ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
  * <b>Incremental reasoning</b> is not supported. To add more facts and rule to
  * the <b>knowledge base</b> and reason again, the reasoner needs to be
- * <b>reset</b> ({@link #reset()}) to the state of its knowledge base before
- * loading. Then, more information can be added to the knowledge base, the
- * reasoner can be loaded again, and querying and reasoning can be performed.
+ * <b>reset</b> ({@link #resetReasoner()}) to the state of its knowledge base
+ * before loading. Then, more information can be added to the knowledge base,
+ * the reasoner can be loaded again, and querying and reasoning can be
+ * performed.
  * 
  * @author Irina Dragoste
  *
@@ -298,8 +299,10 @@ public interface Reasoner extends AutoCloseable {
 	void addFactsFromDataSource(Predicate predicate, DataSource dataSource) throws ReasonerStateException;
 
 	/**
-	 * Loads the <b>knowledge base</b> into the reasoner (if it has not been loaded
-	 * yet). If the reasoner has already been loaded, this call does nothing. <br>
+	 * Loads the <b>knowledge base</b>, consisting of the current rules and facts,
+	 * into the reasoner (if it has not been loaded yet). If the reasoner has
+	 * already been loaded, this call does nothing. After loading, the reasoner is
+	 * ready for reasoning and querying.<br>
 	 * Loading <b>pre-condition</b>: the {@link Predicate}s appearing in
 	 * {@link Rule} heads ({@link Rule#getHead()}), called IDB predicates, cannot
 	 * also appear in knowledge base <b>facts</b>, called EDB predicates. An
@@ -331,15 +334,16 @@ public interface Reasoner extends AutoCloseable {
 	 * <br>
 	 * <b>Incremental reasoning</b> is not supported. To add more facts and rule to
 	 * the <b>knowledge base</b> and reason again, the reasoner needs to be
-	 * <b>reset</b> ({@link #reset()}) to the state of its knowledge base before
-	 * loading. Then, more information can be added to the knowledge base, the
-	 * reasoner can be loaded again, and querying and reasoning can be performed.
+	 * <b>reset</b> ({@link #resetReasoner()}) to the state of its knowledge base
+	 * before loading. Then, more information can be added to the knowledge base,
+	 * the reasoner can be loaded again, and querying and reasoning can be
+	 * performed.
 	 * 
 	 * @return
 	 *         <ul>
 	 *         <li>the value returned by the previous {@link Reasoner#reason()}
 	 *         call, if successive reasoning is attempted before a
-	 *         {@link Reasoner#reset()}.</li>
+	 *         {@link Reasoner#resetReasoner()}.</li>
 	 *         <li>{@code true}, if reasoning reached completion.</li>
 	 *         <li>{@code false}, if reasoning has been interrupted before
 	 *         completion.</li>
@@ -351,18 +355,39 @@ public interface Reasoner extends AutoCloseable {
 	 */
 	boolean reason() throws IOException, ReasonerStateException;
 
-	// TODO document querying
+	// TODO add examples to query javadoc
 	/**
+	 * Evaluates an atomic query ({@code queryAtom}) on the current state of the
+	 * reasoner knowledge base:
+	 * <ul>
+	 * <li>If the reasoner is <b>loaded</b> (see {@link #load()}), but has not
+	 * reasoned yet, the query will be evaluated on the explicit set of facts.</li>
+	 * <li>Otherwise, if this method is called after </b>reasoning</b> (see
+	 * {@link #reason()}, the query will be evaluated on the explicit and implicit
+	 * facts inferred trough reasoning.</li>
+	 * </ul>
+	 * <br>
+	 * An answer to the query is the terms a fact that matches the {@code quryAtom}:
+	 * the fact predicate is the same as the {@code quryAtom} predicate, the
+	 * {@link TermType#CONSTANT} terms of the {@code quryAtom} appear in the answer
+	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
+	 * the {@code quryAtom} are matched by terms in the fact, either named
+	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#BLANK}). The same
+	 * variable name identifies the same term in the answer fact. <br>
+	 * A query answer is represented by a {@link QueryResult}. A query can have
+	 * multiple, distinct query answers. This method returns an Iterator over these
+	 * answers.
 	 * 
 	 * @param queryAtom
+	 *            an {@link Atom} representing the query to be answered.
 	 * @param includeBlanks
 	 *            if {@code true}, anonymous individuals introduced to satisfy rule
 	 *            existentially quantified variables will be included into the query
 	 *            result as terms of type {@link TermType#BLANK}. If {@code false},
 	 *            only named individuals will be contained in the result, as terms
 	 *            of type {@link TermType#CONSTANT}.
-	 * @return an Iterator for {@link QueryResult}s, representing distinct answers
-	 *         to the query.
+	 * @return an {@link AutoCloseable} iterator for {@link QueryResult}s,
+	 *         representing distinct answers to the query.
 	 * @throws ReasonerStateException
 	 *             if this method is called before loading ({@link Reasoner#load()}.
 	 * @throws IllegalArgumentException
@@ -370,19 +395,30 @@ public interface Reasoner extends AutoCloseable {
 	 *             ({@link Atom#getTerms()}) which are not of type
 	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
 	 */
+	// FIXME rewrite facts with...will be included
 	QueryResultIterator answerQuery(Atom queryAtom, boolean includeBlanks) throws ReasonerStateException;
 
-	void exportQueryAnswersToCsv(Atom atom, String csvFilePath, boolean includeBlanks)
+	/**
+	 * 
+	 * @param queryAtom
+	 *            an {@link Atom} representing the query to be answered.
+	 * @param csvFilePath
+	 * @param includeBlanks
+	 * 
+	 * @throws ReasonerStateException
+	 *             if this method is called before loading ({@link Reasoner#load()}.
+	 * @throws IOException
+	 */
+	void exportQueryAnswersToCsv(Atom queryAtom, String csvFilePath, boolean includeBlanks)
 			throws ReasonerStateException, IOException;
 
 	/**
-	 * Resets the reasoner to the state it had before loading (before the call of
-	 * {@link Reasoner#load()} method). All facts inferred by reasoning are
-	 * discarded. Calling {@link Reasoner#load()} again after
-	 * {@link Reasoner#reset()} reloads the reasoner with {@link Reasoner#load()}the
-	 * current given knowledge base (added facts, data sources and rules).
+	 * Resets the reasoner to a pre-loading state (before the call of
+	 * {@link #load()} method). All facts inferred by reasoning are discarded. Rules
+	 * and facts added to the reasoner need to be loaded again, to be able to
+	 * perform querying and reasoning.
 	 */
-	void reset();
+	void resetReasoner();
 
 	// TODO Map<Predicate,DataSource> exportDBToDir(File location);
 

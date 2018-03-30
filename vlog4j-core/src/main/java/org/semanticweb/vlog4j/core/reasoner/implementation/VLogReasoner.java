@@ -276,7 +276,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void reset() {
+	public void resetReasoner() {
 		this.reasonerState = ReasonerState.BEFORE_LOADING;
 		this.vLog.stop();
 		LOGGER.warn(

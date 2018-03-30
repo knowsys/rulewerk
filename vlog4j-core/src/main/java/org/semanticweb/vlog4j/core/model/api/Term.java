@@ -45,7 +45,7 @@ public interface Term {
 	TermType getType();
 
 	/**
-	 * Accept a {@link: TermVisitor} and return its output.
+	 * Accept a {@link TermVisitor} and return its output.
 	 *
 	 * @param termVisitor
 	 *            the TermVisitor
