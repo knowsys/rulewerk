@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -94,8 +95,22 @@ public interface Reasoner extends AutoCloseable {
 	}
 
 	// TODO shouldn't RESTRICTED_CHASE be the default algorithm?
-	void setAlgorithm(Algorithm algorithmType);
+	/**
+	 * Sets the algorithm that will be used for reasoning over the knowledge base.
+	 * If no algorithm is set, the default algorithm is
+	 * {@link Algorithm#SKOLEM_CHASE} will be used.
+	 * 
+	 * @param algorithm
+	 *            the algorithm to be used for reasoning.
+	 */
+	void setAlgorithm(Algorithm algorithm);
 
+	/**
+	 * Getter for the lgorithm that will be used for reasoning over the knowledge
+	 * base. The default value is {@link Algorithm#SKOLEM_CHASE}.
+	 * 
+	 * @return the reasoning algorithm.
+	 */
 	Algorithm getAlgorithm();
 
 	/**
@@ -124,8 +139,27 @@ public interface Reasoner extends AutoCloseable {
 	 */
 	Integer getReasoningTimeout();
 
+	/**
+	 * Loaded {@link Rule}s can be re-written internally to an equivalent set of
+	 * rules, according to given {@code ruleRewritingStrategy}. If no staregy is
+	 * set, the default value is {@link RuleRewriteStrategy#NONE}, meaning that the
+	 * rules will not be re-written.
+	 * 
+	 * @param ruleRewritingStrategy
+	 *            strategy according to which the rules will be rewritten before
+	 *            reasoning.
+	 * @throws ReasonerStateException
+	 *             if the reasoner has already been loaded.
+	 */
 	void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
 
+	/**
+	 * Getter for the strategy according to which rules will be rewritten before
+	 * reasoning. The default value is {@link RuleRewriteStrategy#NONE}, meaning
+	 * that the rules will not be re-written.
+	 * 
+	 * @return the current rule re-writing strategy
+	 */
 	RuleRewriteStrategy getRuleRewriteStrategy();
 
 	/**
@@ -258,7 +292,6 @@ public interface Reasoner extends AutoCloseable {
 	 *             using {@link #addFacts}) or from a data source with the same
 	 *             {@link Predicate} as given {@code predicate}.
 	 */
-	// FIXME what if user tries to adds the same data source and predicate?
 	// TODO add example to javadoc with two datasources and with in-memory facts for
 	// the same predicate.
 	// TODO validate predicate arity corresponds to the dataSource facts arity
@@ -318,7 +351,7 @@ public interface Reasoner extends AutoCloseable {
 	 */
 	boolean reason() throws IOException, ReasonerStateException;
 
-	// TODO query javadoc
+	// TODO document querying
 	/**
 	 * 
 	 * @param queryAtom
@@ -328,7 +361,8 @@ public interface Reasoner extends AutoCloseable {
 	 *            result as terms of type {@link TermType#BLANK}. If {@code false},
 	 *            only named individuals will be contained in the result, as terms
 	 *            of type {@link TermType#CONSTANT}.
-	 * @return
+	 * @return an Iterator for {@link QueryResult}s, representing distinct answers
+	 *         to the query.
 	 * @throws ReasonerStateException
 	 *             if this method is called before loading ({@link Reasoner#load()}.
 	 * @throws IllegalArgumentException
@@ -350,7 +384,7 @@ public interface Reasoner extends AutoCloseable {
 	 */
 	void reset();
 
-	// TODO Set<EDBPredicateConfig> exportDBToFolder(File location);
+	// TODO Map<Predicate,DataSource> exportDBToDir(File location);
 
 	// TODO not allow any operation after closing, except close();
 	@Override
