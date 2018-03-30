@@ -165,7 +165,7 @@ public class VLogReasoner implements OWLReasoner {
 	}
 
 	@Override
-	public NodeSet<OWLNamedIndividual> getInstances(OWLClassExpression arg0, boolean arg1) {
+	public NodeSet<OWLNamedIndividual> getInstances(OWLClassExpression classExpression, boolean direct) {
 		// TODO Auto-generated method stub
 		return null;
 	}
