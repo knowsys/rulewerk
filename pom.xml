@@ -61,6 +61,7 @@
 		<apacheHttpVersion>4.5.4</apacheHttpVersion>
 		<commonsCliVersion>1.4</commonsCliVersion>
 		<ini4JVersion>0.5.4</ini4JVersion>
+		<openrdf.sesame.version>2.7.16</openrdf.sesame.version>
 	</properties>
 
 	<dependencies>
