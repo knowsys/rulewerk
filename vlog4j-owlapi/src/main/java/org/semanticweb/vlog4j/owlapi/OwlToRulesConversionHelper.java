@@ -95,21 +95,6 @@ public class OwlToRulesConversionHelper {
 		return new PredicateImpl(owlObjectProperty.getIRI().toString(), 2);
 	}
 
-	// public static Predicate getAuxiliaryClassPredicate(OWLClassExpression
-	// owlClassExpression) {
-	// try {
-	// MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-	// byte[] digest =
-	// messageDigest.digest(owlClassExpression.toString().getBytes("UTF-8"));
-	// BigInteger bigInt = new BigInteger(1, digest);
-	// String hashtext = bigInt.toString(16);
-	// return new PredicateImpl("aux-" + hashtext, 1);
-	// } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-	// throw new RuntimeException("We are missing some core functionality of Java
-	// here", e);
-	// }
-	// }
-
 	public static Predicate getAuxiliaryClassPredicate(Collection<OWLClassExpression> owlClassExpressions) {
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
