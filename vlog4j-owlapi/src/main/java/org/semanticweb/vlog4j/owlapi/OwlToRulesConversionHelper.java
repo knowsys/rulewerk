@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.semanticweb.owlapi.model.OWLAnonymousIndividual;
 
@@ -32,11 +34,16 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
 import org.semanticweb.vlog4j.core.model.impl.BlankImpl;
 import org.semanticweb.vlog4j.core.model.impl.ConstantImpl;
 import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
+import org.semanticweb.vlog4j.owlapi.AbstractClassToRuleConverter.SimpleConjunction;
 
 /**
  * Utility class for helper functions that are used to convert OWL API objects
@@ -88,16 +95,77 @@ public class OwlToRulesConversionHelper {
 		return new PredicateImpl(owlObjectProperty.getIRI().toString(), 2);
 	}
 
-	public static Predicate getAuxiliaryClassPredicate(OWLClassExpression owlClassExpression) {
+	// public static Predicate getAuxiliaryClassPredicate(OWLClassExpression
+	// owlClassExpression) {
+	// try {
+	// MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+	// byte[] digest =
+	// messageDigest.digest(owlClassExpression.toString().getBytes("UTF-8"));
+	// BigInteger bigInt = new BigInteger(1, digest);
+	// String hashtext = bigInt.toString(16);
+	// return new PredicateImpl("aux-" + hashtext, 1);
+	// } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+	// throw new RuntimeException("We are missing some core functionality of Java
+	// here", e);
+	// }
+	// }
+
+	public static Predicate getAuxiliaryClassPredicate(Collection<OWLClassExpression> owlClassExpressions) {
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-			byte[] digest = messageDigest.digest(owlClassExpression.toString().getBytes("UTF-8"));
+			for (OWLClassExpression owlClassExpression : owlClassExpressions) {
+				messageDigest.update(owlClassExpression.toString().getBytes("UTF-8"));
+			}
+			byte[] digest = messageDigest.digest();
 			BigInteger bigInt = new BigInteger(1, digest);
 			String hashtext = bigInt.toString(16);
 			return new PredicateImpl("aux-" + hashtext, 1);
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
 			throw new RuntimeException("We are missing some core functionality of Java here", e);
 		}
+	}
+
+	/**
+	 * Adds a binary predicate for a given OWL object property expression to the
+	 * given conjunction. If the expression is an inverse, source and target terms
+	 * are swapped. If the expression is top or bottom, it is handled appropriately.
+	 * 
+	 * @param owlObjectPropertyExpression
+	 *            the property expression
+	 * @param sourceTerm
+	 *            the term that should be in the first parameter position of the
+	 *            original expression
+	 * @param targetTerm
+	 *            the term that should be in the second parameter position of the
+	 *            original expression
+	 */
+	static void addConjunctForPropertyExpression(OWLObjectPropertyExpression owlObjectPropertyExpression,
+			Term sourceTerm, Term targetTerm, SimpleConjunction conjuncts) {
+		if (owlObjectPropertyExpression.isOWLTopObjectProperty()) {
+			conjuncts.init();
+		} else if (owlObjectPropertyExpression.isOWLBottomObjectProperty()) {
+			conjuncts.makeFalse();
+		} else {
+			if (owlObjectPropertyExpression.isAnonymous()) {
+				Predicate predicate = OwlToRulesConversionHelper.getObjectPropertyPredicate(
+						owlObjectPropertyExpression.getInverseProperty().asOWLObjectProperty());
+				conjuncts.add(new AtomImpl(predicate, Arrays.asList(targetTerm, sourceTerm)));
+			} else {
+				Predicate predicate = OwlToRulesConversionHelper
+						.getObjectPropertyPredicate(owlObjectPropertyExpression.asOWLObjectProperty());
+				conjuncts.add(new AtomImpl(predicate, Arrays.asList(sourceTerm, targetTerm)));
+			}
+		}
+	}
+
+	public static Atom getBottom(Variable variable) {
+		Predicate predicate = new PredicateImpl("http://www.w3.org/2002/07/owl#Nothing", 1);
+		return new AtomImpl(predicate, Arrays.asList(variable));
+	}
+
+	public static Atom getTop(Variable variable) {
+		Predicate predicate = new PredicateImpl("http://www.w3.org/2002/07/owl#Thing", 1);
+		return new AtomImpl(predicate, Arrays.asList(variable));
 	}
 
 }

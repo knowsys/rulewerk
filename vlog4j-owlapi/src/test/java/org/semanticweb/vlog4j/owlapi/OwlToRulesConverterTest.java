@@ -22,48 +22,328 @@ package org.semanticweb.vlog4j.owlapi;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+import java.util.Collections;
+
+import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataUnionOf;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLOntologyFactory;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLOntologyFactoryImpl;
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.impl.Expressions;
 
 public class OwlToRulesConverterTest {
 
+	static OWLDataFactory df = OWLManager.getOWLDataFactory();
+
+	public static IRI getIri(String localName) {
+		return IRI.create("http://example.org/" + localName);
+	}
+
+	public static OWLClass getOwlClass(String localName) {
+		return df.getOWLClass(getIri(localName));
+	}
+
+	public static OWLObjectProperty getOwlObjectProperty(String localName) {
+		return df.getOWLObjectProperty(getIri(localName));
+	}
+
+	public static Predicate getClassPredicate(String localName) {
+		return Expressions.makePredicate("http://example.org/" + localName, 1);
+	}
+
+	public static Predicate getPropertyPredicate(String localName) {
+		return Expressions.makePredicate("http://example.org/" + localName, 2);
+	}
+
+	static OWLClass cA = getOwlClass("A");
+	static OWLClass cB = getOwlClass("B");
+	static OWLClass cC = getOwlClass("C");
+	static OWLClass cD = getOwlClass("D");
+	static OWLClass cE = getOwlClass("E");
+	static OWLObjectProperty pR = getOwlObjectProperty("R");
+	static OWLObjectProperty pS = getOwlObjectProperty("S");
+	static OWLObjectProperty pT = getOwlObjectProperty("T");
+
+	static Predicate nA = getClassPredicate("A");
+	static Predicate nB = getClassPredicate("B");
+	static Predicate nC = getClassPredicate("C");
+	static Predicate nD = getClassPredicate("D");
+	static Predicate nE = getClassPredicate("E");
+	static Predicate nR = getPropertyPredicate("R");
+	static Predicate nS = getPropertyPredicate("S");
+	static Predicate nT = getPropertyPredicate("T");
+
 	@Test
+	public void testSimpleRule() {
+		OWLObjectIntersectionOf body = df.getOWLObjectIntersectionOf(cA, cB, cC);
+		OWLObjectIntersectionOf head = df.getOWLObjectIntersectionOf(cD, cE);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(body, head);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(converter.frontierVariable));
+		Atom atB = Expressions.makeAtom(nB, Arrays.asList(converter.frontierVariable));
+		Atom atC = Expressions.makeAtom(nC, Arrays.asList(converter.frontierVariable));
+		Atom atD = Expressions.makeAtom(nD, Arrays.asList(converter.frontierVariable));
+		Atom atE = Expressions.makeAtom(nE, Arrays.asList(converter.frontierVariable));
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atD, atE)),
+				Expressions.makeConjunction(Arrays.asList(atA, atB, atC)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+
+	}
+
+	@Test
+	public void testConjunctionTruth() {
+		OWLObjectIntersectionOf head = df.getOWLObjectIntersectionOf(cB, df.getOWLThing(), cC);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, head);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(converter.frontierVariable));
+		Atom atB = Expressions.makeAtom(nB, Arrays.asList(converter.frontierVariable));
+		Atom atC = Expressions.makeAtom(nC, Arrays.asList(converter.frontierVariable));
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atB, atC)),
+				Expressions.makeConjunction(Arrays.asList(atA)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
+	@Test
+	public void testConjunctionTruthTruth() {
+		OWLObjectIntersectionOf head = df.getOWLObjectIntersectionOf(df.getOWLThing(), df.getOWLThing());
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, head);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		assertEquals(0, converter.rules.size());
+	}
+
+	@Test
+	public void testConjunctionFalsity() {
+		OWLClassExpression notSupported = df.getOWLObjectExactCardinality(10, pR);
+		OWLObjectIntersectionOf head = df.getOWLObjectIntersectionOf(notSupported, df.getOWLNothing(), cC);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, head);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(converter.frontierVariable));
+		Atom bot = OwlToRulesConversionHelper.getBottom(converter.frontierVariable);
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(bot)),
+				Expressions.makeConjunction(Arrays.asList(atA)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
+	@Test(expected = OwlFeatureNotSupportedException.class)
+	public void testConjunctionException() {
+		OWLClassExpression notSupported = df.getOWLObjectExactCardinality(10, pR);
+		OWLObjectIntersectionOf head = df.getOWLObjectIntersectionOf(notSupported, cC);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, head);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+	}
+
+	@Test
+	public void testConjunctionNegativeLiterals() {
+		OWLClassExpression notA = df.getOWLObjectComplementOf(cA);
+		OWLClassExpression notB = df.getOWLObjectComplementOf(cB);
+		OWLClassExpression notC = df.getOWLObjectComplementOf(cC);
+		OWLObjectIntersectionOf head = df.getOWLObjectIntersectionOf(notB, notC);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(notA, head);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Predicate auxPredicate = OwlToRulesConversionHelper.getAuxiliaryClassPredicate(Arrays.asList(notB, notC));
+
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(converter.frontierVariable));
+		Atom atB = Expressions.makeAtom(nB, Arrays.asList(converter.frontierVariable));
+		Atom atC = Expressions.makeAtom(nC, Arrays.asList(converter.frontierVariable));
+		Atom atAux = Expressions.makeAtom(auxPredicate, Arrays.asList(converter.frontierVariable));
+
+		Rule rule1 = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atAux)),
+				Expressions.makeConjunction(Arrays.asList(atB)));
+		Rule rule2 = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atAux)),
+				Expressions.makeConjunction(Arrays.asList(atC)));
+		Rule rule3 = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atA)),
+				Expressions.makeConjunction(Arrays.asList(atAux)));
+
+		assertEquals(Sets.newSet(rule1, rule2, rule3), converter.rules);
+	}
+
+	@Test
+	public void testContrapositive() {
+		OWLClassExpression notA = df.getOWLObjectComplementOf(cA);
+		OWLClassExpression notB = df.getOWLObjectComplementOf(cB);
+		OWLClassExpression notC = df.getOWLObjectComplementOf(cC);
+		OWLClassExpression notBOrNotC = df.getOWLObjectUnionOf(notB, notC);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(notA, notBOrNotC);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(converter.frontierVariable));
+		Atom atB = Expressions.makeAtom(nB, Arrays.asList(converter.frontierVariable));
+		Atom atC = Expressions.makeAtom(nC, Arrays.asList(converter.frontierVariable));
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atA)),
+				Expressions.makeConjunction(Arrays.asList(atB, atC)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
+	@Test
+	public void testPositiveUniversal() {
+		OWLClassExpression forallRA = df.getOWLObjectAllValuesFrom(pR, cA);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cB, forallRA);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Variable secondVariable = Expressions.makeVariable("Y1");
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(secondVariable));
+		Atom atB = Expressions.makeAtom(nB, Arrays.asList(converter.frontierVariable));
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, secondVariable));
+
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atA)),
+				Expressions.makeConjunction(Arrays.asList(atR, atB)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
+	@Test
+	public void testPositiveExistential() {
+		OWLClassExpression existsRA = df.getOWLObjectSomeValuesFrom(pR, cA);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cB, existsRA);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Variable secondVariable = Expressions.makeVariable("Y1");
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(secondVariable));
+		Atom atB = Expressions.makeAtom(nB, Arrays.asList(converter.frontierVariable));
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, secondVariable));
+
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atR, atA)),
+				Expressions.makeConjunction(Arrays.asList(atB)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
+	@Test
+	public void testNegativeUniversal() {
+		OWLClassExpression forallRA = df.getOWLObjectAllValuesFrom(pR, cA);
+		OWLClassExpression notB = df.getOWLObjectComplementOf(cB);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(forallRA, notB);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Predicate auxPredicate = OwlToRulesConversionHelper.getAuxiliaryClassPredicate(Arrays.asList(cA));
+		Variable secondVariable = Expressions.makeVariable("Y1");
+
+		Atom atB = Expressions.makeAtom(nB, Arrays.asList(converter.frontierVariable));
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, secondVariable));
+		Atom atAux = Expressions.makeAtom(auxPredicate, Arrays.asList(secondVariable));
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(secondVariable));
+		Atom bot = OwlToRulesConversionHelper.getBottom(secondVariable);
+
+		Rule rule1 = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atR, atAux)),
+				Expressions.makeConjunction(Arrays.asList(atB)));
+		Rule rule2 = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(bot)),
+				Expressions.makeConjunction(Arrays.asList(atAux, atA)));
+
+		assertEquals(Sets.newSet(rule1, rule2), converter.rules);
+	}
+
+	@Test
+	public void testNegaitiveExistential() {
+		OWLClassExpression existRA = df.getOWLObjectSomeValuesFrom(pR, cA);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(existRA, cB);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Variable secondVariable = Expressions.makeVariable("Y1");
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, secondVariable));
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(secondVariable));
+		Atom atB = Expressions.makeAtom(nB, Arrays.asList(converter.frontierVariable));
+
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atB)),
+				Expressions.makeConjunction(Arrays.asList(atR, atA)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
+	@Test
+	public void testSelf() {
+		OWLClassExpression selfR = df.getOWLObjectHasSelf(pR);
+		OWLClassExpression selfS = df.getOWLObjectHasSelf(pS);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(selfR, selfS);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, converter.frontierVariable));
+		Atom atS = Expressions.makeAtom(nS, Arrays.asList(converter.frontierVariable, converter.frontierVariable));
+
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atS)),
+				Expressions.makeConjunction(Arrays.asList(atR)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
+	@Test
+	public void testHasValue() {
+		OWLIndividual inda = df.getOWLNamedIndividual(getIri("a"));
+		OWLIndividual indb = df.getOWLNamedIndividual(getIri("b"));
+		OWLClassExpression hasRa = df.getOWLObjectHasValue(pR, inda);
+		OWLClassExpression hasSb = df.getOWLObjectHasValue(pS, indb);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(hasRa, hasSb);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Term consta = Expressions.makeConstant(getIri("a").toString());
+		Term constb = Expressions.makeConstant(getIri("b").toString());
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, consta));
+		Atom atS = Expressions.makeAtom(nS, Arrays.asList(converter.frontierVariable, constb));
+
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atS)),
+				Expressions.makeConjunction(Arrays.asList(atR)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
+	@Ignore
 	public void test() {
-		OWLDataFactory df = OWLManager.getOWLDataFactory();
-		IRI iA = IRI.create("http://example.org/A");
-		IRI iB = IRI.create("http://example.org/B");
-		IRI iC = IRI.create("http://example.org/C");
-		IRI iD = IRI.create("http://example.org/D");
-		IRI iE = IRI.create("http://example.org/E");
-		IRI iR = IRI.create("http://example.org/R");
-		IRI iS = IRI.create("http://example.org/S");
-		OWLClass A = df.getOWLClass(iA);
-		OWLClass B = df.getOWLClass(iB);
-		OWLClass C = df.getOWLClass(iC);
-		OWLClass D = df.getOWLClass(iD);
-		OWLClass E = df.getOWLClass(iE);
-		OWLObjectProperty R = df.getOWLObjectProperty(iR);
-		OWLObjectProperty S = df.getOWLObjectProperty(iS);
-		OWLObjectPropertyExpression Sinv = df.getOWLObjectInverseOf(S);
-		OWLObjectSomeValuesFrom SomeSinvE = df.getOWLObjectSomeValuesFrom(Sinv, E);
-		OWLObjectSomeValuesFrom SomeRSomeSinvE = df.getOWLObjectSomeValuesFrom(R, SomeSinvE);
-		OWLObjectUnionOf AorB = df.getOWLObjectUnionOf(A, B);
-		OWLObjectIntersectionOf AorBandCandSomeRSomeSinvE = df.getOWLObjectIntersectionOf(AorB, C, SomeRSomeSinvE);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(AorBandCandSomeRSomeSinvE, D);
+		OWLObjectPropertyExpression Sinv = df.getOWLObjectInverseOf(pS);
+		OWLObjectSomeValuesFrom SomeSinvE = df.getOWLObjectSomeValuesFrom(Sinv, cE);
+		OWLObjectSomeValuesFrom SomeRSomeSinvE = df.getOWLObjectSomeValuesFrom(pR, SomeSinvE);
+		OWLObjectUnionOf AorB = df.getOWLObjectUnionOf(cA, cB);
+		OWLObjectIntersectionOf AorBandCandSomeRSomeSinvE = df.getOWLObjectIntersectionOf(AorB, cC, SomeRSomeSinvE);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(AorBandCandSomeRSomeSinvE, cD);
 
 		OwlToRulesConverter converter = new OwlToRulesConverter();
 		axiom.accept(converter);

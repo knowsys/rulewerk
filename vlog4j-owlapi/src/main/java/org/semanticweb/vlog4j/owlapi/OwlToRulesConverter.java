@@ -1,6 +1,5 @@
 package org.semanticweb.vlog4j.owlapi;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,14 +59,10 @@ import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.SWRLRule;
 import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
 import org.semanticweb.vlog4j.core.model.impl.ConjunctionImpl;
-import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
 import org.semanticweb.vlog4j.core.model.impl.RuleImpl;
 import org.semanticweb.vlog4j.core.model.impl.VariableImpl;
 
@@ -98,20 +93,40 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 		return new VariableImpl("Y" + this.freshVariableCounter);
 	}
 
+	void addRule(AbstractClassToRuleConverter converter) {
+		if (converter.isTautology()) {
+			return;
+		}
+		Conjunction headConjunction;
+		if (converter.head.isFalseOrEmpty()) {
+			headConjunction = new ConjunctionImpl(
+					Arrays.asList(OwlToRulesConversionHelper.getBottom(converter.frontierVariable)));
+		} else {
+			headConjunction = new ConjunctionImpl(converter.head.getConjuncts());
+		}
+
+		Conjunction bodyConjunction;
+		if (converter.body.isTrueOrEmpty()) {
+			bodyConjunction = new ConjunctionImpl(
+					Arrays.asList(OwlToRulesConversionHelper.getTop(converter.frontierVariable)));
+		} else {
+			bodyConjunction = new ConjunctionImpl(converter.body.getConjuncts());
+		}
+
+		this.rules.add(new RuleImpl(headConjunction, bodyConjunction));
+
+	}
+
 	@Override
 	public void visit(OWLSubClassOfAxiom axiom) {
 		this.freshVariableCounter = 0;
 
-		ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.frontierVariable, new ArrayList<>(),
-				this.rules, this);
-		axiom.getSubClass().accept(converter);
-
-		// TODO Superclass handling not implemented yet; placeholder class
-		// TODO we need to handle empty (tautological) bodies
-		Predicate predicate = new PredicateImpl("auxhead", 1);
-		Atom headAtom = new AtomImpl(predicate, Arrays.asList(this.frontierVariable));
-		Conjunction auxHead = new ConjunctionImpl(Arrays.asList(headAtom));
-		this.rules.add(new RuleImpl(auxHead, new ConjunctionImpl(converter.bodyConjuncts)));
+		ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(this.frontierVariable, this);
+		axiom.getSuperClass().accept(headConverter);
+		ClassToRuleBodyConverter bodyConverter = new ClassToRuleBodyConverter(this.frontierVariable, headConverter.body,
+				headConverter.head, this);
+		bodyConverter.handleDisjunction(axiom.getSubClass(), this.frontierVariable);
+		addRule(bodyConverter);
 	}
 
 	@Override
