@@ -114,12 +114,18 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 		}
 
 		this.rules.add(new RuleImpl(headConjunction, bodyConjunction));
+	}
 
+	/**
+	 * Resets the internal counter used for generating fresh variables.
+	 */
+	void startAxiomConversion() {
+		this.freshVariableCounter = 0;
 	}
 
 	@Override
 	public void visit(OWLSubClassOfAxiom axiom) {
-		this.freshVariableCounter = 0;
+		startAxiomConversion();
 
 		ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(this.frontierVariable, this);
 		axiom.getSuperClass().accept(headConverter);
@@ -155,8 +161,7 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 
 	@Override
 	public void visit(OWLDataPropertyDomainAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
@@ -173,7 +178,7 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 
 	@Override
 	public void visit(OWLNegativeDataPropertyAssertionAxiom axiom) {
-		// TODO Auto-generated method stub
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 
 	}
 
@@ -185,8 +190,7 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 
 	@Override
 	public void visit(OWLDisjointDataPropertiesAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
@@ -233,20 +237,17 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 
 	@Override
 	public void visit(OWLDataPropertyRangeAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
 	public void visit(OWLFunctionalDataPropertyAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
 	public void visit(OWLEquivalentDataPropertiesAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
@@ -263,8 +264,7 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 
 	@Override
 	public void visit(OWLDataPropertyAssertionAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
@@ -281,8 +281,7 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 
 	@Override
 	public void visit(OWLSubDataPropertyOfAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
