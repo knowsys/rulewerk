@@ -62,9 +62,9 @@ import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.ConjunctionImpl;
-import org.semanticweb.vlog4j.core.model.impl.RuleImpl;
-import org.semanticweb.vlog4j.core.model.impl.VariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
+import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
+import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 
 /**
  * Class for converting OWL axioms to rules.

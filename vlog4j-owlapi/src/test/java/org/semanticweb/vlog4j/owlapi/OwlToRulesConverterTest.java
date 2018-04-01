@@ -45,7 +45,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public class OwlToRulesConverterTest {
 

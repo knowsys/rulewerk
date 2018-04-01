@@ -31,9 +31,9 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
-import org.semanticweb.vlog4j.core.model.impl.ConjunctionImpl;
-import org.semanticweb.vlog4j.core.model.impl.RuleImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
+import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
 
 /**
  * Abstract base class for converters that create rules from OWL class

@@ -28,5 +28,5 @@ public enum RuleRewriteStrategy {
 	/**
 	 * Rule heads are split into head pieces whenever possible
 	 */
-	SPLIT_HEAD_PIECES_AGGRESIVE
+	SPLIT_HEAD_PIECES
 }

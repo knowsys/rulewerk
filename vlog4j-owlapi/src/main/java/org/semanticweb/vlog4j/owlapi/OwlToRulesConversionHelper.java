@@ -39,10 +39,10 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
-import org.semanticweb.vlog4j.core.model.impl.BlankImpl;
-import org.semanticweb.vlog4j.core.model.impl.ConstantImpl;
-import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
+import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 import org.semanticweb.vlog4j.owlapi.AbstractClassToRuleConverter.SimpleConjunction;
 
 /**

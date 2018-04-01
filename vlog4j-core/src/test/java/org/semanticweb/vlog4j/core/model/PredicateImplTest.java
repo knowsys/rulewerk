@@ -26,8 +26,8 @@ import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.impl.Expressions;
-import org.semanticweb.vlog4j.core.model.impl.PredicateImpl;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 
 public class PredicateImplTest {
 

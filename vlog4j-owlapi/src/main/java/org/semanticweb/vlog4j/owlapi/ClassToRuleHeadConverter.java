@@ -43,7 +43,7 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.impl.AtomImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
 
 /**
  * Helper class for transforming OWL class expressions that occur as
