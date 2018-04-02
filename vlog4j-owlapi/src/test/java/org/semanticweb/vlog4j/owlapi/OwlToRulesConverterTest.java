@@ -92,6 +92,7 @@ public class OwlToRulesConverterTest {
 
 	static OWLIndividual inda = df.getOWLNamedIndividual(getIri("a"));
 	static OWLIndividual indb = df.getOWLNamedIndividual(getIri("b"));
+	static OWLIndividual indc = df.getOWLNamedIndividual(getIri("c"));
 
 	@Test
 	public void testSimpleRule() {
@@ -113,10 +114,11 @@ public class OwlToRulesConverterTest {
 		assertEquals(Collections.singleton(rule), converter.rules);
 
 	}
-	
+
 	@Test
 	public void testTrueBody() {
-		OWLClassExpression body = df.getOWLObjectIntersectionOf(df.getOWLThing(), df.getOWLObjectAllValuesFrom(df.getOWLBottomObjectProperty(), cB));
+		OWLClassExpression body = df.getOWLObjectIntersectionOf(df.getOWLThing(),
+				df.getOWLObjectAllValuesFrom(df.getOWLBottomObjectProperty(), cB));
 		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(body, cA);
 
 		OwlToRulesConverter converter = new OwlToRulesConverter();
@@ -370,7 +372,27 @@ public class OwlToRulesConverterTest {
 
 		assertEquals(Sets.newSet(atR, atS), converter.facts);
 	}
-	
+
+	@Test
+	public void testClassAssertions() {
+		OWLAxiom Ca = df.getOWLClassAssertionAxiom(cC, indc);
+		OWLClassExpression BandhasRb = df.getOWLObjectIntersectionOf(cB, df.getOWLObjectHasValue(pR, indb));
+		OWLAxiom BandhasRba = df.getOWLClassAssertionAxiom(BandhasRb, inda);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		Ca.accept(converter);
+		BandhasRba.accept(converter);
+
+		Term consta = Expressions.makeConstant(getIri("a").toString());
+		Term constb = Expressions.makeConstant(getIri("b").toString());
+		Term constc = Expressions.makeConstant(getIri("c").toString());
+		Atom atC = Expressions.makeAtom(nC, Arrays.asList(constc));
+		Atom atB = Expressions.makeAtom(nB, Arrays.asList(consta));
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(consta, constb));
+
+		assertEquals(Sets.newSet(atC, atB, atR), converter.facts);
+	}
+
 	@Test
 	public void testNegativeObjectPropertyAssertions() {
 		OWLAxiom Rab = df.getOWLNegativeObjectPropertyAssertionAxiom(pR, inda, indb);
@@ -382,7 +404,7 @@ public class OwlToRulesConverterTest {
 		Term constb = Expressions.makeConstant(getIri("b").toString());
 		Atom atR = Expressions.makeAtom(nR, Arrays.asList(consta, constb));
 		Atom bot = OwlToRulesConversionHelper.getBottom(consta);
-		
+
 		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(bot)),
 				Expressions.makeConjunction(Arrays.asList(atR)));
 

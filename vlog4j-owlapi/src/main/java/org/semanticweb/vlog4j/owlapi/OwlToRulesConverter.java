@@ -110,8 +110,13 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 
 		Conjunction bodyConjunction;
 		if (converter.body.isTrueOrEmpty()) {
-			bodyConjunction = new ConjunctionImpl(
-					Arrays.asList(OwlToRulesConversionHelper.getTop(converter.mainTerm)));
+			bodyConjunction = new ConjunctionImpl(Arrays.asList(OwlToRulesConversionHelper.getTop(converter.mainTerm)));
+			if (headConjunction.getVariables().isEmpty()) {
+				for (Atom conjunct : headConjunction.getAtoms()) {
+					this.facts.add(conjunct);
+				}
+				return;
+			}
 		} else {
 			bodyConjunction = new ConjunctionImpl(converter.body.getConjuncts());
 		}
@@ -144,7 +149,7 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 		Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject());
 		Atom atom = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), subject, object);
 		Atom bot = OwlToRulesConversionHelper.getBottom(subject);
-		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(bot)),new ConjunctionImpl(Arrays.asList(atom))));
+		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(bot)), new ConjunctionImpl(Arrays.asList(atom))));
 	}
 
 	@Override
@@ -259,8 +264,10 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 
 	@Override
 	public void visit(OWLClassAssertionAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		Term term = OwlToRulesConversionHelper.getIndividualTerm(axiom.getIndividual());
+		ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(term, this);
+		axiom.getClassExpression().accept(headConverter);
+		addRule(headConverter);
 	}
 
 	@Override
