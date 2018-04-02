@@ -428,6 +428,24 @@ public class OwlToRulesConverterTest {
 	}
 
 	@Test
+	public void testInverseObjectProperties() {
+		OWLAxiom axiom = df.getOWLInverseObjectPropertiesAxiom(pR, pS);
+
+		OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		Variable secondVariable = Expressions.makeVariable("Y1");
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, secondVariable));
+		Atom atS = Expressions.makeAtom(nS, Arrays.asList(secondVariable, converter.frontierVariable));
+		Rule rule1 = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atS)),
+				Expressions.makeConjunction(Arrays.asList(atR)));
+		Rule rule2 = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atR)),
+				Expressions.makeConjunction(Arrays.asList(atS)));
+
+		assertEquals(Sets.newSet(rule1,rule2), converter.rules);
+	}
+
+	@Test
 	public void testEquivalentObjectProperties() {
 		OWLAxiom axiom = df.getOWLEquivalentObjectPropertiesAxiom(pR, df.getOWLObjectInverseOf(pS), pT);
 
@@ -457,10 +475,10 @@ public class OwlToRulesConverterTest {
 		assertTrue(converter.rules.equals(Sets.newSet(ruleRS, ruleST, ruleTR))
 				|| converter.rules.equals(Sets.newSet(ruleRT, ruleTS, ruleSR)));
 	}
-	
+
 	@Test
 	public void testEquivalentClasses() {
-		OWLAxiom axiom = df.getOWLEquivalentClassesAxiom(cA,cB,cC);
+		OWLAxiom axiom = df.getOWLEquivalentClassesAxiom(cA, cB, cC);
 
 		OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
