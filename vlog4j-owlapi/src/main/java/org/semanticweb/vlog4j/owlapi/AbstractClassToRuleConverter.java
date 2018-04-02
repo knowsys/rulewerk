@@ -170,10 +170,10 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	/**
 	 * Parent converter object, used to create fresh names, e.g., for variables..
 	 */
-	final OwlToRulesConverter parent;
+	final OwlAxiomToRulesConverter parent;
 
 	public AbstractClassToRuleConverter(Term mainTerm, SimpleConjunction body, SimpleConjunction head,
-			OwlToRulesConverter parent) {
+			OwlAxiomToRulesConverter parent) {
 		this.mainTerm = mainTerm;
 		this.body = body;
 		this.head = head;

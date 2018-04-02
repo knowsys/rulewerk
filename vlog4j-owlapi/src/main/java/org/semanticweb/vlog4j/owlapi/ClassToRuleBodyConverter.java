@@ -57,11 +57,11 @@ import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
 public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter implements OWLClassExpressionVisitor {
 
 	public ClassToRuleBodyConverter(Term mainTerm, SimpleConjunction body, SimpleConjunction head,
-			OwlToRulesConverter parent) {
+			OwlAxiomToRulesConverter parent) {
 		super(mainTerm, body, head, parent);
 	}
 
-	public ClassToRuleBodyConverter(Term mainTerm, OwlToRulesConverter parent) {
+	public ClassToRuleBodyConverter(Term mainTerm, OwlAxiomToRulesConverter parent) {
 		this(mainTerm, new SimpleConjunction(), new SimpleConjunction(), parent);
 	}
 

@@ -74,16 +74,12 @@ import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
  * @author Markus Kroetzsch
  *
  */
-public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAxiomVisitor {
+public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAxiomVisitor {
 
 	final Set<Rule> rules = new HashSet<>();
 	final Set<Atom> facts = new HashSet<>();
 	final Variable frontierVariable = new VariableImpl("X");
 	int freshVariableCounter = 0;
-
-	public OwlToRulesConverter() {
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * Returns a fresh variable, which can be used as auxiliary variable in the

@@ -56,11 +56,11 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 	boolean currentIsExistential = false;
 
 	public ClassToRuleHeadConverter(Term mainTerm, SimpleConjunction body, SimpleConjunction head,
-			OwlToRulesConverter parent) {
+			OwlAxiomToRulesConverter parent) {
 		super(mainTerm, body, head, parent);
 	}
 
-	public ClassToRuleHeadConverter(Term mainTerm, OwlToRulesConverter parent) {
+	public ClassToRuleHeadConverter(Term mainTerm, OwlAxiomToRulesConverter parent) {
 		this(mainTerm, new SimpleConjunction(), new SimpleConjunction(), parent);
 	}
 
