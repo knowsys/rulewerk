@@ -480,6 +480,20 @@ public class OwlAxiomToRulesConverterTest {
 	}
 
 	@Test
+	public void testReflexiveObjectPropertyOf() {
+		OWLAxiom axiom = df.getOWLReflexiveObjectPropertyAxiom(pR);
+
+		OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		Atom at1 = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, converter.frontierVariable));
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(at1)), Expressions
+				.makeConjunction(Arrays.asList(OwlToRulesConversionHelper.getTop(converter.frontierVariable))));
+
+		assertEquals(Sets.newSet(rule), converter.rules);
+	}
+
+	@Test
 	public void testInverseObjectProperties() {
 		OWLAxiom axiom = df.getOWLInverseObjectPropertiesAxiom(pR, pS);
 
