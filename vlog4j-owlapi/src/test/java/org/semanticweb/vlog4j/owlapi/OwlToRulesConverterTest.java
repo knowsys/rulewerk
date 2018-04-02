@@ -411,6 +411,22 @@ public class OwlToRulesConverterTest {
 		assertEquals(Collections.singleton(rule), converter.rules);
 	}
 
+	@Test
+	public void testSubObjectPropertyOf() {
+		OWLAxiom axiom = df.getOWLSubObjectPropertyOfAxiom(pR, df.getOWLObjectInverseOf(pS));
+
+		OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		Variable secondVariable = Expressions.makeVariable("Y1");
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, secondVariable));
+		Atom atS = Expressions.makeAtom(nS, Arrays.asList(secondVariable, converter.frontierVariable));
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atS)),
+				Expressions.makeConjunction(Arrays.asList(atR)));
+
+		assertEquals(Sets.newSet(rule), converter.rules);
+	}
+
 	@Ignore
 	public void test() {
 		OWLObjectPropertyExpression Sinv = df.getOWLObjectInverseOf(pS);
