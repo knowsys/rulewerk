@@ -27,6 +27,7 @@ import java.util.Set;
 import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLAxiomVisitor;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
@@ -128,16 +129,20 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 		this.freshVariableCounter = 0;
 	}
 
-	@Override
-	public void visit(OWLSubClassOfAxiom axiom) {
+	void addSubClassAxiom(OWLClassExpression subClass, OWLClassExpression superClass) {
 		startAxiomConversion();
 
 		ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(this.frontierVariable, this);
-		axiom.getSuperClass().accept(headConverter);
+		superClass.accept(headConverter);
 		ClassToRuleBodyConverter bodyConverter = new ClassToRuleBodyConverter(this.frontierVariable, headConverter.body,
 				headConverter.head, this);
-		bodyConverter.handleDisjunction(axiom.getSubClass(), this.frontierVariable);
+		bodyConverter.handleDisjunction(subClass, this.frontierVariable);
 		addRule(bodyConverter);
+	}
+
+	@Override
+	public void visit(OWLSubClassOfAxiom axiom) {
+		addSubClassAxiom(axiom.getSubClass(), axiom.getSuperClass());
 	}
 
 	@Override
@@ -296,8 +301,22 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLEquivalentClassesAxiom axiom) {
-		// TODO Auto-generated method stub
+		OWLClassExpression firstClass = null;
+		OWLClassExpression previousClass = null;
+		OWLClassExpression currentClass = null;
+		for (OWLClassExpression owlClassExpression : axiom.getClassExpressions()) {
+			currentClass = owlClassExpression;
+			if (previousClass == null) {
+				firstClass = currentClass;
+			} else {
+				addSubClassAxiom(previousClass, currentClass);
+			}
+			previousClass = currentClass;
+		}
 
+		if (currentClass != null) {
+			addSubClassAxiom(currentClass, firstClass);
+		}
 	}
 
 	@Override

@@ -457,6 +457,36 @@ public class OwlToRulesConverterTest {
 		assertTrue(converter.rules.equals(Sets.newSet(ruleRS, ruleST, ruleTR))
 				|| converter.rules.equals(Sets.newSet(ruleRT, ruleTS, ruleSR)));
 	}
+	
+	@Test
+	public void testEquivalentClasses() {
+		OWLAxiom axiom = df.getOWLEquivalentClassesAxiom(cA,cB,cC);
+
+		OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(converter.frontierVariable));
+		Atom atB = Expressions.makeAtom(nB, Arrays.asList(converter.frontierVariable));
+		Atom atC = Expressions.makeAtom(nC, Arrays.asList(converter.frontierVariable));
+		Rule ruleAB = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atB)),
+				Expressions.makeConjunction(Arrays.asList(atA)));
+		Rule ruleBC = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atC)),
+				Expressions.makeConjunction(Arrays.asList(atB)));
+		Rule ruleCA = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atA)),
+				Expressions.makeConjunction(Arrays.asList(atC)));
+		Rule ruleAC = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atC)),
+				Expressions.makeConjunction(Arrays.asList(atA)));
+		Rule ruleCB = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atB)),
+				Expressions.makeConjunction(Arrays.asList(atC)));
+		Rule ruleBA = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atA)),
+				Expressions.makeConjunction(Arrays.asList(atB)));
+
+		// We have to test against two possible iteration orders, which may occur
+		// non-deterministically and affect the result: A B C or A C B
+		// (other orders lead to the same outcome)
+		assertTrue(converter.rules.equals(Sets.newSet(ruleAB, ruleBC, ruleCA))
+				|| converter.rules.equals(Sets.newSet(ruleAC, ruleCB, ruleBA)));
+	}
 
 	@Ignore
 	public void test() {
