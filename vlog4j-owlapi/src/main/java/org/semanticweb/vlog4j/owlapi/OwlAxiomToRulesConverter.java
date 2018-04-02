@@ -1,7 +1,9 @@
 package org.semanticweb.vlog4j.owlapi;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /*-
@@ -217,8 +219,8 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLDifferentIndividualsAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"DifferentIndividuals currently not supported, due to lack of equality support.");
 	}
 
 	@Override
@@ -247,8 +249,8 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLFunctionalObjectPropertyAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"FunctionalObjectProperty currently not supported, due to lack of equality support.");
 	}
 
 	@Override
@@ -343,20 +345,34 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLInverseFunctionalObjectPropertyAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"InverseFunctionalObjectProperty currently not supported, due to lack of equality support.");
 	}
 
 	@Override
 	public void visit(OWLSameIndividualAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"SameIndividual currently not supported, due to lack of equality support.");
 	}
 
 	@Override
 	public void visit(OWLSubPropertyChainOfAxiom axiom) {
-		// TODO Auto-generated method stub
+		startAxiomConversion();
+		Variable previousVariable = this.frontierVariable;
+		Variable currentVariable = null;
+		final List<Atom> body = new ArrayList<>();
 
+		for (OWLObjectPropertyExpression owlObjectPropertyExpression : axiom.getPropertyChain()) {
+			currentVariable = getFreshVariable();
+			body.add(OwlToRulesConversionHelper.getObjectPropertyAtom(owlObjectPropertyExpression, previousVariable,
+					currentVariable));
+			previousVariable = currentVariable;
+		}
+
+		Atom headAtom = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getSuperProperty(),
+				this.frontierVariable, currentVariable);
+
+		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(headAtom)), new ConjunctionImpl(body)));
 	}
 
 	@Override
@@ -375,8 +391,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLHasKeyAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException("HasKey currently not supported, due to lack of equality support.");
 	}
 
 	@Override

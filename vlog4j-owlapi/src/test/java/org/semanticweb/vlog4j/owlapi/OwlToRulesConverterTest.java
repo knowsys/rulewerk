@@ -80,6 +80,7 @@ public class OwlToRulesConverterTest {
 	static OWLObjectProperty pR = getOwlObjectProperty("R");
 	static OWLObjectProperty pS = getOwlObjectProperty("S");
 	static OWLObjectProperty pT = getOwlObjectProperty("T");
+	static OWLObjectProperty pU = getOwlObjectProperty("U");
 
 	static Predicate nA = getClassPredicate("A");
 	static Predicate nB = getClassPredicate("B");
@@ -89,6 +90,7 @@ public class OwlToRulesConverterTest {
 	static Predicate nR = getPropertyPredicate("R");
 	static Predicate nS = getPropertyPredicate("S");
 	static Predicate nT = getPropertyPredicate("T");
+	static Predicate nU = getPropertyPredicate("U");
 
 	static OWLIndividual inda = df.getOWLNamedIndividual(getIri("a"));
 	static OWLIndividual indb = df.getOWLNamedIndividual(getIri("b"));
@@ -442,7 +444,7 @@ public class OwlToRulesConverterTest {
 		Rule rule2 = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atR)),
 				Expressions.makeConjunction(Arrays.asList(atS)));
 
-		assertEquals(Sets.newSet(rule1,rule2), converter.rules);
+		assertEquals(Sets.newSet(rule1, rule2), converter.rules);
 	}
 
 	@Test
@@ -474,6 +476,26 @@ public class OwlToRulesConverterTest {
 		// (other orders lead to the same outcome)
 		assertTrue(converter.rules.equals(Sets.newSet(ruleRS, ruleST, ruleTR))
 				|| converter.rules.equals(Sets.newSet(ruleRT, ruleTS, ruleSR)));
+	}
+
+	@Test
+	public void testSubObjectPropertyChain() {
+		OWLAxiom axiom = df.getOWLSubPropertyChainOfAxiom(Arrays.asList(pR, df.getOWLObjectInverseOf(pS), pT), pU);
+
+		OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		Variable var1 = Expressions.makeVariable("Y1");
+		Variable var2 = Expressions.makeVariable("Y2");
+		Variable var3 = Expressions.makeVariable("Y3");
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, var1));
+		Atom atS = Expressions.makeAtom(nS, Arrays.asList(var2, var1));
+		Atom atT = Expressions.makeAtom(nT, Arrays.asList(var2, var3));
+		Atom atU = Expressions.makeAtom(nU, Arrays.asList(converter.frontierVariable, var3));
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atU)),
+				Expressions.makeConjunction(Arrays.asList(atR, atS, atT)));
+
+		assertEquals(Sets.newSet(rule), converter.rules);
 	}
 
 	@Test
