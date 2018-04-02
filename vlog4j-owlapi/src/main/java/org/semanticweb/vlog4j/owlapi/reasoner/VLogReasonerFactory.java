@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.owlapi;
+package org.semanticweb.vlog4j.owlapi.reasoner;
 
 /*-
  * #%L

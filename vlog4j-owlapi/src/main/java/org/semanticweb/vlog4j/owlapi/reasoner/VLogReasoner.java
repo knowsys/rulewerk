@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.owlapi;
+package org.semanticweb.vlog4j.owlapi.reasoner;
 
 /*-
  * #%L
@@ -49,6 +49,7 @@ import org.semanticweb.owlapi.util.Version;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.owlapi.OwlFeatureNotSupportedException;
 
 public class VLogReasoner implements OWLReasoner {
 
@@ -166,6 +167,20 @@ public class VLogReasoner implements OWLReasoner {
 
 	@Override
 	public NodeSet<OWLNamedIndividual> getInstances(OWLClassExpression classExpression, boolean direct) {
+		if (direct) {
+			throw new OwlFeatureNotSupportedException(
+					"Retrieving only direct instances not supported. Only retrieving all instances is supported.");
+		}
+		if (!classExpression.isClassExpressionLiteral()) {
+			throw new OwlFeatureNotSupportedException(
+					"Could not retrieve instances from a classExpression that is not a named class: '" + classExpression
+							+ "'.");
+			// TODO treat case in which classExpression is a negation of a named class
+		}
+		// TODO how to check that it is OWLClass without using instanceof
+
+		// TODO query filter blanks true with given owlClass predicate
+
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -215,8 +230,7 @@ public class VLogReasoner implements OWLReasoner {
 
 	@Override
 	public Set<InferenceType> getPrecomputableInferenceTypes() {
-		return new HashSet<InferenceType>(
-				Arrays.asList(InferenceType.CLASS_ASSERTIONS, InferenceType.OBJECT_PROPERTY_ASSERTIONS));
+		return new HashSet<InferenceType>(Arrays.asList(InferenceType.CLASS_ASSERTIONS));
 	}
 
 	@Override
@@ -365,9 +379,9 @@ public class VLogReasoner implements OWLReasoner {
 				if (inferenceType.equals(InferenceType.CLASS_ASSERTIONS)) {
 					// TODO set precompted CLASS_ASSERTIONS
 					materialize();
-				} else if (inferenceType.equals(InferenceType.OBJECT_PROPERTY_ASSERTIONS)) {
-					// TODO set precompted OBJECT_PROPERTY_ASSERTIONS
-					materialize();
+					// } else if (inferenceType.equals(InferenceType.OBJECT_PROPERTY_ASSERTIONS)) {
+					// // TODO set precompted OBJECT_PROPERTY_ASSERTIONS
+					// materialize();
 				}
 
 			}

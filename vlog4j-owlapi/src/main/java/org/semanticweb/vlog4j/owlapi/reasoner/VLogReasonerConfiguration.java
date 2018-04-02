@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.owlapi;
+package org.semanticweb.vlog4j.owlapi.reasoner;
 
 /*-
  * #%L
@@ -24,26 +24,23 @@ import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
 import org.semanticweb.owlapi.reasoner.IndividualNodeSetPolicy;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
-import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 
 public class VLogReasonerConfiguration implements OWLReasonerConfiguration {
 
 	private static final long serialVersionUID = 1903592737429847888L;
 
 	private final OWLReasonerConfiguration owlConfig;
-
-	// VLogConfig
-	private final Algorithm algorithm = Algorithm.SKOLEM_CHASE;
-	private final RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
-	private final Integer timeoutAfterSeconds = null;
-	// TODO what if logFile is null?
-	// private final String logFile;
-	// TODO logging level
+	private final VLogConfiguration vLogConfig;
 
 	public VLogReasonerConfiguration(OWLReasonerConfiguration owlConfig) {
+		this.owlConfig = owlConfig;
+		this.vLogConfig = VLogConfiguration.getDefaultConfiguration();
+	}
+
+	public VLogReasonerConfiguration(OWLReasonerConfiguration owlConfig, VLogConfiguration vLogConfig) {
 		super();
 		this.owlConfig = owlConfig;
+		this.vLogConfig = vLogConfig;
 	}
 
 	@Override
