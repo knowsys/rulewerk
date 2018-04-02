@@ -21,16 +21,13 @@ package org.semanticweb.vlog4j.core.reasoner;
  */
 
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 
 /**
  * Utility class for collecting the content of a .csv file, or writing fact
@@ -68,25 +65,6 @@ public final class CsvFileUtils {
 			content.add(line);
 		});
 		return content;
-	}
-
-	/**
-	 * Writes fact term names as lines in given csvFile.
-	 * 
-	 * @param csvFile
-	 *            file to write to
-	 * @param facts
-	 *            fact atoms, whose term names will be written as columns in file
-	 *            lines.
-	 * @throws IOException
-	 *             if an I/O error occurs regarding given {@code csvFile}
-	 */
-	public static void writeFactsToCsv(final String csvFile, Collection<Atom> facts) throws IOException {
-		final Appendable out = new FileWriter(csvFile);
-		// FIXME which format does vLog expect and generate?
-		for (final Atom fact : facts) {
-			CSVFormat.DEFAULT.printRecord(out, fact.getTerms());
-		}
 	}
 
 }
