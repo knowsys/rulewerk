@@ -20,7 +20,7 @@ public class FromFileSkolemChaseExecution {
 
 	public static void main(String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException {
 
-		// Instantiating entities
+		// 1. Instantiating entities and rules.
 		Predicate bicycleIDB = Expressions.makePredicate("BicycleIDB", 1);
 		Predicate bicycleEDB = Expressions.makePredicate("BicycleEDB", 1);
 		Predicate wheelIDB = Expressions.makePredicate("WheelIDB", 1);
@@ -31,8 +31,6 @@ public class FromFileSkolemChaseExecution {
 		Predicate isPartOfEDB = Expressions.makePredicate("IsPartOfEDB", 2);
 		Variable x = Expressions.makeVariable("x");
 		Variable y = Expressions.makeVariable("y");
-
-		// Instantiating rules
 
 		// BicycleIDB(?x) :- BicycleEDB(?x) .
 		Atom bicycleIDBX = Expressions.makeAtom(bicycleIDB, x);
@@ -67,11 +65,12 @@ public class FromFileSkolemChaseExecution {
 		// IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) .
 		Atom hasPartIDBYX = Expressions.makeAtom(hasPartIDB, y, x);
 		Rule rule7 = Expressions.makeRule(isPartOfIDBXY, hasPartIDBYX);
+
 		// HasPartIDB(?x, ?y) :- IsPartOfIDB(?y, ?x) .
 		Atom isPartOfIDBYX = Expressions.makeAtom(isPartOfIDB, y, x);
 		Rule rule8 = Expressions.makeRule(hasPartIDBXY, isPartOfIDBYX);
 
-		// Loading, reasoning, and querying.
+		// 2. Loading, reasoning, and querying.
 
 		Reasoner reasoner = Reasoner.getInstance();
 		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
