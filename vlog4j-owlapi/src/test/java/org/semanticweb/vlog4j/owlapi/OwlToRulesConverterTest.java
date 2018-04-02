@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -88,6 +89,9 @@ public class OwlToRulesConverterTest {
 	static Predicate nR = getPropertyPredicate("R");
 	static Predicate nS = getPropertyPredicate("S");
 	static Predicate nT = getPropertyPredicate("T");
+
+	static OWLIndividual inda = df.getOWLNamedIndividual(getIri("a"));
+	static OWLIndividual indb = df.getOWLNamedIndividual(getIri("b"));
 
 	@Test
 	public void testSimpleRule() {
@@ -278,7 +282,7 @@ public class OwlToRulesConverterTest {
 	}
 
 	@Test
-	public void testNegaitiveExistential() {
+	public void testNegativeExistential() {
 		OWLClassExpression existRA = df.getOWLObjectSomeValuesFrom(pR, cA);
 		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(existRA, cB);
 
@@ -316,8 +320,6 @@ public class OwlToRulesConverterTest {
 
 	@Test
 	public void testHasValue() {
-		OWLIndividual inda = df.getOWLNamedIndividual(getIri("a"));
-		OWLIndividual indb = df.getOWLNamedIndividual(getIri("b"));
 		OWLClassExpression hasRa = df.getOWLObjectHasValue(pR, inda);
 		OWLClassExpression hasSb = df.getOWLObjectHasValue(pS, indb);
 		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(hasRa, hasSb);
@@ -334,6 +336,23 @@ public class OwlToRulesConverterTest {
 				Expressions.makeConjunction(Arrays.asList(atR)));
 
 		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
+	@Test
+	public void testObjectPropertyAssertions() {
+		OWLAxiom Rab = df.getOWLObjectPropertyAssertionAxiom(pR, inda, indb);
+		OWLAxiom invSab = df.getOWLObjectPropertyAssertionAxiom(df.getOWLObjectInverseOf(pS), inda, indb);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		Rab.accept(converter);
+		invSab.accept(converter);
+
+		Term consta = Expressions.makeConstant(getIri("a").toString());
+		Term constb = Expressions.makeConstant(getIri("b").toString());
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(consta, constb));
+		Atom atS = Expressions.makeAtom(nS, Arrays.asList(constb, consta));
+
+		assertEquals(Sets.newSet(atR, atS), converter.facts);
 	}
 
 	@Ignore

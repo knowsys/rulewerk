@@ -131,15 +131,20 @@ public class OwlToRulesConversionHelper {
 		} else if (owlObjectPropertyExpression.isOWLBottomObjectProperty()) {
 			conjuncts.makeFalse();
 		} else {
-			if (owlObjectPropertyExpression.isAnonymous()) {
-				Predicate predicate = OwlToRulesConversionHelper.getObjectPropertyPredicate(
-						owlObjectPropertyExpression.getInverseProperty().asOWLObjectProperty());
-				conjuncts.add(new AtomImpl(predicate, Arrays.asList(targetTerm, sourceTerm)));
-			} else {
-				Predicate predicate = OwlToRulesConversionHelper
-						.getObjectPropertyPredicate(owlObjectPropertyExpression.asOWLObjectProperty());
-				conjuncts.add(new AtomImpl(predicate, Arrays.asList(sourceTerm, targetTerm)));
-			}
+			conjuncts.add(getPropertyAtom(owlObjectPropertyExpression, sourceTerm, targetTerm));
+		}
+	}
+
+	public static Atom getPropertyAtom(OWLObjectPropertyExpression owlObjectPropertyExpression, Term sourceTerm,
+			Term targetTerm) {
+		if (owlObjectPropertyExpression.isAnonymous()) {
+			Predicate predicate = OwlToRulesConversionHelper
+					.getObjectPropertyPredicate(owlObjectPropertyExpression.getInverseProperty().asOWLObjectProperty());
+			return new AtomImpl(predicate, Arrays.asList(targetTerm, sourceTerm));
+		} else {
+			Predicate predicate = OwlToRulesConversionHelper
+					.getObjectPropertyPredicate(owlObjectPropertyExpression.asOWLObjectProperty());
+			return new AtomImpl(predicate, Arrays.asList(sourceTerm, targetTerm));
 		}
 	}
 

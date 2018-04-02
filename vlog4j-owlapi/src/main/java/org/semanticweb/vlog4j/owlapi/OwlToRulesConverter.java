@@ -59,8 +59,10 @@ import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.SWRLRule;
 import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
+import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
@@ -75,6 +77,7 @@ import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAxiomVisitor {
 
 	final Set<Rule> rules = new HashSet<>();
+	final Set<Atom> facts = new HashSet<>();
 	final Variable frontierVariable = new VariableImpl("X");
 	int freshVariableCounter = 0;
 
@@ -207,8 +210,9 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 
 	@Override
 	public void visit(OWLObjectPropertyAssertionAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject());
+		Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject());
+		this.facts.add(OwlToRulesConversionHelper.getPropertyAtom(axiom.getProperty(), subject, object));
 	}
 
 	@Override
