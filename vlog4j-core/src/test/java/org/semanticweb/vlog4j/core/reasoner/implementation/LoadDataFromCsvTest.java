@@ -34,6 +34,7 @@ import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -42,7 +43,7 @@ import karmaresearch.vlog.EDBConfigurationException;
 
 public class LoadDataFromCsvTest {
 
-	private static final File UNARY_FACTS_CSV_FILE = new File("src/test/data/input/unaryFacts.csv");
+	private static final File UNARY_FACTS_CSV_FILE = new File(CsvFileUtils.CSV_INPORT_FOLDER + "unaryFacts.csv");
 
 	@Test
 	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
@@ -67,7 +68,7 @@ public class LoadDataFromCsvTest {
 			reasoner.load();
 			final QueryResultIterator pQueryResultIterator = reasoner
 					.answerQuery(Expressions.makeAtom(predicateP, Expressions.makeVariable("x")), true);
-			final Set<List<Term>> pQueryResults = QueryResultUtils.gatherQueryResults(pQueryResultIterator);
+			final Set<List<Term>> pQueryResults = QueryResultUtils.collectQueryResults(pQueryResultIterator);
 			assertEquals(expectedPQueryResults, pQueryResults);
 		}
 	}

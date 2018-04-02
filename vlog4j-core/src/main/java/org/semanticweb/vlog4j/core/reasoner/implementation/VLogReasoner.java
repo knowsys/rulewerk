@@ -18,6 +18,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
+import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
@@ -58,6 +59,7 @@ public class VLogReasoner implements Reasoner {
 	private final VLog vLog = new VLog();
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
 
+	private LogLevel internalLogLevel = LogLevel.WARNING;
 	private Algorithm algorithm = Algorithm.SKOLEM_CHASE;
 	private RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
 
@@ -167,7 +169,10 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void load() throws EdbIdbSeparationException, IOException {
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
+			LOGGER.warn(
+					"This method call is ineffective: the Reasoner was already loaded. Successive load() calls are not supported.");
+		} else {
 			validateEdbIdbSeparation();
 
 			this.reasonerState = ReasonerState.AFTER_LOADING;
@@ -175,6 +180,7 @@ public class VLogReasoner implements Reasoner {
 			if (this.dataSourceForPredicate.isEmpty() && this.factsForPredicate.isEmpty()) {
 				LOGGER.warn("No facts have been provided.");
 			}
+
 			try {
 				this.vLog.start(generateDataSourcesConfig(), false);
 			} catch (final AlreadyStartedException e) {
@@ -189,10 +195,6 @@ public class VLogReasoner implements Reasoner {
 			} else {
 				loadRules();
 			}
-
-		} else {
-			LOGGER.warn(
-					"This method call is ineffective: the Reasoner was already loaded. Successive load() calls are not supported.");
 		}
 	}
 
@@ -252,6 +254,18 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
+	}
+
+	@Override
+	public void reset() {
+		this.reasonerState = ReasonerState.BEFORE_LOADING;
+		this.vLog.stop();
+		// TODO do I need to create a new vLog instance?
+	}
+
+	@Override
+	public void close() {
+		this.vLog.stop();
 	}
 
 	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
@@ -322,8 +336,19 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void close() {
-		this.vLog.stop();
+	public void setLogLevel(LogLevel logLevel) {
+		this.internalLogLevel = logLevel;
+		this.vLog.setLogLevel(internalLogLevel.name().toLowerCase());
+	}
+
+	@Override
+	public LogLevel getLogLevel() {
+		return internalLogLevel;
+	}
+
+	@Override
+	public void setLogFile(String filePath) {
+		this.vLog.setLogFile(filePath);
 	}
 
 }
