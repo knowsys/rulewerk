@@ -68,7 +68,7 @@ public class LoadDataFromCsvTest {
 			reasoner.load();
 			final QueryResultIterator pQueryResultIterator = reasoner
 					.answerQuery(Expressions.makeAtom(predicateP, Expressions.makeVariable("x")), true);
-			final Set<List<Term>> pQueryResults = QueryResultUtils.gatherQueryResults(pQueryResultIterator);
+			final Set<List<Term>> pQueryResults = QueryResultUtils.collectQueryResults(pQueryResultIterator);
 			assertEquals(expectedPQueryResults, pQueryResults);
 		}
 	}
