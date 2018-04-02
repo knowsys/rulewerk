@@ -448,6 +448,22 @@ public class OwlAxiomToRulesConverterTest {
 	}
 
 	@Test
+	public void testSymmetricObjectPropertyOf() {
+		OWLAxiom axiom = df.getOWLSymmetricObjectPropertyAxiom(pR);
+
+		OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		Variable secondVariable = Expressions.makeVariable("Y1");
+		Atom at1 = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, secondVariable));
+		Atom at2 = Expressions.makeAtom(nR, Arrays.asList(secondVariable, converter.frontierVariable));
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(at2)),
+				Expressions.makeConjunction(Arrays.asList(at1)));
+
+		assertEquals(Sets.newSet(rule), converter.rules);
+	}
+
+	@Test
 	public void testIrreflexiveObjectPropertyOf() {
 		OWLAxiom axiom = df.getOWLIrreflexiveObjectPropertyAxiom(pR);
 
