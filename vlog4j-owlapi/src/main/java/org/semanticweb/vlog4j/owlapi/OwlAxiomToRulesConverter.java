@@ -249,8 +249,11 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLObjectPropertyRangeAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		OWLClassExpression forallPropertyDomain = owlDataFactory.getOWLObjectAllValuesFrom(axiom.getProperty(),
+				axiom.getRange());
+		ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(this.frontierVariable, this);
+		forallPropertyDomain.accept(headConverter);
+		addRule(headConverter);
 	}
 
 	@Override
