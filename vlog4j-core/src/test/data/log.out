@@ -1,4 +1,60 @@
-[0x31d350c1b29d5925 2018-03-29 20:16:46] INFO  Starting full materialization
-[0x31d350c1b29d5925 2018-03-29 20:16:46] INFO  Finished process. Iterations=2
-[0x31d350c1b29d5925 2018-03-29 20:16:46] INFO  Runtime materialization = 0.074000 milliseconds
-[0x31d350c1b29d5925 2018-03-29 20:16:46] INFO  Total # derivations: 1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.077000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.059000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.030000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 0
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.016000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 0
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.051000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.047000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.046000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.140000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.067000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.100000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.077000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.079000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.071000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 2
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.027000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 0
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Starting full materialization
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Finished process. Iterations=1
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Runtime materialization = 0.029000 milliseconds
+[0x3f10bb20a701c876 2018-04-02 16:03:46] INFO  Total # derivations: 0

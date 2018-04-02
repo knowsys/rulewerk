@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner;
+package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 /*-
  * #%L
@@ -27,30 +27,38 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
 public class ReasonerStateTest {
 
-	private static final Variable vx = Expressions.makeVariable("x");
-	private static final Atom exampleQueryAtom = Expressions.makeAtom("q", vx);
+	private static final Predicate p = Expressions.makePredicate("p", 1);
+	private static final Predicate q = Expressions.makePredicate("q", 1);
+	private static final Variable x = Expressions.makeVariable("x");
+	private static final Constant c = Expressions.makeConstant("c");
+	// private static final Constant d = Expressions.makeConstant("d");
+	private static final Atom exampleQueryAtom = Expressions.makeAtom("q", x);
 
-	// p(?x) -> q(?x)
-	private static final Atom ruleHeadQx = Expressions.makeAtom("q", vx);
-	private static final Atom ruleBodyPx = Expressions.makeAtom("p", vx);
-	private static final Rule rule = Expressions.makeRule(ruleHeadQx, ruleBodyPx);
-	private static final Constant constantC = Expressions.makeConstant("c");
-	private static final Atom factPc = Expressions.makeAtom("p", constantC);
+	private static final Atom ruleHeadQx = Expressions.makeAtom(q, x);
+	private static final Atom ruleBodyPx = Expressions.makeAtom(p, x);
+	private static final Rule ruleQxPx = Expressions.makeRule(ruleHeadQx, ruleBodyPx);
+	private static final Atom factPc = Expressions.makeAtom(p, c);
+	// private static final Atom factPd = Expressions.makeAtom(q, d);
 
 	@Test
 	public void testResetBeforeLoad() {
@@ -61,24 +69,33 @@ public class ReasonerStateTest {
 
 	@Test
 	public void testResetDiscardInferences() throws ReasonerStateException, EdbIdbSeparationException, IOException {
-		for (final Algorithm algorith : Algorithm.values()) {
+		for (final Algorithm algorithm : Algorithm.values()) {
 			// discard inferences regardless of the inference algorithm
 			try (final Reasoner reasoner = Reasoner.getInstance();) {
 				reasoner.addFacts(factPc);
-				reasoner.addRules(rule);
+				reasoner.addRules(ruleQxPx);
+				reasoner.setAlgorithm(algorithm);
+
 				reasoner.load();
-				reasoner.setAlgorithm(algorith);
 				reasoner.reason();
-				try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(ruleHeadQx, true)) {
-					assertTrue(queryResultIterator.hasNext());
-					assertEquals(Arrays.asList(constantC), queryResultIterator.next().getTerms());
-					assertFalse(queryResultIterator.hasNext());
+				try (final QueryResultIterator queryQxIterator = reasoner.answerQuery(ruleHeadQx, true)) {
+					Set<List<Term>> queryQxResults = QueryResultsUtils.collectQueryResults(queryQxIterator);
+					Set<List<Term>> queryQxExpectedResults = new HashSet<List<Term>>();
+					queryQxExpectedResults.add(Arrays.asList(c));
+					assertEquals(queryQxResults, queryQxExpectedResults);
 				}
 
 				reasoner.resetReasoner();
 				reasoner.load();
-				try (final QueryResultIterator queryResultIteratorAfterReset = reasoner.answerQuery(ruleHeadQx, true)) {
-					assertFalse(queryResultIteratorAfterReset.hasNext());
+				try (final QueryResultIterator queryQxIterator = reasoner.answerQuery(ruleHeadQx, true)) {
+					Set<List<Term>> queryQxResults = QueryResultsUtils.collectQueryResults(queryQxIterator);
+					assertTrue(queryQxResults.isEmpty());
+				}
+				try (final QueryResultIterator queryPxIterator = reasoner.answerQuery(ruleBodyPx, true)) {
+					Set<List<Term>> queryPxResults = QueryResultsUtils.collectQueryResults(queryPxIterator);
+					Set<List<Term>> queryPxExpectedResults = new HashSet<List<Term>>();
+					queryPxExpectedResults.add(Arrays.asList(c));
+					assertEquals(queryPxResults, queryPxExpectedResults);
 				}
 			}
 		}
@@ -94,7 +111,7 @@ public class ReasonerStateTest {
 			reasoner.addFactsFromDataSource(predicateR1,
 					new CsvFileDataSource(new File(CsvFileUtils.CSV_INPORT_FOLDER, "constantD.csv")));
 			// p(?x) -> q(?x)
-			reasoner.addRules(rule);
+			reasoner.addRules(ruleQxPx);
 			reasoner.load();
 			checkExplicitFacts(reasoner, predicateR1);
 
@@ -106,10 +123,10 @@ public class ReasonerStateTest {
 			reasoner.reason();
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(ruleHeadQx, true)) {
 				assertTrue(queryResultIterator.hasNext());
-				assertEquals(Arrays.asList(constantC), queryResultIterator.next().getTerms());
+				assertEquals(Arrays.asList(c), queryResultIterator.next().getTerms());
 				assertFalse(queryResultIterator.hasNext());
 			}
-			
+
 		}
 	}
 
@@ -121,7 +138,7 @@ public class ReasonerStateTest {
 			assertFalse(queryResultIteratorPx.hasNext());
 		}
 		try (final QueryResultIterator queryResultIteratorRx = reasoner
-				.answerQuery(Expressions.makeAtom(predicateR1, vx), true)) {
+				.answerQuery(Expressions.makeAtom(predicateR1, x), true)) {
 			assertTrue(queryResultIteratorRx.hasNext());
 			assertEquals(Arrays.asList(Expressions.makeConstant("d")), queryResultIteratorRx.next().getTerms());
 			assertFalse(queryResultIteratorRx.hasNext());
