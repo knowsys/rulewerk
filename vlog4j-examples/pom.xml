@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>vlog4j-examples</artifactId>
-	<!-- <packaging>jar</packaging> -->
+	<packaging>jar</packaging>
 
 	<name>VLog4j Examples</name>
 	<description>Contains examples and usage instructions describing the basic functionality of VLog4j</description>

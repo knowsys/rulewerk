@@ -34,7 +34,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
  * #L%
  */
 
-public class RestrictedChaseExecution {
+public class InMemoryRestrictedChaseExecution {
 	public static void main(String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException {
 
 		// Instantiating entities
@@ -71,10 +71,12 @@ public class RestrictedChaseExecution {
 		Rule rule4 = Expressions.makeRule(isPartOfIDBXY, isPartOfEDBXY);
 		// HasPartIDB(?x, !y), WheelIDB(!y) :- BicycleIDB(?x) .
 		Atom wheelIDBY = Expressions.makeAtom(wheelIDB, y);
-		Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(hasPartIDBXY, wheelIDBY), Expressions.makeConjunction(bicycleIDBX));
+		Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(hasPartIDBXY, wheelIDBY),
+				Expressions.makeConjunction(bicycleIDBX));
 		// IsPartOfIDB(?x, !y), BicycleIDB(!y) :- WheelIDB(?x) .
 		Atom bycicleIDBY = Expressions.makeAtom(bicycleIDB, y);
-		Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY, bycicleIDBY), Expressions.makeConjunction(wheelIDBX));
+		Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY, bycicleIDBY),
+				Expressions.makeConjunction(wheelIDBX));
 		// IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) .
 		Atom hasPartIDBYX = Expressions.makeAtom(hasPartIDB, y, x);
 		Rule rule7 = Expressions.makeRule(isPartOfIDBXY, hasPartIDBYX);
