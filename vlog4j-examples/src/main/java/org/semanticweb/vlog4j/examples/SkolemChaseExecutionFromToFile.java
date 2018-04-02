@@ -72,7 +72,6 @@ public class SkolemChaseExecutionFromToFile {
 		Rule rule8 = Expressions.makeRule(hasPartIDBXY, isPartOfIDBYX);
 
 		// 2. Loading, reasoning, and querying.
-
 		Reasoner reasoner = Reasoner.getInstance();
 		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 
@@ -88,24 +87,13 @@ public class SkolemChaseExecutionFromToFile {
 
 		reasoner.load();
 
-		System.out.println("\n" + "Answers to query " + hasPartEDBXY + " before materialisation:");
-		QueryResultIterator answersBeforeMaterialisation = reasoner.answerQuery(hasPartEDBXY, true);
-		while (answersBeforeMaterialisation.hasNext()) {
-			System.out.println(" - " + answersBeforeMaterialisation.next());
-		}
-		System.out.println();
+		ExamplesUtil.printOutQueryAnswers(hasPartEDBXY, reasoner);
 
 		reasoner.reason();
 
-		System.out.println("\n" + "Answers to query " + hasPartIDBXY + " after materialisation:");
-		QueryResultIterator answersAfterMaterialisation = reasoner.answerQuery(hasPartIDBXY, true);
-		while (answersAfterMaterialisation.hasNext()) {
-			System.out.println(" - " + answersAfterMaterialisation.next());
-		}
-		System.out.println();
+		ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 		// 3. Exporting
-
 		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + File.separator + "hasPartIDBXYWithBlanks.csv",
 				true);
 
@@ -118,4 +106,5 @@ public class SkolemChaseExecutionFromToFile {
 				filesDirPath + File.separator + "hasPartIDBRedBikeYWithBlanks.csv", true);
 
 	}
+
 }

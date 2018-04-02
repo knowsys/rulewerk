@@ -38,7 +38,6 @@ public class RestrictedChaseExecutionInMemory {
 	public static void main(String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException {
 
 		// 1. Instantiating entities, rules and facts
-
 		Predicate bicycleIDB = Expressions.makePredicate("BicycleIDB", 1);
 		Predicate bicycleEDB = Expressions.makePredicate("BicycleEDB", 1);
 		Predicate wheelIDB = Expressions.makePredicate("WheelIDB", 1);
@@ -57,39 +56,49 @@ public class RestrictedChaseExecutionInMemory {
 		Atom bicycleIDBX = Expressions.makeAtom(bicycleIDB, x);
 		Atom bicycleEDBX = Expressions.makeAtom(bicycleEDB, x);
 		Rule rule1 = Expressions.makeRule(bicycleIDBX, bicycleEDBX);
+
 		// WheelIDB(?x) :- WheelEDB(?x) .
 		Atom wheelIDBX = Expressions.makeAtom(wheelIDB, x);
 		Atom wheelEDBX = Expressions.makeAtom(wheelEDB, x);
 		Rule rule2 = Expressions.makeRule(wheelIDBX, wheelEDBX);
+
 		// hasPartIDB(?x, ?y) :- hasPartEDB(?x, ?y) .
 		Atom hasPartIDBXY = Expressions.makeAtom(hasPartIDB, x, y);
 		Atom hasPartEDBXY = Expressions.makeAtom(hasPartEDB, x, y);
 		Rule rule3 = Expressions.makeRule(hasPartIDBXY, hasPartEDBXY);
+
 		// isPartOfIDB(?x, ?y) :- isPartOfEDB(?x, ?y) .
 		Atom isPartOfIDBXY = Expressions.makeAtom(isPartOfIDB, x, y);
 		Atom isPartOfEDBXY = Expressions.makeAtom(isPartOfEDB, x, y);
 		Rule rule4 = Expressions.makeRule(isPartOfIDBXY, isPartOfEDBXY);
+
 		// HasPartIDB(?x, !y), WheelIDB(!y) :- BicycleIDB(?x) .
 		Atom wheelIDBY = Expressions.makeAtom(wheelIDB, y);
 		Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(hasPartIDBXY, wheelIDBY),
 				Expressions.makeConjunction(bicycleIDBX));
+
 		// IsPartOfIDB(?x, !y), BicycleIDB(!y) :- WheelIDB(?x) .
 		Atom bycicleIDBY = Expressions.makeAtom(bicycleIDB, y);
 		Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY, bycicleIDBY),
 				Expressions.makeConjunction(wheelIDBX));
+
 		// IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) .
 		Atom hasPartIDBYX = Expressions.makeAtom(hasPartIDB, y, x);
 		Rule rule7 = Expressions.makeRule(isPartOfIDBXY, hasPartIDBYX);
+
 		// HasPartIDB(?x, ?y) :- IsPartOfIDB(?y, ?x) .
 		Atom isPartOfIDBYX = Expressions.makeAtom(isPartOfIDB, y, x);
 		Rule rule8 = Expressions.makeRule(hasPartIDBXY, isPartOfIDBYX);
 
 		// BicycleEDB(bicycle1) .
 		Atom fact1 = Expressions.makeAtom(bicycleEDB, bicycle1);
+
 		// HasPartEDB(bicycle1, wheel1) .
 		Atom fact2 = Expressions.makeAtom(hasPartEDB, bicycle1, wheel1);
+
 		// Wheel(wheel1) .
 		Atom fact3 = Expressions.makeAtom(wheelEDB, wheel1);
+
 		// BicycleEDB(b) .
 		Atom fact4 = Expressions.makeAtom(bicycleEDB, bicycle2);
 
@@ -101,20 +110,11 @@ public class RestrictedChaseExecutionInMemory {
 		reasoner.addFacts(fact1, fact2, fact3, fact4);
 		reasoner.load();
 
-		System.out.println("\n" + "Answers to query " + hasPartEDBXY + " before materialisation:");
-		QueryResultIterator answersBeforeMaterialisation = reasoner.answerQuery(hasPartEDBXY, true);
-		while (answersBeforeMaterialisation.hasNext()) {
-			System.out.println(" - " + answersBeforeMaterialisation.next());
-		}
-		System.out.println();
+		ExamplesUtil.printOutQueryAnswers(hasPartEDBXY, reasoner);
 
 		reasoner.reason();
 
-		System.out.println("\n" + "Answers to query " + hasPartIDBXY + " after materialisation:");
-		QueryResultIterator answersAfterMaterialisation = reasoner.answerQuery(hasPartIDBXY, true);
-		while (answersAfterMaterialisation.hasNext()) {
-			System.out.println(" - " + answersAfterMaterialisation.next());
-		}
-		System.out.println();
+		ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
 	}
+
 }
