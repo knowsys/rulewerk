@@ -38,7 +38,6 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
 import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
@@ -153,9 +152,9 @@ public class OwlToRulesConversionHelper {
 		return new AtomImpl(predicate, Arrays.asList(term));
 	}
 
-	public static Atom getTop(Variable variable) {
+	public static Atom getTop(Term term) {
 		Predicate predicate = new PredicateImpl("http://www.w3.org/2002/07/owl#Thing", 1);
-		return new AtomImpl(predicate, Arrays.asList(variable));
+		return new AtomImpl(predicate, Arrays.asList(term));
 	}
 
 }

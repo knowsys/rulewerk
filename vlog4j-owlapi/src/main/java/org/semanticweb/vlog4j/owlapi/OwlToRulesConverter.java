@@ -103,7 +103,7 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 		Conjunction headConjunction;
 		if (converter.head.isFalseOrEmpty()) {
 			headConjunction = new ConjunctionImpl(
-					Arrays.asList(OwlToRulesConversionHelper.getBottom(converter.frontierVariable)));
+					Arrays.asList(OwlToRulesConversionHelper.getBottom(converter.mainTerm)));
 		} else {
 			headConjunction = new ConjunctionImpl(converter.head.getConjuncts());
 		}
@@ -111,7 +111,7 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 		Conjunction bodyConjunction;
 		if (converter.body.isTrueOrEmpty()) {
 			bodyConjunction = new ConjunctionImpl(
-					Arrays.asList(OwlToRulesConversionHelper.getTop(converter.frontierVariable)));
+					Arrays.asList(OwlToRulesConversionHelper.getTop(converter.mainTerm)));
 		} else {
 			bodyConjunction = new ConjunctionImpl(converter.body.getConjuncts());
 		}

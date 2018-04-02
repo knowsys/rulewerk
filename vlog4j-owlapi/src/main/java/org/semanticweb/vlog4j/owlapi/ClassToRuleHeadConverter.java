@@ -42,7 +42,6 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
 
 /**
@@ -56,18 +55,18 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	boolean currentIsExistential = false;
 
-	public ClassToRuleHeadConverter(Variable frontierVariable, SimpleConjunction body, SimpleConjunction head,
+	public ClassToRuleHeadConverter(Term mainTerm, SimpleConjunction body, SimpleConjunction head,
 			OwlToRulesConverter parent) {
-		super(frontierVariable, body, head, parent);
+		super(mainTerm, body, head, parent);
 	}
 
-	public ClassToRuleHeadConverter(Variable frontierVariable, OwlToRulesConverter parent) {
-		this(frontierVariable, new SimpleConjunction(), new SimpleConjunction(), parent);
+	public ClassToRuleHeadConverter(Term mainTerm, OwlToRulesConverter parent) {
+		this(mainTerm, new SimpleConjunction(), new SimpleConjunction(), parent);
 	}
 
 	@Override
-	public AbstractClassToRuleConverter makeChildConverter(Variable frontierVariable) {
-		return new ClassToRuleHeadConverter(frontierVariable, this.parent);
+	public AbstractClassToRuleConverter makeChildConverter(Term mainTerm) {
+		return new ClassToRuleHeadConverter(mainTerm, this.parent);
 	}
 
 	@Override
@@ -78,13 +77,13 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 			this.head.init();
 		} else {
 			Predicate predicate = OwlToRulesConversionHelper.getClassPredicate(ce);
-			this.head.add(new AtomImpl(predicate, Arrays.asList(this.frontierVariable)));
+			this.head.add(new AtomImpl(predicate, Arrays.asList(this.mainTerm)));
 		}
 	}
 
 	@Override
 	public void visit(OWLObjectIntersectionOf ce) {
-		handleConjunction(ce.getOperands(), this.frontierVariable);
+		handleConjunction(ce.getOperands(), this.mainTerm);
 	}
 
 	@Override
@@ -94,7 +93,7 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(OWLObjectComplementOf ce) {
-		ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.frontierVariable, this.body, this.head,
+		ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.mainTerm, this.body, this.head,
 				this.parent);
 		ce.getOperand().accept(converter);
 	}
@@ -112,8 +111,7 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 	@Override
 	public void visit(OWLObjectHasValue ce) {
 		Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller());
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.frontierVariable, term,
-				this.head);
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, term, this.head);
 	}
 
 	@Override
@@ -142,8 +140,8 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(OWLObjectHasSelf ce) {
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.frontierVariable,
-				this.frontierVariable, this.head);
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, this.mainTerm,
+				this.head);
 	}
 
 	@Override

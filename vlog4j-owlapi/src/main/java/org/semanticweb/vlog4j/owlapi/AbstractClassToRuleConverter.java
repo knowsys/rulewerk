@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
 import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
@@ -164,16 +165,16 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	/**
 	 * Current frontier variable used as the main variable for creating atoms.
 	 */
-	final Variable frontierVariable;
+	final Term mainTerm;
 
 	/**
 	 * Parent converter object, used to create fresh names, e.g., for variables..
 	 */
 	final OwlToRulesConverter parent;
 
-	public AbstractClassToRuleConverter(Variable frontierVariable, SimpleConjunction body, SimpleConjunction head,
+	public AbstractClassToRuleConverter(Term mainTerm, SimpleConjunction body, SimpleConjunction head,
 			OwlToRulesConverter parent) {
-		this.frontierVariable = frontierVariable;
+		this.mainTerm = mainTerm;
 		this.body = body;
 		this.head = head;
 		this.parent = parent;
@@ -200,11 +201,11 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 		return this.body.isTrueOrEmpty() && this.head.isFalseOrEmpty();
 	}
 
-	void handleDisjunction(OWLClassExpression disjunct, Variable variable) {
+	void handleDisjunction(OWLClassExpression disjunct, Term term) {
 		if (this.isTautology()) {
 			return;
 		}
-		AbstractClassToRuleConverter converter = makeChildConverter(variable);
+		AbstractClassToRuleConverter converter = makeChildConverter(term);
 		disjunct.accept(converter);
 		if (converter.isTautology()) {
 			this.body.makeFalse();
@@ -229,7 +230,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 		OwlFeatureNotSupportedException owlFeatureNotSupportedException = null;
 		for (OWLClassExpression disjunct : disjuncts) {
 			try {
-				handleDisjunction(disjunct, this.frontierVariable);
+				handleDisjunction(disjunct, this.mainTerm);
 			} catch (OwlFeatureNotSupportedException e) {
 				owlFeatureNotSupportedException = e;
 			}
@@ -243,12 +244,12 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 		}
 	}
 
-	void handleConjunction(Collection<OWLClassExpression> conjuncts, Variable variable) {
+	void handleConjunction(Collection<OWLClassExpression> conjuncts, Term term) {
 		List<AbstractClassToRuleConverter> converters = new ArrayList<>();
 		OwlFeatureNotSupportedException owlFeatureNotSupportedException = null;
 		boolean hasPositiveConjuncts = false;
 		for (OWLClassExpression conjunct : conjuncts) {
-			AbstractClassToRuleConverter converter = makeChildConverter(variable);
+			AbstractClassToRuleConverter converter = makeChildConverter(term);
 			try {
 				conjunct.accept(converter);
 				if (converter.isTautology()) {
@@ -277,11 +278,11 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 		Atom auxAtom = null;
 		if (hasPositiveConjuncts || this.head.hasPositiveAtoms()) { // make positive (head) auxiliary atom
 			for (AbstractClassToRuleConverter converter : converters) {
-				auxAtom = handlePositiveConjunct(converter, conjuncts, variable, auxAtom);
+				auxAtom = handlePositiveConjunct(converter, conjuncts, term, auxAtom);
 			}
 		} else { // make negative (body) auxiliary atom
 			auxAtom = new AtomImpl(OwlToRulesConversionHelper.getAuxiliaryClassPredicate(conjuncts),
-					Arrays.asList(variable));
+					Arrays.asList(term));
 			this.body.add(auxAtom);
 			Conjunction auxHead = new ConjunctionImpl(Arrays.asList(auxAtom));
 			for (AbstractClassToRuleConverter converter : converters) {
@@ -292,7 +293,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	}
 
 	private Atom handlePositiveConjunct(AbstractClassToRuleConverter converter,
-			Collection<OWLClassExpression> auxiliaryExpressions, Variable variable, Atom auxiliaryAtom) {
+			Collection<OWLClassExpression> auxiliaryExpressions, Term term, Atom auxiliaryAtom) {
 		assert (!converter.isFalsity());
 		assert (!converter.isTautology());
 		if (converter.body.isTrueOrEmpty()) {
@@ -304,7 +305,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 			if (auxiliaryAtom == null) {
 				auxiliaryAtom = new AtomImpl(
 						OwlToRulesConversionHelper.getAuxiliaryClassPredicate(auxiliaryExpressions),
-						Arrays.asList(variable));
+						Arrays.asList(term));
 				this.head.add(auxiliaryAtom);
 			}
 			newBody.add(auxiliaryAtom);
@@ -313,7 +314,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 			if (converter.head.hasPositiveAtoms()) {
 				newHead = converter.head.getConjuncts();
 			} else {
-				newHead = Arrays.asList(OwlToRulesConversionHelper.getBottom(variable));
+				newHead = Arrays.asList(OwlToRulesConversionHelper.getBottom(term));
 			}
 			this.parent.rules.add(new RuleImpl(new ConjunctionImpl(newHead), new ConjunctionImpl(newBody)));
 		}
@@ -330,7 +331,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	 */
 	void handleObjectAllValues(OWLObjectPropertyExpression property, OWLClassExpression filler) {
 		Variable variable = this.parent.getFreshVariable();
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(property, this.frontierVariable, variable,
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(property, this.mainTerm, variable,
 				this.body);
 		if (!this.body.isFalse()) {
 			handleDisjunction(filler, variable);
@@ -347,7 +348,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	 */
 	void handleObjectSomeValues(OWLObjectPropertyExpression property, OWLClassExpression filler) {
 		Variable variable = this.parent.getFreshVariable();
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(property, this.frontierVariable, variable,
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(property, this.mainTerm, variable,
 				this.head);
 		if (!this.head.isFalse()) {
 			handleConjunction(Arrays.asList(filler), variable);
@@ -358,9 +359,9 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	 * Creates a new converter object of the same polarity, using the given frontier
 	 * variable.
 	 * 
-	 * @param frontierVariable
+	 * @param mainTerm
 	 *            a variable to use
 	 */
-	public abstract AbstractClassToRuleConverter makeChildConverter(Variable frontierVariable);
+	public abstract AbstractClassToRuleConverter makeChildConverter(Term mainTerm);
 
 }
