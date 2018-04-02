@@ -140,8 +140,11 @@ public class OwlToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAx
 
 	@Override
 	public void visit(OWLNegativeObjectPropertyAssertionAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject());
+		Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject());
+		Atom atom = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), subject, object);
+		Atom bot = OwlToRulesConversionHelper.getBottom(subject);
+		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(bot)),new ConjunctionImpl(Arrays.asList(atom))));
 	}
 
 	@Override

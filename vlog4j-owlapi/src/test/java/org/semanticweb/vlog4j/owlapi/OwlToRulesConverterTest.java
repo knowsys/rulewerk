@@ -354,6 +354,24 @@ public class OwlToRulesConverterTest {
 
 		assertEquals(Sets.newSet(atR, atS), converter.facts);
 	}
+	
+	@Test
+	public void testNegativeObjectPropertyAssertions() {
+		OWLAxiom Rab = df.getOWLNegativeObjectPropertyAssertionAxiom(pR, inda, indb);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		Rab.accept(converter);
+
+		Term consta = Expressions.makeConstant(getIri("a").toString());
+		Term constb = Expressions.makeConstant(getIri("b").toString());
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(consta, constb));
+		Atom bot = OwlToRulesConversionHelper.getBottom(consta);
+		
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(bot)),
+				Expressions.makeConjunction(Arrays.asList(atR)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
 
 	@Ignore
 	public void test() {

@@ -148,9 +148,9 @@ public class OwlToRulesConversionHelper {
 		}
 	}
 
-	public static Atom getBottom(Variable variable) {
+	public static Atom getBottom(Term term) {
 		Predicate predicate = new PredicateImpl("http://www.w3.org/2002/07/owl#Nothing", 1);
-		return new AtomImpl(predicate, Arrays.asList(variable));
+		return new AtomImpl(predicate, Arrays.asList(term));
 	}
 
 	public static Atom getTop(Variable variable) {
