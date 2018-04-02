@@ -83,10 +83,13 @@
 		<!-- <dependency> FIXME maybe we only need this parser library. TODO check 
 			version number compatible with owl api <groupId>org.openrdf</groupId> <artifactId>rio</artifactId> 
 			<version>1.0.10</version> </dependency> -->
-			
-			<!-- https://mvnrepository.com/artifact/org.openrdf.sesame/sesame-rio-compliance -->
-	<!-- <dependency> <groupId>org.openrdf.sesame</groupId> <artifactId>sesame-rio-compliance</artifactId> 
-		<version>2.7.16</version> <scope>test</scope> </dependency> -->
+
+		<!-- <dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-compliance</artifactId>
+			<version>${openrdf.sesame.version}</version>
+			<scope>test</scope>
+		</dependency> -->
 
 	</dependencies>
 
