@@ -73,13 +73,13 @@ public class AnswerQueryTest {
 
 			final Atom queryAtomXYZ = Expressions.makeAtom(predicate, x, y, z);
 			try (final QueryResultIterator queryResultIteratorXYZ = reasoner.answerQuery(queryAtomXYZ, includeBlanks)) {
-				final Set<List<Term>> queryResultsXYZ = QueryResultUtils.gatherQueryResults(queryResultIteratorXYZ);
+				final Set<List<Term>> queryResultsXYZ = QueryResultUtils.collectQueryResults(queryResultIteratorXYZ);
 				assertEquals(factCCD, queryResultsXYZ);
 			}
 
 			final Atom queryAtomXXZ = Expressions.makeAtom(predicate, x, x, z);
 			try (final QueryResultIterator queryResultIteratorXXZ = reasoner.answerQuery(queryAtomXXZ, includeBlanks)) {
-				final Set<List<Term>> queryResultsXXZ = QueryResultUtils.gatherQueryResults(queryResultIteratorXXZ);
+				final Set<List<Term>> queryResultsXXZ = QueryResultUtils.collectQueryResults(queryResultIteratorXXZ);
 				assertEquals(factCCD, queryResultsXXZ);
 			}
 
@@ -119,7 +119,7 @@ public class AnswerQueryTest {
 
 			// expected p(_:b1, _:b1), p(_:b1, _:b2)
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(pYZ, true)) {
-				final Set<List<Term>> queryResults = QueryResultUtils.gatherQueryResults(queryResultIterator);
+				final Set<List<Term>> queryResults = QueryResultUtils.collectQueryResults(queryResultIterator);
 				assertTrue(queryResults.size() == 2);
 				final ArrayList<List<Term>> queryResultsArray = new ArrayList<>(queryResults);
 				assertEquals(queryResultsArray.get(0).get(0), queryResultsArray.get(1).get(0)); // y
@@ -128,7 +128,7 @@ public class AnswerQueryTest {
 
 			// expected p(_:b1, _:b1)
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(pYY, true)) {
-				final Set<List<Term>> queryResults = QueryResultUtils.gatherQueryResults(queryResultIterator);
+				final Set<List<Term>> queryResults = QueryResultUtils.collectQueryResults(queryResultIterator);
 				assertTrue(queryResults.size() == 1);
 				final ArrayList<List<Term>> queryResultsArray = new ArrayList<>(queryResults);
 				assertEquals(queryResultsArray.get(0).get(0), queryResultsArray.get(0).get(1)); // y
@@ -267,7 +267,7 @@ public class AnswerQueryTest {
 			reasoner.reason();
 
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true)) {
-				final Set<List<Term>> queryResults = QueryResultUtils.gatherQueryResults(queryResultIterator);
+				final Set<List<Term>> queryResults = QueryResultUtils.collectQueryResults(queryResultIterator);
 				@SuppressWarnings("unchecked")
 				final Set<List<Term>> expectedQueryResults = Sets.newSet(Arrays.asList(Expressions.makeConstant("c")));
 				assertEquals(expectedQueryResults, queryResults);
