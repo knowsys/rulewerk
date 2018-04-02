@@ -48,6 +48,7 @@ import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLSameIndividualAxiom;
@@ -179,8 +180,28 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLEquivalentObjectPropertiesAxiom axiom) {
-		// TODO Auto-generated method stub
+		startAxiomConversion();
+		Variable secondVariable = getFreshVariable();
 
+		Atom firstAtom = null;
+		Atom previousAtom = null;
+		Atom currentAtom = null;
+		for (OWLObjectPropertyExpression owlObjectPropertyExpression : axiom.getProperties()) {
+			currentAtom = OwlToRulesConversionHelper.getObjectPropertyAtom(owlObjectPropertyExpression,
+					this.frontierVariable, secondVariable);
+			if (previousAtom == null) {
+				firstAtom = currentAtom;
+			} else {
+				this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(currentAtom)),
+						new ConjunctionImpl(Arrays.asList(previousAtom))));
+			}
+			previousAtom = currentAtom;
+		}
+
+		if (currentAtom != null) {
+			this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(firstAtom)),
+					new ConjunctionImpl(Arrays.asList(currentAtom))));
+		}
 	}
 
 	@Override
@@ -266,6 +287,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLClassAssertionAxiom axiom) {
+		startAxiomConversion();
 		Term term = OwlToRulesConversionHelper.getIndividualTerm(axiom.getIndividual());
 		ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(term, this);
 		axiom.getClassExpression().accept(headConverter);
