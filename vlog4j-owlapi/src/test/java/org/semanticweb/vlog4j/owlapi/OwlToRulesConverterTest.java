@@ -497,6 +497,23 @@ public class OwlToRulesConverterTest {
 
 		assertEquals(Sets.newSet(rule), converter.rules);
 	}
+	
+	public void testTransitiveProperty() {
+		OWLAxiom axiom = df.getOWLTransitiveObjectPropertyAxiom(pR);
+
+		OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		Variable var1 = Expressions.makeVariable("Y1");
+		Variable var2 = Expressions.makeVariable("Y2");
+		Atom at1 = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, var1));
+		Atom at2 = Expressions.makeAtom(nR, Arrays.asList(var1, var2));
+		Atom ath = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, var2));
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(ath)),
+				Expressions.makeConjunction(Arrays.asList(at1,at2)));
+
+		assertEquals(Sets.newSet(rule), converter.rules);
+	}
 
 	@Test
 	public void testEquivalentClasses() {

@@ -3,6 +3,7 @@ package org.semanticweb.vlog4j.owlapi;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -67,6 +68,7 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
@@ -328,8 +330,15 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLTransitiveObjectPropertyAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		startAxiomConversion();
+		Variable var1 = getFreshVariable();
+		Variable var2 = getFreshVariable();
+		Atom atom1 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), this.frontierVariable, var1);
+		Atom atom2 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), var1, var2);
+		Atom atomHead = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), this.frontierVariable,
+				var2);
+		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(atomHead)),
+				new ConjunctionImpl(Arrays.asList(atom1, atom2))));
 	}
 
 	@Override
