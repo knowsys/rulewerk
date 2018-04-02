@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.lang3.Validate;
+import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 
@@ -65,7 +66,7 @@ public class CsvFileDataSource implements DataSource {
 	 *             if the given {@code csvFilePath} does not end with
 	 *             <i><b>.csv</b></i> extension.
 	 */
-	public CsvFileDataSource(final File csvFile) throws IOException {
+	public CsvFileDataSource(@NonNull final File csvFile) throws IOException {
 		Validate.notNull(csvFile, "Data source file cannot be null!");
 		Validate.isTrue(csvFile.getName().endsWith(CSV_FILE_EXTENSION),
 				"Expected .csv extension for data source file [%s]!", csvFile);

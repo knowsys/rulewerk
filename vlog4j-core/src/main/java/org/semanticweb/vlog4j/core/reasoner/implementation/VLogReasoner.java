@@ -60,7 +60,7 @@ public class VLogReasoner implements Reasoner {
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
 
 	private LogLevel internalLogLevel = LogLevel.WARNING;
-	private Algorithm algorithm = Algorithm.SKOLEM_CHASE;
+	private Algorithm algorithm = Algorithm.RESTRICTED_CHASE;
 	private Integer timeoutAfterSeconds;
 	private RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
 

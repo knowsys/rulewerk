@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
@@ -95,20 +97,19 @@ public interface Reasoner extends AutoCloseable {
 		return new VLogReasoner();
 	}
 
-	// TODO shouldn't RESTRICTED_CHASE be the default algorithm?
 	/**
 	 * Sets the algorithm that will be used for reasoning over the knowledge base.
 	 * If no algorithm is set, the default algorithm is
-	 * {@link Algorithm#SKOLEM_CHASE} will be used.
+	 * {@link Algorithm#RESTRICTED_CHASE} will be used.
 	 * 
 	 * @param algorithm
 	 *            the algorithm to be used for reasoning.
 	 */
-	void setAlgorithm(Algorithm algorithm);
+	void setAlgorithm(@NonNull Algorithm algorithm);
 
 	/**
-	 * Getter for the lgorithm that will be used for reasoning over the knowledge
-	 * base. The default value is {@link Algorithm#SKOLEM_CHASE}.
+	 * Getter for the algorithm that will be used for reasoning over the knowledge
+	 * base. The default value is {@link Algorithm#RESTRICTED_CHASE}.
 	 * 
 	 * @return the reasoning algorithm.
 	 */
@@ -127,7 +128,7 @@ public interface Reasoner extends AutoCloseable {
 	 *            {@code null}, reasoning will not be interrupted and will return
 	 *            only after (if) it has reached completion.
 	 */
-	void setReasoningTimeout(Integer seconds);
+	void setReasoningTimeout(@Nullable Integer seconds);
 
 	/**
 	 * This method returns the reasoning timeout, representing the interval (in
@@ -138,7 +139,7 @@ public interface Reasoner extends AutoCloseable {
 	 * @return if not {@code null}, number of seconds after which the reasoning will
 	 *         be interrupted, if it has not reached completion.
 	 */
-	Integer getReasoningTimeout();
+	@Nullable Integer getReasoningTimeout();
 
 	/**
 	 * Loaded {@link Rule}s can be re-written internally to an equivalent set of
@@ -152,7 +153,7 @@ public interface Reasoner extends AutoCloseable {
 	 * @throws ReasonerStateException
 	 *             if the reasoner has already been loaded.
 	 */
-	void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
+	void setRuleRewriteStrategy(@NonNull RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
 
 	/**
 	 * Getter for the strategy according to which rules will be rewritten before
@@ -161,7 +162,7 @@ public interface Reasoner extends AutoCloseable {
 	 * 
 	 * @return the current rule re-writing strategy
 	 */
-	RuleRewriteStrategy getRuleRewriteStrategy();
+	@NonNull RuleRewriteStrategy getRuleRewriteStrategy();
 
 	/**
 	 * Sets the logging level of the internal VLog C++ resource. Default value is
@@ -170,7 +171,7 @@ public interface Reasoner extends AutoCloseable {
 	 * @param logLevel
 	 *            the logging level to be set for VLog C++ resource.
 	 */
-	void setLogLevel(LogLevel logLevel);
+	void setLogLevel(@NonNull LogLevel logLevel);
 
 	/**
 	 * Returns the logging level of the internal VLog C++ resource. If no value has
@@ -178,7 +179,7 @@ public interface Reasoner extends AutoCloseable {
 	 * 
 	 * @return the logging level of the VLog C++ resource.
 	 */
-	LogLevel getLogLevel();
+	@NonNull LogLevel getLogLevel();
 
 	/**
 	 * Redirects the logs of the internal VLog C++ resource to given file. If no log
@@ -188,7 +189,7 @@ public interface Reasoner extends AutoCloseable {
 	 * @param filePath
 	 *            the file for the internal VLog C++ resource to log to.
 	 */
-	void setLogFile(String filePath);
+	void setLogFile(@NonNull String filePath);
 
 	/**
 	 * Adds rules to the reasoner <b>knowledge base</b> in the given order. After
@@ -204,7 +205,7 @@ public interface Reasoner extends AutoCloseable {
 	 *             if the {@code rules} atoms contain terms which are not of type
 	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
 	 */
-	void addRules(Rule... rules) throws ReasonerStateException;
+	void addRules(@NonNull Rule...  rules) throws ReasonerStateException;
 
 	/**
 	 * Adds rules to the reasoner <b>knowledge base</b> in the given order. Rules
@@ -221,7 +222,7 @@ public interface Reasoner extends AutoCloseable {
 	 *             if the {@code rules} atoms contain terms which are not of type
 	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
 	 */
-	void addRules(List<Rule> rules) throws ReasonerStateException;
+	void addRules(@NonNull List<Rule> rules) throws ReasonerStateException;
 
 	/**
 	 * Adds non-null facts to the reasoner <b>knowledge base</b>. A <b>fact</b> is
@@ -244,11 +245,8 @@ public interface Reasoner extends AutoCloseable {
 	 *             if the {@code facts} atoms contain terms which are not of type
 	 *             {@link TermType#CONSTANT}.
 	 */
-	// TODO add example to javadoc For example, the last instruction of the
-	// following code will throw
-	// * {@link IllegalArgumentException}: {@code }
-	// *
-	void addFacts(Atom... facts) throws ReasonerStateException;
+	// TODO add examples to javadoc about  multiple sources per predicate and EDB/IDB
+	void addFacts(@NonNull Atom... facts) throws ReasonerStateException;
 
 	/**
 	 * Adds non-null facts to the reasoner <b>knowledge base</b>. A <b>fact</b> is
@@ -270,11 +268,8 @@ public interface Reasoner extends AutoCloseable {
 	 *             if the {@code facts} atoms contain terms which are not of type
 	 *             {@link TermType#CONSTANT}.
 	 */
-	// TODO add example to javadoc For example, the last instruction of the
-	// following code will throw
-	// * {@link IllegalArgumentException}: {@code }
-	// *
-	void addFacts(Collection<Atom> facts) throws ReasonerStateException;
+	// TODO add examples to javadoc about  multiple sources per predicate and EDB/IDB
+	void addFacts(@NonNull Collection<Atom> facts) throws ReasonerStateException;
 
 	/**
 	 * Adds facts stored in given {@code dataSource} for given {@code predicate} to
@@ -296,7 +291,7 @@ public interface Reasoner extends AutoCloseable {
 	// TODO add example to javadoc with two datasources and with in-memory facts for
 	// the same predicate.
 	// TODO validate predicate arity corresponds to the dataSource facts arity
-	void addFactsFromDataSource(Predicate predicate, DataSource dataSource) throws ReasonerStateException;
+	void addFactsFromDataSource(@NonNull Predicate predicate, @NonNull DataSource dataSource) throws ReasonerStateException;
 
 	/**
 	 * Loads the <b>knowledge base</b>, consisting of the current rules and facts,
@@ -396,7 +391,7 @@ public interface Reasoner extends AutoCloseable {
 	 *             ({@link Atom#getTerms()}) which are not of type
 	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
 	 */
-	QueryResultIterator answerQuery(Atom queryAtom, boolean includeBlanks) throws ReasonerStateException;
+	QueryResultIterator answerQuery(@NonNull Atom queryAtom, boolean includeBlanks) throws ReasonerStateException;
 
 	// TODO add examples to query javadoc
 	/**
@@ -450,7 +445,7 @@ public interface Reasoner extends AutoCloseable {
 	 *             <i><b>.csv</b></i> extension.</li>
 	 *             </ul>
 	 */
-	void exportQueryAnswersToCsv(Atom queryAtom, String csvFilePath, boolean includeBlanks)
+	void exportQueryAnswersToCsv(@NonNull Atom queryAtom, @NonNull String csvFilePath, boolean includeBlanks)
 			throws ReasonerStateException, IOException;
 
 	/**
