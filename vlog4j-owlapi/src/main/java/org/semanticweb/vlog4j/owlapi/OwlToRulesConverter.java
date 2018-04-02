@@ -44,7 +44,7 @@ public class OwlToRulesConverter {
 	 * @param owlOntology
 	 *            the ontology
 	 */
-	public void convertOntology(OWLOntology owlOntology) {
+	public void addOntology(OWLOntology owlOntology) {
 		for (OWLAxiom owlAxiom : owlOntology.getAxioms()) {
 			owlAxiom.accept(this.owlAxiomToRulesConverter);
 		}
