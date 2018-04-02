@@ -76,7 +76,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
-		Validate.notNull(algorithm);
+		Validate.notNull(algorithm, "Algorithm cannot be null!");
 		this.algorithm = algorithm;
 	}
 
@@ -115,7 +115,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException {
-		Validate.notNull(ruleRewritingStrategy);
+		Validate.notNull(ruleRewritingStrategy, "Rewrite strategy cannot be null!");
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
 					"Rules cannot be re-writen after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
@@ -152,7 +152,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void addFactsFromDataSource(final Predicate predicate, final DataSource dataSource) throws ReasonerStateException {
+	public void addFactsFromDataSource(final Predicate predicate, final DataSource dataSource)
+			throws ReasonerStateException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
 					"Data sources cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
@@ -357,6 +358,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setLogLevel(LogLevel logLevel) {
+		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
 		this.vLog.setLogLevel(internalLogLevel.name().toLowerCase());
 	}
@@ -368,6 +370,10 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setLogFile(String filePath) {
+		// FIXME: vlog crashes if a null log file is given. Should we allow for null log
+		// files and interpret them as system out? That way, if a log file was never
+		// set, we can have a getter that returns nulljavadoc
+		Validate.notBlank(filePath, "Invalid log file [{}].", filePath);
 		this.vLog.setLogFile(filePath);
 	}
 
