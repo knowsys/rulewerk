@@ -131,11 +131,11 @@ public class OwlToRulesConversionHelper {
 		} else if (owlObjectPropertyExpression.isOWLBottomObjectProperty()) {
 			conjuncts.makeFalse();
 		} else {
-			conjuncts.add(getPropertyAtom(owlObjectPropertyExpression, sourceTerm, targetTerm));
+			conjuncts.add(getObjectPropertyAtom(owlObjectPropertyExpression, sourceTerm, targetTerm));
 		}
 	}
 
-	public static Atom getPropertyAtom(OWLObjectPropertyExpression owlObjectPropertyExpression, Term sourceTerm,
+	public static Atom getObjectPropertyAtom(OWLObjectPropertyExpression owlObjectPropertyExpression, Term sourceTerm,
 			Term targetTerm) {
 		if (owlObjectPropertyExpression.isAnonymous()) {
 			Predicate predicate = OwlToRulesConversionHelper
