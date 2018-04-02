@@ -184,7 +184,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLDisjointClassesAxiom axiom) {
-		// TODO Auto-generated method stub
+		// TODO Efficient implementation for lists of disjoint classes needed
 
 	}
 
@@ -245,7 +245,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLDisjointObjectPropertiesAxiom axiom) {
-		// TODO Auto-generated method stub
+		// TODO Efficient implementation for lists of disjoint properties needed
 
 	}
 
@@ -286,8 +286,8 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLDisjointUnionAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"OWL DisjointUnion not supported, since the cases where it would be expressible in disjunction-free rules are not useful.");
 	}
 
 	@Override
@@ -431,7 +431,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(SWRLRule rule) {
-		// TODO Auto-generated method stub
+		// TODO support SWRL rules
 
 	}
 
