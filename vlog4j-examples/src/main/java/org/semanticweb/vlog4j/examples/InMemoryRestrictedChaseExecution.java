@@ -97,19 +97,25 @@ public class InMemoryRestrictedChaseExecution {
 		// Loading, reasoning, and querying.
 		Reasoner reasoner = Reasoner.getInstance();
 		reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
+
 		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 		reasoner.addFacts(fact1, fact2, fact3, fact4);
 		reasoner.load();
+
 		System.out.println("\n" + "Answers to query " + hasPartEDBXY + " before materialisation:");
 		QueryResultIterator answersBeforeMaterialisation = reasoner.answerQuery(hasPartEDBXY, true);
-		while (answersBeforeMaterialisation.hasNext())
+		while (answersBeforeMaterialisation.hasNext()) {
 			System.out.println(answersBeforeMaterialisation.next());
+		}
 		System.out.println();
+
 		reasoner.reason();
+
 		System.out.println("\n" + "Answers to query " + hasPartIDBXY + " after materialisation:");
 		QueryResultIterator answersAfterMaterialisation = reasoner.answerQuery(hasPartIDBXY, true);
-		while (answersAfterMaterialisation.hasNext())
+		while (answersAfterMaterialisation.hasNext()) {
 			System.out.println(answersAfterMaterialisation.next());
+		}
 		System.out.println();
 	}
 }
