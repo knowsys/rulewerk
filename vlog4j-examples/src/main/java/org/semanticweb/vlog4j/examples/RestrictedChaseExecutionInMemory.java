@@ -12,7 +12,6 @@ import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
 /*-
  * #%L
@@ -103,18 +102,21 @@ public class RestrictedChaseExecutionInMemory {
 		Atom fact4 = Expressions.makeAtom(bicycleEDB, bicycle2);
 
 		// 2. Loading, reasoning, and querying.
-		Reasoner reasoner = Reasoner.getInstance();
-		reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
+		// Use try-with resources, or remember to call close() to free the reasoner
+		// resources.
+		try (Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 
-		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
-		reasoner.addFacts(fact1, fact2, fact3, fact4);
-		reasoner.load();
+			reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
+			reasoner.addFacts(fact1, fact2, fact3, fact4);
+			reasoner.load();
 
-		ExamplesUtil.printOutQueryAnswers(hasPartEDBXY, reasoner);
+			ExamplesUtil.printOutQueryAnswers(hasPartEDBXY, reasoner);
 
-		reasoner.reason();
+			reasoner.reason();
 
-		ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
+			ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
+		}
 	}
 
 }

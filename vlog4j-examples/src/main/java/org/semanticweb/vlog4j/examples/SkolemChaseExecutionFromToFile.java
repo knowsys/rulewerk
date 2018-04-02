@@ -15,7 +15,6 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
 public class SkolemChaseExecutionFromToFile {
 
@@ -104,6 +103,11 @@ public class SkolemChaseExecutionFromToFile {
 		Atom hasPartIDBRedBikeY = Expressions.makeAtom(hasPartIDB, redBike, y);
 		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
 				filesDirPath + File.separator + "hasPartIDBRedBikeYWithBlanks.csv", true);
+
+		// 4. Closing
+		// Use try-with resources, or remember to call close() to free the reasoner
+		// resources.
+		reasoner.reason();
 
 	}
 
