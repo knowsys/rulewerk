@@ -113,6 +113,22 @@ public class OwlToRulesConverterTest {
 		assertEquals(Collections.singleton(rule), converter.rules);
 
 	}
+	
+	@Test
+	public void testTrueBody() {
+		OWLClassExpression body = df.getOWLObjectIntersectionOf(df.getOWLThing(), df.getOWLObjectAllValuesFrom(df.getOWLBottomObjectProperty(), cB));
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(body, cA);
+
+		OwlToRulesConverter converter = new OwlToRulesConverter();
+		axiom.accept(converter);
+
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(converter.frontierVariable));
+		Atom top = OwlToRulesConversionHelper.getTop(converter.frontierVariable);
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atA)),
+				Expressions.makeConjunction(Arrays.asList(top)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
 
 	@Test
 	public void testConjunctionTruth() {
@@ -388,7 +404,6 @@ public class OwlToRulesConverterTest {
 		for (Rule rule : converter.rules) {
 			System.out.println(rule);
 		}
-
 	}
 
 }
