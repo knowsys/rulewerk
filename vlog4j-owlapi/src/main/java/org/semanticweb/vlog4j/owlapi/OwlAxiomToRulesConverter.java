@@ -158,8 +158,15 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLAsymmetricObjectPropertyAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		startAxiomConversion();
+		Variable secondVariable = getFreshVariable();
+		Atom atom1 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), this.frontierVariable,
+				secondVariable);
+		Atom atom2 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), secondVariable,
+				this.frontierVariable);
+		this.rules.add(new RuleImpl(
+				new ConjunctionImpl(Arrays.asList(OwlToRulesConversionHelper.getBottom(this.frontierVariable))),
+				new ConjunctionImpl(Arrays.asList(atom1, atom2))));
 	}
 
 	@Override

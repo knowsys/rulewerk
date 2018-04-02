@@ -29,6 +29,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.change.OWLCompositeOntologyChange;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -430,6 +431,24 @@ public class OwlToRulesConverterTest {
 	}
 
 	@Test
+	public void testAsymmetricObjectPropertyOf() {
+		OWLAxiom axiom = df.getOWLAsymmetricObjectPropertyAxiom(pR);
+
+		OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		Variable secondVariable = Expressions.makeVariable("Y1");
+		Atom at1 = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, secondVariable));
+		Atom at2 = Expressions.makeAtom(nR, Arrays.asList(secondVariable, converter.frontierVariable));
+		Rule rule = Expressions.makeRule(
+				Expressions.makeConjunction(
+						Arrays.asList(OwlToRulesConversionHelper.getBottom(converter.frontierVariable))),
+				Expressions.makeConjunction(Arrays.asList(at1, at2)));
+
+		assertEquals(Sets.newSet(rule), converter.rules);
+	}
+
+	@Test
 	public void testInverseObjectProperties() {
 		OWLAxiom axiom = df.getOWLInverseObjectPropertiesAxiom(pR, pS);
 
@@ -497,7 +516,7 @@ public class OwlToRulesConverterTest {
 
 		assertEquals(Sets.newSet(rule), converter.rules);
 	}
-	
+
 	public void testTransitiveProperty() {
 		OWLAxiom axiom = df.getOWLTransitiveObjectPropertyAxiom(pR);
 
@@ -510,7 +529,7 @@ public class OwlToRulesConverterTest {
 		Atom at2 = Expressions.makeAtom(nR, Arrays.asList(var1, var2));
 		Atom ath = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, var2));
 		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(ath)),
-				Expressions.makeConjunction(Arrays.asList(at1,at2)));
+				Expressions.makeConjunction(Arrays.asList(at1, at2)));
 
 		assertEquals(Sets.newSet(rule), converter.rules);
 	}
