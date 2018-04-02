@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
+import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -50,7 +51,7 @@ public class ConjunctionImpl implements Conjunction {
 	 * @param atoms
 	 *            a non-null list of atoms, that cannot contain null elements.
 	 */
-	public ConjunctionImpl(List<Atom> atoms) {
+	public ConjunctionImpl(@NonNull List<Atom> atoms) {
 		Validate.noNullElements(atoms);
 		this.atoms = atoms;
 	}

@@ -71,7 +71,7 @@ public class GeneratedAnonymousIndividualsTest {
 	public void testBlanksSkolemChaseNoRuleRewrite()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			assertEquals(Algorithm.SKOLEM_CHASE, reasoner.getAlgorithm());
+			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			assertEquals(RuleRewriteStrategy.NONE, reasoner.getRuleRewriteStrategy());
 			
 			reasoner.addFacts(fact);
@@ -88,7 +88,7 @@ public class GeneratedAnonymousIndividualsTest {
 	public void testBlanksSkolemChaseSplitHeadPieces()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			assertEquals(Algorithm.SKOLEM_CHASE, reasoner.getAlgorithm());
+			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			// P(?x) -> P(?x,!y), P(?x,!z)
 			// after split becomes {{P(?x) -> P(?x,!y), {P(?x)-> P(?x,!z)}}
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
