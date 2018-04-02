@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +43,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
@@ -60,10 +62,94 @@ public class ReasonerStateTest {
 	private static final Atom factPc = Expressions.makeAtom(p, c);
 	// private static final Atom factPd = Expressions.makeAtom(q, d);
 
+	@Test(expected = NullPointerException.class)
+	public void testSetAlgorithm() {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.setAlgorithm(null);
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testSetReasoningTimeout() {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.setReasoningTimeout(-3);
+		}
+	}
+
+	@Test(expected = ReasonerStateException.class)
+	public void testAddRules1() throws EdbIdbSeparationException, IOException, ReasonerStateException {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.load();
+			reasoner.addRules(ruleQxPx);
+		}
+	}
+
+	@Test
+	public void testAddRules2() throws EdbIdbSeparationException, IOException, ReasonerStateException {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.load();
+			reasoner.resetReasoner();
+			reasoner.addRules(ruleQxPx);
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddRules3() throws EdbIdbSeparationException, IOException, ReasonerStateException {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			List<Rule> rules = new ArrayList<>();
+			rules.add(ruleQxPx);
+			rules.add(null);
+			reasoner.addRules(rules);
+		}
+	}
+
+	@Test(expected = ReasonerStateException.class)
+	public void testAddFacts1() throws EdbIdbSeparationException, IOException, ReasonerStateException {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.load();
+			reasoner.addFacts(factPc);
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddFacts2() throws EdbIdbSeparationException, IOException, ReasonerStateException {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			List<Atom> facts = new ArrayList<>();
+			facts.add(factPc);
+			facts.add(null);
+			reasoner.addFacts(facts);
+			reasoner.load();
+		}
+	}
+
 	@Test
 	public void testResetBeforeLoad() {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.resetReasoner();
+		}
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void setRuleRewriteStrategy1() throws ReasonerStateException {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.setRuleRewriteStrategy(null);
+		}
+	}
+
+	@Test(expected = ReasonerStateException.class)
+	public void setRuleRewriteStrategy2() throws ReasonerStateException, EdbIdbSeparationException, IOException {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.load();
+			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.NONE);
+		}
+	}
+
+	@Test
+	public void setRuleRewriteStrategy3() throws ReasonerStateException, EdbIdbSeparationException, IOException {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.load();
+			reasoner.resetReasoner();
+			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.NONE);
 		}
 	}
 

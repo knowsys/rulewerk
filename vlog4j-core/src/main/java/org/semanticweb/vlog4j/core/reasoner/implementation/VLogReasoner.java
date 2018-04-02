@@ -139,7 +139,7 @@ public class VLogReasoner implements Reasoner {
 			throw new ReasonerStateException(this.reasonerState,
 					"Facts cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
 		}
-		Validate.noNullElements(this.rules, "Null facts are not alowed! The list contains a fact at position [%d].");
+		Validate.noNullElements(facts, "Null facts are not alowed! The list contains a fact at position [%d].");
 		for (final Atom fact : facts) {
 			validateFactTermsAreConstant(fact);
 
