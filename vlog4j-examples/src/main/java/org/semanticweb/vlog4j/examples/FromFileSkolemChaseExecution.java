@@ -91,7 +91,7 @@ public class FromFileSkolemChaseExecution {
 		System.out.println("\n" + "Answers to query " + hasPartEDBXY + " before materialisation:");
 		QueryResultIterator answersBeforeMaterialisation = reasoner.answerQuery(hasPartEDBXY, true);
 		while (answersBeforeMaterialisation.hasNext()) {
-			System.out.println(answersBeforeMaterialisation.next());
+			System.out.println(" - " + answersBeforeMaterialisation.next());
 		}
 		System.out.println();
 
@@ -100,7 +100,7 @@ public class FromFileSkolemChaseExecution {
 		System.out.println("\n" + "Answers to query " + hasPartIDBXY + " after materialisation:");
 		QueryResultIterator answersAfterMaterialisation = reasoner.answerQuery(hasPartIDBXY, true);
 		while (answersAfterMaterialisation.hasNext()) {
-			System.out.println(answersAfterMaterialisation.next());
+			System.out.println(" - " + answersAfterMaterialisation.next());
 		}
 		System.out.println();
 	}

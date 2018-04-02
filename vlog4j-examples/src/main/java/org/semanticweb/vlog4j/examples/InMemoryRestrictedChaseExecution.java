@@ -37,7 +37,8 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 public class InMemoryRestrictedChaseExecution {
 	public static void main(String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException {
 
-		// Instantiating entities
+		// 1. Instantiating entities, rules and facts
+
 		Predicate bicycleIDB = Expressions.makePredicate("BicycleIDB", 1);
 		Predicate bicycleEDB = Expressions.makePredicate("BicycleEDB", 1);
 		Predicate wheelIDB = Expressions.makePredicate("WheelIDB", 1);
@@ -52,7 +53,6 @@ public class InMemoryRestrictedChaseExecution {
 		Variable x = Expressions.makeVariable("x");
 		Variable y = Expressions.makeVariable("y");
 
-		// Instantiating rules
 		// BicycleIDB(?x) :- BicycleEDB(?x) .
 		Atom bicycleIDBX = Expressions.makeAtom(bicycleIDB, x);
 		Atom bicycleEDBX = Expressions.makeAtom(bicycleEDB, x);
@@ -84,7 +84,6 @@ public class InMemoryRestrictedChaseExecution {
 		Atom isPartOfIDBYX = Expressions.makeAtom(isPartOfIDB, y, x);
 		Rule rule8 = Expressions.makeRule(hasPartIDBXY, isPartOfIDBYX);
 
-		// Instantiating facts
 		// BicycleEDB(bicycle1) .
 		Atom fact1 = Expressions.makeAtom(bicycleEDB, bicycle1);
 		// HasPartEDB(bicycle1, wheel1) .
@@ -94,7 +93,7 @@ public class InMemoryRestrictedChaseExecution {
 		// BicycleEDB(b) .
 		Atom fact4 = Expressions.makeAtom(bicycleEDB, bicycle2);
 
-		// Loading, reasoning, and querying.
+		// 2. Loading, reasoning, and querying.
 		Reasoner reasoner = Reasoner.getInstance();
 		reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 
@@ -105,7 +104,7 @@ public class InMemoryRestrictedChaseExecution {
 		System.out.println("\n" + "Answers to query " + hasPartEDBXY + " before materialisation:");
 		QueryResultIterator answersBeforeMaterialisation = reasoner.answerQuery(hasPartEDBXY, true);
 		while (answersBeforeMaterialisation.hasNext()) {
-			System.out.println(answersBeforeMaterialisation.next());
+			System.out.println(" - " + answersBeforeMaterialisation.next());
 		}
 		System.out.println();
 
@@ -114,7 +113,7 @@ public class InMemoryRestrictedChaseExecution {
 		System.out.println("\n" + "Answers to query " + hasPartIDBXY + " after materialisation:");
 		QueryResultIterator answersAfterMaterialisation = reasoner.answerQuery(hasPartIDBXY, true);
 		while (answersAfterMaterialisation.hasNext()) {
-			System.out.println(answersAfterMaterialisation.next());
+			System.out.println(" - " + answersAfterMaterialisation.next());
 		}
 		System.out.println();
 	}
