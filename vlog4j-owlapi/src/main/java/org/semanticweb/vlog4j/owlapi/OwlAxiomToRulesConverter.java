@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.semanticweb.owlapi.apibinding.OWLManager;
+
 /*-
  * #%L
  * VLog4j OWL API Support
@@ -30,6 +32,7 @@ import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLAxiomVisitor;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
@@ -79,6 +82,8 @@ import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
  *
  */
 public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAxiomVisitor {
+
+	static OWLDataFactory owlDataFactory = OWLManager.getOWLDataFactory();
 
 	final Set<Rule> rules = new HashSet<>();
 	final Set<Atom> facts = new HashSet<>();
@@ -188,8 +193,9 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(OWLObjectPropertyDomainAxiom axiom) {
-		// TODO Auto-generated method stub
-
+		OWLClassExpression existsProperty = owlDataFactory.getOWLObjectSomeValuesFrom(axiom.getProperty(),
+				owlDataFactory.getOWLThing());
+		addSubClassAxiom(existsProperty, axiom.getDomain());
 	}
 
 	@Override

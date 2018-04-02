@@ -563,6 +563,23 @@ public class OwlAxiomToRulesConverterTest {
 				|| converter.rules.equals(Sets.newSet(ruleAC, ruleCB, ruleBA)));
 	}
 
+	@Test
+	public void testObjectPropertyDomain() {
+		OWLAxiom axiom = df.getOWLObjectPropertyDomainAxiom(pR, cA);
+
+		OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		Variable secondVariable = Expressions.makeVariable("Y1");
+		Atom atR = Expressions.makeAtom(nR, Arrays.asList(converter.frontierVariable, secondVariable));
+		Atom atA = Expressions.makeAtom(nA, Arrays.asList(converter.frontierVariable));
+
+		Rule rule = Expressions.makeRule(Expressions.makeConjunction(Arrays.asList(atA)),
+				Expressions.makeConjunction(Arrays.asList(atR)));
+
+		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
 	@Ignore
 	public void test() {
 		OWLObjectPropertyExpression Sinv = df.getOWLObjectInverseOf(pS);
