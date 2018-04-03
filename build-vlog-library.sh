@@ -15,7 +15,7 @@ else
 	# git pull
 	mkdir build
 	cd build
-	cmake -DJAVA=1 ..
+	cmake -DJAVA=1 -DSPARQL=1 ..
 	make
 	cp jvlog.jar ../../../local_builds/jvlog.jar
 	cd ../../..
