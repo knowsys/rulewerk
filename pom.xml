@@ -9,14 +9,15 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>VLog4j</name>
+	<name>VLog4j RDF Support</name>
 	<description>A Java library for working with the VLog rule engine</description>
-	<url>https://github.com/mkroetzsch/vlog4j</url>
 
 	<modules>
 		<module>vlog4j-core</module>
-    <module>vlog4j-examples</module>
+		<module>vlog4j-rdf</module>
+    		<module>vlog4j-examples</module>
 		<module>vlog4j-owlapi</module>
+
 	</modules>
 
 
@@ -68,6 +69,8 @@
 		<apacheHttpVersion>4.5.4</apacheHttpVersion>
 		<commonsCliVersion>1.4</commonsCliVersion>
 		<ini4JVersion>0.5.4</ini4JVersion>
+		<openrdf.sesame.version>2.7.16</openrdf.sesame.version>
+		<!-- <openrdf.sesame.version>4.1.2</openrdf.sesame.version> -->
 	</properties>
 
 	<dependencies>

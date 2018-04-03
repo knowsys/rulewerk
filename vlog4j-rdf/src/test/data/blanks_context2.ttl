@@ -1,0 +1,5 @@
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Person> .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:genid2 .
+_:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:genid1 .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:genid1 .
+_:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Person> .
