@@ -1,5 +1,3 @@
-package org.semanticweb.vlog4j.core.reasoner.exceptions;
-
 /*
  * #%L
  * VLog4j Core Components
@@ -20,8 +18,11 @@ package org.semanticweb.vlog4j.core.reasoner.exceptions;
  * #L%
  */
 
-import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
+package org.semanticweb.vlog4j.core.reasoner.exceptions;
+
 import java.text.MessageFormat;
+
+import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 
 /**
  * Thrown when an operation that is invalid in current reasoner state is

@@ -21,6 +21,7 @@ package org.semanticweb.vlog4j.core.model.implementation;
  */
 
 import org.apache.commons.lang3.Validate;
+import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 
 /**
@@ -44,7 +45,7 @@ public class PredicateImpl implements Predicate {
 	 * @param arity
 	 *            an int value strictly greater than 0.
 	 */
-	public PredicateImpl(String name, int arity) {
+	public PredicateImpl(@NonNull String name, int arity) {
 		Validate.notBlank(name, "Predicates cannot be named by blank Strings.");
 		Validate.isTrue(arity > 0, "Predicate arity must be greater than zero: %d", arity);
 

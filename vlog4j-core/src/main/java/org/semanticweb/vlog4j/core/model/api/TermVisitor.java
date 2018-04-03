@@ -21,8 +21,8 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * A visitor for the various types of {@link: Term}s in the data model. Should
- * be used to avoid any type casting or instanceof checks when processing terms.
+ * A visitor for the various types of {@link Term}s in the data model. Should be
+ * used to avoid any type casting or {@code instanceof} checks when processing terms.
  * 
  * @author Markus Krötzsch
  */

@@ -1,6 +1,7 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
 import org.apache.commons.lang3.Validate;
+import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 
@@ -35,7 +36,7 @@ public abstract class AbstractTermImpl implements Term {
 
 	private final String name;
 
-	public AbstractTermImpl(final String name) {
+	public AbstractTermImpl(@NonNull final String name) {
 		Validate.notBlank(name, "Terms cannot be named by blank strings");
 		this.name = new String(name);
 	}
@@ -46,7 +47,7 @@ public abstract class AbstractTermImpl implements Term {
 	}
 
 	@Override
-	public abstract TermType getType();
+	public abstract @NonNull TermType getType();
 
 	@Override
 	public int hashCode() {
