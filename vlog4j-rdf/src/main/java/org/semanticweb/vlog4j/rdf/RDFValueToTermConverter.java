@@ -1,17 +1,20 @@
 package org.semanticweb.vlog4j.rdf;
 
+import java.io.IOException;
+
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.datatypes.XMLDatatypeUtil;
+import org.openrdf.rio.ntriples.NTriplesUtil;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
 import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
 
-public class RDFValueToTermConverter {
+class RDFValueToTermConverter {
 
-	public static Term rdfValueToTerm(Value value) {
+	static Term rdfValueToTerm(Value value) {
 		if (value instanceof BNode) {
 			return rdfBlankNodeToBlank((BNode) value);
 		} else if (value instanceof Literal) {
@@ -20,59 +23,55 @@ public class RDFValueToTermConverter {
 			return rdfURItoConstant((URI) value);
 	}
 
-	public static Term rdfBlankNodeToBlank(BNode bNode) {
-		return new BlankImpl(bNode.stringValue());
+	static Term rdfBlankNodeToBlank(BNode bNode) {
+		// IDs are unique per Model.
+		return new BlankImpl(bNode.getID());
 	}
 
-	public static Term rdfURItoConstant(URI uri) {
-		// TODO perhaps enclose URI in "<" ">"
-		return new ConstantImpl(uri.stringValue());
+	static Term rdfURItoConstant(URI uri) {
+		return new ConstantImpl(uri.toString());
 	}
 
-	public static Term rdfLiteralToConstant(Literal literal) {
-		// TODO canonical form (1 instead of 01)
-		// TODO datatype long prefix
-
-		System.out.println("literal.getLabel() " + literal.getLabel());
-		System.out.println("literal.getLanguage() " + literal.getLanguage());
-		System.out.println(" literal.getDatatype() " + literal.getDatatype());
-		System.out.println("literal.stringValue() " + literal.stringValue());
-
+	static Term rdfLiteralToConstant(Literal literal) {
 		if (literal.getDatatype() != null) {
 			final String normalizedLabel = XMLDatatypeUtil.normalize(literal.getLabel(), literal.getDatatype());
 			System.out.println("normalized label: " + normalizedLabel);
 		}
-		// FIXME how t treat builtin datatypes?
-		// XMLDatatypeUtil.isBuiltInDatatype(literal.getDatatype());
-
-		final String normalizedStringValueLiteral = getNormalizedStringValueLiteral(literal);
-		System.out.println(normalizedStringValueLiteral);
+		final String normalizedStringValueLiteral = buildNormalizedStringValue(literal);
 		return new ConstantImpl(normalizedStringValueLiteral);
 	}
 
-	protected static String getNormalizedStringValueLiteral(Literal literal) {
+	// NTriplesUtil append format
+	static String buildNormalizedStringValue(Literal literal) {
 		final StringBuilder sb = new StringBuilder();
-		// FIXME do these characters need to be escaped?
-		sb.append('"');
-		if (literal.getDatatype() != null) {
-			final String normalizedLabel = XMLDatatypeUtil.normalize(literal.getLabel(), literal.getDatatype());
-			System.out.println("normalized label: " + normalizedLabel);
-			sb.append(normalizedLabel);
-		} else {
-			sb.append(literal.getLabel());
+		final URI datatype = literal.getDatatype();
+		// Do some character escaping on the label:
+		sb.append("\"");
+		final String normalizedLabel = datatype != null ? XMLDatatypeUtil.normalize(literal.getLabel(), datatype)
+				: literal.getLabel();
+		try {
+			NTriplesUtil.escapeString(normalizedLabel, sb);
+		} catch (final IOException e) {
+			throw new RuntimeException("I/O exception unexpected when appending to a StringBuilder.", e);
 		}
-		sb.append('"');
+		sb.append("\"");
+
 		if (literal.getLanguage() != null) {
 			// Append the literal's language
 			sb.append("@");
 			sb.append(literal.getLanguage());
-		} else if (literal.getDatatype() != null) {
-			// Append the literal's datatype (possibly written as an abbreviated
-			// URI)
-			sb.append("^^");
-			// FIXME get full datatype name
-			// FIXME should datatype be enclosed in "<" ">" ?
-			sb.append(literal.getDatatype());
+		} else {
+
+			if (datatype != null) {
+				// Append the literal's datatype
+				// FIXME make datatype is not an abbreviated URI.
+				sb.append("^^");
+				try {
+					NTriplesUtil.append(datatype, sb);
+				} catch (final IOException e) {
+					throw new RuntimeException("I/O exception unexpected when appending to a StringBuilder.", e);
+				}
+			}
 		}
 		return sb.toString();
 	}

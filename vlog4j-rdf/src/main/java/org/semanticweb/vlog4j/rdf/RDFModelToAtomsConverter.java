@@ -19,7 +19,6 @@ public class RDFModelToAtomsConverter {
 	}
 
 	public static Atom rdfStatementToAtom(final Statement statement) {
-		// TODO do we need statement.getContext() ?
 		final Resource subject = statement.getSubject();
 
 		final URI predicate = statement.getPredicate();
