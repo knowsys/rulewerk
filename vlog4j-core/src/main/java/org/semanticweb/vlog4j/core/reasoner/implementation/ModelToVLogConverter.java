@@ -1,8 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
-import java.util.Collection;
-
-/*
+/*-
  * #%L
  * VLog4j Core Components
  * %%
@@ -22,15 +20,19 @@ import java.util.Collection;
  * #L%
  */
 
+
+
+import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
+
 
 /**
  * Utility class with static methods for converting from VLog API model objects
@@ -133,13 +135,26 @@ final class ModelToVLogConverter {
 
 	static karmaresearch.vlog.VLog.RuleRewriteStrategy toVLogRuleRewriteStrategy(
 			final RuleRewriteStrategy ruleRewriteStrategy) {
-		Validate.notNull(ruleRewriteStrategy);
 		switch (ruleRewriteStrategy) {
 		case SPLIT_HEAD_PIECES:
 			return karmaresearch.vlog.VLog.RuleRewriteStrategy.AGGRESSIVE;
 		case NONE:
 		default:
 			return karmaresearch.vlog.VLog.RuleRewriteStrategy.NONE;
+		}
+	}
+
+	static karmaresearch.vlog.VLog.LogLevel toVLogLogLevel(final LogLevel logLevel) {
+		switch (logLevel) {
+		case DEBUG:
+			return karmaresearch.vlog.VLog.LogLevel.DEBUG;
+		case INFO:
+			return karmaresearch.vlog.VLog.LogLevel.INFO;
+		case ERROR:
+			return karmaresearch.vlog.VLog.LogLevel.ERROR;
+		case WARNING:
+		default:
+			return karmaresearch.vlog.VLog.LogLevel.WARNING;
 		}
 	}
 }
