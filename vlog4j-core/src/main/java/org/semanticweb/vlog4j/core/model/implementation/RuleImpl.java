@@ -86,7 +86,7 @@ public class RuleImpl implements Rule {
 
 	@Override
 	public String toString() {
-		return "RuleImpl [body=" + this.body + ", head=" + this.head + "]";
+		return this.head + " :- " + this.body;
 	}
 
 	@Override

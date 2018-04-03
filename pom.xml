@@ -15,6 +15,7 @@
 
 	<modules>
 		<module>vlog4j-core</module>
+		<module>vlog4j-owlapi</module>
 	</modules>
 
 	<licenses>
@@ -57,6 +58,8 @@
 		<apacheCommonsLangVersion>3.7</apacheCommonsLangVersion>
 		<apacheCommonsCsvVersion>1.5</apacheCommonsCsvVersion>
 		<mavenJavaDocVersion>3.0.0</mavenJavaDocVersion>
+		<owlapi.version>4.5.1</owlapi.version>
+		
 
 		<apacheCommonsCompressVersion>1.15</apacheCommonsCompressVersion>
 		<apacheHttpVersion>4.5.4</apacheHttpVersion>

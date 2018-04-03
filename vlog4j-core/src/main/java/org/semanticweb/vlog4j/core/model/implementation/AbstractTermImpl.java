@@ -72,9 +72,4 @@ public abstract class AbstractTermImpl implements Term {
 		return (this.getType() == other.getType()) && this.name.equals(other.getName());
 	}
 
-	@Override
-	public String toString() {
-		return getType() + " [name=" + this.name + "]";
-	}
-
 }
