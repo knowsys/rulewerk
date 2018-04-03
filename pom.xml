@@ -54,6 +54,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<eclipse.jdt.annotation.version>2.1.100</eclipse.jdt.annotation.version>
 		<junitVersion>4.12</junitVersion>
 		<mockitoVersion>1.10.19</mockitoVersion>
 		<slf4jVersion>1.7.10</slf4jVersion>
@@ -70,6 +71,11 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.jdt</groupId>
+			<artifactId>org.eclipse.jdt.annotation</artifactId>
+	<version>${eclipse.jdt.annotation.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
