@@ -30,7 +30,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
 /**
- * Utility class for collecting the content of a .csv file.
+ * Utility class for collecting the content of a .csv file, or writing fact
+ * terms to a csv file.
  * 
  * @author Irina Dragoste
  *
@@ -55,7 +56,7 @@ public final class CsvFileUtils {
 	 */
 	public static List<List<String>> getCSVContent(final String csvFile) throws IOException {
 		final List<List<String>> content = new ArrayList<>();
-		// FIXME which format does vLog expect and generate?
+
 		final Reader in = new FileReader(csvFile);
 		final CSVParser parse = CSVFormat.DEFAULT.parse(in);
 		parse.forEach(csvRecord -> {

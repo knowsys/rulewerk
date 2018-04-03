@@ -50,8 +50,8 @@ public class AddDataSourceTest {
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(factPredicateParity2, factPredicateQarity1);
-			reasoner.addDataSource(Expressions.makePredicate("p", 3), dataSource);
-			reasoner.addDataSource(predicateParity1, dataSource);
+			reasoner.addFactsFromDataSource(Expressions.makePredicate("p", 3), dataSource);
+			reasoner.addFactsFromDataSource(predicateParity1, dataSource);
 			reasoner.load();
 		}
 	}
@@ -62,8 +62,8 @@ public class AddDataSourceTest {
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicateP, dataSource);
-			reasoner.addDataSource(predicateQ, dataSource);
+			reasoner.addFactsFromDataSource(predicateP, dataSource);
+			reasoner.addFactsFromDataSource(predicateQ, dataSource);
 			reasoner.load();
 		}
 	}
@@ -75,9 +75,9 @@ public class AddDataSourceTest {
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicateP, dataSource);
+			reasoner.addFactsFromDataSource(predicateP, dataSource);
 			reasoner.load();
-			reasoner.addDataSource(predicateQ, dataSource);
+			reasoner.addFactsFromDataSource(predicateQ, dataSource);
 		}
 	}
 
@@ -88,10 +88,10 @@ public class AddDataSourceTest {
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicateP, dataSource);
+			reasoner.addFactsFromDataSource(predicateP, dataSource);
 			reasoner.load();
 			reasoner.reason();
-			reasoner.addDataSource(predicateQ, dataSource);
+			reasoner.addFactsFromDataSource(predicateQ, dataSource);
 		}
 	}
 
@@ -100,8 +100,8 @@ public class AddDataSourceTest {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicate, dataSource);
-			reasoner.addDataSource(predicate, dataSource);
+			reasoner.addFactsFromDataSource(predicate, dataSource);
+			reasoner.addFactsFromDataSource(predicate, dataSource);
 		}
 	}
 
@@ -112,7 +112,7 @@ public class AddDataSourceTest {
 		final Atom fact = Expressions.makeAtom(Expressions.makePredicate("p", 1), Expressions.makeConstant("a"));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(fact);
-			reasoner.addDataSource(predicate, dataSource);
+			reasoner.addFactsFromDataSource(predicate, dataSource);
 		}
 	}
 
@@ -120,7 +120,7 @@ public class AddDataSourceTest {
 	public void testAddDataSourcePredicateNotNull() throws ReasonerStateException, IOException {
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(null, dataSource);
+			reasoner.addFactsFromDataSource(null, dataSource);
 		}
 	}
 
@@ -128,7 +128,7 @@ public class AddDataSourceTest {
 	public void testAddDataSourceNotNullDataSource() throws ReasonerStateException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicate, null);
+			reasoner.addFactsFromDataSource(predicate, null);
 		}
 	}
 
