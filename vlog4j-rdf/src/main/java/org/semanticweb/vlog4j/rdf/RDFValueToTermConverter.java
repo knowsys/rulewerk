@@ -32,7 +32,10 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
 import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
 
-class RDFValueToTermConverter {
+final class RDFValueToTermConverter {
+
+	private RDFValueToTermConverter() {
+	}
 
 	static Term rdfValueToTerm(Value value) {
 		if (value instanceof BNode) {
@@ -61,7 +64,15 @@ class RDFValueToTermConverter {
 		return new ConstantImpl(normalizedStringValueLiteral);
 	}
 
-	// NTriplesUtil append format
+	// method inspired from NTriplesUtil #append(Literal literal)
+	/**
+	 * Serializes the given {@code literal} to the the NTriples format for
+	 * {@link Literal}s, using a canonical representation.
+	 * 
+	 * @param literal
+	 * @return a unique string representation of given {@code literal} in canonical
+	 *         form.
+	 */
 	static String buildNormalizedStringValue(Literal literal) {
 		final StringBuilder sb = new StringBuilder();
 		final URI datatype = literal.getDatatype();

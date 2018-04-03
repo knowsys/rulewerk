@@ -31,14 +31,17 @@ import org.openrdf.model.Value;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
-public class RDFModelToAtomsConverter {
+public final class RDFModelToAtomsConverter {
+
+	private RDFModelToAtomsConverter() {
+	}
 
 	public static Set<Atom> rdfModelToAtoms(Model rdfModel) {
 		// TODO do we need rdfModel.getNamespaces() ?
 		return rdfModel.stream().map(RDFModelToAtomsConverter::rdfStatementToAtom).collect(Collectors.toSet());
 	}
 
-	public static Atom rdfStatementToAtom(final Statement statement) {
+	static Atom rdfStatementToAtom(final Statement statement) {
 		final Resource subject = statement.getSubject();
 
 		final URI predicate = statement.getPredicate();

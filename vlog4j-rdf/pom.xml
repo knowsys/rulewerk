@@ -29,68 +29,18 @@
 			<version>${openrdf.sesame.version}</version>
 		</dependency>
 		<dependency>
-			<!-- Rio parser and writer implementation for the Turtle file format. -->
-			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-rio-turtle</artifactId>
-			<version>${openrdf.sesame.version}</version>
-		</dependency>
-		<dependency>
 			<!-- Rio parser and writer implementation for the N-Triples file format. -->
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-ntriples</artifactId>
 			<version>${openrdf.sesame.version}</version>
 		</dependency>
-		<!-- TODO N3 format has a writer only -->
 		<dependency>
-			<!-- Rio parser and writer implementation for the TriG file format. -->
+			<!-- Rio parser and writer implementation for the Turtle file format. -->
 			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-rio-trig</artifactId>
-			<version>${openrdf.sesame.version}</version>
-		</dependency>
-		<dependency>
-			<!-- Rio parser and writer implementation for the TriX file format. -->
-			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-rio-trix</artifactId>
-			<version>${openrdf.sesame.version}</version>
-		</dependency>
-		<dependency>
-			<!-- Rio parser and writer implementation for the N-Quads file format. -->
-			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-rio-nquads</artifactId>
-			<version>${openrdf.sesame.version}</version>
-		</dependency>
-		<dependency>
-			<!-- Rio parser and writer implementation for the RDF/JSON file format. -->
-			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-rio-rdfjson</artifactId>
-			<version>${openrdf.sesame.version}</version>
-		</dependency>
-		<dependency>
-			<!-- Rio parser and writer implementation for the binary RDF file format. -->
-			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-rio-binary</artifactId>
-			<version>${openrdf.sesame.version}</version>
-			<!-- FIXME: what does this scope mean? -->
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- FIXME: maybe we only need this -->
-		<!-- <dependency> Rio (RDF I/O) is an API for parsers and writers of various 
-			RDF file formats. <groupId>org.openrdf.sesame</groupId> <artifactId>sesame-rio</artifactId> 
-			<version>${openrdf.sesame.version}</version> <type>pom</type> </dependency> -->
-
-
-		<!-- <dependency> FIXME maybe we only need this parser library. TODO check 
-			version number compatible with owl api <groupId>org.openrdf</groupId> <artifactId>rio</artifactId> 
-			<version>1.0.10</version> </dependency> -->
-
-		<!-- <dependency>
-			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-rio-compliance</artifactId>
+			<artifactId>sesame-rio-turtle</artifactId>
 			<version>${openrdf.sesame.version}</version>
 			<scope>test</scope>
-		</dependency> -->
-
+		</dependency>
 	</dependencies>
 
 
