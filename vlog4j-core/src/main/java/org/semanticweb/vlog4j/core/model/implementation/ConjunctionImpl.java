@@ -119,4 +119,19 @@ public class ConjunctionImpl implements Conjunction {
 		return this.atoms.iterator();
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder stringBuilder = new StringBuilder();
+		boolean first = true;
+		for (final Atom atom : this.atoms) {
+			if (first) {
+				first = false;
+			} else {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(atom.toString());
+		}
+		return stringBuilder.toString();
+	}
+
 }
