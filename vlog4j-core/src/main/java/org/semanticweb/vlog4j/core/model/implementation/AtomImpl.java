@@ -121,7 +121,19 @@ public class AtomImpl implements Atom {
 
 	@Override
 	public String toString() {
-		return "AtomImpl [predicate=" + this.predicate + ", terms=" + this.terms + "]";
+		final StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(this.predicate.getName()).append("(");
+		boolean first = true;
+		for (final Term term : this.terms) {
+			if (first) {
+				first = false;
+			} else {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(term);
+		}
+		stringBuilder.append(")");
+		return stringBuilder.toString();
 	}
 
 }
