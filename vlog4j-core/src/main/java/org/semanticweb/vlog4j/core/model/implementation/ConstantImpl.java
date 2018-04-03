@@ -50,4 +50,9 @@ public class ConstantImpl extends AbstractTermImpl implements Constant {
 	public <T> T accept(TermVisitor<T> termVisitor) {
 		return termVisitor.visit(this);
 	}
+	
+	@Override
+	public String toString() {
+		return this.getName();
+	}
 }

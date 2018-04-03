@@ -25,14 +25,16 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
  */
 
 /**
- * Implements {@link #VARIABLE} terms. A variable is a parameter that stands for an arbitrary domain element.
+ * Implements {@link #VARIABLE} terms. A variable is a parameter that stands for
+ * an arbitrary domain element.
  *
  * @author david.carral@tu-dresden.de
  */
 public class VariableImpl extends AbstractTermImpl implements Variable {
 
 	/**
-	 * Instantiates a <b>{@code VariableImpl}</b> object with the name <b>{@code name}</b>.
+	 * Instantiates a <b>{@code VariableImpl}</b> object with the name
+	 * <b>{@code name}</b>.
 	 *
 	 * @param name
 	 *            cannot be a blank String (null, empty or whitespace).
@@ -49,5 +51,10 @@ public class VariableImpl extends AbstractTermImpl implements Variable {
 	@Override
 	public <T> T accept(TermVisitor<T> termVisitor) {
 		return termVisitor.visit(this);
+	}
+
+	@Override
+	public String toString() {
+		return "?" + this.getName();
 	}
 }

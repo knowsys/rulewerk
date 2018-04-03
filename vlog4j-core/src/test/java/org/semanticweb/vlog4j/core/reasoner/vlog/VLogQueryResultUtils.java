@@ -31,7 +31,8 @@ import karmaresearch.vlog.Term;
 import karmaresearch.vlog.TermQueryResultIterator;
 
 /**
- * Utility class with static methods used for collecting query results.
+ * Utility class with static methods used for collecting query results for
+ * testing purposes.
  * 
  * @author Irina Dragoste
  *
@@ -42,9 +43,9 @@ final class VLogQueryResultUtils {
 	}
 
 	/**
-	 * Collects TermQueryResultIterator results into a Set. Asserts that the result
-	 * should never return duplicates. Closes the iterator after collecting the
-	 * results.
+	 * Collects TermQueryResultIterator results into a Set. Transforms the array of
+	 * {@link Term}s into a set of {@link Term}s. Asserts that the results do not
+	 * contain duplicates. Closes the iterator after collecting the results.
 	 * 
 	 * @param queryResultIterator
 	 * @return a set of unique query result. A query result is a List of Term
