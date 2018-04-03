@@ -15,8 +15,10 @@
 
 	<modules>
 		<module>vlog4j-core</module>
+    <module>vlog4j-examples</module>
 		<module>vlog4j-owlapi</module>
 	</modules>
+
 
 	<licenses>
 		<license>
@@ -107,7 +109,7 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
 					<version>1.14</version>
-					<configuration />
+					<configuration/>
 					<executions>
 						<execution>
 							<id>first</id>
@@ -146,7 +148,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 
@@ -161,7 +163,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute />
+										<execute/>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
