@@ -22,7 +22,6 @@ public class RDFModelToAtomsConverter {
 		// TODO do we need statement.getContext() ?
 		final Resource subject = statement.getSubject();
 
-		// FIXME should we enclose predicate value in "<" ">" ?
 		final URI predicate = statement.getPredicate();
 
 		final Value object = statement.getObject();
