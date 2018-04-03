@@ -62,15 +62,20 @@ public class LoggingTest {
 	// TODO remaining tests: test that the log level and the log files can be set
 	// any time
 
-	// FIXME the low-level API should provide its own enumeration for logging
-	// levels, instead of string values.
-	// FIXME: should we allow a null test file?
-
-	@Test(expected = NullPointerException.class)
-	public void testSetLogFileNull() {
+	@Test
+	public void testSetLogFileNull() throws ReasonerStateException, IOException, EdbIdbSeparationException {
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.setLogFile(null);
+			assertFalse(new File(logFilePath).exists());
+			instance.setLogLevel(LogLevel.INFO);
+
+			instance.addFacts(factPc);
+			instance.addRules(rule);
+			instance.load();
+			instance.reason();
 		}
+		// TODO test that logging is redirected to system output
+		assertFalse(new File(logFilePath).exists());
 	}
 
 	@Test
@@ -85,40 +90,15 @@ public class LoggingTest {
 			instance.load();
 			instance.reason();
 		}
-		// FIXME: if an invalid file is given, the logging is not redirected anywhere.
-		// Is this the desired behavior?
+		// TODO test that logging is redirected to system output
 		assertFalse(new File(logFilePath).exists());
 		assertFalse(new File("/a/b").exists());
 	}
-	
+
 	@Test(expected = NullPointerException.class)
 	public void testSetLogLevelNull() {
 		try (final Reasoner instance = Reasoner.getInstance()) {
-			instance.setLogLevel(null);;
-		}
-	}
-
-	@Test
-	public void testNullLogFile() throws EdbIdbSeparationException, IOException, ReasonerStateException {
-		try (final Reasoner instance = Reasoner.getInstance()) {
-			instance.addFacts(factPc);
-			instance.addRules(rule);
-			instance.setLogLevel(LogLevel.DEBUG);
-			instance.setLogFile(logFilePath);
-			instance.load();
-			instance.reason();
-
-			final int countLinesBeforeReset = readFile();
-			assertTrue(countLinesBeforeReset > 0);
-
-			instance.resetReasoner();
-			instance.load();
-			instance.reason();
-
-			final int countLinesAfterReset = readFile();
-
-			// the logger appends to the same file after reset
-			assertTrue(countLinesAfterReset > countLinesBeforeReset);
+			instance.setLogLevel(null);
 		}
 	}
 

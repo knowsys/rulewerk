@@ -360,7 +360,7 @@ public class VLogReasoner implements Reasoner {
 	public void setLogLevel(LogLevel logLevel) {
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
-		this.vLog.setLogLevel(internalLogLevel.name().toLowerCase());
+		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(internalLogLevel));
 	}
 
 	@Override
@@ -370,10 +370,6 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setLogFile(String filePath) {
-		// FIXME: vlog crashes if a null log file is given. Should we allow for null log
-		// files and interpret them as system out? That way, if a log file was never
-		// set, we can have a getter that returns nulljavadoc
-		Validate.notBlank(filePath, "Invalid log file [{}].", filePath);
 		this.vLog.setLogFile(filePath);
 	}
 

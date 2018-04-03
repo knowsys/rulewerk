@@ -181,18 +181,20 @@ public interface Reasoner extends AutoCloseable {
 	 * 
 	 * @return the logging level of the VLog C++ resource.
 	 */
-	@NonNull
+	@Nullable
 	LogLevel getLogLevel();
 
 	/**
 	 * Redirects the logs of the internal VLog C++ resource to given file. If no log
 	 * file is set or the given {@code filePath} is not a valid file path, VLog will
-	 * only log to the default system output.
+	 * log to the default system output.
 	 * 
 	 * @param filePath
-	 *            the file for the internal VLog C++ resource to log to.
+	 *            the file for the internal VLog C++ resource to log to. If
+	 *            {@code null} or an invalid file path, the reasoner will log to the
+	 *            default system output.
 	 */
-	void setLogFile(@NonNull String filePath);
+	void setLogFile(@Nullable String filePath);
 
 	/**
 	 * Adds rules to the reasoner <b>knowledge base</b> in the given order. After
@@ -317,6 +319,7 @@ public interface Reasoner extends AutoCloseable {
 	 */
 	// FIXME should EdbIdbSeparationException be thrown when users try to add
 	// facts/rules?
+	// TODO validate predicate arities (if not already done in vLog)
 	void load() throws IOException, EdbIdbSeparationException;
 
 	/**
