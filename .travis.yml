@@ -5,6 +5,7 @@ jdk:
 #  - oraclejdk9
   
 before_install:
+  - sudo apt-get install gcc-5 -y
   - sh ./build-vlog-library.sh
 
 after_success:
