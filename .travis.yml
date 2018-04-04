@@ -13,7 +13,7 @@ addons:
     - g++-5
 
 before_install:
-  - sudo apt-get install gcc-5 -y
+#  - sudo apt-get install gcc-5 -y
   - sh ./build-vlog-library.sh
 
 after_success:
