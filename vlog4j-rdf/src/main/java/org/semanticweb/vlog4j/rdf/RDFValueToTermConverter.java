@@ -1,27 +1,5 @@
 package org.semanticweb.vlog4j.rdf;
 
-/*-
- * #%L
- * VLog4j RDF Support
- * %%
- * Copyright (C) 2018 VLog4j Developers
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
-import java.io.IOException;
-
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
@@ -74,17 +52,14 @@ final class RDFValueToTermConverter {
 	 *         form.
 	 */
 	static String buildNormalizedStringValue(Literal literal) {
-		final StringBuilder sb = new StringBuilder();
 		final URI datatype = literal.getDatatype();
+
+		final StringBuilder sb = new StringBuilder();
 		// Do some character escaping on the label:
 		sb.append("\"");
-		final String normalizedLabel = datatype != null ? XMLDatatypeUtil.normalize(literal.getLabel(), datatype)
+		final String normalizedLabel = (datatype != null) ? XMLDatatypeUtil.normalize(literal.getLabel(), datatype)
 				: literal.getLabel();
-		try {
-			NTriplesUtil.escapeString(normalizedLabel, sb);
-		} catch (final IOException e) {
-			throw new RuntimeException("I/O exception unexpected when appending to a StringBuilder.", e);
-		}
+		sb.append(NTriplesUtil.escapeString(normalizedLabel));
 		sb.append("\"");
 
 		if (literal.getLanguage() != null) {
@@ -92,16 +67,10 @@ final class RDFValueToTermConverter {
 			sb.append("@");
 			sb.append(literal.getLanguage());
 		} else {
-
 			if (datatype != null) {
 				// Append the literal's datatype
-				// FIXME make datatype is not an abbreviated URI.
 				sb.append("^^");
-				try {
-					NTriplesUtil.append(datatype, sb);
-				} catch (final IOException e) {
-					throw new RuntimeException("I/O exception unexpected when appending to a StringBuilder.", e);
-				}
+				sb.append(NTriplesUtil.toNTriplesString(datatype));
 			}
 		}
 		return sb.toString();
