@@ -22,22 +22,56 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 public class SparqlQueryResultDataSourceTest {
 
 	@Test
 	public void testToStringSimpleSparqlQueryResultDataSource() throws MalformedURLException {
 		final URL endpoint = new URL("http://query.wikidata.org/sparql");
-		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, "b,a", "?a p:P22 ?b");
+		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
+				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
+		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
+				"?a p:P22 ?b");
 		final String configString = dataSource.toConfigString();
 		final String expectedStringConfig = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=SPARQL\n"
 				+ "EDB%1$d_param0=http://query.wikidata.org/sparql\n" + "EDB%1$d_param1=b,a\n"
 				+ "EDB%1$d_param2=?a p:P22 ?b\n";
 		assertEquals(expectedStringConfig, configString);
+	}
+
+	@Test
+	public void testUniqueVariableNamesQuery()
+			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+		final URL endpoint = new URL("http://query.wikidata.org/sparql");
+		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
+				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("b")));
+
+		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
+				"?a p:P22 ?b");
+		assertEquals(1, dataSource.getQueryVariables().size());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testEmptyQueryBody()
+			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+		final URL endpoint = new URL("http://query.wikidata.org/sparql");
+		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
+				Arrays.asList(Expressions.makeVariable("a")));
+		new SparqlQueryResultDataSource(endpoint, queryVariables, StringUtils.SPACE);
+
 	}
 
 }

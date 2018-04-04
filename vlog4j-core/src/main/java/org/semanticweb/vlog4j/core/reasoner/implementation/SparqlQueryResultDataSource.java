@@ -21,9 +21,12 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  */
 
 import java.net.URL;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
+import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 
 /**
@@ -38,11 +41,7 @@ public class SparqlQueryResultDataSource implements DataSource {
 	private static final String DATASOURCE_TYPE_CONFIG_VALUE = "SPARQL";
 
 	private final URL endpoint;
-	// TODO null, blank
-	// TODO perhaps this should be a List of Variables, whose arity coincides with
-	// the assigned predicate
-	private final String queryParamsList;
-	// TODO null, blank
+	private final LinkedHashSet<Variable> queryVariables;
 	private final String queryBody;
 
 	/**
@@ -50,24 +49,28 @@ public class SparqlQueryResultDataSource implements DataSource {
 	 * 
 	 * @param endpoint
 	 *            the web location of the resource the query will be evaluated on.
-	 * @param queryParamsList
-	 *            a comma-separated list of query variable names. The variable at
-	 *            each position in the list will be mapped to its correspondent
-	 *            query answer term at the same position.
+	 * @param queryVariables
+	 *            the variables of the query, in the given order. The variable at
+	 *            each position in the ordered set will be mapped to its
+	 *            correspondent query answer term at the same position.
 	 * @param queryBody
 	 *            the content of the <i>WHERE</i> clause in the SPARQL query. Must
-	 *            not contain {@code newline} characters ({@code "\n")}. SPARQL body
-	 *            lines are separated by space.
+	 *            not contain {@code newline} characters ({@code "\n")}.
 	 */
 	// TODO add examples to javadoc
-	public SparqlQueryResultDataSource(@NonNull final URL endpoint, @NonNull final String queryParamsList,
-			@NonNull final String queryBody) {
-		Validate.notNull(endpoint, "endpoint cannot be null.");
-		Validate.notNull(queryParamsList, "query parameters list cannot be null.");
-		Validate.notBlank(queryParamsList, "query parameters list must contain at least one query parameter.");
-		Validate.notNull(queryBody, "query body cannot be null.");
+	// TODO add illegal argument exceptions to javadoc
+	public SparqlQueryResultDataSource(@NonNull final URL endpoint,
+			@NonNull final LinkedHashSet<Variable> queryVariables, @NonNull final String queryBody) {
+		Validate.notNull(endpoint, "Endpoint cannot be null.");
+		Validate.notNull(queryVariables, "Query variables ordered set cannot be null.");
+		Validate.noNullElements(queryVariables, "Query variables cannot be null or contain null elements.");
+		Validate.notEmpty(queryVariables, "There must be at least one query variable.");
+		Validate.notBlank(queryBody, "Query body cannot be null or blank [{}].", queryBody);
+		// TODO validate query body syntax (for example, new line character)
+		// TODO validate early that the arity coincides with
+		// the assigned predicate
 		this.endpoint = endpoint;
-		this.queryParamsList = queryParamsList;
+		this.queryVariables = queryVariables;
 		this.queryBody = queryBody;
 	}
 
@@ -75,12 +78,12 @@ public class SparqlQueryResultDataSource implements DataSource {
 		return endpoint;
 	}
 
-	public String getQueryParamsList() {
-		return queryParamsList;
-	}
-
 	public String getQueryBody() {
 		return queryBody;
+	}
+
+	public LinkedHashSet<Variable> getQueryVariables() {
+		return queryVariables;
 	}
 
 	@Override
@@ -91,20 +94,33 @@ public class SparqlQueryResultDataSource implements DataSource {
 
 						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
 
-						"EDB%1$d_param0=" + endpoint + "\n" + "EDB%1$d_param1=" + queryParamsList + "\n" +
+						"EDB%1$d_param0=" + endpoint + "\n" + "EDB%1$d_param1=" + getQueryVariablesList(queryVariables)
+						+ "\n" +
 
 						"EDB%1$d_param2=" + queryBody + "\n";
 
 		return configStringPattern;
 	}
 
+	private String getQueryVariablesList(LinkedHashSet<Variable> queryVariables) {
+		final StringBuilder sb = new StringBuilder();
+		final Iterator<Variable> iterator = queryVariables.iterator();
+		while (iterator.hasNext()) {
+			sb.append(iterator.next().getName());
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
+		}
+		return sb.toString();
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((endpoint == null) ? 0 : endpoint.hashCode());
-		result = prime * result + ((queryBody == null) ? 0 : queryBody.hashCode());
-		result = prime * result + ((queryParamsList == null) ? 0 : queryParamsList.hashCode());
+		result = prime * result + endpoint.hashCode();
+		result = prime * result + queryBody.hashCode();
+		result = prime * result + queryVariables.hashCode();
 		return result;
 	}
 
@@ -117,13 +133,13 @@ public class SparqlQueryResultDataSource implements DataSource {
 		if (getClass() != obj.getClass())
 			return false;
 		final SparqlQueryResultDataSource other = (SparqlQueryResultDataSource) obj;
-		return this.endpoint.equals(other.getEndpoint()) && this.queryParamsList.equals(other.getQueryParamsList())
+		return this.endpoint.equals(other.getEndpoint()) && this.queryVariables.equals(other.getQueryVariables())
 				&& this.queryBody.equals(other.getQueryBody());
 	}
 
 	@Override
 	public String toString() {
-		return "SparqlQueryResultDataSource [endpoint=" + endpoint + ", queryParamsList=" + queryParamsList
+		return "SparqlQueryResultDataSource [endpoint=" + endpoint + ", queryVariables=" + queryVariables
 				+ ", queryBody=" + queryBody + "]";
 	}
 

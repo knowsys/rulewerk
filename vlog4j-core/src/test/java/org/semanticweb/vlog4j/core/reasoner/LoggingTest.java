@@ -39,6 +39,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 public class LoggingTest {
@@ -63,7 +64,7 @@ public class LoggingTest {
 	// any time
 
 	@Test
-	public void testSetLogFileNull() throws ReasonerStateException, IOException, EdbIdbSeparationException {
+	public void testSetLogFileNull() throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.setLogFile(null);
 			assertFalse(new File(logFilePath).exists());
@@ -79,7 +80,7 @@ public class LoggingTest {
 	}
 
 	@Test
-	public void testSetLogFileInexistent() throws ReasonerStateException, IOException, EdbIdbSeparationException {
+	public void testSetLogFileInexistent() throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.setLogFile("/a/b");
 			assertFalse(new File("/a/b").exists());
@@ -103,7 +104,7 @@ public class LoggingTest {
 	}
 
 	@Test
-	public void testSetLogFileAppendsToFile() throws EdbIdbSeparationException, IOException, ReasonerStateException {
+	public void testSetLogFileAppendsToFile() throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.addFacts(factPc);
 			instance.addRules(rule);
@@ -127,7 +128,7 @@ public class LoggingTest {
 	}
 
 	@Test
-	public void testLogLevelInfo() throws ReasonerStateException, EdbIdbSeparationException, IOException {
+	public void testLogLevelInfo() throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.addFacts(factPc);
 			instance.addRules(rule);
@@ -145,7 +146,7 @@ public class LoggingTest {
 	}
 
 	@Test
-	public void testLogLevelDebug() throws ReasonerStateException, EdbIdbSeparationException, IOException {
+	public void testLogLevelDebug() throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.addFacts(factPc);
 			instance.addRules(rule);
