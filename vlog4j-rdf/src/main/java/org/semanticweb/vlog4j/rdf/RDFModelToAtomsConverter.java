@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.rdf;
 
+import static org.semanticweb.vlog4j.rdf.RDFValueToTermConverter.rdfValueToTerm;
+
 /*-
  * #%L
  * VLog4j RDF Support
@@ -29,15 +31,18 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public final class RDFModelToAtomsConverter {
+
+	public static final String RDF_TRIPLE_PREDICATE_NAME = "TRIPLE";
+	public static final Predicate RDF_TRIPLE_PREDICATE = Expressions.makePredicate(RDF_TRIPLE_PREDICATE_NAME, 3);
 
 	private RDFModelToAtomsConverter() {
 	}
 
 	public static Set<Atom> rdfModelToAtoms(Model rdfModel) {
-		// TODO do we need rdfModel.getNamespaces() ?
 		return rdfModel.stream().map(RDFModelToAtomsConverter::rdfStatementToAtom).collect(Collectors.toSet());
 	}
 
@@ -48,8 +53,8 @@ public final class RDFModelToAtomsConverter {
 
 		final Value object = statement.getObject();
 
-		return Expressions.makeAtom(predicate.stringValue(), RDFValueToTermConverter.rdfValueToTerm(subject),
-				RDFValueToTermConverter.rdfValueToTerm(object));
+		return Expressions.makeAtom(RDF_TRIPLE_PREDICATE, rdfValueToTerm(subject), rdfValueToTerm(predicate),
+				rdfValueToTerm(object));
 	}
 
 }
