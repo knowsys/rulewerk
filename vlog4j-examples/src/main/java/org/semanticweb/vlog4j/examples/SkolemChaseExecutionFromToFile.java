@@ -33,12 +33,14 @@ import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 
 public class SkolemChaseExecutionFromToFile {
 
-	public static void main(String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException {
+	public static void main(String[] args)
+			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
 		// 1. Instantiating entities and rules.
 		final Predicate bicycleIDB = Expressions.makePredicate("BicycleIDB", 1);
