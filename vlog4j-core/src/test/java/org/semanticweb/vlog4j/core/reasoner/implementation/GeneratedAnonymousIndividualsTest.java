@@ -39,6 +39,7 @@ import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 public class GeneratedAnonymousIndividualsTest {
@@ -69,9 +70,9 @@ public class GeneratedAnonymousIndividualsTest {
 
 	@Test
 	public void testBlanksSkolemChaseNoRuleRewrite()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException {
+			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			assertEquals(Algorithm.SKOLEM_CHASE, reasoner.getAlgorithm());
+			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			assertEquals(RuleRewriteStrategy.NONE, reasoner.getRuleRewriteStrategy());
 			
 			reasoner.addFacts(fact);
@@ -86,9 +87,9 @@ public class GeneratedAnonymousIndividualsTest {
 
 	@Test
 	public void testBlanksSkolemChaseSplitHeadPieces()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException {
+			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			assertEquals(Algorithm.SKOLEM_CHASE, reasoner.getAlgorithm());
+			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			// P(?x) -> P(?x,!y), P(?x,!z)
 			// after split becomes {{P(?x) -> P(?x,!y), {P(?x)-> P(?x,!z)}}
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
@@ -105,7 +106,7 @@ public class GeneratedAnonymousIndividualsTest {
 
 	@Test
 	public void testBlanksRestrictedChaseNoRuleRewrite()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException {
+			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			assertEquals(RuleRewriteStrategy.NONE, reasoner.getRuleRewriteStrategy());
@@ -122,7 +123,7 @@ public class GeneratedAnonymousIndividualsTest {
 
 	@Test
 	public void testBlanksRestrictedChaseSplitHeadPieces()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException {
+			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);

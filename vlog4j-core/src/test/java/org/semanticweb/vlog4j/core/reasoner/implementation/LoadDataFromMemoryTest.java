@@ -29,6 +29,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import karmaresearch.vlog.EDBConfigurationException;
@@ -37,7 +38,7 @@ public class LoadDataFromMemoryTest {
 
 	@Test(expected = EdbIdbSeparationException.class)
 	public void loadEdbIdbNotSeparated()
-			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException {
+			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
 		final Variable vx = Expressions.makeVariable("x");
 		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
 		final Atom factIDBpredQ1 = Expressions.makeAtom("q", Expressions.makeConstant("c"));
@@ -52,7 +53,7 @@ public class LoadDataFromMemoryTest {
 
 	@Test
 	public void loadEdbIdbSeparated()
-			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException {
+			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
 		final Variable vx = Expressions.makeVariable("x");
 		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
 		final Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"),

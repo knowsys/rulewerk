@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -8,17 +9,16 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>VLog4j</name>
+	<name>VLog4j RDF Support</name>
 	<description>A Java library for working with the VLog rule engine</description>
-	<url>https://github.com/mkroetzsch/vlog4j</url>
 
 	<modules>
 		<module>vlog4j-core</module>
-    <module>vlog4j-examples</module>
+		<module>vlog4j-rdf</module>
+		<module>vlog4j-examples</module>
 		<module>vlog4j-owlapi</module>
-    <module>vlog4j-evaluation</module>
-  </modules>
-
+		<module>vlog4j-evaluation</module>
+	</modules>
 
 	<licenses>
 		<license>
@@ -54,6 +54,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<eclipse.jdt.annotation.version>2.1.100</eclipse.jdt.annotation.version>
 		<junitVersion>4.12</junitVersion>
 		<mockitoVersion>1.10.19</mockitoVersion>
 		<slf4jVersion>1.7.10</slf4jVersion>
@@ -61,15 +62,22 @@
 		<apacheCommonsCsvVersion>1.5</apacheCommonsCsvVersion>
 		<mavenJavaDocVersion>3.0.0</mavenJavaDocVersion>
 		<owlapi.version>4.5.1</owlapi.version>
-		
+
 
 		<apacheCommonsCompressVersion>1.15</apacheCommonsCompressVersion>
 		<apacheHttpVersion>4.5.4</apacheHttpVersion>
 		<commonsCliVersion>1.4</commonsCliVersion>
 		<ini4JVersion>0.5.4</ini4JVersion>
+		<openrdf.sesame.version>2.7.16</openrdf.sesame.version>
+		<!-- <openrdf.sesame.version>4.1.2</openrdf.sesame.version> -->
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.jdt</groupId>
+			<artifactId>org.eclipse.jdt.annotation</artifactId>
+			<version>${eclipse.jdt.annotation.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -109,7 +117,7 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
 					<version>1.14</version>
-					<configuration/>
+					<configuration />
 					<executions>
 						<execution>
 							<id>first</id>
@@ -148,7 +156,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 
@@ -163,7 +171,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute/>
+										<execute />
 									</action>
 								</pluginExecution>
 								<pluginExecution>

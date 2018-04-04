@@ -35,13 +35,14 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 public class ExportQueryAnswersToCsvTest {
 
 	@Test
 	public void testEDBQuerySameConstantSubstitutesSameVariableName()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException {
+			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final String predicate = "p";
 		final Constant constantC = Expressions.makeConstant("c");
 		final Constant constantD = Expressions.makeConstant("d");
@@ -87,7 +88,7 @@ public class ExportQueryAnswersToCsvTest {
 
 	@Test
 	public void testExportQueryEmptyKnowledgeBase()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException {
+			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 		final Atom queryAtom = Expressions.makeAtom("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
