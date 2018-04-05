@@ -21,11 +21,13 @@ package org.semanticweb.vlog4j.owlapi.reasoner;
  */
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -46,16 +48,22 @@ import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.Version;
+import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.owlapi.OwlFeatureNotSupportedException;
+import org.semanticweb.vlog4j.owlapi.OwlToRulesConverter;
 
 public class VLogReasoner implements OWLReasoner {
 
 	private final Reasoner reasoner;
 
 	private final OWLOntology owlOntology;
+
+	private OwlToRulesConverter owlToRulesConverter;
 
 	public VLogReasoner(Reasoner reasoner, OWLOntology owlOntology) {
 		super();
@@ -390,13 +398,23 @@ public class VLogReasoner implements OWLReasoner {
 	}
 
 	private void materialize() {
+		if (owlToRulesConverter == null) {
+			owlToRulesConverter = new OwlToRulesConverter();
+			owlToRulesConverter.addOntology(owlOntology);
+		}
+		final Set<Atom> facts = owlToRulesConverter.getFacts();
+		final Set<Rule> rules = owlToRulesConverter.getRules();
+
 		// TODO convert owlOntology to rules and facts
 		try {
 			// TODO set reasoner configuration (algorithm, rule rewriting strategy, log
 			// level)
+			reasoner.addFacts(facts);
+			reasoner.addRules(new ArrayList<>(rules));
 			reasoner.load();
 			reasoner.reason();
-		} catch (EdbIdbSeparationException | IOException | ReasonerStateException e) {
+		} catch (EdbIdbSeparationException | IOException | ReasonerStateException
+				| IncompatiblePredicateArityException e) {
 			// TODO convert properly
 			throw new OWLRuntimeException("Unexpected exception during reasoning", e);
 		}
