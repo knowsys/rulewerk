@@ -37,7 +37,7 @@ import org.semanticweb.vlog4j.core.reasoner.DataSource;
  */
 public class CsvFileDataSource implements DataSource {
 	public static final String CSV_FILE_EXTENSION = ".csv";
-	static final String DATASOURCE_TYPE_CONFIG_VALUE = "INMEMORY";
+	private static final String DATASOURCE_TYPE_CONFIG_VALUE = "INMEMORY";
 
 	private final File csvFile;
 	private final String dirCanonicalPath;

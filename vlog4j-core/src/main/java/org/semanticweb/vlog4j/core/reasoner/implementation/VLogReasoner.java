@@ -23,6 +23,7 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,7 +185,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void load() throws EdbIdbSeparationException, IOException {
+	public void load() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			LOGGER.warn("This method call is ineffective: the Reasoner has already been loaded.");
 		} else {
@@ -203,6 +204,9 @@ public class VLogReasoner implements Reasoner {
 			} catch (final EDBConfigurationException e) {
 				throw new RuntimeException("Invalid data sources configuration.", e);
 			}
+			
+			validateDataSourcePredicateArities();
+
 			loadInMemoryFacts();
 
 			if (this.rules.isEmpty()) {
@@ -211,6 +215,22 @@ public class VLogReasoner implements Reasoner {
 				loadRules();
 			}
 		}
+	}
+
+	private void validateDataSourcePredicateArities() throws IncompatiblePredicateArityException {
+		for (final Predicate predicate : this.dataSourceForPredicate.keySet()) {
+			final int dataSourcePredicateArity;
+			try {
+				dataSourcePredicateArity = this.vLog.getPredicateArity(ModelToVLogConverter.toVLogPredicate(predicate));
+			} catch (final NotStartedException e) {
+				throw new RuntimeException("Inconsistent reasoner state.", e);
+			}
+			if (predicate.getArity() != dataSourcePredicateArity) {
+				throw new IncompatiblePredicateArityException(predicate, dataSourcePredicateArity,
+						this.dataSourceForPredicate.get(predicate));
+			}
+		}
+
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
@@ -316,11 +317,15 @@ public interface Reasoner extends AutoCloseable {
 	 *             if a {@link Predicate} appearing in a {@link Rule} <b>head</b>
 	 *             (IDB predicate) also appears in a knowledge base <b>fact</b> (EDB
 	 *             predicate).
+	 * @throws IncompatiblePredicateArityException
+	 *             if the arity of a {@link Predicate} of a fact loaded from a data
+	 *             source ({@link #addFactsFromDataSource(Predicate, DataSource)})
+	 *             does nor match the arity of the facts in the corresponding data
+	 *             source.
 	 */
 	// FIXME should EdbIdbSeparationException be thrown when users try to add
 	// facts/rules?
-	// TODO validate predicate arities (if not already done in vLog)
-	void load() throws IOException, EdbIdbSeparationException;
+	void load() throws IOException, EdbIdbSeparationException, IncompatiblePredicateArityException;
 
 	/**
 	 * Performs reasoning on the loaded <b>knowledge base</b>, depending on the set

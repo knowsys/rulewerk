@@ -32,6 +32,7 @@ import org.openrdf.rio.RDFParseException;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 public class TestLoadFactsFromRDFToVLogReasoner {
@@ -41,7 +42,7 @@ public class TestLoadFactsFromRDFToVLogReasoner {
 
 	@Test
 	public void testLoadFactsFromRDF() throws RDFParseException, RDFHandlerException, IOException,
-			ReasonerStateException, EdbIdbSeparationException {
+			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final Model model = TestingUtils.parseFile(
 				new File(TestingUtils.TURTLE_TEST_FILES_PATH + "exampleFactsNoBlanks.ttl"), RDFFormat.TURTLE);
 		final Set<Atom> facts = RDFModelToAtomsConverter.rdfModelToAtoms(model);
