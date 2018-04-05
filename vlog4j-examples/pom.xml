@@ -22,5 +22,10 @@
 			<artifactId>vlog4j-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.semanticweb.vlog4j</groupId>
+			<artifactId>vlog4j-owlapi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
