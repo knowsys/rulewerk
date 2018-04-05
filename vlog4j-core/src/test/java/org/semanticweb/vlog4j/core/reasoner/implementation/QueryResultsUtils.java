@@ -36,9 +36,9 @@ import org.semanticweb.vlog4j.core.model.api.Term;
  * @author Irina Dragoste
  *
  */
-final class QueryResultUtils {
+final class QueryResultsUtils {
 
-	private QueryResultUtils() {
+	private QueryResultsUtils() {
 	}
 
 	/**

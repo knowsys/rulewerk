@@ -37,6 +37,7 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import karmaresearch.vlog.EDBConfigurationException;
@@ -44,7 +45,7 @@ import karmaresearch.vlog.EDBConfigurationException;
 public class ReasonerTest {
 
 	@Test
-	public void testCloseRepeatedly() throws EdbIdbSeparationException, IOException {
+	public void testCloseRepeatedly() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.close();
 		}
@@ -58,7 +59,7 @@ public class ReasonerTest {
 
 	@Test
 	public void testSimpleInference()
-			throws EDBConfigurationException, IOException, ReasonerStateException, EdbIdbSeparationException {
+			throws EDBConfigurationException, IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final String constantNameC = "c";
 		final String constantNameD = "d";
 
@@ -84,7 +85,7 @@ public class ReasonerTest {
 			reasoner.reason();
 
 			final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx, true);
-			final Set<List<Term>> actualResults = QueryResultUtils.collectQueryResults(cxQueryResultEnumAfterReasoning);
+			final Set<List<Term>> actualResults = QueryResultsUtils.collectQueryResults(cxQueryResultEnumAfterReasoning);
 
 			final Set<List<Constant>> expectedResults = new HashSet<>(
 					Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));

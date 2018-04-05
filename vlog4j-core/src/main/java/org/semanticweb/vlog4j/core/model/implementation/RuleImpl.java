@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
+import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -50,7 +51,7 @@ public class RuleImpl implements Rule {
 	 * @param body
 	 *            list of Atoms representing the rule head conjuncts.
 	 */
-	public RuleImpl(final Conjunction head, final Conjunction body) {
+	public RuleImpl(@NonNull final Conjunction head, @NonNull final Conjunction body) {
 		Validate.notNull(head);
 		Validate.notNull(body);
 		Validate.notEmpty(body.getAtoms());

@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
+import static org.junit.Assert.assertEquals;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -22,15 +24,19 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import karmaresearch.vlog.EDBConfigurationException;
@@ -40,58 +46,70 @@ public class AddDataSourceTest {
 	private static final String CSV_FILE_PATH = CsvFileUtils.CSV_INPORT_FOLDER + "unaryFacts.csv";
 
 	@Test
-	public void testAddDataSourceExistentDataForDifferentPredicates()
-			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException {
+	public void testAddDataSourceExistentDataForDifferentPredicates() throws ReasonerStateException,
+			EdbIdbSeparationException, EDBConfigurationException, IOException, IncompatiblePredicateArityException {
 		final Predicate predicateParity1 = Expressions.makePredicate("p", 1);
 		final Constant constantA = Expressions.makeConstant("a");
-		final Atom factPredicateParity2 = Expressions.makeAtom("p", constantA, constantA);
-		final Atom factPredicateQarity1 = Expressions.makeAtom("q", constantA);
+		final Atom factPredicatePArity2 = Expressions.makeAtom("p", constantA, constantA);
+		final Atom factPredicateQArity1 = Expressions.makeAtom("q", constantA);
+		final Predicate predicateLArity1 = Expressions.makePredicate("l", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addFacts(factPredicateParity2, factPredicateQarity1);
-			reasoner.addDataSource(Expressions.makePredicate("p", 3), dataSource);
-			reasoner.addDataSource(predicateParity1, dataSource);
-			reasoner.load();
-		}
-	}
-
-	public void testAddDataSourceBeforeLoading()
-			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException {
-		final Predicate predicateP = Expressions.makePredicate("p", 1);
-		final Predicate predicateQ = Expressions.makePredicate("q", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicateP, dataSource);
-			reasoner.addDataSource(predicateQ, dataSource);
-			reasoner.load();
-		}
-	}
-
-	@Test(expected = ReasonerStateException.class)
-	public void testAddDataSourceAfterLoading()
-			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException {
-		final Predicate predicateP = Expressions.makePredicate("p", 1);
-		final Predicate predicateQ = Expressions.makePredicate("q", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicateP, dataSource);
-			reasoner.load();
-			reasoner.addDataSource(predicateQ, dataSource);
-		}
-	}
-
-	@Test(expected = ReasonerStateException.class)
-	public void testAddDataSourceAfterReasoning()
-			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException {
-		final Predicate predicateP = Expressions.makePredicate("p", 1);
-		final Predicate predicateQ = Expressions.makePredicate("q", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicateP, dataSource);
+			reasoner.addFacts(factPredicatePArity2, factPredicateQArity1);
+			
+			reasoner.addFactsFromDataSource(predicateLArity1, dataSource);
+			reasoner.addFactsFromDataSource(predicateParity1, dataSource);
 			reasoner.load();
 			reasoner.reason();
-			reasoner.addDataSource(predicateQ, dataSource);
+			final QueryResultIterator queryResultIteratorL1 = reasoner.answerQuery(
+					Expressions.makeAtom(predicateLArity1, Expressions.makeVariable("x")), false);
+			final Set<List<Term>> queryResultsL1 = QueryResultsUtils.collectQueryResults(queryResultIteratorL1);
+			
+			final QueryResultIterator queryResultIteratorP1 = reasoner.answerQuery(
+					Expressions.makeAtom(predicateParity1, Expressions.makeVariable("x")), false);
+			final Set<List<Term>> queryResultsP1 = QueryResultsUtils.collectQueryResults(queryResultIteratorP1);
+			assertEquals(queryResultsL1, queryResultsP1);
+			
+		}
+	}
+
+	public void testAddDataSourceBeforeLoading() throws ReasonerStateException, EdbIdbSeparationException,
+			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+		final Predicate predicateP = Expressions.makePredicate("p", 1);
+		final Predicate predicateQ = Expressions.makePredicate("q", 1);
+		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addFactsFromDataSource(predicateP, dataSource);
+			reasoner.addFactsFromDataSource(predicateQ, dataSource);
+			reasoner.load();
+		}
+	}
+
+	@Test(expected = ReasonerStateException.class)
+	public void testAddDataSourceAfterLoading() throws ReasonerStateException, EdbIdbSeparationException,
+			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+		final Predicate predicateP = Expressions.makePredicate("p", 1);
+		final Predicate predicateQ = Expressions.makePredicate("q", 1);
+		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addFactsFromDataSource(predicateP, dataSource);
+			reasoner.load();
+			reasoner.addFactsFromDataSource(predicateQ, dataSource);
+		}
+	}
+
+	@Test(expected = ReasonerStateException.class)
+	public void testAddDataSourceAfterReasoning() throws ReasonerStateException, EdbIdbSeparationException,
+			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+		final Predicate predicateP = Expressions.makePredicate("p", 1);
+		final Predicate predicateQ = Expressions.makePredicate("q", 1);
+		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addFactsFromDataSource(predicateP, dataSource);
+			reasoner.load();
+			reasoner.reason();
+			reasoner.addFactsFromDataSource(predicateQ, dataSource);
 		}
 	}
 
@@ -100,8 +118,8 @@ public class AddDataSourceTest {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicate, dataSource);
-			reasoner.addDataSource(predicate, dataSource);
+			reasoner.addFactsFromDataSource(predicate, dataSource);
+			reasoner.addFactsFromDataSource(predicate, dataSource);
 		}
 	}
 
@@ -112,7 +130,7 @@ public class AddDataSourceTest {
 		final Atom fact = Expressions.makeAtom(Expressions.makePredicate("p", 1), Expressions.makeConstant("a"));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(fact);
-			reasoner.addDataSource(predicate, dataSource);
+			reasoner.addFactsFromDataSource(predicate, dataSource);
 		}
 	}
 
@@ -120,7 +138,7 @@ public class AddDataSourceTest {
 	public void testAddDataSourcePredicateNotNull() throws ReasonerStateException, IOException {
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(null, dataSource);
+			reasoner.addFactsFromDataSource(null, dataSource);
 		}
 	}
 
@@ -128,7 +146,7 @@ public class AddDataSourceTest {
 	public void testAddDataSourceNotNullDataSource() throws ReasonerStateException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicate, null);
+			reasoner.addFactsFromDataSource(predicate, null);
 		}
 	}
 

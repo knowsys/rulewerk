@@ -37,6 +37,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import karmaresearch.vlog.EDBConfigurationException;
@@ -55,7 +56,7 @@ public class LoadDataFromCsvTest {
 
 	@Test
 	public void testLoadUnaryFactsFromCsv()
-			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException {
+			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException, IncompatiblePredicateArityException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(UNARY_FACTS_CSV_FILE);
@@ -63,12 +64,12 @@ public class LoadDataFromCsvTest {
 		final Set<List<Term>> expectedPQueryResults = Sets.newSet(Arrays.asList(Expressions.makeConstant("c1")),
 				Arrays.asList(Expressions.makeConstant("c2")));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addDataSource(predicateP, dataSource);
-			reasoner.addDataSource(predicateQ, dataSource);
+			reasoner.addFactsFromDataSource(predicateP, dataSource);
+			reasoner.addFactsFromDataSource(predicateQ, dataSource);
 			reasoner.load();
 			final QueryResultIterator pQueryResultIterator = reasoner
 					.answerQuery(Expressions.makeAtom(predicateP, Expressions.makeVariable("x")), true);
-			final Set<List<Term>> pQueryResults = QueryResultUtils.collectQueryResults(pQueryResultIterator);
+			final Set<List<Term>> pQueryResults = QueryResultsUtils.collectQueryResults(pQueryResultIterator);
 			assertEquals(expectedPQueryResults, pQueryResults);
 		}
 	}

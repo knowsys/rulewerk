@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.lang3.Validate;
+import org.eclipse.jdt.annotation.NonNull;
+import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 
 /**
@@ -35,14 +37,15 @@ import org.semanticweb.vlog4j.core.reasoner.DataSource;
  */
 public class CsvFileDataSource implements DataSource {
 	public static final String CSV_FILE_EXTENSION = ".csv";
-	static final String DATASOURCE_TYPE_CONFIG_VALUE = "INMEMORY";
+	private static final String DATASOURCE_TYPE_CONFIG_VALUE = "INMEMORY";
 
 	private final File csvFile;
 	private final String dirCanonicalPath;
 
 	/**
-	 * A ".csv" format file, where each line corresponds to a fact, each column
-	 * being a predicate argument.
+	 * A <i><b>.csv</b></i> format file, where each line corresponds to a fact of
+	 * {@link TermType#CONSTANT} {@link Term}s, each column being the fact term
+	 * name.
 	 * 
 	 * @return
 	 */
@@ -59,8 +62,11 @@ public class CsvFileDataSource implements DataSource {
 	 *            corresponds to a fact, each column being a predicate argument.
 	 * @throws IOException
 	 *             if the given {@code csvFile} path is and invalid file path.
+	 * @throws IllegalArgumentException
+	 *             if the given {@code csvFilePath} does not end with
+	 *             <i><b>.csv</b></i> extension.
 	 */
-	public CsvFileDataSource(final File csvFile) throws IOException {
+	public CsvFileDataSource(@NonNull final File csvFile) throws IOException {
 		Validate.notNull(csvFile, "Data source file cannot be null!");
 		Validate.isTrue(csvFile.getName().endsWith(CSV_FILE_EXTENSION),
 				"Expected .csv extension for data source file [%s]!", csvFile);
