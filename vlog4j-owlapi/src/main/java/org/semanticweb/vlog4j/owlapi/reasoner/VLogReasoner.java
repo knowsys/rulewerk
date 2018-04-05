@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -64,6 +63,8 @@ public class VLogReasoner implements OWLReasoner {
 	private final OWLOntology owlOntology;
 
 	private OwlToRulesConverter owlToRulesConverter;
+
+	private boolean materialized;
 
 	public VLogReasoner(Reasoner reasoner, OWLOntology owlOntology) {
 		super();
@@ -369,8 +370,10 @@ public class VLogReasoner implements OWLReasoner {
 	}
 
 	@Override
-	public boolean isPrecomputed(InferenceType arg0) {
-		// FIXME how do we know if reasoner completed materialization?
+	public boolean isPrecomputed(InferenceType inferenceType) {
+		if (inferenceType.equals(InferenceType.CLASS_ASSERTIONS)) {
+			return materialized;
+		}
 		return false;
 	}
 
@@ -382,6 +385,7 @@ public class VLogReasoner implements OWLReasoner {
 
 	@Override
 	public void precomputeInferences(InferenceType... inferenceTypes) {
+		// TODO what should happen if this method is called multiple times?
 		{
 			for (final InferenceType inferenceType : inferenceTypes) {
 				if (inferenceType.equals(InferenceType.CLASS_ASSERTIONS)) {
@@ -398,21 +402,22 @@ public class VLogReasoner implements OWLReasoner {
 	}
 
 	private void materialize() {
-		if (owlToRulesConverter == null) {
-			owlToRulesConverter = new OwlToRulesConverter();
-			owlToRulesConverter.addOntology(owlOntology);
+		// FIXME what should happen if this method is called multiple times? Can the
+		// ontology change?
+		if (this.owlToRulesConverter == null) {
+			this.owlToRulesConverter = new OwlToRulesConverter();
+			this.owlToRulesConverter.addOntology(owlOntology);
 		}
 		final Set<Atom> facts = owlToRulesConverter.getFacts();
 		final Set<Rule> rules = owlToRulesConverter.getRules();
 
-		// TODO convert owlOntology to rules and facts
 		try {
 			// TODO set reasoner configuration (algorithm, rule rewriting strategy, log
 			// level)
-			reasoner.addFacts(facts);
-			reasoner.addRules(new ArrayList<>(rules));
-			reasoner.load();
-			reasoner.reason();
+			this.reasoner.addFacts(facts);
+			this.reasoner.addRules(new ArrayList<>(rules));
+			this.reasoner.load();
+			this.materialized = reasoner.reason();
 		} catch (EdbIdbSeparationException | IOException | ReasonerStateException
 				| IncompatiblePredicateArityException e) {
 			// TODO convert properly
