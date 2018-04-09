@@ -116,9 +116,9 @@ public class LoadDataFromSparqlQueryTest {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
 			reasoner.load();
-		reasoner.answerQuery(Expressions.makeAtom(haveChildrenTogether,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
-
+			reasoner.answerQuery(Expressions.makeAtom(haveChildrenTogether, Expressions.makeVariable("x"),
+					Expressions.makeVariable("y")), false);
+		}
 	}
 
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
