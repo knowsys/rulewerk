@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -46,6 +47,7 @@ public class LoadDataFromSparqlQueryTest {
 	 * @throws IOException
 	 * @throws IncompatiblePredicateArityException
 	 */
+	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
 	public void testSimpleSparqlQuery()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
@@ -76,6 +78,7 @@ public class LoadDataFromSparqlQueryTest {
 	 * @throws IOException
 	 * @throws IncompatiblePredicateArityException
 	 */
+	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
 	public void testSimpleSparqlQuery2()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
@@ -98,6 +101,7 @@ public class LoadDataFromSparqlQueryTest {
 		}
 	}
 
+	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test(expected = RuntimeException.class)
 	public void testConjunctiveQueryNewLineCharacterInQueryBody()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
@@ -112,14 +116,12 @@ public class LoadDataFromSparqlQueryTest {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makeAtom(haveChildrenTogether,
+		reasoner.answerQuery(Expressions.makeAtom(haveChildrenTogether,
 					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
-				assertTrue(answerQuery.hasNext());
-			}
-		}
 	}
 
+	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
 	public void testConjunctiveQuery()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
