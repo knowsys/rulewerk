@@ -111,7 +111,7 @@ public class LoadDataFromSparqlQueryTest {
 	@Test
 	public void testSimpleSparqlQuery2()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final URL endpoint = new URL("http://query.wikidata.org/sparql");
+		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
@@ -134,7 +134,7 @@ public class LoadDataFromSparqlQueryTest {
 	@Test(expected = RuntimeException.class)
 	public void testConjunctiveQueryNewLineCharacterInQueryBody()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final URL endpoint = new URL("http://query.wikidata.org/sparql");
+		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
@@ -154,7 +154,7 @@ public class LoadDataFromSparqlQueryTest {
 	@Test
 	public void testConjunctiveQuery()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final URL endpoint = new URL("http://query.wikidata.org/sparql");
+		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
@@ -176,7 +176,7 @@ public class LoadDataFromSparqlQueryTest {
 	@Test(expected = IncompatiblePredicateArityException.class)
 	public void testDataSourcePredicateDoesNotMatchSparqlQueryTerms()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final URL endpoint = new URL("http://query.wikidata.org/sparql");
+		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
 
