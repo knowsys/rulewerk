@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Blank;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -94,6 +95,15 @@ public class AtomImpl implements Atom {
 			term.accept(termFilter);
 		}
 		return termFilter.getConstants();
+	}
+	
+	@Override
+	public Set<Blank> getBlanks() {
+		final TermFilter termFilter = new TermFilter(TermType.BLANK);
+		for (final Term term : this.terms) {
+			term.accept(termFilter);
+		}
+		return termFilter.getBlanks();
 	}
 
 	@Override

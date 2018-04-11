@@ -1,0 +1,10 @@
+<http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Student> <http://www.w3.org/2000/01/rdf-schema#label> "student" .
+<http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Person> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#SystemsStaff> <http://www.w3.org/2000/01/rdf-schema#label> "systems staff worker" .
+<http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#SystemsStaff> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#AdministrativeStaff> .
+<http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#age> <http://www.w3.org/2000/01/rdf-schema#label> "is age" .
+<http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Person1> <http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#age> "-005"^^xsd:integer .
+<http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Person1> <http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#age> "-05.0"^^xsd:decimal .
+<http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Person1> <http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#age> "04.2E9"^^xsd:double .
+<http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Student> <http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#hasClass> false .
+<http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#Student> <http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#hasClass> true .
