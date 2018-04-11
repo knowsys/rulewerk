@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.rdf;
 
+import static org.junit.Assert.assertTrue;
+
 /*-
  * #%L
  * VLog4j RDF Support
@@ -30,10 +32,12 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
 public class TestLoadFactsFromRDFToVLogReasoner {
 
@@ -49,6 +53,12 @@ public class TestLoadFactsFromRDFToVLogReasoner {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFacts(facts);
 			reasoner.load();
+			final QueryResultIterator answerQuery = reasoner.answerQuery(
+					Expressions.makeAtom(RDFModelToAtomsConverter.RDF_TRIPLE_PREDICATE, Expressions.makeVariable("x"),
+							Expressions.makeVariable("y"), Expressions.makeVariable("z")),
+					true);
+			assertTrue(answerQuery.hasNext());
+			answerQuery.close();
 		}
 
 	}
