@@ -54,21 +54,19 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<eclipse.jdt.annotation.version>2.1.100</eclipse.jdt.annotation.version>
-		<junitVersion>4.12</junitVersion>
-		<mockitoVersion>1.10.19</mockitoVersion>
-		<slf4jVersion>1.7.10</slf4jVersion>
-		<apacheCommonsLangVersion>3.7</apacheCommonsLangVersion>
-		<apacheCommonsCsvVersion>1.5</apacheCommonsCsvVersion>
+		<junit.version>4.12</junit.version>
+		<mockito.version>1.10.19</mockito.version>
+		<slf4j.version>1.7.10</slf4j.version>
+		<apache.commons.lang.version>3.7</apache.commons.lang.version>
+		<apache.commons.csv.version>1.5</apache.commons.csv.version>
 		<mavenJavaDocVersion>3.0.0</mavenJavaDocVersion>
 		<owlapi.version>4.5.1</owlapi.version>
-
-
-		<apacheCommonsCompressVersion>1.15</apacheCommonsCompressVersion>
-		<apacheHttpVersion>4.5.4</apacheHttpVersion>
-		<commonsCliVersion>1.4</commonsCliVersion>
-		<ini4JVersion>0.5.4</ini4JVersion>
+		<!-- TOOD do we need those? are the versions in some upper dependency? -->
+		<!-- <apache.commons.compress.version>1.15</apache.commons.compress.version> -->
+	<!-- <apache.http.version>4.5.4</apache.http.version> -->
+		<!-- <commons.cli.version>1.4</commons.cli.version> -->
+	<!-- <ini4j.version>0.5.4</ini4j.version> -->
 		<openrdf.sesame.version>2.7.16</openrdf.sesame.version>
-		<!-- <openrdf.sesame.version>4.1.2</openrdf.sesame.version> -->
 	</properties>
 
 	<dependencies>
@@ -80,32 +78,32 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junitVersion}</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<!-- Mock objects for testing -->
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>${mockitoVersion}</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4jVersion}</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<!-- Useful helpers for cleaner coding -->
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>${apacheCommonsLangVersion}</version>
+			<version>${apache.commons.lang.version}</version>
 		</dependency>
 		<dependency>
 			<!-- Useful for testing generated csv files -->
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
-			<version>${apacheCommonsCsvVersion}</version>
+			<version>${apache.commons.csv.version}</version>
 		</dependency>
 	</dependencies>
 
