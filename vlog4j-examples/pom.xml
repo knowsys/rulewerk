@@ -18,7 +18,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.semanticweb.vlog4j</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>vlog4j-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
