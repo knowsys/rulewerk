@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -24,33 +24,34 @@
 		</dependency>
 	</dependencies>
 
-<build>
 
-	<plugins>
-		<plugin>
-			<!-- Useful for integrating the jar containing the JNI to VLog -->
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-install-plugin</artifactId>
-			<version>2.4</version>
-			<executions>
-				<execution>
-					<phase>initialize</phase>
-					<goals>
-						<goal>install-file</goal>
-					</goals>
-					<configuration>
-						<groupId>karmaresearch</groupId>
-						<artifactId>vlog</artifactId>
-						<version>0.0.1-SNAPSHOT</version>
-						<packaging>jar</packaging>
-						<file>./lib/jvlog.jar</file>
-					</configuration>
-				</execution>
-			</executions>
-		</plugin>
-	</plugins>
-</build>
-
-
-	
+	<!-- <profiles> <profile> <id>development</id> -->
+	<!-- For development using unreleased snapshots of karmaresearch.vlog.jvlog.jar, 
+		create lib directory place jar dependency there. -->
+	<build>
+		<plugins>
+			<plugin>
+				<!-- Useful for integrating the jar containing the JNI to VLog -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>karmaresearch</groupId>
+							<artifactId>vlog</artifactId>
+							<version>0.0.1-SNAPSHOT</version>
+							<packaging>jar</packaging>
+							<file>./lib/jvlog.jar</file>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<!-- </profile> </profiles> -->
 </project>
