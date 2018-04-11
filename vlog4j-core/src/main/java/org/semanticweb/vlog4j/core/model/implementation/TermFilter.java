@@ -100,7 +100,7 @@ public class TermFilter implements TermVisitor<Void> {
 	 * terms collected are not blanks. The method will also return an empty set
 	 * if anything other than blanks are being collected.
 	 * 
-	 * @return set of constants (see {@link Constant}).
+	 * @return set of blanks (see {@link Blank}).
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Blank> getBlanks(){
