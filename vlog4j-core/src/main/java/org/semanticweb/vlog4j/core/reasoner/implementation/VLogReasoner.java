@@ -91,12 +91,12 @@ public class VLogReasoner implements Reasoner {
 		if (seconds != null) {
 			Validate.isTrue(seconds > 0, "Only strictly positive timeout period alowed!", seconds);
 		}
-		timeoutAfterSeconds = seconds;
+		this.timeoutAfterSeconds = seconds;
 	}
 
 	@Override
 	public Integer getReasoningTimeout() {
-		return timeoutAfterSeconds;
+		return this.timeoutAfterSeconds;
 	}
 
 	@Override
@@ -162,11 +162,11 @@ public class VLogReasoner implements Reasoner {
 		Validate.notNull(predicate, "Null predicates are not allowed!");
 		Validate.notNull(dataSource, "Null dataSources are not allowed!");
 		validateNoDataSourceForPredicate(predicate);
-		Validate.isTrue(!factsForPredicate.containsKey(predicate),
+		Validate.isTrue(!this.factsForPredicate.containsKey(predicate),
 				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added in memory: %s",
-				predicate, factsForPredicate.get(predicate));
+				predicate, this.factsForPredicate.get(predicate));
 
-		dataSourceForPredicate.put(predicate, dataSource);
+		this.dataSourceForPredicate.put(predicate, dataSource);
 	}
 
 	private void validateFactTermsAreConstant(Atom fact) {
@@ -179,9 +179,9 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	private void validateNoDataSourceForPredicate(final Predicate predicate) {
-		Validate.isTrue(!dataSourceForPredicate.containsKey(predicate),
+		Validate.isTrue(!this.dataSourceForPredicate.containsKey(predicate),
 				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added from data source: %s",
-				predicate, dataSourceForPredicate.get(predicate));
+				predicate, this.dataSourceForPredicate.get(predicate));
 	}
 
 	@Override
@@ -204,7 +204,7 @@ public class VLogReasoner implements Reasoner {
 			} catch (final EDBConfigurationException e) {
 				throw new RuntimeException("Invalid data sources configuration.", e);
 			}
-			
+
 			validateDataSourcePredicateArities();
 
 			loadInMemoryFacts();
@@ -225,7 +225,10 @@ public class VLogReasoner implements Reasoner {
 			} catch (final NotStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
 			}
-			if (predicate.getArity() != dataSourcePredicateArity) {
+			if (dataSourcePredicateArity == -1) {
+				LOGGER.warn("Data source {0} for predicate {1} is empty: ", this.dataSourceForPredicate.get(predicate),
+						predicate);
+			} else if (predicate.getArity() != dataSourcePredicateArity) {
 				throw new IncompatiblePredicateArityException(predicate, dataSourcePredicateArity,
 						this.dataSourceForPredicate.get(predicate));
 			}
@@ -245,17 +248,17 @@ public class VLogReasoner implements Reasoner {
 
 			final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
 			try {
-				if (timeoutAfterSeconds == null) {
+				if (this.timeoutAfterSeconds == null) {
 					this.vLog.materialize(skolemChase);
-					reasoningCompleted = true;
+					this.reasoningCompleted = true;
 				} else {
-					reasoningCompleted = this.vLog.materialize(skolemChase, timeoutAfterSeconds);
+					this.reasoningCompleted = this.vLog.materialize(skolemChase, this.timeoutAfterSeconds);
 				}
 			} catch (final NotStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
 			}
 		}
-		return reasoningCompleted;
+		return this.reasoningCompleted;
 	}
 
 	@Override
@@ -340,8 +343,8 @@ public class VLogReasoner implements Reasoner {
 	String generateDataSourcesConfig() {
 		final StringBuilder configStringBuilder = new StringBuilder();
 		int dataSourceIndex = 0;
-		for (final Predicate predicate : dataSourceForPredicate.keySet()) {
-			final DataSource dataSource = dataSourceForPredicate.get(predicate);
+		for (final Predicate predicate : this.dataSourceForPredicate.keySet()) {
+			final DataSource dataSource = this.dataSourceForPredicate.get(predicate);
 			try (final Formatter formatter = new Formatter(configStringBuilder);) {
 				formatter.format(dataSource.toConfigString(), dataSourceIndex,
 						ModelToVLogConverter.toVLogPredicate(predicate));
@@ -380,12 +383,12 @@ public class VLogReasoner implements Reasoner {
 	public void setLogLevel(LogLevel logLevel) {
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
-		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(internalLogLevel));
+		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(this.internalLogLevel));
 	}
 
 	@Override
 	public LogLevel getLogLevel() {
-		return internalLogLevel;
+		return this.internalLogLevel;
 	}
 
 	@Override

@@ -57,7 +57,6 @@ public class AddDataSourceTest {
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(factPredicatePArity2, factPredicateQArity1);
-			
 			reasoner.addFactsFromDataSource(predicateLArity1, dataSource);
 			reasoner.addFactsFromDataSource(predicateParity1, dataSource);
 			reasoner.load();
@@ -74,6 +73,7 @@ public class AddDataSourceTest {
 		}
 	}
 
+	@Test
 	public void testAddDataSourceBeforeLoading() throws ReasonerStateException, EdbIdbSeparationException,
 			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
