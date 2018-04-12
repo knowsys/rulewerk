@@ -13,7 +13,7 @@
 	<packaging>jar</packaging>
 
 	<name>VLog4j Core Components</name>
-	<description>Basic implementation of the VLog Java connection</description>
+	<description>Core components of VLog4j: reasoner and model</description>
 
 	<properties>
 		<karmaresearch.vlog.version>1.0.0</karmaresearch.vlog.version>
