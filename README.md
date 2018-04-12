@@ -10,9 +10,10 @@ Installation
 
 To build vlog4j from source, you need to install Maven and perform the following steps:
 
-* In the directory ```./vlog-core/lib``` copy the jar that matches your operating system to ```jvlog.jar``` (the current default is a Linux library there)
+* In the directory ```./vlog-core/lib``` copy the jar to ```jvlog-local.jar``` (the current default is a Linux library there)
 * Run ```mvn initialize```
 * Run ```mvn install```
+* If this fails, you can run the script build-vlog-library.sh to compile and install this jar from the latest online sources using your local compiler
 
 Documentation
 -------------
