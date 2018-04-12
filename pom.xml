@@ -9,8 +9,9 @@
 	<version>0.0.1</version>
 	<packaging>pom</packaging>
 
-	<name>VLog4j RDF Support</name>
+	<name>VLog4j</name>
 	<description>A Java library for working with the VLog rule engine</description>
+	<url>https://github.com/mkroetzsch/vlog4j</url>
 
 	<modules>
 		<module>vlog4j-core</module>
