@@ -22,5 +22,5 @@ else
 	cd ../../..
 fi
 
-cp local_builds/jvlog.jar vlog4j-core/lib/jvlog.jar
+cp local_builds/jvlog.jar vlog4j-core/lib/jvlog-local.jar
 mvn initialize
