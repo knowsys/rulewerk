@@ -8,9 +8,13 @@ A Java library based on the [VLog rule engine](https://github.com/karmaresearch/
 Installation
 ------------
 
-To run vlog4j, you need to install Maven. Steps:
+To build vlog4j from source, you need to install Maven and perform the following steps:
 
 * In the directory ```./vlog-core/lib``` copy the jar that matches your operating system to ```jvlog.jar``` (the current default is a Linux library there)
 * Run ```mvn initialize```
 * Run ```mvn install```
 
+Documentation
+-------------
+
+* [JavaDoc](https://mkroetzsch.github.io/vlog4j/) is available online and through the Maven packages.
