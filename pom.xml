@@ -59,13 +59,8 @@
 		<slf4j.version>1.7.10</slf4j.version>
 		<apache.commons.lang.version>3.7</apache.commons.lang.version>
 		<apache.commons.csv.version>1.5</apache.commons.csv.version>
-		<mavenJavaDocVersion>3.0.0</mavenJavaDocVersion>
+		<maven.javadoc.version>3.0.0</maven.javadoc.version>
 		<owlapi.version>4.5.1</owlapi.version>
-		<!-- TOOD do we need those? are the versions in some upper dependency? -->
-		<!-- <apache.commons.compress.version>1.15</apache.commons.compress.version> -->
-	<!-- <apache.http.version>4.5.4</apache.http.version> -->
-		<!-- <commons.cli.version>1.4</commons.cli.version> -->
-	<!-- <ini4j.version>0.5.4</ini4j.version> -->
 		<openrdf.sesame.version>2.7.16</openrdf.sesame.version>
 	</properties>
 
@@ -241,7 +236,7 @@
 					to github: javadoc:aggregate -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${mavenJavaDocVersion}</version>
+				<version>${maven.javadoc.version}</version>
 				<configuration>
 					<bottom><![CDATA[Copyright &#169; {inceptionYear}&#x2018;{currentYear} {organizationName}. Generated from source code published under the Apache License 2.0. For more information, see the <a href="https://github.com/mkroetzsch/vlog4j">VLog4j homepage</a>]]></bottom>
 				</configuration>
@@ -284,7 +279,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>${mavenJavaDocVersion}</version>
+						<version>${maven.javadoc.version}</version>
 						<executions>
 							<execution>
 								<id>javadoc-jars</id>
