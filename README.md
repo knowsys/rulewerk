@@ -8,12 +8,27 @@ A Java library based on the [VLog rule engine](https://github.com/karmaresearch/
 Installation
 ------------
 
-To build vlog4j from source, you need to install Maven and perform the following steps:
+The current release of VLog4j is version 0.1.0. The easiest way of using the library is with Maven. Maven users must add the following dependency to the dependencies in their pom.xml file:
 
-* In the directory ```./vlog-core/lib``` copy the jar to ```jvlog-local.jar``` (the current default is a Linux library there)
-* Run ```mvn initialize```
-* Run ```mvn install```
-* If this fails, you can run the script build-vlog-library.sh to compile and install this jar from the latest online sources using your local compiler
+```
+<dependency>
+	<groupId>org.semanticweb.vlog4j</groupId>
+	<artifactId>vlog4j-core</artifactId>
+	<version>0.1.0</version>
+</dependency>
+```
+
+You need to use Java 1.8 or above. Available modules include:
+
+* **vlog4j-core**: essential data models for rules and facts, and essential reasoner functionality
+* **vlog4j-rdf**: support for reading from RDF files
+* **vlog4j-owlapi**: support for converting rules from OWL ontology, loaded with the OWL API
+
+The released packages use vlog4j-base, which packages system-dependent binaries for Linux, MacOS, and Windows, and should work out of the box with current versions of these systems. In case of problems, own binaries can be compiled as follows:
+
+* Run [build-vlog-library.sh](https://github.com/mkroetzsch/vlog4j/blob/master/build-vlog-library.sh) or execute the commands in this file manually. This will compile a local jar file on your system and copy it to ```./vlog4j-core/lib/jvlog-local.jar```
+* Run ```mvn -Pdevelopment initialize```. This will install the newly compiled jar file in place of the officially distributed vlog4j-base library.
+* Run ```mvn install``` to test if the setup works
 
 Documentation
 -------------
