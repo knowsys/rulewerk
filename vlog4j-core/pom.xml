@@ -16,7 +16,7 @@
 	<description>Core components of VLog4j: reasoner and model</description>
 
 	<properties>
-		<karmaresearch.vlog.version>1.0.0</karmaresearch.vlog.version>
+		<karmaresearch.vlog.version>1.0.1</karmaresearch.vlog.version>
 	</properties>
 
 	<dependencies>
@@ -32,8 +32,8 @@
 		<profile>
 			<id>development</id>
 			<!-- For development phase, using unreleased snapshots of karmaresearch 
-				vlog jar, create a "lib" directory with the same parent dir as the parent 
-				pom, and place jar dependency there. -->
+				vlog jar, create a "lib" directory with the same parent dir as this pom (vlog4j-core 
+				pom), and place jar dependency there. -->
 			<build>
 				<plugins>
 					<plugin>
