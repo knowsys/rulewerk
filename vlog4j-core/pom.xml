@@ -22,39 +22,43 @@
 	<dependencies>
 		<dependency>
 			<!-- Useful for integrating the jar containing the JNI to VLog -->
-			<groupId>karmaresearch</groupId>
-			<artifactId>vlog</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-base</artifactId>
 			<version>${karmaresearch.vlog.version}</version>
 		</dependency>
 	</dependencies>
 
-	<!-- <profiles> <profile> <id>development</id> -->
-	<!-- For development using unreleased snapshots of karmaresearch.vlog.jvlog.jar, 
-		create lib directory place jar dependency there. -->
-	<build>
-		<plugins>
-			<plugin>
-				<!-- Useful for integrating the jar containing the JNI to VLog -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.4</version>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>karmaresearch</groupId>
-							<artifactId>vlog</artifactId>
-							<version>${karmaresearch.vlog.version}</version>
-							<packaging>jar</packaging>
-							<file>./lib/jvlog-local.jar</file>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-	<!-- </profile> </profiles> -->
+	<profiles>
+		<profile>
+			<id>development</id>
+			<!-- For development phase, using unreleased snapshots of karmaresearch 
+				vlog jar, create a "lib" directory with the same parent dir as the parent 
+				pom, and place jar dependency there. -->
+			<build>
+				<plugins>
+					<plugin>
+						<!-- Useful for integrating the jar containing the JNI to VLog -->
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-install-plugin</artifactId>
+						<version>2.4</version>
+						<executions>
+							<execution>
+								<phase>initialize</phase>
+								<goals>
+									<goal>install-file</goal>
+								</goals>
+								<configuration>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>vlog4j-base</artifactId>
+									<version>${karmaresearch.vlog.version}</version>
+									<packaging>jar</packaging>
+									<file>./lib/jvlog-local.jar</file>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
