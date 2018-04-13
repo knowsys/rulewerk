@@ -1,5 +1,5 @@
 #!/bin/sh
-# Script to build the necessary VLog jar on Unix-like systems
+# Script to build unreleased snapshots of karmaresearch/vlog into vlog4j-base jar on Unix-like systems
 
 if [ -f "./local_builds/jvlog.jar" ]
 then
@@ -22,5 +22,6 @@ else
 	cd ../../..
 fi
 
+mkdir local_builds/jvlog.jar vlog4j-core/lib
 cp local_builds/jvlog.jar vlog4j-core/lib/jvlog-local.jar
-mvn initialize
+mvn initialize -Pdevelopment
