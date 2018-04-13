@@ -33,4 +33,5 @@ The released packages use vlog4j-base, which packages system-dependent binaries 
 Documentation
 -------------
 
+* The module **vlog4j-examples** includes short example programs that demonstrate some common use cases
 * [JavaDoc](https://mkroetzsch.github.io/vlog4j/) is available online and through the Maven packages.
