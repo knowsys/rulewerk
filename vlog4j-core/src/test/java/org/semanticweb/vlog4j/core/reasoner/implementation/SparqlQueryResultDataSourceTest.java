@@ -44,11 +44,11 @@ public class SparqlQueryResultDataSourceTest {
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
-				"?a p:P22 ?b");
+				"?a wdt:P22 ?b");
 		final String configString = dataSource.toConfigString();
 		final String expectedStringConfig = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=SPARQL\n"
 				+ "EDB%1$d_param0=http://query.wikidata.org/sparql\n" + "EDB%1$d_param1=b,a\n"
-				+ "EDB%1$d_param2=?a p:P22 ?b\n";
+				+ "EDB%1$d_param2=?a wdt:P22 ?b\n";
 		assertEquals(expectedStringConfig, configString);
 	}
 
@@ -60,7 +60,7 @@ public class SparqlQueryResultDataSourceTest {
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("b")));
 
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
-				"?a p:P22 ?b");
+				"?a wdt:P22 ?b");
 		assertEquals(1, dataSource.getQueryVariables().size());
 	}
 
