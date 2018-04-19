@@ -26,16 +26,17 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 
 public class CsvFileDataSourceTest {
 
 	@Test
 	public void testToConfigString() throws IOException {
-		final File csvFile = new File("/dir1/dir2/file.csv");
+		final File csvFile = new File(CsvFileUtils.CSV_INPORT_FOLDER + "file.csv");
 		final CsvFileDataSource csvFileDataSource = new CsvFileDataSource(csvFile);
 
 		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n"
-				+ "EDB%1$d_param0=/dir1/dir2\n" + "EDB%1$d_param1=file\n";
+				+ "EDB%1$d_param0=" + new File(csvFile.getParent()).getCanonicalPath() + "\n" + "EDB%1$d_param1=file\n";
 
 		final String actualConfigString = csvFileDataSource.toConfigString();
 		assertEquals(expectedConfigString, actualConfigString);
@@ -43,7 +44,8 @@ public class CsvFileDataSourceTest {
 
 	@Test
 	public void getFileNameWithoutExtension() throws IOException {
-		final CsvFileDataSource csvFileDataSource = new CsvFileDataSource(new File("/dir1/dir2/file.csv"));
+		final CsvFileDataSource csvFileDataSource = new CsvFileDataSource(
+				new File(CsvFileUtils.CSV_INPORT_FOLDER + "file.csv"));
 		assertEquals("file", csvFileDataSource.getFileNameWithoutExtension());
 	}
 

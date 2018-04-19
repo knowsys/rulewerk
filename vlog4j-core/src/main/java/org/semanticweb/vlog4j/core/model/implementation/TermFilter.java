@@ -94,6 +94,22 @@ public class TermFilter implements TermVisitor<Void> {
 			return Collections.emptySet();
 		}
 	}
+	
+	/**
+	 * Returns the set of blanks collected so far, which might be empty if the
+	 * terms collected are not blanks. The method will also return an empty set
+	 * if anything other than blanks are being collected.
+	 * 
+	 * @return set of blanks (see {@link Blank}).
+	 */
+	@SuppressWarnings("unchecked")
+	public Set<Blank> getBlanks(){
+		if (this.termType.equals(TermType.BLANK)) {
+			return (Set<Blank>) (Set<? extends Term>) Collections.unmodifiableSet(this.terms);
+		} else {
+			return Collections.emptySet();
+		}
+	}
 
 	@Override
 	public Void visit(Constant term) {

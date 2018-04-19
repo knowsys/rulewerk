@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.semanticweb.vlog4j</groupId>
 		<artifactId>vlog4j-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.2.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>vlog4j-owlapi</artifactId>
@@ -27,7 +27,7 @@
 			<version>${owlapi.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.semanticweb.vlog4j</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>vlog4j-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>

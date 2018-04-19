@@ -6,11 +6,12 @@
 
 	<groupId>org.semanticweb.vlog4j</groupId>
 	<artifactId>vlog4j-parent</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>VLog4j RDF Support</name>
+	<name>VLog4j</name>
 	<description>A Java library for working with the VLog rule engine</description>
+	<url>https://github.com/mkroetzsch/vlog4j</url>
 
 	<modules>
 		<module>vlog4j-core</module>
@@ -54,21 +55,14 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<eclipse.jdt.annotation.version>2.1.100</eclipse.jdt.annotation.version>
-		<junitVersion>4.12</junitVersion>
-		<mockitoVersion>1.10.19</mockitoVersion>
-		<slf4jVersion>1.7.10</slf4jVersion>
-		<apacheCommonsLangVersion>3.7</apacheCommonsLangVersion>
-		<apacheCommonsCsvVersion>1.5</apacheCommonsCsvVersion>
-		<mavenJavaDocVersion>3.0.0</mavenJavaDocVersion>
+		<junit.version>4.12</junit.version>
+		<mockito.version>1.10.19</mockito.version>
+		<slf4j.version>1.7.10</slf4j.version>
+		<apache.commons.lang.version>3.7</apache.commons.lang.version>
+		<apache.commons.csv.version>1.5</apache.commons.csv.version>
+		<maven.javadoc.version>3.0.0</maven.javadoc.version>
 		<owlapi.version>4.5.1</owlapi.version>
-
-
-		<apacheCommonsCompressVersion>1.15</apacheCommonsCompressVersion>
-		<apacheHttpVersion>4.5.4</apacheHttpVersion>
-		<commonsCliVersion>1.4</commonsCliVersion>
-		<ini4JVersion>0.5.4</ini4JVersion>
 		<openrdf.sesame.version>2.7.16</openrdf.sesame.version>
-		<!-- <openrdf.sesame.version>4.1.2</openrdf.sesame.version> -->
 	</properties>
 
 	<dependencies>
@@ -80,32 +74,32 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junitVersion}</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<!-- Mock objects for testing -->
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>${mockitoVersion}</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4jVersion}</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<!-- Useful helpers for cleaner coding -->
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>${apacheCommonsLangVersion}</version>
+			<version>${apache.commons.lang.version}</version>
 		</dependency>
 		<dependency>
 			<!-- Useful for testing generated csv files -->
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
-			<version>${apacheCommonsCsvVersion}</version>
+			<version>${apache.commons.csv.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -221,7 +215,7 @@
 				<!-- Create code coverage reports and submit them to coveralls.io. -->
 				<groupId>org.eluder.coveralls</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>4.3.0</version>
+				<version>2.1.0</version>
 			</plugin>
 			<plugin>
 				<!-- Plugin for actually computing code coverage. -->
@@ -243,7 +237,7 @@
 					to github: javadoc:aggregate -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${mavenJavaDocVersion}</version>
+				<version>${maven.javadoc.version}</version>
 				<configuration>
 					<bottom><![CDATA[Copyright &#169; {inceptionYear}&#x2018;{currentYear} {organizationName}. Generated from source code published under the Apache License 2.0. For more information, see the <a href="https://github.com/mkroetzsch/vlog4j">VLog4j homepage</a>]]></bottom>
 				</configuration>
@@ -286,7 +280,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>${mavenJavaDocVersion}</version>
+						<version>${maven.javadoc.version}</version>
 						<executions>
 							<execution>
 								<id>javadoc-jars</id>

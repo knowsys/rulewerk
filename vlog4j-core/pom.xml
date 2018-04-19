@@ -1,56 +1,64 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.semanticweb.vlog4j</groupId>
 		<artifactId>vlog4j-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.2.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>vlog4j-core</artifactId>
 	<packaging>jar</packaging>
 
 	<name>VLog4j Core Components</name>
-	<description>Basic implementation of the VLog Java connection</description>
+	<description>Core components of VLog4j: reasoner and model</description>
+
+	<properties>
+		<karmaresearch.vlog.version>1.0.1</karmaresearch.vlog.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
 			<!-- Useful for integrating the jar containing the JNI to VLog -->
-			<groupId>karmaresearch</groupId>
-			<artifactId>vlog</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-base</artifactId>
+			<version>${karmaresearch.vlog.version}</version>
 		</dependency>
 	</dependencies>
 
-<build>
-
-	<plugins>
-		<plugin>
-			<!-- Useful for integrating the jar containing the JNI to VLog -->
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-install-plugin</artifactId>
-			<version>2.4</version>
-			<executions>
-				<execution>
-					<phase>initialize</phase>
-					<goals>
-						<goal>install-file</goal>
-					</goals>
-					<configuration>
-						<groupId>karmaresearch</groupId>
-						<artifactId>vlog</artifactId>
-						<version>0.0.1-SNAPSHOT</version>
-						<packaging>jar</packaging>
-						<file>./lib/jvlog.jar</file>
-					</configuration>
-				</execution>
-			</executions>
-		</plugin>
-	</plugins>
-</build>
-
-
-	
+	<profiles>
+		<profile>
+			<id>development</id>
+			<!-- For development phase, using unreleased snapshots of karmaresearch 
+				vlog jar, create a "lib" directory with the same parent dir as this pom (vlog4j-core 
+				pom), and place jar dependency there. -->
+			<build>
+				<plugins>
+					<plugin>
+						<!-- Useful for integrating the jar containing the JNI to VLog -->
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-install-plugin</artifactId>
+						<version>2.4</version>
+						<executions>
+							<execution>
+								<phase>initialize</phase>
+								<goals>
+									<goal>install-file</goal>
+								</goals>
+								<configuration>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>vlog4j-base</artifactId>
+									<version>${karmaresearch.vlog.version}</version>
+									<packaging>jar</packaging>
+									<file>./lib/jvlog-local.jar</file>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
