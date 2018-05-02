@@ -26,8 +26,7 @@ public class RestrictedChaseOnOwlOntology {
 	public static void main(String[] args) throws OWLOntologyCreationException, ReasonerStateException,
 			EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
 		OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology = ontologyManager.loadOntologyFromOntologyDocument(new File("src" + File.separator + "main"
-				+ File.separator + "data" + File.separator + "owl" + File.separator + "bike.owl"));
+		OWLOntology ontology = ontologyManager.loadOntologyFromOntologyDocument(new File("src/main/data/owl/bike.owl"));
 
 		OwlToRulesConverter owlToRulesConverter = new OwlToRulesConverter();
 		owlToRulesConverter.addOntology(ontology);
