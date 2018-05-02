@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:names="foo://bla/names#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <Ontology/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- foo://bla/names#child -->
+
+    <ObjectProperty rdf:about="foo://bla/names#child"/>
+    
+
+
+    <!-- foo://bla/names#sibling -->
+
+    <ObjectProperty rdf:about="foo://bla/names#sibling"/>
+    <rdf:Description>
+        <inverseOf rdf:resource="foo://bla/names#sibling"/>
+        <rdfs:subPropertyOf rdf:resource="foo://bla/names#sibling"/>
+    </rdf:Description>
+    
+
+
+    <!-- foo://bla/names#uncle1 -->
+
+    <ObjectProperty rdf:about="foo://bla/names#uncle1"/>
+    
+
+
+    <!-- foo://bla/names#uncle2 -->
+
+    <ObjectProperty rdf:about="foo://bla/names#uncle2">
+        <propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description>
+                <inverseOf rdf:resource="foo://bla/names#child"/>
+            </rdf:Description>
+            <rdf:Description rdf:about="foo://bla/names#sibling"/>
+        </propertyChainAxiom>
+    </ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- foo://bla/names#Uncle -->
+
+    <Class rdf:about="foo://bla/names#Uncle">
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="foo://bla/names#sibling"/>
+                <minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</minQualifiedCardinality>
+                <onClass rdf:resource="http://FC493481016"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="foo://bla/names#sibling"/>
+                <minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</minQualifiedCardinality>
+                <onClass rdf:resource="http://FC493481021"/>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- http://FC493481016 -->
+
+    <Class rdf:about="http://FC493481016">
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="foo://bla/names#child"/>
+                <minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</minCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- http://FC493481020 -->
+
+    <Class rdf:about="http://FC493481020">
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty>
+                    <rdf:Description>
+                        <inverseOf rdf:resource="foo://bla/names#sibling"/>
+                    </rdf:Description>
+                </onProperty>
+                <allValuesFrom rdf:resource="foo://bla/names#Uncle"/>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- http://FC493481021 -->
+
+    <Class rdf:about="http://FC493481021">
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="foo://bla/names#child"/>
+                <minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</minCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- http://FC493481027 -->
+
+    <Class rdf:about="http://FC493481027">
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty>
+                    <rdf:Description>
+                        <inverseOf rdf:resource="foo://bla/names#sibling"/>
+                    </rdf:Description>
+                </onProperty>
+                <allValuesFrom rdf:resource="foo://bla/names#Uncle"/>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- http://FCSubClass1806488 -->
+
+    <Class rdf:about="http://FCSubClass1806488">
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="foo://bla/names#child"/>
+                <minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</minCardinality>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <Class rdf:about="http://www.w3.org/2002/07/owl#Thing">
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty>
+                    <rdf:Description>
+                        <inverseOf rdf:resource="foo://bla/names#child"/>
+                    </rdf:Description>
+                </onProperty>
+                <allValuesFrom rdf:resource="http://FC493481020"/>
+            </Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty>
+                    <rdf:Description>
+                        <inverseOf rdf:resource="foo://bla/names#child"/>
+                    </rdf:Description>
+                </onProperty>
+                <allValuesFrom rdf:resource="http://FC493481027"/>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- foo://bla/names#bob -->
+
+    <NamedIndividual rdf:about="foo://bla/names#bob"/>
+    
+
+
+    <!-- foo://bla/names#john -->
+
+    <NamedIndividual rdf:about="foo://bla/names#john">
+        <names:child rdf:resource="foo://bla/names#bob"/>
+        <names:sibling rdf:resource="foo://bla/names#paul"/>
+        <names:sibling>
+            <rdf:Description/>
+        </names:sibling>
+    </NamedIndividual>
+    
+
+
+    <!-- foo://bla/names#paul -->
+
+    <NamedIndividual rdf:about="foo://bla/names#paul">
+        <rdf:type rdf:resource="http://FCSubClass1806488"/>
+    </NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Rules
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="foo://bla/names#x">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="foo://bla/names#y">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="foo://bla/names#z">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="foo://bla/names#child"/>
+                        <swrl:argument1 rdf:resource="foo://bla/names#x"/>
+                        <swrl:argument2 rdf:resource="foo://bla/names#y"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="foo://bla/names#sibling"/>
+                                <swrl:argument1 rdf:resource="foo://bla/names#x"/>
+                                <swrl:argument2 rdf:resource="foo://bla/names#z"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="foo://bla/names#uncle1"/>
+                        <swrl:argument1 rdf:resource="foo://bla/names#y"/>
+                        <swrl:argument2 rdf:resource="foo://bla/names#z"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.1.0.20151025-0955) https://github.com/owlcs/owlapi -->
+
