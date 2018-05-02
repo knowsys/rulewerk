@@ -30,7 +30,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.vlog4j.core.model.api.Atom;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -41,42 +41,72 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.owlapi.OwlToRulesConverter;
 
+/**
+ * This example shows how an OWL ontology can be transformed into {@link Rule}s
+ * and {@link Fact}s using vlog4j-owlapi dependency libraries.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public class RestrictedChaseOnOwlOntology {
 
 	public static void main(String[] args) throws OWLOntologyCreationException, ReasonerStateException,
 			EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+
+		/* Bike ontology is loaded from a Bike file using OWL API */
 		OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = ontologyManager.loadOntologyFromOntologyDocument(new File("src/main/data/owl/bike.owl"));
 
+		/*
+		 * vlog4j.owlapi.OwlToRulesConverter can be used to convert the OWL axiom in
+		 * source ontology to target Rule and Fact objects
+		 */
 		OwlToRulesConverter owlToRulesConverter = new OwlToRulesConverter();
 		owlToRulesConverter.addOntology(ontology);
 
-		// Print out rules
+		/* Print out the Rules extracted from bike ontology. */
+		System.out.println("Rules extracted from Bike ontology:");
 		Set<Rule> rules = owlToRulesConverter.getRules();
-		for (Rule rule : rules)
-			System.out.println(rule);
+		for (Rule rule : rules) {
+			System.out.println(" - rule: " + rule);
+		}
 		System.out.println();
 
-		// Print out facts
+		/* Print out Facts extracted from bike ontology */
+		System.out.println("Facts extracted from Bike ontology:");
 		Set<Atom> facts = owlToRulesConverter.getFacts();
-		for (Atom fact : facts)
-			System.out.println(fact);
+		for (Atom fact : facts) {
+			System.out.println(" - fact: " + fact);
+		}
 		System.out.println();
 
 		try (Reasoner reasoner = Reasoner.getInstance()) {
-			// Load and reason
+			/* Load rules and facts obtained from the ontology */
 			reasoner.addRules(new ArrayList<Rule>(owlToRulesConverter.getRules()));
 			reasoner.addFacts(owlToRulesConverter.getFacts());
 			reasoner.load();
+			/* Reason over loaded ontology */
 			reasoner.reason();
 
-			// Print out Query Answers
-			Predicate pred = Expressions.makePredicate("http://www.bike.org#isPartOf", 2);
+			/* Query for the parts of bike constant "b2". */
 			Variable vx = Expressions.makeVariable("x");
-			Variable vy = Expressions.makeVariable("y");
-			QueryResultIterator answers = reasoner.answerQuery(Expressions.makeAtom(pred, vx, vy), true);
-			while (answers.hasNext()) {
-				System.out.println(answers.next());
+			Constant b2 = Expressions.makeConstant("http://www.bike.org#b2");
+			Atom isPartOfPairs = Expressions.makeAtom("http://www.bike.org#isPartOf", vx, b2);
+
+			/*
+			 * See that an unnamed individual has been introduced to satisfy
+			 * owl:someValuesFrom restriction:
+			 * 
+			 * http://www.semanticweb.org/carralma/ontologies/2018/3/untitled-ontology-2#Bike 
+			 * 	:Bike rdf:type owl:Class ; 
+			 * 	rdfs:subClassOf [ rdf:type owl:Restriction ;
+			 * 					  owl:onProperty :hasPart ; 
+			 * 					  owl:someValuesFrom :Wheel 
+			 *					] .
+			 */
+			try (QueryResultIterator answers = reasoner.answerQuery(isPartOfPairs, true);) {
+				answers.forEachRemaining(answer -> System.out
+						.println(answer.getTerms().get(0) + " isPartOf " + answer.getTerms().get(1)));
 			}
 		}
 	}
