@@ -58,7 +58,7 @@ public class LoadDataFromSparqlQueryTest {
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// a has father b
-				"?a p:P22 ?b");
+				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -83,7 +83,7 @@ public class LoadDataFromSparqlQueryTest {
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// a has father b
-				"?a p:P22 ?b");
+				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -116,7 +116,7 @@ public class LoadDataFromSparqlQueryTest {
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// a has father b
-				"?a p:P22 ?b .");
+				"?a wdt:P22 ?b .");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -139,7 +139,7 @@ public class LoadDataFromSparqlQueryTest {
 				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
-				"?b p:P22 ?a .\n" + "?b p:P25 ?c");
+				"?b wdt:P22 ?a .\n" + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -159,7 +159,7 @@ public class LoadDataFromSparqlQueryTest {
 				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
-				"?b p:P22 ?a ." + "?b p:P25 ?c");
+				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -182,7 +182,7 @@ public class LoadDataFromSparqlQueryTest {
 
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
-				"?b p:P22 ?a ." + "?b p:P25 ?c");
+				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			// TODO must validate predicate arity sonner
