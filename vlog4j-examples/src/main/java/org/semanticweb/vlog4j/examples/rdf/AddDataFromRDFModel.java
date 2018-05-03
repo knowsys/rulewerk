@@ -52,10 +52,10 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.rdf.RDFModelToAtomsConverter;
 
 /**
- * This example shows how different types of RDF resources can be parsed to RDF
- * Models, and such Models can be converted to triple {@link Fact}s using
- * vlog4j-rdf dependency library.
- * 
+ * This example shows how <b>vlog4j-rdf</b> library's utility class
+ * {@link RDFModelToAtomsConverter} can be used to convert RDF {@link Model}s
+ * from various types of RDF resources to <b>vlog4j-core</b> {@code Atom} sets.
+ *  
  * @author Irina Dragoste
  *
  */
@@ -133,12 +133,13 @@ public class AddDataFromRDFModel {
 		 * from facts extracted from RDF triples.
 		 */
 		final Predicate predicateHasOrganizationName = Expressions.makePredicate("hasOrganizationName", 2);
-		final Atom creatorOrganizationName = Expressions.makeAtom(predicateHasOrganizationName, varPerson, varOganizationName);
-		
+		final Atom creatorOrganizationName = Expressions.makeAtom(predicateHasOrganizationName, varPerson,
+				varOganizationName);
+
 		/*
-		 * hasOrganizationName(person, organizationName) :- TRIPLE(person, <hasAffiliation>, affiliation), 
-		 * 													TRIPLE(affiliation, <withOrganisation>, organization), 
-		 * 													TRIPLE(organization, <name>, organizationName)
+		 * hasOrganizationName(person, organizationName) :- TRIPLE(person,<hasAffiliation>, affiliation), 
+		 * 													TRIPLE(affiliation, <withOrganisation>, organization),
+		 * 												    TRIPLE(organization, <name>, organizationName)
 		 */
 		final Rule organizationRule = Expressions.makeRule(creatorOrganizationName, personHasAffiliation,
 				affiliationWithOrganization, organizationHasName);
@@ -159,7 +160,7 @@ public class AddDataFromRDFModel {
 			reasoner.load();
 			reasoner.reason();
 
-			/* We query for persons whose organization name is "TU Dresden" .*/
+			/* We query for persons whose organization name is "TU Dresden" . */
 			final Constant constantTuDresdenOrganization = Expressions.makeConstant("\"TU Dresden\"");
 			@NonNull
 			final Atom queryTUDresdenParticipantsAtISWC = Expressions.makeAtom(predicateHasOrganizationName, varPerson,
