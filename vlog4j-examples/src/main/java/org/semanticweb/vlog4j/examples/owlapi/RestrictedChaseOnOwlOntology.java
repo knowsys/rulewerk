@@ -43,12 +43,14 @@ import org.semanticweb.vlog4j.owlapi.OwlToRulesConverter;
 
 /**
  * This example shows how an OWL ontology can be transformed into {@link Rule}s
- * and {@link Fact}s using vlog4j-owlapi dependency libraries.
+ * and {@link Fact}s using vlog4j-owlapi dependency library.
  * 
  * @author Irina Dragoste
  *
  */
 public class RestrictedChaseOnOwlOntology {
+	
+	//FIXME change www.bike.org name
 
 	public static void main(String[] args) throws OWLOntologyCreationException, ReasonerStateException,
 			EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
