@@ -1,22 +1,8 @@
 package org.semanticweb.vlog4j.examples;
 
-import java.io.IOException;
-
-import org.semanticweb.vlog4j.core.model.api.Atom;
-import org.semanticweb.vlog4j.core.model.api.Constant;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-
 /*-
  * #%L
- * examples
+ * VLog4j Examples
  * %%
  * Copyright (C) 2018 VLog4j Developers
  * %%
@@ -34,11 +20,31 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
  * #L%
  */
 
-public class RestrictedChaseExecutionInMemory {
+import java.io.File;
+import java.io.IOException;
+
+import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.DataSource;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
+
+public class AddDataFromCSVFile {
+	// FIXME: run on the same set if rules skolem (non-terminating, timeout, print
+	// the numbeer of generated facts), reset reasoner, run restricted chase
+
 	public static void main(String[] args)
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
-		// 1. Instantiating entities, rules and facts
+		// 1. Instantiating entities and rules.
 		final Predicate bicycleIDB = Expressions.makePredicate("BicycleIDB", 1);
 		final Predicate bicycleEDB = Expressions.makePredicate("BicycleEDB", 1);
 		final Predicate wheelIDB = Expressions.makePredicate("WheelIDB", 1);
@@ -47,9 +53,6 @@ public class RestrictedChaseExecutionInMemory {
 		final Predicate hasPartEDB = Expressions.makePredicate("HasPartEDB", 2);
 		final Predicate isPartOfIDB = Expressions.makePredicate("IsPartOfIDB", 2);
 		final Predicate isPartOfEDB = Expressions.makePredicate("IsPartOfEDB", 2);
-		final Constant bicycle1 = Expressions.makeConstant("bicycle1");
-		final Constant bicycle2 = Expressions.makeConstant("bicycle2");
-		final Constant wheel1 = Expressions.makeConstant("wheel1");
 		final Variable x = Expressions.makeVariable("x");
 		final Variable y = Expressions.makeVariable("y");
 
@@ -78,9 +81,9 @@ public class RestrictedChaseExecutionInMemory {
 		final Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(hasPartIDBXY, wheelIDBY),
 				Expressions.makeConjunction(bicycleIDBX));
 
-		// IsPartOfIDB(?x, !y), BicycleIDB(!y) :- WheelIDB(?x) .
-		final Atom bycicleIDBY = Expressions.makeAtom(bicycleIDB, y);
-		final Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY, bycicleIDBY),
+		// IsPartOfIDB(?x, !y) :- WheelIDB(?x) .
+		// Atom bycicleIDBY = Expressions.makeAtom(bicycleIDB, y);
+		final Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY),
 				Expressions.makeConjunction(wheelIDBX));
 
 		// IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) .
@@ -91,34 +94,47 @@ public class RestrictedChaseExecutionInMemory {
 		final Atom isPartOfIDBYX = Expressions.makeAtom(isPartOfIDB, y, x);
 		final Rule rule8 = Expressions.makeRule(hasPartIDBXY, isPartOfIDBYX);
 
-		// BicycleEDB(bicycle1) .
-		final Atom fact1 = Expressions.makeAtom(bicycleEDB, bicycle1);
-
-		// HasPartEDB(bicycle1, wheel1) .
-		final Atom fact2 = Expressions.makeAtom(hasPartEDB, bicycle1, wheel1);
-
-		// Wheel(wheel1) .
-		final Atom fact3 = Expressions.makeAtom(wheelEDB, wheel1);
-
-		// BicycleEDB(b) .
-		final Atom fact4 = Expressions.makeAtom(bicycleEDB, bicycle2);
-
 		// 2. Loading, reasoning, and querying.
+		final Reasoner reasoner = Reasoner.getInstance();
+		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
+
+		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
+
+		final String filesDirPath = "src" + File.separator + "main" + File.separator + "data";
+		final DataSource bicycleEDBPath = new CsvFileDataSource(
+				new File(filesDirPath + File.separator + "bycicleEDB.csv"));
+		reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBPath);
+		final DataSource hasPartPath = new CsvFileDataSource(
+				new File(filesDirPath + File.separator + "hasPartEDB.csv"));
+		reasoner.addFactsFromDataSource(hasPartEDB, hasPartPath);
+		final DataSource wheelPath = new CsvFileDataSource(new File(filesDirPath + File.separator + "wheelEDB.csv"));
+		reasoner.addFactsFromDataSource(wheelEDB, wheelPath);
+
+		reasoner.load();
+
+		ExamplesUtil.printOutQueryAnswers(hasPartEDBXY, reasoner);
+
+		reasoner.reason();
+
+		ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
+
+		// 3. Exporting
+		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + File.separator + "hasPartIDBXYWithBlanks.csv",
+				true);
+
+		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + File.separator + "hasPartIDBXYWithoutBlanks.csv",
+				false);
+
+		final Constant redBike = Expressions.makeConstant("redBike");
+		final Atom hasPartIDBRedBikeY = Expressions.makeAtom(hasPartIDB, redBike, y);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
+				filesDirPath + File.separator + "hasPartIDBRedBikeYWithBlanks.csv", true);
+
+		// 4. Closing
 		// Use try-with resources, or remember to call close() to free the reasoner
 		// resources.
-		try (Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
+		reasoner.reason();
 
-			reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
-			reasoner.addFacts(fact1, fact2, fact3, fact4);
-			reasoner.load();
-
-			ExamplesUtil.printOutQueryAnswers(hasPartEDBXY, reasoner);
-
-			reasoner.reason();
-
-			ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
-		}
 	}
 
 }

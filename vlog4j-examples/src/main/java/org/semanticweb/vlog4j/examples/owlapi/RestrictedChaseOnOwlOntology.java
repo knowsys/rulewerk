@@ -42,15 +42,15 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.owlapi.OwlToRulesConverter;
 
 /**
- * This example shows how an OWL ontology can be transformed into {@link Rule}s
- * and {@link Fact}s using vlog4j-owlapi dependency library.
+ * This example shows how <b>vlog4j-owlapi</b> library (class {@link OwlToRulesConverter}) can be used to transform
+ * an OWL ontology into <b>vlog4j-core</b> {@link Rule}s and {@link Atom}s.
  * 
  * @author Irina Dragoste
  *
  */
 public class RestrictedChaseOnOwlOntology {
-	
-	//FIXME change www.bike.org name
+
+	// FIXME change www.bike.org name
 
 	public static void main(String[] args) throws OWLOntologyCreationException, ReasonerStateException,
 			EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
@@ -61,7 +61,7 @@ public class RestrictedChaseOnOwlOntology {
 
 		/*
 		 * vlog4j.owlapi.OwlToRulesConverter can be used to convert the OWL axiom in
-		 * source ontology to target Rule and Fact objects
+		 * source ontology to target Rule and Atom objects
 		 */
 		OwlToRulesConverter owlToRulesConverter = new OwlToRulesConverter();
 		owlToRulesConverter.addOntology(ontology);
@@ -92,19 +92,16 @@ public class RestrictedChaseOnOwlOntology {
 
 			/* Query for the parts of bike constant "b2". */
 			Variable vx = Expressions.makeVariable("x");
-			Constant b2 = Expressions.makeConstant("http://www.bike.org#b2");
-			Atom isPartOfPairs = Expressions.makeAtom("http://www.bike.org#isPartOf", vx, b2);
+			Constant b2 = Expressions.makeConstant("http://www.bike-example.ontology#b2");
+			Atom isPartOfPairs = Expressions.makeAtom("http://www.bike-example.ontology#isPartOf", vx, b2);
 
 			/*
 			 * See that an unnamed individual has been introduced to satisfy
 			 * owl:someValuesFrom restriction:
 			 * 
-			 * http://www.semanticweb.org/carralma/ontologies/2018/3/untitled-ontology-2#Bike 
-			 * 	:Bike rdf:type owl:Class ; 
-			 * 	rdfs:subClassOf [ rdf:type owl:Restriction ;
-			 * 					  owl:onProperty :hasPart ; 
-			 * 					  owl:someValuesFrom :Wheel 
-			 *					] .
+			 * http://www.semanticweb.org/carralma/ontologies/2018/3/untitled-ontology-2#
+			 * Bike :Bike rdf:type owl:Class ; rdfs:subClassOf [ rdf:type owl:Restriction ;
+			 * owl:onProperty :hasPart ; owl:someValuesFrom :Wheel ] .
 			 */
 			try (QueryResultIterator answers = reasoner.answerQuery(isPartOfPairs, true);) {
 				answers.forEachRemaining(answer -> System.out
