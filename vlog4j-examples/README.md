@@ -1,5 +1,6 @@
 This project contains examples of different use-cases of **vlog4j** functionality.
-- reasoning with th default Restricted Chase algorithm : RestrictedChaseExecutionInMemory.java
-- reasoning with Skolem Chase algorithm : SkolemChaseExecutionFromToFile.java
+- reasoning termination for various algorithms: Skolem and Restricted Chase algorithm : SkolemVsRestrictedChaseTermination.java
+- adding facts from a CSV file; exporting query results to CSV: AddDataFromCSVFile.java
+- adding facts from the result of a SPARQL query on a remote endpoint: AddDataFromSparqlQueryResults.java
 - converting an OWL ontology into rules and facts: owlapi.RestrictedChaseOnOwlOntology.java
 - converting an RDF resource into facts: rdf.AddDataFromRDFModel.java
