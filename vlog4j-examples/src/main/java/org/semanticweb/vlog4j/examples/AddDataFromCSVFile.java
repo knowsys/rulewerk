@@ -38,8 +38,6 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 
 public class AddDataFromCSVFile {
-	// FIXME: run on the same set if rules skolem (non-terminating, timeout, print
-	// the numbeer of generated facts), reset reasoner, run restricted chase
 
 	public static void main(String[] args)
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
@@ -82,7 +80,6 @@ public class AddDataFromCSVFile {
 				Expressions.makeConjunction(bicycleIDBX));
 
 		// IsPartOfIDB(?x, !y) :- WheelIDB(?x) .
-		// Atom bycicleIDBY = Expressions.makeAtom(bicycleIDB, y);
 		final Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY),
 				Expressions.makeConjunction(wheelIDBX));
 

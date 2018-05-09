@@ -137,9 +137,9 @@ public class AddDataFromRDFModel {
 				varOganizationName);
 
 		/*
-		 * hasOrganizationName(person, organizationName) :- TRIPLE(person,<hasAffiliation>, affiliation), 
-		 * 													TRIPLE(affiliation, <withOrganisation>, organization),
-		 * 												    TRIPLE(organization, <name>, organizationName)
+		 * hasOrganizationName(?person, ?organizationName) :- TRIPLE(?person, <hasAffiliation>, ?affiliation), 
+		 * 													  TRIPLE(?affiliation, <withOrganisation>, ?organization),
+		 * 												      TRIPLE(?organization, <name>, ?organizationName) .
 		 */
 		final Rule organizationRule = Expressions.makeRule(creatorOrganizationName, personHasAffiliation,
 				affiliationWithOrganization, organizationHasName);
@@ -162,11 +162,13 @@ public class AddDataFromRDFModel {
 
 			/* We query for persons whose organization name is "TU Dresden" . */
 			final Constant constantTuDresdenOrganization = Expressions.makeConstant("\"TU Dresden\"");
+			/*  hasOrganizationName(?person, "TU Dresden") */
 			@NonNull
 			final Atom queryTUDresdenParticipantsAtISWC = Expressions.makeAtom(predicateHasOrganizationName, varPerson,
 					constantTuDresdenOrganization);
 
 			System.out.println("Participants at ISWC'16 and '17 from Organization 'TU Dresden':");
+			System.out.println("( Answers to query " + queryTUDresdenParticipantsAtISWC + " )");
 			try (QueryResultIterator queryResultIterator = reasoner.answerQuery(queryTUDresdenParticipantsAtISWC,
 					false)) {
 				queryResultIterator.forEachRemaining(answer -> System.out

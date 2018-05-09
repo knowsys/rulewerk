@@ -43,7 +43,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultData
 
 /**
  * This is a simple example of adding data from the result of a SPARQL query on
- * a remote database endpoint. In this example, we will query WikiData for
+ * a remote database endpoint, using {@link SparqlQueryResultDataSource}. In this example, we will query WikiData for
  * titles of publications that have authors who have children together.
  * 
  * @author Irina Dragoste
@@ -117,7 +117,7 @@ public class AddDataFromSparqlQueryResults {
 		 * variables (title, mother and father).
 		 */
 		final Predicate titleOfPublicationThatHasAuthorsWhoParentTheSameChild = Expressions
-				.makePredicate("havePublicationsTogether", 3);
+				.makePredicate("publicationAndAuthorsWhoParentTheSameChild", 3);
 
 		try (Reasoner reasoner = Reasoner.getInstance()) {
 
@@ -139,7 +139,7 @@ public class AddDataFromSparqlQueryResults {
 					Expressions.makeVariable("x"), Expressions.makeVariable("y"), Expressions.makeVariable("z"));
 
 			/* We query the reasoner for facts of the SPARQL query result predicate. */
-			System.out.println("Publications that have authors who parent the same child:");
+			System.out.println("Titles of publications that have authors who parent the same child:");
 			try (QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, false)) {
 				queryResultIterator.forEachRemaining(queryResult -> {
 					List<Term> queryResultTerms = queryResult.getTerms();
@@ -155,8 +155,8 @@ public class AddDataFromSparqlQueryResults {
 			Atom isFather = Expressions.makeAtom("isFather", Expressions.makeVariable("z"));
 			Conjunction ruleHeadConjunction = Expressions.makeConjunction(haveChildrenTogether, isMother, isFather);
 			/*
-			 * haveChildrenTogetherRuleHeadAtom(y,z), isMother(y), isFather(z) :-
-			 * titleOfPublicationThatHasAuthorsWhoParentTheSameChild(x,y,z)
+			 * haveChildrenTogether(?y, ?z), isMother(?y), isFather(?z) :-
+			 * publicationAndAuthorsWhoParentTheSameChild(?x, ?y, ?z)
 			 */
 			Rule rule = Expressions.makeRule(ruleHeadConjunction, Expressions.makeConjunction(queryAtom));
 
