@@ -29,7 +29,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
  * is invalid, the logging will be redirected to the System output. If the log file does not exist at given path, it will be created. If a file already exists,
  * it will be over-written, so we suggest backing up and versioning log files.</li>
  */
-public class ExportReasonerLoggingToFile {
+public class ConfigureReasonerLogging {
 	private static String logsFolder = "src/main/logs/";
 
 	/**
