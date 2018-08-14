@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.examples;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,21 +33,17 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
 /**
- * This example shows non-termination of the Skolem Chase, versus termination of
- * the Restricted Chase on the same set of rules and facts. Note that the
- * Restricted Chase is the default reasoning algorithm, as it terminates in most
- * cases and generates a smaller number of facts.
- * 
+ * This example shows non-termination of the Skolem Chase, versus termination of the Restricted Chase on the same set of rules and facts. Note that the
+ * Restricted Chase is the default reasoning algorithm, as it terminates in most cases and generates a smaller number of facts.
+ *
  * @author Irina Dragoste
  *
  */
 public class SkolemVsRestrictedChaseTermination {
 
-	public static void main(String[] args)
-			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+	public static void main(final String[] args) throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
 		/* 1. Instantiating entities, rules and facts */
 		final Predicate bicycleIDB = Expressions.makePredicate("BicycleIDB", 1);
 		final Predicate bicycleEDB = Expressions.makePredicate("BicycleEDB", 1);
@@ -84,19 +80,16 @@ public class SkolemVsRestrictedChaseTermination {
 		final Rule rule4 = Expressions.makeRule(isPartOfIDBXY, isPartOfEDBXY);
 
 		/*
-		 * HasPartIDB(?x, ?y), WheelIDB(?y) :- BicycleIDB(?x) . y - existential variable
+		 * exists y. HasPartIDB(?x, !y), WheelIDB(!y) :- BicycleIDB(?x) .
 		 */
 		final Atom wheelIDBY = Expressions.makeAtom(wheelIDB, y);
-		final Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(hasPartIDBXY, wheelIDBY),
-				Expressions.makeConjunction(bicycleIDBX));
+		final Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(hasPartIDBXY, wheelIDBY), Expressions.makeConjunction(bicycleIDBX));
 
 		/*
-		 * IsPartOfIDB(?x, ?y), BicycleIDB(?y) :- WheelIDB(?x) . y - existential
-		 * variable
+		 * exists y. IsPartOfIDB(?x, !y), BicycleIDB(!y) :- WheelIDB(?x) .
 		 */
 		final Atom bycicleIDBY = Expressions.makeAtom(bicycleIDB, y);
-		final Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY, bycicleIDBY),
-				Expressions.makeConjunction(wheelIDBX));
+		final Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY, bycicleIDBY), Expressions.makeConjunction(wheelIDBX));
 
 		/* IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) . */
 		final Atom hasPartIDBYX = Expressions.makeAtom(hasPartIDB, y, x);
@@ -119,8 +112,7 @@ public class SkolemVsRestrictedChaseTermination {
 		final Atom fact4 = Expressions.makeAtom(bicycleEDB, bicycle2);
 
 		/*
-		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to
-		 * call close() to free the reasoner resources.
+		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to call close() to free the reasoner resources.
 		 */
 		try (Reasoner reasoner = Reasoner.getInstance()) {
 
@@ -130,32 +122,28 @@ public class SkolemVsRestrictedChaseTermination {
 
 			/* See that there is no fact HasPartIDB before reasoning. */
 			System.out.println("Answers to query " + hasPartIDBXY + " before reasoning:");
-			printOutQueryAnswers(hasPartIDBXY, reasoner);
+			ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 			/*
-			 * As the Skolem Chase is known not to terminate for this set of rules and
-			 * facts, it is interrupted after one second.
+			 * As the Skolem Chase is known not to terminate for this set of rules and facts, it is interrupted after one second.
 			 */
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			reasoner.setReasoningTimeout(1);
 			System.out.println("Starting Skolem Chase with 1 second timeout.");
 
 			/* Indeed, the Skolem Chase did not terminate before timeout. */
-			boolean skolemChaseFinished = reasoner.reason();
+			final boolean skolemChaseFinished = reasoner.reason();
 			System.out.println("Has Skolem Chase algorithm finished before 1 second timeout? " + skolemChaseFinished);
 
 			/*
-			 * See that the Skolem Chase generated a very large number of facts in 1 second,
-			 * extensively introducing new unnamed individuals to satisfy existential
-			 * restrictions.
+			 * See that the Skolem Chase generated a very large number of facts in 1 second, extensively introducing new unnamed individuals to satisfy
+			 * existential restrictions.
 			 */
-			System.out.println(
-					"Answers to query " + hasPartIDBXY + " after reasoning with the Skolem Chase for 1 second:");
-			printOutQueryAnswers(hasPartIDBXY, reasoner);
+			System.out.println("Answers to query " + hasPartIDBXY + " after reasoning with the Skolem Chase for 1 second:");
+			ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 			/*
-			 * We reset the reasoner and apply the Restricted Chase on the same set of rules
-			 * and facts
+			 * We reset the reasoner and apply the Restricted Chase on the same set of rules and facts
 			 */
 			System.out.println();
 			System.out.println("Reseting reasoner; discarding facts generated during reasoning.");
@@ -163,39 +151,30 @@ public class SkolemVsRestrictedChaseTermination {
 			reasoner.load();
 
 			/*
-			 * See that there is no fact HasPartIDB before reasoning. All inferred facts
-			 * have been discarded when the reasoner was reset.
+			 * See that there is no fact HasPartIDB before reasoning. All inferred facts have been discarded when the reasoner was reset.
 			 */
 			System.out.println("Answers to query " + hasPartIDBXY + " before reasoning:");
-			printOutQueryAnswers(hasPartIDBXY, reasoner);
+			ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 			/*
-			 * As the Restricted Chase is known to terminate for this set of rules and
-			 * facts, we will not interrupt it.
+			 * As the Restricted Chase is known to terminate for this set of rules and facts, we will not interrupt it.
 			 */
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			reasoner.setReasoningTimeout(null);
-			long restrictedChaseStartTime = System.currentTimeMillis();
+			final long restrictedChaseStartTime = System.currentTimeMillis();
 			System.out.println("Starting Restricted Chase with no timeout.");
 
 			/* Indeed, the Restricted Chase did terminate (in less than 1 second) */
-			boolean restrictedChaseFinished = reasoner.reason();
-			long restrictedChaseDuration = System.currentTimeMillis() - restrictedChaseStartTime;
-			System.out.println("Has Restricted Chase algorithm finished? " + restrictedChaseFinished + ". (Duration: "
-					+ restrictedChaseDuration + " ms)");
+			final boolean restrictedChaseFinished = reasoner.reason();
+			final long restrictedChaseDuration = System.currentTimeMillis() - restrictedChaseStartTime;
+			System.out.println("Has Restricted Chase algorithm finished? " + restrictedChaseFinished + ". (Duration: " + restrictedChaseDuration + " ms)");
 
 			/*
-			 * See that the Restricted Chase generated a small number of facts, reusing
-			 * individuals that satisfy existential restrictions.
+			 * See that the Restricted Chase generated a small number of facts, reusing individuals that satisfy existential restrictions.
 			 */
 			System.out.println("Answers to query " + hasPartIDBXY + " after reasoning with the Restricted Chase:");
-			printOutQueryAnswers(hasPartIDBXY, reasoner);
+			ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
 		}
 	}
 
-	private static void printOutQueryAnswers(Atom queryAtom, Reasoner reasoner) throws ReasonerStateException {
-		try (QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true)) {
-			queryResultIterator.forEachRemaining(queryResult -> System.out.println(" - " + queryResult));
-		}
-	}
 }

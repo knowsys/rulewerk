@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.examples;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,12 +37,19 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArit
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 
+/**
+ * This example shows how facts can be imported from <b>.csv>/b> files, and also how query answers can be exported to <b>.csv>/b> files. For importing, a
+ * {@link DataSource} of type {@link CsvFileDataSource}, containing the path to the <b>.csv>/b>, must be associated to the corresponding predicate. The
+ * <b>.csv>/b> file contains facts over that predicate on its lines. For exporting, the path to the output <b>.csv>/b> file msut be specified.
+ *
+ * @author Irina Dragoste
+ *
+ */
 public class AddDataFromCSVFile {
 
-	public static void main(String[] args)
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public static void main(final String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
-		// 1. Instantiating entities and rules.
+		/* 1. Instantiating entities and rules. */
 		final Predicate bicycleIDB = Expressions.makePredicate("BicycleIDB", 1);
 		final Predicate bicycleEDB = Expressions.makePredicate("BicycleEDB", 1);
 		final Predicate wheelIDB = Expressions.makePredicate("WheelIDB", 1);
@@ -54,83 +61,79 @@ public class AddDataFromCSVFile {
 		final Variable x = Expressions.makeVariable("x");
 		final Variable y = Expressions.makeVariable("y");
 
-		// BicycleIDB(?x) :- BicycleEDB(?x) .
+		/* BicycleIDB(?x) :- BicycleEDB(?x) . */
 		final Atom bicycleIDBX = Expressions.makeAtom(bicycleIDB, x);
 		final Atom bicycleEDBX = Expressions.makeAtom(bicycleEDB, x);
 		final Rule rule1 = Expressions.makeRule(bicycleIDBX, bicycleEDBX);
 
-		// WheelIDB(?x) :- WheelEDB(?x) .
+		/* WheelIDB(?x) :- WheelEDB(?x) . */
 		final Atom wheelIDBX = Expressions.makeAtom(wheelIDB, x);
 		final Atom wheelEDBX = Expressions.makeAtom(wheelEDB, x);
 		final Rule rule2 = Expressions.makeRule(wheelIDBX, wheelEDBX);
 
-		// hasPartIDB(?x, ?y) :- hasPartEDB(?x, ?y) .
+		/* hasPartIDB(?x, ?y) :- hasPartEDB(?x, ?y) . */
 		final Atom hasPartIDBXY = Expressions.makeAtom(hasPartIDB, x, y);
 		final Atom hasPartEDBXY = Expressions.makeAtom(hasPartEDB, x, y);
 		final Rule rule3 = Expressions.makeRule(hasPartIDBXY, hasPartEDBXY);
 
-		// isPartOfIDB(?x, ?y) :- isPartOfEDB(?x, ?y) .
+		/* isPartOfIDB(?x, ?y) :- isPartOfEDB(?x, ?y) . */
 		final Atom isPartOfIDBXY = Expressions.makeAtom(isPartOfIDB, x, y);
 		final Atom isPartOfEDBXY = Expressions.makeAtom(isPartOfEDB, x, y);
 		final Rule rule4 = Expressions.makeRule(isPartOfIDBXY, isPartOfEDBXY);
 
-		// HasPartIDB(?x, !y), WheelIDB(!y) :- BicycleIDB(?x) .
+		/* exists y. HasPartIDB(?x, !y), WheelIDB(!y) :- BicycleIDB(?x) . */
 		final Atom wheelIDBY = Expressions.makeAtom(wheelIDB, y);
-		final Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(hasPartIDBXY, wheelIDBY),
-				Expressions.makeConjunction(bicycleIDBX));
+		final Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(hasPartIDBXY, wheelIDBY), Expressions.makeConjunction(bicycleIDBX));
 
-		// IsPartOfIDB(?x, !y) :- WheelIDB(?x) .
-		final Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY),
-				Expressions.makeConjunction(wheelIDBX));
+		/* exists y. IsPartOfIDB(?x, !y) :- WheelIDB(?x) . */
+		final Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY), Expressions.makeConjunction(wheelIDBX));
 
-		// IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) .
+		/* IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) . */
 		final Atom hasPartIDBYX = Expressions.makeAtom(hasPartIDB, y, x);
 		final Rule rule7 = Expressions.makeRule(isPartOfIDBXY, hasPartIDBYX);
 
-		// HasPartIDB(?x, ?y) :- IsPartOfIDB(?y, ?x) .
+		/* HasPartIDB(?x, ?y) :- IsPartOfIDB(?y, ?x) . */
 		final Atom isPartOfIDBYX = Expressions.makeAtom(isPartOfIDB, y, x);
 		final Rule rule8 = Expressions.makeRule(hasPartIDBXY, isPartOfIDBYX);
 
-		// 2. Loading, reasoning, and querying.
+		/* 2. Loading, reasoning, and querying. */
 		final Reasoner reasoner = Reasoner.getInstance();
 		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 
 		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 
-		final String filesDirPath = "src" + File.separator + "main" + File.separator + "data";
-		final DataSource bicycleEDBPath = new CsvFileDataSource(
-				new File(filesDirPath + File.separator + "bycicleEDB.csv"));
+		final String filesDirPath = "src/main/data";
+		/* Importing from <b>.csv>/b> files as Data Sources. */
+		final DataSource bicycleEDBPath = new CsvFileDataSource(new File(filesDirPath + File.separator + "bycicleEDB.csv"));
 		reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBPath);
-		final DataSource hasPartPath = new CsvFileDataSource(
-				new File(filesDirPath + File.separator + "hasPartEDB.csv"));
+		final DataSource hasPartPath = new CsvFileDataSource(new File(filesDirPath + File.separator + "hasPartEDB.csv"));
 		reasoner.addFactsFromDataSource(hasPartEDB, hasPartPath);
 		final DataSource wheelPath = new CsvFileDataSource(new File(filesDirPath + File.separator + "wheelEDB.csv"));
 		reasoner.addFactsFromDataSource(wheelEDB, wheelPath);
 
 		reasoner.load();
 
+		System.out.println("Before materialisation:");
 		ExamplesUtil.printOutQueryAnswers(hasPartEDBXY, reasoner);
 
 		reasoner.reason();
 
+		System.out.println("After materialisation:");
 		ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
-		// 3. Exporting
-		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + File.separator + "hasPartIDBXYWithBlanks.csv",
-				true);
+		/* 3. Exporting query answers to <b>.csv>/b> files. */
+		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + File.separator + "hasPartIDBXYWithBlanks.csv", true);
 
-		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + File.separator + "hasPartIDBXYWithoutBlanks.csv",
-				false);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + File.separator + "hasPartIDBXYWithoutBlanks.csv", false);
 
 		final Constant redBike = Expressions.makeConstant("redBike");
 		final Atom hasPartIDBRedBikeY = Expressions.makeAtom(hasPartIDB, redBike, y);
-		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
-				filesDirPath + File.separator + "hasPartIDBRedBikeYWithBlanks.csv", true);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY, filesDirPath + File.separator + "hasPartIDBRedBikeYWithBlanks.csv", true);
 
-		// 4. Closing
-		// Use try-with resources, or remember to call close() to free the reasoner
-		// resources.
-		reasoner.reason();
+		/*
+		 * 4. Closing. Use try-with resources, or remember to call close() to free the reasoner resources.
+		 */
+		reasoner.close();
 
 	}
 
