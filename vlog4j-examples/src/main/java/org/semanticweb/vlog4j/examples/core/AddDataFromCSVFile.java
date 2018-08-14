@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.examples;
+package org.semanticweb.vlog4j.examples.core;
 
 /*-
  * #%L
@@ -36,6 +36,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.vlog4j.examples.ExamplesUtil;
 
 /**
  * This example shows how facts can be imported from <b>.csv>/b> files, and also how query answers can be exported to <b>.csv>/b> files. For importing, a

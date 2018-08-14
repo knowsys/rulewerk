@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.examples;
+package org.semanticweb.vlog4j.examples.core;
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;

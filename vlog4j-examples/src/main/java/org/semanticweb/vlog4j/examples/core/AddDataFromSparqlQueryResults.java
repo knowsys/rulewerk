@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.examples;
+package org.semanticweb.vlog4j.examples.core;
 
 /*-
  * #%L

@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.examples;
+package org.semanticweb.vlog4j.examples.core;
 
 /*-
  * #%L
@@ -33,6 +33,7 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.examples.ExamplesUtil;
 
 /**
  * This example shows non-termination of the Skolem Chase, versus termination of the Restricted Chase on the same set of rules and facts. Note that the

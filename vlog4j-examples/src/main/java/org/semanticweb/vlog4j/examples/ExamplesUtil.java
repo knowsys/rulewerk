@@ -43,7 +43,7 @@ public final class ExamplesUtil {
 	 * @throws ReasonerStateException
 	 *             in case the reasoner has not yet been loaded.
 	 */
-	static void printOutQueryAnswers(final Atom queryAtom, final Reasoner reasoner) throws ReasonerStateException {
+	public static void printOutQueryAnswers(final Atom queryAtom, final Reasoner reasoner) throws ReasonerStateException {
 		System.out.println("Answers to query " + queryAtom + " :");
 		try (final QueryResultIterator answers = reasoner.answerQuery(queryAtom, true)) {
 			answers.forEachRemaining(answer -> System.out.println(" - " + answer));
