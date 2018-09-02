@@ -22,103 +22,41 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
-import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
-import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.reasoner.DataSource;
 
 /**
  * A CsvFileDataSource stores fact terms (tuples) as lines in a ".csv" format
  * file, each column being a predicate argument.
- * 
+ *
  * @author Irina Dragoste
  *
  */
-public class CsvFileDataSource implements DataSource {
-	public static final String CSV_FILE_EXTENSION = ".csv";
-	private static final String DATASOURCE_TYPE_CONFIG_VALUE = "INMEMORY";
+public class CsvFileDataSource extends FileDataSource {
 
-	private final File csvFile;
-	private final String dirCanonicalPath;
-
-	/**
-	 * A <i><b>.csv</b></i> format file, where each line corresponds to a fact of
-	 * {@link TermType#CONSTANT} {@link Term}s, each column being the fact term
-	 * name.
-	 * 
-	 * @return
-	 */
-	public File getCsvFile() {
-		return this.csvFile;
-	}
+	final static Iterable<String> possibleExtensions = Arrays.asList(".csv", ".csv.gz");
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param csvFile
-	 *            must be a file of ".csv" extension and valid CSV format. The
-	 *            content of the file represents fact tuples, where each line
-	 *            corresponds to a fact, each column being a predicate argument.
-	 * @throws IOException
-	 *             if the given {@code csvFile} path is and invalid file path.
-	 * @throws IllegalArgumentException
-	 *             if the given {@code csvFilePath} does not end with
-	 *             <i><b>.csv</b></i> extension.
+	 *
+	 * @param csvFile a file of ".csv" or ".csv.gz" extension and valid CSV format.
+	 *                The content of the file represents fact tuples, where each
+	 *                line corresponds to a fact, each column being a predicate
+	 *                argument.
+	 * @throws IOException              if the path of the given {@code file} is
+	 *                                  invalid.
+	 * @throws IllegalArgumentException if the extension of the given {@code file}
+	 *                                  does not occur in
+	 *                                  {@code possibleExtensions}.
 	 */
 	public CsvFileDataSource(@NonNull final File csvFile) throws IOException {
-		Validate.notNull(csvFile, "Data source file cannot be null!");
-		Validate.isTrue(csvFile.getName().endsWith(CSV_FILE_EXTENSION),
-				"Expected .csv extension for data source file [%s]!", csvFile);
-		this.dirCanonicalPath = csvFile.getAbsoluteFile().getParentFile().getCanonicalPath();
-		this.csvFile = csvFile;
-	}
-
-	@Override
-	public final String toConfigString() {
-		final String configStringPattern =
-
-				DataSource.PREDICATE_NAME_CONFIG_LINE +
-
-						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
-
-						"EDB%1$d_param0=" + dirCanonicalPath + "\n" +
-
-						"EDB%1$d_param1=" + getFileNameWithoutExtension() + "\n";
-
-		return configStringPattern;
-	}
-
-	String getDirCanonicalPath() throws IOException {
-		return dirCanonicalPath;
-	}
-
-	String getFileNameWithoutExtension() {
-		final String fileName = this.csvFile.getName();
-		return fileName.substring(0, fileName.lastIndexOf(CSV_FILE_EXTENSION));
-	}
-
-	@Override
-	public int hashCode() {
-		return this.csvFile.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof CsvFileDataSource))
-			return false;
-		final CsvFileDataSource other = (CsvFileDataSource) obj;
-		return csvFile.equals(other.getCsvFile());
+		super(csvFile, possibleExtensions);
 	}
 
 	@Override
 	public String toString() {
-		return "CsvFileDataSource [csvFile=" + csvFile + "]";
-
+		return "CsvFileDataSource [csvFile=" + getFile() + "]";
 	}
 
 }

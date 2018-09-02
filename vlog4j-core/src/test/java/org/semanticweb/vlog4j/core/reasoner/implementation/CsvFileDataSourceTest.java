@@ -32,20 +32,25 @@ public class CsvFileDataSourceTest {
 
 	@Test
 	public void testToConfigString() throws IOException {
-		final File csvFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv");
-		final CsvFileDataSource csvFileDataSource = new CsvFileDataSource(csvFile);
+		File csvFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv");
+		CsvFileDataSource csvFileDataSource = new CsvFileDataSource(csvFile);
 
-		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n"
-				+ "EDB%1$d_param0=" + new File(csvFile.getParent()).getCanonicalPath() + "\n" + "EDB%1$d_param1=file\n";
+		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
+				+ new File(csvFile.getParent()).getCanonicalPath() + "\n" + "EDB%1$d_param1=file\n";
+		assertEquals(expectedConfigString, csvFileDataSource.toConfigString());
 
-		final String actualConfigString = csvFileDataSource.toConfigString();
-		assertEquals(expectedConfigString, actualConfigString);
+		csvFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv.gz");
+		csvFileDataSource = new CsvFileDataSource(csvFile);
+		assertEquals(expectedConfigString, csvFileDataSource.toConfigString());
 	}
 
 	@Test
 	public void getFileNameWithoutExtension() throws IOException {
-		final CsvFileDataSource csvFileDataSource = new CsvFileDataSource(
+		CsvFileDataSource csvFileDataSource = new CsvFileDataSource(
 				new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv"));
+		assertEquals("file", csvFileDataSource.getFileNameWithoutExtension());
+
+		csvFileDataSource = new CsvFileDataSource(new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv.gz"));
 		assertEquals("file", csvFileDataSource.getFileNameWithoutExtension());
 	}
 

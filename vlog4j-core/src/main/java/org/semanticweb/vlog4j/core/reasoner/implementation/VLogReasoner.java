@@ -288,7 +288,7 @@ public class VLogReasoner implements Reasoner {
 		}
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
-		Validate.isTrue(csvFilePath.endsWith(CsvFileDataSource.CSV_FILE_EXTENSION),
+		Validate.isTrue(csvFilePath.endsWith(".csv"),
 				"Expected .csv extension for file [%s]!", csvFilePath);
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
