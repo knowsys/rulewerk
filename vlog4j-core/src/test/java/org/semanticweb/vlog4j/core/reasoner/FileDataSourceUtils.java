@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.reasoner;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,29 +30,26 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
 /**
- * Utility class for collecting the content of a .csv file, or writing fact
- * terms to a csv file.
- * 
+ * Utility class for reading from and writing to data source files.
+ *
  * @author Irina Dragoste
  *
  */
-public final class CsvFileUtils {
-	public static final String CSV_EXPORT_FOLDER = "src/test/data/output/";
-	public static final String CSV_INPORT_FOLDER = "src/test/data/input/";
+public final class FileDataSourceUtils {
+	public static final String OUTPUT_FOLDER = "src/test/data/output/";
+	public static final String INPUT_FOLDER = "src/test/data/input/";
 
-	private CsvFileUtils() {
+	private FileDataSourceUtils() {
 	}
 
 	/**
 	 * Collects the content of given {@code csvFile} into a List of lines, where
 	 * each line is represented as a List of String entries.
-	 * 
-	 * @param csvFile
-	 *            file to be read
+	 *
+	 * @param csvFile file to be read
 	 * @return content of given {@code csvFile} as a List of lines, where each line
 	 *         is represented as a List of String entries.
-	 * @throws IOException
-	 *             if an I/O error occurs regarding given {@code csvFile}
+	 * @throws IOException if an I/O error occurs regarding given {@code csvFile}
 	 */
 	public static List<List<String>> getCSVContent(final String csvFile) throws IOException {
 		final List<List<String>> content = new ArrayList<>();

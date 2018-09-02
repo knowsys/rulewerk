@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
+import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
 
 import karmaresearch.vlog.Atom;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -46,7 +46,7 @@ public class ExportQueryResultToCsvTest {
 		final String csvFilePath = CSV_EXPORT_FOLDER + "unaryFacts.csv";
 		vLog.writeQueryResultsToCsv(new Atom("p", VLogExpressions.makeVariable("x")), csvFilePath);
 
-		final List<List<String>> queryResult = CsvFileUtils.getCSVContent(csvFilePath);
+		final List<List<String>> queryResult = FileDataSourceUtils.getCSVContent(csvFilePath);
 		assertEquals(expectedQueryResult, queryResult);
 	}
 
@@ -61,7 +61,7 @@ public class ExportQueryResultToCsvTest {
 		vLog.writeQueryResultsToCsv(new Atom("p", VLogExpressions.makeVariable("x"), VLogExpressions.makeVariable("y")),
 				csvFilePath);
 
-		final List<List<String>> queryResult = CsvFileUtils.getCSVContent(csvFilePath);
+		final List<List<String>> queryResult = FileDataSourceUtils.getCSVContent(csvFilePath);
 		assertEquals(expectedQueryResult, queryResult);
 	}
 
