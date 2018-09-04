@@ -105,11 +105,11 @@ public class AddDataFromCSVFile {
 
 		final String filesDirPath = "src/main/data";
 		/* Importing from <b>.csv>/b> files as Data Sources. */
-		final DataSource bicycleEDBPath = new CsvFileDataSource(new File(filesDirPath + File.separator + "bycicleEDB.csv"));
+		final DataSource bicycleEDBPath = new CsvFileDataSource(new File(filesDirPath + "/bicycleEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBPath);
-		final DataSource hasPartPath = new CsvFileDataSource(new File(filesDirPath + File.separator + "hasPartEDB.csv"));
+		final DataSource hasPartPath = new CsvFileDataSource(new File(filesDirPath + "/hasPartEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(hasPartEDB, hasPartPath);
-		final DataSource wheelPath = new CsvFileDataSource(new File(filesDirPath + File.separator + "wheelEDB.csv"));
+		final DataSource wheelPath = new CsvFileDataSource(new File(filesDirPath + "/wheelEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(wheelEDB, wheelPath);
 
 		reasoner.load();
@@ -123,13 +123,13 @@ public class AddDataFromCSVFile {
 		ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 		/* 3. Exporting query answers to <b>.csv>/b> files. */
-		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + File.separator + "hasPartIDBXYWithBlanks.csv", true);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + "/hasPartIDBXYWithBlanks.csv", true);
 
-		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + File.separator + "hasPartIDBXYWithoutBlanks.csv", false);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + "/hasPartIDBXYWithoutBlanks.csv", false);
 
 		final Constant redBike = Expressions.makeConstant("redBike");
 		final Atom hasPartIDBRedBikeY = Expressions.makeAtom(hasPartIDB, redBike, y);
-		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY, filesDirPath + File.separator + "hasPartIDBRedBikeYWithBlanks.csv", true);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY, filesDirPath + "/hasPartIDBRedBikeYWithBlanks.csv", true);
 
 		/*
 		 * 4. Closing. Use try-with resources, or remember to call close() to free the reasoner resources.
