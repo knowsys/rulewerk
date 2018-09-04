@@ -111,13 +111,13 @@ public class AddDataFromCSVFile {
 
 		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 
-		final String filesDirPath = "src/main/data";
 		/* Importing from {@code .csv} files as Data Sources. */
-		final DataSource bicycleEDBPath = new CsvFileDataSource(new File(filesDirPath + "/bicycleEDB.csv.gz"));
+		final DataSource bicycleEDBPath = new CsvFileDataSource(
+				new File(ExamplesUtil.INPUT_FOLDER + "bicycleEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBPath);
-		final DataSource hasPartPath = new CsvFileDataSource(new File(filesDirPath + "/hasPartEDB.csv.gz"));
+		final DataSource hasPartPath = new CsvFileDataSource(new File(ExamplesUtil.INPUT_FOLDER + "hasPartEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(hasPartEDB, hasPartPath);
-		final DataSource wheelPath = new CsvFileDataSource(new File(filesDirPath + "/wheelEDB.csv.gz"));
+		final DataSource wheelPath = new CsvFileDataSource(new File(ExamplesUtil.INPUT_FOLDER + "wheelEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(wheelEDB, wheelPath);
 
 		reasoner.load();
@@ -131,13 +131,14 @@ public class AddDataFromCSVFile {
 		ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 		/* 3. Exporting query answers to {@code .csv} files. */
-		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + "/hasPartIDBXYWithBlanks.csv", true);
-
-		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + "/hasPartIDBXYWithoutBlanks.csv", false);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtil.OUTPUT_FOLDER + "hasPartIDBXYWithBlanks.csv", true);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtil.OUTPUT_FOLDER + "hasPartIDBXYWithoutBlanks.csv",
+				false);
 
 		final Constant redBike = Expressions.makeConstant("redBike");
 		final Atom hasPartIDBRedBikeY = Expressions.makeAtom(hasPartIDB, redBike, y);
-		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY, filesDirPath + "/hasPartIDBRedBikeYWithBlanks.csv", true);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
+				ExamplesUtil.OUTPUT_FOLDER + "hasPartIDBRedBikeYWithBlanks.csv", true);
 
 		/*
 		 * 4. Closing. Use try-with resources, or remember to call {@code close()} to

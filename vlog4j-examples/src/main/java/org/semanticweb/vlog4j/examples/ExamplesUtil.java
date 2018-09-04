@@ -27,6 +27,9 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
 public final class ExamplesUtil {
 
+	public static final String OUTPUT_FOLDER = "src/main/data/output/";
+	public static final String INPUT_FOLDER = "src/main/data/input/";
+
 	/**
 	 * Private constructor prevents this utilities class to be instantiated.
 	 */
