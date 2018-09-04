@@ -49,7 +49,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.examples.ExamplesUtil;
+import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.rdf.RDFModelToAtomsConverter;
 
 /**
@@ -69,7 +69,7 @@ public class AddDataFromRDFModel {
 		 * Local file containing metadata of publications from ISWC'16 conference, in
 		 * RDF/XML format.
 		 */
-		final File rdfXMLResourceFile = new File(ExamplesUtil.INPUT_FOLDER + "rdf/iswc-2016-complete-alignments.rdf");
+		final File rdfXMLResourceFile = new File(ExamplesUtils.INPUT_FOLDER + "rdf/iswc-2016-complete-alignments.rdf");
 		final FileInputStream inputStreamISWC2016 = new FileInputStream(rdfXMLResourceFile);
 		/* An RDF Model is obtained from parsing the RDF/XML resource. */
 		final Model rdfModelISWC2016 = parseRDFResource(inputStreamISWC2016, rdfXMLResourceFile.toURI(),

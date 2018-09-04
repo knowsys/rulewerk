@@ -33,7 +33,7 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.examples.ExamplesUtil;
+import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
  * This example shows non-termination of the Skolem Chase, versus termination of the Restricted Chase on the same set of rules and facts. Note that the
@@ -123,7 +123,7 @@ public class SkolemVsRestrictedChaseTermination {
 
 			/* See that there is no fact HasPartIDB before reasoning. */
 			System.out.println("Answers to query " + hasPartIDBXY + " before reasoning:");
-			ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
+			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 			/*
 			 * As the Skolem Chase is known not to terminate for this set of rules and facts, it is interrupted after one second.
@@ -141,7 +141,7 @@ public class SkolemVsRestrictedChaseTermination {
 			 * existential restrictions.
 			 */
 			System.out.println("Answers to query " + hasPartIDBXY + " after reasoning with the Skolem Chase for 1 second:");
-			ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
+			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 			/*
 			 * We reset the reasoner and apply the Restricted Chase on the same set of rules and facts
@@ -155,7 +155,7 @@ public class SkolemVsRestrictedChaseTermination {
 			 * See that there is no fact HasPartIDB before reasoning. All inferred facts have been discarded when the reasoner was reset.
 			 */
 			System.out.println("Answers to query " + hasPartIDBXY + " before reasoning:");
-			ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
+			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 			/*
 			 * As the Restricted Chase is known to terminate for this set of rules and facts, we will not interrupt it.
@@ -174,7 +174,7 @@ public class SkolemVsRestrictedChaseTermination {
 			 * See that the Restricted Chase generated a small number of facts, reusing individuals that satisfy existential restrictions.
 			 */
 			System.out.println("Answers to query " + hasPartIDBXY + " after reasoning with the Restricted Chase:");
-			ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
+			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 		}
 	}
 

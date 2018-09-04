@@ -40,7 +40,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.examples.ExamplesUtil;
+import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.owlapi.OwlToRulesConverter;
 
 /**
@@ -58,7 +58,7 @@ public class OwlOntologyToRulesAndFacts {
 
 		/* Bike ontology is loaded from a Bike file using OWL API */
 		OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology = ontologyManager.loadOntologyFromOntologyDocument(new File(ExamplesUtil.INPUT_FOLDER + "owl/bike.owl"));
+		OWLOntology ontology = ontologyManager.loadOntologyFromOntologyDocument(new File(ExamplesUtils.INPUT_FOLDER + "owl/bike.owl"));
 
 		/*
 		 * vlog4j.owlapi.OwlToRulesConverter can be used to convert the OWL axiom in

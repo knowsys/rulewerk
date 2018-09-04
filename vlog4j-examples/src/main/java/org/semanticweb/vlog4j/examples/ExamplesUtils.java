@@ -25,7 +25,7 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
-public final class ExamplesUtil {
+public final class ExamplesUtils {
 
 	public static final String OUTPUT_FOLDER = "src/main/data/output/";
 	public static final String INPUT_FOLDER = "src/main/data/input/";
@@ -33,7 +33,7 @@ public final class ExamplesUtil {
 	/**
 	 * Private constructor prevents this utilities class to be instantiated.
 	 */
-	private ExamplesUtil() {
+	private ExamplesUtils() {
 	}
 
 	/**
