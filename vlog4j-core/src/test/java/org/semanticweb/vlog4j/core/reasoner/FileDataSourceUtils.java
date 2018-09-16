@@ -42,6 +42,8 @@ public final class FileDataSourceUtils {
 
 	public static final String unzippedUnaryCsvFileRoot = "unaryFacts";
 	public static final String zippedUnaryCsvFileRoot = "unaryFactsZipped";
+	public static final String unzippedNtFileRoot = "ternaryFacts";
+	public static final String zippedNtFileRoot = "ternaryFactsZipped";
 
 	private FileDataSourceUtils() {
 	}
