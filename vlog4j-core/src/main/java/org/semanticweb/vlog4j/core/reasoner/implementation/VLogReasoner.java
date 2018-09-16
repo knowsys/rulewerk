@@ -214,6 +214,8 @@ public class VLogReasoner implements Reasoner {
 			} else {
 				loadRules();
 			}
+
+			setLogLevel(this.internalLogLevel);
 		}
 	}
 
