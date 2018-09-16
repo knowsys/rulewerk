@@ -27,9 +27,23 @@ import java.util.Arrays;
 import org.eclipse.jdt.annotation.NonNull;
 
 /**
- * A CsvFileDataSource stores fact terms (tuples) as lines in a ".csv" format
- * file, each column being a predicate argument.
+ * A {@code CsvFileDataSource} stores facts as tuples inside a file of the
+ * extension {@code .csv}. One file can only include facts of a single
+ * predicate. The required format looks like this
  *
+ * <pre>
+ * {@code
+ * term11 term12 term13 ... term1n
+ * term21 term22 term23 ... term2n
+ * ...
+ * termM1 termM2 termM3 ... termMn
+ * }
+ * </pre>
+ *
+ * where {@code n} is the arity of the predicate and {@code M} is the number of
+ * facts. Gzipped files of the extension {@code .csv.gz} are also supported.
+ *
+ * @author Christian Lewe
  * @author Irina Dragoste
  *
  */
@@ -40,15 +54,13 @@ public class CsvFileDataSource extends FileDataSource {
 	/**
 	 * Constructor.
 	 *
-	 * @param csvFile a file of ".csv" or ".csv.gz" extension and valid CSV format.
-	 *                The content of the file represents fact tuples, where each
-	 *                line corresponds to a fact, each column being a predicate
-	 *                argument.
-	 * @throws IOException              if the path of the given {@code file} is
+	 * @param csvFile a file of a {@code .csv} or {@code .csv.gz} extension and a
+	 *                valid CSV format.
+	 * @throws IOException              if the path of the given {@code csvFile} is
 	 *                                  invalid.
-	 * @throws IllegalArgumentException if the extension of the given {@code file}
-	 *                                  does not occur in
-	 *                                  {@code possibleExtensions}.
+	 * @throws IllegalArgumentException if the extension of the given
+	 *                                  {@code csvFile} does not occur in
+	 *                                  {@link #possibleExtensions}.
 	 */
 	public CsvFileDataSource(@NonNull final File csvFile) throws IOException {
 		super(csvFile, possibleExtensions);
