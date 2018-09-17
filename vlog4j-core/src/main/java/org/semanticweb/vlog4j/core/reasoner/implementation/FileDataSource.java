@@ -2,6 +2,9 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
@@ -38,22 +41,20 @@ public abstract class FileDataSource implements DataSource {
 	public FileDataSource(@NonNull final File file, final Iterable<String> possibleExtensions) throws IOException {
 		Validate.notNull(file, "Data source file cannot be null!");
 		final String fileName = file.getName();
-		String errorMessage = "Expected one of the following extensions for the data source file \"" + file + "\":";
 
-		for (final String extension : possibleExtensions) {
-			if (fileName.endsWith(extension)) {
-				this.file = file;
-				this.extension = extension;
-				this.dirCanonicalPath = file.getAbsoluteFile().getParentFile().getCanonicalPath();
-				this.fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf(this.extension));
-				return;
-			}
+		final Stream<String> extensions = StreamSupport.stream(possibleExtensions.spliterator(), true);
+		final Optional<String> maybeExtension = extensions.filter(ex -> fileName.endsWith(ex) == true).findFirst();
 
-			errorMessage += extension + ",";
+		if (!maybeExtension.isPresent()) {
+			throw new IllegalArgumentException(
+					"Expected one of the following extensions for the data source file " + file + ": "
+							+ String.join(", ", possibleExtensions) + ".");
 		}
 
-		errorMessage = errorMessage.substring(0, errorMessage.length() - 2);
-		throw new IllegalArgumentException(errorMessage);
+		this.file = file;
+		this.extension = maybeExtension.get();
+		this.dirCanonicalPath = file.getAbsoluteFile().getParentFile().getCanonicalPath();
+		this.fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf(this.extension));
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public abstract class FileDataSource implements DataSource {
 
 				DataSource.PREDICATE_NAME_CONFIG_LINE +
 
-						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
+				DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
 
 						"EDB%1$d_param0=" + this.dirCanonicalPath + "\n" +
 
