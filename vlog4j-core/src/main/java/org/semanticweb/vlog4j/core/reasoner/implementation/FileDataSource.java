@@ -11,9 +11,9 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 
 /**
- * An `FileDataSource` is an abstract implementation of a storage for fact terms
- * in a file of some format. The exact syntax of this storage is determined by
- * the individual extensions of this class.
+ * A {@code FileDataSource} is an abstract implementation of a storage for fact
+ * terms in a file of some format. The exact syntax of this storage is
+ * determined by the individual extensions of this class.
  *
  * @author Christian Lewe
  * @author Irina Dragoste
@@ -31,7 +31,8 @@ public abstract class FileDataSource implements DataSource {
 	/**
 	 * Constructor.
 	 *
-	 * @param file a file that will serve as storage for fact terms.
+	 * @param file               a file that will serve as storage for fact terms.
+	 * @param possibleExtensions a list of extensions that the files could have
 	 * @throws IOException              if the path of the given {@code file} is
 	 *                                  invalid.
 	 * @throws IllegalArgumentException if the extension of the given {@code file}
