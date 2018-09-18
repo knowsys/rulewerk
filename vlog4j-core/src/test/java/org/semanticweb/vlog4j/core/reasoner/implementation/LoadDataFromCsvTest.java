@@ -22,7 +22,6 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,14 +47,6 @@ import karmaresearch.vlog.EDBConfigurationException;
 public class LoadDataFromCsvTest {
 
 	private static final File UNARY_FACTS_CSV_FILE = new File(FileDataSourceUtils.INPUT_FOLDER + "unaryFacts.csv");
-
-	@Test
-	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
-			assertTrue(dataSourcesConfig.isEmpty());
-		}
-	}
 
 	@Test
 	public void testLoadEmptyCsv()
