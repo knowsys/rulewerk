@@ -39,10 +39,18 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.examples.ExamplesUtil;
 
 /**
- * This example shows how facts can be imported from <b>.csv>/b> files, and also how query answers can be exported to <b>.csv>/b> files. For importing, a
- * {@link DataSource} of type {@link CsvFileDataSource}, containing the path to the <b>.csv>/b>, must be associated to the corresponding predicate. The
- * <b>.csv>/b> file contains facts over that predicate on its lines. For exporting, the path to the output <b>.csv>/b> file msut be specified.
+ * This example shows how facts can be imported from {@code .csv.gz} files, and
+ * also how query answers can be exported to {@code .csv} files. <i>Note that
+ * you can also import from {@code .csv} files.</i>
  *
+ * For importing, a {@link DataSource} of type {@link CsvFileDataSource},
+ * containing the path to the {@code .csv.gz}, must be associated to the
+ * corresponding predicate. A {@code .csv} file contains facts over that
+ * predicate on its lines, while a {@code .csv.gz} file is the gzipped version
+ * of such a {@code .csv} file. For exporting, the path to the output
+ * {@code .csv} file must be specified.
+ *
+ * @author Christian Lewe
  * @author Irina Dragoste
  *
  */
@@ -104,7 +112,7 @@ public class AddDataFromCSVFile {
 		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 
 		final String filesDirPath = "src/main/data";
-		/* Importing from <b>.csv>/b> files as Data Sources. */
+		/* Importing from {@code .csv} files as Data Sources. */
 		final DataSource bicycleEDBPath = new CsvFileDataSource(new File(filesDirPath + "/bicycleEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBPath);
 		final DataSource hasPartPath = new CsvFileDataSource(new File(filesDirPath + "/hasPartEDB.csv.gz"));
@@ -122,7 +130,7 @@ public class AddDataFromCSVFile {
 		System.out.println("After materialisation:");
 		ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
-		/* 3. Exporting query answers to <b>.csv>/b> files. */
+		/* 3. Exporting query answers to {@code .csv} files. */
 		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + "/hasPartIDBXYWithBlanks.csv", true);
 
 		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + "/hasPartIDBXYWithoutBlanks.csv", false);
@@ -132,7 +140,8 @@ public class AddDataFromCSVFile {
 		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY, filesDirPath + "/hasPartIDBRedBikeYWithBlanks.csv", true);
 
 		/*
-		 * 4. Closing. Use try-with resources, or remember to call close() to free the reasoner resources.
+		 * 4. Closing. Use try-with resources, or remember to call {@code close()} to
+		 * free the reasoner resources.
 		 */
 		reasoner.close();
 
