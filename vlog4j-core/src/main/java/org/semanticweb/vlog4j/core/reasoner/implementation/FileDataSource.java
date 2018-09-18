@@ -43,19 +43,24 @@ public abstract class FileDataSource implements DataSource {
 		Validate.notNull(file, "Data source file cannot be null!");
 		final String fileName = file.getName();
 
-		final Stream<String> extensions = StreamSupport.stream(possibleExtensions.spliterator(), true);
-		final Optional<String> maybeExtension = extensions.filter(ex -> fileName.endsWith(ex) == true).findFirst();
+		this.file = file;
+		this.extension = getValidExtension(file, possibleExtensions);
+		this.dirCanonicalPath = file.getParentFile().getCanonicalPath();
+		this.fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf(this.extension));
+	}
 
-		if (!maybeExtension.isPresent()) {
+	private String getValidExtension(final File file, final Iterable<String> possibleExtensions) {
+		final String fileName = file.getName();
+		final Stream<String> extensionsStream = StreamSupport.stream(possibleExtensions.spliterator(), true);
+		final Optional<String> potentialExtension = extensionsStream.filter(ex -> fileName.endsWith(ex)).findFirst();
+
+		if (!potentialExtension.isPresent()) {
 			throw new IllegalArgumentException(
 					"Expected one of the following extensions for the data source file " + file + ": "
 							+ String.join(", ", possibleExtensions) + ".");
 		}
 
-		this.file = file;
-		this.extension = maybeExtension.get();
-		this.dirCanonicalPath = file.getParentFile().getCanonicalPath();
-		this.fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf(this.extension));
+		return potentialExtension.get();
 	}
 
 	@Override
