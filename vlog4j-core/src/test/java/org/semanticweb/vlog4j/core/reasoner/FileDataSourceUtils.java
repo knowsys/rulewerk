@@ -32,12 +32,16 @@ import org.apache.commons.csv.CSVParser;
 /**
  * Utility class for reading from and writing to data source files.
  *
+ * @author Christian Lewe
  * @author Irina Dragoste
  *
  */
 public final class FileDataSourceUtils {
 	public static final String OUTPUT_FOLDER = "src/test/data/output/";
 	public static final String INPUT_FOLDER = "src/test/data/input/";
+
+	public static final String unzippedUnaryCsvFileRoot = "unaryFacts";
+	public static final String zippedUnaryCsvFileRoot = "unaryFactsZipped";
 
 	private FileDataSourceUtils() {
 	}
