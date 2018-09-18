@@ -30,38 +30,45 @@ import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
 
 public class CsvFileDataSourceTest {
 
-	@Test
-	public void testToConfigString() throws IOException {
-		File csvFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv");
-		CsvFileDataSource csvFileDataSource = new CsvFileDataSource(csvFile);
-
-		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
-				+ new File(csvFile.getParent()).getCanonicalPath() + "\n" + "EDB%1$d_param1=file\n";
-		assertEquals(expectedConfigString, csvFileDataSource.toConfigString());
-
-		csvFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv.gz");
-		csvFileDataSource = new CsvFileDataSource(csvFile);
-		assertEquals(expectedConfigString, csvFileDataSource.toConfigString());
-	}
-
-	@Test
-	public void getFileNameWithoutExtension() throws IOException {
-		CsvFileDataSource csvFileDataSource = new CsvFileDataSource(
-				new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv"));
-		assertEquals("file", csvFileDataSource.getFileNameWithoutExtension());
-
-		csvFileDataSource = new CsvFileDataSource(new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv.gz"));
-		assertEquals("file", csvFileDataSource.getFileNameWithoutExtension());
-	}
-
 	@Test(expected = NullPointerException.class)
-	public void fileNameNotNull() throws IOException {
+	public void testConstructorNullFile() throws IOException {
 		new CsvFileDataSource(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void fileNameEndsWithCsv() throws IOException {
-		new CsvFileDataSource(new File("invalid/file/name"));
+	public void testConstructorFalseExtension() throws IOException {
+		new CsvFileDataSource(new File(FileDataSourceUtils.INPUT_FOLDER + "file.nt"));
+	}
+
+	@Test
+	public void testConstructor() throws IOException {
+		final File unzippedCsvFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv");
+		final String expectedDirCanonicalPath = unzippedCsvFile.getParentFile().getCanonicalPath();
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(unzippedCsvFile);
+		assertEquals(unzippedCsvFile, unzippedCsvFileDataSource.getFile());
+		assertEquals(expectedDirCanonicalPath, unzippedCsvFileDataSource.getDirCanonicalPath());
+		assertEquals("file", unzippedCsvFileDataSource.getFileNameWithoutExtension());
+
+		final File zippedCsvFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv.gz");
+		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(zippedCsvFile);
+		assertEquals(zippedCsvFile, zippedCsvFileDataSource.getFile());
+		assertEquals(expectedDirCanonicalPath, zippedCsvFileDataSource.getDirCanonicalPath());
+		assertEquals("file", zippedCsvFileDataSource.getFileNameWithoutExtension());
+	}
+
+	@Test
+	public void testToConfigString() throws IOException {
+		final File unzippedCsvFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv");
+		final File zippedCsvFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.csv.gz");
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(unzippedCsvFile);
+		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(zippedCsvFile);
+
+		final String expectedDirCanonicalPath = unzippedCsvFile.getParentFile().getCanonicalPath();
+		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
+				+ expectedDirCanonicalPath + "\n" + "EDB%1$d_param1=file\n";
+
+		assertEquals(expectedConfigString, zippedCsvFileDataSource.toConfigString());
+		assertEquals(expectedConfigString, unzippedCsvFileDataSource.toConfigString());
 	}
 
 }
