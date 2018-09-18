@@ -54,7 +54,7 @@ public abstract class FileDataSource implements DataSource {
 
 		this.file = file;
 		this.extension = maybeExtension.get();
-		this.dirCanonicalPath = file.getAbsoluteFile().getParentFile().getCanonicalPath();
+		this.dirCanonicalPath = file.getParentFile().getCanonicalPath();
 		this.fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf(this.extension));
 	}
 
