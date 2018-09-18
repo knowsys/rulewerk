@@ -32,7 +32,7 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
+import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -60,27 +60,27 @@ public class ExportQueryAnswersToCsvTest {
 			reasoner.load();
 
 			final Atom queryAtomXYZ = Expressions.makeAtom(predicate, x, y, z);
-			final String csvFilePathXYZ = CsvFileUtils.CSV_EXPORT_FOLDER + "outputXYZ.csv";
+			final String csvFilePathXYZ = FileDataSourceUtils.OUTPUT_FOLDER + "outputXYZ.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXYZ, csvFilePathXYZ, includeBlanks);
-			final List<List<String>> csvContentXYZ = CsvFileUtils.getCSVContent(csvFilePathXYZ);
+			final List<List<String>> csvContentXYZ = FileDataSourceUtils.getCSVContent(csvFilePathXYZ);
 			assertEquals(factCCD, csvContentXYZ);
 
 			final Atom queryAtomXXZ = Expressions.makeAtom(predicate, x, x, z);
-			final String csvFilePathXXZ = CsvFileUtils.CSV_EXPORT_FOLDER + "outputXXZ.csv";
+			final String csvFilePathXXZ = FileDataSourceUtils.OUTPUT_FOLDER + "outputXXZ.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXXZ, csvFilePathXXZ, includeBlanks);
-			final List<List<String>> csvContentXXZ = CsvFileUtils.getCSVContent(csvFilePathXXZ);
+			final List<List<String>> csvContentXXZ = FileDataSourceUtils.getCSVContent(csvFilePathXXZ);
 			assertEquals(factCCD, csvContentXXZ);
 
 			final Atom queryAtomXXX = Expressions.makeAtom("q", x, x, x);
-			final String csvFilePathXXX = CsvFileUtils.CSV_EXPORT_FOLDER + "outputXXX.csv";
+			final String csvFilePathXXX = FileDataSourceUtils.OUTPUT_FOLDER + "outputXXX.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXXX, csvFilePathXXX, includeBlanks);
-			final List<List<String>> csvContentXXX = CsvFileUtils.getCSVContent(csvFilePathXXX);
+			final List<List<String>> csvContentXXX = FileDataSourceUtils.getCSVContent(csvFilePathXXX);
 			assertTrue(csvContentXXX.isEmpty());
 
 			final Atom queryAtomXYX = Expressions.makeAtom("q", x, y, x);
-			final String csvFilePathXYX = CsvFileUtils.CSV_EXPORT_FOLDER + "outputXYX.csv";
+			final String csvFilePathXYX = FileDataSourceUtils.OUTPUT_FOLDER + "outputXYX.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXYX, csvFilePathXYX, includeBlanks);
-			final List<List<String>> csvContentXYX = CsvFileUtils.getCSVContent(csvFilePathXYX);
+			final List<List<String>> csvContentXYX = FileDataSourceUtils.getCSVContent(csvFilePathXYX);
 			assertTrue(csvContentXYX.isEmpty());
 		}
 
@@ -93,12 +93,12 @@ public class ExportQueryAnswersToCsvTest {
 				Expressions.makeVariable("?y"));
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.load();
-			final String emptyFilePath = CsvFileUtils.CSV_EXPORT_FOLDER + "empty.csv";
+			final String emptyFilePath = FileDataSourceUtils.OUTPUT_FOLDER + "empty.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, true);
-			assertTrue(CsvFileUtils.getCSVContent(emptyFilePath).isEmpty());
+			assertTrue(FileDataSourceUtils.getCSVContent(emptyFilePath).isEmpty());
 
 			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, false);
-			assertTrue(CsvFileUtils.getCSVContent(emptyFilePath).isEmpty());
+			assertTrue(FileDataSourceUtils.getCSVContent(emptyFilePath).isEmpty());
 		}
 	}
 
