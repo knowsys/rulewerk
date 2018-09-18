@@ -49,7 +49,7 @@ import org.eclipse.jdt.annotation.NonNull;
  */
 public class CsvFileDataSource extends FileDataSource {
 
-	final static Iterable<String> possibleExtensions = Arrays.asList(".csv", ".csv.gz");
+	private static final Iterable<String> possibleExtensions = Arrays.asList(".csv", ".csv.gz");
 
 	/**
 	 * Constructor.

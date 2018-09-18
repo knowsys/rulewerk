@@ -62,7 +62,7 @@ public abstract class FileDataSource implements DataSource {
 	public final String toConfigString() {
 		final String configStringPattern =
 
-				DataSource.PREDICATE_NAME_CONFIG_LINE +
+				PREDICATE_NAME_CONFIG_LINE +
 
 				DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
 
@@ -77,11 +77,11 @@ public abstract class FileDataSource implements DataSource {
 		return this.file;
 	}
 
-	public String getDirCanonicalPath() {
+	String getDirCanonicalPath() {
 		return this.dirCanonicalPath;
 	}
 
-	public String getFileNameWithoutExtension() {
+	String getFileNameWithoutExtension() {
 		return this.fileNameWithoutExtension;
 	}
 
