@@ -21,13 +21,20 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArit
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 /**
- * This class exemplifies setting a log file and log level for VLog reasoner logging information (like materialisation duration, number of iterations, number of
- * derivations).
+ * This class exemplifies setting a log file and log level for VLog reasoner
+ * logging information (like materialisation duration, number of iterations,
+ * number of derivations).
  * <ul>
- * <li>Setting the <b>log level</b> is done via {@link Reasoner#setLogLevel(LogLevel)}, the default being {@link LogLevel#WARNING}.</li>
- * <li>The <b>log file</b> where the logging information will be exported is set via {@link Reasoner#setLogFile(String)}. If no log file is set, or the log file
- * is invalid, the logging will be redirected to the System output. If the log file does not exist at given path, it will be created. If a file already exists,
- * it will be over-written, so we suggest backing up and versioning log files.</li>
+ * <li>Setting the <b>log level</b> is done via
+ * {@link Reasoner#setLogLevel(LogLevel)}, the default being
+ * {@link LogLevel#WARNING}.</li>
+ * <li>The <b>log file</b> where the logging information will be exported is set
+ * via {@link Reasoner#setLogFile(String)}. If no log file is set, or the log
+ * file is invalid, the logging will be redirected to the System output. If the
+ * log file does not exist at given path, it will be created. If a file already
+ * exists, it will be over-written, so we suggest backing up and versioning log
+ * files.</li>
+ * </ul>
  */
 public class ConfigureReasonerLogging {
 	private static String logsFolder = "src/main/logs/";

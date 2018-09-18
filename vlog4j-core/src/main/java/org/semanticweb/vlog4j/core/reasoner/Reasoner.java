@@ -26,9 +26,9 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,7 +62,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
  * {@link Rule} heads (called IDBs) cannot also appear in knowledge base
  * <b>facts</b> (called EDBs). An {@link EdbIdbSeparationException} would be
  * thrown when loading the knowledge base.<br>
- * 
+ *
  * <br>
  * The loaded reasoner can perform <b>atomic queries</b> on explicit facts
  * before reasoning, and all implicit and explicit facts after calling
@@ -83,7 +83,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
  * before loading. Then, more information can be added to the knowledge base,
  * the reasoner can be loaded again, and querying and reasoning can be
  * performed.
- * 
+ *
  * @author Irina Dragoste
  *
  */
@@ -91,7 +91,7 @@ public interface Reasoner extends AutoCloseable {
 
 	/**
 	 * Factory method that to instantiate a Reasoner.
-	 * 
+	 *
 	 * @return a {@link VLogReasoner} instance.
 	 */
 	public static Reasoner getInstance() {
@@ -102,7 +102,7 @@ public interface Reasoner extends AutoCloseable {
 	 * Sets the algorithm that will be used for reasoning over the knowledge base.
 	 * If no algorithm is set, the default algorithm is
 	 * {@link Algorithm#RESTRICTED_CHASE} will be used.
-	 * 
+	 *
 	 * @param algorithm
 	 *            the algorithm to be used for reasoning.
 	 */
@@ -111,7 +111,7 @@ public interface Reasoner extends AutoCloseable {
 	/**
 	 * Getter for the algorithm that will be used for reasoning over the knowledge
 	 * base. The default value is {@link Algorithm#RESTRICTED_CHASE}.
-	 * 
+	 *
 	 * @return the reasoning algorithm.
 	 */
 	Algorithm getAlgorithm();
@@ -123,7 +123,7 @@ public interface Reasoner extends AutoCloseable {
 	 * leads to termination in more cases. <br>
 	 * This method sets a timeout (in seconds) after which reasoning can be
 	 * artificially interrupted if it has not reached completion.
-	 * 
+	 *
 	 * @param seconds
 	 *            interval after which reasoning will be interrupted, in seconds. If
 	 *            {@code null}, reasoning will not be interrupted and will return
@@ -136,7 +136,7 @@ public interface Reasoner extends AutoCloseable {
 	 * {@code seconds}) after which reasoning will be interrupted if it has not
 	 * reached completion. The default value is {@code null}, in which case
 	 * reasoning terminates only after (if) it reaches completion.
-	 * 
+	 *
 	 * @return if not {@code null}, number of seconds after which the reasoning will
 	 *         be interrupted, if it has not reached completion.
 	 */
@@ -148,7 +148,7 @@ public interface Reasoner extends AutoCloseable {
 	 * rules, according to given {@code ruleRewritingStrategy}. If no staregy is
 	 * set, the default value is {@link RuleRewriteStrategy#NONE}, meaning that the
 	 * rules will not be re-written.
-	 * 
+	 *
 	 * @param ruleRewritingStrategy
 	 *            strategy according to which the rules will be rewritten before
 	 *            reasoning.
@@ -161,7 +161,7 @@ public interface Reasoner extends AutoCloseable {
 	 * Getter for the strategy according to which rules will be rewritten before
 	 * reasoning. The default value is {@link RuleRewriteStrategy#NONE}, meaning
 	 * that the rules will not be re-written.
-	 * 
+	 *
 	 * @return the current rule re-writing strategy
 	 */
 	@NonNull
@@ -170,7 +170,7 @@ public interface Reasoner extends AutoCloseable {
 	/**
 	 * Sets the logging level of the internal VLog C++ resource. Default value is
 	 * {@link LogLevel#WARNING}
-	 * 
+	 *
 	 * @param logLevel
 	 *            the logging level to be set for VLog C++ resource.
 	 */
@@ -179,7 +179,7 @@ public interface Reasoner extends AutoCloseable {
 	/**
 	 * Returns the logging level of the internal VLog C++ resource. If no value has
 	 * been set, the default is {@link LogLevel#WARNING}.
-	 * 
+	 *
 	 * @return the logging level of the VLog C++ resource.
 	 */
 	@Nullable
@@ -189,7 +189,7 @@ public interface Reasoner extends AutoCloseable {
 	 * Redirects the logs of the internal VLog C++ resource to given file. If no log
 	 * file is set or the given {@code filePath} is not a valid file path, VLog will
 	 * log to the default system output.
-	 * 
+	 *
 	 * @param filePath
 	 *            the file for the internal VLog C++ resource to log to. If
 	 *            {@code null} or an invalid file path, the reasoner will log to the
@@ -201,7 +201,7 @@ public interface Reasoner extends AutoCloseable {
 	 * Adds rules to the reasoner <b>knowledge base</b> in the given order. After
 	 * the reasoner has been loaded ({@link #load()}), the rules may be rewritten
 	 * internally according to the set {@link RuleRewriteStrategy}.
-	 * 
+	 *
 	 * @param rules
 	 *            non-null rules to be added to the <b>knowledge base</b> for
 	 *            reasoning.
@@ -218,7 +218,7 @@ public interface Reasoner extends AutoCloseable {
 	 * can only be added before loading ({@link #load()}). After the reasoner has
 	 * been loaded, the rules may be rewritten internally according to the set
 	 * {@link RuleRewriteStrategy}.
-	 * 
+	 *
 	 * @param rules
 	 *            non-null rules to be added to the <b>knowledge base</b> for
 	 *            reasoning.
@@ -237,7 +237,7 @@ public interface Reasoner extends AutoCloseable {
 	 * Facts can only be added before loading ({@link #load()}). <br>
 	 * Facts predicates ({@link Atom#getPredicate()}) cannot have multiple data
 	 * sources.
-	 * 
+	 *
 	 * @param facts
 	 *            facts to be added to the <b>knowledge base</b>. The given order is
 	 *            not maintained.
@@ -261,7 +261,7 @@ public interface Reasoner extends AutoCloseable {
 	 * Facts can only be added before loading ({@link #load()}). <br>
 	 * Facts predicates ({@link Atom#getPredicate()}) cannot have multiple data
 	 * sources.
-	 * 
+	 *
 	 * @param facts
 	 *            facts to be added to the <b>knowledge base</b>.
 	 * @throws ReasonerStateException
@@ -282,7 +282,7 @@ public interface Reasoner extends AutoCloseable {
 	 * the reasoner <b>knowledge base</b>. Facts predicates cannot have multiple
 	 * data sources, including in-memory {@link Atom} objects added trough
 	 * {@link #addFacts}.
-	 * 
+	 *
 	 * @param predicate
 	 *            the {@link Predicate} for which the given {@code dataSource}
 	 *            contains <b>facts</b>.
@@ -309,7 +309,7 @@ public interface Reasoner extends AutoCloseable {
 	 * {@link Rule} heads ({@link Rule#getHead()}), called IDB predicates, cannot
 	 * also appear in knowledge base <b>facts</b>, called EDB predicates. An
 	 * {@link EdbIdbSeparationException} would be thrown in this case.
-	 * 
+	 *
 	 * @throws IOException
 	 *             if an I/O error occurs related to the resources in the
 	 *             <b>knowledge base</b> to be loaded.
@@ -345,7 +345,7 @@ public interface Reasoner extends AutoCloseable {
 	 * before loading. Then, more information can be added to the knowledge base,
 	 * the reasoner can be loaded again, and querying and reasoning can be
 	 * performed.
-	 * 
+	 *
 	 * @return
 	 *         <ul>
 	 *         <li>the value returned by the previous {@link Reasoner#reason()}
@@ -369,7 +369,7 @@ public interface Reasoner extends AutoCloseable {
 	 * <ul>
 	 * <li>If the reasoner is <b>loaded</b> (see {@link #load()}), but has not
 	 * reasoned yet, the query will be evaluated on the explicit set of facts.</li>
-	 * <li>Otherwise, if this method is called after </b>reasoning</b> (see
+	 * <li>Otherwise, if this method is called after <b>reasoning</b> (see
 	 * {@link #reason()}, the query will be evaluated on the explicit and implicit
 	 * facts inferred trough reasoning.</li>
 	 * </ul>
@@ -384,24 +384,23 @@ public interface Reasoner extends AutoCloseable {
 	 * A query answer is represented by a {@link QueryResult}. A query can have
 	 * multiple, distinct query answers. This method returns an Iterator over these
 	 * answers.
-	 * 
-	 * @param queryAtom
-	 *            an {@link Atom} representing the query to be answered.
-	 * @param includeBlanks
-	 *            if {@code true}, facts containing terms of type
-	 *            {@link TermType#BLANK} (representing anonymous individuals
-	 *            introduced to satisfy rule existentially quantified variables)
-	 *            will be included into the query results. Otherwise, the query
-	 *            results will only contain the facts with terms of type
-	 *            {@link TermType#CONSTANT} (representing named individuals).
+	 *
+	 * @param queryAtom     an {@link Atom} representing the query to be answered.
+	 * @param includeBlanks if {@code true}, facts containing terms of type
+	 *                      {@link TermType#BLANK} (representing anonymous
+	 *                      individuals introduced to satisfy rule existentially
+	 *                      quantified variables) will be included into the query
+	 *                      results. Otherwise, the query results will only contain
+	 *                      the facts with terms of type {@link TermType#CONSTANT}
+	 *                      (representing named individuals).
 	 * @return an {@link AutoCloseable} iterator for {@link QueryResult}s,
 	 *         representing distinct answers to the query.
-	 * @throws ReasonerStateException
-	 *             if this method is called before loading ({@link Reasoner#load()}.
-	 * @throws IllegalArgumentException
-	 *             if the given {@code queryAtom} contains terms
-	 *             ({@link Atom#getTerms()}) which are not of type
-	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
+	 * @throws ReasonerStateException   if this method is called before loading
+	 *                                  ({@link Reasoner#load()}.
+	 * @throws IllegalArgumentException if the given {@code queryAtom} contains
+	 *                                  terms ({@link Atom#getTerms()}) which are
+	 *                                  not of type {@link TermType#CONSTANT} or
+	 *                                  {@link TermType#VARIABLE}.
 	 */
 	QueryResultIterator answerQuery(@NonNull Atom queryAtom, boolean includeBlanks) throws ReasonerStateException;
 
@@ -413,7 +412,7 @@ public interface Reasoner extends AutoCloseable {
 	 * <ul>
 	 * <li>If the reasoner is <b>loaded</b> (see {@link #load()}), but has not
 	 * reasoned yet, the query will be evaluated on the explicit set of facts.</li>
-	 * <li>Otherwise, if this method is called after </b>reasoning</b> (see
+	 * <li>Otherwise, if this method is called after <b>reasoning</b> (see
 	 * {@link #reason()}, the query will be evaluated on the explicit and implicit
 	 * facts inferred trough reasoning.</li>
 	 * </ul>
@@ -427,35 +426,34 @@ public interface Reasoner extends AutoCloseable {
 	 * variable name identifies the same term in the answer fact. <br>
 	 * A query answer is represented by a {@link QueryResult}. A query can have
 	 * multiple, distinct query answers.
-	 * 
-	 * @param queryAtom
-	 *            an {@link Atom} representing the query to be answered.
-	 * @param csvFilePath
-	 *            path to a <i><b>.csv</b></i> file where the query answers will be
-	 *            written. Each line of the <i><b>.csv</b></i> file represents a
-	 *            query answer fact, and it will contain the fact term names as
-	 *            columns.
-	 * @param includeBlanks
-	 *            if {@code true}, facts containing terms of type
-	 *            {@link TermType#BLANK} (representing anonymous individuals
-	 *            introduced to satisfy rule existentially quantified variables)
-	 *            will be included into the query answers. Otherwise, the query
-	 *            answers will only contain the facts with terms of type
-	 *            {@link TermType#CONSTANT} (representing named individuals).
-	 * 
-	 * @throws ReasonerStateException
-	 *             if this method is called before loading ({@link Reasoner#load()}.
-	 * @throws IOException
-	 *             if an I/O error occurs regarding given file
-	 *             ({@code csvFilePath)}.
+	 *
+	 * @param queryAtom     an {@link Atom} representing the query to be answered.
+	 * @param csvFilePath   path to a <i><b>.csv</b></i> file where the query
+	 *                      answers will be written. Each line of the
+	 *                      <i><b>.csv</b></i> file represents a query answer fact,
+	 *                      and it will contain the fact term names as columns.
+	 * @param includeBlanks if {@code true}, facts containing terms of type
+	 *                      {@link TermType#BLANK} (representing anonymous
+	 *                      individuals introduced to satisfy rule existentially
+	 *                      quantified variables) will be included into the query
+	 *                      answers. Otherwise, the query answers will only contain
+	 *                      the facts with terms of type {@link TermType#CONSTANT}
+	 *                      (representing named individuals).
+	 *
+	 * @throws ReasonerStateException   if this method is called before loading
+	 *                                  ({@link Reasoner#load()}.
+	 * @throws IOException              if an I/O error occurs regarding given file
+	 *                                  ({@code csvFilePath)}.
 	 * @throws IllegalArgumentException
-	 *             <ul>
-	 *             <li>if the given {@code queryAtom} contains terms
-	 *             ({@link Atom#getTerms()}) which are not of type
-	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.</li>
-	 *             <li>if the given {@code csvFilePath} does not end with
-	 *             <i><b>.csv</b></i> extension.</li>
-	 *             </ul>
+	 *                                  <ul>
+	 *                                  <li>if the given {@code queryAtom} contains
+	 *                                  terms ({@link Atom#getTerms()}) which are
+	 *                                  not of type {@link TermType#CONSTANT} or
+	 *                                  {@link TermType#VARIABLE}.</li>
+	 *                                  <li>if the given {@code csvFilePath} does
+	 *                                  not end with <i><b>.csv</b></i>
+	 *                                  extension.</li>
+	 *                                  </ul>
 	 */
 	void exportQueryAnswersToCsv(@NonNull Atom queryAtom, @NonNull String csvFilePath, boolean includeBlanks)
 			throws ReasonerStateException, IOException;

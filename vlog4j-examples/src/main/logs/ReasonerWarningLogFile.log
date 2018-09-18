@@ -1,4 +1,0 @@
-[0x74cb233afb47b0fc 2018-08-07 15:23:54] INFO  Starting full materialization
-[0x74cb233afb47b0fc 2018-08-07 15:23:54] INFO  Finished process. Iterations=11
-[0x74cb233afb47b0fc 2018-08-07 15:23:54] INFO  Runtime materialization = 0.502200 milliseconds
-[0x74cb233afb47b0fc 2018-08-07 15:23:54] INFO  Total # derivations: 5

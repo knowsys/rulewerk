@@ -36,7 +36,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
-import org.semanticweb.vlog4j.examples.ExamplesUtil;
+import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
  * This example shows how facts can be imported from {@code .csv.gz} files, and
@@ -111,33 +111,34 @@ public class AddDataFromCSVFile {
 
 		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 
-		final String filesDirPath = "src/main/data";
 		/* Importing from {@code .csv} files as Data Sources. */
-		final DataSource bicycleEDBPath = new CsvFileDataSource(new File(filesDirPath + "/bicycleEDB.csv.gz"));
+		final DataSource bicycleEDBPath = new CsvFileDataSource(
+				new File(ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBPath);
-		final DataSource hasPartPath = new CsvFileDataSource(new File(filesDirPath + "/hasPartEDB.csv.gz"));
+		final DataSource hasPartPath = new CsvFileDataSource(new File(ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(hasPartEDB, hasPartPath);
-		final DataSource wheelPath = new CsvFileDataSource(new File(filesDirPath + "/wheelEDB.csv.gz"));
+		final DataSource wheelPath = new CsvFileDataSource(new File(ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(wheelEDB, wheelPath);
 
 		reasoner.load();
 
 		System.out.println("Before materialisation:");
-		ExamplesUtil.printOutQueryAnswers(hasPartEDBXY, reasoner);
+		ExamplesUtils.printOutQueryAnswers(hasPartEDBXY, reasoner);
 
 		reasoner.reason();
 
 		System.out.println("After materialisation:");
-		ExamplesUtil.printOutQueryAnswers(hasPartIDBXY, reasoner);
+		ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 		/* 3. Exporting query answers to {@code .csv} files. */
-		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + "/hasPartIDBXYWithBlanks.csv", true);
-
-		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, filesDirPath + "/hasPartIDBXYWithoutBlanks.csv", false);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithBlanks.csv", true);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithoutBlanks.csv",
+				false);
 
 		final Constant redBike = Expressions.makeConstant("redBike");
 		final Atom hasPartIDBRedBikeY = Expressions.makeAtom(hasPartIDB, redBike, y);
-		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY, filesDirPath + "/hasPartIDBRedBikeYWithBlanks.csv", true);
+		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
+				ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBRedBikeYWithBlanks.csv", true);
 
 		/*
 		 * 4. Closing. Use try-with resources, or remember to call {@code close()} to
