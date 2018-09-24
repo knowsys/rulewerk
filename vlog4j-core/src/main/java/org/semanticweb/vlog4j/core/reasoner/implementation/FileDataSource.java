@@ -22,6 +22,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -45,6 +46,9 @@ public abstract class FileDataSource implements DataSource {
 
 	private final File file;
 	private final String extension;
+	/**
+	 * The canonical path to the parent directory where the file resides.
+	 */
 	private final String dirCanonicalPath;
 	private final String fileNameWithoutExtension;
 
@@ -64,8 +68,8 @@ public abstract class FileDataSource implements DataSource {
 		final String fileName = file.getName();
 
 		this.file = file;
+		this.dirCanonicalPath = Paths.get(file.getCanonicalPath()).getParent().toString();
 		this.extension = getValidExtension(file, possibleExtensions);
-		this.dirCanonicalPath = file.getParentFile().getCanonicalPath();
 		this.fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf(this.extension));
 	}
 
@@ -102,6 +106,10 @@ public abstract class FileDataSource implements DataSource {
 		return this.file;
 	}
 
+	/**
+	 * 
+	 * @return The canonical path to the parent directory where the file resides.
+	 */
 	String getDirCanonicalPath() {
 		return this.dirCanonicalPath;
 	}

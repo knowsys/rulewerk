@@ -37,6 +37,7 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -63,7 +64,7 @@ public class LoadDataFromCsvTest {
 			final File emptyCsvFile = new File(FileDataSourceUtils.INPUT_FOLDER + csvFileName);
 			final CsvFileDataSource emptyCsvDataSource = new CsvFileDataSource(emptyCsvFile);
 
-			try (final VLogReasoner reasoner = new VLogReasoner()) {
+			try (final Reasoner reasoner = Reasoner.getInstance()) {
 				reasoner.addFactsFromDataSource(predicateP, emptyCsvDataSource);
 				reasoner.load();
 				reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
@@ -102,7 +103,7 @@ public class LoadDataFromCsvTest {
 			final File csvFile = new File(FileDataSourceUtils.INPUT_FOLDER + csvFileName);
 			final CsvFileDataSource csvFileDataSource = new CsvFileDataSource(csvFile);
 
-			try (final VLogReasoner reasoner = new VLogReasoner()) {
+			try (final Reasoner reasoner = Reasoner.getInstance()) {
 				reasoner.addFactsFromDataSource(predicateP, csvFileDataSource);
 				reasoner.addFactsFromDataSource(predicateQ, csvFileDataSource);
 				reasoner.load();
@@ -117,6 +118,25 @@ public class LoadDataFromCsvTest {
 				assertEquals(expectedUnaryQueryResult, pQueryResult);
 				assertEquals(pQueryResult, qQueryResult);
 			}
+		}
+	}
+	
+	/**
+	 * Tries to add a FileDataSource from a file that does not exist on disk.
+	 * @throws IOException
+	 * @throws ReasonerStateException
+	 * @throws EdbIdbSeparationException
+	 * @throws IncompatiblePredicateArityException
+	 */
+	@Test(expected = IOException.class)
+	public void testFileNotOnDisk()
+			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+		final File unexistingFile = new File("unexistingFile.csv");
+		assertFalse(unexistingFile.exists());
+		final CsvFileDataSource csvFileDataSource = new CsvFileDataSource(unexistingFile);
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.addFactsFromDataSource(Expressions.makePredicate(unaryPredicateNameP, 1), csvFileDataSource);
+			reasoner.load();
 		}
 	}
 
