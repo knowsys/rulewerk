@@ -21,7 +21,7 @@ package org.semanticweb.vlog4j.core.reasoner.vlog;
  */
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,12 +41,13 @@ import karmaresearch.vlog.VLog;
 
 public class VLogDataFromCsvTest {
 
-	private static final String unzippedUnaryPredicateNameP = "p";
-	private static final String unzippedUnaryPredicateNameQ = "q";
-	private static final String zippedUnaryPredicateNameP = "pz";
-	private static final String zippedUnaryPredicateNameQ = "qz";
+	private static final String unzippedUnaryPredicateName1 = "p";
+	private static final String unzippedUnaryPredicateName2 = "q";
+	private static final String zippedUnaryPredicateName1 = "p_z";
+	private static final String zippedUnaryPredicateName2 = "q_z";
+	private static final String emptyUnaryPredicateName = "empty";
 
-	private final List<List<Term>> expectedUnaryQueryResult = Arrays.asList(
+	private static final List<List<Term>> expectedUnaryQueryResult = Arrays.asList(
 			Arrays.asList(VLogExpressions.makeConstant("c1")), Arrays.asList(VLogExpressions.makeConstant("c2")));
 
 	private static List<List<Term>> getUnaryQueryResults(final VLog vLog, final String predicateName)
@@ -61,35 +62,34 @@ public class VLogDataFromCsvTest {
 	@Test
 	public void testLoadDataFomCsvString()
 			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
-		final String unaryPredicatesEDBConfig = "EDB0_predname=" + unzippedUnaryPredicateNameP + "\n"
+		final String unaryPredicatesEDBConfig = "EDB0_predname=" + unzippedUnaryPredicateName1 + "\n"
 				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceUtils.INPUT_FOLDER + "\n"
 				+ "EDB0_param1=" + FileDataSourceUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB1_predname="
-				+ unzippedUnaryPredicateNameQ + "\n" + "EDB1_type=INMEMORY" + "\n" + "EDB1_param0="
+				+ unzippedUnaryPredicateName2 + "\n" + "EDB1_type=INMEMORY" + "\n" + "EDB1_param0="
 				+ FileDataSourceUtils.INPUT_FOLDER + "\n" + "EDB1_param1="
-				+ FileDataSourceUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB2_predname=" + zippedUnaryPredicateNameP
+				+ FileDataSourceUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB2_predname=" + zippedUnaryPredicateName1
 				+ "\n" + "EDB2_type=INMEMORY" + "\n" + "EDB2_param0=" + FileDataSourceUtils.INPUT_FOLDER + "\n"
 				+ "EDB2_param1=" + FileDataSourceUtils.zippedUnaryCsvFileRoot + "\n" + "EDB3_predname="
-				+ zippedUnaryPredicateNameQ + "\n" + "EDB3_type=INMEMORY" + "\n" + "EDB3_param0="
+				+ zippedUnaryPredicateName2 + "\n" + "EDB3_type=INMEMORY" + "\n" + "EDB3_param0="
 				+ FileDataSourceUtils.INPUT_FOLDER + "\n" + "EDB3_param1=" + FileDataSourceUtils.zippedUnaryCsvFileRoot;
 
 		final VLog vLog = new VLog();
 		vLog.start(unaryPredicatesEDBConfig, false);
 
-		final List<List<Term>> queryResultP = getUnaryQueryResults(vLog, unzippedUnaryPredicateNameP);
-		final List<List<Term>> queryResultZippedP = getUnaryQueryResults(vLog, zippedUnaryPredicateNameP);
-		assertEquals(this.expectedUnaryQueryResult, queryResultP);
-		assertEquals(queryResultP, queryResultZippedP);
+		final List<List<Term>> queryResult1 = getUnaryQueryResults(vLog, unzippedUnaryPredicateName1);
+		final List<List<Term>> queryResultZipped1 = getUnaryQueryResults(vLog, zippedUnaryPredicateName1);
+		assertEquals(expectedUnaryQueryResult, queryResult1);
+		assertEquals(queryResult1, queryResultZipped1);
 
-		final List<List<Term>> queryResultQ = getUnaryQueryResults(vLog, unzippedUnaryPredicateNameQ);
-		final List<List<Term>> queryResultZippedQ = getUnaryQueryResults(vLog, zippedUnaryPredicateNameQ);
-		assertEquals(this.expectedUnaryQueryResult, queryResultQ);
-		assertEquals(queryResultQ, queryResultZippedQ);
+		final List<List<Term>> queryResult2 = getUnaryQueryResults(vLog, unzippedUnaryPredicateName2);
+		final List<List<Term>> queryResultZipped2 = getUnaryQueryResults(vLog, zippedUnaryPredicateName2);
+		assertEquals(expectedUnaryQueryResult, queryResult2);
+		assertEquals(queryResult2, queryResultZipped2);
 
-		final TermQueryResultIterator queryResultsRIterator = vLog
-				.query(new Atom("t", VLogExpressions.makeVariable("x")));
-		assertFalse(queryResultsRIterator.hasNext());
+		final List<List<Term>> queryResultsEmpty = getUnaryQueryResults(vLog, emptyUnaryPredicateName);
+		assertTrue(queryResultsEmpty.isEmpty());
 
-		queryResultsRIterator.close();
 		vLog.stop();
 	}
+
 }

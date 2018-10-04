@@ -46,26 +46,25 @@ import karmaresearch.vlog.EDBConfigurationException;
 
 public class LoadDataFromCsvTest {
 
-	private static final String unaryPredicateNameP = "p";
-	private static final String unaryPredicateNameQ = "q";
+	private static final String unaryPredicateName1 = "p";
+	private static final String unaryPredicateName2 = "q";
 
 	@SuppressWarnings("unchecked")
 	private static final Set<List<Term>> expectedUnaryQueryResult = Sets
 			.newSet(Arrays.asList(Expressions.makeConstant("c1")), Arrays.asList(Expressions.makeConstant("c2")));
 
 	@Test
-	public void testLoadEmptyCsv()
+	public void testLoadEmptyCsvFile()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final Predicate predicateP = Expressions.makePredicate("p", 2);
-		final Atom queryAtom = Expressions.makeAtom(predicateP, Expressions.makeVariable("x"),
-				Expressions.makeVariable("y"));
+		final Predicate predicate = Expressions.makePredicate(unaryPredicateName1, 1);
+		final Atom queryAtom = Expressions.makeAtom(predicate, Expressions.makeVariable("x"));
 
 		for (final String csvFileName : Arrays.asList("empty.csv", "empty.csv.gz")) {
 			final File emptyCsvFile = new File(FileDataSourceUtils.INPUT_FOLDER + csvFileName);
-			final CsvFileDataSource emptyCsvDataSource = new CsvFileDataSource(emptyCsvFile);
+			final FileDataSource emptyDataSource = new CsvFileDataSource(emptyCsvFile);
 
 			try (final Reasoner reasoner = Reasoner.getInstance()) {
-				reasoner.addFactsFromDataSource(predicateP, emptyCsvDataSource);
+				reasoner.addFactsFromDataSource(predicate, emptyDataSource);
 				reasoner.load();
 				reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 				reasoner.reason();
@@ -93,49 +92,52 @@ public class LoadDataFromCsvTest {
 	}
 
 	@Test
-	public void testLoadUnaryFactsFromCsv() throws ReasonerStateException, EdbIdbSeparationException,
+	public void testLoadUnaryFactsFromCsvFile() throws ReasonerStateException, EdbIdbSeparationException,
 	EDBConfigurationException, IOException, IncompatiblePredicateArityException {
-		final Predicate predicateP = Expressions.makePredicate(unaryPredicateNameP, 1);
-		final Predicate predicateQ = Expressions.makePredicate(unaryPredicateNameQ, 1);
+		final Predicate predicate1 = Expressions.makePredicate(unaryPredicateName1, 1);
+		final Predicate predicate2 = Expressions.makePredicate(unaryPredicateName2, 1);
 
 		for (final String csvFileName : Arrays.asList(FileDataSourceUtils.unzippedUnaryCsvFileRoot + ".csv",
 				FileDataSourceUtils.zippedUnaryCsvFileRoot + ".csv.gz")) {
 			final File csvFile = new File(FileDataSourceUtils.INPUT_FOLDER + csvFileName);
-			final CsvFileDataSource csvFileDataSource = new CsvFileDataSource(csvFile);
+			final FileDataSource fileDataSource = new CsvFileDataSource(csvFile);
 
 			try (final Reasoner reasoner = Reasoner.getInstance()) {
-				reasoner.addFactsFromDataSource(predicateP, csvFileDataSource);
-				reasoner.addFactsFromDataSource(predicateQ, csvFileDataSource);
+				reasoner.addFactsFromDataSource(predicate1, fileDataSource);
+				reasoner.addFactsFromDataSource(predicate2, fileDataSource);
 				reasoner.load();
 
-				final QueryResultIterator pQueryResultIterator = reasoner
-						.answerQuery(Expressions.makeAtom(predicateP, Expressions.makeVariable("x")), true);
-				final Set<List<Term>> pQueryResult = QueryResultsUtils.collectQueryResults(pQueryResultIterator);
-				final QueryResultIterator qQueryResultIterator = reasoner
-						.answerQuery(Expressions.makeAtom(predicateQ, Expressions.makeVariable("x")), true);
-				final Set<List<Term>> qQueryResult = QueryResultsUtils.collectQueryResults(qQueryResultIterator);
+				final QueryResultIterator queryResultIterator1 = reasoner
+						.answerQuery(Expressions.makeAtom(predicate1, Expressions.makeVariable("x")), true);
+				final Set<List<Term>> queryResult1 = QueryResultsUtils.collectQueryResults(queryResultIterator1);
+				final QueryResultIterator queryResultIterator2 = reasoner
+						.answerQuery(Expressions.makeAtom(predicate2, Expressions.makeVariable("x")), true);
+				final Set<List<Term>> queryResult2 = QueryResultsUtils.collectQueryResults(queryResultIterator2);
 
-				assertEquals(expectedUnaryQueryResult, pQueryResult);
-				assertEquals(pQueryResult, qQueryResult);
+				assertEquals(expectedUnaryQueryResult, queryResult1);
+				assertEquals(expectedUnaryQueryResult, queryResult2);
 			}
 		}
 	}
-	
+
 	/**
-	 * Tries to add a FileDataSource from a file that does not exist on disk.
+	 * Tries to add a {@code CsvFileDataSource} from a file that does not exist on
+	 * disk.
+	 *
 	 * @throws IOException
 	 * @throws ReasonerStateException
 	 * @throws EdbIdbSeparationException
 	 * @throws IncompatiblePredicateArityException
 	 */
 	@Test(expected = IOException.class)
-	public void testFileNotOnDisk()
+	public void testCsvFileNotOnDisk()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final File unexistingFile = new File("unexistingFile.csv");
 		assertFalse(unexistingFile.exists());
-		final CsvFileDataSource csvFileDataSource = new CsvFileDataSource(unexistingFile);
+		final FileDataSource fileDataSource = new CsvFileDataSource(unexistingFile);
+
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFactsFromDataSource(Expressions.makePredicate(unaryPredicateNameP, 1), csvFileDataSource);
+			reasoner.addFactsFromDataSource(Expressions.makePredicate(unaryPredicateName1, 1), fileDataSource);
 			reasoner.load();
 		}
 	}
