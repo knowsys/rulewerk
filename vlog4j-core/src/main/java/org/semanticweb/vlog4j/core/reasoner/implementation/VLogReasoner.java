@@ -228,7 +228,7 @@ public class VLogReasoner implements Reasoner {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
 			}
 			if (dataSourcePredicateArity == -1) {
-				LOGGER.warn("Data source {0} for predicate {1} is empty: ", this.dataSourceForPredicate.get(predicate),
+				LOGGER.warn("Data source {} for predicate {} is empty: ", this.dataSourceForPredicate.get(predicate),
 						predicate);
 			} else if (predicate.getArity() != dataSourcePredicateArity) {
 				throw new IncompatiblePredicateArityException(predicate, dataSourcePredicateArity,
