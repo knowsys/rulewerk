@@ -30,9 +30,9 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
 import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
 
-final class RDFValueToTermConverter {
+final class RdfValueToTermConverter {
 
-	private RDFValueToTermConverter() {
+	private RdfValueToTermConverter() {
 	}
 
 	static Term rdfValueToTerm(Value value) {

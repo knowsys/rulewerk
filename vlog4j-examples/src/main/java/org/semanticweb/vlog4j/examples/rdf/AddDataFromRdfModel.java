@@ -50,17 +50,17 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArit
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
-import org.semanticweb.vlog4j.rdf.RDFModelToAtomsConverter;
+import org.semanticweb.vlog4j.rdf.RdfModelToAtomsConverter;
 
 /**
  * This example shows how <b>vlog4j-rdf</b> library's utility class
- * {@link RDFModelToAtomsConverter} can be used to convert RDF {@link Model}s
+ * {@link RdfModelToAtomsConverter} can be used to convert RDF {@link Model}s
  * from various types of RDF resources to <b>vlog4j-core</b> {@code Atom} sets.
  *  
  * @author Irina Dragoste
  *
  */
-public class AddDataFromRDFModel {
+public class AddDataFromRdfModel {
 
 	public static void main(String[] args) throws IOException, RDFParseException, RDFHandlerException,
 			URISyntaxException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
@@ -79,7 +79,7 @@ public class AddDataFromRDFModel {
 		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
-		final Set<Atom> tripleFactsISWC2016 = RDFModelToAtomsConverter.rdfModelToAtoms(rdfModelISWC2016);
+		final Set<Atom> tripleFactsISWC2016 = RdfModelToAtomsConverter.rdfModelToAtoms(rdfModelISWC2016);
 		System.out.println("Example triple fact from iswc-2016");
 		System.out.println(" - " + tripleFactsISWC2016.iterator().next());
 
@@ -98,7 +98,7 @@ public class AddDataFromRDFModel {
 		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
-		final Set<Atom> tripleFactsISWC2017 = RDFModelToAtomsConverter.rdfModelToAtoms(rdfModelISWC2017);
+		final Set<Atom> tripleFactsISWC2017 = RdfModelToAtomsConverter.rdfModelToAtoms(rdfModelISWC2017);
 		System.out.println("Example triple fact from iswc-2017");
 		System.out.println(" - " + tripleFactsISWC2017.iterator().next());
 
@@ -122,11 +122,11 @@ public class AddDataFromRDFModel {
 		final Variable varAfiliation = Expressions.makeVariable("affiliation");
 
 		/* Patterns for facts extracted from RDF triples. */
-		final Atom personHasAffiliation = Expressions.makeAtom(RDFModelToAtomsConverter.RDF_TRIPLE_PREDICATE, varPerson,
+		final Atom personHasAffiliation = Expressions.makeAtom(RdfModelToAtomsConverter.RDF_TRIPLE_PREDICATE, varPerson,
 				constHasAffiiation, varAfiliation);
-		final Atom affiliationWithOrganization = Expressions.makeAtom(RDFModelToAtomsConverter.RDF_TRIPLE_PREDICATE,
+		final Atom affiliationWithOrganization = Expressions.makeAtom(RdfModelToAtomsConverter.RDF_TRIPLE_PREDICATE,
 				varAfiliation, constWithOrganization, varOganization);
-		final Atom organizationHasName = Expressions.makeAtom(RDFModelToAtomsConverter.RDF_TRIPLE_PREDICATE,
+		final Atom organizationHasName = Expressions.makeAtom(RdfModelToAtomsConverter.RDF_TRIPLE_PREDICATE,
 				varOganization, constName, varOganizationName);
 
 		/*

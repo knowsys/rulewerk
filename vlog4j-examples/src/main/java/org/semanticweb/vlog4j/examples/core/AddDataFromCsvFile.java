@@ -54,7 +54,7 @@ import org.semanticweb.vlog4j.examples.ExamplesUtils;
  * @author Irina Dragoste
  *
  */
-public class AddDataFromCSVFile {
+public class AddDataFromCsvFile {
 
 	public static void main(final String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
