@@ -43,12 +43,11 @@ import org.semanticweb.vlog4j.examples.ExamplesUtils;
  * also how query answers can be exported to {@code .csv} files. <i>Note that
  * you can also import from {@code .csv} files.</i>
  *
- * For importing, a {@link DataSource} of type {@link CsvFileDataSource},
- * containing the path to the {@code .csv.gz}, must be associated to the
- * corresponding predicate. A {@code .csv} file contains facts over that
- * predicate on its lines, while a {@code .csv.gz} file is the gzipped version
- * of such a {@code .csv} file. For exporting, the path to the output
- * {@code .csv} file must be specified.
+ * For importing, a {@link CsvFileDataSource} that contains a path to the
+ * corresponding {@code .csv.gz} file must be created. A {@code .csv} file
+ * contains facts over exactly one predicate in the CSV format, while a
+ * {@code .csv.gz} file is the gzipped version of such a {@code .csv} file. For
+ * exporting, a path to the output {@code .csv} file must be specified.
  *
  * @author Christian Lewe
  * @author Irina Dragoste
@@ -70,48 +69,61 @@ public class AddDataFromCsvFile {
 		final Variable x = Expressions.makeVariable("x");
 		final Variable y = Expressions.makeVariable("y");
 
-		/* BicycleIDB(?x) :- BicycleEDB(?x) . */
+		/*
+		 * BicycleIDB(?x) :- BicycleEDB(?x) .
+		 */
 		final Atom bicycleIDBX = Expressions.makeAtom(bicycleIDB, x);
 		final Atom bicycleEDBX = Expressions.makeAtom(bicycleEDB, x);
 		final Rule rule1 = Expressions.makeRule(bicycleIDBX, bicycleEDBX);
 
-		/* WheelIDB(?x) :- WheelEDB(?x) . */
+		/*
+		 * WheelIDB(?x) :- WheelEDB(?x) .
+		 */
 		final Atom wheelIDBX = Expressions.makeAtom(wheelIDB, x);
 		final Atom wheelEDBX = Expressions.makeAtom(wheelEDB, x);
 		final Rule rule2 = Expressions.makeRule(wheelIDBX, wheelEDBX);
 
-		/* hasPartIDB(?x, ?y) :- hasPartEDB(?x, ?y) . */
+		/*
+		 * hasPartIDB(?x, ?y) :- hasPartEDB(?x, ?y) .
+		 */
 		final Atom hasPartIDBXY = Expressions.makeAtom(hasPartIDB, x, y);
 		final Atom hasPartEDBXY = Expressions.makeAtom(hasPartEDB, x, y);
 		final Rule rule3 = Expressions.makeRule(hasPartIDBXY, hasPartEDBXY);
 
-		/* isPartOfIDB(?x, ?y) :- isPartOfEDB(?x, ?y) . */
+		/*
+		 * isPartOfIDB(?x, ?y) :- isPartOfEDB(?x, ?y) .
+		 */
 		final Atom isPartOfIDBXY = Expressions.makeAtom(isPartOfIDB, x, y);
 		final Atom isPartOfEDBXY = Expressions.makeAtom(isPartOfEDB, x, y);
 		final Rule rule4 = Expressions.makeRule(isPartOfIDBXY, isPartOfEDBXY);
 
-		/* exists y. HasPartIDB(?x, !y), WheelIDB(!y) :- BicycleIDB(?x) . */
+		/*
+		 * exists y. HasPartIDB(?x, !y), WheelIDB(!y) :- BicycleIDB(?x) .
+		 */
 		final Atom wheelIDBY = Expressions.makeAtom(wheelIDB, y);
 		final Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(hasPartIDBXY, wheelIDBY), Expressions.makeConjunction(bicycleIDBX));
 
-		/* exists y. IsPartOfIDB(?x, !y) :- WheelIDB(?x) . */
+		/*
+		 * exists y. IsPartOfIDB(?x, !y) :- WheelIDB(?x) .
+		 */
 		final Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY), Expressions.makeConjunction(wheelIDBX));
 
 		/* IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) . */
 		final Atom hasPartIDBYX = Expressions.makeAtom(hasPartIDB, y, x);
 		final Rule rule7 = Expressions.makeRule(isPartOfIDBXY, hasPartIDBYX);
 
-		/* HasPartIDB(?x, ?y) :- IsPartOfIDB(?y, ?x) . */
+		/*
+		 * HasPartIDB(?x, ?y) :- IsPartOfIDB(?y, ?x) .
+		 */
 		final Atom isPartOfIDBYX = Expressions.makeAtom(isPartOfIDB, y, x);
 		final Rule rule8 = Expressions.makeRule(hasPartIDBXY, isPartOfIDBYX);
 
 		/* 2. Loading, reasoning, and querying. */
 		final Reasoner reasoner = Reasoner.getInstance();
 		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
-
 		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 
-		/* Importing from {@code .csv} files as Data Sources. */
+		/* Importing {@code .csv} files as data sources. */
 		final DataSource bicycleEDBPath = new CsvFileDataSource(
 				new File(ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz"));
 		reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBPath);
@@ -121,12 +133,10 @@ public class AddDataFromCsvFile {
 		reasoner.addFactsFromDataSource(wheelEDB, wheelPath);
 
 		reasoner.load();
-
 		System.out.println("Before materialisation:");
 		ExamplesUtils.printOutQueryAnswers(hasPartEDBXY, reasoner);
 
 		reasoner.reason();
-
 		System.out.println("After materialisation:");
 		ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
@@ -145,7 +155,6 @@ public class AddDataFromCsvFile {
 		 * free the reasoner resources.
 		 */
 		reasoner.close();
-
 	}
 
 }
