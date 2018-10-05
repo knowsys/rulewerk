@@ -1,0 +1,9 @@
+<http://an.example/redBike> <http://an.example/bicycle> <http://an.example/empty> .
+<http://an.example/blueBike> <http://an.example/bicycle> <http://an.example/empty> .
+<http://an.example/blackBike> <http://an.example/bicycle> <http://an.example/empty> .
+
+<http://an.example/redBike> <http://an.example/hasPart> <http://an.example/redWheel> .
+<http://an.example/blueBike> <http://an.example/hasPart> <http://an.example/blueWheel> .
+
+<http://an.example/redWheel> <http://an.example/wheel> <http://an.example/empty> .
+<http://an.example/blueWheel> <http://an.example/wheel> <http://an.example/empty> .
