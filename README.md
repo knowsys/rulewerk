@@ -1,6 +1,6 @@
 VLog4j
 ======
-[![Build Status](https://travis-ci.org/mkroetzsch/vlog4j.png?branch=master)](https://travis-ci.org/mkroetzsch/vlog4j)
+[![Build Status](https://travis-ci.org/knowsys/vlog4j.png?branch=master)](https://travis-ci.org/knowsys/vlog4j)
 [![Coverage Status](https://coveralls.io/repos/github/mkroetzsch/vlog4j/badge.svg?branch=master)](https://coveralls.io/github/mkroetzsch/vlog4j?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.semanticweb.vlog4j/vlog4j-parent/badge.svg)](http://search.maven.org/#search|ga|1|g%3A%22org.semanticweb.vlog4j%22)
 
