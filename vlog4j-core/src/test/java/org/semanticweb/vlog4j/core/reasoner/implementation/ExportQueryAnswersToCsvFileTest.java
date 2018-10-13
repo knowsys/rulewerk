@@ -38,7 +38,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
-public class ExportQueryAnswersToCsvTest {
+public class ExportQueryAnswersToCsvFileTest {
 
 	@Test
 	public void testEDBQuerySameConstantSubstitutesSameVariableName()

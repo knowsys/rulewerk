@@ -39,7 +39,7 @@ import karmaresearch.vlog.Term;
 import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
 
-public class VLogDataFromCsvTest {
+public class VLogDataFromCsvFileTest {
 
 	private static final String unzippedUnaryPredicateName1 = "p";
 	private static final String unzippedUnaryPredicateName2 = "q";

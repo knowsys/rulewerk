@@ -40,7 +40,7 @@ import karmaresearch.vlog.Term;
 import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
 
-public class VLogDataFromRdfTest {
+public class VLogDataFromRdfFileTest {
 
 	private static final String unzippedTernaryPredicateName = "triple";
 	private static final String zippedTernaryPredicateName = "triple_z";

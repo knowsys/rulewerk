@@ -39,7 +39,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArit
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
-public class TestLoadFactsFromRdfToVLogReasoner {
+public class TestLoadFactsFromRdfFileToVLogReasoner {
 
 	// TODO add rules, reason
 	// TODO add data of each type

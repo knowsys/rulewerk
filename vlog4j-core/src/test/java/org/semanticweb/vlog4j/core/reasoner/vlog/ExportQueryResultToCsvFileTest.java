@@ -34,7 +34,7 @@ import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.VLog;
 
-public class ExportQueryResultToCsvTest {
+public class ExportQueryResultToCsvFileTest {
 
 	@Test
 	public void testExportUnaryPredicateFacts() throws EDBConfigurationException, NotStartedException, IOException {
