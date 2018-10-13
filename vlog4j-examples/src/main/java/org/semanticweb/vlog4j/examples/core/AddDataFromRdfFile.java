@@ -20,6 +20,13 @@ package org.semanticweb.vlog4j.examples.core;
  * #L%
  */
 
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -28,8 +35,6 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -59,112 +64,104 @@ public class AddDataFromRdfFile {
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
 		/* 1. Instantiating entities and rules. */
-		final Predicate triplesEDB = Expressions.makePredicate("triplesEDB", 3);
-		final Predicate triplesIDB = Expressions.makePredicate("triplesIDB", 3);
+		final Predicate triplesEDB = makePredicate("triplesEDB", 3);
+		final Predicate triplesIDB = makePredicate("triplesIDB", 3);
 
-		final Constant bicyclePredicate = Expressions.makeConstant("<http://an.example/bicycle>");
-		final Constant wheelPredicate = Expressions.makeConstant("<http://an.example/wheel>");
-		final Constant hasPartPredicate = Expressions.makeConstant("<http://an.example/hasPart>");
-		final Constant isPartOfPredicate = Expressions.makeConstant("<http://an.example/isPartOf>");
-		final Constant emptyObject = Expressions.makeConstant("<http://an.example/empty>");
+		final Constant hasPartPredicate = makeConstant("<http://an.example/hasPart>");
+		final Constant isPartOfPredicate = makeConstant("<http://an.example/isPartOf>");
+		final Constant hasTypePredicate = makeConstant("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>");
+		final Constant bicycleObject = makeConstant("<http://an.example/bicycle>");
+		final Constant wheelObject = makeConstant("<http://an.example/wheel>");
 
-		final Variable x = Expressions.makeVariable("x");
-		final Variable s = Expressions.makeVariable("s");
-		final Variable o = Expressions.makeVariable("o");
+		final Variable x = makeVariable("x");
+		final Variable s = makeVariable("s");
+		final Variable o = makeVariable("o");
 
 		/*
-		 * We will write '<~/someName>' instead of <http://an.example/someName>.
+		 * We will write '<~/someName>' instead of <http://an.example/someName> and
+		 * <~#someName> instead of <www.w3.org/1999/02/22-rdf-syntax-ns#someName>.
 		 *
-		 * triplesIDB(?s, <~/bicycle>, ?o) :- triplesEDB(?s, <~/bicycle>, ?o) .
+		 * triplesIDB(?s, <~#type>, ?o) :- triplesEDB(?s, <~#type>, ?o) .
 		 */
-		final Atom bicycleIDB = Expressions.makeAtom(triplesIDB, s, bicyclePredicate, o);
-		final Atom bicycleEDB = Expressions.makeAtom(triplesEDB, s, bicyclePredicate, o);
-		final Rule rule1 = Expressions.makeRule(bicycleIDB, bicycleEDB);
-
-		/*
-		 * triplesIDB(?s, <~/wheel>, ?o) :- triplesEDB(?s, <~/wheel>, ?o) .
-		 */
-		final Atom wheelIDB = Expressions.makeAtom(triplesIDB, s, wheelPredicate, o);
-		final Atom wheelEDB = Expressions.makeAtom(triplesEDB, s, wheelPredicate, o);
-		final Rule rule2 = Expressions.makeRule(wheelIDB, wheelEDB);
+		final Atom hasTypeIDB = makeAtom(triplesIDB, s, hasTypePredicate, o);
+		final Atom hasTypeEDB = makeAtom(triplesEDB, s, hasTypePredicate, o);
+		final Rule rule1 = makeRule(hasTypeIDB, hasTypeEDB);
 
 		/*
 		 * triplesIDB(?s, <~/hasPart>, ?o) :- triplesEDB(?s, <~/hasPart>, ?o) .
 		 */
-		final Atom hasPartIDB = Expressions.makeAtom(triplesIDB, s, hasPartPredicate, o);
-		final Atom hasPartEDB = Expressions.makeAtom(triplesEDB, s, hasPartPredicate, o);
-		final Rule rule3 = Expressions.makeRule(hasPartIDB, hasPartEDB);
+		final Atom hasPartIDB = makeAtom(triplesIDB, s, hasPartPredicate, o);
+		final Atom hasPartEDB = makeAtom(triplesEDB, s, hasPartPredicate, o);
+		final Rule rule2 = makeRule(hasPartIDB, hasPartEDB);
 
 		/*
 		 * triplesIDB(?s, <~/isPartOf>, ?o) :- triplesEDB(?s, <~/isPartOf>, ?o) .
 		 */
-		final Atom isPartOfIDB = Expressions.makeAtom(triplesIDB, s, isPartOfPredicate, o);
-		final Atom isPartOfEDB = Expressions.makeAtom(triplesEDB, s, isPartOfPredicate, o);
-		final Rule rule4 = Expressions.makeRule(isPartOfIDB, isPartOfEDB);
+		final Atom isPartOfIDB = makeAtom(triplesIDB, s, isPartOfPredicate, o);
+		final Atom isPartOfEDB = makeAtom(triplesEDB, s, isPartOfPredicate, o);
+		final Rule rule3 = makeRule(isPartOfIDB, isPartOfEDB);
 
 		/*
-		 * exists x. triplesIDB(?s, <~/hasPartIDB>, !x), triplesIDB(!x, <~/wheelIDB>,
-		 * <~/empty>) :- triplesIDB(?s, <~/bicycleIDB>, ?o) .
+		 * exists x. triplesIDB(?s, <~/hasPart>, !x), triplesIDB(!x, <~#type>,
+		 * <~/wheel>) :- triplesIDB(?s, <~#type>, <~/bicycle>) .
 		 */
-		final Atom existsHasPartIDB = Expressions.makeAtom(triplesIDB, s, hasPartPredicate, x);
-		final Atom existsWheelIDB = Expressions.makeAtom(triplesIDB, x, wheelPredicate, emptyObject);
-		final Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(existsHasPartIDB, existsWheelIDB),
-				Expressions.makeConjunction(bicycleIDB));
+		final Atom existsHasPartIDB = makeAtom(triplesIDB, s, hasPartPredicate, x);
+		final Atom existsWheelIDB = makeAtom(triplesIDB, x, hasTypePredicate, wheelObject);
+		final Atom bicycleIDB = makeAtom(triplesIDB, s, hasTypePredicate, bicycleObject);
+		final Rule rule4 = makeRule(makeConjunction(existsHasPartIDB, existsWheelIDB), makeConjunction(bicycleIDB));
 
 		/*
-		 * exists x. triplesIDB(?s, <~/isPartOfIDB>, !x) :- triplesIDB(?s, <~/wheelIDB>,
-		 * ?o) .
+		 * exists x. triplesIDB(?s, <~/isPartOfIDB>, !x) :- triplesIDB(?s, <~#type>,
+		 * <~/wheelIDB>) .
 		 */
-		final Atom existsIsPartOfIDB = Expressions.makeAtom(triplesIDB, s, isPartOfPredicate, x);
-		final Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(existsIsPartOfIDB),
-				Expressions.makeConjunction(wheelIDB));
+		final Atom existsIsPartOfIDB = makeAtom(triplesIDB, s, isPartOfPredicate, x);
+		final Atom wheelIDB = makeAtom(triplesIDB, s, hasTypePredicate, wheelObject);
+		final Rule rule5 = makeRule(makeConjunction(existsIsPartOfIDB), makeConjunction(wheelIDB));
 
 		/*
 		 * triplesIDB(?s, <~/isPartOfIDB>, ?o) :- triplesIDB(?o, <~/hasPartIDB>, ?s) .
 		 */
-		final Atom hasPartIDBReversed = Expressions.makeAtom(triplesIDB, o, hasPartPredicate, s);
-		final Rule rule7 = Expressions.makeRule(isPartOfIDB, hasPartIDBReversed);
+		final Atom hasPartIDBReversed = makeAtom(triplesIDB, o, hasPartPredicate, s);
+		final Rule rule6 = makeRule(isPartOfIDB, hasPartIDBReversed);
 
 		/*
 		 * triplesIDB(?s, <~/hasPartIDB>, ?o) :- triplesIDB(?o, <~/isPartOfIDB>, ?s) .
 		 */
-		final Atom isPartOfIDBReversed = Expressions.makeAtom(triplesIDB, o, isPartOfPredicate, s);
-		final Rule rule8 = Expressions.makeRule(hasPartIDB, isPartOfIDBReversed);
-
-		/* 2. Loading, reasoning, and querying. */
-		final Reasoner reasoner = Reasoner.getInstance();
-		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
-		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
-
-		/* Importing {@code .nt} file as data source. */
-		final DataSource triplesEDBPath = new RdfFileDataSource(
-				new File(ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt"));
-		reasoner.addFactsFromDataSource(triplesEDB, triplesEDBPath);
-
-		reasoner.load();
-		System.out.println("Before materialisation:");
-		ExamplesUtils.printOutQueryAnswers(hasPartEDB, reasoner);
-
-		reasoner.reason();
-		System.out.println("After materialisation:");
-		ExamplesUtils.printOutQueryAnswers(hasPartIDB, reasoner);
-
-		/* 3. Exporting query answers to {@code .csv} files. */
-		reasoner.exportQueryAnswersToCsv(hasPartIDB, ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithBlanks.csv",
-				true);
-		reasoner.exportQueryAnswersToCsv(hasPartIDB, ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv",
-				false);
-
-		final Constant redBikeSubject = Expressions.makeConstant("<http://an.example/redBike>");
-		final Atom existsHasPartRedBike = Expressions.makeAtom(triplesIDB, redBikeSubject, hasPartPredicate, x);
-		reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
-				ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);
+		final Atom isPartOfIDBReversed = makeAtom(triplesIDB, o, isPartOfPredicate, s);
+		final Rule rule7 = makeRule(hasPartIDB, isPartOfIDBReversed);
 
 		/*
-		 * 4. Closing. Use try-with resources, or remember to call {@code close()} to
-		 * free the reasoner resources.
+		 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
+		 * to close the reasoner automatically.
 		 */
-		reasoner.close();
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7);
+
+			/* Importing {@code .nt.gz} file as data source. */
+			final DataSource triplesEDBDataSource = new RdfFileDataSource(
+					new File(ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt.gz"));
+			reasoner.addFactsFromDataSource(triplesEDB, triplesEDBDataSource);
+
+			reasoner.load();
+			System.out.println("Before materialisation:");
+			ExamplesUtils.printOutQueryAnswers(hasPartEDB, reasoner);
+
+			/* The reasoner will use the Restricted Chase by default. */
+			reasoner.reason();
+			System.out.println("After materialisation:");
+			ExamplesUtils.printOutQueryAnswers(hasPartIDB, reasoner);
+
+			/* Exporting query answers to {@code .csv} files. */
+			reasoner.exportQueryAnswersToCsv(hasPartIDB,
+					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithBlanks.csv", true);
+			reasoner.exportQueryAnswersToCsv(hasPartIDB,
+					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
+
+			final Constant redBikeSubject = makeConstant("<http://an.example/redBike>");
+			final Atom existsHasPartRedBike = makeAtom(triplesIDB, redBikeSubject, hasPartPredicate, x);
+			reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
+					ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);
+		}
 	}
 
 }
