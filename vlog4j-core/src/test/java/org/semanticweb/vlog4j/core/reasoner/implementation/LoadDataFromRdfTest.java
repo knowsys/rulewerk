@@ -22,6 +22,8 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,13 +31,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -46,71 +48,38 @@ import karmaresearch.vlog.EDBConfigurationException;
 
 public class LoadDataFromRdfTest {
 
-	private static final String ternaryPredicateName = "triple";
+	private static final Predicate ternaryPredicate = Expressions.makePredicate("triple", 3);
+	private static final Atom queryAtom = Expressions.makeAtom(ternaryPredicate, makeVariable("s"), makeVariable("p"),
+			makeVariable("o"));
 
 	@SuppressWarnings("unchecked")
 	private static final Set<List<Term>> expectedTernaryQueryResult = Sets.newSet(
-			Arrays.asList(Expressions.makeConstant("<c1>"), Expressions.makeConstant("<q>"),
-					Expressions.makeConstant("<c2>")),
-			Arrays.asList(Expressions.makeConstant("<c1>"), Expressions.makeConstant("<p>"),
-					Expressions.makeConstant("<c2>")));
+			Arrays.asList(makeConstant("<c1>"), makeConstant("<q>"), makeConstant("<c2>")),
+			Arrays.asList(makeConstant("<c1>"), makeConstant("<p>"), makeConstant("<c2>")));
 
 	@Test
 	public void testLoadEmptyRdfFile()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final Predicate predicate = Expressions.makePredicate(ternaryPredicateName, 3);
-		final Atom queryAtom = Expressions.makeAtom(predicate, Expressions.makeVariable("s"),
-				Expressions.makeVariable("p"), Expressions.makeVariable("o"));
-
 		for (final String rdfFileName : Arrays.asList("empty.nt", "empty.nt.gz")) {
-			final File emptyRdfFile = new File(FileDataSourceUtils.INPUT_FOLDER + rdfFileName);
-			final FileDataSource emptyDataSource = new RdfFileDataSource(emptyRdfFile);
-
-			try (final Reasoner reasoner = Reasoner.getInstance()) {
-				reasoner.addFactsFromDataSource(predicate, emptyDataSource);
-				reasoner.load();
-				reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
-				reasoner.reason();
-
-				try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, true)) {
-					assertFalse(answerQuery.hasNext());
-				}
-				try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, false)) {
-					assertFalse(answerQuery.hasNext());
-				}
-
-				reasoner.resetReasoner();
-				reasoner.load();
-				reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
-				reasoner.reason();
-
-				try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, true)) {
-					assertFalse(answerQuery.hasNext());
-				}
-				try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, false)) {
-					assertFalse(answerQuery.hasNext());
-				}
-			}
+			final FileDataSource emptyFileDataSource = new RdfFileDataSource(
+					new File(FileDataSourceUtils.INPUT_FOLDER + rdfFileName));
+			FileDataSourceUtils.testLoadEmptyFile(ternaryPredicate, queryAtom, emptyFileDataSource);
 		}
 	}
 
 	@Test
 	public void testLoadTernaryFactsFromRdfFile() throws ReasonerStateException, EdbIdbSeparationException,
 	EDBConfigurationException, IOException, IncompatiblePredicateArityException {
-		final Predicate predicate = Expressions.makePredicate(ternaryPredicateName, 3);
-
 		for (final String rdfFileName : Arrays.asList(FileDataSourceUtils.unzippedNtFileRoot + ".nt",
 				FileDataSourceUtils.zippedNtFileRoot + ".nt.gz")) {
-			final File rdfFile = new File(FileDataSourceUtils.INPUT_FOLDER + rdfFileName);
-			final FileDataSource fileDataSource = new RdfFileDataSource(rdfFile);
+			final FileDataSource fileDataSource = new RdfFileDataSource(
+					new File(FileDataSourceUtils.INPUT_FOLDER + rdfFileName));
 
 			try (final Reasoner reasoner = Reasoner.getInstance()) {
-				reasoner.addFactsFromDataSource(predicate, fileDataSource);
+				reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);
 				reasoner.load();
 
-				final QueryResultIterator queryResultIterator = reasoner.answerQuery(Expressions.makeAtom(predicate,
-						Expressions.makeVariable("s"), Expressions.makeVariable("p"), Expressions.makeVariable("o")),
-						true);
+				final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true);
 				final Set<List<Term>> queryResult = QueryResultsUtils.collectQueryResults(queryResultIterator);
 
 				assertEquals(expectedTernaryQueryResult, queryResult);
@@ -119,14 +88,14 @@ public class LoadDataFromRdfTest {
 	}
 
 	@Test(expected = IOException.class)
-	public void testRdfFileNotOnDisk()
+	public void testLoadNonexistingRdfFile()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final File unexistingFile = new File("unexistingFile.nt");
-		assertFalse(unexistingFile.exists());
-		final FileDataSource fileDataSource = new RdfFileDataSource(unexistingFile);
+		final File nonexistingFile = new File("nonexistingFile.nt");
+		assertFalse(nonexistingFile.exists());
+		final FileDataSource fileDataSource = new RdfFileDataSource(nonexistingFile);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFactsFromDataSource(Expressions.makePredicate(ternaryPredicateName, 3), fileDataSource);
+			reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);
 			reasoner.load();
 		}
 	}

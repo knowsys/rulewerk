@@ -22,6 +22,8 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +37,6 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -46,72 +47,43 @@ import karmaresearch.vlog.EDBConfigurationException;
 
 public class LoadDataFromCsvTest {
 
-	private static final String unaryPredicateName1 = "p";
-	private static final String unaryPredicateName2 = "q";
+	private static final Predicate unaryPredicate1 = Expressions.makePredicate("p", 1);
+	private static final Predicate unaryPredicate2 = Expressions.makePredicate("q", 1);
 
 	@SuppressWarnings("unchecked")
 	private static final Set<List<Term>> expectedUnaryQueryResult = Sets
-			.newSet(Arrays.asList(Expressions.makeConstant("c1")), Arrays.asList(Expressions.makeConstant("c2")));
+	.newSet(Arrays.asList(makeConstant("c1")), Arrays.asList(makeConstant("c2")));
 
 	@Test
 	public void testLoadEmptyCsvFile()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final Predicate predicate = Expressions.makePredicate(unaryPredicateName1, 1);
-		final Atom queryAtom = Expressions.makeAtom(predicate, Expressions.makeVariable("x"));
+		final Atom queryAtom = Expressions.makeAtom(unaryPredicate1, makeVariable("x"));
 
 		for (final String csvFileName : Arrays.asList("empty.csv", "empty.csv.gz")) {
-			final File emptyCsvFile = new File(FileDataSourceUtils.INPUT_FOLDER + csvFileName);
-			final FileDataSource emptyDataSource = new CsvFileDataSource(emptyCsvFile);
-
-			try (final Reasoner reasoner = Reasoner.getInstance()) {
-				reasoner.addFactsFromDataSource(predicate, emptyDataSource);
-				reasoner.load();
-				reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
-				reasoner.reason();
-
-				try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, true)) {
-					assertFalse(answerQuery.hasNext());
-				}
-				try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, false)) {
-					assertFalse(answerQuery.hasNext());
-				}
-
-				reasoner.resetReasoner();
-				reasoner.load();
-				reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
-				reasoner.reason();
-
-				try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, true)) {
-					assertFalse(answerQuery.hasNext());
-				}
-				try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, false)) {
-					assertFalse(answerQuery.hasNext());
-				}
-			}
+			final FileDataSource emptyFileDataSource = new CsvFileDataSource(
+					new File(FileDataSourceUtils.INPUT_FOLDER + csvFileName));
+			FileDataSourceUtils.testLoadEmptyFile(unaryPredicate1, queryAtom, emptyFileDataSource);
 		}
 	}
 
 	@Test
 	public void testLoadUnaryFactsFromCsvFile() throws ReasonerStateException, EdbIdbSeparationException,
 	EDBConfigurationException, IOException, IncompatiblePredicateArityException {
-		final Predicate predicate1 = Expressions.makePredicate(unaryPredicateName1, 1);
-		final Predicate predicate2 = Expressions.makePredicate(unaryPredicateName2, 1);
-
 		for (final String csvFileName : Arrays.asList(FileDataSourceUtils.unzippedUnaryCsvFileRoot + ".csv",
 				FileDataSourceUtils.zippedUnaryCsvFileRoot + ".csv.gz")) {
 			final File csvFile = new File(FileDataSourceUtils.INPUT_FOLDER + csvFileName);
 			final FileDataSource fileDataSource = new CsvFileDataSource(csvFile);
 
 			try (final Reasoner reasoner = Reasoner.getInstance()) {
-				reasoner.addFactsFromDataSource(predicate1, fileDataSource);
-				reasoner.addFactsFromDataSource(predicate2, fileDataSource);
+				reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
+				reasoner.addFactsFromDataSource(unaryPredicate2, fileDataSource);
 				reasoner.load();
 
 				final QueryResultIterator queryResultIterator1 = reasoner
-						.answerQuery(Expressions.makeAtom(predicate1, Expressions.makeVariable("x")), true);
+						.answerQuery(Expressions.makeAtom(unaryPredicate1, makeVariable("x")), true);
 				final Set<List<Term>> queryResult1 = QueryResultsUtils.collectQueryResults(queryResultIterator1);
 				final QueryResultIterator queryResultIterator2 = reasoner
-						.answerQuery(Expressions.makeAtom(predicate2, Expressions.makeVariable("x")), true);
+						.answerQuery(Expressions.makeAtom(unaryPredicate2, makeVariable("x")), true);
 				final Set<List<Term>> queryResult2 = QueryResultsUtils.collectQueryResults(queryResultIterator2);
 
 				assertEquals(expectedUnaryQueryResult, queryResult1);
@@ -130,14 +102,14 @@ public class LoadDataFromCsvTest {
 	 * @throws IncompatiblePredicateArityException
 	 */
 	@Test(expected = IOException.class)
-	public void testCsvFileNotOnDisk()
+	public void testLoadNonexistingCsvFile()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final File unexistingFile = new File("unexistingFile.csv");
-		assertFalse(unexistingFile.exists());
-		final FileDataSource fileDataSource = new CsvFileDataSource(unexistingFile);
+		final File nonexistingFile = new File("nonexistingFile.csv");
+		assertFalse(nonexistingFile.exists());
+		final FileDataSource fileDataSource = new CsvFileDataSource(nonexistingFile);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFactsFromDataSource(Expressions.makePredicate(unaryPredicateName1, 1), fileDataSource);
+			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 			reasoner.load();
 		}
 	}

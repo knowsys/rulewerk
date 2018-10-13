@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
+import static org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils.INPUT_FOLDER;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,38 +30,30 @@ import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
 
 public class RdfFileDataSourceTest {
 
-	@Test
-	public void testToConfigString() throws IOException {
-		File rdfFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.nt");
-		RdfFileDataSource rdfFileDataSource = new RdfFileDataSource(rdfFile);
-
-		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
-				+ new File(rdfFile.getParent()).getCanonicalPath() + "\n" + "EDB%1$d_param1=file\n";
-		assertEquals(expectedConfigString, rdfFileDataSource.toConfigString());
-
-		rdfFile = new File(FileDataSourceUtils.INPUT_FOLDER + "file.nt.gz");
-		rdfFileDataSource = new RdfFileDataSource(rdfFile);
-		assertEquals(expectedConfigString, rdfFileDataSource.toConfigString());
-	}
-
-	@Test
-	public void getFileNameWithoutExtension() throws IOException {
-		RdfFileDataSource rdfFileDataSource = new RdfFileDataSource(
-				new File(FileDataSourceUtils.INPUT_FOLDER + "file.nt"));
-		assertEquals("file", rdfFileDataSource.getFileNameWithoutExtension());
-
-		rdfFileDataSource = new RdfFileDataSource(new File(FileDataSourceUtils.INPUT_FOLDER + "file.nt.gz"));
-		assertEquals("file", rdfFileDataSource.getFileNameWithoutExtension());
-	}
-
 	@Test(expected = NullPointerException.class)
-	public void fileNameNotNull() throws IOException {
-		new CsvFileDataSource(null);
+	public void testConstructorNullFile() throws IOException {
+		new RdfFileDataSource(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void fileNameEndsWithCsv() throws IOException {
-		new CsvFileDataSource(new File("invalid/file/name"));
+	public void testConstructorFalseExtension() throws IOException {
+		new RdfFileDataSource(new File(INPUT_FOLDER + "file.csv"));
+	}
+
+	@Test
+	public void testConstructor() throws IOException {
+		final FileDataSource unzippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
+		final FileDataSource zippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
+
+		FileDataSourceUtils.testConstructor(unzippedCsvFileDataSource, zippedCsvFileDataSource);
+	}
+
+	@Test
+	public void testToConfigString() throws IOException {
+		final FileDataSource unzippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
+		final FileDataSource zippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
+
+		FileDataSourceUtils.testToConfigString(unzippedCsvFileDataSource, zippedCsvFileDataSource);
 	}
 
 }
