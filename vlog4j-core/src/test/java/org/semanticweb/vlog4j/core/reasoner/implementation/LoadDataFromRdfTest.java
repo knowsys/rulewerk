@@ -100,4 +100,17 @@ public class LoadDataFromRdfTest {
 		}
 	}
 
+	@Ignore
+	@Test(expected = IncompatiblePredicateArityException.class)
+	public void testLoadRdfFileWrongArity()
+			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+		final FileDataSource fileDataSource = new RdfFileDataSource(
+				new File(FileDataSourceUtils.INPUT_FOLDER + FileDataSourceUtils.wrongArityNtFileNameRoot + ".nt"));
+
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);
+			reasoner.load();
+		}
+	}
+
 }

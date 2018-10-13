@@ -114,4 +114,16 @@ public class LoadDataFromCsvTest {
 		}
 	}
 
+	@Test(expected = IncompatiblePredicateArityException.class)
+	public void testLoadCsvFileWrongArity()
+			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+		final FileDataSource fileDataSource = new CsvFileDataSource(
+				new File(FileDataSourceUtils.INPUT_FOLDER + FileDataSourceUtils.binaryCsvFileNameRoot + ".csv"));
+
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
+			reasoner.load();
+		}
+	}
+
 }
