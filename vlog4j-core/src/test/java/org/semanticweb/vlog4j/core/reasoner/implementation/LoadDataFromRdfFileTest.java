@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Atom;
@@ -105,16 +104,16 @@ public class LoadDataFromRdfFileTest {
 		}
 	}
 
-	@Ignore
-	@Test(expected = IncompatiblePredicateArityException.class)
-	public void testLoadRdfFileWrongArity()
+	@Test
+	public void testLoadRdfInvalidFormat()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final FileDataSource fileDataSource = new RdfFileDataSource(
-				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.wrongArityNtFileNameRoot + ".nt"));
+				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.invalidFormatNtFileNameRoot + ".nt"));
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);
 			reasoner.load();
+			FileDataSourceTestUtils.testNoFactsOverPredicate(reasoner, queryAtom);
 		}
 	}
 

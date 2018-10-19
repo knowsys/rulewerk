@@ -57,7 +57,7 @@ public final class FileDataSourceTestUtils {
 	public static final String unzippedNtFileRoot = "ternaryFacts";
 	public static final String zippedNtFileRoot = "ternaryFactsZipped";
 	public static final String binaryCsvFileNameRoot = "binaryFacts";
-	public static final String wrongArityNtFileNameRoot = "illegalArityNtFacts";
+	public static final String invalidFormatNtFileNameRoot = "invalidFormatNtFacts";
 
 	private FileDataSourceTestUtils() {
 	}
@@ -121,25 +121,23 @@ public final class FileDataSourceTestUtils {
 			reasoner.load();
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			reasoner.reason();
-
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, true)) {
-				assertFalse(answerQuery.hasNext());
-			}
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, false)) {
-				assertFalse(answerQuery.hasNext());
-			}
+			testNoFactsOverPredicate(reasoner, queryAtom);
 
 			reasoner.resetReasoner();
 			reasoner.load();
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			reasoner.reason();
+			testNoFactsOverPredicate(reasoner, queryAtom);
+		}
+	}
 
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, true)) {
-				assertFalse(answerQuery.hasNext());
-			}
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, false)) {
-				assertFalse(answerQuery.hasNext());
-			}
+	public static void testNoFactsOverPredicate(final Reasoner reasoner, final Atom queryAtom)
+			throws ReasonerStateException {
+		try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, true)) {
+			assertFalse(answerQuery.hasNext());
+		}
+		try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, false)) {
+			assertFalse(answerQuery.hasNext());
 		}
 	}
 
