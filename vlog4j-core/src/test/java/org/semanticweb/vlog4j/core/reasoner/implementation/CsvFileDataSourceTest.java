@@ -21,13 +21,12 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  */
 
 import static org.junit.Assert.assertEquals;
-import static org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils.INPUT_FOLDER;
+import static org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUtils.INPUT_FOLDER;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
 
 public class CsvFileDataSourceTest {
 
@@ -46,7 +45,7 @@ public class CsvFileDataSourceTest {
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv"));
 		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv.gz"));
 
-		FileDataSourceUtils.testConstructor(unzippedCsvFileDataSource, zippedCsvFileDataSource);
+		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, zippedCsvFileDataSource);
 	}
 
 	@Test
@@ -54,7 +53,7 @@ public class CsvFileDataSourceTest {
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv"));
 		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv.gz"));
 
-		FileDataSourceUtils.testToConfigString(unzippedCsvFileDataSource, zippedCsvFileDataSource);
+		FileDataSourceTestUtils.testToConfigString(unzippedCsvFileDataSource, zippedCsvFileDataSource);
 	}
 
 	@Test

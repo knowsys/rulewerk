@@ -38,7 +38,6 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -62,18 +61,18 @@ public class LoadDataFromRdfFileTest {
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		for (final String rdfFileName : Arrays.asList("empty.nt", "empty.nt.gz")) {
 			final FileDataSource emptyFileDataSource = new RdfFileDataSource(
-					new File(FileDataSourceUtils.INPUT_FOLDER + rdfFileName));
-			FileDataSourceUtils.testLoadEmptyFile(ternaryPredicate, queryAtom, emptyFileDataSource);
+					new File(FileDataSourceTestUtils.INPUT_FOLDER + rdfFileName));
+			FileDataSourceTestUtils.testLoadEmptyFile(ternaryPredicate, queryAtom, emptyFileDataSource);
 		}
 	}
 
 	@Test
 	public void testLoadTernaryFactsFromRdfFile() throws ReasonerStateException, EdbIdbSeparationException,
 	EDBConfigurationException, IOException, IncompatiblePredicateArityException {
-		for (final String rdfFileName : Arrays.asList(FileDataSourceUtils.unzippedNtFileRoot + ".nt",
-				FileDataSourceUtils.zippedNtFileRoot + ".nt.gz")) {
+		for (final String rdfFileName : Arrays.asList(FileDataSourceTestUtils.unzippedNtFileRoot + ".nt",
+				FileDataSourceTestUtils.zippedNtFileRoot + ".nt.gz")) {
 			final FileDataSource fileDataSource = new RdfFileDataSource(
-					new File(FileDataSourceUtils.INPUT_FOLDER + rdfFileName));
+					new File(FileDataSourceTestUtils.INPUT_FOLDER + rdfFileName));
 
 			try (final Reasoner reasoner = Reasoner.getInstance()) {
 				reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);
@@ -105,7 +104,7 @@ public class LoadDataFromRdfFileTest {
 	public void testLoadRdfFileWrongArity()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final FileDataSource fileDataSource = new RdfFileDataSource(
-				new File(FileDataSourceUtils.INPUT_FOLDER + FileDataSourceUtils.wrongArityNtFileNameRoot + ".nt"));
+				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.wrongArityNtFileNameRoot + ".nt"));
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);

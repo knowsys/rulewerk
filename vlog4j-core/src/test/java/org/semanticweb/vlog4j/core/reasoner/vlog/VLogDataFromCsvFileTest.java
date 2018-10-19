@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
+import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUtils;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.Atom;
@@ -63,15 +63,15 @@ public class VLogDataFromCsvFileTest {
 	public void testLoadDataFomCsvString()
 			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 		final String unaryPredicatesEDBConfig = "EDB0_predname=" + unzippedUnaryPredicateName1 + "\n"
-				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceUtils.INPUT_FOLDER + "\n"
-				+ "EDB0_param1=" + FileDataSourceUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB1_predname="
+				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
+				+ "EDB0_param1=" + FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB1_predname="
 				+ unzippedUnaryPredicateName2 + "\n" + "EDB1_type=INMEMORY" + "\n" + "EDB1_param0="
-				+ FileDataSourceUtils.INPUT_FOLDER + "\n" + "EDB1_param1="
-				+ FileDataSourceUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB2_predname=" + zippedUnaryPredicateName1
-				+ "\n" + "EDB2_type=INMEMORY" + "\n" + "EDB2_param0=" + FileDataSourceUtils.INPUT_FOLDER + "\n"
-				+ "EDB2_param1=" + FileDataSourceUtils.zippedUnaryCsvFileRoot + "\n" + "EDB3_predname="
+				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB1_param1="
+				+ FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB2_predname=" + zippedUnaryPredicateName1
+				+ "\n" + "EDB2_type=INMEMORY" + "\n" + "EDB2_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
+				+ "EDB2_param1=" + FileDataSourceTestUtils.zippedUnaryCsvFileRoot + "\n" + "EDB3_predname="
 				+ zippedUnaryPredicateName2 + "\n" + "EDB3_type=INMEMORY" + "\n" + "EDB3_param0="
-				+ FileDataSourceUtils.INPUT_FOLDER + "\n" + "EDB3_param1=" + FileDataSourceUtils.zippedUnaryCsvFileRoot;
+				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB3_param1=" + FileDataSourceTestUtils.zippedUnaryCsvFileRoot;
 
 		final VLog vLog = new VLog();
 		vLog.start(unaryPredicatesEDBConfig, false);

@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner;
+package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,6 +35,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -48,7 +50,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
  * @author Irina Dragoste
  *
  */
-public final class FileDataSourceUtils {
+public final class FileDataSourceTestUtils {
 	public static final String OUTPUT_FOLDER = "src/test/data/output/";
 	public static final String INPUT_FOLDER = "src/test/data/input/";
 
@@ -59,7 +61,7 @@ public final class FileDataSourceUtils {
 	public static final String binaryCsvFileNameRoot = "binaryFacts";
 	public static final String wrongArityNtFileNameRoot = "illegalArityNtFacts";
 
-	private FileDataSourceUtils() {
+	private FileDataSourceTestUtils() {
 	}
 
 	/**

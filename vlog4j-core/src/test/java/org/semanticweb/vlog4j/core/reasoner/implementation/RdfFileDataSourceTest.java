@@ -20,13 +20,12 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils.INPUT_FOLDER;
+import static org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUtils.INPUT_FOLDER;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
 
 public class RdfFileDataSourceTest {
 
@@ -45,7 +44,7 @@ public class RdfFileDataSourceTest {
 		final FileDataSource unzippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
 		final FileDataSource zippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
 
-		FileDataSourceUtils.testConstructor(unzippedCsvFileDataSource, zippedCsvFileDataSource);
+		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, zippedCsvFileDataSource);
 	}
 
 	@Test
@@ -53,7 +52,7 @@ public class RdfFileDataSourceTest {
 		final FileDataSource unzippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
 		final FileDataSource zippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
 
-		FileDataSourceUtils.testToConfigString(unzippedCsvFileDataSource, zippedCsvFileDataSource);
+		FileDataSourceTestUtils.testToConfigString(unzippedCsvFileDataSource, zippedCsvFileDataSource);
 	}
 
 }

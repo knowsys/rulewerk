@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
+import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUtils;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.Atom;
@@ -66,10 +66,10 @@ public class VLogDataFromRdfFileTest {
 	public void testLoadDataFomRdfString()
 			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 		final String ternaryPredicateEDBConfig = "EDB0_predname=" + unzippedTernaryPredicateName + "\n"
-				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceUtils.INPUT_FOLDER + "\n"
-				+ "EDB0_param1=" + FileDataSourceUtils.unzippedNtFileRoot + "\n" + "EDB1_predname="
+				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
+				+ "EDB0_param1=" + FileDataSourceTestUtils.unzippedNtFileRoot + "\n" + "EDB1_predname="
 				+ zippedTernaryPredicateName + "\n" + "EDB1_type=INMEMORY" + "\n" + "EDB1_param0="
-				+ FileDataSourceUtils.INPUT_FOLDER + "\n" + "EDB1_param1=" + FileDataSourceUtils.zippedNtFileRoot;
+				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB1_param1=" + FileDataSourceTestUtils.zippedNtFileRoot;
 
 		final VLog vLog = new VLog();
 		vLog.start(ternaryPredicateEDBConfig, false);

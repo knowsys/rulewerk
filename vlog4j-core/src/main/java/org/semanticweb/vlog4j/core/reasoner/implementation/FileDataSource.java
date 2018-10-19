@@ -110,11 +110,11 @@ public abstract class FileDataSource implements DataSource {
 	 *
 	 * @return The canonical path to the parent directory where the file resides.
 	 */
-	public String getDirCanonicalPath() {
+	String getDirCanonicalPath() {
 		return this.dirCanonicalPath;
 	}
 
-	public String getFileNameWithoutExtension() {
+	String getFileNameWithoutExtension() {
 		return this.fileNameWithoutExtension;
 	}
 

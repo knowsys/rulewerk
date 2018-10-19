@@ -37,7 +37,6 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -51,8 +50,8 @@ public class LoadDataFromCsvFileTest {
 	private static final Predicate unaryPredicate2 = Expressions.makePredicate("q", 1);
 
 	@SuppressWarnings("unchecked")
-	private static final Set<List<Term>> expectedUnaryQueryResult = Sets
-	.newSet(Arrays.asList(makeConstant("c1")), Arrays.asList(makeConstant("c2")));
+	private static final Set<List<Term>> expectedUnaryQueryResult = Sets.newSet(Arrays.asList(makeConstant("c1")),
+			Arrays.asList(makeConstant("c2")));
 
 	@Test
 	public void testLoadEmptyCsvFile()
@@ -61,17 +60,17 @@ public class LoadDataFromCsvFileTest {
 
 		for (final String csvFileName : Arrays.asList("empty.csv", "empty.csv.gz")) {
 			final FileDataSource emptyFileDataSource = new CsvFileDataSource(
-					new File(FileDataSourceUtils.INPUT_FOLDER + csvFileName));
-			FileDataSourceUtils.testLoadEmptyFile(unaryPredicate1, queryAtom, emptyFileDataSource);
+					new File(FileDataSourceTestUtils.INPUT_FOLDER + csvFileName));
+			FileDataSourceTestUtils.testLoadEmptyFile(unaryPredicate1, queryAtom, emptyFileDataSource);
 		}
 	}
 
 	@Test
 	public void testLoadUnaryFactsFromCsvFile() throws ReasonerStateException, EdbIdbSeparationException,
 	EDBConfigurationException, IOException, IncompatiblePredicateArityException {
-		for (final String csvFileName : Arrays.asList(FileDataSourceUtils.unzippedUnaryCsvFileRoot + ".csv",
-				FileDataSourceUtils.zippedUnaryCsvFileRoot + ".csv.gz")) {
-			final File csvFile = new File(FileDataSourceUtils.INPUT_FOLDER + csvFileName);
+		for (final String csvFileName : Arrays.asList(FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + ".csv",
+				FileDataSourceTestUtils.zippedUnaryCsvFileRoot + ".csv.gz")) {
+			final File csvFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + csvFileName);
 			final FileDataSource fileDataSource = new CsvFileDataSource(csvFile);
 
 			try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -118,7 +117,7 @@ public class LoadDataFromCsvFileTest {
 	public void testLoadCsvFileWrongArity()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final FileDataSource fileDataSource = new CsvFileDataSource(
-				new File(FileDataSourceUtils.INPUT_FOLDER + FileDataSourceUtils.binaryCsvFileNameRoot + ".csv"));
+				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.binaryCsvFileNameRoot + ".csv"));
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
