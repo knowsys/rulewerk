@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
+import static org.junit.Assert.assertEquals;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -41,19 +43,29 @@ public class RdfFileDataSourceTest {
 
 	@Test
 	public void testConstructor() throws IOException {
-		final RdfFileDataSource unzippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
-		final RdfFileDataSource zippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
+		final File unzippedRdfFile = new File(INPUT_FOLDER + "file.nt");
+		final File zippedRdfFile = new File(INPUT_FOLDER + "file.nt.gz");
+		final String dirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
+		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
+		final RdfFileDataSource zippedRdfFileDataSource = new RdfFileDataSource(zippedRdfFile);
 
-		FileDataSourceTestUtils.testConstructorUnzipped(unzippedCsvFileDataSource);
-		FileDataSourceTestUtils.testConstructorZipped(zippedCsvFileDataSource);
+		FileDataSourceTestUtils.testConstructor(unzippedRdfFileDataSource, unzippedRdfFile, dirCanonicalPath,
+				"file");
+		FileDataSourceTestUtils.testConstructor(zippedRdfFileDataSource, zippedRdfFile, dirCanonicalPath,
+				"file");
 	}
 
 	@Test
 	public void testToConfigString() throws IOException {
-		final RdfFileDataSource unzippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
-		final RdfFileDataSource zippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
+		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
+		final RdfFileDataSource zippedRdfFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
 
-		FileDataSourceTestUtils.testToConfigString(unzippedCsvFileDataSource, zippedCsvFileDataSource);
+		final String expectedDirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
+		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
+				+ expectedDirCanonicalPath + "\n" + "EDB%1$d_param1=file\n";
+
+		assertEquals(expectedConfigString, unzippedRdfFileDataSource.toConfigString());
+		assertEquals(expectedConfigString, zippedRdfFileDataSource.toConfigString());
 	}
 
 }

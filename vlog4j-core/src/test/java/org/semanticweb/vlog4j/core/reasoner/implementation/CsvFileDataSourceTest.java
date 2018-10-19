@@ -42,11 +42,14 @@ public class CsvFileDataSourceTest {
 
 	@Test
 	public void testConstructor() throws IOException {
-		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv"));
-		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv.gz"));
+		final File unzippedCsvFile = new File(INPUT_FOLDER + "file.csv");
+		final File zippedCsvFile = new File(INPUT_FOLDER + "file.csv.gz");
+		final String dirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(unzippedCsvFile);
+		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(zippedCsvFile);
 
-		FileDataSourceTestUtils.testConstructorUnzipped(unzippedCsvFileDataSource);
-		FileDataSourceTestUtils.testConstructorZipped(zippedCsvFileDataSource);
+		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, unzippedCsvFile, dirCanonicalPath, "file");
+		FileDataSourceTestUtils.testConstructor(zippedCsvFileDataSource, zippedCsvFile, dirCanonicalPath, "file");
 	}
 
 	@Test
@@ -54,7 +57,12 @@ public class CsvFileDataSourceTest {
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv"));
 		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv.gz"));
 
-		FileDataSourceTestUtils.testToConfigString(unzippedCsvFileDataSource, zippedCsvFileDataSource);
+		final String expectedDirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
+		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
+				+ expectedDirCanonicalPath + "\n" + "EDB%1$d_param1=file\n";
+
+		assertEquals(expectedConfigString, unzippedCsvFileDataSource.toConfigString());
+		assertEquals(expectedConfigString, zippedCsvFileDataSource.toConfigString());
 	}
 
 	@Test

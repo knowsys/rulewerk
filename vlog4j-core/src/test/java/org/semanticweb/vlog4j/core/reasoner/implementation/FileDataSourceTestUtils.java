@@ -84,33 +84,12 @@ public final class FileDataSourceTestUtils {
 		return content;
 	}
 
-	public static void testConstructorUnzipped(final FileDataSource unzippedFileDataSource)
+	public static void testConstructor(final FileDataSource fileDataSource, final File expectedFile,
+			final String expectedDirCanonicalPath, final String expectedFileNameWithoutExtension)
 			throws IOException {
-		final String expectedDirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
-		final File unzippedFile = unzippedFileDataSource.getFile();
-
-		assertEquals(unzippedFile, unzippedFileDataSource.getFile());
-		assertEquals(expectedDirCanonicalPath, unzippedFileDataSource.getDirCanonicalPath());
-		assertEquals("file", unzippedFileDataSource.getFileNameWithoutExtension());
-	}
-
-	public static void testConstructorZipped(final FileDataSource zippedFileDataSource) throws IOException {
-		final String expectedDirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
-		final File zippedFile = zippedFileDataSource.getFile();
-
-		assertEquals(zippedFile, zippedFileDataSource.getFile());
-		assertEquals(expectedDirCanonicalPath, zippedFileDataSource.getDirCanonicalPath());
-		assertEquals("file", zippedFileDataSource.getFileNameWithoutExtension());
-	}
-
-	public static void testToConfigString(final FileDataSource unzippedFileDataSource,
-			final FileDataSource zippedFileDataSource) throws IOException {
-		final String expectedDirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
-		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
-				+ expectedDirCanonicalPath + "\n" + "EDB%1$d_param1=file\n";
-
-		assertEquals(expectedConfigString, zippedFileDataSource.toConfigString());
-		assertEquals(expectedConfigString, unzippedFileDataSource.toConfigString());
+		assertEquals(expectedFile, fileDataSource.getFile());
+		assertEquals(expectedDirCanonicalPath, fileDataSource.getDirCanonicalPath());
+		assertEquals(expectedFileNameWithoutExtension, fileDataSource.getFileNameWithoutExtension());
 	}
 
 	public static void testLoadEmptyFile(final Predicate predicate, final Atom queryAtom,
