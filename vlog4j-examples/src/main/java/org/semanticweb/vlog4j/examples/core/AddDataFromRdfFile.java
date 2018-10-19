@@ -77,31 +77,18 @@ public class AddDataFromRdfFile {
 
 		final Variable x = makeVariable("x");
 		final Variable s = makeVariable("s");
+		final Variable p = makeVariable("p");
 		final Variable o = makeVariable("o");
 
 		/*
 		 * We will write <~/someName> instead of <http://an.example/someName> and
 		 * <~#someName> instead of <www.w3.org/1999/02/22-rdf-syntax-ns#someName>.
 		 *
-		 * triplesIDB(?s, <~#type>, ?o) :- triplesEDB(?s, <~#type>, ?o) .
+		 * triplesIDB(?s, ?p, ?o) :- triplesEDB(?s, ?p, ?o) .
 		 */
-		final Atom hasTypeIDB = makeAtom(triplesIDB, s, hasTypePredicate, o);
-		final Atom hasTypeEDB = makeAtom(triplesEDB, s, hasTypePredicate, o);
-		final Rule rule1 = makeRule(hasTypeIDB, hasTypeEDB);
-
-		/*
-		 * triplesIDB(?s, <~/hasPart>, ?o) :- triplesEDB(?s, <~/hasPart>, ?o) .
-		 */
-		final Atom hasPartIDB = makeAtom(triplesIDB, s, hasPartPredicate, o);
-		final Atom hasPartEDB = makeAtom(triplesEDB, s, hasPartPredicate, o);
-		final Rule rule2 = makeRule(hasPartIDB, hasPartEDB);
-
-		/*
-		 * triplesIDB(?s, <~/isPartOf>, ?o) :- triplesEDB(?s, <~/isPartOf>, ?o) .
-		 */
-		final Atom isPartOfIDB = makeAtom(triplesIDB, s, isPartOfPredicate, o);
-		final Atom isPartOfEDB = makeAtom(triplesEDB, s, isPartOfPredicate, o);
-		final Rule rule3 = makeRule(isPartOfIDB, isPartOfEDB);
+		final Atom factIDB = makeAtom(triplesIDB, s, p, o);
+		final Atom factEDB = makeAtom(triplesEDB, s, p, o);
+		final Rule rule1 = makeRule(factIDB, factEDB);
 
 		/*
 		 * exists x. triplesIDB(?s, <~/hasPart>, !x), triplesIDB(!x, <~#type>,
@@ -110,34 +97,36 @@ public class AddDataFromRdfFile {
 		final Atom existsHasPartIDB = makeAtom(triplesIDB, s, hasPartPredicate, x);
 		final Atom existsWheelIDB = makeAtom(triplesIDB, x, hasTypePredicate, wheelObject);
 		final Atom bicycleIDB = makeAtom(triplesIDB, s, hasTypePredicate, bicycleObject);
-		final Rule rule4 = makeRule(makeConjunction(existsHasPartIDB, existsWheelIDB), makeConjunction(bicycleIDB));
+		final Rule rule2 = makeRule(makeConjunction(existsHasPartIDB, existsWheelIDB), makeConjunction(bicycleIDB));
 
 		/*
-		 * exists x. triplesIDB(?s, <~/isPartOfIDB>, !x) :- triplesIDB(?s, <~#type>,
-		 * <~/wheelIDB>) .
+		 * exists x. triplesIDB(?s, <~/isPartOf>, !x) :- triplesIDB(?s, <~#type>,
+		 * <~/wheel>) .
 		 */
 		final Atom existsIsPartOfIDB = makeAtom(triplesIDB, s, isPartOfPredicate, x);
 		final Atom wheelIDB = makeAtom(triplesIDB, s, hasTypePredicate, wheelObject);
-		final Rule rule5 = makeRule(makeConjunction(existsIsPartOfIDB), makeConjunction(wheelIDB));
+		final Rule rule3 = makeRule(makeConjunction(existsIsPartOfIDB), makeConjunction(wheelIDB));
 
 		/*
-		 * triplesIDB(?s, <~/isPartOfIDB>, ?o) :- triplesIDB(?o, <~/hasPartIDB>, ?s) .
+		 * triplesIDB(?s, <~/isPartOf>, ?o) :- triplesIDB(?o, <~/hasPart>, ?s) .
 		 */
+		final Atom isPartOfIDB = makeAtom(triplesIDB, s, isPartOfPredicate, o);
 		final Atom hasPartIDBReversed = makeAtom(triplesIDB, o, hasPartPredicate, s);
-		final Rule rule6 = makeRule(isPartOfIDB, hasPartIDBReversed);
+		final Rule rule4 = makeRule(isPartOfIDB, hasPartIDBReversed);
 
 		/*
-		 * triplesIDB(?s, <~/hasPartIDB>, ?o) :- triplesIDB(?o, <~/isPartOfIDB>, ?s) .
+		 * triplesIDB(?s, <~/hasPart>, ?o) :- triplesIDB(?o, <~/isPartOf>, ?s) .
 		 */
+		final Atom hasPartIDB = makeAtom(triplesIDB, s, hasPartPredicate, o);
 		final Atom isPartOfIDBReversed = makeAtom(triplesIDB, o, isPartOfPredicate, s);
-		final Rule rule7 = makeRule(hasPartIDB, isPartOfIDBReversed);
+		final Rule rule5 = makeRule(hasPartIDB, isPartOfIDBReversed);
 
 		/*
 		 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
 		 * to close the reasoner automatically.
 		 */
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7);
+			reasoner.addRules(rule1, rule2, rule3, rule4, rule5);
 
 			/* Importing {@code .nt.gz} file as data source. */
 			final DataSource triplesEDBDataSource = new RdfFileDataSource(
@@ -146,6 +135,8 @@ public class AddDataFromRdfFile {
 
 			reasoner.load();
 			System.out.println("Before materialisation:");
+			/* triplesEDB(?s, <~/hasPart>, ?o) */
+			final Atom hasPartEDB = makeAtom(triplesEDB, s, hasPartPredicate, o);
 			ExamplesUtils.printOutQueryAnswers(hasPartEDB, reasoner);
 
 			/* The reasoner will use the Restricted Chase by default. */
