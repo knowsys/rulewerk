@@ -30,8 +30,8 @@ import org.eclipse.jdt.annotation.NonNull;
  * An {@code RdfFileDataSource} stores facts as triples inside a file of the
  * extension {@code .nt}. One file may only include facts over a single
  * predicate, which must be of arity 3. The required format is given in the <a
- * href=https://www.w3.org/TR/n-triples/}>W3C specification</a>. A simple
- * example file could look like this:
+ * href=https://www.w3.org/TR/n-triples/>W3C specification</a>. A simple example
+ * file could look like this:
  *
  * <pre>
  * {@code
