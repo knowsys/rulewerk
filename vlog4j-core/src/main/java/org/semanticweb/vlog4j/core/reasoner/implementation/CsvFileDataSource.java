@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * A {@code CsvFileDataSource} stores facts as tuples inside a file of the
- * extension {@code .csv}. One file can only include facts of a single
+ * extension {@code .csv}. One file may only include facts over a single
  * predicate. The required format looks like this
  *
  * <pre>
