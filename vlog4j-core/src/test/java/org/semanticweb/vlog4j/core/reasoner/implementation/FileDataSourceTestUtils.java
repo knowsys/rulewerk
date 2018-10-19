@@ -40,8 +40,6 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
 /**
  * Utility class for reading from and writing to data source files.
@@ -86,16 +84,19 @@ public final class FileDataSourceTestUtils {
 		return content;
 	}
 
-	public static void testConstructor(final FileDataSource unzippedFileDataSource,
-			final FileDataSource zippedFileDataSource)
-					throws IOException {
+	public static void testConstructorUnzipped(final FileDataSource unzippedFileDataSource)
+			throws IOException {
 		final String expectedDirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
 		final File unzippedFile = unzippedFileDataSource.getFile();
-		final File zippedFile = zippedFileDataSource.getFile();
 
 		assertEquals(unzippedFile, unzippedFileDataSource.getFile());
 		assertEquals(expectedDirCanonicalPath, unzippedFileDataSource.getDirCanonicalPath());
 		assertEquals("file", unzippedFileDataSource.getFileNameWithoutExtension());
+	}
+
+	public static void testConstructorZipped(final FileDataSource zippedFileDataSource) throws IOException {
+		final String expectedDirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
+		final File zippedFile = zippedFileDataSource.getFile();
 
 		assertEquals(zippedFile, zippedFileDataSource.getFile());
 		assertEquals(expectedDirCanonicalPath, zippedFileDataSource.getDirCanonicalPath());

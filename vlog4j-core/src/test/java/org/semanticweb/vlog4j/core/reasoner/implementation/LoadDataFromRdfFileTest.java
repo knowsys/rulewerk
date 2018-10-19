@@ -74,15 +74,21 @@ public class LoadDataFromRdfFileTest {
 			final FileDataSource fileDataSource = new RdfFileDataSource(
 					new File(FileDataSourceTestUtils.INPUT_FOLDER + rdfFileName));
 
-			try (final Reasoner reasoner = Reasoner.getInstance()) {
-				reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);
-				reasoner.load();
+			testLoadTernaryFactsFromSingleRdfDataSource(fileDataSource);
+		}
+	}
 
-				final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true);
-				final Set<List<Term>> queryResult = QueryResultsUtils.collectQueryResults(queryResultIterator);
+	public void testLoadTernaryFactsFromSingleRdfDataSource(final FileDataSource fileDataSource)
+			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException,
+			IncompatiblePredicateArityException {
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);
+			reasoner.load();
 
-				assertEquals(expectedTernaryQueryResult, queryResult);
-			}
+			final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true);
+			final Set<List<Term>> queryResult = QueryResultsUtils.collectQueryResults(queryResultIterator);
+
+			assertEquals(expectedTernaryQueryResult, queryResult);
 		}
 	}
 

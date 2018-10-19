@@ -45,7 +45,8 @@ public class CsvFileDataSourceTest {
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv"));
 		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv.gz"));
 
-		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, zippedCsvFileDataSource);
+		FileDataSourceTestUtils.testConstructorUnzipped(unzippedCsvFileDataSource);
+		FileDataSourceTestUtils.testConstructorZipped(zippedCsvFileDataSource);
 	}
 
 	@Test

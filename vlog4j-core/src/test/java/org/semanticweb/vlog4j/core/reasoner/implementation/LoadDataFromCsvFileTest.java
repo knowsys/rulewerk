@@ -61,6 +61,7 @@ public class LoadDataFromCsvFileTest {
 		for (final String csvFileName : Arrays.asList("empty.csv", "empty.csv.gz")) {
 			final FileDataSource emptyFileDataSource = new CsvFileDataSource(
 					new File(FileDataSourceTestUtils.INPUT_FOLDER + csvFileName));
+
 			FileDataSourceTestUtils.testLoadEmptyFile(unaryPredicate1, queryAtom, emptyFileDataSource);
 		}
 	}
@@ -73,21 +74,26 @@ public class LoadDataFromCsvFileTest {
 			final File csvFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + csvFileName);
 			final FileDataSource fileDataSource = new CsvFileDataSource(csvFile);
 
-			try (final Reasoner reasoner = Reasoner.getInstance()) {
-				reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
-				reasoner.addFactsFromDataSource(unaryPredicate2, fileDataSource);
-				reasoner.load();
+			testLoadUnaryFactsFromSingleCsvDataSource(fileDataSource);
+		}
+	}
 
-				final QueryResultIterator queryResultIterator1 = reasoner
-						.answerQuery(Expressions.makeAtom(unaryPredicate1, makeVariable("x")), true);
-				final Set<List<Term>> queryResult1 = QueryResultsUtils.collectQueryResults(queryResultIterator1);
-				final QueryResultIterator queryResultIterator2 = reasoner
-						.answerQuery(Expressions.makeAtom(unaryPredicate2, makeVariable("x")), true);
-				final Set<List<Term>> queryResult2 = QueryResultsUtils.collectQueryResults(queryResultIterator2);
+	private void testLoadUnaryFactsFromSingleCsvDataSource(final FileDataSource fileDataSource) throws ReasonerStateException,
+	EdbIdbSeparationException, EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
+			reasoner.addFactsFromDataSource(unaryPredicate2, fileDataSource);
+			reasoner.load();
 
-				assertEquals(expectedUnaryQueryResult, queryResult1);
-				assertEquals(expectedUnaryQueryResult, queryResult2);
-			}
+			final QueryResultIterator queryResultIterator1 = reasoner
+					.answerQuery(Expressions.makeAtom(unaryPredicate1, makeVariable("x")), true);
+			final Set<List<Term>> queryResult1 = QueryResultsUtils.collectQueryResults(queryResultIterator1);
+			final QueryResultIterator queryResultIterator2 = reasoner
+					.answerQuery(Expressions.makeAtom(unaryPredicate2, makeVariable("x")), true);
+			final Set<List<Term>> queryResult2 = QueryResultsUtils.collectQueryResults(queryResultIterator2);
+
+			assertEquals(expectedUnaryQueryResult, queryResult1);
+			assertEquals(expectedUnaryQueryResult, queryResult2);
 		}
 	}
 

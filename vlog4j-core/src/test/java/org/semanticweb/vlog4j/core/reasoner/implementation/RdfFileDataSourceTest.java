@@ -41,16 +41,17 @@ public class RdfFileDataSourceTest {
 
 	@Test
 	public void testConstructor() throws IOException {
-		final FileDataSource unzippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
-		final FileDataSource zippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
+		final RdfFileDataSource unzippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
+		final RdfFileDataSource zippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
 
-		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, zippedCsvFileDataSource);
+		FileDataSourceTestUtils.testConstructorUnzipped(unzippedCsvFileDataSource);
+		FileDataSourceTestUtils.testConstructorZipped(zippedCsvFileDataSource);
 	}
 
 	@Test
 	public void testToConfigString() throws IOException {
-		final FileDataSource unzippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
-		final FileDataSource zippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
+		final RdfFileDataSource unzippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt"));
+		final RdfFileDataSource zippedCsvFileDataSource = new RdfFileDataSource(new File(INPUT_FOLDER + "file.nt.gz"));
 
 		FileDataSourceTestUtils.testToConfigString(unzippedCsvFileDataSource, zippedCsvFileDataSource);
 	}
