@@ -44,15 +44,16 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
- * This example shows how facts can be imported from {@code .csv.gz} files, and
- * also how query answers can be exported to {@code .csv} files. <i>Note that
- * you can also import from {@code .csv} files.</i>
+ * This example shows how facts can be imported from {@code .csv.gz} files.
+ * <i>(Note that you can also import from {@code .csv} files.)</i> Moreover,
+ * this example shows how query answers can be exported to {@code .csv} files.
  *
  * For importing, a {@link CsvFileDataSource} that contains a path to the
  * corresponding {@code .csv.gz} file must be created. A {@code .csv} file
  * contains facts over exactly one predicate in the CSV format, while a
- * {@code .csv.gz} file is the gzipped version of such a {@code .csv} file. For
- * exporting, a path to the output {@code .csv} file must be specified.
+ * {@code .csv.gz} file is the gzipped version of such a {@code .csv} file.
+ *
+ * For exporting, a path to the output {@code .csv} file must be specified.
  *
  * @author Christian Lewe
  * @author Irina Dragoste

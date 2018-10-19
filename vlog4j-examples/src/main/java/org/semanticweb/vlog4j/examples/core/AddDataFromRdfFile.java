@@ -44,16 +44,18 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
- * This example is an adaptation of {@link AddDataFromCsvFile}. It shows how
- * facts can be imported from {@code .nt.gz} files, and also how query answers
- * can be exported to {@code .csv} files. <i>Note that you can also import from
- * {@code .nt} files.</i>
+ * This example is an adaptation of {@link AddDataFromCsvFile}, where the rules
+ * have been modified to work with the ternary predicates that N-Triples
+ * enforces. It shows how facts can be imported from {@code .nt.gz} files.
+ * <i>(Note that you can also import from {@code .nt} files.)</i> Moreover, this
+ * example shows how query answers can be exported to {@code .csv} files.
  *
  * For importing, an {@link RdfFileDataSource} that contains a path to the
  * corresponding {@code .nt.gz} file must be created. An {@code .nt} file
  * contains facts over one or more predicates in the N-Triples format, while an
- * {@code .nt.gz} file is the gzipped version of such an {@code .nt} file. For
- * exporting, a path to the output {@code .csv} file must be specified.
+ * {@code .nt.gz} file is the gzipped version of such an {@code .nt} file.
+ *
+ * For exporting, a path to the output {@code .csv} file must be specified.
  *
  * @author Christian Lewe
  *
@@ -78,7 +80,7 @@ public class AddDataFromRdfFile {
 		final Variable o = makeVariable("o");
 
 		/*
-		 * We will write '<~/someName>' instead of <http://an.example/someName> and
+		 * We will write <~/someName> instead of <http://an.example/someName> and
 		 * <~#someName> instead of <www.w3.org/1999/02/22-rdf-syntax-ns#someName>.
 		 *
 		 * triplesIDB(?s, <~#type>, ?o) :- triplesEDB(?s, <~#type>, ?o) .
