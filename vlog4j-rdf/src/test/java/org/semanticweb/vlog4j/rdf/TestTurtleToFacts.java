@@ -42,7 +42,7 @@ public class TestTurtleToFacts {
 	@Test
 	public void testRDFFileToAtomsConverter() throws RDFParseException, RDFHandlerException, IOException {
 
-		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.TURTLE_TEST_FILES_PATH + "exampleFacts.ttl"),
+		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
 		final Set<Atom> facts = RdfModelToAtomsConverter.rdfModelToAtoms(model);
 
@@ -59,7 +59,7 @@ public class TestTurtleToFacts {
 	@Test
 	public void testBlanksWithSameRDFNameAreDifferentInDifferentModelContexts()
 			throws RDFParseException, RDFHandlerException, IOException {
-		final String blanksTurtleFile1 = RdfTestUtils.TURTLE_TEST_FILES_PATH + "blanks_context1.ttl";
+		final String blanksTurtleFile1 = RdfTestUtils.INPUT_FOLDER + "blanks_context1.ttl";
 
 		final Model model1File1 = RdfTestUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
 		final Set<Atom> atomsFromModel1 = RdfModelToAtomsConverter.rdfModelToAtoms(model1File1);

@@ -43,7 +43,7 @@ public class BlankIdsInDifferentModelsTest {
 	public void testBlanksHaveDifferentIdsInDifferentModelContexts()
 			throws RDFParseException, RDFHandlerException, IOException {
 
-		final String blanksTurtleFile1 = RdfTestUtils.TURTLE_TEST_FILES_PATH + "blanks_context1.ttl";
+		final String blanksTurtleFile1 = RdfTestUtils.INPUT_FOLDER + "blanks_context1.ttl";
 		final Model model1 = RdfTestUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
 		final Set<String> blankNodeIdsForModel1File1 = collectBlankNodeIds(model1);
 		assertEquals(2, blankNodeIdsForModel1File1.size());
@@ -59,7 +59,7 @@ public class BlankIdsInDifferentModelsTest {
 		intersectionModel1Model2.retainAll(blankNodeIdsForModel2File1);
 		assertTrue(intersectionModel1Model2.isEmpty());
 
-		final String blanksTurtleFile2SameContentAsFile1 = RdfTestUtils.TURTLE_TEST_FILES_PATH + "blanks_context2.ttl";
+		final String blanksTurtleFile2SameContentAsFile1 = RdfTestUtils.INPUT_FOLDER + "blanks_context2.ttl";
 		final Model model3 = RdfTestUtils.parseFile(new File(blanksTurtleFile2SameContentAsFile1), RDFFormat.TURTLE);
 		final Set<String> blankNodeIdsForModel3File2 = collectBlankNodeIds(model3);
 		assertEquals(2, blankNodeIdsForModel3File2.size());

@@ -48,7 +48,7 @@ public class TestLoadFactsFromRdfFileToVLogReasoner {
 	public void testLoadFactsFromRDF() throws RDFParseException, RDFHandlerException, IOException,
 	ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final Model model = RdfTestUtils.parseFile(
-				new File(RdfTestUtils.TURTLE_TEST_FILES_PATH + "exampleFactsNoBlanks.ttl"), RDFFormat.TURTLE);
+				new File(RdfTestUtils.INPUT_FOLDER + "exampleFactsNoBlanks.ttl"), RDFFormat.TURTLE);
 		final Set<Atom> facts = RdfModelToAtomsConverter.rdfModelToAtoms(model);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {

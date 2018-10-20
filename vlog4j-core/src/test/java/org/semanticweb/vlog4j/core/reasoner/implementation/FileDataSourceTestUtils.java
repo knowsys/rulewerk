@@ -49,8 +49,9 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
  *
  */
 public final class FileDataSourceTestUtils {
-	public static final String OUTPUT_FOLDER = "src/test/data/output/";
+
 	public static final String INPUT_FOLDER = "src/test/data/input/";
+	public static final String OUTPUT_FOLDER = "src/test/data/output/";
 
 	public static final String unzippedUnaryCsvFileRoot = "unaryFacts";
 	public static final String zippedUnaryCsvFileRoot = "unaryFactsZipped";
@@ -58,9 +59,6 @@ public final class FileDataSourceTestUtils {
 	public static final String zippedNtFileRoot = "ternaryFactsZipped";
 	public static final String binaryCsvFileNameRoot = "binaryFacts";
 	public static final String invalidFormatNtFileNameRoot = "invalidFormatNtFacts";
-
-	private FileDataSourceTestUtils() {
-	}
 
 	/**
 	 * Collects the content of given {@code csvFile} into a List of lines, where
@@ -86,7 +84,7 @@ public final class FileDataSourceTestUtils {
 
 	public static void testConstructor(final FileDataSource fileDataSource, final File expectedFile,
 			final String expectedDirCanonicalPath, final String expectedFileNameWithoutExtension)
-			throws IOException {
+					throws IOException {
 		assertEquals(expectedFile, fileDataSource.getFile());
 		assertEquals(expectedDirCanonicalPath, fileDataSource.getDirCanonicalPath());
 		assertEquals(expectedFileNameWithoutExtension, fileDataSource.getFileNameWithoutExtension());

@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.rdf;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,13 +37,11 @@ import org.openrdf.rio.helpers.StatementCollector;
 
 final class RdfTestUtils {
 
-	private RdfTestUtils() {
-	}
+	static final String INPUT_FOLDER = "src/test/data/input/";
+	static final String OUTPUT_FOLDER = "src/test/data/output/";
 
-	static final String TURTLE_TEST_FILES_PATH = "src/test/data/";
-
-	static Model parseFile(File file, RDFFormat rdfFormat) throws RDFParseException, RDFHandlerException, IOException {
-
+	static Model parseFile(final File file, final RDFFormat rdfFormat)
+			throws RDFParseException, RDFHandlerException, IOException {
 		final URI baseURI = file.toURI();
 		final InputStream inputStream = new FileInputStream(file);
 		final RDFParser rdfParser = Rio.createParser(rdfFormat);
