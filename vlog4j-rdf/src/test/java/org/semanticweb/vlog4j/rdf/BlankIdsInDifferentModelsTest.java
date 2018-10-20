@@ -43,12 +43,12 @@ public class BlankIdsInDifferentModelsTest {
 	public void testBlanksHaveDifferentIdsInDifferentModelContexts()
 			throws RDFParseException, RDFHandlerException, IOException {
 
-		final String blanksTurtleFile1 = TestingUtils.TURTLE_TEST_FILES_PATH + "blanks_context1.ttl";
-		final Model model1 = TestingUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
+		final String blanksTurtleFile1 = RdfTestUtils.TURTLE_TEST_FILES_PATH + "blanks_context1.ttl";
+		final Model model1 = RdfTestUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
 		final Set<String> blankNodeIdsForModel1File1 = collectBlankNodeIds(model1);
 		assertEquals(2, blankNodeIdsForModel1File1.size());
 
-		final Model model2 = TestingUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
+		final Model model2 = RdfTestUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
 		final Set<String> blankNodeIdsForModel2File1 = collectBlankNodeIds(model2);
 		assertEquals(2, blankNodeIdsForModel2File1.size());
 
@@ -59,8 +59,8 @@ public class BlankIdsInDifferentModelsTest {
 		intersectionModel1Model2.retainAll(blankNodeIdsForModel2File1);
 		assertTrue(intersectionModel1Model2.isEmpty());
 
-		final String blanksTurtleFile2SameContentAsFile1 = TestingUtils.TURTLE_TEST_FILES_PATH + "blanks_context2.ttl";
-		final Model model3 = TestingUtils.parseFile(new File(blanksTurtleFile2SameContentAsFile1), RDFFormat.TURTLE);
+		final String blanksTurtleFile2SameContentAsFile1 = RdfTestUtils.TURTLE_TEST_FILES_PATH + "blanks_context2.ttl";
+		final Model model3 = RdfTestUtils.parseFile(new File(blanksTurtleFile2SameContentAsFile1), RDFFormat.TURTLE);
 		final Set<String> blankNodeIdsForModel3File2 = collectBlankNodeIds(model3);
 		assertEquals(2, blankNodeIdsForModel3File2.size());
 

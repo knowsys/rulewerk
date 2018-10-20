@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.rdf;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,7 +42,7 @@ public class TestTurtleToFacts {
 	@Test
 	public void testRDFFileToAtomsConverter() throws RDFParseException, RDFHandlerException, IOException {
 
-		final Model model = TestingUtils.parseFile(new File(TestingUtils.TURTLE_TEST_FILES_PATH + "exampleFacts.ttl"),
+		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.TURTLE_TEST_FILES_PATH + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
 		final Set<Atom> facts = RdfModelToAtomsConverter.rdfModelToAtoms(model);
 
@@ -59,14 +59,14 @@ public class TestTurtleToFacts {
 	@Test
 	public void testBlanksWithSameRDFNameAreDifferentInDifferentModelContexts()
 			throws RDFParseException, RDFHandlerException, IOException {
-		final String blanksTurtleFile1 = TestingUtils.TURTLE_TEST_FILES_PATH + "blanks_context1.ttl";
+		final String blanksTurtleFile1 = RdfTestUtils.TURTLE_TEST_FILES_PATH + "blanks_context1.ttl";
 
-		final Model model1File1 = TestingUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
+		final Model model1File1 = RdfTestUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
 		final Set<Atom> atomsFromModel1 = RdfModelToAtomsConverter.rdfModelToAtoms(model1File1);
 		final Set<Blank> blanksFromModel1 = extractBlanks(atomsFromModel1);
 		assertEquals(2, blanksFromModel1.size());
 
-		final Model model2File1 = TestingUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
+		final Model model2File1 = RdfTestUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
 		final Set<Atom> atomsFromModel2 = RdfModelToAtomsConverter.rdfModelToAtoms(model2File1);
 		final Set<Blank> blanksFromModel2 = extractBlanks(atomsFromModel2);
 		assertEquals(2, blanksFromModel2.size());
@@ -77,14 +77,12 @@ public class TestTurtleToFacts {
 		final Set<Blank> intersection = new HashSet<>(blanksFromModel1);
 		intersection.retainAll(blanksFromModel2);
 		assertTrue(intersection.isEmpty());
-
 	}
 
-	private Set<Blank> extractBlanks(Collection<Atom> atoms) {
+	private Set<Blank> extractBlanks(final Collection<Atom> atoms) {
 		final Set<Blank> blanks = new HashSet<>();
 		atoms.forEach(atom -> blanks.addAll(atom.getBlanks()));
 		return blanks;
-
 	}
 
 }

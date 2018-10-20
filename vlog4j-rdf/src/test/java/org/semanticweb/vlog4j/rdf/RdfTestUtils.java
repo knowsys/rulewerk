@@ -35,9 +35,9 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
 
-final class TestingUtils {
+final class RdfTestUtils {
 
-	private TestingUtils() {
+	private RdfTestUtils() {
 	}
 
 	static final String TURTLE_TEST_FILES_PATH = "src/test/data/";
