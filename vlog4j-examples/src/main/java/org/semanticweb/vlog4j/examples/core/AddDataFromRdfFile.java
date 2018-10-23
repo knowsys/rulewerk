@@ -44,17 +44,21 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
+ * This example shows how facts can be imported from files in the RDF N-Triples
+ * format. Specifically, it imports from a {@code .nt.gz} file, but you can also
+ * import from {@code .nt} files. Moreover, it shows how query answers that
+ * result from reasoning over these facts can be exported to {@code .csv} files.
+ * <p>
  * This example is an adaptation of {@link AddDataFromCsvFile}, where the rules
  * have been modified to work with the ternary predicates that N-Triples
- * enforces. It shows how facts can be imported from {@code .nt.gz} files.
- * <i>(Note that you can also import from {@code .nt} files.)</i> Moreover, this
- * example shows how query answers can be exported to {@code .csv} files.
- *
+ * enforces.
+ * <p>
  * For importing, an {@link RdfFileDataSource} that contains a path to the
  * corresponding {@code .nt.gz} file must be created. An {@code .nt} file
- * contains facts over one or more predicates in the N-Triples format, while an
- * {@code .nt.gz} file is the gzipped version of such an {@code .nt} file.
- *
+ * contains facts in the RDF N-Triples format, which can be associated with a
+ * ternary {@link Predicate}. A {@code .nt.gz} file is the gzipped version of
+ * such an {@code .nt} file.
+ * <p>
  * For exporting, a path to the output {@code .csv} file must be specified.
  *
  * @author Christian Lewe
