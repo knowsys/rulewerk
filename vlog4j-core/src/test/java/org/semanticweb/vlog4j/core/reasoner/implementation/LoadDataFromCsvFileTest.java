@@ -58,24 +58,19 @@ public class LoadDataFromCsvFileTest {
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final Atom queryAtom = Expressions.makeAtom(unaryPredicate1, makeVariable("x"));
 
-		for (final String csvFileName : Arrays.asList("empty.csv", "empty.csv.gz")) {
-			final FileDataSource emptyFileDataSource = new CsvFileDataSource(
-					new File(FileDataSourceTestUtils.INPUT_FOLDER + csvFileName));
-
-			FileDataSourceTestUtils.testLoadEmptyFile(unaryPredicate1, queryAtom, emptyFileDataSource);
-		}
+		FileDataSourceTestUtils.testLoadEmptyFile(unaryPredicate1, queryAtom,
+				new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.csv")));
+		FileDataSourceTestUtils.testLoadEmptyFile(unaryPredicate1, queryAtom,
+				new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.csv.gz")));
 	}
 
 	@Test
 	public void testLoadUnaryFactsFromCsvFile() throws ReasonerStateException, EdbIdbSeparationException,
 	EDBConfigurationException, IOException, IncompatiblePredicateArityException {
-		for (final String csvFileName : Arrays.asList(FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + ".csv",
-				FileDataSourceTestUtils.zippedUnaryCsvFileRoot + ".csv.gz")) {
-			final File csvFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + csvFileName);
-			final FileDataSource fileDataSource = new CsvFileDataSource(csvFile);
-
-			testLoadUnaryFactsFromSingleCsvDataSource(fileDataSource);
-		}
+		testLoadUnaryFactsFromSingleCsvDataSource(new CsvFileDataSource(new File(
+				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + ".csv")));
+		testLoadUnaryFactsFromSingleCsvDataSource(new CsvFileDataSource(new File(
+				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.zippedUnaryCsvFileRoot + ".csv.gz")));
 	}
 
 	private void testLoadUnaryFactsFromSingleCsvDataSource(final FileDataSource fileDataSource) throws ReasonerStateException,

@@ -58,23 +58,19 @@ public class LoadDataFromRdfFileTest {
 	@Test
 	public void testLoadEmptyRdfFile()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		for (final String rdfFileName : Arrays.asList("empty.nt", "empty.nt.gz")) {
-			final FileDataSource emptyFileDataSource = new RdfFileDataSource(
-					new File(FileDataSourceTestUtils.INPUT_FOLDER + rdfFileName));
-			FileDataSourceTestUtils.testLoadEmptyFile(ternaryPredicate, queryAtom, emptyFileDataSource);
-		}
+		FileDataSourceTestUtils.testLoadEmptyFile(ternaryPredicate, queryAtom,
+				new RdfFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.nt")));
+		FileDataSourceTestUtils.testLoadEmptyFile(ternaryPredicate, queryAtom,
+				new RdfFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.nt.gz")));
 	}
 
 	@Test
 	public void testLoadTernaryFactsFromRdfFile() throws ReasonerStateException, EdbIdbSeparationException,
 	EDBConfigurationException, IOException, IncompatiblePredicateArityException {
-		for (final String rdfFileName : Arrays.asList(FileDataSourceTestUtils.unzippedNtFileRoot + ".nt",
-				FileDataSourceTestUtils.zippedNtFileRoot + ".nt.gz")) {
-			final FileDataSource fileDataSource = new RdfFileDataSource(
-					new File(FileDataSourceTestUtils.INPUT_FOLDER + rdfFileName));
-
-			testLoadTernaryFactsFromSingleRdfDataSource(fileDataSource);
-		}
+		testLoadTernaryFactsFromSingleRdfDataSource(new RdfFileDataSource(
+				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.unzippedNtFileRoot + ".nt")));
+		testLoadTernaryFactsFromSingleRdfDataSource(new RdfFileDataSource(
+				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.zippedNtFileRoot + ".nt.gz")));
 	}
 
 	public void testLoadTernaryFactsFromSingleRdfDataSource(final FileDataSource fileDataSource)
