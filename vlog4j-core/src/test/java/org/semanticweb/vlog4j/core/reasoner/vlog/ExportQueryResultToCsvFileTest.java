@@ -27,15 +27,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils;
+import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUtils;
 
 import karmaresearch.vlog.Atom;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.VLog;
 
-public class ExportQueryResultToCsvTest {
-	private static final String CSV_EXPORT_FOLDER = "src/test/data/output/";
+public class ExportQueryResultToCsvFileTest {
 
 	@Test
 	public void testExportUnaryPredicateFacts() throws EDBConfigurationException, NotStartedException, IOException {
@@ -43,10 +42,10 @@ public class ExportQueryResultToCsvTest {
 		final List<List<String>> expectedQueryResult = Arrays.asList(Arrays.asList("c1"), Arrays.asList("c2"));
 		final VLog vLog = new VLog();
 		vLog.addData("p", argsAMatrix);
-		final String csvFilePath = CSV_EXPORT_FOLDER + "unaryFacts.csv";
+		final String csvFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "unaryFacts.csv";
 		vLog.writeQueryResultsToCsv(new Atom("p", VLogExpressions.makeVariable("x")), csvFilePath);
 
-		final List<List<String>> queryResult = FileDataSourceUtils.getCSVContent(csvFilePath);
+		final List<List<String>> queryResult = FileDataSourceTestUtils.getCSVContent(csvFilePath);
 		assertEquals(expectedQueryResult, queryResult);
 	}
 
@@ -57,11 +56,11 @@ public class ExportQueryResultToCsvTest {
 				Arrays.asList("c3", "c4"));
 		final VLog vLog = new VLog();
 		vLog.addData("p", argsAMatrix);
-		final String csvFilePath = CSV_EXPORT_FOLDER + "binaryFacts.csv";
+		final String csvFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "binaryFacts.csv";
 		vLog.writeQueryResultsToCsv(new Atom("p", VLogExpressions.makeVariable("x"), VLogExpressions.makeVariable("y")),
 				csvFilePath);
 
-		final List<List<String>> queryResult = FileDataSourceUtils.getCSVContent(csvFilePath);
+		final List<List<String>> queryResult = FileDataSourceTestUtils.getCSVContent(csvFilePath);
 		assertEquals(expectedQueryResult, queryResult);
 	}
 

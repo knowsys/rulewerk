@@ -27,50 +27,48 @@ import java.util.Arrays;
 import org.eclipse.jdt.annotation.NonNull;
 
 /**
- * An {@code CsvFileDataSource} stores facts in the CSV format inside a file of
- * the extension {@code .csv}. These fact tuples can be associated with a single
- * predicate of the same arity as the length of these tuples.
+ * An {@code RdfFileDataSource} stores facts in the RDF N-Triples format inside
+ * a file of the extension {@code .nt}. These fact triples can be associated
+ * with a single predicate of arity 3.
  * <p>
- * The required format looks like this:
+ * The required format is given in the <a
+ * href=https://www.w3.org/TR/n-triples/>W3C specification</a>. A simple example
+ * file could look like this:
  *
  * <pre>
  * {@code
- * term11, term12, term13, ... term1n
- * term21, term22, term23, ... term2n
- * ...
- * termM1, termM2, termM3, ... termMn
+ * <subject1> <predicate1> <object1> .
+ * <subject2> <predicate2> <object2> .
  * }
  * </pre>
  *
- * where {@code n} is the arity of the predicate and {@code M} is the number of
- * facts. Gzipped files of the extension {@code .csv.gz} are also supported.
+ * Gzipped files of the extension {@code .nt.gz} are also supported.
  *
  * @author Christian Lewe
- * @author Irina Dragoste
  *
  */
-public class CsvFileDataSource extends FileDataSource {
+public class RdfFileDataSource extends FileDataSource {
 
-	private static final Iterable<String> possibleExtensions = Arrays.asList(".csv", ".csv.gz");
+	private final static Iterable<String> possibleExtensions = Arrays.asList(".nt", ".nt.gz");
 
 	/**
 	 * Constructor.
 	 *
-	 * @param csvFile a file of a {@code .csv} or {@code .csv.gz} extension and a
-	 *                valid CSV format.
-	 * @throws IOException              if the path of the given {@code csvFile} is
+	 * @param rdfFile a file of a {@code .nt} or {@code .nt.gz} extension and a
+	 *                valid N-Triples format.
+	 * @throws IOException              if the path of the given {@code rdfFile} is
 	 *                                  invalid.
 	 * @throws IllegalArgumentException if the extension of the given
-	 *                                  {@code csvFile} does not occur in
+	 *                                  {@code rdfFile} does not occur in
 	 *                                  {@link #possibleExtensions}.
 	 */
-	public CsvFileDataSource(@NonNull final File csvFile) throws IOException {
-		super(csvFile, possibleExtensions);
+	public RdfFileDataSource(@NonNull final File rdfFile) throws IOException {
+		super(rdfFile, possibleExtensions);
 	}
 
 	@Override
 	public String toString() {
-		return "CsvFileDataSource [csvFile=" + getFile() + "]";
+		return "RdfFileDataSource [rdfFile=" + getFile() + "]";
 	}
 
 }

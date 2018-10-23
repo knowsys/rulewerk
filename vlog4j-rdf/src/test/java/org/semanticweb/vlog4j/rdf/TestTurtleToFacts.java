@@ -44,7 +44,7 @@ public class TestTurtleToFacts {
 
 		final Model model = TestingUtils.parseFile(new File(TestingUtils.TURTLE_TEST_FILES_PATH + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
-		final Set<Atom> facts = RDFModelToAtomsConverter.rdfModelToAtoms(model);
+		final Set<Atom> facts = RdfModelToAtomsConverter.rdfModelToAtoms(model);
 
 		System.out.println(facts);
 		// TODO asserts: url long name for constants and literal datatypes
@@ -62,12 +62,12 @@ public class TestTurtleToFacts {
 		final String blanksTurtleFile1 = TestingUtils.TURTLE_TEST_FILES_PATH + "blanks_context1.ttl";
 
 		final Model model1File1 = TestingUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
-		final Set<Atom> atomsFromModel1 = RDFModelToAtomsConverter.rdfModelToAtoms(model1File1);
+		final Set<Atom> atomsFromModel1 = RdfModelToAtomsConverter.rdfModelToAtoms(model1File1);
 		final Set<Blank> blanksFromModel1 = extractBlanks(atomsFromModel1);
 		assertEquals(2, blanksFromModel1.size());
 
 		final Model model2File1 = TestingUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
-		final Set<Atom> atomsFromModel2 = RDFModelToAtomsConverter.rdfModelToAtoms(model2File1);
+		final Set<Atom> atomsFromModel2 = RdfModelToAtomsConverter.rdfModelToAtoms(model2File1);
 		final Set<Blank> blanksFromModel2 = extractBlanks(atomsFromModel2);
 		assertEquals(2, blanksFromModel2.size());
 

@@ -21,7 +21,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  */
 
 import static org.junit.Assert.assertEquals;
-import static org.semanticweb.vlog4j.core.reasoner.FileDataSourceUtils.INPUT_FOLDER;
+import static org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUtils.INPUT_FOLDER;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,34 +42,27 @@ public class CsvFileDataSourceTest {
 
 	@Test
 	public void testConstructor() throws IOException {
-		final String expectedDirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
-
 		final File unzippedCsvFile = new File(INPUT_FOLDER + "file.csv");
-		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(unzippedCsvFile);
-		assertEquals(unzippedCsvFile, unzippedCsvFileDataSource.getFile());
-		assertEquals(expectedDirCanonicalPath, unzippedCsvFileDataSource.getDirCanonicalPath());
-		assertEquals("file", unzippedCsvFileDataSource.getFileNameWithoutExtension());
-
 		final File zippedCsvFile = new File(INPUT_FOLDER + "file.csv.gz");
+		final String dirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(unzippedCsvFile);
 		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(zippedCsvFile);
-		assertEquals(zippedCsvFile, zippedCsvFileDataSource.getFile());
-		assertEquals(expectedDirCanonicalPath, zippedCsvFileDataSource.getDirCanonicalPath());
-		assertEquals("file", zippedCsvFileDataSource.getFileNameWithoutExtension());
+
+		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, unzippedCsvFile, dirCanonicalPath, "file");
+		FileDataSourceTestUtils.testConstructor(zippedCsvFileDataSource, zippedCsvFile, dirCanonicalPath, "file");
 	}
 
 	@Test
 	public void testToConfigString() throws IOException {
-		final File unzippedCsvFile = new File(INPUT_FOLDER + "file.csv");
-		final File zippedCsvFile = new File(INPUT_FOLDER + "file.csv.gz");
-		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(unzippedCsvFile);
-		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(zippedCsvFile);
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv"));
+		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(new File(INPUT_FOLDER + "file.csv.gz"));
 
 		final String expectedDirCanonicalPath = new File(INPUT_FOLDER).getCanonicalPath();
 		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
 				+ expectedDirCanonicalPath + "\n" + "EDB%1$d_param1=file\n";
 
-		assertEquals(expectedConfigString, zippedCsvFileDataSource.toConfigString());
 		assertEquals(expectedConfigString, unzippedCsvFileDataSource.toConfigString());
+		assertEquals(expectedConfigString, zippedCsvFileDataSource.toConfigString());
 	}
 
 	@Test

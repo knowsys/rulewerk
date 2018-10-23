@@ -1,6 +1,6 @@
 package org.semanticweb.vlog4j.rdf;
 
-import static org.semanticweb.vlog4j.rdf.RDFValueToTermConverter.rdfValueToTerm;
+import static org.semanticweb.vlog4j.rdf.RdfValueToTermConverter.rdfValueToTerm;
 
 /*-
  * #%L
@@ -45,7 +45,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  * {@code rdfModel} into an {@link Atom} of the form
  * {@code TRIPLE(subject, predicate, object)}. The ternary predicate used for
  * all atoms generated from RDF triples is
- * {@link RDFModelToAtomsConverter#RDF_TRIPLE_PREDICATE}. Subject, predicate and
+ * {@link RdfModelToAtomsConverter#RDF_TRIPLE_PREDICATE}. Subject, predicate and
  * object {@link Value}s are converted to corresponding {@link Term}s:
  * <ul>
  * <li>{@link URI}s are converted to {@link Constant}s with the escaped URI
@@ -61,7 +61,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  * @author Irina Dragoste
  *
  */
-public final class RDFModelToAtomsConverter {
+public final class RdfModelToAtomsConverter {
 
 	/**
 	 * The name of the ternary predicate of atoms generated from RDF triples:
@@ -76,14 +76,14 @@ public final class RDFModelToAtomsConverter {
 	 */
 	public static final Predicate RDF_TRIPLE_PREDICATE = Expressions.makePredicate(RDF_TRIPLE_PREDICATE_NAME, 3);
 
-	private RDFModelToAtomsConverter() {
+	private RdfModelToAtomsConverter() {
 	}
 
 	/**
 	 * Converts each {@code <subject, predicate, object>} triple statement of the
 	 * given {@code rdfModel} into an {@link Atom} of the form
 	 * {@code TRIPLE(subject, predicate, object)}. See
-	 * {@link RDFModelToAtomsConverter#RDF_TRIPLE_PREDICATE}, the ternary predicate
+	 * {@link RdfModelToAtomsConverter#RDF_TRIPLE_PREDICATE}, the ternary predicate
 	 * used for all atoms generated from RDF triples.
 	 * 
 	 * @param rdfModel
@@ -93,7 +93,7 @@ public final class RDFModelToAtomsConverter {
 	 *         {@code rdfModel}.
 	 */
 	public static Set<Atom> rdfModelToAtoms(Model rdfModel) {
-		return rdfModel.stream().map(RDFModelToAtomsConverter::rdfStatementToAtom).collect(Collectors.toSet());
+		return rdfModel.stream().map(RdfModelToAtomsConverter::rdfStatementToAtom).collect(Collectors.toSet());
 	}
 
 	static Atom rdfStatementToAtom(final Statement statement) {

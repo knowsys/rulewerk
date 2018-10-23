@@ -39,7 +39,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArit
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 
-public class TestLoadFactsFromRDFToVLogReasoner {
+public class TestLoadFactsFromRdfFileToVLogReasoner {
 
 	// TODO add rules, reason
 	// TODO add data of each type
@@ -49,12 +49,12 @@ public class TestLoadFactsFromRDFToVLogReasoner {
 			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final Model model = TestingUtils.parseFile(
 				new File(TestingUtils.TURTLE_TEST_FILES_PATH + "exampleFactsNoBlanks.ttl"), RDFFormat.TURTLE);
-		final Set<Atom> facts = RDFModelToAtomsConverter.rdfModelToAtoms(model);
+		final Set<Atom> facts = RdfModelToAtomsConverter.rdfModelToAtoms(model);
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFacts(facts);
 			reasoner.load();
 			final QueryResultIterator answerQuery = reasoner.answerQuery(
-					Expressions.makeAtom(RDFModelToAtomsConverter.RDF_TRIPLE_PREDICATE, Expressions.makeVariable("x"),
+					Expressions.makeAtom(RdfModelToAtomsConverter.RDF_TRIPLE_PREDICATE, Expressions.makeVariable("x"),
 							Expressions.makeVariable("y"), Expressions.makeVariable("z")),
 					true);
 			assertTrue(answerQuery.hasNext());
