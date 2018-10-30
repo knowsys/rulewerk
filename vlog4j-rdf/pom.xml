@@ -23,7 +23,6 @@
 			<artifactId>vlog4j-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
 			<!-- Rio parser and writer implementation for the RDF/XML file format. -->
 			<groupId>org.openrdf.sesame</groupId>
@@ -42,6 +41,13 @@
 			<artifactId>sesame-rio-turtle</artifactId>
 			<version>${openrdf.sesame.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<!-- Useful Collection utilities, like intersection -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-collections4</artifactId>
+		    <version>4.2</version>
+		    <scope>test</scope>
 		</dependency>
 	</dependencies>
 
