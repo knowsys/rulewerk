@@ -1,0 +1,5 @@
+@base <file:/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<1> <a> "This is a test."@en .
+<1> <a> "Das ist ein Test."@de .

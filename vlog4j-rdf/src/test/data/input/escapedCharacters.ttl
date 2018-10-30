@@ -1,0 +1,4 @@
+@base <file:/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<1> <a> "\t\b\n\r\f\"\'\\" .

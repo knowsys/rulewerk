@@ -22,13 +22,17 @@ package org.semanticweb.vlog4j.rdf;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.rdf.RdfModelToAtomsConverter.RDF_TRIPLE_PREDICATE_NAME;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 import org.openrdf.model.Model;
 import org.openrdf.rio.RDFFormat;
@@ -39,47 +43,130 @@ import org.semanticweb.vlog4j.core.model.api.Blank;
 
 public class TestTurtleToFacts {
 
-	@Test
-	public void testRDFFileToAtomsConverter() throws RDFParseException, RDFHandlerException, IOException {
+	// TODO: test of collections and nested unlabelled blank nodes? ~> IDs of blank
+	// nodes determined are dynamic, which makes testing hard
+	// FIXME: the openrdf parser does neither support '\b' nor '\f' (from ASCII) nor
+	// any unicode, and encodes all of that in hex
 
-		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
+	private static final Set<Atom> expectedNormalizedAtoms = new HashSet<>(Arrays.asList(
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"), makeConstant("file:/a"),
+					makeConstant(intoLexical("-1", "integer"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/2"), makeConstant("file:/a"),
+					makeConstant(intoLexical("1", "integer"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/3"), makeConstant("file:/a"),
+					makeConstant(intoLexical("-1.0", "decimal"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/4"), makeConstant("file:/a"),
+					makeConstant(intoLexical("1.0", "decimal"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/5"), makeConstant("file:/a"),
+					makeConstant(intoLexical("-1.1E1", "double"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/6"), makeConstant("file:/a"),
+					makeConstant(intoLexical("1.1E1", "double"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/7"), makeConstant("file:/a"),
+					makeConstant(intoLexical("true", "boolean")))));
+
+	private static final Set<Atom> expectedLiteralAtoms = new HashSet<>(Arrays.asList(
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"), makeConstant("file:/a"),
+					makeConstant(intoLexical("1", "integer"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/2"), makeConstant("file:/a"),
+					makeConstant(intoLexical("1.0", "decimal"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/3"), makeConstant("file:/a"),
+					makeConstant(intoLexical("1.0E1", "double"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/4"), makeConstant("file:/a"),
+					makeConstant(intoLexical("true", "boolean"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/5"), makeConstant("file:/a"),
+					makeConstant(intoLexical("false", "boolean"))),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/6"), makeConstant("file:/a"),
+					makeConstant("\"test string\""))));
+
+	private static final Set<Atom> expectedRelativeUriAtoms = new HashSet<>(Arrays.asList(
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("http://example.org/1"),
+					makeConstant("http://example.org/a"), makeConstant("http://example.org/#1")),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("http://example.org/2"),
+					makeConstant("http://example.org/a"), makeConstant("http://example.org/#1")),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("http://example.org/3"),
+					makeConstant("http://example.org/a"), makeConstant("http://example.org/#1"))));
+
+	private static final Set<Atom> expectedEscapedCharacterAtoms = new HashSet<>(
+			Arrays.asList(makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"), makeConstant("file:/a"),
+					makeConstant("\"\\t\\u0008\\n\\r\\u000C\\\"'\\\\\""))));
+
+	private static final Set<Atom> expectedLanguageTagAtoms = new HashSet<>(Arrays.asList(
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"),
+					makeConstant("file:/a"), makeConstant("\"This is a test.\"@en")),
+			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"),
+					makeConstant("file:/a"), makeConstant("\"Das ist ein Test.\"@de"))));
+
+	private static String intoLexical(final String abbreviated, final String type) {
+		return "\"" + abbreviated + "\"^^<http://www.w3.org/2001/XMLSchema#" + type + ">";
+	}
+
+	@Test
+	public void testDataTypesNormalized() throws RDFHandlerException, RDFParseException, IOException {
+		final Model model = RdfTestUtils.parseFile(
+				new File(RdfTestUtils.INPUT_FOLDER + "unnormalizedLiteralValues.ttl"),
 				RDFFormat.TURTLE);
-		final Set<Atom> facts = RdfModelToAtomsConverter.rdfModelToAtoms(model);
-
-		System.out.println(facts);
-		// TODO asserts: url long name for constants and literal datatypes
-		// TODO asserts: normalized literal label
-		// TODO asserts: escaped " characters in literal
-		// FIXME test builtin datatypes?
-		// TODO test literal of all literal datatypes
-		// TODO test with/without language
-		// TODO test if reasoning is possible with this predicate / fact names
+		final Set<Atom> atomsFromModel = RdfModelToAtomsConverter.rdfModelToAtoms(model);
+		assertEquals(expectedNormalizedAtoms, atomsFromModel);
 	}
 
 	@Test
-	public void testBlanksWithSameRDFNameAreDifferentInDifferentModelContexts()
-			throws RDFParseException, RDFHandlerException, IOException {
-		final String blanksTurtleFile1 = RdfTestUtils.INPUT_FOLDER + "blanks_context1.ttl";
-
-		final Model model1File1 = RdfTestUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
-		final Set<Atom> atomsFromModel1 = RdfModelToAtomsConverter.rdfModelToAtoms(model1File1);
-		final Set<Blank> blanksFromModel1 = extractBlanks(atomsFromModel1);
-		assertEquals(2, blanksFromModel1.size());
-
-		final Model model2File1 = RdfTestUtils.parseFile(new File(blanksTurtleFile1), RDFFormat.TURTLE);
-		final Set<Atom> atomsFromModel2 = RdfModelToAtomsConverter.rdfModelToAtoms(model2File1);
-		final Set<Blank> blanksFromModel2 = extractBlanks(atomsFromModel2);
-		assertEquals(2, blanksFromModel2.size());
-
-		// assert that there is no common Blank in two different models (even if they
-		// have been
-		// loaded from the same file)
-		final Set<Blank> intersection = new HashSet<>(blanksFromModel1);
-		intersection.retainAll(blanksFromModel2);
-		assertTrue(intersection.isEmpty());
+	public void testLiteralValuesPreserved() throws RDFHandlerException, RDFParseException, IOException {
+		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "literalValues.ttl"),
+				RDFFormat.TURTLE);
+		final Set<Atom> atomsFromModel = RdfModelToAtomsConverter.rdfModelToAtoms(model);
+		assertEquals(expectedLiteralAtoms, atomsFromModel);
 	}
 
-	private Set<Blank> extractBlanks(final Collection<Atom> atoms) {
+	@Test
+	public void testRelativeURIsMadeAbsolute() throws RDFHandlerException, RDFParseException, IOException {
+		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "relativeURIs.ttl"),
+				RDFFormat.TURTLE);
+		final Set<Atom> atomsFromModel = RdfModelToAtomsConverter.rdfModelToAtoms(model);
+		assertEquals(expectedRelativeUriAtoms, atomsFromModel);
+	}
+
+	@Test
+	public void testEscapedCharactersPreserved() throws RDFHandlerException, RDFParseException, IOException {
+		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "escapedCharacters.ttl"),
+				RDFFormat.TURTLE);
+		final Set<Atom> atomsFromModel = RdfModelToAtomsConverter.rdfModelToAtoms(model);
+		assertEquals(expectedEscapedCharacterAtoms, atomsFromModel);
+	}
+
+	@Test
+	public void testLanguageTagsPreserved() throws RDFHandlerException, RDFParseException, IOException {
+		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "languageTags.ttl"),
+				RDFFormat.TURTLE);
+		final Set<Atom> atomsFromModel = RdfModelToAtomsConverter.rdfModelToAtoms(model);
+		assertEquals(expectedLanguageTagAtoms, atomsFromModel);
+	}
+
+	@Test
+	public void testNumberOfBlankNodesCorrect() throws RDFParseException, RDFHandlerException, IOException {
+		final File labelledFile = new File(RdfTestUtils.INPUT_FOLDER + "labelledBNodes.ttl");
+		final File unlabelledFile = new File(RdfTestUtils.INPUT_FOLDER + "unlabelledBNodes.ttl");
+		final Set<Blank> labelledBlanks = getBlanksFromTurtleFile(labelledFile);
+		final Set<Blank> unlabelledBlanks = getBlanksFromTurtleFile(unlabelledFile);
+
+		assertEquals(2, labelledBlanks.size());
+		assertEquals(2, unlabelledBlanks.size());
+	}
+
+	@Test
+	public void testBlankNodesWithSameLabelAreDifferentInDifferentModels()
+			throws RDFParseException, RDFHandlerException, IOException {
+		final File file = new File(RdfTestUtils.INPUT_FOLDER + "labelledBNodes.ttl");
+		final Set<Blank> blanks1 = getBlanksFromTurtleFile(file);
+		final Set<Blank> blanks2 = getBlanksFromTurtleFile(file);
+
+		assertTrue(CollectionUtils.intersection(blanks1, blanks2).isEmpty());
+	}
+
+	private Set<Blank> getBlanksFromTurtleFile(final File file)
+			throws RDFParseException, RDFHandlerException, IOException {
+		final Model model = RdfTestUtils.parseFile(file, RDFFormat.TURTLE);
+		final Set<Atom> atoms = RdfModelToAtomsConverter.rdfModelToAtoms(model);
+
 		final Set<Blank> blanks = new HashSet<>();
 		atoms.forEach(atom -> blanks.addAll(atom.getBlanks()));
 		return blanks;
