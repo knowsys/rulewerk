@@ -41,7 +41,7 @@ import org.openrdf.rio.RDFParseException;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Blank;
 
-public class TestTurtleToFacts {
+public class TestConvertRdfFileToFacts {
 
 	// TODO: test of collections and nested unlabelled blank nodes? ~> IDs of blank
 	// nodes determined are dynamic, which makes testing hard
