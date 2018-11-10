@@ -31,12 +31,6 @@ public final class ExamplesUtils {
 	public static final String INPUT_FOLDER = "src/main/data/input/";
 
 	/**
-	 * Private constructor prevents this utilities class to be instantiated.
-	 */
-	private ExamplesUtils() {
-	}
-
-	/**
 	 * Prints out the {@code reasoner} answer's to given query ({@code queryAtom}).
 	 *
 	 * @param queryAtom

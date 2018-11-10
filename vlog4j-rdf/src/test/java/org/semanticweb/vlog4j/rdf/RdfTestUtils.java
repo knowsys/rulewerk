@@ -35,7 +35,7 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
 
-final class RdfTestUtils {
+public final class RdfTestUtils {
 
 	static final String INPUT_FOLDER = "src/test/data/input/";
 	static final String OUTPUT_FOLDER = "src/test/data/output/";
