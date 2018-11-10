@@ -92,6 +92,7 @@ final class RdfValueToTermConverter {
 				sb.append(NTriplesUtil.toNTriplesString(datatype));
 			}
 		}
+
 		return sb.toString();
 	}
 
