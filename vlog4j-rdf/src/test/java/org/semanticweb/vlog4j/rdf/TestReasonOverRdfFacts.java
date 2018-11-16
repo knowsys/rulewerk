@@ -55,7 +55,7 @@ public class TestReasonOverRdfFacts {
 	private static final Set<List<Term>> expectedQueryResultsInvention = new HashSet<>(Arrays.asList(
 			Arrays.asList(makeConstant("https://example.org/Carl-Benz"), makeConstant("https://example.org/invention"), makeConstant("\"car\"@en")),
 			Arrays.asList(makeConstant("https://example.org/Carl-Benz"), makeConstant("https://example.org/invention"),
-					makeConstant("\"Auto\"@de"))));
+					makeConstant("\"\\u81EA\\u52A8\\u8F66\"@zh-hans"))));
 
 	private static final Variable subject = makeVariable("s");
 	private static final Variable predicate = makeVariable("p");

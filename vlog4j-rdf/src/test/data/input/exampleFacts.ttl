@@ -7,6 +7,7 @@
 			<born-in> <Karlsruhe> ;
             <birthdate> "1844-11-25"^^xsd:date ;
             <invention> "car"@en ;
-            <invention> "Auto"@de .
-<Karlsruhe> rdfs:label "Karlsruhe" ;
+            <invention> "自动车"@zh-hans .
+<Karlsruhe> rdfs:label "Karlsruhe"@en ;
+		    rdfs:label "卡尔斯鲁厄"@zh-hans ;
 		    <population> 311919 .
