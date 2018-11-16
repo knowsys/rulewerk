@@ -44,13 +44,13 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Blank;
+import org.semanticweb.vlog4j.core.model.api.Term;
 
 public class TestConvertRdfFileToFacts {
 
-	// TODO: test of collections and nested unlabelled blank nodes? ~> IDs of blank
-	// nodes determined are dynamic, which makes testing hard
-	// FIXME: the openrdf parser does neither support '\b' nor '\f' (from ASCII) nor
-	// any unicode, and encodes all of that in hex
+	// FIXME: The openrdf parser does neither support '\b' nor '\f' (from ASCII) and
+	// encodes such characters as "\u0008" and "\u000C", respectively (the
+	// corresponding Unicode hex code).
 
 	private static final Set<Atom> expectedNormalizedAtoms = new HashSet<>(Arrays.asList(
 			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"), makeConstant("file:/a"),
@@ -139,6 +139,32 @@ public class TestConvertRdfFileToFacts {
 				RDFFormat.TURTLE);
 		final Set<Atom> atomsFromModel = RdfModelToAtomsConverter.rdfModelToAtoms(model);
 		assertEquals(expectedLanguageTagAtoms, atomsFromModel);
+	}
+
+	@Test
+	public void testCollectionsPreserved() throws RDFHandlerException, RDFParseException, IOException {
+		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "collections.ttl"),
+				RDFFormat.TURTLE);
+		final Set<Atom> atomsFromModel = RdfModelToAtomsConverter.rdfModelToAtoms(model);
+
+		final Term blank1 = RdfTestUtils.getObjectOfFirstMatchedTriple(makeConstant("file:/2"), makeConstant("file:/a"),
+				atomsFromModel);
+		final Term blank2 = RdfTestUtils.getObjectOfFirstMatchedTriple(makeConstant("file:/3"), makeConstant("file:/a"),
+				atomsFromModel);
+		final Term blank3 = RdfTestUtils.getObjectOfFirstMatchedTriple(blank2, RDF_REST, atomsFromModel);
+
+		final Set<Atom> expectedSetAtoms = new HashSet<>(Arrays.asList(
+				makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"), makeConstant("file:/a"), RDF_NIL),
+				makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/2"), makeConstant("file:/a"), blank1),
+				makeAtom(RDF_TRIPLE_PREDICATE_NAME, blank1, RDF_FIRST, makeConstant(intoLexical("1", "integer"))),
+				makeAtom(RDF_TRIPLE_PREDICATE_NAME, blank1, RDF_REST, RDF_NIL),
+				makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/3"), makeConstant("file:/a"), blank2),
+				makeAtom(RDF_TRIPLE_PREDICATE_NAME, blank2, RDF_FIRST, makeConstant("file:/#1")),
+				makeAtom(RDF_TRIPLE_PREDICATE_NAME, blank2, RDF_REST, blank3),
+				makeAtom(RDF_TRIPLE_PREDICATE_NAME, blank3, RDF_FIRST, makeConstant("file:/#2")),
+				makeAtom(RDF_TRIPLE_PREDICATE_NAME, blank3, RDF_REST, RDF_NIL)));
+
+		assertEquals(expectedSetAtoms, atomsFromModel);
 	}
 
 	@Test
