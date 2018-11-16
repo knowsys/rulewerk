@@ -53,3 +53,5 @@ vlog4j-core/src/test/data/output/*
 vlog4j-core/src/test/data/output/.keep
 vlog4j-examples/src/main/data/output/*
 vlog4j-examples/src/main/data/output/.keep
+vlog4j-examples/src/main/data/logs/*
+vlog4j-examples/src/main/data/logs/.keep
