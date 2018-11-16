@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.rdf;
 
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+
 /*-
  * #%L
  * VLog4j RDF Support
@@ -25,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Set;
 
 import org.openrdf.model.Model;
 import org.openrdf.model.impl.LinkedHashModel;
@@ -34,11 +37,18 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
+import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Term;
 
 public final class RdfTestUtils {
 
 	static final String INPUT_FOLDER = "src/test/data/input/";
 	static final String OUTPUT_FOLDER = "src/test/data/output/";
+
+	static final Constant RDF_FIRST = makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
+	static final Constant RDF_REST = makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+	static final Constant RDF_NIL = makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
 
 	static Model parseFile(final File file, final RDFFormat rdfFormat)
 			throws RDFParseException, RDFHandlerException, IOException {
@@ -51,6 +61,29 @@ public final class RdfTestUtils {
 		rdfParser.parse(inputStream, baseURI.toString());
 
 		return model;
+	}
+
+	static Term getSubjectFromTriple(final Atom triple) {
+		return triple.getTerms().get(0);
+	}
+
+	static Term getPredicateFromTriple(final Atom triple) {
+		return triple.getTerms().get(1);
+	}
+
+	static Term getObjectFromTriple(final Atom triple) {
+		return triple.getTerms().get(2);
+	}
+
+	static String intoLexical(final String abbreviated, final String type) {
+		return "\"" + abbreviated + "\"^^<http://www.w3.org/2001/XMLSchema#" + type + ">";
+	}
+
+	static Term getObjectOfFirstMatchedTriple(final Term subject, final Term predicate, final Set<Atom> atoms) {
+		return atoms.stream()
+				.filter(triple -> getSubjectFromTriple(triple).equals(subject)
+						&& getPredicateFromTriple(triple).equals(predicate))
+				.findFirst().map(triple -> getObjectFromTriple(triple)).get();
 	}
 
 }

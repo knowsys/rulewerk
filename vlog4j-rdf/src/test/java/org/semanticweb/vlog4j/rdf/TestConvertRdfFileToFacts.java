@@ -25,6 +25,10 @@ import static org.junit.Assert.assertTrue;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 import static org.semanticweb.vlog4j.rdf.RdfModelToAtomsConverter.RDF_TRIPLE_PREDICATE_NAME;
+import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_FIRST;
+import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_NIL;
+import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_REST;
+import static org.semanticweb.vlog4j.rdf.RdfTestUtils.intoLexical;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,10 +99,6 @@ public class TestConvertRdfFileToFacts {
 					makeConstant("file:/a"), makeConstant("\"This is a test.\"@en")),
 			makeAtom(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"),
 					makeConstant("file:/a"), makeConstant("\"Das ist ein Test.\"@de"))));
-
-	private static String intoLexical(final String abbreviated, final String type) {
-		return "\"" + abbreviated + "\"^^<http://www.w3.org/2001/XMLSchema#" + type + ">";
-	}
 
 	@Test
 	public void testDataTypesNormalized() throws RDFHandlerException, RDFParseException, IOException {
