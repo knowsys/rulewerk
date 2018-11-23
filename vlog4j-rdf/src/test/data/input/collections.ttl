@@ -1,0 +1,20 @@
+@base <file:/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<1> <a> () .
+<2> <a> (1) .
+<3> <a> (<#1> <#2>) .
+
+# <1> <a> _:1 .
+# _:1 rdf:first rdf:nil .
+# _:1 rdf:last rdf:nil .
+# <2> <a> _:2 .
+# _:2 rdf:first 1 .
+# _:2 rdf:last rdf:nil .
+# <3> <a> _:3 .
+# _:3 rdf:first <#1> .
+# _:3 rdf:last _:4 .
+# _:4 rdf:first <#2> .
+# _:4 rdf:last rdf:nil .

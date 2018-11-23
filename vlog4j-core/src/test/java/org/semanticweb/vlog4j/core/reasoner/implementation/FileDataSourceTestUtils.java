@@ -49,8 +49,9 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
  *
  */
 public final class FileDataSourceTestUtils {
-	public static final String OUTPUT_FOLDER = "src/test/data/output/";
+
 	public static final String INPUT_FOLDER = "src/test/data/input/";
+	public static final String OUTPUT_FOLDER = "src/test/data/output/";
 
 	public static final String unzippedUnaryCsvFileRoot = "unaryFacts";
 	public static final String zippedUnaryCsvFileRoot = "unaryFactsZipped";
@@ -59,7 +60,14 @@ public final class FileDataSourceTestUtils {
 	public static final String binaryCsvFileNameRoot = "binaryFacts";
 	public static final String invalidFormatNtFileNameRoot = "invalidFormatNtFacts";
 
+	/*
+	 * This is a utility class. Therefore, it is best practice to do the following:
+	 * (1) Make the class final, (2) make its constructor private, (3) make all its
+	 * fields and methods static. This prevents the classes instantiation and
+	 * inheritance.
+	 */
 	private FileDataSourceTestUtils() {
+
 	}
 
 	/**
@@ -86,7 +94,7 @@ public final class FileDataSourceTestUtils {
 
 	public static void testConstructor(final FileDataSource fileDataSource, final File expectedFile,
 			final String expectedDirCanonicalPath, final String expectedFileNameWithoutExtension)
-			throws IOException {
+					throws IOException {
 		assertEquals(expectedFile, fileDataSource.getFile());
 		assertEquals(expectedDirCanonicalPath, fileDataSource.getDirCanonicalPath());
 		assertEquals(expectedFileNameWithoutExtension, fileDataSource.getFileNameWithoutExtension());

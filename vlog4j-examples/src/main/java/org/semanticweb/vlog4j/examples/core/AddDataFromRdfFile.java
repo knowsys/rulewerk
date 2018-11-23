@@ -73,11 +73,11 @@ public class AddDataFromRdfFile {
 		final Predicate triplesEDB = makePredicate("triplesEDB", 3);
 		final Predicate triplesIDB = makePredicate("triplesIDB", 3);
 
-		final Constant hasPartPredicate = makeConstant("<http://an.example/hasPart>");
-		final Constant isPartOfPredicate = makeConstant("<http://an.example/isPartOf>");
+		final Constant hasPartPredicate = makeConstant("<https://example.org/hasPart>");
+		final Constant isPartOfPredicate = makeConstant("<https://example.org/isPartOf>");
 		final Constant hasTypePredicate = makeConstant("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>");
-		final Constant bicycleObject = makeConstant("<http://an.example/bicycle>");
-		final Constant wheelObject = makeConstant("<http://an.example/wheel>");
+		final Constant bicycleObject = makeConstant("<https://example.org/bicycle>");
+		final Constant wheelObject = makeConstant("<https://example.org/wheel>");
 
 		final Variable x = makeVariable("x");
 		final Variable s = makeVariable("s");
@@ -85,7 +85,7 @@ public class AddDataFromRdfFile {
 		final Variable o = makeVariable("o");
 
 		/*
-		 * We will write <~/someName> instead of <http://an.example/someName> and
+		 * We will write <~/someName> instead of <https://example.org/someName> and
 		 * <~#someName> instead of <www.w3.org/1999/02/22-rdf-syntax-ns#someName>.
 		 *
 		 * triplesIDB(?s, ?p, ?o) :- triplesEDB(?s, ?p, ?o) .
@@ -154,7 +154,7 @@ public class AddDataFromRdfFile {
 			reasoner.exportQueryAnswersToCsv(hasPartIDB,
 					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
 
-			final Constant redBikeSubject = makeConstant("<http://an.example/redBike>");
+			final Constant redBikeSubject = makeConstant("<https://example.org/redBike>");
 			final Atom existsHasPartRedBike = makeAtom(triplesIDB, redBikeSubject, hasPartPredicate, x);
 			reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
 					ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);

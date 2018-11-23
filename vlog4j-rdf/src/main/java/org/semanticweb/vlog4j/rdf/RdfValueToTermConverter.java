@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.rdf;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,28 +35,29 @@ final class RdfValueToTermConverter {
 	private RdfValueToTermConverter() {
 	}
 
-	static Term rdfValueToTerm(Value value) {
+	static Term rdfValueToTerm(final Value value) {
 		if (value instanceof BNode) {
 			return rdfBlankNodeToBlank((BNode) value);
 		} else if (value instanceof Literal) {
 			return rdfLiteralToConstant((Literal) value);
 		} else if (value instanceof URI) {
 			return rdfURItoConstant((URI) value);
-		} else
-			throw new RuntimeException("Unown Value type: " + value.getClass());
+		} else {
+			throw new RuntimeException("Unknown value type: " + value.getClass());
+		}
 	}
 
-	static Term rdfBlankNodeToBlank(BNode bNode) {
+	static Term rdfBlankNodeToBlank(final BNode bNode) {
 		// IDs are generated to be unique in every Model.
 		return new BlankImpl(bNode.getID());
 	}
 
-	static Term rdfURItoConstant(URI uri) {
+	static Term rdfURItoConstant(final URI uri) {
 		final String escapedURIString = NTriplesUtil.escapeString(uri.toString());
 		return new ConstantImpl(escapedURIString);
 	}
 
-	static Term rdfLiteralToConstant(Literal literal) {
+	static Term rdfLiteralToConstant(final Literal literal) {
 		final String normalizedStringValueLiteral = buildNormalizedStringValue(literal);
 		return new ConstantImpl(normalizedStringValueLiteral);
 	}
@@ -64,12 +65,12 @@ final class RdfValueToTermConverter {
 	/**
 	 * Serializes the given {@code literal} to the the NTriples format for
 	 * {@link Literal}s, using a canonical representation.
-	 * 
+	 *
 	 * @param literal
 	 * @return a unique string representation of given {@code literal} in canonical
 	 *         form.
 	 */
-	static String buildNormalizedStringValue(Literal literal) {
+	static String buildNormalizedStringValue(final Literal literal) {
 		final URI datatype = literal.getDatatype();
 
 		final StringBuilder sb = new StringBuilder();
@@ -91,6 +92,7 @@ final class RdfValueToTermConverter {
 				sb.append(NTriplesUtil.toNTriplesString(datatype));
 			}
 		}
+
 		return sb.toString();
 	}
 

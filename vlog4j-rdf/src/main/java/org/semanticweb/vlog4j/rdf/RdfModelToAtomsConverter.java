@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.rdf;
 
-import static org.semanticweb.vlog4j.rdf.RdfValueToTermConverter.rdfValueToTerm;
-
 /*-
  * #%L
  * VLog4j RDF Support
@@ -21,6 +19,8 @@ import static org.semanticweb.vlog4j.rdf.RdfValueToTermConverter.rdfValueToTerm;
  * limitations under the License.
  * #L%
  */
+
+import static org.semanticweb.vlog4j.rdf.RdfValueToTermConverter.rdfValueToTerm;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,14 +85,14 @@ public final class RdfModelToAtomsConverter {
 	 * {@code TRIPLE(subject, predicate, object)}. See
 	 * {@link RdfModelToAtomsConverter#RDF_TRIPLE_PREDICATE}, the ternary predicate
 	 * used for all atoms generated from RDF triples.
-	 * 
+	 *
 	 * @param rdfModel
 	 *            a {@link Model} of an RDF document, containing triple statements
 	 *            that will be converter to facts.
 	 * @return a set of atoms corresponding to the statements of given
 	 *         {@code rdfModel}.
 	 */
-	public static Set<Atom> rdfModelToAtoms(Model rdfModel) {
+	public static Set<Atom> rdfModelToAtoms(final Model rdfModel) {
 		return rdfModel.stream().map(RdfModelToAtomsConverter::rdfStatementToAtom).collect(Collectors.toSet());
 	}
 
