@@ -38,7 +38,14 @@ import org.semanticweb.vlog4j.core.model.api.Term;
  */
 final class QueryResultsUtils {
 
+	/*
+	 * This is a utility class. Therefore, it is best practice to do the following:
+	 * (1) Make the class final, (2) make its constructor private, (3) make all its
+	 * fields and methods static. This prevents the classes instantiation and
+	 * inheritance.
+	 */
 	private QueryResultsUtils() {
+
 	}
 
 	/**

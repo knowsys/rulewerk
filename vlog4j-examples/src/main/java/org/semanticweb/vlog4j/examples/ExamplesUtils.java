@@ -30,6 +30,16 @@ public final class ExamplesUtils {
 	public static final String OUTPUT_FOLDER = "src/main/data/output/";
 	public static final String INPUT_FOLDER = "src/main/data/input/";
 
+	/*
+	 * This is a utility class. Therefore, it is best practice to do the following:
+	 * (1) Make the class final, (2) make its constructor private, (3) make all its
+	 * fields and methods static. This prevents the classes instantiation and
+	 * inheritance.
+	 */
+	private ExamplesUtils() {
+
+	}
+
 	/**
 	 * Prints out the {@code reasoner} answer's to given query ({@code queryAtom}).
 	 *
