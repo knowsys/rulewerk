@@ -85,8 +85,17 @@ public final class RdfTestUtils {
 		return triple.getTerms().get(2);
 	}
 
-	static String intoLexical(final String abbreviated, final String type) {
-		return "\"" + abbreviated + "\"^^<http://www.w3.org/2001/XMLSchema#" + type + ">";
+	/*
+	 * Takes a value of a specific type in its abbreviated form (i.e. a bare value)
+	 * and returns the corresponding lexical form (i.e. a value accompanied by its
+	 * type).
+	 *
+	 * @param abbreviatedValue value in abbreviated form
+	 * @param type type of {@code abbreviated}
+	 * @return {@code abbreviatedValue} in lexical form
+	 */
+	static String intoLexical(final String abbreviatedValue, final String type) {
+		return "\"" + abbreviatedValue + "\"^^<http://www.w3.org/2001/XMLSchema#" + type + ">";
 	}
 
 	static Term getObjectOfFirstMatchedTriple(final Term subject, final Term predicate, final Set<Atom> atoms) {
