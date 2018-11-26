@@ -75,12 +75,11 @@ public class ReasonerTimeoutTest {
 		
 		reasoner.addFacts(facts);
 		reasoner.addRules(rules);
-		
-		reasoner.setReasoningTimeout(timeout);
 	}
 
 	@Test
 	public void skolem() throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+		reasoner.setReasoningTimeout(timeout);
 		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 		
 		reasoner.load();
@@ -90,9 +89,32 @@ public class ReasonerTimeoutTest {
 	
 	@Test
 	public void restricted() throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+		reasoner.setReasoningTimeout(timeout);
 		reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 		
 		reasoner.load();
+		
+		reasoner.reason();
+	}
+	
+	@Test
+	public void skolemAfterLoad() throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
+		
+		reasoner.load();
+		
+		reasoner.setReasoningTimeout(timeout);
+		
+		reasoner.reason();
+	}
+	
+	@Test
+	public void restrictedAfterLoad() throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+		reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
+		
+		reasoner.load();
+		
+		reasoner.setReasoningTimeout(timeout);
 		
 		reasoner.reason();
 	}
