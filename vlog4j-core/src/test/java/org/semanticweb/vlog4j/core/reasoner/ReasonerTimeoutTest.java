@@ -54,12 +54,12 @@ public class ReasonerTimeoutTest {
 	/**
 	 * The timeout after which reasoning should be completed in seconds.
 	 */
-	static int timeout = 1;
+	private static int timeout = 1;
 	
-	static List<Atom> facts = new ArrayList<>();
-	static List<Rule> rules = new ArrayList<>();
+	private static List<Atom> facts = new ArrayList<>();
+	private static List<Rule> rules = new ArrayList<>();
 	
-	Reasoner reasoner;
+	private Reasoner reasoner;
 	
 	/**
 	 * The timeout after which reasoning should be completed. One second is added to account for setup and tear down of reasoning resources.
