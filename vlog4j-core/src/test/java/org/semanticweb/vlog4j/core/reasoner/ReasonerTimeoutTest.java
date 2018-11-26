@@ -56,7 +56,13 @@ public class ReasonerTimeoutTest {
 	 */
 	private static int timeout = 1;
 	
+	/**
+	 * A list of facts to be used in multiple test runs.
+	 */
 	private static List<Atom> facts = new ArrayList<>();
+	/**
+	 * A list of rules to be used in multiple test runs.
+	 */
 	private static List<Rule> rules = new ArrayList<>();
 	
 	private Reasoner reasoner;
@@ -67,6 +73,15 @@ public class ReasonerTimeoutTest {
 	@org.junit.Rule
 	public Timeout globalTimeout = Timeout.seconds(timeout + 1);
 
+	/**
+	 * This method provides the {@link #facts} and {@link #rules} to be used in all test runs.
+	 * To test if the timeout works as expected, a small set of facts and rules is used that results in an infinite chase.
+	 * Facts:
+	 * 	infinite_EDB(A, B)
+	 * Rules:
+	 * 	infinite_IDB(?x, ?y) :- infinite_EDB(?x, ?y) 
+	 * 	infinite_IDB(?y, ?z) :- infinite_IDB(?x, ?y)
+	 */
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		Predicate infinite_EDB = makePredicate("infinite_EDB", 2);
@@ -85,8 +100,8 @@ public class ReasonerTimeoutTest {
 		
 		Variable z = makeVariable("z");
 		
-		Atom further_yz = makeAtom(infinite_IDB, y, z);
-		Rule infinite_rule = makeRule(further_yz, infinite_IDB_xy);
+		Atom infinite_IDB_yz = makeAtom(infinite_IDB, y, z);
+		Rule infinite_rule = makeRule(infinite_IDB_yz, infinite_IDB_xy);
 		rules.add(infinite_rule);
 	}
 
