@@ -68,7 +68,7 @@ public class ReasonerTimeoutTest {
 	public Timeout globalTimeout = Timeout.seconds(timeout + 1);
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 		Predicate infinite_EDB = makePredicate("infinite_EDB", 2);
 		Predicate infinite_IDB = makePredicate("infinite_IDB", 2);
 		
@@ -91,7 +91,7 @@ public class ReasonerTimeoutTest {
 	}
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws ReasonerStateException {
 		reasoner = Reasoner.getInstance();
 		
 		reasoner.addFacts(facts);
