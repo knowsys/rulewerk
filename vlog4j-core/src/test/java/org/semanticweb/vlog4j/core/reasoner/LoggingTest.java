@@ -90,7 +90,7 @@ public class LoggingTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testSetLogLevelNull() {
+	public void testSetLogLevelNull() throws ReasonerStateException {
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.setLogLevel(null);
 		}
