@@ -79,6 +79,8 @@ public class VLogReasoner implements Reasoner {
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm, "Algorithm cannot be null!");
 		this.algorithm = algorithm;
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			LOGGER.warn("Setting algorithm on a closed reasoner.");
 	}
 
 	@Override
@@ -92,6 +94,8 @@ public class VLogReasoner implements Reasoner {
 			Validate.isTrue(seconds > 0, "Only strictly positive timeout period alowed!", seconds);
 		}
 		this.timeoutAfterSeconds = seconds;
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			LOGGER.warn("Setting timeout on a closed reasoner.");
 	}
 
 	@Override
@@ -112,6 +116,8 @@ public class VLogReasoner implements Reasoner {
 		}
 		Validate.noNullElements(rules, "Null rules are not alowed! The list contains a null at position [%d].");
 		this.rules.addAll(new ArrayList<>(rules));
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			LOGGER.warn("Adding rules ot a closed reasoner.");
 	}
 
 	@Override
@@ -122,6 +128,7 @@ public class VLogReasoner implements Reasoner {
 					"Rules cannot be re-writen after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
 		}
 		this.ruleRewriteStrategy = ruleRewritingStrategy;
+		LOGGER.warn("Setting rule rewrite strategy on a closed reasoner.");
 	}
 
 	@Override
@@ -150,6 +157,8 @@ public class VLogReasoner implements Reasoner {
 			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
 			this.factsForPredicate.get(predicate).add(fact);
 		}
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			LOGGER.warn("Adding facts to a closed reasoner.");
 	}
 
 	@Override
@@ -167,6 +176,8 @@ public class VLogReasoner implements Reasoner {
 				predicate, this.factsForPredicate.get(predicate));
 
 		this.dataSourceForPredicate.put(predicate, dataSource);
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			LOGGER.warn("Adding facts to a closed reasoner.");
 	}
 
 	private void validateFactTermsAreConstant(Atom fact) {
@@ -185,7 +196,9 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void load() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void load() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			throw new ReasonerStateException(reasonerState, "Loading is not allowed after closing.");
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			LOGGER.warn("This method call is ineffective: the Reasoner has already been loaded.");
 		} else {
@@ -242,6 +255,8 @@ public class VLogReasoner implements Reasoner {
 	public boolean reason() throws IOException, ReasonerStateException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed before loading!");
+		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(reasonerState, "Reasoning is not allowed after closing.");
 		} else if (this.reasonerState == ReasonerState.AFTER_REASONING) {
 			LOGGER.warn(
 					"This method call is ineffective: this Reasoner has already reasoned. Successive reason() calls are not supported. Call reset() to undo loading and reasoning and reload to be able to reason again");
@@ -268,6 +283,8 @@ public class VLogReasoner implements Reasoner {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
+		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(reasonerState, "Querying is not allowed after closing.");
 		}
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 
@@ -287,6 +304,8 @@ public class VLogReasoner implements Reasoner {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
+		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(reasonerState, "Querying is not allowed after closing.");
 		}
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
@@ -302,7 +321,9 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void resetReasoner() {
+	public void resetReasoner() throws ReasonerStateException {
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			throw new ReasonerStateException(reasonerState, "Resetting is not allowed after closing.");
 		this.reasonerState = ReasonerState.BEFORE_LOADING;
 		this.vLog.stop();
 		LOGGER.warn(
@@ -311,6 +332,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void close() {
+		reasonerState = ReasonerState.AFTER_CLOSING;
 		this.vLog.stop();
 	}
 
@@ -382,7 +404,9 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setLogLevel(LogLevel logLevel) {
+	public void setLogLevel(LogLevel logLevel) throws ReasonerStateException {
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			throw new ReasonerStateException(reasonerState, "Setting log level is not allowed after closing.");
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
 		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(this.internalLogLevel));
@@ -394,7 +418,9 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setLogFile(String filePath) {
+	public void setLogFile(String filePath) throws ReasonerStateException {
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			throw new ReasonerStateException(reasonerState, "Setting log file is not allowed after closing.");
 		this.vLog.setLogFile(filePath);
 	}
 
