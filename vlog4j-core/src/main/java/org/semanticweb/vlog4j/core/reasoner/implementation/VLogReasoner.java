@@ -117,7 +117,7 @@ public class VLogReasoner implements Reasoner {
 		Validate.noNullElements(rules, "Null rules are not alowed! The list contains a null at position [%d].");
 		this.rules.addAll(new ArrayList<>(rules));
 		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			LOGGER.warn("Adding rules ot a closed reasoner.");
+			LOGGER.warn("Adding rules to a closed reasoner.");
 	}
 
 	@Override
