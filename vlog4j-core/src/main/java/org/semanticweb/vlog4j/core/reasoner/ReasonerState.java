@@ -50,7 +50,15 @@ public enum ReasonerState {
 	 * adding rules, fact and fact data sources and setting the rule re-writing
 	 * strategy are not allowed in this state.
 	 */
-	AFTER_REASONING("completed reasoning");
+	AFTER_REASONING("completed reasoning"),
+	/**
+	 * State a Reasoner is in after method {@link Reasoner#close()} has been called.
+	 * The Reasoner cannot reason again, once it reached this state.
+	 * Loading and setting the reasoning algorithm in this state are ineffective.
+	 * Reasoning, adding rules, fact and fact data sources and setting the rule re-writing
+	 * strategy are not allowed in this state. 
+	 */
+	AFTER_CLOSING("closed");
 
 	private final String name;
 
