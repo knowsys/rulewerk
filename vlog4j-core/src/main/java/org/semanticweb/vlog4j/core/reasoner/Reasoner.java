@@ -173,8 +173,9 @@ public interface Reasoner extends AutoCloseable {
 	 *
 	 * @param logLevel
 	 *            the logging level to be set for VLog C++ resource.
+	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
-	void setLogLevel(@NonNull LogLevel logLevel);
+	void setLogLevel(@NonNull LogLevel logLevel) throws ReasonerStateException;
 
 	/**
 	 * Returns the logging level of the internal VLog C++ resource. If no value has
@@ -194,8 +195,9 @@ public interface Reasoner extends AutoCloseable {
 	 *            the file for the internal VLog C++ resource to log to. If
 	 *            {@code null} or an invalid file path, the reasoner will log to the
 	 *            default system output.
+	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
-	void setLogFile(@Nullable String filePath);
+	void setLogFile(@Nullable String filePath) throws ReasonerStateException;
 
 	/**
 	 * Adds rules to the reasoner <b>knowledge base</b> in the given order. After
@@ -322,10 +324,11 @@ public interface Reasoner extends AutoCloseable {
 	 *             source ({@link #addFactsFromDataSource(Predicate, DataSource)})
 	 *             does nor match the arity of the facts in the corresponding data
 	 *             source.
+	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
 	// FIXME should EdbIdbSeparationException be thrown when users try to add
 	// facts/rules?
-	void load() throws IOException, EdbIdbSeparationException, IncompatiblePredicateArityException;
+	void load() throws IOException, EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException;
 
 	/**
 	 * Performs reasoning on the loaded <b>knowledge base</b>, depending on the set
@@ -358,7 +361,7 @@ public interface Reasoner extends AutoCloseable {
 	 * @throws IOException
 	 *             if I/O exceptions occur during reasoning.
 	 * @throws ReasonerStateException
-	 *             if this method is called before loading ({@link Reasoner#load()}.
+	 *             if this method is called before loading ({@link Reasoner#load()} or after closing ({@link Reasoner#close()}).
 	 */
 	boolean reason() throws IOException, ReasonerStateException;
 
@@ -396,7 +399,7 @@ public interface Reasoner extends AutoCloseable {
 	 * @return an {@link AutoCloseable} iterator for {@link QueryResult}s,
 	 *         representing distinct answers to the query.
 	 * @throws ReasonerStateException   if this method is called before loading
-	 *                                  ({@link Reasoner#load()}.
+	 *                                  ({@link Reasoner#load()} or after closing ({@link Reasoner#close()}).
 	 * @throws IllegalArgumentException if the given {@code queryAtom} contains
 	 *                                  terms ({@link Atom#getTerms()}) which are
 	 *                                  not of type {@link TermType#CONSTANT} or
@@ -441,7 +444,7 @@ public interface Reasoner extends AutoCloseable {
 	 *                      (representing named individuals).
 	 *
 	 * @throws ReasonerStateException   if this method is called before loading
-	 *                                  ({@link Reasoner#load()}.
+	 *                                  ({@link Reasoner#load()} or after closing ({@link Reasoner#close()}).
 	 * @throws IOException              if an I/O error occurs regarding given file
 	 *                                  ({@code csvFilePath)}.
 	 * @throws IllegalArgumentException
@@ -463,8 +466,9 @@ public interface Reasoner extends AutoCloseable {
 	 * {@link #load()} method). All facts inferred by reasoning are discarded. Rules
 	 * and facts added to the reasoner need to be loaded again, to be able to
 	 * perform querying and reasoning.
+	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
-	void resetReasoner();
+	void resetReasoner() throws ReasonerStateException;
 
 	// TODO Map<Predicate,DataSource> exportDBToDir(File location);
 

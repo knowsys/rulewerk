@@ -46,7 +46,7 @@ import karmaresearch.vlog.EDBConfigurationException;
 public class ReasonerTest {
 
 	@Test
-	public void testCloseRepeatedly() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testCloseRepeatedly() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.close();
 		}

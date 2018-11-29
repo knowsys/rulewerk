@@ -123,7 +123,7 @@ public class ReasonerStateTest {
 	}
 
 	@Test
-	public void testResetBeforeLoad() {
+	public void testResetBeforeLoad() throws ReasonerStateException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.resetReasoner();
 		}
@@ -286,7 +286,7 @@ public class ReasonerStateTest {
 	}
 
 	@Test
-	public void testSuccessiveCloseAfterLoad() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testSuccessiveCloseAfterLoad() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.load();
 			reasoner.close();
