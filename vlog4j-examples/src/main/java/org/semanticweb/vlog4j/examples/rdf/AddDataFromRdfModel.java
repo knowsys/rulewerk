@@ -69,7 +69,7 @@ public class AddDataFromRdfModel {
 		 * Local file containing metadata of publications from ISWC'16 conference, in
 		 * RDF/XML format.
 		 */
-		final File rdfXMLResourceFile = new File(ExamplesUtils.INPUT_FOLDER + "rdf/iswc-2016-complete-alignments.rdf");
+		final File rdfXMLResourceFile = new File(ExamplesUtils.INPUT_FOLDER + "iswc-2016-complete-alignments.rdf");
 		final FileInputStream inputStreamISWC2016 = new FileInputStream(rdfXMLResourceFile);
 		/* An RDF Model is obtained from parsing the RDF/XML resource. */
 		final Model rdfModelISWC2016 = parseRDFResource(inputStreamISWC2016, rdfXMLResourceFile.toURI(),

@@ -57,8 +57,9 @@ public class OwlOntologyToRulesAndFacts {
 			EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
 
 		/* Bike ontology is loaded from a Bike file using OWL API */
-		OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology = ontologyManager.loadOntologyFromOntologyDocument(new File(ExamplesUtils.INPUT_FOLDER + "owl/bike.owl"));
+		final OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
+		final OWLOntology ontology = ontologyManager
+				.loadOntologyFromOntologyDocument(new File(ExamplesUtils.INPUT_FOLDER + "bike.owl"));
 
 		/*
 		 * vlog4j.owlapi.OwlToRulesConverter can be used to convert the OWL axiom in
