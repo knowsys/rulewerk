@@ -6,7 +6,7 @@
 
 	<groupId>org.semanticweb.vlog4j</groupId>
 	<artifactId>vlog4j-parent</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>VLog4j</name>
