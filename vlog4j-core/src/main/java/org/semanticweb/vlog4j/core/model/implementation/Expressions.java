@@ -181,6 +181,7 @@ public final class Expressions {
 	 * Creates a {@code Rule} with a single atom in its head.
 	 *
 	 * @param headAtom
+	 *            the single atom in the rule head
 	 * @param bodyAtoms
 	 *            array of non-null atoms
 	 * @return a {@link Rule} corresponding to the input

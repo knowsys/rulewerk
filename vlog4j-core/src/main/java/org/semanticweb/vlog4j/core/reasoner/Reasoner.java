@@ -280,21 +280,18 @@ public interface Reasoner extends AutoCloseable {
 	void addFacts(@NonNull Collection<Atom> facts) throws ReasonerStateException;
 
 	/**
-	 * Adds facts stored in given {@code dataSource} for given {@code predicate} to
-	 * the reasoner <b>knowledge base</b>. Facts predicates cannot have multiple
-	 * data sources, including in-memory {@link Atom} objects added trough
-	 * {@link #addFacts}.
+	 * Adds facts stored in given {@code dataSource} for given {@code predicate} to the reasoner <b>knowledge base</b>. Facts predicates cannot have multiple
+	 * data sources, including in-memory {@link Atom} objects added trough {@link #addFacts}.
 	 *
 	 * @param predicate
-	 *            the {@link Predicate} for which the given {@code dataSource}
-	 *            contains <b>facts</b>.
+	 *            the {@link Predicate} for which the given {@code dataSource} contains <b>fact terms</b>.
 	 * @param dataSource
+	 *            data source containing the fact terms to be associated to given predicate and added to the reasoner
 	 * @throws ReasonerStateException
 	 *             if the reasoner has already been loaded ({@link #load()}).
 	 * @throws IllegalArgumentException
-	 *             if the <b>knowledge base</b> contains facts in memory (added
-	 *             using {@link #addFacts}) or from a data source with the same
-	 *             {@link Predicate} as given {@code predicate}.
+	 *             if the <b>knowledge base</b> contains facts in memory (added using {@link #addFacts}) or from a data source with the same {@link Predicate}
+	 *             as given {@code predicate}.
 	 */
 	// TODO add example to javadoc with two datasources and with in-memory facts for
 	// the same predicate.
