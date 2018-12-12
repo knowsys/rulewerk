@@ -1,6 +1,6 @@
 package org.semanticweb.vlog4j.rdf;
 
-import static org.semanticweb.vlog4j.rdf.RDFValueToTermConverter.rdfValueToTerm;
+import static org.semanticweb.vlog4j.rdf.RdfValueToTermConverter.rdfValueToTerm;
 
 /*-
  * #%L
@@ -34,16 +34,16 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
-public final class RDFModelToAtomsConverter {
+public final class RdfModelToAtomsConverter {
 
 	public static final String RDF_TRIPLE_PREDICATE_NAME = "TRIPLE";
 	public static final Predicate RDF_TRIPLE_PREDICATE = Expressions.makePredicate(RDF_TRIPLE_PREDICATE_NAME, 3);
 
-	private RDFModelToAtomsConverter() {
+	private RdfModelToAtomsConverter() {
 	}
 
 	public static Set<Atom> rdfModelToAtoms(Model rdfModel) {
-		return rdfModel.stream().map(RDFModelToAtomsConverter::rdfStatementToAtom).collect(Collectors.toSet());
+		return rdfModel.stream().map(RdfModelToAtomsConverter::rdfStatementToAtom).collect(Collectors.toSet());
 	}
 
 	static Atom rdfStatementToAtom(final Statement statement) {
