@@ -79,6 +79,8 @@ public class VLogReasoner implements Reasoner {
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm, "Algorithm cannot be null!");
 		this.algorithm = algorithm;
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			LOGGER.warn("Setting algorithm on a closed reasoner.");
 	}
 
 	@Override
@@ -91,12 +93,14 @@ public class VLogReasoner implements Reasoner {
 		if (seconds != null) {
 			Validate.isTrue(seconds > 0, "Only strictly positive timeout period alowed!", seconds);
 		}
-		timeoutAfterSeconds = seconds;
+		this.timeoutAfterSeconds = seconds;
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			LOGGER.warn("Setting timeout on a closed reasoner.");
 	}
 
 	@Override
 	public Integer getReasoningTimeout() {
-		return timeoutAfterSeconds;
+		return this.timeoutAfterSeconds;
 	}
 
 	@Override
@@ -112,6 +116,8 @@ public class VLogReasoner implements Reasoner {
 		}
 		Validate.noNullElements(rules, "Null rules are not alowed! The list contains a null at position [%d].");
 		this.rules.addAll(new ArrayList<>(rules));
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			LOGGER.warn("Adding rules to a closed reasoner.");
 	}
 
 	@Override
@@ -122,6 +128,7 @@ public class VLogReasoner implements Reasoner {
 					"Rules cannot be re-writen after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
 		}
 		this.ruleRewriteStrategy = ruleRewritingStrategy;
+		LOGGER.warn("Setting rule rewrite strategy on a closed reasoner.");
 	}
 
 	@Override
@@ -150,6 +157,8 @@ public class VLogReasoner implements Reasoner {
 			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
 			this.factsForPredicate.get(predicate).add(fact);
 		}
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			LOGGER.warn("Adding facts to a closed reasoner.");
 	}
 
 	@Override
@@ -162,11 +171,13 @@ public class VLogReasoner implements Reasoner {
 		Validate.notNull(predicate, "Null predicates are not allowed!");
 		Validate.notNull(dataSource, "Null dataSources are not allowed!");
 		validateNoDataSourceForPredicate(predicate);
-		Validate.isTrue(!factsForPredicate.containsKey(predicate),
+		Validate.isTrue(!this.factsForPredicate.containsKey(predicate),
 				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added in memory: %s",
-				predicate, factsForPredicate.get(predicate));
+				predicate, this.factsForPredicate.get(predicate));
 
-		dataSourceForPredicate.put(predicate, dataSource);
+		this.dataSourceForPredicate.put(predicate, dataSource);
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			LOGGER.warn("Adding facts to a closed reasoner.");
 	}
 
 	private void validateFactTermsAreConstant(Atom fact) {
@@ -179,13 +190,15 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	private void validateNoDataSourceForPredicate(final Predicate predicate) {
-		Validate.isTrue(!dataSourceForPredicate.containsKey(predicate),
+		Validate.isTrue(!this.dataSourceForPredicate.containsKey(predicate),
 				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added from data source: %s",
-				predicate, dataSourceForPredicate.get(predicate));
+				predicate, this.dataSourceForPredicate.get(predicate));
 	}
 
 	@Override
-	public void load() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void load() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			throw new ReasonerStateException(reasonerState, "Loading is not allowed after closing.");
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			LOGGER.warn("This method call is ineffective: the Reasoner has already been loaded.");
 		} else {
@@ -204,7 +217,7 @@ public class VLogReasoner implements Reasoner {
 			} catch (final EDBConfigurationException e) {
 				throw new RuntimeException("Invalid data sources configuration.", e);
 			}
-			
+
 			validateDataSourcePredicateArities();
 
 			loadInMemoryFacts();
@@ -214,6 +227,8 @@ public class VLogReasoner implements Reasoner {
 			} else {
 				loadRules();
 			}
+
+			setLogLevel(this.internalLogLevel);
 		}
 	}
 
@@ -225,7 +240,10 @@ public class VLogReasoner implements Reasoner {
 			} catch (final NotStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
 			}
-			if (predicate.getArity() != dataSourcePredicateArity) {
+			if (dataSourcePredicateArity == -1) {
+				LOGGER.warn("Data source {} for predicate {} is empty: ", this.dataSourceForPredicate.get(predicate),
+						predicate);
+			} else if (predicate.getArity() != dataSourcePredicateArity) {
 				throw new IncompatiblePredicateArityException(predicate, dataSourcePredicateArity,
 						this.dataSourceForPredicate.get(predicate));
 			}
@@ -237,6 +255,8 @@ public class VLogReasoner implements Reasoner {
 	public boolean reason() throws IOException, ReasonerStateException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed before loading!");
+		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(reasonerState, "Reasoning is not allowed after closing.");
 		} else if (this.reasonerState == ReasonerState.AFTER_REASONING) {
 			LOGGER.warn(
 					"This method call is ineffective: this Reasoner has already reasoned. Successive reason() calls are not supported. Call reset() to undo loading and reasoning and reload to be able to reason again");
@@ -245,17 +265,17 @@ public class VLogReasoner implements Reasoner {
 
 			final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
 			try {
-				if (timeoutAfterSeconds == null) {
+				if (this.timeoutAfterSeconds == null) {
 					this.vLog.materialize(skolemChase);
-					reasoningCompleted = true;
+					this.reasoningCompleted = true;
 				} else {
-					reasoningCompleted = this.vLog.materialize(skolemChase, timeoutAfterSeconds);
+					this.reasoningCompleted = this.vLog.materialize(skolemChase, this.timeoutAfterSeconds);
 				}
 			} catch (final NotStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
 			}
 		}
-		return reasoningCompleted;
+		return this.reasoningCompleted;
 	}
 
 	@Override
@@ -263,6 +283,8 @@ public class VLogReasoner implements Reasoner {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
+		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(reasonerState, "Querying is not allowed after closing.");
 		}
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 
@@ -282,10 +304,12 @@ public class VLogReasoner implements Reasoner {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
+		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(reasonerState, "Querying is not allowed after closing.");
 		}
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
-		Validate.isTrue(csvFilePath.endsWith(CsvFileDataSource.CSV_FILE_EXTENSION),
+		Validate.isTrue(csvFilePath.endsWith(".csv"),
 				"Expected .csv extension for file [%s]!", csvFilePath);
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
@@ -297,7 +321,9 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void resetReasoner() {
+	public void resetReasoner() throws ReasonerStateException {
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			throw new ReasonerStateException(reasonerState, "Resetting is not allowed after closing.");
 		this.reasonerState = ReasonerState.BEFORE_LOADING;
 		this.vLog.stop();
 		LOGGER.warn(
@@ -306,6 +332,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void close() {
+		reasonerState = ReasonerState.AFTER_CLOSING;
 		this.vLog.stop();
 	}
 
@@ -340,8 +367,8 @@ public class VLogReasoner implements Reasoner {
 	String generateDataSourcesConfig() {
 		final StringBuilder configStringBuilder = new StringBuilder();
 		int dataSourceIndex = 0;
-		for (final Predicate predicate : dataSourceForPredicate.keySet()) {
-			final DataSource dataSource = dataSourceForPredicate.get(predicate);
+		for (final Predicate predicate : this.dataSourceForPredicate.keySet()) {
+			final DataSource dataSource = this.dataSourceForPredicate.get(predicate);
 			try (final Formatter formatter = new Formatter(configStringBuilder);) {
 				formatter.format(dataSource.toConfigString(), dataSourceIndex,
 						ModelToVLogConverter.toVLogPredicate(predicate));
@@ -377,19 +404,23 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setLogLevel(LogLevel logLevel) {
+	public void setLogLevel(LogLevel logLevel) throws ReasonerStateException {
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			throw new ReasonerStateException(reasonerState, "Setting log level is not allowed after closing.");
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
-		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(internalLogLevel));
+		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(this.internalLogLevel));
 	}
 
 	@Override
 	public LogLevel getLogLevel() {
-		return internalLogLevel;
+		return this.internalLogLevel;
 	}
 
 	@Override
-	public void setLogFile(String filePath) {
+	public void setLogFile(String filePath) throws ReasonerStateException {
+		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+			throw new ReasonerStateException(reasonerState, "Setting log file is not allowed after closing.");
 		this.vLog.setLogFile(filePath);
 	}
 

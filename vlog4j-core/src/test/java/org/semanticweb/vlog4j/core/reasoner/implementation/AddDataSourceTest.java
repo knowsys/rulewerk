@@ -33,7 +33,6 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -43,7 +42,7 @@ import karmaresearch.vlog.EDBConfigurationException;
 
 public class AddDataSourceTest {
 
-	private static final String CSV_FILE_PATH = CsvFileUtils.CSV_INPORT_FOLDER + "unaryFacts.csv";
+	private static final String CSV_FILE_PATH = FileDataSourceTestUtils.INPUT_FOLDER + "unaryFacts.csv";
 
 	@Test
 	public void testAddDataSourceExistentDataForDifferentPredicates() throws ReasonerStateException,
@@ -57,7 +56,6 @@ public class AddDataSourceTest {
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(factPredicatePArity2, factPredicateQArity1);
-			
 			reasoner.addFactsFromDataSource(predicateLArity1, dataSource);
 			reasoner.addFactsFromDataSource(predicateParity1, dataSource);
 			reasoner.load();
@@ -74,6 +72,7 @@ public class AddDataSourceTest {
 		}
 	}
 
+	@Test
 	public void testAddDataSourceBeforeLoading() throws ReasonerStateException, EdbIdbSeparationException,
 			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);

@@ -35,7 +35,6 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -44,8 +43,8 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 public class GeneratedAnonymousIndividualsTest {
 
-	private static final String includeBlanksFilePath = CsvFileUtils.CSV_EXPORT_FOLDER + "include_blanks.csv";
-	private static final String excludeBlanksFilePath = CsvFileUtils.CSV_EXPORT_FOLDER + "exclude_blanks.csv";
+	private static final String includeBlanksFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "include_blanks.csv";
+	private static final String excludeBlanksFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "exclude_blanks.csv";
 
 	private static final Variable vx = Expressions.makeVariable("x");
 	private static final Variable vy = Expressions.makeVariable("y");
@@ -138,7 +137,7 @@ public class GeneratedAnonymousIndividualsTest {
 
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
 			// expected fact: P(c, _:b)
-			final List<List<String>> csvContentIncludeBlanks = CsvFileUtils.getCSVContent(includeBlanksFilePath);
+			final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils.getCSVContent(includeBlanksFilePath);
 			assertTrue(csvContentIncludeBlanks.size() == 1);
 			for (final List<String> queryResult : csvContentIncludeBlanks) {
 				assertTrue(queryResult.size() == 2);
@@ -148,7 +147,7 @@ public class GeneratedAnonymousIndividualsTest {
 			assertNotEquals("c", blank);
 
 			reasoner.exportQueryAnswersToCsv(queryAtom, excludeBlanksFilePath, false);
-			final List<List<String>> csvContentExcludeBlanks = CsvFileUtils.getCSVContent(excludeBlanksFilePath);
+			final List<List<String>> csvContentExcludeBlanks = FileDataSourceTestUtils.getCSVContent(excludeBlanksFilePath);
 			assertTrue(csvContentExcludeBlanks.isEmpty());
 
 		}
@@ -157,7 +156,7 @@ public class GeneratedAnonymousIndividualsTest {
 	private void checkTowDistinctBlanksGenerated(final Reasoner reasoner)
 			throws ReasonerStateException, IOException, EdbIdbSeparationException {
 		// expected facts: P(c, _:b1), P(c, _:b2)
-		final List<List<String>> csvContentIncludeBlanks = CsvFileUtils.getCSVContent(includeBlanksFilePath);
+		final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils.getCSVContent(includeBlanksFilePath);
 		assertTrue(csvContentIncludeBlanks.size() == 2);
 		for (final List<String> queryResult : csvContentIncludeBlanks) {
 			assertTrue(queryResult.size() == 2);
@@ -170,7 +169,7 @@ public class GeneratedAnonymousIndividualsTest {
 		assertNotEquals("c", blank2);
 
 		reasoner.exportQueryAnswersToCsv(queryAtom, excludeBlanksFilePath, false);
-		final List<List<String>> csvContentExcludeBlanks = CsvFileUtils.getCSVContent(excludeBlanksFilePath);
+		final List<List<String>> csvContentExcludeBlanks = FileDataSourceTestUtils.getCSVContent(excludeBlanksFilePath);
 		assertTrue(csvContentExcludeBlanks.isEmpty());
 	}
 

@@ -1,0 +1,11 @@
+@base <file:/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<1> <a> "1"^^xsd:integer .
+<2> <a> "1.0"^^xsd:decimal .
+<3> <a> "1.0E1"^^xsd:double .
+<4> <a> "true"^^xsd:boolean .
+<5> <a> "false"^^xsd:boolean .
+<6> <a> "test string" .

@@ -30,8 +30,6 @@ import java.io.FileReader;
 
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
@@ -43,7 +41,8 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArit
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 public class LoggingTest {
-	private static final String logFilePath = "src/test/data/log.out";
+
+	public static final String LOGS_FOLDER = "src/test/data/logs/";
 
 	private static final Variable vx = Expressions.makeVariable("x");
 	// p(?x) -> q(?x)
@@ -54,11 +53,6 @@ public class LoggingTest {
 	private static final Constant constantC = Expressions.makeConstant("c");
 	private static final Atom factPc = Expressions.makeAtom("p", constantC);
 
-	@Before
-	public void assertLogTestFileNotExists() {
-		assertFalse(new File(logFilePath).exists());
-	}
-
 	// TODO remaining tests: change log file
 	// TODO remaining tests: test that the log level and the log files can be set
 	// any time
@@ -67,7 +61,6 @@ public class LoggingTest {
 	public void testSetLogFileNull() throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.setLogFile(null);
-			assertFalse(new File(logFilePath).exists());
 			instance.setLogLevel(LogLevel.INFO);
 
 			instance.addFacts(factPc);
@@ -76,14 +69,15 @@ public class LoggingTest {
 			instance.reason();
 		}
 		// TODO test that logging is redirected to system output
-		assertFalse(new File(logFilePath).exists());
 	}
 
 	@Test
 	public void testSetLogFileInexistent() throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+		final String inexistentFilePath = LOGS_FOLDER + "a/b";
+
 		try (final Reasoner instance = Reasoner.getInstance()) {
-			instance.setLogFile("/a/b");
-			assertFalse(new File("/a/b").exists());
+			instance.setLogFile(inexistentFilePath);
+			assertFalse(new File(inexistentFilePath).exists());
 			instance.setLogLevel(LogLevel.INFO);
 
 			instance.addFacts(factPc);
@@ -92,12 +86,11 @@ public class LoggingTest {
 			instance.reason();
 		}
 		// TODO test that logging is redirected to system output
-		assertFalse(new File(logFilePath).exists());
-		assertFalse(new File("/a/b").exists());
+		assertFalse(new File(inexistentFilePath).exists());
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testSetLogLevelNull() {
+	public void testSetLogLevelNull() throws ReasonerStateException {
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.setLogLevel(null);
 		}
@@ -105,6 +98,10 @@ public class LoggingTest {
 
 	@Test
 	public void testSetLogFileAppendsToFile() throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testSetLogFileAppendsToFile.log";
+		assertFalse(new File(logFilePath).exists());
+		int countLinesBeforeReset = 0;
+
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.addFacts(factPc);
 			instance.addRules(rule);
@@ -113,22 +110,24 @@ public class LoggingTest {
 			instance.load();
 			instance.reason();
 
-			final int countLinesBeforeReset = readFile();
+			countLinesBeforeReset = readFile(logFilePath);
 			assertTrue(countLinesBeforeReset > 0);
 
 			instance.resetReasoner();
 			instance.load();
 			instance.reason();
-
-			final int countLinesAfterReset = readFile();
-
-			// the logger appends to the same file after reset
-			assertTrue(countLinesAfterReset > countLinesBeforeReset);
 		}
+		final int countLinesAfterReset = readFile(logFilePath);
+		// the logger appends to the same file after reset
+		assertTrue(countLinesAfterReset > countLinesBeforeReset);
+
 	}
 
 	@Test
 	public void testLogLevelInfo() throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelInfo.log";
+		assertFalse(new File(logFilePath).exists());
+
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.addFacts(factPc);
 			instance.addRules(rule);
@@ -139,14 +138,17 @@ public class LoggingTest {
 			instance.setLogLevel(LogLevel.INFO);
 			instance.reason();
 			instance.setLogLevel(LogLevel.INFO);
-
-			final int countLinesReasonLogLevelInfo = readFile();
-			assertTrue(countLinesReasonLogLevelInfo > 0);
 		}
+		final int countLinesReasonLogLevelInfo = readFile(logFilePath);
+		assertTrue(countLinesReasonLogLevelInfo > 0);
+
 	}
 
 	@Test
 	public void testLogLevelDebug() throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelDebug.log";
+		assertFalse(new File(logFilePath).exists());
+
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.addFacts(factPc);
 			instance.addRules(rule);
@@ -157,18 +159,14 @@ public class LoggingTest {
 			instance.setLogLevel(LogLevel.DEBUG);
 			instance.reason();
 			instance.setLogLevel(LogLevel.DEBUG);
-
-			final int countLinesReasonLogLevelDebug = readFile();
-			assertTrue(countLinesReasonLogLevelDebug > 0);
+			instance.close();
 		}
+		final int countLinesReasonLogLevelDebug = readFile(logFilePath);
+		assertTrue(countLinesReasonLogLevelDebug > 0);
+
 	}
 
-	@After
-	public void deleteLogTestFile() {
-		new File(logFilePath).delete();
-	}
-
-	private int readFile() throws IOException, FileNotFoundException {
+	private int readFile(final String logFilePath) throws IOException, FileNotFoundException {
 		int countLines = 0;
 		assertTrue(new File(logFilePath).exists());
 		try (BufferedReader br = new BufferedReader(new FileReader(logFilePath))) {

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.semanticweb.vlog4j</groupId>
 		<artifactId>vlog4j-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.3.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>vlog4j-examples</artifactId>
@@ -18,9 +18,38 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.semanticweb.vlog4j</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>vlog4j-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-owlapi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-rdf</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<!-- Rio parser and writer implementation for the Turtle file format. -->
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-turtle</artifactId>
+			<!-- version compatible with the org.openrdf.model version, as imported by vlog4j-rdf dependency -->
+			<version>2.7.16</version>
+		</dependency>
+		
+		<dependency>
+			<!-- Rio parser and writer implementation for the RDF/XML file format. -->
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-rdfxml</artifactId>
+			<!-- version compatible with the org.openrdf.model version, as imported by vlog4j-rdf dependency -->
+			<version>2.7.16</version>
+		</dependency>
+		
+		
 	</dependencies>
 </project>
+

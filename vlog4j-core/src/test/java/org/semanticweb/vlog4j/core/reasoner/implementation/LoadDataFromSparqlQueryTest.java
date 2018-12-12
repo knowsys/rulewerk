@@ -1,5 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /*-
@@ -27,8 +28,10 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -46,6 +49,7 @@ public class LoadDataFromSparqlQueryTest {
 	 * @throws IOException
 	 * @throws IncompatiblePredicateArityException
 	 */
+	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
 	public void testSimpleSparqlQuery()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
@@ -54,7 +58,7 @@ public class LoadDataFromSparqlQueryTest {
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// a has father b
-				"?a p:P22 ?b");
+				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -64,6 +68,33 @@ public class LoadDataFromSparqlQueryTest {
 					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
+				final QueryResult firstAnswer = answerQuery.next();
+				assertNotNull(firstAnswer);
+			}
+		}
+	}
+
+	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
+	@Test
+	public void testSimpleSparqlQueryHttps()
+			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+		final URL endpoint = new URL("https://query.wikidata.org/sparql");
+		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
+				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
+		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
+				// a has father b
+				"?a wdt:P22 ?b");
+		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
+
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
+			reasoner.load();
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makeAtom(fatherOfPredicate,
+					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+
+				assertTrue(answerQuery.hasNext());
+				final QueryResult firstAnswer = answerQuery.next();
+				assertNotNull(firstAnswer);
 			}
 		}
 	}
@@ -76,15 +107,16 @@ public class LoadDataFromSparqlQueryTest {
 	 * @throws IOException
 	 * @throws IncompatiblePredicateArityException
 	 */
+	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
 	public void testSimpleSparqlQuery2()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final URL endpoint = new URL("http://query.wikidata.org/sparql");
+		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// a has father b
-				"?a p:P22 ?b .");
+				"?a wdt:P22 ?b .");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -98,37 +130,36 @@ public class LoadDataFromSparqlQueryTest {
 		}
 	}
 
+	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test(expected = RuntimeException.class)
 	public void testConjunctiveQueryNewLineCharacterInQueryBody()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final URL endpoint = new URL("http://query.wikidata.org/sparql");
+		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
-				"?b p:P22 ?a .\n" + "?b p:P25 ?c");
+				"?b wdt:P22 ?a .\n" + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makeAtom(haveChildrenTogether,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
-
-				assertTrue(answerQuery.hasNext());
-			}
+			reasoner.answerQuery(Expressions.makeAtom(haveChildrenTogether, Expressions.makeVariable("x"),
+					Expressions.makeVariable("y")), false);
 		}
 	}
 
+	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
 	public void testConjunctiveQuery()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final URL endpoint = new URL("http://query.wikidata.org/sparql");
+		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
-				"?b p:P22 ?a ." + "?b p:P25 ?c");
+				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -145,13 +176,13 @@ public class LoadDataFromSparqlQueryTest {
 	@Test(expected = IncompatiblePredicateArityException.class)
 	public void testDataSourcePredicateDoesNotMatchSparqlQueryTerms()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final URL endpoint = new URL("http://query.wikidata.org/sparql");
+		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
 
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
-				"?b p:P22 ?a ." + "?b p:P25 ?c");
+				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			// TODO must validate predicate arity sonner

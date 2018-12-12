@@ -41,7 +41,6 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.CsvFileUtils;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -124,7 +123,7 @@ public class ReasonerStateTest {
 	}
 
 	@Test
-	public void testResetBeforeLoad() {
+	public void testResetBeforeLoad() throws ReasonerStateException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.resetReasoner();
 		}
@@ -196,7 +195,7 @@ public class ReasonerStateTest {
 			// assert r(d)
 			final Predicate predicateR1 = Expressions.makePredicate("r", 1);
 			reasoner.addFactsFromDataSource(predicateR1,
-					new CsvFileDataSource(new File(CsvFileUtils.CSV_INPORT_FOLDER, "constantD.csv")));
+					new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER, "constantD.csv")));
 			// p(?x) -> q(?x)
 			reasoner.addRules(ruleQxPx);
 			reasoner.load();
@@ -282,12 +281,12 @@ public class ReasonerStateTest {
 	@Test(expected = ReasonerStateException.class)
 	public void testFailExportQueryAnswerToCsvBeforeLoad() throws ReasonerStateException, IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, CsvFileUtils.CSV_EXPORT_FOLDER + "output.csv", true);
+			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, FileDataSourceTestUtils.OUTPUT_FOLDER + "output.csv", true);
 		}
 	}
 
 	@Test
-	public void testSuccessiveCloseAfterLoad() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testSuccessiveCloseAfterLoad() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.load();
 			reasoner.close();

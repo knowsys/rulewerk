@@ -52,14 +52,21 @@ public interface Atom {
 	/**
 	 * Returns the {@link Variable}s that occur among the atom terms.
 	 *
-	 * @return a set of variables
+	 * @return the set of atom variables
 	 */
 	public Set<Variable> getVariables();
 
 	/**
 	 * Returns the {@link Constant}s that occur among the atom terms.
 	 * 
-	 * @return
+	 * @return the set of atom constants
 	 */
 	public Set<Constant> getConstants();
+
+	/**
+	 * Returns the {@link Blank}s that occur among the atom terms.
+	 * 
+	 * @return the set of atom blanks
+	 */
+	public Set<Blank> getBlanks();
 }
