@@ -125,45 +125,40 @@ public class AddDataFromCsvFile {
 		final Atom isPartOfIDBYX = makeAtom(isPartOfIDB, y, x);
 		final Rule rule8 = makeRule(hasPartIDBXY, isPartOfIDBYX);
 
-		/* 2. Loading, reasoning, and querying. */
-		final Reasoner reasoner = Reasoner.getInstance();
-		reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
+		/* 2. Loading, reasoning, and querying while using try-with-resources to close the reasoner automatically. */
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 
-		/* Importing {@code .csv} files as data sources. */
-		final DataSource bicycleEDBDataSource = new CsvFileDataSource(
-				new File(ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz"));
-		final DataSource hasPartDataSource = new CsvFileDataSource(
-				new File(ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz"));
-		final DataSource wheelDataSource = new CsvFileDataSource(
-				new File(ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz"));
-		reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBDataSource);
-		reasoner.addFactsFromDataSource(hasPartEDB, hasPartDataSource);
-		reasoner.addFactsFromDataSource(wheelEDB, wheelDataSource);
+			/* Importing {@code .csv} files as data sources. */
+			final DataSource bicycleEDBDataSource = new CsvFileDataSource(
+					new File(ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz"));
+			final DataSource hasPartDataSource = new CsvFileDataSource(
+					new File(ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz"));
+			final DataSource wheelDataSource = new CsvFileDataSource(
+					new File(ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz"));
+			reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBDataSource);
+			reasoner.addFactsFromDataSource(hasPartEDB, hasPartDataSource);
+			reasoner.addFactsFromDataSource(wheelEDB, wheelDataSource);
 
-		reasoner.load();
-		System.out.println("Before materialisation:");
-		ExamplesUtils.printOutQueryAnswers(hasPartEDBXY, reasoner);
+			reasoner.load();
+			System.out.println("Before materialisation:");
+			ExamplesUtils.printOutQueryAnswers(hasPartEDBXY, reasoner);
 
-		/* The reasoner will use the Restricted Chase by default. */
-		reasoner.reason();
-		System.out.println("After materialisation:");
-		ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
+			/* The reasoner will use the Restricted Chase by default. */
+			reasoner.reason();
+			System.out.println("After materialisation:");
+			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
-		/* 3. Exporting query answers to {@code .csv} files. */
-		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithBlanks.csv", true);
-		reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithoutBlanks.csv",
-				false);
+			/* 3. Exporting query answers to {@code .csv} files. */
+			reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithBlanks.csv", true);
+			reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithoutBlanks.csv",
+					false);
 
-		final Constant redBike = makeConstant("redBike");
-		final Atom hasPartIDBRedBikeY = makeAtom(hasPartIDB, redBike, y);
-		reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
-				ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBRedBikeYWithBlanks.csv", true);
-
-		/*
-		 * 4. Closing. Use try-with-resources, or remember to call {@code close()} to
-		 * free the reasoner's resources.
-		 */
-		reasoner.close();
+			final Constant redBike = makeConstant("redBike");
+			final Atom hasPartIDBRedBikeY = makeAtom(hasPartIDB, redBike, y);
+			reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
+					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBRedBikeYWithBlanks.csv", true);
+		}
 	}
 
 }
