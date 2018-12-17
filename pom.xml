@@ -18,6 +18,7 @@
 		<module>vlog4j-rdf</module>
 		<module>vlog4j-examples</module>
 		<module>vlog4j-owlapi</module>
+		<module>vlog4j-graal</module>
 	</modules>
 
 	<licenses>
