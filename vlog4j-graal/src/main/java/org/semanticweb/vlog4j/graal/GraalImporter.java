@@ -23,8 +23,10 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 
 import fr.lirmm.graphik.graal.api.core.AtomSet;
+import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 import fr.lirmm.graphik.util.stream.CloseableIterator;
 import fr.lirmm.graphik.util.stream.IteratorException;
 
@@ -95,6 +97,29 @@ public class GraalImporter {
 	 */
 	private static Predicate importPredicate(fr.lirmm.graphik.graal.api.core.Predicate predicate) {
 		return makePredicate(predicate.getIdentifier().toString(), predicate.getArity());
+	}
+	
+	/**
+
+	 */
+	/**
+	 * Converts a {@link ConjunctiveQuery Graal Query} into a {@link ImportedGraalQuery}.
+	 * To use this with the {@link Reasoner}, add it as a Rule via {@link Reasoner#addRules(Rule...)}
+	 * and use it as the Atom for {@link Reasoner#answerQuery(Atom, boolean)}.
+	 * 
+	 * <p>
+	 * <b>WARNING</b>: The supplied {@code identifier} will be used to create a predicate containing all
+	 * answer variables from the {@code query}. If you use this identifier in another predicate, you will get conflicts.
+	 * </p>
+	 * @param identifier
+	 * @param query
+	 * @return
+	 */
+	public static ImportedGraalQuery importQuery(String identifier, ConjunctiveQuery query) {
+		Conjunction conjunction = importAtomSet(query.getAtomSet());
+		List<Term> answerVariables = importTerms(query.getAnswerVariables());
+		
+		return new  ImportedGraalQuery(identifier, answerVariables, conjunction);
 	}
 	
 	/**
