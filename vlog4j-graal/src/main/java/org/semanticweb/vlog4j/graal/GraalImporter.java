@@ -50,6 +50,20 @@ public class GraalImporter {
 		List<Term> terms = importTerms(atom.getTerms());
 		return makeAtom(predicate, terms);
 	}
+	
+	/**
+	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atoms} into a
+	 * {@link List} of {@link Atom VLog4J Atoms}.
+	 * @param atoms A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atoms}.
+	 * @return A {@link List} of {@link Atom VLog4J Atoms}.
+	 */
+	public static List<Atom> importAtoms(List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
+		List<Atom> result = new ArrayList<>();
+		for (fr.lirmm.graphik.graal.api.core.Atom atom : atoms) {
+			result.add(importAtom(atom));
+		}
+		return result;
+	}
 
 	/**
 	 * Converts a {@link AtomSet Graal AtomSet} into a {@link Conjunction VLog4J Conjunction}.
@@ -131,6 +145,20 @@ public class GraalImporter {
 		Conjunction head = importAtomSet(rule.getHead());
 		Conjunction body = importAtomSet(rule.getBody());
 		return makeRule(head, body);
+	}
+
+	/**
+	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rules} into a
+	 * {@link List} of {@link Rule VLog4J Rules}.
+	 * @param rules A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rules}.
+	 * @return A {@link List} of {@link Rule VLog4J Rules}.
+	 */
+	public static List<Rule> importRules(List<fr.lirmm.graphik.graal.api.core.Rule> rules) {
+		List<Rule> result = new ArrayList<>();
+		for (fr.lirmm.graphik.graal.api.core.Rule rule : rules) {
+			result.add(importRule(rule));;
+		}
+		return result;
 	}
 	
 	/**
