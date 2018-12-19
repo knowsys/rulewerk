@@ -68,4 +68,16 @@ public class GraalImporterTest {
 		fr.lirmm.graphik.graal.api.core.Rule graal_rule = DlgpParser.parseRule(hasPart + "(" + x + "," + y + ")," + wheel + "(" + y + "):-" + bicycle + "(" + x + ")."); 
 		assertEquals(vlog4j_rule, GraalImporter.importRule(graal_rule));
 	}
+	
+	@Test
+	public void testImportQuery() throws ParseException {
+		// ?(X) :- mortal(X)
+		String mortalQuery = "mortalQuery";
+		Atom query = makeAtom(makePredicate(mortalQuery, 1), vlog4j_x);
+		Rule queryRule = makeRule(query, makeAtom(vlog4j_mortal, vlog4j_x));
+		
+		ImportedGraalQuery importedQuery = GraalImporter.importQuery(mortalQuery, DlgpParser.parseQuery("?(" + x + ") :- " + mortal + "(" + x + ")."));
+		assertEquals(query, importedQuery.getQuery());
+		assertEquals(queryRule, importedQuery.getRule());
+	}
 }
