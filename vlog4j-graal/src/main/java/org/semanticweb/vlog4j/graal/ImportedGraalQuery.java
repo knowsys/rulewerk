@@ -17,70 +17,41 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 
 /**
- * A utility class representing a {@link ConjunctiveQuery Graal ConjunctiveQuery}.
- * To use this with the {@link Reasoner}, add it as a Rule via {@link Reasoner#addRules(Rule...)}
- * and use it as the Atom for {@link Reasoner#answerQuery(Atom, boolean)}. 
+ * A utility class containing a {@link ConjunctiveQuery Graal ConjunctiveQuery}.
+ * To use this with the {@link Reasoner}, add the {@code rule} from {@link #getRule()} via {@link Reasoner#addRules(Rule...)}
+ * and use the {@code query} from {@link #getQuery()} in {@link Reasoner#answerQuery(Atom, boolean)}. 
  * @author adrian
  */
-public class ImportedGraalQuery implements Rule, Atom {
+public class ImportedGraalQuery {
+	
+	private static Logger LOGGER = LoggerFactory.getLogger(ImportedGraalQuery.class);
 	
 	Rule rule;
 	
 	Atom query;
+	
+	boolean ruleAccessed = false;
 	
 	protected ImportedGraalQuery(String identifier, List<Term> answerVariables, Conjunction conjunction) {
 		Predicate answerPredicate = makePredicate(identifier, answerVariables.size());
 		query = makeAtom(answerPredicate, answerVariables);
 		rule = makeRule(makeConjunction(query), conjunction);
 	}
-
-	@Override
-	public Predicate getPredicate() {
-		return query.getPredicate();
+	
+	public Rule getRule() {
+		ruleAccessed = true;
+		return rule;
 	}
-
-	@Override
-	public List<Term> getTerms() {
-		return query.getTerms();
+	
+	public Atom getQuery() {
+		LOGGER.warn("Acessing imported graal query without accessing imported rule. The rule needs to be added to the reasoner to obtain results!");
+		return query;
 	}
-
-	@Override
-	public Set<Variable> getVariables() {
-		return query.getVariables();
-	}
-
-	@Override
-	public Set<Constant> getConstants() {
-		return query.getConstants();
-	}
-
-	@Override
-	public Set<Blank> getBlanks() {
-		return query.getBlanks();
-	}
-
-	@Override
-	public Conjunction getHead() {
-		return rule.getHead();
-	}
-
-	@Override
-	public Conjunction getBody() {
-		return rule.getBody();
-	}
-
-	@Override
-	public Set<Variable> getExistentiallyQuantifiedVariables() {
-		return rule.getExistentiallyQuantifiedVariables();
-	}
-
-	@Override
-	public Set<Variable> getUniversallyQuantifiedVariables() {
-		return rule.getUniversallyQuantifiedVariables();
-	}
-
 }
