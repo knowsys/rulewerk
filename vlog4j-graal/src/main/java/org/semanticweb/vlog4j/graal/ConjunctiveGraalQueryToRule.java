@@ -22,22 +22,22 @@ import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
  * A utility class containing a {@link ConjunctiveQuery Graal ConjunctiveQuery}.
  * To use this with the {@link Reasoner}, add the {@code rule} from
  * {@link #getRule()} via {@link Reasoner#addRules(Rule...)} and use the
- * {@code query} from {@link #getQuery()} in
+ * {@code query} from {@link #getQueryAtom()} in
  * {@link Reasoner#answerQuery(Atom, boolean)}.
  * 
  * @author Adrian Bielefeldt
  */
-public class ImportedGraalQuery {
+public class ConjunctiveGraalQueryToRule {
 	
-	private static Logger LOGGER = LoggerFactory.getLogger(ImportedGraalQuery.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(ConjunctiveGraalQueryToRule.class);
 	
-	Rule rule;
+	final Rule rule;
 	
-	Atom query;
+	final Atom query;
 	
 	boolean ruleAccessed = false;
 	
-	protected ImportedGraalQuery(final String identifier, final List<Term> answerVariables, final Conjunction conjunction) {
+	protected ConjunctiveGraalQueryToRule(final String identifier, final List<Term> answerVariables, final Conjunction conjunction) {
 		final Predicate answerPredicate = makePredicate(identifier, answerVariables.size());
 		query = makeAtom(answerPredicate, answerVariables);
 		rule = makeRule(makeConjunction(query), conjunction);
@@ -48,8 +48,11 @@ public class ImportedGraalQuery {
 		return rule;
 	}
 	
-	public Atom getQuery() {
-		LOGGER.warn("Acessing imported graal query without accessing imported rule. The rule needs to be added to the reasoner to obtain results!");
+	public Atom getQueryAtom() {
+		if (!ruleAccessed) {
+			LOGGER.warn(
+					"Acessing converted graal query without accessing converted rule. The rule needs to be added to the reasoner to obtain results!");
+		}
 		return query;
 	}
 }

@@ -101,8 +101,8 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link ConjunctiveQuery Graal Query} into a
-	 * {@link ImportedGraalQuery}. To use this with the {@link Reasoner}, add the
-	 * {@code rule} from {@link ImportedGraalQuery#getRule()} as a Rule via
+	 * {@link ConjunctiveGraalQueryToRule}. To use this with the {@link Reasoner}, add the
+	 * {@code rule} from {@link ConjunctiveGraalQueryToRule#getRule()} as a Rule via
 	 * {@link Reasoner#addRules(Rule...)} and use it as the Atom for
 	 * {@link Reasoner#answerQuery(Atom, boolean)}.
 	 * 
@@ -116,11 +116,11 @@ public final class GraalToVLog4JModelConverter {
 	 * @param query
 	 * @return
 	 */
-	public static ImportedGraalQuery convertQuery(final String identifier, final ConjunctiveQuery query) {
+	public static ConjunctiveGraalQueryToRule convertQuery(final String identifier, final ConjunctiveQuery query) {
 		final Conjunction conjunction = convertAtomSet(query.getAtomSet());
 		final List<Term> answerVariables = convertTerms(query.getAnswerVariables());
 
-		return new ImportedGraalQuery(identifier, answerVariables, conjunction);
+		return new ConjunctiveGraalQueryToRule(identifier, answerVariables, conjunction);
 	}
 
 	/**
