@@ -21,7 +21,7 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
 /**
  * @author Adrian Bielefeldt
  */
-public class GraalImporterTest {
+public class GraalToVLog4JModelConverterTest {
 	
 	private final String bicycle = "bicycle";
 	private final String hasPart = "hasPart";
