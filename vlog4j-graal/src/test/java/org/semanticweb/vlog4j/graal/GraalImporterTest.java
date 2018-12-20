@@ -45,7 +45,7 @@ public class GraalImporterTest {
 	public void testImportAtom() throws ParseException {
 		Atom vlog4j_atom = makeAtom(vlog4j_human, vlog4j_socrate);
 		fr.lirmm.graphik.graal.api.core.Atom graal_atom = DlgpParser.parseAtom(human + "(" + socrate + ").");
-		assertEquals(vlog4j_atom, GraalImporter.importAtom(graal_atom));
+		assertEquals(vlog4j_atom, GraalToVLog4JModelConverter.importAtom(graal_atom));
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class GraalImporterTest {
 		Atom vlog4j_human_atom = makeAtom(vlog4j_human, vlog4j_x);
 		Rule vlog4j_rule = makeRule(vlog4j_mortal_atom, vlog4j_human_atom);
 		fr.lirmm.graphik.graal.api.core.Rule graal_rule = DlgpParser.parseRule(mortal + "(" + x + ") :- " + human + "(" + x + ").");
-		assertEquals(vlog4j_rule, GraalImporter.importRule(graal_rule));
+		assertEquals(vlog4j_rule, GraalToVLog4JModelConverter.importRule(graal_rule));
 	}
 	
 	@Test
@@ -66,7 +66,7 @@ public class GraalImporterTest {
 		Atom vlog4j_bicycle_atom = makeAtom(vlog4j_bicycle, vlog4j_x);
 		Rule vlog4j_rule = makeRule(makeConjunction(vlog4j_hasPart_atom, vlog4j_wheel_atom), makeConjunction(vlog4j_bicycle_atom));
 		fr.lirmm.graphik.graal.api.core.Rule graal_rule = DlgpParser.parseRule(hasPart + "(" + x + "," + y + ")," + wheel + "(" + y + "):-" + bicycle + "(" + x + ")."); 
-		assertEquals(vlog4j_rule, GraalImporter.importRule(graal_rule));
+		assertEquals(vlog4j_rule, GraalToVLog4JModelConverter.importRule(graal_rule));
 	}
 	
 	@Test
@@ -76,7 +76,7 @@ public class GraalImporterTest {
 		Atom query = makeAtom(makePredicate(mortalQuery, 1), vlog4j_x);
 		Rule queryRule = makeRule(query, makeAtom(vlog4j_mortal, vlog4j_x));
 		
-		ImportedGraalQuery importedQuery = GraalImporter.importQuery(mortalQuery, DlgpParser.parseQuery("?(" + x + ") :- " + mortal + "(" + x + ")."));
+		ImportedGraalQuery importedQuery = GraalToVLog4JModelConverter.importQuery(mortalQuery, DlgpParser.parseQuery("?(" + x + ") :- " + mortal + "(" + x + ")."));
 		assertEquals(query, importedQuery.getQuery());
 		assertEquals(queryRule, importedQuery.getRule());
 	}
