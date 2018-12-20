@@ -1,8 +1,10 @@
 package org.semanticweb.vlog4j.graal;
 
 /**
- * An exception to signify that a conversion from Graal data structures to VLog4J data structures could not be made.
- * @author adrian
+ * An exception to signify that a conversion from Graal data structures to
+ * VLog4J data structures could not be made.
+ * 
+ * @author Adrian Bielefeldt
  *
  */
 public class GraalImportException extends RuntimeException {
@@ -12,7 +14,7 @@ public class GraalImportException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = -3228005099627492816L;
 
-	public GraalImportException(String message) {
+	public GraalImportException(final String message) {
 		super(message);
 	}
 }

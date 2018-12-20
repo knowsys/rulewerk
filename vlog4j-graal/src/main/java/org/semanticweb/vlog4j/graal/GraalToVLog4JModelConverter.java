@@ -34,7 +34,7 @@ import fr.lirmm.graphik.util.stream.IteratorException;
  * Utility class to convert Graal data structures into VLog4J structures. Labels
  * are not imported since VLog4J does not support them.
  * 
- * @author adrian
+ * @author Adrian Bielefeldt
  *
  */
 public final class GraalToVLog4JModelConverter {
