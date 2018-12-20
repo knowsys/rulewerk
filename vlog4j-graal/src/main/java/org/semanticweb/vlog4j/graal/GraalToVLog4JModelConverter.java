@@ -49,9 +49,9 @@ public final class GraalToVLog4JModelConverter {
 	 * @param atom A {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom}
 	 * @return A {@link Atom VLog4J Atom}
 	 */
-	public static Atom importAtom(final fr.lirmm.graphik.graal.api.core.Atom atom) {
-		final Predicate predicate = importPredicate(atom.getPredicate());
-		final List<Term> terms = importTerms(atom.getTerms());
+	public static Atom convertAtom(final fr.lirmm.graphik.graal.api.core.Atom atom) {
+		final Predicate predicate = convertPredicate(atom.getPredicate());
+		final List<Term> terms = convertTerms(atom.getTerms());
 		return makeAtom(predicate, terms);
 	}
 
@@ -63,10 +63,10 @@ public final class GraalToVLog4JModelConverter {
 	 *              Graal Atoms}.
 	 * @return A {@link List} of {@link Atom VLog4J Atoms}.
 	 */
-	public static List<Atom> importAtoms(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
+	public static List<Atom> convertAtoms(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
 		final List<Atom> result = new ArrayList<>();
 		for (final fr.lirmm.graphik.graal.api.core.Atom atom : atoms) {
-			result.add(importAtom(atom));
+			result.add(convertAtom(atom));
 		}
 		return result;
 	}
@@ -78,11 +78,11 @@ public final class GraalToVLog4JModelConverter {
 	 * @param atomSet A {@link AtomSet Graal Atomset}
 	 * @return A {@link Conjunction VLog4J Conjunction}
 	 */
-	private static Conjunction importAtomSet(final AtomSet atomSet) {
+	private static Conjunction convertAtomSet(final AtomSet atomSet) {
 		final List<Atom> result = new ArrayList<>();
 		try (CloseableIterator<fr.lirmm.graphik.graal.api.core.Atom> iterator = atomSet.iterator()) {
 			while (iterator.hasNext()) {
-				result.add(importAtom(iterator.next()));
+				result.add(convertAtom(iterator.next()));
 			}
 		} catch (final IteratorException e) {
 			throw new GraalImportException(
@@ -99,7 +99,7 @@ public final class GraalToVLog4JModelConverter {
 	 *                 Constant}
 	 * @return A {@link Constant VLog4J Constant}
 	 */
-	private static Constant importConstant(final fr.lirmm.graphik.graal.api.core.Constant constant) {
+	private static Constant convertConstant(final fr.lirmm.graphik.graal.api.core.Constant constant) {
 		return makeConstant(constant.getIdentifier().toString());
 	}
 
@@ -113,10 +113,10 @@ public final class GraalToVLog4JModelConverter {
 	 * @return {@link Set} of {@link Constant VLog4J Constants}
 	 */
 	@SuppressWarnings("unused")
-	private static Set<Constant> importConstants(final Set<fr.lirmm.graphik.graal.api.core.Constant> constants) {
+	private static Set<Constant> convertConstants(final Set<fr.lirmm.graphik.graal.api.core.Constant> constants) {
 		final Set<Constant> result = new HashSet<>();
 		for (final fr.lirmm.graphik.graal.api.core.Constant constant : constants) {
-			result.add(importConstant(constant));
+			result.add(convertConstant(constant));
 		}
 		return result;
 	}
@@ -129,7 +129,7 @@ public final class GraalToVLog4JModelConverter {
 	 *                  Predicate}
 	 * @return A {@link Predicate VLog4J Predicate}
 	 */
-	private static Predicate importPredicate(final fr.lirmm.graphik.graal.api.core.Predicate predicate) {
+	private static Predicate convertPredicate(final fr.lirmm.graphik.graal.api.core.Predicate predicate) {
 		return makePredicate(predicate.getIdentifier().toString(), predicate.getArity());
 	}
 
@@ -150,9 +150,9 @@ public final class GraalToVLog4JModelConverter {
 	 * @param query
 	 * @return
 	 */
-	public static ImportedGraalQuery importQuery(final String identifier, final ConjunctiveQuery query) {
-		final Conjunction conjunction = importAtomSet(query.getAtomSet());
-		final List<Term> answerVariables = importTerms(query.getAnswerVariables());
+	public static ImportedGraalQuery convertQuery(final String identifier, final ConjunctiveQuery query) {
+		final Conjunction conjunction = convertAtomSet(query.getAtomSet());
+		final List<Term> answerVariables = convertTerms(query.getAnswerVariables());
 
 		return new ImportedGraalQuery(identifier, answerVariables, conjunction);
 	}
@@ -164,9 +164,9 @@ public final class GraalToVLog4JModelConverter {
 	 * @param rule A {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule}
 	 * @return A {@link Rule Vlog4J Rule}
 	 */
-	public static Rule importRule(final fr.lirmm.graphik.graal.api.core.Rule rule) {
-		final Conjunction head = importAtomSet(rule.getHead());
-		final Conjunction body = importAtomSet(rule.getBody());
+	public static Rule convertRule(final fr.lirmm.graphik.graal.api.core.Rule rule) {
+		final Conjunction head = convertAtomSet(rule.getHead());
+		final Conjunction body = convertAtomSet(rule.getBody());
 		return makeRule(head, body);
 	}
 
@@ -178,10 +178,10 @@ public final class GraalToVLog4JModelConverter {
 	 *              Graal Rules}.
 	 * @return A {@link List} of {@link Rule VLog4J Rules}.
 	 */
-	public static List<Rule> importRules(final List<fr.lirmm.graphik.graal.api.core.Rule> rules) {
+	public static List<Rule> convertRules(final List<fr.lirmm.graphik.graal.api.core.Rule> rules) {
 		final List<Rule> result = new ArrayList<>();
 		for (final fr.lirmm.graphik.graal.api.core.Rule rule : rules) {
-			result.add(importRule(rule));
+			result.add(convertRule(rule));
 			;
 		}
 		return result;
@@ -198,7 +198,7 @@ public final class GraalToVLog4JModelConverter {
 	 * @return A {@link Term VLog4J Term}
 	 * @throws GraalImportException If the term is neither variable nor constant.
 	 */
-	private static Term importTerm(final fr.lirmm.graphik.graal.api.core.Term term) {
+	private static Term convertTerm(final fr.lirmm.graphik.graal.api.core.Term term) {
 		if (term.isConstant()) {
 			return makeConstant(term.getIdentifier().toString());
 		} else if (term.isVariable()) {
@@ -218,10 +218,10 @@ public final class GraalToVLog4JModelConverter {
 	 *              Graal Terms}
 	 * @return A {@link List} of {@link Term VLog4J Terms}
 	 */
-	private static List<Term> importTerms(final List<fr.lirmm.graphik.graal.api.core.Term> terms) {
+	private static List<Term> convertTerms(final List<fr.lirmm.graphik.graal.api.core.Term> terms) {
 		final List<Term> result = new ArrayList<>();
 		for (final fr.lirmm.graphik.graal.api.core.Term term : terms) {
-			result.add(importTerm(term));
+			result.add(convertTerm(term));
 		}
 		return result;
 	}
@@ -234,7 +234,7 @@ public final class GraalToVLog4JModelConverter {
 	 *                 Variable}
 	 * @return A {@link Variable VLog4J Variable}
 	 */
-	private static Variable importVariable(final fr.lirmm.graphik.graal.api.core.Variable variable) {
+	private static Variable convertVariable(final fr.lirmm.graphik.graal.api.core.Variable variable) {
 		return makeVariable(variable.getIdentifier().toString());
 	}
 
@@ -248,10 +248,10 @@ public final class GraalToVLog4JModelConverter {
 	 * @return A {@link Set} of {@link Variable VLog4J Variables}
 	 */
 	@SuppressWarnings("unused")
-	private static Set<Variable> importVariables(final Set<fr.lirmm.graphik.graal.api.core.Variable> variables) {
+	private static Set<Variable> convertVariables(final Set<fr.lirmm.graphik.graal.api.core.Variable> variables) {
 		final Set<Variable> result = new HashSet<>();
 		for (final fr.lirmm.graphik.graal.api.core.Variable variable : variables) {
-			result.add(importVariable(variable));
+			result.add(convertVariable(variable));
 		}
 		return result;
 	}
