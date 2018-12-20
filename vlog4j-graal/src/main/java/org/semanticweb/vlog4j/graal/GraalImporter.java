@@ -13,6 +13,7 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeV
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -112,13 +113,10 @@ public class GraalImporter {
 	private static Predicate importPredicate(fr.lirmm.graphik.graal.api.core.Predicate predicate) {
 		return makePredicate(predicate.getIdentifier().toString(), predicate.getArity());
 	}
-	
-	/**
 
-	 */
 	/**
 	 * Converts a {@link ConjunctiveQuery Graal Query} into a {@link ImportedGraalQuery}.
-	 * To use this with the {@link Reasoner}, add it as a Rule via {@link Reasoner#addRules(Rule...)}
+	 * To use this with the {@link Reasoner}, add the {@code rule} from {@link ImportedGraalQuery#getRule()} as a Rule via {@link Reasoner#addRules(Rule...)}
 	 * and use it as the Atom for {@link Reasoner#answerQuery(Atom, boolean)}.
 	 * 
 	 * <p>
