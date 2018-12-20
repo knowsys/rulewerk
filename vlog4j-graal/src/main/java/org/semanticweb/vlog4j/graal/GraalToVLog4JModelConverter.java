@@ -32,7 +32,7 @@ import fr.lirmm.graphik.util.stream.IteratorException;
 
 /**
  * Utility class to convert Graal data structures into VLog4J structures. Labels
- * are not imported since VLog4J does not support them.
+ * are not converted since VLog4J does not support them.
  * 
  * @author Adrian Bielefeldt
  *
@@ -86,7 +86,7 @@ public final class GraalToVLog4JModelConverter {
 			}
 		} catch (final IteratorException e) {
 			throw new GraalImportException(
-					MessageFormat.format("Unexpected Iterator Exception when importing AtomSet {0}}.", atomSet));
+					MessageFormat.format("Unexpected Iterator Exception when converting AtomSet {0}}.", atomSet));
 		}
 		return makeConjunction(result);
 	}
@@ -205,7 +205,7 @@ public final class GraalToVLog4JModelConverter {
 			return makeVariable(term.getIdentifier().toString());
 		} else {
 			throw new GraalImportException(MessageFormat.format(
-					"Term {0} with identifier {1} could not be imported because it is neither constant nor variable.",
+					"Term {0} with identifier {1} could not be converted because it is neither constant nor variable.",
 					term, term.getIdentifier().toString()));
 		}
 	}
