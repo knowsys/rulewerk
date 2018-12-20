@@ -101,26 +101,26 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link ConjunctiveQuery Graal Query} into a
-	 * {@link ConjunctiveGraalQueryToRule}. To use this with the {@link Reasoner}, add the
-	 * {@code rule} from {@link ConjunctiveGraalQueryToRule#getRule()} as a Rule via
-	 * {@link Reasoner#addRules(Rule...)} and use it as the Atom for
+	 * {@link ConjunctiveGraalQueryToRule}. To use this with the {@link Reasoner},
+	 * add the {@code rule} from {@link ConjunctiveGraalQueryToRule#getRule()} as a
+	 * Rule via {@link Reasoner#addRules(Rule...)} and use it as the Atom for
 	 * {@link Reasoner#answerQuery(Atom, boolean)}.
 	 * 
 	 * <p>
-	 * <b>WARNING</b>: The supplied {@code identifier} will be used to create a
-	 * predicate containing all answer variables from the {@code query}. If you use
-	 * this identifier in another predicate, you will get conflicts.
+	 * <b>WARNING</b>: The supplied {@code ruleHeadPredicateName} will be used to
+	 * create a predicate containing all answer variables from the {@code query}. If
+	 * you use this identifier in another predicate, you will get conflicts.
 	 * </p>
 	 * 
-	 * @param identifier
+	 * @param ruleHeadPredicateName
 	 * @param query
 	 * @return
 	 */
-	public static ConjunctiveGraalQueryToRule convertQuery(final String identifier, final ConjunctiveQuery query) {
+	public static ConjunctiveGraalQueryToRule convertQuery(final String ruleHeadPredicateName, final ConjunctiveQuery query) {
 		final Conjunction conjunction = convertAtomSet(query.getAtomSet());
 		final List<Term> answerVariables = convertTerms(query.getAnswerVariables());
 
-		return new ConjunctiveGraalQueryToRule(identifier, answerVariables, conjunction);
+		return new ConjunctiveGraalQueryToRule(ruleHeadPredicateName, answerVariables, conjunction);
 	}
 
 	/**

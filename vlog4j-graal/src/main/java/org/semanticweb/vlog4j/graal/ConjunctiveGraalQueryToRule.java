@@ -37,8 +37,9 @@ public class ConjunctiveGraalQueryToRule {
 	
 	boolean ruleAccessed = false;
 	
-	protected ConjunctiveGraalQueryToRule(final String identifier, final List<Term> answerVariables, final Conjunction conjunction) {
-		final Predicate answerPredicate = makePredicate(identifier, answerVariables.size());
+	protected ConjunctiveGraalQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables,
+			final Conjunction conjunction) {
+		final Predicate answerPredicate = makePredicate(ruleHeadPredicateName, answerVariables.size());
 		query = makeAtom(answerPredicate, answerVariables);
 		rule = makeRule(makeConjunction(query), conjunction);
 	}
