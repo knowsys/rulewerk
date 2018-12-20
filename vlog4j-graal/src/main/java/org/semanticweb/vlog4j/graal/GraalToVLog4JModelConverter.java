@@ -12,17 +12,13 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeV
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 
 import fr.lirmm.graphik.graal.api.core.AtomSet;
@@ -89,36 +85,6 @@ public final class GraalToVLog4JModelConverter {
 					MessageFormat.format("Unexpected Iterator Exception when converting AtomSet {0}}.", atomSet), e);
 		}
 		return makeConjunction(result);
-	}
-
-	/**
-	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Constant Graal Constant}
-	 * into a {@link Constant VLog4J Constant}.
-	 * 
-	 * @param constant A {@link fr.lirmm.graphik.graal.api.core.Constant Graal
-	 *                 Constant}
-	 * @return A {@link Constant VLog4J Constant}
-	 */
-	private static Constant convertConstant(final fr.lirmm.graphik.graal.api.core.Constant constant) {
-		return makeConstant(constant.getIdentifier().toString());
-	}
-
-	/**
-	 * Converts a {@link Set} of {@link fr.lirmm.graphik.graal.api.core.Constant
-	 * Graal Constants} into a {@link Set} of {@link Constant VLog4J Constants}.
-	 * 
-	 * @param constants {@link Set} of
-	 *                  {@link fr.lirmm.graphik.graal.api.core.Constant Graal
-	 *                  Constants}
-	 * @return {@link Set} of {@link Constant VLog4J Constants}
-	 */
-	@SuppressWarnings("unused")
-	private static Set<Constant> convertConstants(final Set<fr.lirmm.graphik.graal.api.core.Constant> constants) {
-		final Set<Constant> result = new HashSet<>();
-		for (final fr.lirmm.graphik.graal.api.core.Constant constant : constants) {
-			result.add(convertConstant(constant));
-		}
-		return result;
 	}
 
 	/**
@@ -223,36 +189,6 @@ public final class GraalToVLog4JModelConverter {
 		final List<Term> result = new ArrayList<>();
 		for (final fr.lirmm.graphik.graal.api.core.Term term : terms) {
 			result.add(convertTerm(term));
-		}
-		return result;
-	}
-
-	/**
-	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Variable Graal Variable}
-	 * into a {@link Variable VLog4J Variable}.
-	 * 
-	 * @param variable A {@link fr.lirmm.graphik.graal.api.core.Variable Graal
-	 *                 Variable}
-	 * @return A {@link Variable VLog4J Variable}
-	 */
-	private static Variable convertVariable(final fr.lirmm.graphik.graal.api.core.Variable variable) {
-		return makeVariable(variable.getIdentifier().toString());
-	}
-
-	/**
-	 * Converts a {@link Set} of {@link fr.lirmm.graphik.graal.api.core.Variable
-	 * Graal Variables} into a {@link Set} of {@link Variable VLog4J Variables}.
-	 * 
-	 * @param variables A {@link Set} of
-	 *                  {@link fr.lirmm.graphik.graal.api.core.Variable Graal
-	 *                  Variables}
-	 * @return A {@link Set} of {@link Variable VLog4J Variables}
-	 */
-	@SuppressWarnings("unused")
-	private static Set<Variable> convertVariables(final Set<fr.lirmm.graphik.graal.api.core.Variable> variables) {
-		final Set<Variable> result = new HashSet<>();
-		for (final fr.lirmm.graphik.graal.api.core.Variable variable : variables) {
-			result.add(convertVariable(variable));
 		}
 		return result;
 	}
