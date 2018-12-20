@@ -85,7 +85,7 @@ public final class GraalToVLog4JModelConverter {
 				result.add(convertAtom(iterator.next()));
 			}
 		} catch (final IteratorException e) {
-			throw new GraalImportException(
+			throw new GraalConvertException(
 					MessageFormat.format("Unexpected Iterator Exception when converting AtomSet {0}}.", atomSet));
 		}
 		return makeConjunction(result);
@@ -192,11 +192,11 @@ public final class GraalToVLog4JModelConverter {
 	 * {@link Term VLog4J Term}. Tests if the term is a
 	 * {@link fr.lirmm.graphik.graal.api.core.Term#isVariable() Variable} or
 	 * {@link fr.lirmm.graphik.graal.api.core.Term#isConstant() Constant} and
-	 * converts accordingly. Throws a {@link GraalImportException} if it is neither.
+	 * converts accordingly. Throws a {@link GraalConvertException} if it is neither.
 	 * 
 	 * @param term A {@link fr.lirmm.graphik.graal.api.core.Term Graal Term}
 	 * @return A {@link Term VLog4J Term}
-	 * @throws GraalImportException If the term is neither variable nor constant.
+	 * @throws GraalConvertException If the term is neither variable nor constant.
 	 */
 	private static Term convertTerm(final fr.lirmm.graphik.graal.api.core.Term term) {
 		if (term.isConstant()) {
@@ -204,7 +204,7 @@ public final class GraalToVLog4JModelConverter {
 		} else if (term.isVariable()) {
 			return makeVariable(term.getIdentifier().toString());
 		} else {
-			throw new GraalImportException(MessageFormat.format(
+			throw new GraalConvertException(MessageFormat.format(
 					"Term {0} with identifier {1} could not be converted because it is neither constant nor variable.",
 					term, term.getIdentifier().toString()));
 		}

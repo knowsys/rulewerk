@@ -7,14 +7,14 @@ package org.semanticweb.vlog4j.graal;
  * @author Adrian Bielefeldt
  *
  */
-public class GraalImportException extends RuntimeException {
+public class GraalConvertException extends RuntimeException {
 
 	/**
 	 * generated serial version UID
 	 */
 	private static final long serialVersionUID = -3228005099627492816L;
 
-	public GraalImportException(final String message) {
+	public GraalConvertException(final String message) {
 		super(message);
 	}
 }
