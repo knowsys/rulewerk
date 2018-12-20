@@ -86,7 +86,7 @@ public final class GraalToVLog4JModelConverter {
 			}
 		} catch (final IteratorException e) {
 			throw new GraalConvertException(
-					MessageFormat.format("Unexpected Iterator Exception when converting AtomSet {0}}.", atomSet));
+					MessageFormat.format("Unexpected Iterator Exception when converting AtomSet {0}}.", atomSet), e);
 		}
 		return makeConjunction(result);
 	}

@@ -17,4 +17,8 @@ public class GraalConvertException extends RuntimeException {
 	public GraalConvertException(final String message) {
 		super(message);
 	}
+
+	public GraalConvertException(final String message, final Throwable exception) {
+		super(message, exception);
+	}
 }
