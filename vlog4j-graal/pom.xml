@@ -1,35 +1,35 @@
 <?xml version="1.0"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.semanticweb.vlog4j</groupId>
-    <artifactId>vlog4j-parent</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<groupId>org.semanticweb.vlog4j</groupId>
+		<artifactId>vlog4j-parent</artifactId>
+		<version>0.3.0-SNAPSHOT</version>
+	</parent>
 
-  <artifactId>vlog4j-graal</artifactId>
-  <packaging>jar</packaging>
+	<artifactId>vlog4j-graal</artifactId>
+	<packaging>jar</packaging>
   
-  <name>VLog4J Graal Import Components</name>
-  <description>Components to import Graal data structures.</description>
+	<name>VLog4J Graal Import Components</name>
+	<description>Components to import Graal data structures.</description>
 
-  <dependencies>
-    <dependency>
-      <groupId>fr.lirmm.graphik</groupId>
-      <artifactId>graal-core</artifactId>
-      <version>1.3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.lirmm.graphik</groupId>
-      <artifactId>graal-io-dlgp</artifactId>
-      <version>1.3.1</version>
-    </dependency>
-    <dependency>
-	  <groupId>${project.groupId}</groupId>
-	  <artifactId>vlog4j-core</artifactId>
-	  <version>${project.version}</version>
-	</dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>fr.lirmm.graphik</groupId>
+			<artifactId>graal-core</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.lirmm.graphik</groupId>
+			<artifactId>graal-io-dlgp</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
 </project>
