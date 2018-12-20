@@ -37,7 +37,7 @@ import fr.lirmm.graphik.util.stream.IteratorException;
  * @author adrian
  *
  */
-public class GraalToVLog4JModelConverter {
+public final class GraalToVLog4JModelConverter {
 
 	private GraalToVLog4JModelConverter() {
 	};
