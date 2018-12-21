@@ -1,7 +1,24 @@
-/**
- * 
- */
 package org.semanticweb.vlog4j.graal;
+
+/*-
+ * #%L
+ * VLog4J Graal Import Components
+ * %%
+ * Copyright (C) 2018 VLog4j Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
@@ -28,7 +45,7 @@ import fr.lirmm.graphik.util.stream.IteratorException;
 /**
  * Utility class to convert Graal data structures into VLog4J structures. Labels
  * are not converted since VLog4J does not support them.
- * 
+ *
  * @author Adrian Bielefeldt
  *
  */
@@ -40,7 +57,7 @@ public final class GraalToVLog4JModelConverter {
 	/**
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom} into a
 	 * {@link Atom VLog4J Atom}.
-	 * 
+	 *
 	 * @param atom A {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom}
 	 * @return A {@link Atom VLog4J Atom}
 	 */
@@ -53,7 +70,7 @@ public final class GraalToVLog4JModelConverter {
 	/**
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
 	 * Atoms} into a {@link List} of {@link Atom VLog4J Atoms}.
-	 * 
+	 *
 	 * @param atoms A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom
 	 *              Graal Atoms}.
 	 * @return A {@link List} of {@link Atom VLog4J Atoms}.
@@ -69,7 +86,7 @@ public final class GraalToVLog4JModelConverter {
 	/**
 	 * Converts a {@link AtomSet Graal AtomSet} into a {@link Conjunction VLog4J
 	 * Conjunction}.
-	 * 
+	 *
 	 * @param atomSet A {@link AtomSet Graal Atomset}
 	 * @return A {@link Conjunction VLog4J Conjunction}
 	 */
@@ -89,7 +106,7 @@ public final class GraalToVLog4JModelConverter {
 	/**
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Predicate Graal Predicate}
 	 * into a {@link Predicate VLog4J Predicate}.
-	 * 
+	 *
 	 * @param predicate A {@link fr.lirmm.graphik.graal.api.core.Predicate Graal
 	 *                  Predicate}
 	 * @return A {@link Predicate VLog4J Predicate}
@@ -105,13 +122,13 @@ public final class GraalToVLog4JModelConverter {
 	 * atoms as the body and a single atom with a new predicate containing all the
 	 * query variables as the head. This rule head can then be used as a query atom
 	 * to obtain the results of the query.
-	 * 
+	 *
 	 * <p>
 	 * <b>WARNING</b>: The supplied {@code ruleHeadPredicateName} will be used to
 	 * create a predicate containing all answer variables from the {@code query}. If
 	 * you use this name in another predicate, you will get conflicts.
 	 * </p>
-	 * 
+	 *
 	 * @param ruleHeadPredicateName A name to create a program-unique predicate for
 	 *                              the query atom.
 	 * @param query                 A {@link ConjunctiveQuery Graal Query}.
@@ -128,7 +145,7 @@ public final class GraalToVLog4JModelConverter {
 	/**
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule} into a
 	 * {@link Rule Vlog4J Rule}.
-	 * 
+	 *
 	 * @param rule A {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule}.
 	 * @return A {@link Rule Vlog4J Rule}.
 	 */
@@ -141,7 +158,7 @@ public final class GraalToVLog4JModelConverter {
 	/**
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Rule Graal
 	 * Rules} into a {@link List} of {@link Rule VLog4J Rules}.
-	 * 
+	 *
 	 * @param rules A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Rule
 	 *              Graal Rules}.
 	 * @return A {@link List} of {@link Rule VLog4J Rules}.
@@ -161,7 +178,7 @@ public final class GraalToVLog4JModelConverter {
 	 * {@link fr.lirmm.graphik.graal.api.core.Term#isVariable() Variable} or
 	 * {@link fr.lirmm.graphik.graal.api.core.Term#isConstant() Constant} and
 	 * converts accordingly. Throws a {@link GraalConvertException} if it is neither.
-	 * 
+	 *
 	 * @param term A {@link fr.lirmm.graphik.graal.api.core.Term Graal Term}
 	 * @return A {@link Term VLog4J Term}
 	 * @throws GraalConvertException If the term is neither variable nor constant.
@@ -182,7 +199,7 @@ public final class GraalToVLog4JModelConverter {
 	/**
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Term Graal
 	 * Terms} into a {@link List} of {@link Term VLog4J Terms}.
-	 * 
+	 *
 	 * @param terms A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Term
 	 *              Graal Terms}
 	 * @return A {@link List} of {@link Term VLog4J Terms}
