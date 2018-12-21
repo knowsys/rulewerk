@@ -19,7 +19,6 @@ import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 
 import fr.lirmm.graphik.graal.api.core.AtomSet;
 import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
@@ -101,20 +100,23 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link ConjunctiveQuery Graal Query} into a
-	 * {@link ConjunctiveGraalQueryToRule}. To use this with the {@link Reasoner},
-	 * add the {@code rule} from {@link ConjunctiveGraalQueryToRule#getRule()} as a
-	 * Rule via {@link Reasoner#addRules(Rule...)} and use it as the Atom for
-	 * {@link Reasoner#answerQuery(Atom, boolean)}.
+	 * {@link ConjunctiveGraalQueryToRule}. Answering a {@link ConjunctiveQuery
+	 * GraalConjunctiveQuery} is equivalent to adding a {@link Rule} with the query
+	 * atoms as the body and a single atom with a new predicate containing all the
+	 * query variables as the head. This rule head can then be used as a query atom
+	 * to obtain the results of the query.
 	 * 
 	 * <p>
 	 * <b>WARNING</b>: The supplied {@code ruleHeadPredicateName} will be used to
 	 * create a predicate containing all answer variables from the {@code query}. If
-	 * you use this identifier in another predicate, you will get conflicts.
+	 * you use this name in another predicate, you will get conflicts.
 	 * </p>
 	 * 
-	 * @param ruleHeadPredicateName
-	 * @param query
-	 * @return
+	 * @param ruleHeadPredicateName A name to create a program-unique predicate for
+	 *                              the query atom.
+	 * @param query                 A {@link ConjunctiveQuery Graal Query}.
+	 * @return A {@link ConjunctiveGraalQueryToRule} equivalent to the {@code query}
+	 *         input.
 	 */
 	public static ConjunctiveGraalQueryToRule convertQuery(final String ruleHeadPredicateName, final ConjunctiveQuery query) {
 		final Conjunction conjunction = convertAtomSet(query.getAtomSet());
@@ -127,8 +129,8 @@ public final class GraalToVLog4JModelConverter {
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule} into a
 	 * {@link Rule Vlog4J Rule}.
 	 * 
-	 * @param rule A {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule}
-	 * @return A {@link Rule Vlog4J Rule}
+	 * @param rule A {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule}.
+	 * @return A {@link Rule Vlog4J Rule}.
 	 */
 	public static Rule convertRule(final fr.lirmm.graphik.graal.api.core.Rule rule) {
 		final Conjunction head = convertAtomSet(rule.getHead());

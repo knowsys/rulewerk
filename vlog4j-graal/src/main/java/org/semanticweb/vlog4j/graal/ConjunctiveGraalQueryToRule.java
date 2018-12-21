@@ -12,7 +12,6 @@ import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +19,10 @@ import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 
 /**
  * A utility class containing a {@link ConjunctiveQuery Graal ConjunctiveQuery}.
- * To use this with the {@link Reasoner}, add the {@code rule} from
- * {@link #getRule()} via {@link Reasoner#addRules(Rule...)} and use the
- * {@code query} from {@link #getQueryAtom()} in
- * {@link Reasoner#answerQuery(Atom, boolean)}.
+ * Answering a {@link ConjunctiveQuery GraalConjunctiveQuery} is equivalent to
+ * adding a {@link Rule} with the query atoms as the body and a single atom with
+ * a new predicate containing all the query variables as the head. This rule
+ * head can then be used as a query atom to obtain the results of the query.
  * 
  * @author Adrian Bielefeldt
  */
