@@ -30,11 +30,11 @@ public class ConjunctiveGraalQueryToRule {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(ConjunctiveGraalQueryToRule.class);
 	
-	final Rule rule;
+	private final Rule rule;
 	
-	final Atom query;
+	private final Atom query;
 	
-	boolean ruleAccessed = false;
+	private boolean ruleAccessed = false;
 	
 	protected ConjunctiveGraalQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables,
 			final Conjunction conjunction) {
