@@ -55,8 +55,6 @@ public class GraalConjunctiveQueryToRule {
 	
 	private final Atom query;
 	
-	private boolean ruleAccessed = false;
-	
 	protected GraalConjunctiveQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables,
 			final Conjunction conjunction) {
 		final Predicate answerPredicate = makePredicate(ruleHeadPredicateName, answerVariables.size());
@@ -74,7 +72,6 @@ public class GraalConjunctiveQueryToRule {
 	 *         object.
 	 */
 	public Rule getRule() {
-		ruleAccessed = true;
 		return rule;
 	}
 	
@@ -88,10 +85,6 @@ public class GraalConjunctiveQueryToRule {
 	 *         represented by this object.
 	 */
 	public Atom getQueryAtom() {
-		if (!ruleAccessed) {
-			LOGGER.warn(
-					"Acessing converted graal query without accessing converted rule. The rule needs to be added to the reasoner to obtain results!");
-		}
 		return query;
 	}
 }
