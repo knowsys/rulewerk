@@ -39,10 +39,11 @@ import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 
 /**
  * A utility class containing a {@link ConjunctiveQuery Graal ConjunctiveQuery}.
- * Answering a {@link ConjunctiveQuery GraalConjunctiveQuery} is equivalent to
+ * Answering a {@link ConjunctiveQuery Graal ConjunctiveQuery} is equivalent to
  * adding a {@link Rule} with the query atoms as the body and a single atom with
  * a new predicate containing all the query variables as the head. This rule
- * head can then be used as a query atom to obtain the results of the query.
+ * head can then be used as a query atom to obtain the results of the Graal
+ * ConjunctiveQuery.
  * 
  * @author Adrian Bielefeldt
  */
@@ -62,12 +63,30 @@ public class ConjunctiveGraalQueryToRule {
 		query = makeAtom(answerPredicate, answerVariables);
 		rule = makeRule(makeConjunction(query), conjunction);
 	}
-	
+
+	/**
+	 * A rule that needs to be added to the program to answer the
+	 * {@link ConjunctiveQuery Graal ConjunctiveQuery} represented by this object.
+	 * It consists of all query atoms from the original Graal ConjunctiveQuery as
+	 * the body and a single atom containing all the query variables as the head.
+	 * 
+	 * @return The rule equivalent to the Graal ConjunctiveQuery represented by this
+	 *         object.
+	 */
 	public Rule getRule() {
 		ruleAccessed = true;
 		return rule;
 	}
 	
+	/**
+	 * A query atom that returns the results of the {@link ConjunctiveQuery Graal
+	 * ConjunctiveQuery} represented by this object, provided the corresponding
+	 * {@link #getRule() Rule} has been added to the program. It is equal to the
+	 * head of that Rule.
+	 * 
+	 * @return The query atom to obtain the results of the Graal ConjunctiveQuery
+	 *         represented by this object.
+	 */
 	public Atom getQueryAtom() {
 		if (!ruleAccessed) {
 			LOGGER.warn(
