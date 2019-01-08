@@ -99,7 +99,7 @@ public class GraalToVLog4JModelConverterTest {
 		final Atom query = makeAtom(makePredicate(mortalQuery, 1), vlog4j_x);
 		final Rule queryRule = makeRule(query, makeAtom(vlog4j_mortal, vlog4j_x));
 		
-		final ConjunctiveGraalQueryToRule importedQuery = GraalToVLog4JModelConverter.convertQuery(mortalQuery, DlgpParser.parseQuery("?(" + x + ") :- " + mortal + "(" + x + ")."));
+		final GraalConjunctiveQueryToRule importedQuery = GraalToVLog4JModelConverter.convertQuery(mortalQuery, DlgpParser.parseQuery("?(" + x + ") :- " + mortal + "(" + x + ")."));
 		assertEquals(query, importedQuery.getQueryAtom());
 		assertEquals(queryRule, importedQuery.getRule());
 	}

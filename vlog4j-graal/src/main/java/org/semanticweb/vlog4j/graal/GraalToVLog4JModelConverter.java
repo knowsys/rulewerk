@@ -117,7 +117,7 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link ConjunctiveQuery Graal Query} into a
-	 * {@link ConjunctiveGraalQueryToRule}. Answering a {@link ConjunctiveQuery
+	 * {@link GraalConjunctiveQueryToRule}. Answering a {@link ConjunctiveQuery
 	 * GraalConjunctiveQuery} is equivalent to adding a {@link Rule} with the query
 	 * atoms as the body and a single atom with a new predicate containing all the
 	 * query variables as the head. This rule head can then be used as a query atom
@@ -132,14 +132,14 @@ public final class GraalToVLog4JModelConverter {
 	 * @param ruleHeadPredicateName A name to create a program-unique predicate for
 	 *                              the query atom.
 	 * @param query                 A {@link ConjunctiveQuery Graal Query}.
-	 * @return A {@link ConjunctiveGraalQueryToRule} equivalent to the {@code query}
+	 * @return A {@link GraalConjunctiveQueryToRule} equivalent to the {@code query}
 	 *         input.
 	 */
-	public static ConjunctiveGraalQueryToRule convertQuery(final String ruleHeadPredicateName, final ConjunctiveQuery query) {
+	public static GraalConjunctiveQueryToRule convertQuery(final String ruleHeadPredicateName, final ConjunctiveQuery query) {
 		final Conjunction conjunction = convertAtomSet(query.getAtomSet());
 		final List<Term> answerVariables = convertTerms(query.getAnswerVariables());
 
-		return new ConjunctiveGraalQueryToRule(ruleHeadPredicateName, answerVariables, conjunction);
+		return new GraalConjunctiveQueryToRule(ruleHeadPredicateName, answerVariables, conjunction);
 	}
 
 	/**

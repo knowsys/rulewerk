@@ -47,9 +47,9 @@ import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
  * 
  * @author Adrian Bielefeldt
  */
-public class ConjunctiveGraalQueryToRule {
+public class GraalConjunctiveQueryToRule {
 	
-	private static Logger LOGGER = LoggerFactory.getLogger(ConjunctiveGraalQueryToRule.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(GraalConjunctiveQueryToRule.class);
 	
 	private final Rule rule;
 	
@@ -57,7 +57,7 @@ public class ConjunctiveGraalQueryToRule {
 	
 	private boolean ruleAccessed = false;
 	
-	protected ConjunctiveGraalQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables,
+	protected GraalConjunctiveQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables,
 			final Conjunction conjunction) {
 		final Predicate answerPredicate = makePredicate(ruleHeadPredicateName, answerVariables.size());
 		query = makeAtom(answerPredicate, answerVariables);
