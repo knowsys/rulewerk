@@ -39,11 +39,10 @@ import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 
 /**
  * A utility class containing a {@link ConjunctiveQuery Graal ConjunctiveQuery}.
- * Answering a {@link ConjunctiveQuery Graal ConjunctiveQuery} is equivalent to
- * adding a {@link Rule} with the query atoms as the body and a single atom with
- * a new predicate containing all the query variables as the head. This rule
- * head can then be used as a query atom to obtain the results of the Graal
- * ConjunctiveQuery.
+ * Answering a Graal ConjunctiveQuery is equivalent to adding a {@link Rule}
+ * with the query atoms as the body and a single atom with a new predicate
+ * containing all the query variables as the head. This rule head can then be
+ * used as a query atom to obtain the results of the Graal ConjunctiveQuery.
  * 
  * @author Adrian Bielefeldt
  */

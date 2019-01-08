@@ -43,8 +43,11 @@ import fr.lirmm.graphik.util.stream.CloseableIterator;
 import fr.lirmm.graphik.util.stream.IteratorException;
 
 /**
- * Utility class to convert Graal data structures into VLog4J structures. Labels
- * are not converted since VLog4J does not support them.
+ * Utility class to convert Graal data structures ("model classes") into VLog4J
+ * data structures. Labels ({@link ConjunctiveQuery#getLabel()},
+ * {@link fr.lirmm.graphik.graal.api.core.Rule#getLabel() Rule.getLabel()}, or
+ * {@link fr.lirmm.graphik.graal.api.core.Term#getLabel() Term.getLabel()}) are
+ * not converted since VLog4J does not support them.
  *
  * @author Adrian Bielefeldt
  *
@@ -87,7 +90,7 @@ public final class GraalToVLog4JModelConverter {
 	 * Converts a {@link AtomSet Graal AtomSet} into a {@link Conjunction VLog4J
 	 * Conjunction}.
 	 *
-	 * @param atomSet A {@link AtomSet Graal Atomset}
+	 * @param atomSet A {@link AtomSet Graal AtomSet}
 	 * @return A {@link Conjunction VLog4J Conjunction}
 	 */
 	private static Conjunction convertAtomSet(final AtomSet atomSet) {
@@ -116,17 +119,19 @@ public final class GraalToVLog4JModelConverter {
 	}
 
 	/**
-	 * Converts a {@link ConjunctiveQuery Graal Query} into a
-	 * {@link GraalConjunctiveQueryToRule}. Answering a {@link ConjunctiveQuery
-	 * GraalConjunctiveQuery} is equivalent to adding a {@link Rule} with the query
-	 * atoms as the body and a single atom with a new predicate containing all the
-	 * query variables as the head. This rule head can then be used as a query atom
-	 * to obtain the results of the query.
+	 * Converts a {@link ConjunctiveQuery Graal ConjunctiveQuery} into a
+	 * {@link GraalConjunctiveQueryToRule}. Answering a Graal ConjunctiveQuery is
+	 * equivalent to adding a {@link Rule} with the query atoms as the body and a
+	 * single atom with a new predicate containing all the query variables as the
+	 * head. This rule head can then be used as a query atom to obtain the results
+	 * of the Graal ConjunctiveQuery.
 	 *
 	 * <p>
 	 * <b>WARNING</b>: The supplied {@code ruleHeadPredicateName} will be used to
-	 * create a predicate containing all answer variables from the {@code query}. If
-	 * you use this name in another predicate, you will get conflicts.
+	 * create a {@link Predicate} containing all answer variables from the
+	 * {@code query}. If a Predicate with the same name and arity is used elsewhere
+	 * in the same program, the result will differ from the one expected from the
+	 * Graal ConjunctiveQuery.
 	 * </p>
 	 *
 	 * @param ruleHeadPredicateName A name to create a program-unique predicate for
@@ -174,10 +179,10 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Term Graal Term} into a
-	 * {@link Term VLog4J Term}. Tests if the term is a
-	 * {@link fr.lirmm.graphik.graal.api.core.Term#isVariable() Variable} or
-	 * {@link fr.lirmm.graphik.graal.api.core.Term#isConstant() Constant} and
-	 * converts accordingly. Throws a {@link GraalConvertException} if it is neither.
+	 * {@link Term VLog4J Term}. If the {@code term} is neither
+	 * {@link fr.lirmm.graphik.graal.api.core.Term#isVariable() Variable} nor
+	 * {@link fr.lirmm.graphik.graal.api.core.Term#isConstant() Constant}, a
+	 * {@link GraalConvertException} is throw.
 	 *
 	 * @param term A {@link fr.lirmm.graphik.graal.api.core.Term Graal Term}
 	 * @return A {@link Term VLog4J Term}

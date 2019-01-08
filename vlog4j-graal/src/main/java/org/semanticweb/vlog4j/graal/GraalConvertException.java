@@ -21,8 +21,8 @@ package org.semanticweb.vlog4j.graal;
  */
 
 /**
- * An exception to signify that a conversion from Graal data structures to
- * VLog4J data structures could not be made.
+ * An exception to signify that a conversion from Graal data structures ("model
+ * classes") to VLog4J data structures could not be made.
  * 
  * @author Adrian Bielefeldt
  *
