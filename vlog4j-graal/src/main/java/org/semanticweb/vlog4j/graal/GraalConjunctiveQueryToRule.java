@@ -87,4 +87,48 @@ public class GraalConjunctiveQueryToRule {
 	public Atom getQueryAtom() {
 		return query;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((query == null) ? 0 : query.hashCode());
+		result = prime * result + ((rule == null) ? 0 : rule.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final GraalConjunctiveQueryToRule other = (GraalConjunctiveQueryToRule) obj;
+		if (query == null) {
+			if (other.query != null) {
+				return false;
+			}
+		} else if (!query.equals(other.query)) {
+			return false;
+		}
+		if (rule == null) {
+			if (other.rule != null) {
+				return false;
+			}
+		} else if (!rule.equals(other.rule)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "GraalConjunctiveQueryToRule [rule=" + rule + ", query=" + query + "]";
+	}
+
 }
