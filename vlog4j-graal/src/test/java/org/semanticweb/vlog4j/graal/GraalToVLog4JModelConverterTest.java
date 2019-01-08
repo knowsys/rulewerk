@@ -65,14 +65,14 @@ public class GraalToVLog4JModelConverterTest {
 	private final Variable vlog4j_y = makeVariable(y);
 
 	@Test
-	public void testImportAtom() throws ParseException {
+	public void testConvertAtom() throws ParseException {
 		final Atom vlog4j_atom = makeAtom(vlog4j_human, vlog4j_socrate);
 		final fr.lirmm.graphik.graal.api.core.Atom graal_atom = DlgpParser.parseAtom(human + "(" + socrate + ").");
 		assertEquals(vlog4j_atom, GraalToVLog4JModelConverter.convertAtom(graal_atom));
 	}
 
 	@Test
-	public void testImportRule() throws ParseException {
+	public void testConvertRule() throws ParseException {
 		// moral(X) :- human(X)
 		final Atom vlog4j_mortal_atom = makeAtom(vlog4j_mortal, vlog4j_x);
 		final Atom vlog4j_human_atom = makeAtom(vlog4j_human, vlog4j_x);
@@ -82,7 +82,7 @@ public class GraalToVLog4JModelConverterTest {
 	}
 	
 	@Test
-	public void testImportExistentialRule() throws ParseException {
+	public void testConvertExistentialRule() throws ParseException {
 		// hasPart(X, Y), wheel(Y) :- bicycle(X)
 		final Atom vlog4j_hasPart_atom = makeAtom(vlog4j_hasPart, vlog4j_x, vlog4j_y);
 		final Atom vlog4j_wheel_atom = makeAtom(vlog4j_wheel, vlog4j_y);
@@ -93,7 +93,7 @@ public class GraalToVLog4JModelConverterTest {
 	}
 	
 	@Test
-	public void testImportQuery() throws ParseException {
+	public void testConvertQuery() throws ParseException {
 		// ?(X) :- mortal(X)
 		final String mortalQuery = "mortalQuery";
 		final Atom query = makeAtom(makePredicate(mortalQuery, 1), vlog4j_x);
