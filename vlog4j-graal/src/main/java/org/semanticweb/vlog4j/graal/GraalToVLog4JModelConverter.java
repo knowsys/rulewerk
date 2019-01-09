@@ -182,7 +182,7 @@ public final class GraalToVLog4JModelConverter {
 	 * {@link Term VLog4J Term}. If the {@code term} is neither
 	 * {@link fr.lirmm.graphik.graal.api.core.Term#isVariable() Variable} nor
 	 * {@link fr.lirmm.graphik.graal.api.core.Term#isConstant() Constant}, a
-	 * {@link GraalConvertException} is throw.
+	 * {@link GraalConvertException} is thrown.
 	 *
 	 * @param term A {@link fr.lirmm.graphik.graal.api.core.Term Graal Term}
 	 * @return A {@link Term VLog4J Term}
