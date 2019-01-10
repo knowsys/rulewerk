@@ -129,9 +129,9 @@ public final class GraalToVLog4JModelConverter {
 	 * <p>
 	 * <b>WARNING</b>: The supplied {@code ruleHeadPredicateName} will be used to
 	 * create a {@link Predicate} containing all answer variables from the
-	 * {@code query}. If a Predicate with the same name and arity is used elsewhere
-	 * in the same program, the result will differ from the one expected from the
-	 * Graal ConjunctiveQuery.
+	 * {@code conjunctiveQuery}. If a Predicate with the same name and arity is used
+	 * elsewhere in the same program, the result will differ from the one expected
+	 * from the Graal ConjunctiveQuery.
 	 * </p>
 	 *
 	 * @param ruleHeadPredicateName A name to create a program-unique predicate for
