@@ -130,7 +130,7 @@ public class GraalToVLog4JModelConverterTest {
 		final Rule complexQueryRule = makeRule(complexQueryAtom, vlog4j_predicate1_atom, vlog4j_predicate2_atom,
 				vlog4j_predicate3_atom, vlog4j_predicate4_atom);
 
-		final GraalConjunctiveQueryToRule importedComplexQuery = GraalToVLog4JModelConverter.convertQuery("query",
+		final GraalConjunctiveQueryToRule importedComplexQuery = GraalToVLog4JModelConverter.convertQuery(complexQuery,
 				DlgpParser.parseQuery(
 						"?(" + x + ", " + x + ", " + y + ") :- " + predicate1
 								+ "(" + x + "), " + predicate2 + "(" + y + ", " + x + "), " + predicate3 + "(" + y
