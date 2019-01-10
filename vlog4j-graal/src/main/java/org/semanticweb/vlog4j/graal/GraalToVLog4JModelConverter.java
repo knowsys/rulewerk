@@ -31,6 +31,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -140,7 +142,24 @@ public final class GraalToVLog4JModelConverter {
 	 * @return A {@link GraalConjunctiveQueryToRule} equivalent to the
 	 *         {@code conjunctiveQuery} input.
 	 */
-	public static GraalConjunctiveQueryToRule convertQuery(final String ruleHeadPredicateName, final ConjunctiveQuery conjunctiveQuery) {
+	public static GraalConjunctiveQueryToRule convertQuery(final @NonNull String ruleHeadPredicateName,
+			final ConjunctiveQuery conjunctiveQuery) {
+		if (StringUtils.isBlank(ruleHeadPredicateName)) {
+			throw new GraalConvertException(MessageFormat.format(
+					"Rule head predicate for Graal ConjunctiveQuery {0} cannot be a blank string.", conjunctiveQuery));
+		}
+
+		if (conjunctiveQuery.getAtomSet().isEmpty()) {
+			throw new GraalConvertException(MessageFormat.format(
+					"Graal ConjunctiveQuery {0} with empty body is not supported in VLog4j.", conjunctiveQuery));
+		}
+
+		if (conjunctiveQuery.getAnswerVariables().isEmpty()) {
+			throw new GraalConvertException(MessageFormat.format(
+					"Graal ConjunctiveQuery {0} with no answer variables is not supported in VLog4J.",
+					conjunctiveQuery));
+		}
+
 		final Conjunction conjunction = convertAtomSet(conjunctiveQuery.getAtomSet());
 		final List<Term> answerVariables = convertTerms(conjunctiveQuery.getAnswerVariables());
 
