@@ -18,7 +18,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>fr.lirmm.graphik</groupId>
-			<artifactId>graal-core</artifactId>
+			<artifactId>graal-api</artifactId>
 			<version>1.3.1</version>
 		</dependency>
 		<dependency>
