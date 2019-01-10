@@ -75,9 +75,9 @@ public class GraalToVLog4JModelConverterTest {
 		final fr.lirmm.graphik.graal.api.core.Atom graal_atom = DlgpParser.parseAtom(human + "(" + socrate + ").");
 		assertEquals(vlog4j_atom, GraalToVLog4JModelConverter.convertAtom(graal_atom));
 
-		final Atom vlog4j_atom_2 = makeAtom(vlog4j_hasPart, vlog4j_redsBike, vlog4j_x);
+		final Atom vlog4j_atom_2 = makeAtom(vlog4j_hasPart, vlog4j_redsBike, vlog4j_socrate);
 		final fr.lirmm.graphik.graal.api.core.Atom graal_atom_2 = DlgpParser
-				.parseAtom(hasPart + "(" + redsBike + ", " + x + ").");
+				.parseAtom(hasPart + "(" + redsBike + ", " + socrate + ").");
 		assertEquals(vlog4j_atom_2, GraalToVLog4JModelConverter.convertAtom(graal_atom_2));
 	}
 
