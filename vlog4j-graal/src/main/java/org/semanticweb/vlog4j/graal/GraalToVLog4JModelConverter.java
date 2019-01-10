@@ -172,7 +172,6 @@ public final class GraalToVLog4JModelConverter {
 		final List<Rule> result = new ArrayList<>();
 		for (final fr.lirmm.graphik.graal.api.core.Rule rule : rules) {
 			result.add(convertRule(rule));
-			;
 		}
 		return result;
 	}
