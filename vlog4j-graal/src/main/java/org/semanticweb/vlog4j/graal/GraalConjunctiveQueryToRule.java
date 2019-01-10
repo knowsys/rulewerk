@@ -22,14 +22,12 @@ package org.semanticweb.vlog4j.graal;
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
 
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.slf4j.Logger;
@@ -59,8 +57,7 @@ public class GraalConjunctiveQueryToRule {
 	
 	protected GraalConjunctiveQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables,
 			final Conjunction conjunction) {
-		final Predicate answerPredicate = makePredicate(ruleHeadPredicateName, answerVariables.size());
-		query = makeAtom(answerPredicate, answerVariables);
+		query = makeAtom(ruleHeadPredicateName, answerVariables);
 		rule = makeRule(makeConjunction(query), conjunction);
 	}
 
