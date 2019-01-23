@@ -28,9 +28,11 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeP
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -50,6 +52,9 @@ import fr.lirmm.graphik.graal.core.term.DefaultTermFactory;
  */
 public class GraalToVLog4JModelConverterTest {
 	
+	@org.junit.Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	private final String socrate = "socrate";
 	private final String redsBike = "redsBike";
 
@@ -201,5 +206,38 @@ public class GraalToVLog4JModelConverterTest {
 				graal_complex_query);
 		assertEquals(complexQueryAtom, importedComplexQuery.getQueryAtom());
 		assertEquals(complexQueryRule, importedComplexQuery.getRule());
+	}
+
+	@Test
+	public void testConvertQueryExceptionNoVariables() {
+		thrown.expect(GraalConvertException.class);
+
+		final fr.lirmm.graphik.graal.api.core.Atom graal_atom = new DefaultAtom(graal_hasPart, graal_x, graal_socrate);
+		final ConjunctiveQuery graal_query_without_answer_variables = new DefaultConjunctiveQuery(
+				new LinkedListAtomSet(graal_atom), new ArrayList<>());
+		GraalToVLog4JModelConverter.convertQuery("name", graal_query_without_answer_variables);
+	}
+
+	@Test
+	public void testConvertQueryExceptionEmptyBody() {
+		thrown.expect(GraalConvertException.class);
+
+		final ConjunctiveQuery graal_query_without_body = new DefaultConjunctiveQuery(new LinkedListAtomSet(),
+				Arrays.asList(graal_y));
+		GraalToVLog4JModelConverter.convertQuery("name", graal_query_without_body);
+	}
+
+	@Test
+	public void testConvertQueryExceptionBlankPredicate() {
+
+		thrown.expect(GraalConvertException.class);
+	
+		final fr.lirmm.graphik.graal.api.core.Atom graal_atom_1 = new DefaultAtom(graal_hasPart, graal_redsBike,
+				graal_z);
+		final fr.lirmm.graphik.graal.api.core.Atom graal_atom_2 = new DefaultAtom(graal_human, graal_z);
+		final ConjunctiveQuery graal_query = new DefaultConjunctiveQuery(
+				new LinkedListAtomSet(graal_atom_1, graal_atom_2), Arrays.asList(graal_z));
+
+		GraalToVLog4JModelConverter.convertQuery(" ", graal_query);
 	}
 }
