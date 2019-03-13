@@ -40,10 +40,10 @@ import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
  * Answering a Graal ConjunctiveQuery over a certain knowledge base is
  * equivalent to adding a {@link Rule} to the knowledge base, <em> prior to
  * reasoning</em>. The rule consists of the query atoms as the body and a single
- * atom with a new predicate containing all the query variables as the head.
- * After the reasoning process, in which the rule is materialised, is completed,
- * this rule head can then be used as a query atom to obtain the results of the
- * Graal ConjunctiveQuery.
+ * atom with a new predicate containing all the answer variables of the query as
+ * the head. After the reasoning process, in which the rule is materialised, is
+ * completed, this rule head can then be used as a query atom to obtain the
+ * results of the Graal ConjunctiveQuery.
  * 
  * @author Adrian Bielefeldt
  */
