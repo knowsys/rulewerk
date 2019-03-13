@@ -107,8 +107,8 @@ public class GraalToVLog4JModelConverterTest {
 		final fr.lirmm.graphik.graal.api.core.Atom graal_atom = new DefaultAtom(graal_human, graal_socrate);
 		assertEquals(vlog4j_atom, GraalToVLog4JModelConverter.convertAtom(graal_atom));
 
-		final Atom vlog4j_atom_2 = makeAtom(vlog4j_hasPart, vlog4j_redsBike, vlog4j_socrate);
-		final fr.lirmm.graphik.graal.api.core.Atom graal_atom_2 = new DefaultAtom(graal_hasPart, graal_redsBike,
+		final Atom vlog4j_atom_2 = makeAtom(vlog4j_hasPart, vlog4j_x, vlog4j_socrate);
+		final fr.lirmm.graphik.graal.api.core.Atom graal_atom_2 = new DefaultAtom(graal_hasPart, graal_x,
 				graal_socrate);
 		assertEquals(vlog4j_atom_2, GraalToVLog4JModelConverter.convertAtom(graal_atom_2));
 	}
