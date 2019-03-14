@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -51,9 +50,6 @@ import fr.lirmm.graphik.graal.core.term.DefaultTermFactory;
  * @author Adrian Bielefeldt
  */
 public class GraalToVLog4JModelConverterTest {
-
-	@org.junit.Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private final String socrate = "socrate";
 	private final String redsBike = "redsBike";
@@ -190,27 +186,23 @@ public class GraalToVLog4JModelConverterTest {
 		assertEquals(complexQueryRule, importedComplexQuery.getRule());
 	}
 
-	@Test
+	@Test(expected = GraalConvertException.class)
 	public void testConvertQueryExceptionNoVariables() {
-		this.thrown.expect(GraalConvertException.class);
 
 		final fr.lirmm.graphik.graal.api.core.Atom graal_atom = new DefaultAtom(this.graal_hasPart, this.graal_x, this.graal_socrate);
 		final ConjunctiveQuery graal_query_without_answer_variables = new DefaultConjunctiveQuery(new LinkedListAtomSet(graal_atom), new ArrayList<>());
 		GraalToVLog4JModelConverter.convertQuery("name", graal_query_without_answer_variables);
 	}
 
-	@Test
+	@Test(expected = GraalConvertException.class)
 	public void testConvertQueryExceptionEmptyBody() {
-		this.thrown.expect(GraalConvertException.class);
 
 		final ConjunctiveQuery graal_query_without_body = new DefaultConjunctiveQuery(new LinkedListAtomSet(), Arrays.asList(this.graal_y));
 		GraalToVLog4JModelConverter.convertQuery("name", graal_query_without_body);
 	}
 
-	@Test
+	@Test(expected = GraalConvertException.class)
 	public void testConvertQueryExceptionBlankPredicate() {
-
-		this.thrown.expect(GraalConvertException.class);
 
 		final fr.lirmm.graphik.graal.api.core.Atom graal_atom_1 = new DefaultAtom(this.graal_hasPart, this.graal_redsBike, this.graal_z);
 		final fr.lirmm.graphik.graal.api.core.Atom graal_atom_2 = new DefaultAtom(this.graal_human, this.graal_z);
