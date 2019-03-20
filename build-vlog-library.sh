@@ -6,8 +6,10 @@ then
 	echo "Using cached VLog JAR."
 else
 	echo "Building new VLog JAR."
-	export CC=gcc-5 && export CXX=g++-5
-	mkdir local_builds
+    if [ "$(which gcc-5)x" != "x" ]; then
+	    export CC=gcc-5 && export CXX=g++-5
+    fi
+	mkdir -p local_builds
 	rm -rf build-vlog
 	mkdir build-vlog
 	cd build-vlog
