@@ -21,8 +21,8 @@ import fr.lirmm.graphik.graal.api.core.Rule;
 import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
 
 /**
- * This example shows how facts can be imported from files in the DLGP/DLP
- * format.
+ * This example shows how facts can be imported from files in the
+ * <a href="http://graphik-team.github.io/graal/doc/dlgp">DLGP/DLP</a> format.
  * 
  * The Graal {@link DlgpParser} is used to parse the program. This step requires
  * a {@link File}, {@link InputStream}, {@link Reader}, or {@link String}
