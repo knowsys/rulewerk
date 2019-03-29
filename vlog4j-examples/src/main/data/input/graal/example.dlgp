@@ -1,0 +1,28 @@
+@facts
+bicycleEDB(redBike).
+bicycleEDB(blueBike).
+bicycleEDB(blackBike).
+
+wheelEDB(redWheel).
+wheelEDB(blueWheel).
+wheelEDB(greyWheel).
+
+hasPartEDB(redBike, redWheel).
+hasPartEDB(blueBike, blueWheel).
+
+@rules
+% Importing from external database predicates
+bicycleIDB(X) :- bicycleEDB(X).
+wheelIDB(X) :- wheelEDB(X).
+hasPartIDB(X, Y) :- hasPartEDB(X, Y).
+
+% Existential rules
+hasPartIDB(X, Y), wheelIDB(Y) :- bicycleIDB(X).
+isPartOfIDB(X, Y) :- wheelIDB(X).
+
+% Inverse relationships
+isPartOfIDB(X, Y) :- hasPartIDB(Y, X).
+hasPartIDB(X, Y) :- isPartOfIDB(Y, X).
+
+@queries
+?(B, W) :- bicycleIDB(B), wheelIDB(W), isPartOfIDB(W, B).
