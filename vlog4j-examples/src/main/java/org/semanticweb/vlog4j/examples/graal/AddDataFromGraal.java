@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -46,14 +46,13 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  * <p>
  * In VLog4J, the reasoner is queried by an Atom and the results are all facts
  * matching this Atom.<br>
- * In Graal, a query is a conjunction of atoms and a set of queried variables
- * from those atoms. The results are then all variable sets for which Atoms
- * matching the conjunction Atoms are found.
- * </p>
- * <p>
- * To apply a Graaal query to VLog4J, an additional Rule must be added to the
- * reasoner. This rule is part of the {@link ImportedGraalQuery}, which also
- * holds the query to use in {@link Reasoner#answerQuery(Atom, boolean)}.
+ * Answering a Graal ConjunctiveQuery over a certain knowledge base is
+ * equivalent to adding a {@link Rule} to the knowledge base, <em> prior to
+ * reasoning</em>. The rule consists of the query atoms as the body and a single
+ * atom with a new predicate containing all the answer variables of the query as
+ * the head. After the reasoning process, in which the rule is materialised, is
+ * completed, this rule head can then be used as a query atom to obtain the
+ * results of the Graal ConjunctiveQuery.
  * </p>
  * 
  * @author adrian
