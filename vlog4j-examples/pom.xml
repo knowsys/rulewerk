@@ -53,12 +53,7 @@
 			<!-- version compatible with the org.openrdf.model version, as imported by vlog4j-rdf dependency -->
 			<version>2.7.16</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>fr.lirmm.graphik</groupId>
-			<artifactId>graal-api</artifactId>
-			<version>${graal.version}</version>
-		</dependency>
+
     	<dependency>
       		<groupId>fr.lirmm.graphik</groupId>
       		<artifactId>graal-io-dlgp</artifactId>
