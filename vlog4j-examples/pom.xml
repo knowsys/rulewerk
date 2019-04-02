@@ -32,6 +32,11 @@
 			<artifactId>vlog4j-rdf</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-graal</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		
 		<dependency>
 			<!-- Rio parser and writer implementation for the Turtle file format. -->
@@ -48,8 +53,12 @@
 			<!-- version compatible with the org.openrdf.model version, as imported by vlog4j-rdf dependency -->
 			<version>2.7.16</version>
 		</dependency>
-		
-		
+
+    	<dependency>
+      		<groupId>fr.lirmm.graphik</groupId>
+      		<artifactId>graal-io-dlgp</artifactId>
+      		<version>${graal.version}</version>
+    	</dependency>		
 	</dependencies>
 </project>
 
