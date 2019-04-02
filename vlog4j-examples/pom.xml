@@ -43,7 +43,7 @@
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-turtle</artifactId>
 			<!-- version compatible with the org.openrdf.model version, as imported by vlog4j-rdf dependency -->
-			<version>2.7.16</version>
+			<version>${openrdf.sesame.version}</version>
 		</dependency>
 		
 		<dependency>
@@ -51,7 +51,7 @@
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-rdfxml</artifactId>
 			<!-- version compatible with the org.openrdf.model version, as imported by vlog4j-rdf dependency -->
-			<version>2.7.16</version>
+			<version>${openrdf.sesame.version}</version>
 		</dependency>
 
     	<dependency>

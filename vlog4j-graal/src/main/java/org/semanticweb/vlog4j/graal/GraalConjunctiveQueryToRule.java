@@ -30,67 +30,62 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
+
 import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 
 /**
- * A utility class containing a {@link ConjunctiveQuery Graal ConjunctiveQuery}.
- * Answering a Graal ConjunctiveQuery over a certain knowledge base is
- * equivalent to adding a {@link Rule} to the knowledge base, <em> prior to
- * reasoning</em>. The rule consists of the query atoms as the body and a single
- * atom with a new predicate containing all the answer variables of the query as
- * the head. After the reasoning process, in which the rule is materialised, is
- * completed, this rule head can then be used as a query atom to obtain the
- * results of the Graal ConjunctiveQuery.
+ * A utility class containing a <a href="http://graphik-team.github.io/graal/">Graal</a> {@link ConjunctiveQuery}. Answering a
+ * <a href="http://graphik-team.github.io/graal/">Graal</a> {@link ConjunctiveQuery} over a certain knowledge base is equivalent to adding a {@link Rule} to the
+ * knowledge base, <em> prior to reasoning</em>. The rule consists of the query atoms as the body and a single atom with a new predicate containing all the
+ * answer variables of the query as the head. After the reasoning process, in which the rule is materialised, is completed, this rule head can then be used as a
+ * query atom to obtain the results of the Graal {@link ConjunctiveQuery}.
  * 
  * @author Adrian Bielefeldt
  */
 public class GraalConjunctiveQueryToRule {
-		
+
 	private final Rule rule;
-	
+
 	private final Atom query;
-	
+
 	/**
-	 * Constructor for a GraalConjunctiveQueryToRule. 
-	 * @param ruleHeadPredicateName the query predicate name. Becomes the name of the rule head Predicate.
-	 * @param answerVariables the query answer variables. They become the terms of the rule head Atom.
-	 * @param conjunction the query body. Becomes the rule body.
+	 * Constructor for a GraalConjunctiveQueryToRule.
+	 * 
+	 * @param ruleHeadPredicateName
+	 *            the query predicate name. Becomes the name of the rule head Predicate.
+	 * @param answerVariables
+	 *            the query answer variables. They become the terms of the rule head Atom.
+	 * @param conjunction
+	 *            the query body. Becomes the rule body.
 	 */
-	protected GraalConjunctiveQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables,
-			final Conjunction conjunction) {
-		query = makeAtom(ruleHeadPredicateName, answerVariables);
-		rule = makeRule(makeConjunction(query), conjunction);
+	protected GraalConjunctiveQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables, final Conjunction conjunction) {
+		this.query = makeAtom(ruleHeadPredicateName, answerVariables);
+		this.rule = makeRule(makeConjunction(this.query), conjunction);
 	}
 
 	/**
-	 * A rule that needs to be added to the program to answer the
-	 * {@link ConjunctiveQuery Graal ConjunctiveQuery} represented by this object.
-	 * It consists of all query atoms from the original Graal ConjunctiveQuery as
-	 * the body and a single atom containing all the answer variables of the query as the head.
+	 * A rule that needs to be added to the program to answer the {@link ConjunctiveQuery Graal ConjunctiveQuery} represented by this object. It consists of all
+	 * query atoms from the original Graal ConjunctiveQuery as the body and a single atom containing all the answer variables of the query as the head.
 	 * 
-	 * @return The rule equivalent to the Graal ConjunctiveQuery represented by this
-	 *         object.
+	 * @return The rule equivalent to the Graal ConjunctiveQuery represented by this object.
 	 */
 	public Rule getRule() {
-		return rule;
+		return this.rule;
 	}
-	
+
 	/**
-	 * A query atom that returns the results of the {@link ConjunctiveQuery Graal
-	 * ConjunctiveQuery} represented by this object, provided the corresponding
-	 * rule ({@link #getRule()}) has been added to the program. It is equal to the
-	 * head of the rule returned by {@link #getRule()}.
+	 * A query atom that returns the results of the {@link ConjunctiveQuery Graal ConjunctiveQuery} represented by this object, provided the corresponding rule
+	 * ({@link #getRule()}) has been added to the program. It is equal to the head of the rule returned by {@link #getRule()}.
 	 * 
-	 * @return The query atom to obtain the results of the Graal ConjunctiveQuery
-	 *         represented by this object.
+	 * @return The query atom to obtain the results of the Graal ConjunctiveQuery represented by this object.
 	 */
 	public Atom getQueryAtom() {
-		return query;
+		return this.query;
 	}
 
 	@Override
 	public int hashCode() {
-		return rule.hashCode();
+		return this.rule.hashCode();
 	}
 
 	@Override
@@ -101,12 +96,12 @@ public class GraalConjunctiveQueryToRule {
 		if (obj == null) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (this.getClass() != obj.getClass()) {
 			return false;
 		}
 		final GraalConjunctiveQueryToRule other = (GraalConjunctiveQueryToRule) obj;
-		
-		if (!rule.equals(other.rule)) {
+
+		if (!this.rule.equals(other.rule)) {
 			return false;
 		}
 		return true;
@@ -114,7 +109,7 @@ public class GraalConjunctiveQueryToRule {
 
 	@Override
 	public String toString() {
-		return "GraalConjunctiveQueryToRule [rule=" + rule + "]";
+		return "GraalConjunctiveQueryToRule [rule=" + this.rule + "]";
 	}
 
 }

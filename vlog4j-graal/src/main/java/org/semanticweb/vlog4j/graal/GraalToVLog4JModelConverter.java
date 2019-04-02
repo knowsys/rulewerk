@@ -45,11 +45,9 @@ import fr.lirmm.graphik.util.stream.CloseableIterator;
 import fr.lirmm.graphik.util.stream.IteratorException;
 
 /**
- * Utility class to convert Graal data structures ("model classes") into VLog4J
- * data structures. Labels ({@link ConjunctiveQuery#getLabel()},
- * {@link fr.lirmm.graphik.graal.api.core.Rule#getLabel() Rule.getLabel()}, or
- * {@link fr.lirmm.graphik.graal.api.core.Term#getLabel() Term.getLabel()}) are
- * not converted since VLog4J does not support them.
+ * Utility class to convert <a href="http://graphik-team.github.io/graal/">Graal</a> data structures ("model classes") into VLog4J data structures. Labels
+ * ({@link ConjunctiveQuery#getLabel()}, {@link fr.lirmm.graphik.graal.api.core.Rule#getLabel() Rule.getLabel()}, or
+ * {@link fr.lirmm.graphik.graal.api.core.Term#getLabel() Term.getLabel()}) are not converted since VLog4J does not support them.
  *
  * @author Adrian Bielefeldt
  *
@@ -60,10 +58,10 @@ public final class GraalToVLog4JModelConverter {
 	};
 
 	/**
-	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom} into a
-	 * {@link Atom VLog4J Atom}.
+	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom} into a {@link Atom VLog4J Atom}.
 	 *
-	 * @param atom A {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom}
+	 * @param atom
+	 *            A {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom}
 	 * @return A {@link Atom VLog4J Atom}
 	 */
 	public static Atom convertAtom(final fr.lirmm.graphik.graal.api.core.Atom atom) {
@@ -73,11 +71,10 @@ public final class GraalToVLog4JModelConverter {
 	}
 
 	/**
-	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
-	 * Atoms} into a {@link List} of {@link Atom VLog4J Atoms}.
+	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atoms} into a {@link List} of {@link Atom VLog4J Atoms}.
 	 *
-	 * @param atoms A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom
-	 *              Graal Atoms}.
+	 * @param atoms
+	 *            A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atoms}.
 	 * @return A {@link List} of {@link Atom VLog4J Atoms}.
 	 */
 	public static List<Atom> convertAtoms(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
@@ -89,10 +86,10 @@ public final class GraalToVLog4JModelConverter {
 	}
 
 	/**
-	 * Converts a {@link AtomSet Graal AtomSet} into a {@link Conjunction VLog4J
-	 * Conjunction}.
+	 * Converts a {@link AtomSet Graal AtomSet} into a {@link Conjunction VLog4J Conjunction}.
 	 *
-	 * @param atomSet A {@link AtomSet Graal AtomSet}
+	 * @param atomSet
+	 *            A {@link AtomSet Graal AtomSet}
 	 * @return A {@link Conjunction VLog4J Conjunction}
 	 */
 	private static Conjunction convertAtomSet(final AtomSet atomSet) {
@@ -102,18 +99,16 @@ public final class GraalToVLog4JModelConverter {
 				result.add(convertAtom(iterator.next()));
 			}
 		} catch (final IteratorException e) {
-			throw new GraalConvertException(
-					MessageFormat.format("Unexpected Iterator Exception when converting AtomSet {0}}.", atomSet), e);
+			throw new GraalConvertException(MessageFormat.format("Unexpected Iterator Exception when converting AtomSet {0}}.", atomSet), e);
 		}
 		return makeConjunction(result);
 	}
 
 	/**
-	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Predicate Graal Predicate}
-	 * into a {@link Predicate VLog4J Predicate}.
+	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Predicate Graal Predicate} into a {@link Predicate VLog4J Predicate}.
 	 *
-	 * @param predicate A {@link fr.lirmm.graphik.graal.api.core.Predicate Graal
-	 *                  Predicate}
+	 * @param predicate
+	 *            A {@link fr.lirmm.graphik.graal.api.core.Predicate Graal Predicate}
 	 * @return A {@link Predicate VLog4J Predicate}
 	 */
 	private static Predicate convertPredicate(final fr.lirmm.graphik.graal.api.core.Predicate predicate) {
@@ -121,45 +116,36 @@ public final class GraalToVLog4JModelConverter {
 	}
 
 	/**
-	 * Converts a {@link ConjunctiveQuery Graal ConjunctiveQuery} into a
-	 * {@link GraalConjunctiveQueryToRule}. Answering a Graal ConjunctiveQuery over
-	 * a certain knowledge base is equivalent to adding a {@link Rule} to the
-	 * knowledge base, <em> prior to reasoning</em>. The rule consists of the query
-	 * atoms as the body and a single atom with a new predicate containing all the
-	 * query variables as the head. After the reasoning process, in which the rule
-	 * is materialised, is completed, this rule head can then be used as a query
-	 * atom to obtain the results of the Graal ConjunctiveQuery.
+	 * Converts a {@link ConjunctiveQuery Graal ConjunctiveQuery} into a {@link GraalConjunctiveQueryToRule}. Answering a Graal ConjunctiveQuery over a certain
+	 * knowledge base is equivalent to adding a {@link Rule} to the knowledge base, <em> prior to reasoning</em>. The rule consists of the query atoms as the
+	 * body and a single atom with a new predicate containing all the query variables as the head. After the reasoning process, in which the rule is
+	 * materialised, is completed, this rule head can then be used as a query atom to obtain the results of the Graal ConjunctiveQuery.
 	 *
 	 * <p>
-	 * <b>WARNING</b>: The supplied {@code ruleHeadPredicateName} will be used to
-	 * create a {@link Predicate} containing all answer variables from the
-	 * {@code conjunctiveQuery}. If a Predicate with the same name and arity is used
-	 * elsewhere in the same program, the result will differ from the one expected
+	 * <b>WARNING</b>: The supplied {@code ruleHeadPredicateName} will be used to create a {@link Predicate} containing all answer variables from the
+	 * {@code conjunctiveQuery}. If a Predicate with the same name and arity is used elsewhere in the same program, the result will differ from the one expected
 	 * from the Graal ConjunctiveQuery.
 	 * </p>
 	 *
-	 * @param ruleHeadPredicateName A name to create a program-unique predicate for
-	 *                              the query atom.
-	 * @param conjunctiveQuery      A {@link ConjunctiveQuery Graal Query}.
-	 * @return A {@link GraalConjunctiveQueryToRule} equivalent to the
-	 *         {@code conjunctiveQuery} input.
+	 * @param ruleHeadPredicateName
+	 *            A name to create a program-unique predicate for the query atom.
+	 * @param conjunctiveQuery
+	 *            A {@link ConjunctiveQuery Graal Query}.
+	 * @return A {@link GraalConjunctiveQueryToRule} equivalent to the {@code conjunctiveQuery} input.
 	 */
-	public static GraalConjunctiveQueryToRule convertQuery(final @NonNull String ruleHeadPredicateName,
-			final ConjunctiveQuery conjunctiveQuery) {
+	public static GraalConjunctiveQueryToRule convertQuery(final @NonNull String ruleHeadPredicateName, final ConjunctiveQuery conjunctiveQuery) {
 		if (StringUtils.isBlank(ruleHeadPredicateName)) {
-			throw new GraalConvertException(MessageFormat.format(
-					"Rule head predicate for Graal ConjunctiveQuery {0} cannot be a blank string.", conjunctiveQuery));
+			throw new GraalConvertException(
+					MessageFormat.format("Rule head predicate for Graal ConjunctiveQuery {0} cannot be a blank string.", conjunctiveQuery));
 		}
 
 		if (conjunctiveQuery.getAtomSet().isEmpty()) {
-			throw new GraalConvertException(MessageFormat.format(
-					"Graal ConjunctiveQuery {0} with empty body is not supported in VLog4j.", conjunctiveQuery));
+			throw new GraalConvertException(MessageFormat.format("Graal ConjunctiveQuery {0} with empty body is not supported in VLog4j.", conjunctiveQuery));
 		}
 
 		if (conjunctiveQuery.getAnswerVariables().isEmpty()) {
-			throw new GraalConvertException(MessageFormat.format(
-					"Graal ConjunctiveQuery {0} with no answer variables is not supported in VLog4J.",
-					conjunctiveQuery));
+			throw new GraalConvertException(
+					MessageFormat.format("Graal ConjunctiveQuery {0} with no answer variables is not supported in VLog4J.", conjunctiveQuery));
 		}
 
 		final Conjunction conjunction = convertAtomSet(conjunctiveQuery.getAtomSet());
@@ -169,10 +155,10 @@ public final class GraalToVLog4JModelConverter {
 	}
 
 	/**
-	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule} into a
-	 * {@link Rule Vlog4J Rule}.
+	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule} into a {@link Rule Vlog4J Rule}.
 	 *
-	 * @param rule A {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule}.
+	 * @param rule
+	 *            A {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule}.
 	 * @return A {@link Rule Vlog4J Rule}.
 	 */
 	public static Rule convertRule(final fr.lirmm.graphik.graal.api.core.Rule rule) {
@@ -182,11 +168,10 @@ public final class GraalToVLog4JModelConverter {
 	}
 
 	/**
-	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Rule Graal
-	 * Rules} into a {@link List} of {@link Rule VLog4J Rules}.
+	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rules} into a {@link List} of {@link Rule VLog4J Rules}.
 	 *
-	 * @param rules A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Rule
-	 *              Graal Rules}.
+	 * @param rules
+	 *            A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rules}.
 	 * @return A {@link List} of {@link Rule VLog4J Rules}.
 	 */
 	public static List<Rule> convertRules(final List<fr.lirmm.graphik.graal.api.core.Rule> rules) {
@@ -198,15 +183,15 @@ public final class GraalToVLog4JModelConverter {
 	}
 
 	/**
-	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Term Graal Term} into a
-	 * {@link Term VLog4J Term}. If the {@code term} is neither
-	 * {@link fr.lirmm.graphik.graal.api.core.Term#isVariable() Variable} nor
-	 * {@link fr.lirmm.graphik.graal.api.core.Term#isConstant() Constant}, a
+	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Term Graal Term} into a {@link Term VLog4J Term}. If the {@code term} is neither
+	 * {@link fr.lirmm.graphik.graal.api.core.Term#isVariable() Variable} nor {@link fr.lirmm.graphik.graal.api.core.Term#isConstant() Constant}, a
 	 * {@link GraalConvertException} is thrown.
 	 *
-	 * @param term A {@link fr.lirmm.graphik.graal.api.core.Term Graal Term}
+	 * @param term
+	 *            A {@link fr.lirmm.graphik.graal.api.core.Term Graal Term}
 	 * @return A {@link Term VLog4J Term}
-	 * @throws GraalConvertException If the term is neither variable nor constant.
+	 * @throws GraalConvertException
+	 *             If the term is neither variable nor constant.
 	 */
 	private static Term convertTerm(final fr.lirmm.graphik.graal.api.core.Term term) {
 		final String id = term.getIdentifier().toString();
@@ -215,18 +200,17 @@ public final class GraalToVLog4JModelConverter {
 		} else if (term.isVariable()) {
 			return makeVariable(id);
 		} else {
-			throw new GraalConvertException(MessageFormat.format(
-					"Term {0} with identifier {1} and label {2} could not be converted because it is neither constant nor variable.",
-					term, id, term.getLabel()));
+			throw new GraalConvertException(
+					MessageFormat.format("Term {0} with identifier {1} and label {2} could not be converted because it is neither constant nor variable.", term,
+							id, term.getLabel()));
 		}
 	}
 
 	/**
-	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Term Graal
-	 * Terms} into a {@link List} of {@link Term VLog4J Terms}.
+	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Term Graal Terms} into a {@link List} of {@link Term VLog4J Terms}.
 	 *
-	 * @param terms A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Term
-	 *              Graal Terms}
+	 * @param terms
+	 *            A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Term Graal Terms}
 	 * @return A {@link List} of {@link Term VLog4J Terms}
 	 */
 	private static List<Term> convertTerms(final List<fr.lirmm.graphik.graal.api.core.Term> terms) {
