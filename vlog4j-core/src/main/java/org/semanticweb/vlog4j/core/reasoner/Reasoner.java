@@ -326,6 +326,8 @@ public interface Reasoner extends AutoCloseable {
 	// FIXME should EdbIdbSeparationException be thrown when users try to add
 	// facts/rules?
 	void load() throws IOException, EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException;
+	
+	boolean checkAcyclicity(AcyclicityNotion acyclicityNotion) throws ReasonerStateException;
 
 	/**
 	 * Performs reasoning on the loaded <b>knowledge base</b>, depending on the set

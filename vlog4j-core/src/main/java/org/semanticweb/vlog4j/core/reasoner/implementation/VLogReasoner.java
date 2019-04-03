@@ -16,6 +16,7 @@ import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
@@ -33,6 +34,7 @@ import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
+import karmaresearch.vlog.VLog.CyclicCheckResult;
 
 /*
  * #%L
@@ -196,7 +198,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void load() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void load()
+			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
 			throw new ReasonerStateException(reasonerState, "Loading is not allowed after closing.");
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
@@ -309,8 +312,7 @@ public class VLogReasoner implements Reasoner {
 		}
 		Validate.notNull(queryAtom, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
-		Validate.isTrue(csvFilePath.endsWith(".csv"),
-				"Expected .csv extension for file [%s]!", csvFilePath);
+		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
 		try {
@@ -422,6 +424,28 @@ public class VLogReasoner implements Reasoner {
 		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
 			throw new ReasonerStateException(reasonerState, "Setting log file is not allowed after closing.");
 		this.vLog.setLogFile(filePath);
+	}
+
+	@Override
+	public boolean checkAcyclicity(AcyclicityNotion acyclicityNotion) throws ReasonerStateException {
+		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+			throw new ReasonerStateException(this.reasonerState,
+					"checking rules acyclicity is not allowed before loading!");
+		}
+		try {
+			final CyclicCheckResult checkCyclic = this.vLog.checkCyclic(acyclicityNotion.name());
+			switch (checkCyclic) {
+			case NON_CYCLIC:
+				return true;
+			case INCONCLUSIVE:
+				return false;
+			default:
+				throw new RuntimeException("Inconsistent acyclicity result");
+			}
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		}
+		// TODO Auto-generated method stub
 	}
 
 }
