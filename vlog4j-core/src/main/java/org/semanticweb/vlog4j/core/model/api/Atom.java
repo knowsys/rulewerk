@@ -39,7 +39,7 @@ public interface Atom {
 	 * 
 	 * @return the atom predicate.
 	 */
-	public Predicate getPredicate();
+	Predicate getPredicate();
 
 	/**
 	 * The list of terms representing the tuple arguments.
@@ -47,26 +47,26 @@ public interface Atom {
 	 * @return an unmodifiable list of terms with the same size as the
 	 *         {@link Predicate} arity.
 	 */
-	public List<Term> getTerms();
+	List<Term> getTerms();
 
 	/**
 	 * Returns the {@link Variable}s that occur among the atom terms.
 	 *
 	 * @return the set of atom variables
 	 */
-	public Set<Variable> getVariables();
+	Set<Variable> getVariables();
 
 	/**
 	 * Returns the {@link Constant}s that occur among the atom terms.
 	 * 
 	 * @return the set of atom constants
 	 */
-	public Set<Constant> getConstants();
+	Set<Constant> getConstants();
 
 	/**
 	 * Returns the {@link Blank}s that occur among the atom terms.
 	 * 
 	 * @return the set of atom blanks
 	 */
-	public Set<Blank> getBlanks();
+	Set<Blank> getBlanks();
 }

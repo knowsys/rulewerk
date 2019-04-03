@@ -39,27 +39,27 @@ public interface Rule {
 	 *
 	 * @return conjunction of atoms
 	 */
-	public Conjunction getHead();
+	Conjunction getHead();
 
 	/**
 	 * Returns the conjunction of body atoms (the premise of the rule).
 	 *
 	 * @return conjunction of atoms
 	 */
-	public Conjunction getBody();
+	Conjunction getBody();
 
 	/**
 	 * Returns the existentially quantified head variables of this rule.
 	 *
 	 * @return a set of variables
 	 */
-	public Set<Variable> getExistentiallyQuantifiedVariables();
+	Set<Variable> getExistentiallyQuantifiedVariables();
 
 	/**
 	 * Returns the universally quantified variables of this rule.
 	 *
 	 * @return a set of variables
 	 */
-	public Set<Variable> getUniversallyQuantifiedVariables();
+	Set<Variable> getUniversallyQuantifiedVariables();
 
 }

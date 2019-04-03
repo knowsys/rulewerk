@@ -38,7 +38,7 @@ public interface Conjunction extends Iterable<Atom> {
 	 * 
 	 * @return list of atoms
 	 */
-	public List<Atom> getAtoms();
+	List<Atom> getAtoms();
 
 	/**
 	 * Returns the set of terms of a certain type that occur in this conjunction.
@@ -47,19 +47,19 @@ public interface Conjunction extends Iterable<Atom> {
 	 *            the type of the term requested
 	 * @return set of matching terms used in this conjunction
 	 */
-	public Set<? extends Term> getTerms(TermType termType);
-	
+	Set<? extends Term> getTerms(TermType termType);
+
 	/**
-	 * Returns the set of all terms  that occur in this conjunction.
+	 * Returns the set of all terms that occur in this conjunction.
 	 * 
 	 * @return set of terms used in this conjunction
 	 */
-	public Set<Term> getTerms();
+	Set<Term> getTerms();
 
 	/**
 	 * Returns the {@link Variable}s that occur in this conjunction.
 	 *
 	 * @return a set of variables
 	 */
-	public Set<Variable> getVariables();
+	Set<Variable> getVariables();
 }

@@ -26,6 +26,7 @@ import java.util.List;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -140,6 +141,140 @@ public final class Expressions {
 	 */
 	public static Atom makeAtom(final Predicate predicate, final Term... terms) {
 		return new AtomImpl(predicate, Arrays.asList(terms));
+	}
+
+	/**
+	 * Creates a {@code Literal}.
+	 *
+	 * @param positive
+	 *            if true, creates a positive literal, and a negative one otherwise
+	 * @param predicateName
+	 *            non-blank {@link Predicate} name
+	 * @param terms
+	 *            non-empty, non-null list of non-null terms
+	 * @return a {@link Literal} with given {@code terms} and {@link Predicate}
+	 *         constructed from name given {@code predicateName} and {@code arity}
+	 *         given {@code terms} size.
+	 */
+	public static Literal makeLiteral(final boolean positive, final String predicateName, final List<Term> terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.size());
+
+		return new LiteralImpl(predicate, terms, positive);
+	}
+
+	/**
+	 * Creates a {@code Literal}.
+	 *
+	 * @param positive
+	 *            if true, creates a positive literal, and a negative one otherwise
+	 * @param predicateName
+	 *            non-blank {@link Predicate} name
+	 * @param terms
+	 *            non-empty, non-null array of non-null terms
+	 * @return a {@link Literal} with given {@code terms} and {@link Predicate}
+	 *         constructed from name given {@code predicateName} and {@code arity}
+	 *         given {@code terms} length.
+	 */
+	public static Literal makeLiteral(final boolean positive, final String predicateName, final Term... terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.length);
+
+		return new LiteralImpl(predicate, Arrays.asList(terms), positive);
+	}
+
+	/**
+	 * Creates a {@code Literal}.
+	 *
+	 * @param positive
+	 *            if true, creates a positive literal, and a negative one otherwise
+	 * @param predicate
+	 *            a non-null {@link Predicate}
+	 * @param terms
+	 *            non-empty, non-null list of non-null terms. List size must be the
+	 *            same as the given {@code predicate} arity.
+	 * @return a {@link Literal} corresponding to the input.
+	 */
+	public static Literal makeLiteral(final boolean positive, final Predicate predicate, final List<Term> terms) {
+		return new LiteralImpl(predicate, terms, positive);
+	}
+
+	/**
+	 * Creates a {@code Literal}.
+	 * 
+	 * @param positive
+	 *            if true, creates a positive literal, and a negative one otherwise
+	 * @param predicate
+	 *            a non-null {@link Predicate}
+	 * @param terms
+	 *            non-empty, non-null array of non-null terms. Aray size must be the
+	 *            same as the given {@code predicate} arity.
+	 * 
+	 * @return an {@link Atom} corresponding to the input
+	 */
+	public static Literal makeLiteral(final boolean positive, final Predicate predicate, final Term... terms) {
+		return new LiteralImpl(predicate, Arrays.asList(terms), positive);
+	}
+
+	/**
+	 * Creates a {@code Literal} with {@link Literal#isPositive()} {@code true}.
+	 *
+	 * @param predicateName
+	 *            non-blank {@link Predicate} name
+	 * @param terms
+	 *            non-empty, non-null list of non-null terms
+	 * @return a {@link Literal} with given {@code terms} and {@link Predicate}
+	 *         constructed from name given {@code predicateName} and {@code arity}
+	 *         given {@code terms} size.
+	 */
+	public static Literal makLiteral(final String predicateName, final List<Term> terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.size());
+
+		return new LiteralImpl(predicate, terms, true);
+	}
+
+	/**
+	 * Creates a {@code Literal} with {@link Literal#isPositive()} {@code true}.
+	 * 
+	 * @param predicateName
+	 *            non-blank {@link Predicate} name
+	 * @param terms
+	 *            non-empty, non-null array of non-null terms
+	 * @return a {@link Literal} with given {@code terms} and {@link Predicate}
+	 *         constructed from name given {@code predicateName} and {@code arity}
+	 *         given {@code terms} length.
+	 */
+	public static Literal makeLiteral( final String predicateName, final Term... terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.length);
+
+		return new LiteralImpl(predicate, Arrays.asList(terms), true);
+	}
+
+	/**
+	 * Creates a {@code Literal} with {@link Literal#isPositive()} {@code true}.
+	 * 
+	 * @param predicate
+	 *            a non-null {@link Predicate}
+	 * @param terms
+	 *            non-empty, non-null list of non-null terms. List size must be the
+	 *            same as the given {@code predicate} arity.
+	 * @return a {@link Literal} corresponding to the input.
+	 */
+	public static Literal makeLiteral(final Predicate predicate, final List<Term> terms) {
+		return new LiteralImpl(predicate, terms, true);
+	}
+
+	/**
+	 * Creates a {@code Literal} with {@link Literal#isPositive()} {@code true}.
+	 * 
+	 * @param predicate
+	 *            a non-null {@link Predicate}
+	 * @param terms
+	 *            non-empty, non-null array of non-null terms. Aray size must be the
+	 *            same as the given {@code predicate} arity.
+	 * 
+	 * @return an {@link Atom} corresponding to the input
+	 */
+	public static Literal makeLiteral(final Predicate predicate, final Term... terms) {
+		return new LiteralImpl(predicate, Arrays.asList(terms), true);
 	}
 
 	/**
