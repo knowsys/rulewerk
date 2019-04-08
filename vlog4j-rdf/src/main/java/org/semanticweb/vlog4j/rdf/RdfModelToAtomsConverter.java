@@ -44,7 +44,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  * {@code <subject, predicate, object>} triple statement of the given
  * {@code rdfModel} into an {@link Atom} of the form
  * {@code TRIPLE(subject, predicate, object)}. The ternary predicate used for
- * all atoms generated from RDF triples is
+ * all literals generated from RDF triples is
  * {@link RdfModelToAtomsConverter#RDF_TRIPLE_PREDICATE}. Subject, predicate and
  * object {@link Value}s are converted to corresponding {@link Term}s:
  * <ul>
@@ -64,13 +64,13 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 public final class RdfModelToAtomsConverter {
 
 	/**
-	 * The name of the ternary predicate of atoms generated from RDF triples:
+	 * The name of the ternary predicate of literals generated from RDF triples:
 	 * "TRIPLE".
 	 */
 	public static final String RDF_TRIPLE_PREDICATE_NAME = "TRIPLE";
 
 	/**
-	 * The ternary predicate of atoms generated from RDF triples. It has
+	 * The ternary predicate of literals generated from RDF triples. It has
 	 * {@code name}({@link Predicate#getName()}) "TRIPLE" and
 	 * {@code arity}({@link Predicate#getArity()}) 3.
 	 */
@@ -84,12 +84,12 @@ public final class RdfModelToAtomsConverter {
 	 * given {@code rdfModel} into an {@link Atom} of the form
 	 * {@code TRIPLE(subject, predicate, object)}. See
 	 * {@link RdfModelToAtomsConverter#RDF_TRIPLE_PREDICATE}, the ternary predicate
-	 * used for all atoms generated from RDF triples.
+	 * used for all literals generated from RDF triples.
 	 *
 	 * @param rdfModel
 	 *            a {@link Model} of an RDF document, containing triple statements
 	 *            that will be converter to facts.
-	 * @return a set of atoms corresponding to the statements of given
+	 * @return a set of literals corresponding to the statements of given
 	 *         {@code rdfModel}.
 	 */
 	public static Set<Atom> rdfModelToAtoms(final Model rdfModel) {

@@ -45,8 +45,8 @@ import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
 public abstract class AbstractClassToRuleConverter implements OWLClassExpressionVisitor {
 
 	/**
-	 * Helper class to represent a list of atoms, interpreted as a conjunction of
-	 * (positive) atoms. An empty conjunction is "true" (the neutral element of
+	 * Helper class to represent a list of literals, interpreted as a conjunction of
+	 * (positive) literals. An empty conjunction is "true" (the neutral element of
 	 * conjunction). If the conjunction would become false due to some unsatisfiable
 	 * atom, this is recorded in {@link SimpleConjunction#unsatisfiable}. In this
 	 * case, the conjuncts should be ignored. A third relevant option for the head
@@ -95,8 +95,8 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 
 		/**
 		 * Returns true if this conjunction is true, i.e., if it is an empty conjunction
-		 * (assuming that tautological atoms are never added). A true conjunction can
-		 * become refutable when more atoms are added.
+		 * (assuming that tautological literals are never added). A true conjunction can
+		 * become refutable when more literals are added.
 		 * 
 		 * @return
 		 */
@@ -106,7 +106,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 
 		/**
 		 * Returns true if this conjunction is strongly false, i.e., if it contains an
-		 * unsatisfiable atom. In this case, the actual atoms stored are not relevant. A
+		 * unsatisfiable atom. In this case, the actual literals stored are not relevant. A
 		 * false conjunction can not become true again.
 		 * 
 		 * @return
@@ -163,7 +163,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	SimpleConjunction head;
 
 	/**
-	 * Current frontier variable used as the main variable for creating atoms.
+	 * Current frontier variable used as the main variable for creating literals.
 	 */
 	final Term mainTerm;
 

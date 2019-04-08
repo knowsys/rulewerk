@@ -46,7 +46,7 @@ import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
 
 /**
  * Helper class for transforming OWL class expressions that occur as
- * superclasses into suitable head atoms for rules.
+ * superclasses into suitable head literals for rules.
  * 
  * @author Markus Krötzsch
  *

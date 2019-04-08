@@ -24,7 +24,7 @@ import java.util.Set;
  */
 
 /**
- * Interface for atoms. An atom is predicate applied to a tuple of terms; that
+ * Interface for literals. An atom is predicate applied to a tuple of terms; that
  * is, an atomic formula is a formula of the form P(t1,...,tn) for P a
  * {@link Predicate} name, and t1,...,tn some {@link Term}s. The number of terms
  * in the tuple corresponds to the {@link Predicate} arity.

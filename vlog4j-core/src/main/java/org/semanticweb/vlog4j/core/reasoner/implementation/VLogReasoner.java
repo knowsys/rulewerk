@@ -184,7 +184,7 @@ public class VLogReasoner implements Reasoner {
 		final Set<Term> nonConstantTerms = new HashSet<>(fact.getTerms());
 		nonConstantTerms.removeAll(fact.getConstants());
 		Validate.isTrue(nonConstantTerms.isEmpty(),
-				"Only Constant terms alowed in Fact atoms! The following non-constant terms [%s] appear for fact [%s]!",
+				"Only Constant terms alowed in Fact literals! The following non-constant terms [%s] appear for fact [%s]!",
 				nonConstantTerms, fact);
 
 	}

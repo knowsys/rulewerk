@@ -48,7 +48,7 @@ import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
 
 /**
  * Helper class for transforming OWL class expressions that occur as subclasses
- * into suitable body atoms for rules. Auxiliary rules might be created to
+ * into suitable body literals for rules. Auxiliary rules might be created to
  * capture the semantics of some constructs.
  * 
  * @author Markus Krötzsch

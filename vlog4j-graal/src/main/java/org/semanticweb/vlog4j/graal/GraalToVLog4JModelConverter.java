@@ -73,7 +73,7 @@ public final class GraalToVLog4JModelConverter {
 	/**
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atoms} into a {@link List} of {@link Atom VLog4J Atoms}.
 	 *
-	 * @param atoms
+	 * @param literals
 	 *            A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atoms}.
 	 * @return A {@link List} of {@link Atom VLog4J Atoms}.
 	 */
@@ -117,7 +117,7 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link ConjunctiveQuery Graal ConjunctiveQuery} into a {@link GraalConjunctiveQueryToRule}. Answering a Graal ConjunctiveQuery over a certain
-	 * knowledge base is equivalent to adding a {@link Rule} to the knowledge base, <em> prior to reasoning</em>. The rule consists of the query atoms as the
+	 * knowledge base is equivalent to adding a {@link Rule} to the knowledge base, <em> prior to reasoning</em>. The rule consists of the query literals as the
 	 * body and a single atom with a new predicate containing all the query variables as the head. After the reasoning process, in which the rule is
 	 * materialised, is completed, this rule head can then be used as a query atom to obtain the results of the Graal ConjunctiveQuery.
 	 *

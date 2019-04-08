@@ -210,7 +210,7 @@ public interface Reasoner extends AutoCloseable {
 	 * @throws ReasonerStateException
 	 *             if the reasoner has already been loaded.
 	 * @throws IllegalArgumentException
-	 *             if the {@code rules} atoms contain terms which are not of type
+	 *             if the {@code rules} literals contain terms which are not of type
 	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
 	 */
 	void addRules(@NonNull Rule... rules) throws ReasonerStateException;
@@ -227,7 +227,7 @@ public interface Reasoner extends AutoCloseable {
 	 * @throws ReasonerStateException
 	 *             if the reasoner has already been loaded.
 	 * @throws IllegalArgumentException
-	 *             if the {@code rules} atoms contain terms which are not of type
+	 *             if the {@code rules} literals contain terms which are not of type
 	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
 	 */
 	void addRules(@NonNull List<Rule> rules) throws ReasonerStateException;
@@ -250,7 +250,7 @@ public interface Reasoner extends AutoCloseable {
 	 *             with the same predicate ({@link Atom#getPredicate()}) as an
 	 *             {@link Atom} among given {@code facts}.
 	 * @throws IllegalArgumentException
-	 *             if the {@code facts} atoms contain terms which are not of type
+	 *             if the {@code facts} literals contain terms which are not of type
 	 *             {@link TermType#CONSTANT}.
 	 */
 	// TODO add examples to javadoc about multiple sources per predicate and EDB/IDB
@@ -273,7 +273,7 @@ public interface Reasoner extends AutoCloseable {
 	 *             with the same predicate ({@link Atom#getPredicate()}) as an
 	 *             {@link Atom} among given {@code facts}.
 	 * @throws IllegalArgumentException
-	 *             if the {@code facts} atoms contain terms which are not of type
+	 *             if the {@code facts} literals contain terms which are not of type
 	 *             {@link TermType#CONSTANT}.
 	 */
 	// TODO add examples to javadoc about multiple sources per predicate and EDB/IDB

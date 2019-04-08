@@ -36,7 +36,7 @@ import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 /**
  * A utility class containing a <a href="http://graphik-team.github.io/graal/">Graal</a> {@link ConjunctiveQuery}. Answering a
  * <a href="http://graphik-team.github.io/graal/">Graal</a> {@link ConjunctiveQuery} over a certain knowledge base is equivalent to adding a {@link Rule} to the
- * knowledge base, <em> prior to reasoning</em>. The rule consists of the query atoms as the body and a single atom with a new predicate containing all the
+ * knowledge base, <em> prior to reasoning</em>. The rule consists of the query literals as the body and a single atom with a new predicate containing all the
  * answer variables of the query as the head. After the reasoning process, in which the rule is materialised, is completed, this rule head can then be used as a
  * query atom to obtain the results of the Graal {@link ConjunctiveQuery}.
  * 
@@ -65,7 +65,7 @@ public class GraalConjunctiveQueryToRule {
 
 	/**
 	 * A rule that needs to be added to the program to answer the {@link ConjunctiveQuery Graal ConjunctiveQuery} represented by this object. It consists of all
-	 * query atoms from the original Graal ConjunctiveQuery as the body and a single atom containing all the answer variables of the query as the head.
+	 * query literals from the original Graal ConjunctiveQuery as the body and a single atom containing all the answer variables of the query as the head.
 	 * 
 	 * @return The rule equivalent to the Graal ConjunctiveQuery represented by this object.
 	 */

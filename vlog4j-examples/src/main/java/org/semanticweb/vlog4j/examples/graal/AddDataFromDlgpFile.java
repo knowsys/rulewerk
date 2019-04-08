@@ -81,7 +81,7 @@ public class AddDataFromDlgpFile {
 		}
 
 		/*
-		 * 2. ConjunctiveQueries consist of a conjunction of atoms and a set of answer variables. To query this with VLog4J, an additional rule needs to be
+		 * 2. ConjunctiveQueries consist of a conjunction of literals and a set of answer variables. To query this with VLog4J, an additional rule needs to be
 		 * added for each ConjunctiveQuery. See GraalConjunctiveQueryToRule for details.
 		 */
 		final List<GraalConjunctiveQueryToRule> convertedConjunctiveQueries = new ArrayList<>();
