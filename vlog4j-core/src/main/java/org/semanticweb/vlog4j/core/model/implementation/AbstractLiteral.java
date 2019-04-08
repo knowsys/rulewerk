@@ -1,12 +1,31 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+/*-
+ * #%L
+ * VLog4j Core Components
+ * %%
+ * Copyright (C) 2018 - 2019 VLog4j Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Blank;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
@@ -16,8 +35,8 @@ import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 
 /**
- * Implements {@link Atom} objects. An atom is a formula of the form
- * P(t1,...,tn) for P a {@link Predicate} name, and t1,...,tn some
+ * Implements {@link Literal} objects. A literal is a formula of the form
+ * +P(t1,...,tn) or -P(t1,...,tn) for P a {@link Predicate} name, and t1,...,tn some
  * {@link Term}s. The number of terms corresponds to the {@link Predicate}
  * arity.
  *
@@ -39,9 +58,9 @@ public abstract class AbstractLiteral implements Literal {
 	 *            the <b>predicate</b> arity.
 	 */
 	public AbstractLiteral(@NonNull final Predicate predicate, @NonNull final List<Term> terms) {
-		Validate.notNull(predicate, "Atom predicates cannot be null.");
+		Validate.notNull(predicate, "Literal predicates cannot be null.");
 		Validate.noNullElements(terms, "Null terms cannot appear in literals. The list contains a null at position [%d].");
-		Validate.notEmpty(terms, "Atoms of arity zero are not supported: please specify at least one term.");
+		Validate.notEmpty(terms, "Literals of arity zero are not supported: please specify at least one term.");
 
 		Validate.isTrue(terms.size() == predicate.getArity(), "Terms size [%d] does not match predicate arity [%d].",
 				terms.size(), predicate.getArity());
