@@ -1,0 +1,22 @@
+@prefix purl:  <http://purl.org/dc/elements/1.1/>
+@prefix conference-onto:   <https://w3id.org/scholarlydata/ontology/conference-ontology.owl>
+
+@rules
+% Rule: two creators of the same work work together.
+pwt(A, B) :- te(X, purl:creator, A), te(X, purl:creator, B).
+
+% Rule: determines an organization from a creator. Note: there is no direct connection in the database.
+ao(A, B) :- te(B, conference-onto:hasAffiliation, X), te(X, conference-onto:withOrganisation, A).
+
+% Rule that determines the name of an organization
+af(X, B) :-  ao(A, B),  te(A, conference-onto:name, X).
+
+% Rule that determines which organizations work together.
+awt(A, B) :- pwt(C, D), af(A, C), af(B, D).
+
+% Rules extracting organizations.
+a(X) :- awt(X, A) .
+a(X) :-  awt(A, X) .
+
+% Countries A and B working together: institutes C and D working together, C is from A, D is from B.
+cwt(A, B) :- awt(C, D), inCountry(C, A), inCountry(D, B) .
