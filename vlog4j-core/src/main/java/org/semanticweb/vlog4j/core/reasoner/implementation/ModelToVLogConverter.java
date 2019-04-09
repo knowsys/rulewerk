@@ -25,8 +25,9 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import java.util.Collection;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
+import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -64,10 +65,10 @@ final class ModelToVLogConverter {
 		return vLogTerms;
 	}
 
-	static String[][] toVLogFactTuples(final Collection<Atom> facts) {
+	static String[][] toVLogFactTuples(final Collection<PositiveLiteral> facts) {
 		final String[][] tuples = new String[facts.size()][];
 		int i = 0;
-		for (final Atom atom : facts) {
+		for (final PositiveLiteral atom : facts) {
 			final String[] vLogFactTuple = ModelToVLogConverter.toVLogFactTuple(atom);
 			tuples[i] = vLogFactTuple;
 			i++;
@@ -75,7 +76,7 @@ final class ModelToVLogConverter {
 		return tuples;
 	}
 
-	static String[] toVLogFactTuple(final Atom fact) {
+	static String[] toVLogFactTuple(final PositiveLiteral fact) {
 		final List<Term> terms = fact.getTerms();
 		final String[] vLogFactTuple = new String[terms.size()];
 		int i = 0;
@@ -100,17 +101,17 @@ final class ModelToVLogConverter {
 		return vLogPredicate;
 	}
 
-	static karmaresearch.vlog.Atom toVLogAtom(final Atom atom) {
-		final karmaresearch.vlog.Term[] vLogTerms = toVLogTermArray(atom.getTerms());
-		final String vLogPredicate = toVLogPredicate(atom.getPredicate());
+	static karmaresearch.vlog.Atom toVLogAtom(final Literal literal) {
+		final karmaresearch.vlog.Term[] vLogTerms = toVLogTermArray(literal.getTerms());
+		final String vLogPredicate = toVLogPredicate(literal.getPredicate());
 		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(vLogPredicate, vLogTerms);
 		return vLogAtom;
 	}
 
-	static karmaresearch.vlog.Atom[] toVLogAtomArray(final Conjunction conjunction) {
-		final karmaresearch.vlog.Atom[] vLogAtoms = new karmaresearch.vlog.Atom[conjunction.getAtoms().size()];
+	static karmaresearch.vlog.Atom[] toVLogAtomArray(final Conjunction<?> conjunction) {
+		final karmaresearch.vlog.Atom[] vLogAtoms = new karmaresearch.vlog.Atom[conjunction.getLiterals().size()];
 		int i = 0;
-		for (final Atom atom : conjunction.getAtoms()) {
+		for (final Literal atom : conjunction.getLiterals()) {
 			vLogAtoms[i] = toVLogAtom(atom);
 			i++;
 		}

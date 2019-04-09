@@ -4,7 +4,7 @@ package org.semanticweb.vlog4j.core.model.api;
  * #%L
  * VLog4j Core Components
  * %%
- * Copyright (C) 2018 VLog4j Developers
+ * Copyright (C) 2018 - 2019 VLog4j Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +24,21 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Interface for representing conjunctions of {@link Atom}s, i.e., lists of
- * atomic formulas that are connected with logical AND. Conjunctions may have
+ * Interface for representing conjunctions of {@link Literal}s, i.e., lists of
+ * (negated or positive) atomic formulas that are connected with logical AND. Conjunctions may have
  * free variables, since they contain no quantifiers.
  * 
  * @author Markus Krötzsch
  *
  */
-public interface Conjunction extends Iterable<Atom> {
-
+public interface Conjunction<T extends Literal> extends Iterable<T> {
+	
 	/**
 	 * Returns the list of literals that are part of this conjunction.
 	 * 
 	 * @return list of literals
 	 */
-	List<Atom> getAtoms();
+	List<T> getLiterals();
 
 	/**
 	 * Returns the set of terms of a certain type that occur in this conjunction.
@@ -62,4 +62,5 @@ public interface Conjunction extends Iterable<Atom> {
 	 * @return a set of variables
 	 */
 	Set<Variable> getVariables();
+
 }

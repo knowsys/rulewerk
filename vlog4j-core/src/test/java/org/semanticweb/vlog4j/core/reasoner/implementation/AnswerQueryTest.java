@@ -34,8 +34,8 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -62,7 +62,7 @@ public class AnswerQueryTest {
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
 		final Variable z = Expressions.makeVariable("Z");
-		final Atom fact = Expressions.makeAtom(predicate, constantC, constantC, constantD);
+		final PositiveLiteral fact = Expressions.makePositiveLiteral(predicate, constantC, constantC, constantD);
 
 		final boolean includeBlanks = false;
 		@SuppressWarnings("unchecked")
@@ -72,24 +72,24 @@ public class AnswerQueryTest {
 			reasoner.addFacts(fact);
 			reasoner.load();
 
-			final Atom queryAtomXYZ = Expressions.makeAtom(predicate, x, y, z);
+			final PositiveLiteral queryAtomXYZ = Expressions.makePositiveLiteral(predicate, x, y, z);
 			try (final QueryResultIterator queryResultIteratorXYZ = reasoner.answerQuery(queryAtomXYZ, includeBlanks)) {
 				final Set<List<Term>> queryResultsXYZ = QueryResultsUtils.collectQueryResults(queryResultIteratorXYZ);
 				assertEquals(factCCD, queryResultsXYZ);
 			}
 
-			final Atom queryAtomXXZ = Expressions.makeAtom(predicate, x, x, z);
+			final PositiveLiteral queryAtomXXZ = Expressions.makePositiveLiteral(predicate, x, x, z);
 			try (final QueryResultIterator queryResultIteratorXXZ = reasoner.answerQuery(queryAtomXXZ, includeBlanks)) {
 				final Set<List<Term>> queryResultsXXZ = QueryResultsUtils.collectQueryResults(queryResultIteratorXXZ);
 				assertEquals(factCCD, queryResultsXXZ);
 			}
 
-			final Atom queryAtomXXX = Expressions.makeAtom(predicate, x, x, x);
+			final PositiveLiteral queryAtomXXX = Expressions.makePositiveLiteral(predicate, x, x, x);
 			try (final QueryResultIterator queryResultIteratorXXX = reasoner.answerQuery(queryAtomXXX, includeBlanks)) {
 				assertFalse(queryResultIteratorXXX.hasNext());
 			}
 
-			final Atom queryAtomXYX = Expressions.makeAtom(predicate, x, y, x);
+			final PositiveLiteral queryAtomXYX = Expressions.makePositiveLiteral(predicate, x, y, x);
 			try (final QueryResultIterator queryResultIteratorXYX = reasoner.answerQuery(queryAtomXYX, includeBlanks)) {
 
 				assertFalse(queryResultIteratorXYX.hasNext());
@@ -104,16 +104,16 @@ public class AnswerQueryTest {
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
 		final Variable z = Expressions.makeVariable("Z");
-		final Atom pYY = Expressions.makeAtom(predicate, y, y);
-		final Atom pYZ = Expressions.makeAtom(predicate, y, z);
-		final Rule pX__pYY_pYZ = Expressions.makeRule(Expressions.makeConjunction(pYY, pYZ),
-				Expressions.makeConjunction(Expressions.makeAtom(predicate, x)));
+		final PositiveLiteral pYY = Expressions.makePositiveLiteral(predicate, y, y);
+		final PositiveLiteral pYZ = Expressions.makePositiveLiteral(predicate, y, z);
+		final Rule pX__pYY_pYZ = Expressions.makeRule(Expressions.makePositiveLiteralsConjunction(pYY, pYZ),
+				Expressions.makeConjunction(Expressions.makePositiveLiteral(predicate, x)));
 		assertEquals(Sets.newSet(y, z), pX__pYY_pYZ.getExistentiallyQuantifiedVariables());
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
-			reasoner.addFacts(Expressions.makeAtom(predicate, Expressions.makeConstant("c")));
+			reasoner.addFacts(Expressions.makePositiveLiteral(predicate, Expressions.makeConstant("c")));
 			reasoner.addRules(pX__pYY_pYZ);
 			reasoner.load();
 			reasoner.reason();
@@ -145,12 +145,12 @@ public class AnswerQueryTest {
 		final Variable y = Expressions.makeVariable("Y");
 		final Variable z = Expressions.makeVariable("Z");
 		final Variable t = Expressions.makeVariable("T");
-		final Atom pXYYZZT = Expressions.makeAtom(predicate, x, y, y, z, z, t);
-		final Rule pXY__pXYYZZT = Expressions.makeRule(pXYYZZT, Expressions.makeAtom(predicate, x, y));
+		final PositiveLiteral pXYYZZT = Expressions.makePositiveLiteral(predicate, x, y, y, z, z, t);
+		final Rule pXY__pXYYZZT = Expressions.makeRule(pXYYZZT, Expressions.makePositiveLiteral(predicate, x, y));
 		assertEquals(Sets.newSet(z, t), pXY__pXYYZZT.getExistentiallyQuantifiedVariables());
 		final Constant constantC = Expressions.makeConstant("c");
 		final Constant constantD = Expressions.makeConstant("d");
-		final Atom factPcd = Expressions.makeAtom(predicate, constantC, constantD);
+		final PositiveLiteral factPcd = Expressions.makePositiveLiteral(predicate, constantC, constantD);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFacts(factPcd);
@@ -158,7 +158,7 @@ public class AnswerQueryTest {
 			reasoner.load();
 			reasoner.reason();
 
-			final Atom queryAtomXYYZZT = pXYYZZT;
+			final PositiveLiteral queryAtomXYYZZT = pXYYZZT;
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtomXYYZZT, true)) {
 				assertTrue(queryResultIterator.hasNext());
 				final List<Term> queryResultTerms = queryResultIterator.next().getTerms();
@@ -181,24 +181,24 @@ public class AnswerQueryTest {
 			}
 
 			// x and y do not have the same constant substitution
-			final Atom queryAtomXXYZZT = Expressions.makeAtom(predicate, x, x, y, z, z, t);
+			final PositiveLiteral queryAtomXXYZZT = Expressions.makePositiveLiteral(predicate, x, x, y, z, z, t);
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtomXXYZZT, true)) {
 				assertFalse(queryResultIterator.hasNext());
 			}
 			// z and t do not have the same blank substitution
-			final Atom queryAtomXYYZZZ = Expressions.makeAtom(predicate, x, y, y, z, z, z);
+			final PositiveLiteral queryAtomXYYZZZ = Expressions.makePositiveLiteral(predicate, x, y, y, z, z, z);
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtomXYYZZZ, true)) {
 				assertFalse(queryResultIterator.hasNext());
 			}
 			// universal and existential variables do not have the same substitution
 			// y and z do not have the same constant substitution
-			final Atom queryAtomXYYYZT = Expressions.makeAtom(predicate, x, y, y, y, z, t);
+			final PositiveLiteral queryAtomXYYYZT = Expressions.makePositiveLiteral(predicate, x, y, y, y, z, t);
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtomXYYYZT, true)) {
 				assertFalse(queryResultIterator.hasNext());
 			}
 
 			// y and t do not have the same constant substitution
-			final Atom queryAtomXYYZZY = Expressions.makeAtom(predicate, x, y, y, z, z, y);
+			final PositiveLiteral queryAtomXYYZZY = Expressions.makePositiveLiteral(predicate, x, y, y, z, z, y);
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtomXYYZZY, true)) {
 				assertFalse(queryResultIterator.hasNext());
 			}
@@ -211,11 +211,11 @@ public class AnswerQueryTest {
 		final Variable vx = Expressions.makeVariable("x");
 		final Variable vy = Expressions.makeVariable("y");
 		// P(x) -> Q(y)
-		final Rule existentialRule = Expressions.makeRule(Expressions.makeAtom("q", vy), Expressions.makeAtom("p", vx));
+		final Rule existentialRule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vy), Expressions.makePositiveLiteral("p", vx));
 		assertEquals(Sets.newSet(vy), existentialRule.getExistentiallyQuantifiedVariables());
 		final Constant constantC = Expressions.makeConstant("c");
-		final Atom fact = Expressions.makeAtom("p", constantC);
-		final Atom queryAtom = Expressions.makeAtom("q", Expressions.makeVariable("?x"));
+		final PositiveLiteral fact = Expressions.makePositiveLiteral("p", constantC);
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("q", Expressions.makeVariable("?x"));
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(fact);
@@ -243,7 +243,7 @@ public class AnswerQueryTest {
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.load();
 
-			final Atom queryAtom = Expressions.makeAtom("P", Expressions.makeVariable("?x"));
+			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
 			final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true);
 			Assert.assertFalse(queryResultIterator.hasNext());
 			queryResultIterator.close();
@@ -259,11 +259,11 @@ public class AnswerQueryTest {
 	@Test
 	public void queryEmptyRules() throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			final Atom fact = Expressions.makeAtom("P", Expressions.makeConstant("c"));
+			final PositiveLiteral fact = Expressions.makePositiveLiteral("P", Expressions.makeConstant("c"));
 			reasoner.addFacts(fact);
 			reasoner.load();
 
-			final Atom queryAtom = Expressions.makeAtom("P", Expressions.makeVariable("?x"));
+			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
 
 			reasoner.reason();
 
@@ -280,13 +280,13 @@ public class AnswerQueryTest {
 	public void queryEmptyFacts()
 			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
 		final Variable vx = Expressions.makeVariable("x");
-		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
+		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx), Expressions.makePositiveLiteral("p", vx));
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addRules(rule);
 			reasoner.load();
 
-			final Atom queryAtom = Expressions.makeAtom("P", Expressions.makeVariable("?x"));
+			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true)) {
 				Assert.assertFalse(queryResultIterator.hasNext());
 				queryResultIterator.close();

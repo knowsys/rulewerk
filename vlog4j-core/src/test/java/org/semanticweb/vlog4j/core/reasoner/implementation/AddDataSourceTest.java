@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -49,8 +49,8 @@ public class AddDataSourceTest {
 			EdbIdbSeparationException, EDBConfigurationException, IOException, IncompatiblePredicateArityException {
 		final Predicate predicateParity1 = Expressions.makePredicate("p", 1);
 		final Constant constantA = Expressions.makeConstant("a");
-		final Atom factPredicatePArity2 = Expressions.makeAtom("p", constantA, constantA);
-		final Atom factPredicateQArity1 = Expressions.makeAtom("q", constantA);
+		final PositiveLiteral factPredicatePArity2 = Expressions.makePositiveLiteral("p", constantA, constantA);
+		final PositiveLiteral factPredicateQArity1 = Expressions.makePositiveLiteral("q", constantA);
 		final Predicate predicateLArity1 = Expressions.makePredicate("l", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
@@ -61,11 +61,11 @@ public class AddDataSourceTest {
 			reasoner.load();
 			reasoner.reason();
 			final QueryResultIterator queryResultIteratorL1 = reasoner.answerQuery(
-					Expressions.makeAtom(predicateLArity1, Expressions.makeVariable("x")), false);
+					Expressions.makePositiveLiteral(predicateLArity1, Expressions.makeVariable("x")), false);
 			final Set<List<Term>> queryResultsL1 = QueryResultsUtils.collectQueryResults(queryResultIteratorL1);
 			
 			final QueryResultIterator queryResultIteratorP1 = reasoner.answerQuery(
-					Expressions.makeAtom(predicateParity1, Expressions.makeVariable("x")), false);
+					Expressions.makePositiveLiteral(predicateParity1, Expressions.makeVariable("x")), false);
 			final Set<List<Term>> queryResultsP1 = QueryResultsUtils.collectQueryResults(queryResultIteratorP1);
 			assertEquals(queryResultsL1, queryResultsP1);
 			
@@ -126,7 +126,7 @@ public class AddDataSourceTest {
 	public void testAddDataSourceNoFactsForPredicate() throws ReasonerStateException, IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		final Atom fact = Expressions.makeAtom(Expressions.makePredicate("p", 1), Expressions.makeConstant("a"));
+		final PositiveLiteral fact = Expressions.makePositiveLiteral(Expressions.makePredicate("p", 1), Expressions.makeConstant("a"));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(fact);
 			reasoner.addFactsFromDataSource(predicate, dataSource);

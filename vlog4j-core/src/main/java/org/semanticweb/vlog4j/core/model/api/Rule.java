@@ -4,7 +4,7 @@ package org.semanticweb.vlog4j.core.model.api;
  * #%L
  * VLog4j Core Components
  * %%
- * Copyright (C) 2018 VLog4j Developers
+ * Copyright (C) 2018 - 2019 VLog4j Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,20 +33,20 @@ import java.util.Set;
  *
  */
 public interface Rule {
-
+	
 	/**
 	 * Returns the conjunction of head literals (the consequence of the rule).
 	 *
 	 * @return conjunction of literals
 	 */
-	Conjunction getHead();
+	Conjunction<PositiveLiteral> getHead();
 
 	/**
 	 * Returns the conjunction of body literals (the premise of the rule).
 	 *
 	 * @return conjunction of literals
 	 */
-	Conjunction getBody();
+	Conjunction<Literal> getBody();
 
 	/**
 	 * Returns the existentially quantified head variables of this rule.

@@ -23,15 +23,12 @@ package org.semanticweb.vlog4j.core.model.implementation;
 import java.util.Arrays;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
-import org.semanticweb.vlog4j.core.model.api.Conj;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.R;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -83,68 +80,6 @@ public final class Expressions {
 	 */
 	public static Predicate makePredicate(String name, int arity) {
 		return new PredicateImpl(name, arity);
-	}
-
-	/**
-	 * Creates an {@code Atom}.
-	 *
-	 * @param predicateName
-	 *            non-blank {@link Predicate} name
-	 * @param terms
-	 *            non-empty, non-null list of non-null terms
-	 * @return an {@link Atom} with given {@code terms} and {@link Predicate}
-	 *         constructed from name given {@code predicateName} and {@code arity}
-	 *         given {@code terms} size.
-	 */
-	public static Atom makeAtom(final String predicateName, final List<Term> terms) {
-		final Predicate predicate = makePredicate(predicateName, terms.size());
-
-		return new AtomImpl(predicate, terms);
-	}
-
-	/**
-	 * Creates an {@code Atom}.
-	 *
-	 * @param predicateName
-	 *            non-blank {@link Predicate} name
-	 * @param terms
-	 *            non-empty, non-null array of non-null terms
-	 * @return an {@link Atom} with given {@code terms} and {@link Predicate}
-	 *         constructed from name given {@code predicateName} and {@code arity}
-	 *         given {@code terms} length.
-	 */
-	public static Atom makeAtom(final String predicateName, final Term... terms) {
-		final Predicate predicate = makePredicate(predicateName, terms.length);
-
-		return new AtomImpl(predicate, Arrays.asList(terms));
-	}
-
-	/**
-	 * Creates an {@code Atom}.
-	 *
-	 * @param predicate
-	 *            a non-null {@link Predicate}
-	 * @param terms
-	 *            non-empty, non-null list of non-null terms. List size must be the
-	 *            same as the given {@code predicate} arity.
-	 * @return an {@link Atom} corresponding to the input.
-	 */
-	public static Atom makeAtom(final Predicate predicate, final List<Term> terms) {
-		return new AtomImpl(predicate, terms);
-	}
-
-	/**
-	 * Creates an {@code Atom}.
-	 *
-	 * @param predicate
-	 *            a non-null {@link Predicate}
-	 * @param terms
-	 *            non-empty, non-null array of non-null terms. Array size must be
-	 *            the same as the given {@code predicate} arity.
-	 * @return an {@link Atom} corresponding to the input
-	 */
-	public static Atom makeAtom(final Predicate predicate, final Term... terms) {
-		return new AtomImpl(predicate, Arrays.asList(terms));
 	}
 
 	/**
@@ -270,103 +205,94 @@ public final class Expressions {
 	public static NegativeLiteral makeNegativeLiteral(final Predicate predicate, final Term... terms) {
 		return new NegativeLiteralImpl(predicate, Arrays.asList(terms));
 	}
-
+	
 	/**
-	 * Creates a {@code Conjunction}.
+	 * Creates a {@code Conjunction} of {@link Literal} objects.
 	 *
 	 * @param literals
 	 *            list of non-null literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static Conjunction makeConjunction(final List<Atom> atoms) {
-		return new ConjunctionImpl(atoms);
+	public static Conjunction<Literal> makeConjunction(final List<Literal> literals) {
+		return new ConjunctionImpl<>(literals);
 	}
 
 	/**
-	 * Creates a {@code Conjunction}.
+	 * Creates a {@code Conjunction} of {@link Literal} objects.
 	 *
 	 * @param literals
 	 *            array of non-null literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static Conjunction makeConjunction(final Atom... atoms) {
-		return new ConjunctionImpl(Arrays.asList(atoms));
+	public static Conjunction<Literal> makeConjunction(final Literal... literals) {
+		return new ConjunctionImpl<>(Arrays.asList(literals));
+	}
+	
+	
+	/**
+	 * Creates a {@code Conjunction} of {@link PositiveLiteral} objects.
+	 *
+	 * @param literals
+	 *            list of non-null positive literals
+	 * @return a {@link Conjunction} corresponding to the input
+	 */
+	public static Conjunction<PositiveLiteral> makePositiveLiteralsConjunction(final List<PositiveLiteral> literals) {
+		return new ConjunctionImpl<>(literals);
 	}
 	
 	/**
-	 * Creates a {@code Conjunction}.
+	 * Creates a {@code Conjunction} of {@link PositiveLiteral} objects.
 	 *
 	 * @param literals
-	 *            list of non-null literals
+	 *            array of non-null positive literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static Conj<Literal> makeConj(final List<Literal> literals) {
-		return new ConjImpl<Literal>(literals);
+	public static Conjunction<PositiveLiteral> makePositiveLiteralsConjunction(final PositiveLiteral... literals) {
+		return new ConjunctionImpl<>(Arrays.asList(literals));
 	}
 
-	/**
-	 * Creates a {@code Conjunction}.
-	 *
-	 * @param literals
-	 *            array of non-null literals
-	 * @return a {@link Conjunction} corresponding to the input
-	 */
-	public static Conj<Literal> makeConj(final Literal... literals) {
-		return new ConjImpl<Literal>(Arrays.asList(literals));
-	}
-
-	/**
-	 * Creates a {@code Rule}.
-	 *
-	 * @param head
-	 *            conjunction of literals
-	 * @param body
-	 *            conjunction of literals
-	 * @return a {@link Rule} corresponding to the input
-	 */
-	public static Rule makeRule(final Conjunction head, final Conjunction body) {
-		return new RuleImpl(head, body);
-	}
-
+	
+	
+	
 	/**
 	 * Creates a {@code Rule} with a single atom in its head.
 	 *
-	 * @param headAtom
-	 *            the single atom in the rule head
-	 * @param bodyAtoms
-	 *            array of non-null literals
-	 * @return a {@link Rule} corresponding to the input
-	 */
-	public static Rule makeRule(final Atom headAtom, final Atom... bodyAtoms) {
-		return new RuleImpl(new ConjunctionImpl(Arrays.asList(headAtom)),
-				new ConjunctionImpl(Arrays.asList(bodyAtoms)));
-	}
-
-	/**
-	 * Creates a {@code Rule}.
-	 *
-	 * @param head
-	 *            conjunction of literals
-	 * @param body
-	 *            conjunction of literals
-	 * @return a {@link Rule} corresponding to the input
-	 */
-	public static R makeR(final Conj<PositiveLiteral> head, final Conj<Literal> body) {
-		return new RImpl(head, body);
-	}
-
-	/**
-	 * Creates a {@code Rule} with a single atom in its head.
-	 *
-	 * @param headLiterals
-	 *            the single atom in the rule head
+	 * @param headLiteral
+	 *            the single positive literal in the rule head
 	 * @param bodyLiterals
 	 *            array of non-null literals
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static R makeR(final PositiveLiteral headLiterals, final Literal... bodyLiterals) {
-		return new RImpl(new ConjImpl<PositiveLiteral>(Arrays.asList(headLiterals)),
-				new ConjImpl<Literal>(Arrays.asList(bodyLiterals)));
+	public static Rule makeRule(final PositiveLiteral headLiteral, final Literal... bodyLiterals) {
+		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
+				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
+	}
+	
+	/**
+	 * Creates a {@code Rule} with a single atom in its head.
+	 *
+	 * @param headLiteral
+	 *            the single positive literal in the rule head
+	 * @param bodyLiterals
+	 *            array of non-null literals
+	 * @return a {@link Rule} corresponding to the input
+	 */
+	public static Rule makeRule(final PositiveLiteral headLiteral, final PositiveLiteral... bodyLiterals) {
+		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
+				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
+	}
+	
+	/**
+	 * Creates a {@code Rule}.
+	 *
+	 * @param head
+	 *            conjunction of positive (non-negated) literals
+	 * @param body
+	 *            conjunction of literals (negated or not)
+	 * @return a {@link Rule} corresponding to the input
+	 */
+	public static Rule makeRule(final Conjunction<PositiveLiteral> head, final Conjunction<Literal> body) {
+		return new RuleImpl(head, body);
 	}
 
 }

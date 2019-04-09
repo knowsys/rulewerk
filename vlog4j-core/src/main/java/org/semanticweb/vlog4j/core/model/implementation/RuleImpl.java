@@ -1,12 +1,10 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
-import java.util.HashSet;
-
-/*
+/*-
  * #%L
  * VLog4j Core Components
  * %%
- * Copyright (C) 2018 VLog4j Developers
+ * Copyright (C) 2018 - 2019 VLog4j Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +20,14 @@ import java.util.HashSet;
  * #L%
  */
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
+import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 
@@ -39,23 +40,26 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
  */
 public class RuleImpl implements Rule {
 
-	final Conjunction body;
-	final Conjunction head;
+	final Conjunction<Literal> body;
+	final Conjunction<PositiveLiteral> head;
 
 	/**
-	 * Creates a Rule with a non-empty body and an non-empty head. All variables in the body are considered universally quantified; all variables in the head
+	 * Creates a Rule with a non-empty body and an non-empty head. All variables in
+	 * the body are considered universally quantified; all variables in the head
 	 * that do not occur in the body are considered existentially quantified.
 	 *
 	 * @param head
-	 *            list of Atoms representing the rule body conjuncts.
+	 *            list of Literals (negated or non-negated) representing the rule
+	 *            body conjuncts.
 	 * @param body
-	 *            list of Atoms representing the rule head conjuncts.
+	 *            list of positive (non-negated) Literals representing the rule head
+	 *            conjuncts.
 	 */
-	public RuleImpl(@NonNull final Conjunction head, @NonNull final Conjunction body) {
+	public RuleImpl(@NonNull final Conjunction<PositiveLiteral> head, @NonNull final Conjunction<Literal> body) {
 		Validate.notNull(head);
 		Validate.notNull(body);
-		Validate.notEmpty(body.getAtoms());
-		Validate.notEmpty(head.getAtoms());
+		Validate.notEmpty(body.getLiterals());
+		Validate.notEmpty(head.getLiterals());
 
 		this.head = head;
 		this.body = body;
@@ -91,18 +95,13 @@ public class RuleImpl implements Rule {
 	}
 
 	@Override
-	public Conjunction getHead() {
+	public Conjunction<PositiveLiteral> getHead() {
 		return this.head;
 	}
 
 	@Override
-	public Conjunction getBody() {
+	public Conjunction<Literal> getBody() {
 		return this.body;
-	}
-
-	@Override
-	public Set<Variable> getUniversallyQuantifiedVariables() {
-		return this.body.getVariables();
 	}
 
 	@Override
@@ -110,6 +109,11 @@ public class RuleImpl implements Rule {
 		final Set<Variable> result = new HashSet<>(this.head.getVariables());
 		result.removeAll(this.body.getVariables());
 		return result;
+	}
+
+	@Override
+	public Set<Variable> getUniversallyQuantifiedVariables() {
+		return this.body.getVariables();
 	}
 
 }
