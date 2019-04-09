@@ -18,6 +18,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -427,25 +428,65 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public boolean checkAcyclicity(AcyclicityNotion acyclicityNotion) throws ReasonerStateException {
+	public boolean isJA() throws ReasonerStateException, NotStartedException {
+		return checkAcyclicity(AcyclicityNotion.JA);
+	}
+
+	@Override
+	public boolean isRJA() throws ReasonerStateException, NotStartedException {
+		return checkAcyclicity(AcyclicityNotion.RJA);
+	}
+
+	@Override
+	public boolean isMFA() throws ReasonerStateException, NotStartedException {
+		return checkAcyclicity(AcyclicityNotion.MFA);
+	}
+
+	@Override
+	public boolean isRMFA() throws ReasonerStateException, NotStartedException {
+		return checkAcyclicity(AcyclicityNotion.RMFA);
+	}
+
+	@Override
+	public boolean isMFC() throws ReasonerStateException, NotStartedException {
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
 					"checking rules acyclicity is not allowed before loading!");
 		}
-		try {
-			final CyclicCheckResult checkCyclic = this.vLog.checkCyclic(acyclicityNotion.name());
-			switch (checkCyclic) {
-			case NON_CYCLIC:
-				return true;
-			case INCONCLUSIVE:
-				return false;
-			default:
-				throw new RuntimeException("Inconsistent acyclicity result");
-			}
-		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+
+		final CyclicCheckResult checkCyclic = this.vLog.checkCyclic("MFC");
+		if (checkCyclic.equals(CyclicCheckResult.CYCLIC)) {
+			return true;
 		}
-		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion)
+			throws ReasonerStateException, NotStartedException {
+		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+			throw new ReasonerStateException(this.reasonerState,
+					"checking rules acyclicity is not allowed before loading!");
+		}
+
+		final CyclicCheckResult checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
+		if (checkCyclic.equals(CyclicCheckResult.NON_CYCLIC)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public CyclicityResult checkForCycles() throws ReasonerStateException, NotStartedException {
+		final boolean acyclic = isJA() || isRJA() || isMFA() || isRMFA();
+		if (acyclic) {
+			return CyclicityResult.ACYCLIC;
+		} else {
+			final boolean cyclic = isMFC();
+			if (cyclic) {
+				return CyclicityResult.CYCLIC;
+			}
+			return CyclicityResult.UNDETERMINED;
+		}
 	}
 
 }
