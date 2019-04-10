@@ -1,6 +1,10 @@
+@facts
+bicycleEDB(redBike).
 @rules
+
 % Importing from external database predicates
-TI(S,P,O) :- TE(S,P,O).
+
+ TI(S,P,O) :- TE(S,P,O).
 
 % dead(human, humanLabel).
 % deadCause(human, deadCause).
