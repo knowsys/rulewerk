@@ -35,41 +35,14 @@ public class DoidExample {
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
 
 		/* SPARQL queries */
-
-		String auxString = "?human wdt:P31 wd:Q5 . ";
-		auxString += "?human wdt:P1050 ?disease . ";
-		auxString += "?disease wdt:P31 wd:Q12136 . ";
-		auxString += "?disease wdt:P2888 ?diseaselinks . ";
-		final String queryBody = auxString;
-
-		// human humanLabel
-		auxString = "";
-		auxString += "?human wdt:P31 wd:Q5 .";
-		auxString += "?human wdt:P570 ?dateofdeath . ";
-		auxString += "?human rdfs:label ?humanLabel . ";
-		auxString += "FILTER (lang(?humanLabel) = \"en\") . ";
-		auxString += "FILTER (?dateofdeath > \"2018-01-01\"^^xsd:dateTime) . ";
-		auxString += "FILTER (?dateofdeath < \"2019-01-01\"^^xsd:dateTime) . ";
-		final String humanHumanLavelQuery = auxString;
-
-		// human deadCause
-		auxString = "";
-		auxString += "?human wdt:P31 wd:Q5 . ";
-		auxString += "?human wdt:P570 ?dateofdeath . ";
-		auxString += "?human wdt:P509 ?deadCause . ";
-		auxString += "FILTER (?dateofdeath > \"2018-01-01\"^^xsd:dateTime) . ";
-		auxString += "FILTER (?dateofdeath < \"2019-01-01\"^^xsd:dateTime) . ";
-		final String humanDeadCauseQuery = auxString;
-
-		// deadCause doid
-		auxString = "";
-		auxString += "?human wdt:P31 wd:Q5 . ";
-		auxString += "?human wdt:P570 ?dateofdeath . ";
-		auxString += "?human wdt:P509 ?deadCause . ";
-		auxString += "?deadCause wdt:P699 ?doid . ";
-		auxString += "FILTER (?dateofdeath > \"2018-01-01\"^^xsd:dateTime) . ";
-		auxString += "FILTER (?dateofdeath < \"2019-01-01\"^^xsd:dateTime) . ";
-		final String deadCauseDoidQuery = auxString;
+		final String sparqlRecentDeaths = "?human wdt:P31 wd:Q5; wdt:P570 ?dateofdeath . \n"
+				+ "FILTER (?dateofdeath > \"2018-01-01\"^^xsd:dateTime && ?dateofdeath < \"2019-01-01\"^^xsd:dateTime)";
+		final String sparqlHumansWithDisease = "?human wdt:P31 wd:Q5; wdt:P1050 ?disease .\n"
+				+ "?disease wdt:P31 wd:Q12136; wdt:P2888 ?diseaselinks .";
+		final String sparqlRecentDeathsLabel = sparqlRecentDeaths + "?human rdfs:label ?humanLabel .\n"
+				+ "FILTER (lang(?humanLabel) = \"en\")\n";
+		final String sparqlRecentDeathsCause = sparqlRecentDeaths + "?human wdt:P509 ?deadCause . ";
+		final String sparqlRecentDeathsDoid = sparqlRecentDeathsCause + "?deadCause wdt:P699 ?doid . ";
 
 		/* Variables */
 		final Variable humanVar = Expressions.makeVariable("human");
@@ -94,13 +67,13 @@ public class DoidExample {
 
 		/* sparql queries */
 		final DataSource humanHumanLabelDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-				humanHumanLavelQueryVariables, humanHumanLavelQuery);
+				humanHumanLavelQueryVariables, sparqlRecentDeathsLabel);
 
 		final DataSource humanDeadCauseDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-				humanDeadCauseQueryVariables, humanDeadCauseQuery);
+				humanDeadCauseQueryVariables, sparqlRecentDeathsCause);
 
 		final DataSource deadCauseDoidDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-				deadCauseDoidQueryVariables, deadCauseDoidQuery);
+				deadCauseDoidQueryVariables, sparqlRecentDeathsDoid);
 
 		final Predicate triplesEDB = makePredicate("triplesEDB", 3);
 		final Predicate triplesIDB = makePredicate("triplesIDB", 3);
@@ -194,7 +167,7 @@ public class DoidExample {
 					Arrays.asList(humanVar, diseaseVar, diseaseDoidVar));
 
 			final DataSource sparqlQueryResultDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-					queryVariables, queryBody);
+					queryVariables, sparqlHumansWithDisease);
 
 			reasoner.addFactsFromDataSource(triplesEDB, triplesEDBDataSource);
 			reasoner.addFactsFromDataSource(livingHumansWithDiseases, sparqlQueryResultDataSource);
@@ -213,19 +186,21 @@ public class DoidExample {
 			ExamplesUtils.printOutQueryAnswers(hasPartIDB, reasoner);
 
 			/* Exporting query answers to {@code .csv} files. */
-//			reasoner.exportQueryAnswersToCsv(hasPartIDB,
-//					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithBlanks.csv", true);
-//			reasoner.exportQueryAnswersToCsv(hasPartIDB,
-//					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
-//
-//			// reasoner.exportQueryAnswersToCsv(factIDB, ExamplesUtils.OUTPUT_FOLDER +
-//			// "factIDB.csv", false);
+			// reasoner.exportQueryAnswersToCsv(hasPartIDB,
+			// ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithBlanks.csv", true);
+			// reasoner.exportQueryAnswersToCsv(hasPartIDB,
+			// ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
+			//
+			// // reasoner.exportQueryAnswersToCsv(factIDB, ExamplesUtils.OUTPUT_FOLDER +
+			// // "factIDB.csv", false);
 			reasoner.exportQueryAnswersToCsv(subClassXY, ExamplesUtils.OUTPUT_FOLDER + "closureSubClass.csv", false);
 			reasoner.exportQueryAnswersToCsv(humanAtom, ExamplesUtils.OUTPUT_FOLDER + "humanWithDiseases.csv", false);
-//			final Constant redBikeSubject = makeConstant("<https://example.org/redBike>");
-//			final Atom existsHasPartRedBike = makeAtom(triplesIDB, redBikeSubject, hasPartPredicate, x);
-//			reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
-//					ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);
+			// final Constant redBikeSubject =
+			// makeConstant("<https://example.org/redBike>");
+			// final Atom existsHasPartRedBike = makeAtom(triplesIDB, redBikeSubject,
+			// hasPartPredicate, x);
+			// reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
+			// ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);
 		}
 	}
 }
