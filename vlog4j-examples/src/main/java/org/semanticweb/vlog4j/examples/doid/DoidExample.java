@@ -129,6 +129,7 @@ public class DoidExample {
 
 			reasoner.load();
 			System.out.println("Load completed");
+			System.out.println(vlogRules);
 			reasoner.reason();
 			System.out.println("Reasoning completed");
 
