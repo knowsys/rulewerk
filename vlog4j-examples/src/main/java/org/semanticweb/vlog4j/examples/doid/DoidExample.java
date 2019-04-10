@@ -30,9 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -121,15 +119,8 @@ public class DoidExample {
 //						.add(GraalToVLog4JModelConverter.convertQuery(queryUniqueId, conjunctiveQuery));
 //			}
 
-			final Set<Atom> atoms = new HashSet<>();
 			List<org.semanticweb.vlog4j.core.model.api.Rule> vlogRules = GraalToVLog4JModelConverter
 					.convertRules(graalRules);
-
-			for (org.semanticweb.vlog4j.core.model.api.Rule rule : vlogRules) {
-				atoms.addAll(rule.getHead().getAtoms());
-				atoms.addAll(rule.getBody().getAtoms());
-			}
-
 			reasoner.addRules(vlogRules);
 
 			// Adding a rule with a negated literal from java.
@@ -159,12 +150,6 @@ public class DoidExample {
 //				ExamplesUtils.printOutQueryAnswers(graalConjunctiveQueryToRule.getQueryAtom(), reasoner);
 //			}
 
-			for (Atom atom : atoms) {
-				String filepath = ExamplesUtils.OUTPUT_FOLDER + atom.getPredicate().getName() + ".csv";
-				System.out.println(filepath);
-				reasoner.exportQueryAnswersToCsv(atom, filepath, true);
-
-			}
 			// TODO query
 		}
 
