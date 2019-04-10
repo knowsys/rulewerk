@@ -1,10 +1,6 @@
 package org.semanticweb.vlog4j.examples.doid;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.File;
@@ -13,10 +9,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
@@ -78,14 +71,6 @@ public class DoidExample {
 		final Predicate triplesEDB = makePredicate("triplesEDB", 3);
 		final Predicate triplesIDB = makePredicate("triplesIDB", 3);
 		final Predicate subClassOfPredicate = makePredicate("subClass", 2);
-		final Predicate humanPredicate = makePredicate("human", 1);
-		final Predicate livingHumansWithDiseases = makePredicate("livingHumansWithMedicalConditions", 3);
-		final Constant hasPartPredicate = makeConstant("<https://example.org/hasPart>");
-		final Constant isPartOfPredicate = makeConstant("<https://example.org/isPartOf>");
-		final Constant hasTypePredicate = makeConstant("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>");
-		final Constant subClassOf = makeConstant("<http://www.w3.org/2000/01/rdf-schema#subClassOf>");
-		final Constant bicycleObject = makeConstant("<https://example.org/bicycle>");
-		final Constant wheelObject = makeConstant("<https://example.org/wheel>");
 
 		final Variable x = makeVariable("x");
 		final Variable y = makeVariable("y");
@@ -99,63 +84,10 @@ public class DoidExample {
 		final Variable diseaseDoidVar = Expressions.makeVariable("diseaselinks");
 		// final Variable deadCause = Expressions.makeVariable("deadCause");
 
-		/*
-		 * We will write <~/someName> instead of <https://example.org/someName> and
-		 * <~#someName> instead of <www.w3.org/1999/02/22-rdf-syntax-ns#someName>.
-		 *
-		 * triplesIDB(?s, ?p, ?o) :- triplesEDB(?s, ?p, ?o) .
-		 */
-		final Atom factIDB = makeAtom(triplesIDB, s, p, o);
-		final Atom factEDB = makeAtom(triplesEDB, s, p, o);
-		final Rule rule1 = makeRule(factIDB, factEDB);
-
-		/*
-		 * exists x. triplesIDB(?s, <~/hasPart>, !x), triplesIDB(!x, <~#type>,
-		 * <~/wheel>) :- triplesIDB(?s, <~#type>, <~/bicycle>) .
-		 */
-		final Atom existsHasPartIDB = makeAtom(triplesIDB, s, hasPartPredicate, x);
-		final Atom existsWheelIDB = makeAtom(triplesIDB, x, hasTypePredicate, wheelObject);
-		final Atom bicycleIDB = makeAtom(triplesIDB, s, hasTypePredicate, bicycleObject);
-		final Rule rule2 = makeRule(makeConjunction(existsHasPartIDB, existsWheelIDB), makeConjunction(bicycleIDB));
-
-		/*
-		 * exists x. triplesIDB(?s, <~/isPartOf>, !x) :- triplesIDB(?s, <~#type>,
-		 * <~/wheel>) .
-		 */
-		final Atom existsIsPartOfIDB = makeAtom(triplesIDB, s, isPartOfPredicate, x);
-		final Atom wheelIDB = makeAtom(triplesIDB, s, hasTypePredicate, wheelObject);
-		final Rule rule3 = makeRule(makeConjunction(existsIsPartOfIDB), makeConjunction(wheelIDB));
-
-		/*
-		 * triplesIDB(?s, <~/isPartOf>, ?o) :- triplesIDB(?o, <~/hasPart>, ?s) .
-		 */
-		final Atom isPartOfIDB = makeAtom(triplesIDB, s, isPartOfPredicate, o);
-		final Atom hasPartIDBReversed = makeAtom(triplesIDB, o, hasPartPredicate, s);
-		final Rule rule4 = makeRule(isPartOfIDB, hasPartIDBReversed);
-
-		/*
-		 * triplesIDB(?s, <~/hasPart>, ?o) :- triplesIDB(?o, <~/isPartOf>, ?s) .
-		 */
-
-		final Atom hasPartIDB = makeAtom(triplesIDB, s, hasPartPredicate, o);
-		final Atom isPartOfIDBReversed = makeAtom(triplesIDB, o, isPartOfPredicate, s);
-		final Rule rule5 = makeRule(hasPartIDB, isPartOfIDBReversed);
-
-		final Atom SSubClassOfO = makeAtom(triplesIDB, s, subClassOf, o);
-		final Atom subClass = makeAtom(subClassOfPredicate, s, o);
-		final Rule rule6 = makeRule(subClass, SSubClassOfO);
-
-		final Atom subClassXZ = makeAtom(subClassOfPredicate, x, z);
-		final Atom subClassXY = makeAtom(subClassOfPredicate, x, y);
-		final Atom subClassYZ = makeAtom(subClassOfPredicate, y, z);
-		final Rule rule7 = makeRule(makeConjunction(subClassXZ), makeConjunction(subClassXY, subClassYZ));
-
-		final Atom humansWithDeseasesAtom = makeAtom(livingHumansWithDiseases, humanVar, diseaseVar, diseaseDoidVar);
-
-		final Atom humanAtom = makeAtom(humanPredicate, humanVar);
-		final Rule rule8 = makeRule(humanAtom, humansWithDeseasesAtom);
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
+
+			// TO DO: import rules from Graal
+			// reasoner.addRules(rule1, rule6);
 
 			/* Importing {@code .nt.gz} file as data source. */
 			final DataSource triplesEDBDataSource = new RdfFileDataSource(
@@ -166,41 +98,28 @@ public class DoidExample {
 			final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 					Arrays.asList(humanVar, diseaseVar, diseaseDoidVar));
 
+			// TO DO: link other data sources
 			final DataSource sparqlQueryResultDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
 					queryVariables, sparqlHumansWithDisease);
 
 			reasoner.addFactsFromDataSource(triplesEDB, triplesEDBDataSource);
-			reasoner.addFactsFromDataSource(livingHumansWithDiseases, sparqlQueryResultDataSource);
+			// reasoner.addFactsFromDataSource(livingHumansWithDiseases,
+			// sparqlQueryResultDataSource);
 
 			reasoner.load();
 
 			System.out.println("Before materialisation:");
 			/* triplesEDB(?s, <~/hasPart>, ?o) */
-			final Atom hasPartEDB = makeAtom(triplesEDB, s, hasPartPredicate, o);
-			ExamplesUtils.printOutQueryAnswers(hasPartEDB, reasoner);
 
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 
 			System.out.println("After materialisation:");
-			ExamplesUtils.printOutQueryAnswers(hasPartIDB, reasoner);
 
-			/* Exporting query answers to {@code .csv} files. */
-			// reasoner.exportQueryAnswersToCsv(hasPartIDB,
-			// ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithBlanks.csv", true);
-			// reasoner.exportQueryAnswersToCsv(hasPartIDB,
-			// ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
-			//
-			// // reasoner.exportQueryAnswersToCsv(factIDB, ExamplesUtils.OUTPUT_FOLDER +
-			// // "factIDB.csv", false);
-			reasoner.exportQueryAnswersToCsv(subClassXY, ExamplesUtils.OUTPUT_FOLDER + "closureSubClass.csv", false);
-			reasoner.exportQueryAnswersToCsv(humanAtom, ExamplesUtils.OUTPUT_FOLDER + "humanWithDiseases.csv", false);
-			// final Constant redBikeSubject =
-			// makeConstant("<https://example.org/redBike>");
-			// final Atom existsHasPartRedBike = makeAtom(triplesIDB, redBikeSubject,
-			// hasPartPredicate, x);
-			// reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
-			// ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);
+			// reasoner.exportQueryAnswersToCsv(subClassXY, ExamplesUtils.OUTPUT_FOLDER +
+			// "closureSubClass.csv", false);
+			// reasoner.exportQueryAnswersToCsv(humanAtom, ExamplesUtils.OUTPUT_FOLDER +
+			// "humanWithDiseases.csv", false);
 		}
 	}
 }
