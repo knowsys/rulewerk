@@ -41,8 +41,32 @@ public class SparqlQueryResultDataSource implements DataSource {
 	private static final String DATASOURCE_TYPE_CONFIG_VALUE = "SPARQL";
 
 	private final URL endpoint;
-	private final LinkedHashSet<Variable> queryVariables;
+	private final String queryVariables;
 	private final String queryBody;
+
+	/**
+	 * Creates a data source from answers to a remote SPARQL query.
+	 * 
+	 * @param endpoint
+	 *            web location of the resource the query will be evaluated on
+	 * @param queryVariables
+	 *            comma-separated list of SPARQL variable names (without leading ? or $)
+	 * @param queryBody
+	 *            content of the <i>WHERE</i> clause in the SPARQL query
+	 */
+	// TODO add examples to javadoc
+	// TODO add illegal argument exceptions to javadoc
+	public SparqlQueryResultDataSource(final URL endpoint, final String queryVariables, final String queryBody) {
+		Validate.notNull(endpoint, "Endpoint cannot be null.");
+		Validate.notNull(queryVariables, "Query variables string cannot be null.");
+		Validate.notEmpty(queryVariables, "There must be at least one query variable.");
+		Validate.notBlank(queryBody, "Query body cannot be null or blank [{}].", queryBody);
+		// TODO validate query body syntax (for example, new line character)
+		// TODO validate early that the arity coincides with the assigned predicate
+		this.endpoint = endpoint;
+		this.queryVariables = queryVariables.replace(" ", "");
+		this.queryBody = queryBody.replace("\n", " ");
+	}
 
 	/**
 	 * Creates a data source from answers to a remote SPARQL query.
@@ -67,10 +91,9 @@ public class SparqlQueryResultDataSource implements DataSource {
 		Validate.notEmpty(queryVariables, "There must be at least one query variable.");
 		Validate.notBlank(queryBody, "Query body cannot be null or blank [{}].", queryBody);
 		// TODO validate query body syntax (for example, new line character)
-		// TODO validate early that the arity coincides with
-		// the assigned predicate
+		// TODO validate early that the arity coincides with the assigned predicate
 		this.endpoint = endpoint;
-		this.queryVariables = queryVariables;
+		this.queryVariables = getQueryVariablesList(queryVariables);
 		this.queryBody = queryBody;
 	}
 
@@ -82,7 +105,7 @@ public class SparqlQueryResultDataSource implements DataSource {
 		return queryBody;
 	}
 
-	public LinkedHashSet<Variable> getQueryVariables() {
+	public String getQueryVariables() {
 		return queryVariables;
 	}
 
@@ -94,15 +117,14 @@ public class SparqlQueryResultDataSource implements DataSource {
 
 						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
 
-						"EDB%1$d_param0=" + endpoint + "\n" + "EDB%1$d_param1=" + getQueryVariablesList(queryVariables)
-						+ "\n" +
+						"EDB%1$d_param0=" + endpoint + "\n" + "EDB%1$d_param1=" + queryVariables + "\n" +
 
 						"EDB%1$d_param2=" + queryBody + "\n";
 
 		return configStringPattern;
 	}
 
-	private String getQueryVariablesList(LinkedHashSet<Variable> queryVariables) {
+	static String getQueryVariablesList(LinkedHashSet<Variable> queryVariables) {
 		final StringBuilder sb = new StringBuilder();
 		final Iterator<Variable> iterator = queryVariables.iterator();
 		while (iterator.hasNext()) {
