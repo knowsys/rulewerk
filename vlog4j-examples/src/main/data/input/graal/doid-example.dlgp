@@ -9,10 +9,11 @@
 deadCause(X, Z) :- recentDeathsCause(X, Z).
 deadCause(X, Z) :- recentDeathsLabel(X,Y).
 
-doid(Iri,DoidId) :- doidTriple(Iri,"<http://www.geneontology.org/formats/oboInOwl#id>",DoidId).
+doidTripleIdb(X,Y,Z) :- doidTriple(X,Y,Z).
+doid(Iri,DoidId) :- doidTriple(Iri,<http://www.geneontology.org/formats/oboInOwl#id>,DoidId).
 
-diseaseHierarchy(X,Y) :- doidTriple(X,"<http://www.w3.org/2000/01/rdf-schema#subClassOf>",Y).
-diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), doidTriple(Y,"<http://www.w3.org/2000/01/rdf-schema#subClassOf>",Z).
+diseaseHierarchy(X,Y) :- doidTriple(X,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,Y).
+diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), doidTriple(Y,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,Z).
 
 cancerDisease(Xdoid) :- diseaseHierarchy(X,Y), doid(Y, "DOID:162"), doid(X, Xdoid).
 
