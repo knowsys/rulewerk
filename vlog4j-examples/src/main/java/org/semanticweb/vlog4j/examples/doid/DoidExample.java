@@ -156,6 +156,7 @@ public class DoidExample {
 			saveData(reasoner, "deathCause", 2);
 			saveData(reasoner, "diseaseHierarchy", 2);
 			saveData(reasoner, "cancerDisease", 1);
+			saveData(reasoner, "recentDeaths", 1);
 
 //			System.out.println("After materialisation:");
 //			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {

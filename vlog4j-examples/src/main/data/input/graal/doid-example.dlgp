@@ -2,7 +2,7 @@
 % doidTriple(S,P,O) -- triples from DOID ontology
 % recentDeaths(Human) -- human who died recently
 % recentDeathsCause(human, deadCause) -- cause of death of a human (both Wikidata IRIs)
-% diseaseId(diseaseIri, doid) -- disease with DOID 
+% diseaseId(diseaseIri, doid) -- disease from Wikidata with DOID 
 
 @rules
 
@@ -10,7 +10,7 @@ deathCause(X, Z) :- recentDeathsCause(X, Z).
 deathCause(X, Z) :- recentDeaths(X).
 
 doid(Iri,DoidId) :- doidTriple(Iri,<http://www.geneontology.org/formats/oboInOwl#id>,DoidId).
-hasDoid(X) :- doid(Iri,DoidId) . 
+hasDoid(X) :- diseaseId(X,DoidId) . 
 
 diseaseHierarchy(X,Y) :- doidTriple(X,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,Y).
 diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), doidTriple(Y,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,Z).
