@@ -21,18 +21,17 @@ package org.semanticweb.vlog4j.examples.doid;
  */
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -89,23 +88,62 @@ public class DoidExample {
 //			final Predicate recentDeathsDoidPredicate = Expressions.makePredicate("recentDeathsDoid", 3);
 //			reasoner.addFactsFromDataSource(recentDeathsDoidPredicate, recentDeathsDoidDataSource);
 
+			final Predicate doidTriplePredicate = makePredicate("doidTriple", 3);
+			final DataSource doidDataSource = new RdfFileDataSource(
+					new File(ExamplesUtils.INPUT_FOLDER + "doid.nt.gz"));
+			reasoner.addFactsFromDataSource(doidTriplePredicate, doidDataSource);
+
 			final List<Rule> graalRules = new ArrayList<>();
+			// final List<ConjunctiveQuery> graalConjunctiveQueries = new ArrayList<>();
+
 			try (final DlgpParser parser = new DlgpParser(
 					new File(ExamplesUtils.INPUT_FOLDER + "/graal", "doid-example.dlgp"))) {
 				while (parser.hasNext()) {
 					final Object object = parser.next();
 					if (object instanceof Rule) {
 						graalRules.add((Rule) object);
-					}
+					} // else if (object instanceof ConjunctiveQuery) {
+						// graalConjunctiveQueries.add((ConjunctiveQuery) object);
+						// }
 				}
 			}
-			reasoner.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
+
+			/* to query the materialization */
+//			final List<GraalConjunctiveQueryToRule> convertedConjunctiveQueries = new ArrayList<>();
+//			for (final ConjunctiveQuery conjunctiveQuery : graalConjunctiveQueries) {
+//				final String queryUniqueId = "query" + convertedConjunctiveQueries.size();
+//				convertedConjunctiveQueries
+//						.add(GraalToVLog4JModelConverter.convertQuery(queryUniqueId, conjunctiveQuery));
+//			}
+
+			final Set<Atom> atoms = new HashSet<>();
+			List<org.semanticweb.vlog4j.core.model.api.Rule> vlogRules = GraalToVLog4JModelConverter
+					.convertRules(graalRules);
+
+			for (org.semanticweb.vlog4j.core.model.api.Rule rule : vlogRules) {
+				atoms.addAll(rule.getHead().getAtoms());
+				atoms.addAll(rule.getBody().getAtoms());
+			}
+
+			reasoner.addRules(vlogRules);
 
 			reasoner.load();
+			System.out.println("Load completed");
 			reasoner.reason();
+			System.out.println("Reasoning completed");
 
+//			System.out.println("After materialisation:");
+//			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
+//				ExamplesUtils.printOutQueryAnswers(graalConjunctiveQueryToRule.getQueryAtom(), reasoner);
+//			}
+
+			for (Atom atom : atoms) {
+				String filepath = ExamplesUtils.OUTPUT_FOLDER + atom.getPredicate().getName() + ".csv";
+				System.out.println(filepath);
+				reasoner.exportQueryAnswersToCsv(atom, filepath, true);
+
+			}
 			// TODO query
-			// TODO modify CSV file to contain lowercase inCountry predicate
 		}
 
 	}
