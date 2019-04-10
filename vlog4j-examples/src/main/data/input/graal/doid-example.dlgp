@@ -6,8 +6,8 @@
 
 @rules
 
-deadCause(X, Z) :- recentDeathsCause(X, Z).
-deadCause(X, Z) :- recentDeathsLabel(X,Y).
+deathCause(X, Z) :- recentDeathsCause(X, Z).
+deathCause(X, Z) :- recentDeathsLabel(X,Y).
 
 doidTripleIdb(X,Y,Z) :- doidTriple(X,Y,Z).
 doid(Iri,DoidId) :- doidTriple(Iri,<http://www.geneontology.org/formats/oboInOwl#id>,DoidId).
@@ -16,9 +16,10 @@ diseaseHierarchy(X,Y) :- doidTriple(X,<http://www.w3.org/2000/01/rdf-schema#subC
 diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), doidTriple(Y,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,Z).
 
 cancerDisease(Xdoid) :- diseaseHierarchy(X,Y), doid(Y, "DOID:162"), doid(X, Xdoid).
+% nonCancerDisease(Xdoid) :- doid(X, Xdoid), neg_cancerDisease(Xdoid) .
 
-humansWhoDiedOfCancer(X) :- deadCause(X,Y), diseaseId(Y,Z), cancerDisease(Z).
-% humansWhoDiedOfNoncancer(X) :- deadCause(X,Y), diseaseId(Y,Z),  neg_cancerDisease(Z).
+humansWhoDiedOfCancer(X) :- deathCause(X,Y), diseaseId(Y,Z), cancerDisease(Z).
+% humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), diseaseId(Y,Z),  neg_cancerDisease(Z).
 
 @queries
-?(X, Y) :- deadCause(X, Y).
+?(X, Y) :- deathCause(X, Y).
