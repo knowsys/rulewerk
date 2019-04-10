@@ -73,11 +73,8 @@ public class DoidExample {
 
 		final String sparqlRecentDeaths = "?human wdt:P31 wd:Q5; wdt:P570 ?dateofdeath . \n"
 				+ "FILTER (?dateofdeath > \"2018-01-01\"^^xsd:dateTime && ?dateofdeath < \"2019-01-01\"^^xsd:dateTime)";
-
-		final String sparqlRecentDeathsLabel = sparqlRecentDeaths + "?human rdfs:label ?humanLabel .\n"
-				+ "FILTER (lang(?humanLabel) = \"en\")\n";
-		final DataSource recentDeathsLabelDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-				"human,humanLabel", sparqlRecentDeathsLabel);
+		final DataSource recentDeathsDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
+				"human", sparqlRecentDeaths);
 
 		final String sparqlRecentDeathsCause = sparqlRecentDeaths + "?human wdt:P509 ?causeOfDeath . ";
 		final DataSource recentDeathsCauseDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
@@ -93,8 +90,8 @@ public class DoidExample {
 
 			final Predicate diseaseIdPredicate = Expressions.makePredicate("diseaseId", 2);
 			reasoner.addFactsFromDataSource(diseaseIdPredicate, diseasesDataSource);
-			final Predicate recentDeathsLabelPredicate = Expressions.makePredicate("recentDeathsLabel", 2);
-			reasoner.addFactsFromDataSource(recentDeathsLabelPredicate, recentDeathsLabelDataSource);
+			final Predicate recentDeathsPredicate = Expressions.makePredicate("recentDeaths",1);
+			reasoner.addFactsFromDataSource(recentDeathsPredicate, recentDeathsDataSource);
 			final Predicate recentDeathsCausePredicate = Expressions.makePredicate("recentDeathsCause", 2);
 			reasoner.addFactsFromDataSource(recentDeathsCausePredicate, recentDeathsCauseDataSource);
 //			final Predicate recentDeathsDoidPredicate = Expressions.makePredicate("recentDeathsDoid", 3);
@@ -159,7 +156,6 @@ public class DoidExample {
 			saveData(reasoner, "deathCause", 2);
 			saveData(reasoner, "diseaseHierarchy", 2);
 			saveData(reasoner, "cancerDisease", 1);
-			saveData(reasoner, "humansWhoDied", 1);
 
 //			System.out.println("After materialisation:");
 //			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {

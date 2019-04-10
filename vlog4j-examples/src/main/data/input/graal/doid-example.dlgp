@@ -1,16 +1,16 @@
 % Data sources with predicate names:
 % doidTriple(S,P,O) -- triples from DOID ontology
-% recentDeathsLabel(Human, Label) -- human who died recently, with label
+% recentDeaths(Human) -- human who died recently
 % recentDeathsCause(human, deadCause) -- cause of death of a human (both Wikidata IRIs)
 % diseaseId(diseaseIri, doid) -- disease with DOID 
 
 @rules
 
 deathCause(X, Z) :- recentDeathsCause(X, Z).
-deathCause(X, Z) :- recentDeathsLabel(X,Y).
-humansWhoDied(X) :- recentDeathsLabel(X,Y).
+deathCause(X, Z) :- recentDeaths(X).
 
 doid(Iri,DoidId) :- doidTriple(Iri,<http://www.geneontology.org/formats/oboInOwl#id>,DoidId).
+hasDoid(X) :- doid(Iri,DoidId) . 
 
 diseaseHierarchy(X,Y) :- doidTriple(X,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,Y).
 diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), doidTriple(Y,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,Z).
@@ -20,6 +20,7 @@ cancerDisease(Xdoid) :- diseaseHierarchy(X,Y), doid(Y, "DOID:162"), doid(X, Xdoi
 
 humansWhoDiedOfCancer(X) :- deathCause(X,Y), diseaseId(Y,Z), cancerDisease(Z).
 humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), diseaseId(Y,Z),  neg_cancerDisease(Z).
+humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), neg_hasDoid(Y) .
 
 @queries
 ?(X, Y) :- deathCause(X, Y).
