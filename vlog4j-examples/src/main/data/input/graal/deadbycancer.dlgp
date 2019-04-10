@@ -1,24 +1,24 @@
 @rules
 % Importing from external database predicates
-TI(S,P,O) :- TE(S,P,O)
+TI(S,P,O) :- TE(S,P,O).
 
-% dead(human, humanLabel)
-% deadCause(human, deadCause)
-% deadCauseDoid(deadCause, doidLabel)
+% dead(human, humanLabel).
+% deadCause(human, deadCause).
+% deadCauseDoid(deadCause, doidLabel).
 
-% doidDoidLabel(doid, label)
-doidDoidLabel(S,O) :- TI(S,"<http://www.geneontology.org/formats/oboInOwl#id>",O)
+% doidDoidLabel(doid, label).
+doidDoidLabel(S,O) :- TI(S,"<http://www.geneontology.org/formats/oboInOwl#id>",O).
 
 
-disease(X) :- doidDoidLabel(X,Y)
-diseaseHierarchy(S,O) :- TI(S,"<http://www.w3.org/2000/01/rdf-schema#subClassOf>",O), disease(S), disease(O)
-diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), diseaseHierarchy(Y,Z)
+disease(X) :- doidDoidLabel(X,Y).
+diseaseHierarchy(S,O) :- TI(S,"<http://www.w3.org/2000/01/rdf-schema#subClassOf>",O), disease(S), disease(O).
+diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), diseaseHierarchy(Y,Z).
 
 % Z is cancer
-cancerDesease(Y) :- diseaseHierarchy(X,Y), doidDoidLabel(Y, "DOID:162")
+cancerDesease(Y) :- diseaseHierarchy(X,Y), doidDoidLabel(Y, "DOID:162").
 
-DC(Z) :- deadCause(X,Z), cancerDesease(Z)
-DNC(Z) :- deadCause(X,Z), neg_cancerDesease(Z)
+DC(C) :- deadCause(X,Y), deadCauseDoid(Y,Z), doidDoidLabel(C,Z), cancerDesease(C).
+DNC(Z) :- deadCause(X,Y), neg_cancerDesease(Z).
 
 % Existential rules
 deadCause(X, Z) :- dead(X,Y).
