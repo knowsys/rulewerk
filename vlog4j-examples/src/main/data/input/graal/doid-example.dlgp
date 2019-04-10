@@ -18,3 +18,6 @@ cancerDesease(Xdoid) :- diseaseHierarchy(X,Y), doid(Y, "DOID:162"), doid(X, Xdoi
 
 humansWhoDiedOfCancer(X) :- deadCause(X,Y), diseaseId(Y,Z), cancerDesease(Z).
 humansWhoDiedOfNoncancer(X) :- deadCause(X,Y), diseaseId(Y,Z),  neg_cancerDesease(Z).
+
+@queries
+?(X, Y) :- deadCause(X, Y).
