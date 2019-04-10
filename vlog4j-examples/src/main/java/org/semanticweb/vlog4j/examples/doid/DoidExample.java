@@ -21,17 +21,17 @@ package org.semanticweb.vlog4j.examples.doid;
  */
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -47,6 +47,18 @@ import fr.lirmm.graphik.graal.api.core.Rule;
 import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
 
 public class DoidExample {
+
+	public static void saveData(Reasoner reasoner, String predicateName, int numberOfVariables)
+			throws ReasonerStateException, IOException {
+		final List<Term> vars = new ArrayList<>();
+		for (int i = 0; i < numberOfVariables; i++)
+			vars.add(makeVariable("x" + i));
+		final Predicate predicate = Expressions.makePredicate(predicateName, numberOfVariables);
+		final Atom atom = Expressions.makeAtom(predicate, vars);
+		String path = ExamplesUtils.OUTPUT_FOLDER + predicateName + ".csv";
+		reasoner.exportQueryAnswersToCsv(atom, path, true);
+	}
+
 	public static void main(String[] args)
 			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 
@@ -116,16 +128,25 @@ public class DoidExample {
 //						.add(GraalToVLog4JModelConverter.convertQuery(queryUniqueId, conjunctiveQuery));
 //			}
 
-			final Set<Atom> atoms = new HashSet<>();
 			List<org.semanticweb.vlog4j.core.model.api.Rule> vlogRules = GraalToVLog4JModelConverter
 					.convertRules(graalRules);
-
-			for (org.semanticweb.vlog4j.core.model.api.Rule rule : vlogRules) {
-				atoms.addAll(rule.getHead().getAtoms());
-//				atoms.addAll(rule.getBody().getAtoms());
-			}
-
 			reasoner.addRules(vlogRules);
+
+			// Adding a rule with a negated literal from java.
+			// % humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), diseaseId(Y,Z),
+			// neg_cancerDisease(Z).
+//			final Variable x = makeVariable("x");
+//			final Variable y = makeVariable("y");
+//			final Variable z = makeVariable("z");
+//			final Atom humansWhoDiedOfNoncancerAtom = Expressions
+//					.makeAtom(Expressions.makePredicate("humansWhoDiedOfNoncancer", 1), x);
+//			final Atom deathCauseAtom = Expressions.makeAtom(Expressions.makePredicate("deathCause", 2), x, y);
+//			final Atom diseaseIdAtom = Expressions.makeAtom(Expressions.makePredicate("diseaseId", 2), y, z);
+//			final Atom notCancerDiseaseAtom = Expressions.makeAtom(Expressions.makePredicate("neg_cancerDisease", 1),
+//					z);
+//
+//			reasoner.addRules(makeRule(makeConjunction(humansWhoDiedOfNoncancerAtom),
+//					makeConjunction(deathCauseAtom, diseaseIdAtom, notCancerDiseaseAtom)));
 
 			reasoner.load();
 			System.out.println("Load completed");
@@ -133,18 +154,17 @@ public class DoidExample {
 			reasoner.reason();
 			System.out.println("Reasoning completed");
 
+			saveData(reasoner, "humansWhoDiedOfCancer", 1);
+			saveData(reasoner, "humansWhoDiedOfNoncancer", 1);
+			saveData(reasoner, "deathCause", 2);
+			saveData(reasoner, "diseaseHierarchy", 2);
+			saveData(reasoner, "cancerDisease", 1);
+
 //			System.out.println("After materialisation:");
 //			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
 //				ExamplesUtils.printOutQueryAnswers(graalConjunctiveQueryToRule.getQueryAtom(), reasoner);
 //			}
 
-			for (Atom atom : atoms) {
-				String filepath = ExamplesUtils.OUTPUT_FOLDER + atom.getPredicate().getName() + ".csv";
-				System.out.println(filepath);
-				reasoner.exportQueryAnswersToCsv(atom, filepath, true);
-
-			}
-			// TODO query
 		}
 
 	}
