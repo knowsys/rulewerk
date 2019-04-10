@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.examples.doid;
 
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
+
 /*-
  * #%L
  * VLog4j Examples
@@ -21,6 +23,8 @@ package org.semanticweb.vlog4j.examples.doid;
  */
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +36,7 @@ import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -126,6 +131,22 @@ public class DoidExample {
 			}
 
 			reasoner.addRules(vlogRules);
+
+			// Adding a rule with a negated literal from java.
+			// % humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), diseaseId(Y,Z),
+			// neg_cancerDisease(Z).
+			final Variable x = makeVariable("x");
+			final Variable y = makeVariable("y");
+			final Variable z = makeVariable("z");
+			final Atom humansWhoDiedOfNoncancerAtom = Expressions
+					.makeAtom(Expressions.makePredicate("humansWhoDiedOfNoncancer", 1), x);
+			final Atom deathCauseAtom = Expressions.makeAtom(Expressions.makePredicate("deathCause", 2), x, y);
+			final Atom diseaseIdAtom = Expressions.makeAtom(Expressions.makePredicate("diseaseId", 2), y, z);
+			final Atom notCancerDiseaseAtom = Expressions.makeAtom(Expressions.makePredicate("neg_cancerDisease", 1),
+					z);
+
+			reasoner.addRules(makeRule(makeConjunction(humansWhoDiedOfNoncancerAtom),
+					makeConjunction(deathCauseAtom, diseaseIdAtom, notCancerDiseaseAtom)));
 
 			reasoner.load();
 			System.out.println("Load completed");
