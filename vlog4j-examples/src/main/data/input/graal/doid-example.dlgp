@@ -1,7 +1,7 @@
 % Data sources with predicate names:
 % doidTriple(S,P,O) -- triples from DOID ontology
 % recentDeaths(Human) -- human who died recently
-% recentDeathsCause(human, deadCause) -- cause of death of a human (both Wikidata IRIs)
+% recentDeathsCause(human, deathCause) -- cause of death of a human (both Wikidata IRIs)
 % diseaseId(diseaseIri, doid) -- disease from Wikidata with DOID 
 
 @rules
