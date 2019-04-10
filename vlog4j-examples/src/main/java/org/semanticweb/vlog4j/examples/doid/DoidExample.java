@@ -122,7 +122,7 @@ public class DoidExample {
 
 			for (org.semanticweb.vlog4j.core.model.api.Rule rule : vlogRules) {
 				atoms.addAll(rule.getHead().getAtoms());
-				atoms.addAll(rule.getBody().getAtoms());
+//				atoms.addAll(rule.getBody().getAtoms());
 			}
 
 			reasoner.addRules(vlogRules);
