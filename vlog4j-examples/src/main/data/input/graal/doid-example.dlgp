@@ -14,10 +14,10 @@ doid(Iri,DoidId) :- doidTriple(Iri,"<http://www.geneontology.org/formats/oboInOw
 diseaseHierarchy(X,Y) :- doidTriple(X,"<http://www.w3.org/2000/01/rdf-schema#subClassOf>",Y).
 diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), doidTriple(Y,"<http://www.w3.org/2000/01/rdf-schema#subClassOf>",Z).
 
-cancerDesease(Xdoid) :- diseaseHierarchy(X,Y), doid(Y, "DOID:162"), doid(X, Xdoid).
+cancerDisease(Xdoid) :- diseaseHierarchy(X,Y), doid(Y, "DOID:162"), doid(X, Xdoid).
 
-humansWhoDiedOfCancer(X) :- deadCause(X,Y), diseaseId(Y,Z), cancerDesease(Z).
-humansWhoDiedOfNoncancer(X) :- deadCause(X,Y), diseaseId(Y,Z),  neg_cancerDesease(Z).
+humansWhoDiedOfCancer(X) :- deadCause(X,Y), diseaseId(Y,Z), cancerDisease(Z).
+% humansWhoDiedOfNoncancer(X) :- deadCause(X,Y), diseaseId(Y,Z),  neg_cancerDisease(Z).
 
 @queries
 ?(X, Y) :- deadCause(X, Y).
