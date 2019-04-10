@@ -18,7 +18,7 @@ diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), diseaseHierarchy(Y,Z).
 cancerDesease(Y) :- diseaseHierarchy(X,Y), doidDoidLabel(Y, "DOID:162").
 
 DC(C) :- deadCause(X,Y), deadCauseDoid(Y,Z), doidDoidLabel(C,Z), cancerDesease(C).
-DNC(Z) :- deadCause(X,Y), neg_cancerDesease(Z).
+DNC(C) :- deadCause(X,Y), deadCauseDoid(Y,Z), doidDoidLabel(C,Z), neg_cancerDesease(C).
 
 % Existential rules
 deadCause(X, Z) :- dead(X,Y).
