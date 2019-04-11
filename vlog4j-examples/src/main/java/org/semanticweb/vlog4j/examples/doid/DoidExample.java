@@ -72,7 +72,8 @@ public class DoidExample {
 				sparqlHumansWithDisease);
 
 		final String sparqlRecentDeaths = "?human wdt:P31 wd:Q5; wdt:P570 ?dateofdeath . \n"
-				+ "FILTER (?dateofdeath > \"2018-01-01\"^^xsd:dateTime && ?dateofdeath < \"2019-01-01\"^^xsd:dateTime)";
+				+ "FILTER (YEAR(?dateofdeath) = 2018)";
+				//+ "FILTER (?dateofdeath > \"2018-01-01\"^^xsd:dateTime && ?dateofdeath < \"2019-01-01\"^^xsd:dateTime)";
 		final DataSource recentDeathsDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
 				"human", sparqlRecentDeaths);
 
