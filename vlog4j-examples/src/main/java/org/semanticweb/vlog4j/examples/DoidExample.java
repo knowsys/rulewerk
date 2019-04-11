@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.examples.doid;
+package org.semanticweb.vlog4j.examples;
 
 /*-
  * #%L
@@ -40,7 +40,6 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArit
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
-import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.graal.GraalToVLog4JModelConverter;
 
 import fr.lirmm.graphik.graal.api.core.Rule;
