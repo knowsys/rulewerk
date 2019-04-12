@@ -1,5 +1,12 @@
 package org.semanticweb.vlog4j.examples;
 
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /*-
  * #%L
  * VLog4j Examples
@@ -21,6 +28,8 @@ package org.semanticweb.vlog4j.examples;
  */
 
 import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
@@ -55,4 +64,45 @@ public final class ExamplesUtils {
 			System.out.println();
 		}
 	}
+
+	/**
+	 * Returns the size of an Iterator
+	 *
+	 * @param Iterator<T> to iterate over
+	 */
+	public static <T> int iteratorSize(Iterator<T> iterator) {
+		int size = 0;
+		for (; iterator.hasNext(); ++size)
+			iterator.next();
+		return size;
+	}
+
+	/**
+	 * Creates an Atom with @numberOfVariables variables
+	 *
+	 * @param atomName  for the new predicate
+	 * @param atomArity number of variables
+	 */
+	private static Atom generalAtom(String atomName, int atomArity) {
+		final List<Term> vars = new ArrayList<>();
+		for (int i = 0; i < atomArity; i++)
+			vars.add(makeVariable("x" + i));
+		final Atom atom = Expressions.makeAtom(atomName, vars);
+		return atom;
+	}
+
+	/**
+	 * Exports the extension of the Atom with name @predicateName
+	 *
+	 * @param reasoner reasoner to query on
+	 * @param atomName atom's name
+	 * @param arity    atom's arity
+	 */
+	public static void exportQueryAnswersToCSV(Reasoner reasoner, String atomName, int atomArity)
+			throws ReasonerStateException, IOException {
+		final Atom atom = generalAtom(atomName, atomArity);
+		String path = ExamplesUtils.OUTPUT_FOLDER + atomName + ".csv";
+		reasoner.exportQueryAnswersToCsv(atom, path, true);
+	}
+
 }
