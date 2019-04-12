@@ -32,13 +32,14 @@ import java.util.List;
 import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.graal.GraalToVLog4JModelConverter;
@@ -58,6 +59,21 @@ public class DoidExample {
 
 	public static void main(String[] args)
 			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+
+		/* Create rule with negated literals (they will be used latter) */
+		final Variable x = makeVariable("x");
+		final Variable y = makeVariable("y");
+		final Variable z = makeVariable("z");
+		final Atom neg_hasDoid = Expressions.makeAtom("neg_hasDoid", y);
+		final Atom neg_cancerDisease = Expressions.makeAtom("neg_cancerDisease", z);
+		final Atom diseaseId = Expressions.makeAtom("diseaseId", y, z);
+		final Atom deathCause = Expressions.makeAtom("deathCause", x, y);
+		final Atom humansWhoDiedOfCancer = Expressions.makeAtom("humansWhoDiedOfCancer", x);
+		final Atom humansWhoDiedOfNoncancer = Expressions.makeAtom("humansWhoDiedOfNoncancer", x);
+		final Rule rule1 = Expressions.makeRule(Expressions.makeConjunction(humansWhoDiedOfNoncancer),
+				Expressions.makeConjunction(deathCause, diseaseId, neg_cancerDisease));
+		final Rule rule2 = Expressions.makeRule(Expressions.makeConjunction(humansWhoDiedOfNoncancer),
+				Expressions.makeConjunction(deathCause, neg_hasDoid));
 
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
 
@@ -103,26 +119,9 @@ public class DoidExample {
 					}
 				}
 			}
-			reasoner.addRules(vlogRules);
 
-			// Adding a rule with a negated literal from java.
-			// % humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), diseaseId(Y,Z),
-			// neg_cancerDisease(Z).
-			// final Variable x = makeVariable("x");
-			// final Variable y = makeVariable("y");
-			// final Variable z = makeVariable("z");
-			// final Atom humansWhoDiedOfNoncancerAtom = Expressions
-			// .makeAtom(Expressions.makePredicate("humansWhoDiedOfNoncancer", 1), x);
-			// final Atom deathCauseAtom =
-			// Expressions.makeAtom(Expressions.makePredicate("deathCause", 2), x, y);
-			// final Atom diseaseIdAtom =
-			// Expressions.makeAtom(Expressions.makePredicate("diseaseId", 2), y, z);
-			// final Atom notCancerDiseaseAtom =
-			// Expressions.makeAtom(Expressions.makePredicate("neg_cancerDisease", 1),
-			// z);
-			//
-			// reasoner.addRules(makeRule(makeConjunction(humansWhoDiedOfNoncancerAtom),
-			// makeConjunction(deathCauseAtom, diseaseIdAtom, notCancerDiseaseAtom)));
+			reasoner.addRules(rule1, rule2);
+			reasoner.addRules(vlogRules);
 
 			System.out.println("Rules configured:\n--");
 			vlogRules.forEach(System.out::println);
@@ -133,32 +132,15 @@ public class DoidExample {
 			reasoner.reason();
 			System.out.println("... reasoning completed.");
 
-			saveData(reasoner, "humansWhoDiedOfCancer", 1);
-			saveData(reasoner, "humansWhoDiedOfNoncancer", 1);
-			saveData(reasoner, "deathCause", 2);
-			saveData(reasoner, "diseaseHierarchy", 2);
-			saveData(reasoner, "cancerDisease", 1);
-			saveData(reasoner, "recentDeaths", 1);
+			final QueryResultIterator answersCancer = reasoner.answerQuery(humansWhoDiedOfCancer, true);
+			System.out.println("Number of humans who died of Cancer: " + ExamplesUtils.iteratorSize(answersCancer));
 
-			// System.out.println("After materialisation:");
-			// for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule :
-			// convertedConjunctiveQueries) {
-			// ExamplesUtils.printOutQueryAnswers(graalConjunctiveQueryToRule.getQueryAtom(),
-			// reasoner);
-			// }
+			final QueryResultIterator answersNoncancer = reasoner.answerQuery(humansWhoDiedOfNoncancer, true);
+			System.out.println(
+					"Number of humans who died of Non cancer: " + ExamplesUtils.iteratorSize(answersNoncancer));
 
 		}
 
 	}
 
-	public static void saveData(Reasoner reasoner, String predicateName, int numberOfVariables)
-			throws ReasonerStateException, IOException {
-		final List<Term> vars = new ArrayList<>();
-		for (int i = 0; i < numberOfVariables; i++)
-			vars.add(makeVariable("x" + i));
-		final Predicate predicate = Expressions.makePredicate(predicateName, numberOfVariables);
-		final Atom atom = Expressions.makeAtom(predicate, vars);
-		String path = ExamplesUtils.OUTPUT_FOLDER + predicateName + ".csv";
-		reasoner.exportQueryAnswersToCsv(atom, path, true);
-	}
 }

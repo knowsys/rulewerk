@@ -18,6 +18,3 @@ diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), doidTriple(Y,<http://www.w3.org/
 cancerDisease(Xdoid) :- diseaseHierarchy(X,Y), doid(Y, "DOID:162"), doid(X, Xdoid).
 
 humansWhoDiedOfCancer(X) :- deathCause(X,Y), diseaseId(Y,Z), cancerDisease(Z).
-humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), diseaseId(Y,Z),  neg_cancerDisease(Z).
-humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), neg_hasDoid(Y) .
-
