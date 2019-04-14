@@ -331,9 +331,9 @@ public interface Reasoner extends AutoCloseable {
 	
 	CyclicityResult checkForCycles() throws ReasonerStateException, NotStartedException;
 
-	boolean isRJA() throws ReasonerStateException, NotStartedException;
-
 	boolean isJA() throws ReasonerStateException, NotStartedException;
+	
+	boolean isRJA() throws ReasonerStateException, NotStartedException;
 
 	boolean isMFA() throws ReasonerStateException, NotStartedException;
 	
