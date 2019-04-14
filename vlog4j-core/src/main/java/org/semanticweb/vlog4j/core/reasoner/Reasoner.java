@@ -17,6 +17,8 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
+import karmaresearch.vlog.NotStartedException;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -326,7 +328,19 @@ public interface Reasoner extends AutoCloseable {
 	// FIXME should EdbIdbSeparationException be thrown when users try to add
 	// facts/rules?
 	void load() throws IOException, EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException;
+	
+	CyclicityResult checkForCycles() throws ReasonerStateException, NotStartedException;
 
+	boolean isJA() throws ReasonerStateException, NotStartedException;
+	
+	boolean isRJA() throws ReasonerStateException, NotStartedException;
+
+	boolean isMFA() throws ReasonerStateException, NotStartedException;
+	
+	boolean isRMFA() throws ReasonerStateException, NotStartedException;
+	
+	boolean isMFC() throws ReasonerStateException, NotStartedException;
+	
 	/**
 	 * Performs reasoning on the loaded <b>knowledge base</b>, depending on the set
 	 * {@link Algorithm}. Reasoning implies extending the set of explicit facts in
@@ -457,7 +471,7 @@ public interface Reasoner extends AutoCloseable {
 	 */
 	void exportQueryAnswersToCsv(@NonNull Atom queryAtom, @NonNull String csvFilePath, boolean includeBlanks)
 			throws ReasonerStateException, IOException;
-
+	
 	/**
 	 * Resets the reasoner to a pre-loading state (before the call of
 	 * {@link #load()} method). All facts inferred by reasoning are discarded. Rules
@@ -470,7 +484,9 @@ public interface Reasoner extends AutoCloseable {
 	// TODO Map<Predicate,DataSource> exportDBToDir(File location);
 
 	// TODO not allow any operation after closing, except close();
+	
 	@Override
 	void close();
+
 
 }
