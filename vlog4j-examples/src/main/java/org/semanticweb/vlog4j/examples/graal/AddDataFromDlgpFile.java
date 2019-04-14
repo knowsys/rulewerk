@@ -41,13 +41,18 @@ import fr.lirmm.graphik.graal.api.core.Rule;
 import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
 
 /**
- * This example shows how facts can be imported from files in the <a href="http://graphik-team.github.io/graal/doc/dlgp">DLGP/DLP</a> format.
+ * This example shows how facts can be imported from files in the
+ * <a href="http://graphik-team.github.io/graal/doc/dlgp">DLGP/DLP</a> format.
  * 
- * The <a href="http://graphik-team.github.io/graal/">Graal</a> {@link DlgpParser} is used to parse the program. This step requires a {@link File},
- * {@link InputStream}, {@link Reader}, or {@link String} containing or pointing to the program.
+ * The <a href="http://graphik-team.github.io/graal/">Graal</a>
+ * {@link DlgpParser} is used to parse the program. This step requires a
+ * {@link File}, {@link InputStream}, {@link Reader}, or {@link String}
+ * containing or pointing to the program.
  * 
- * The {@link Atom Atoms}, {@link Rule Rules}, and {@link ConjunctiveQuery ConjunctiveQueries} are then converted for use by VLog4J. Take care to add the rules
- * resulting from the {@link ConjunctiveQuery ConjunctiveQueries} as well as the {@link Rule Rules} to the {@link Reasoner}; see
+ * The {@link Atom Atoms}, {@link Rule Rules}, and {@link ConjunctiveQuery
+ * ConjunctiveQueries} are then converted for use by VLog4J. Take care to add
+ * the rules resulting from the {@link ConjunctiveQuery ConjunctiveQueries} as
+ * well as the {@link Rule Rules} to the {@link Reasoner}; see
  * {@link GraalConjunctiveQueryToRule} for details.
  *
  * @author Adrian Bielefeldt
@@ -55,7 +60,8 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  */
 public class AddDataFromDlgpFile {
 
-	public static void main(final String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public static void main(final String[] args)
+			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
 		final List<fr.lirmm.graphik.graal.api.core.Atom> graalAtoms = new ArrayList<>();
 		final List<fr.lirmm.graphik.graal.api.core.Rule> graalRules = new ArrayList<>();
@@ -64,7 +70,8 @@ public class AddDataFromDlgpFile {
 		/*
 		 * 1. Parse the DLGP/DLP file using the DlgpParser.
 		 * 
-		 * DlgpParser supports Files, InputStreams, Readers, and Strings. While other objects such as prefixes can also be part of the iterator, they are
+		 * DlgpParser supports Files, InputStreams, Readers, and Strings. While other
+		 * objects such as prefixes can also be part of the iterator, they are
 		 * automatically resolved and do not need to be handled here.
 		 */
 		try (final DlgpParser parser = new DlgpParser(new File("src/main/data/input/graal/", "example.dlgp"))) {
@@ -81,8 +88,9 @@ public class AddDataFromDlgpFile {
 		}
 
 		/*
-		 * 2. ConjunctiveQueries consist of a conjunction of atoms and a set of answer variables. To query this with VLog4J, an additional rule needs to be
-		 * added for each ConjunctiveQuery. See GraalConjunctiveQueryToRule for details.
+		 * 2. ConjunctiveQueries consist of a conjunction of atoms and a set of answer
+		 * variables. To query this with VLog4J, an additional rule needs to be added
+		 * for each ConjunctiveQuery. See GraalConjunctiveQueryToRule for details.
 		 */
 		final List<GraalConjunctiveQueryToRule> convertedConjunctiveQueries = new ArrayList<>();
 
@@ -92,7 +100,8 @@ public class AddDataFromDlgpFile {
 		}
 
 		/*
-		 * 3. Loading, reasoning, and querying while using try-with-resources to close the reasoner automatically.
+		 * 3. Loading, reasoning, and querying while using try-with-resources to close
+		 * the reasoner automatically.
 		 */
 		try (Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
