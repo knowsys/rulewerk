@@ -45,7 +45,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  * given {@code rdfModel} into an {@link PositiveLiteral} of the form
  * {@code TRIPLE(subject, predicate, object)}. The ternary predicate used for
  * all literals generated from RDF triples is
- * {@link RdfModelToPositiveLiteralsConverter#RDF_TRIPLE_PREDICATE}. Subject,
+ * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}. Subject,
  * predicate and object {@link Value}s are converted to corresponding
  * {@link Term}s:
  * <ul>
@@ -62,7 +62,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  * @author Irina Dragoste
  *
  */
-public final class RdfModelToPositiveLiteralsConverter {
+public final class RdfModelConverter {
 
 	/**
 	 * The name of the ternary predicate of literals generated from RDF triples:
@@ -77,14 +77,14 @@ public final class RdfModelToPositiveLiteralsConverter {
 	 */
 	public static final Predicate RDF_TRIPLE_PREDICATE = Expressions.makePredicate(RDF_TRIPLE_PREDICATE_NAME, 3);
 
-	private RdfModelToPositiveLiteralsConverter() {
+	private RdfModelConverter() {
 	}
 
 	/**
 	 * Converts each {@code <subject, predicate, object>} triple statement of the
 	 * given {@code rdfModel} into a {@link PositiveLiteral} of the form
 	 * {@code TRIPLE(subject, predicate, object)}. See
-	 * {@link RdfModelToPositiveLiteralsConverter#RDF_TRIPLE_PREDICATE}, the ternary
+	 * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}, the ternary
 	 * predicate used for all literals generated from RDF triples.
 	 *
 	 * @param rdfModel a {@link Model} of an RDF document, containing triple
@@ -93,7 +93,7 @@ public final class RdfModelToPositiveLiteralsConverter {
 	 *         {@code rdfModel}.
 	 */
 	public static Set<PositiveLiteral> rdfModelToPositiveLiterals(final Model rdfModel) {
-		return rdfModel.stream().map(RdfModelToPositiveLiteralsConverter::rdfStatementToPositiveLiteral)
+		return rdfModel.stream().map(RdfModelConverter::rdfStatementToPositiveLiteral)
 				.collect(Collectors.toSet());
 	}
 

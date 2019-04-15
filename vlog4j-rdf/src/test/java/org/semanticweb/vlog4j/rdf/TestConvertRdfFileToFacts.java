@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.rdf.RdfModelToPositiveLiteralsConverter.RDF_TRIPLE_PREDICATE_NAME;
+import static org.semanticweb.vlog4j.rdf.RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME;
 import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_FIRST;
 import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_NIL;
 import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_REST;
@@ -104,7 +104,7 @@ public class TestConvertRdfFileToFacts {
 	public void testDataTypesNormalized() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils
 				.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "unnormalizedLiteralValues.ttl"), RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelToPositiveLiteralsConverter
+		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter
 				.rdfModelToPositiveLiterals(model);
 		assertEquals(expectedNormalizedPositiveLiterals, PositiveLiteralsFromModel);
 	}
@@ -113,7 +113,7 @@ public class TestConvertRdfFileToFacts {
 	public void testLiteralValuesPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "literalValues.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelToPositiveLiteralsConverter
+		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter
 				.rdfModelToPositiveLiterals(model);
 		assertEquals(expectedLiteralPositiveLiterals, PositiveLiteralsFromModel);
 	}
@@ -122,7 +122,7 @@ public class TestConvertRdfFileToFacts {
 	public void testRelativeURIsMadeAbsolute() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "relativeURIs.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelToPositiveLiteralsConverter
+		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter
 				.rdfModelToPositiveLiterals(model);
 		assertEquals(expectedRelativeUriPositiveLiterals, PositiveLiteralsFromModel);
 	}
@@ -131,7 +131,7 @@ public class TestConvertRdfFileToFacts {
 	public void testEscapedCharactersPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "escapedCharacters.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelToPositiveLiteralsConverter
+		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter
 				.rdfModelToPositiveLiterals(model);
 		assertEquals(expectedEscapedCharacterPositiveLiterals, PositiveLiteralsFromModel);
 	}
@@ -140,7 +140,7 @@ public class TestConvertRdfFileToFacts {
 	public void testLanguageTagsPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "languageTags.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelToPositiveLiteralsConverter
+		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter
 				.rdfModelToPositiveLiterals(model);
 		assertEquals(expectedLanguageTagPositiveLiterals, PositiveLiteralsFromModel);
 	}
@@ -149,7 +149,7 @@ public class TestConvertRdfFileToFacts {
 	public void testCollectionsPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "collections.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelToPositiveLiteralsConverter
+		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter
 				.rdfModelToPositiveLiterals(model);
 
 		final Term blank1 = RdfTestUtils.getObjectOfFirstMatchedTriple(makeConstant("file:/2"), makeConstant("file:/a"),
@@ -200,7 +200,7 @@ public class TestConvertRdfFileToFacts {
 	private Set<Blank> getBlanksFromTurtleFile(final File file)
 			throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = RdfTestUtils.parseFile(file, RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiterals = RdfModelToPositiveLiteralsConverter
+		final Set<PositiveLiteral> PositiveLiterals = RdfModelConverter
 				.rdfModelToPositiveLiterals(model);
 
 		final Set<Blank> blanks = new HashSet<>();

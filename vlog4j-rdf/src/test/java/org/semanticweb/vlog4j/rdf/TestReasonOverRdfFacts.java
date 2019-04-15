@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-import static org.semanticweb.vlog4j.rdf.RdfModelToPositiveLiteralsConverter.RDF_TRIPLE_PREDICATE_NAME;
+import static org.semanticweb.vlog4j.rdf.RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +67,7 @@ public class TestReasonOverRdfFacts {
 			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> facts = RdfModelToPositiveLiteralsConverter.rdfModelToPositiveLiterals(model);
+		final Set<PositiveLiteral> facts = RdfModelConverter.rdfModelToPositiveLiterals(model);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFacts(facts);
@@ -85,7 +85,7 @@ public class TestReasonOverRdfFacts {
 			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> facts = RdfModelToPositiveLiteralsConverter.rdfModelToPositiveLiterals(model);
+		final Set<PositiveLiteral> facts = RdfModelConverter.rdfModelToPositiveLiterals(model);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFacts(facts);
