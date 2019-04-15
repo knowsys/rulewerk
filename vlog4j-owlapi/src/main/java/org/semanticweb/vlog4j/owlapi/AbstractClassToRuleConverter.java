@@ -60,9 +60,9 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	 * @author Markus Krötzsch
 	 *
 	 */
-	static class SimpleConjunction<T extends Literal> {
+	static class SimpleConjunction {
 
-		private List<T> conjuncts;
+		private List<PositiveLiteral> conjuncts;
 		private boolean unsatisfiable;
 
 		/**
@@ -75,7 +75,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 			}
 		}
 
-		public void add(final T atom) {
+		public void add(final PositiveLiteral atom) {
 			if (this.unsatisfiable) {
 				return;
 			}
@@ -83,7 +83,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 			this.conjuncts.add(atom);
 		}
 
-		public void add(final List<T> atoms) {
+		public void add(final List<PositiveLiteral> atoms) {
 			if (this.unsatisfiable) {
 				return;
 			}
@@ -137,7 +137,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 			return !this.unsatisfiable && (this.conjuncts != null) && !this.conjuncts.isEmpty();
 		}
 
-		public List<T> getConjuncts() {
+		public List<PositiveLiteral> getConjuncts() {
 			return this.conjuncts;
 		}
 
@@ -161,8 +161,8 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 
 	}
 
-	SimpleConjunction<Literal> body;
-	SimpleConjunction<PositiveLiteral> head;
+	SimpleConjunction body;
+	SimpleConjunction head;
 
 	/**
 	 * Current frontier variable used as the main variable for creating literals.
@@ -174,8 +174,8 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	 */
 	final OwlAxiomToRulesConverter parent;
 
-	public AbstractClassToRuleConverter(final Term mainTerm, final SimpleConjunction<Literal> body,
-			final SimpleConjunction<PositiveLiteral> head, final OwlAxiomToRulesConverter parent) {
+	public AbstractClassToRuleConverter(final Term mainTerm, final SimpleConjunction body, final SimpleConjunction head,
+			final OwlAxiomToRulesConverter parent) {
 		this.mainTerm = mainTerm;
 		this.body = body;
 		this.head = head;
@@ -289,8 +289,8 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 			final Conjunction<PositiveLiteral> auxHead = Expressions.makePositiveConjunction(auxAtom);
 			for (final AbstractClassToRuleConverter converter : converters) {
 				assert (converter.body.exists()); // else: falsity (empty body true, empty head false)
-				this.parent.rules
-						.add(Expressions.makeRule(auxHead, Expressions.makeConjunction(converter.body.getConjuncts())));
+				this.parent.rules.add(Expressions.makePositiveLiteralsRule(auxHead,
+						Expressions.makeConjunction(converter.body.getConjuncts())));
 
 			}
 		}

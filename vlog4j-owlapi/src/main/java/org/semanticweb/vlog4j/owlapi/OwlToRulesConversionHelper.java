@@ -35,7 +35,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -120,8 +119,8 @@ public class OwlToRulesConversionHelper {
 	 *                                    parameter position of the original
 	 *                                    expression
 	 */
-	static void <T extends Literal> addConjunctForPropertyExpression(final OWLObjectPropertyExpression owlObjectPropertyExpression,
-			final Term sourceTerm, final Term targetTerm, final SimpleConjunction<T> conjuncts) {
+	static void addConjunctForPropertyExpression(final OWLObjectPropertyExpression owlObjectPropertyExpression,
+			final Term sourceTerm, final Term targetTerm, final SimpleConjunction conjuncts) {
 		if (owlObjectPropertyExpression.isOWLTopObjectProperty()) {
 			conjuncts.init();
 		} else if (owlObjectPropertyExpression.isOWLBottomObjectProperty()) {

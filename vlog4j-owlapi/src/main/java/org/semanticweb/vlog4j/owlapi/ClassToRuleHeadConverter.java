@@ -41,8 +41,6 @@ import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.vlog4j.core.model.api.Literal;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
@@ -58,13 +56,13 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	boolean currentIsExistential = false;
 
-	public ClassToRuleHeadConverter(final Term mainTerm, final SimpleConjunction<Literal> body,
-			final SimpleConjunction<PositiveLiteral> head, final OwlAxiomToRulesConverter parent) {
+	public ClassToRuleHeadConverter(final Term mainTerm, final SimpleConjunction body, final SimpleConjunction head,
+			final OwlAxiomToRulesConverter parent) {
 		super(mainTerm, body, head, parent);
 	}
 
 	public ClassToRuleHeadConverter(final Term mainTerm, final OwlAxiomToRulesConverter parent) {
-		this(mainTerm, new SimpleConjunction<>(), new SimpleConjunction<>(), parent);
+		this(mainTerm, new SimpleConjunction(), new SimpleConjunction(), parent);
 	}
 
 	@Override
