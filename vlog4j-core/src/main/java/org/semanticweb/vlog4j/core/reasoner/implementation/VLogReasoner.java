@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
+import karmaresearch.vlog.MaterializationException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
@@ -197,7 +198,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void load() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void load()
+			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
 			throw new ReasonerStateException(reasonerState, "Loading is not allowed after closing.");
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
@@ -274,6 +276,10 @@ public class VLogReasoner implements Reasoner {
 				}
 			} catch (final NotStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
+			} catch (final MaterializationException e) {
+				throw new RuntimeException(
+						"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
+						e);
 			}
 		}
 		return this.reasoningCompleted;
@@ -300,8 +306,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath, final boolean includeBlanks)
-			throws ReasonerStateException, IOException {
+	public void exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
+			final boolean includeBlanks) throws ReasonerStateException, IOException {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
@@ -310,8 +316,7 @@ public class VLogReasoner implements Reasoner {
 		}
 		Validate.notNull(query, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
-		Validate.isTrue(csvFilePath.endsWith(".csv"),
-				"Expected .csv extension for file [%s]!", csvFilePath);
+		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 		try {
