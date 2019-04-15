@@ -65,7 +65,7 @@ public class GraalToVLog4JModelConverterTest {
 	private final String y = "Y";
 	private final String z = "Z";
 
-	private final Constant vlog4j_socrate = makeConstant(this.socrate);
+	private final Constant vlog4j_socrate = makeConstant("<" + this.socrate + ">");
 
 	private final Predicate vlog4j_bicycle = makePredicate(this.bicycle, 1);
 	private final Predicate vlog4j_hasPart = makePredicate(this.hasPart, 2);
@@ -130,6 +130,7 @@ public class GraalToVLog4JModelConverterTest {
 	@Test
 	public void testConvertExistentialRule() throws ParseException {
 		// hasPart(X, Y), wheel(Y) :- bicycle(X)
+
 		final PositiveLiteral vlog4j_hasPart_atom = makePositiveLiteral(this.vlog4j_hasPart, this.vlog4j_x,
 				this.vlog4j_y);
 		final PositiveLiteral vlog4j_wheel_atom = makePositiveLiteral(this.vlog4j_wheel, this.vlog4j_y);
@@ -212,6 +213,7 @@ public class GraalToVLog4JModelConverterTest {
 		final GraalConjunctiveQueryToRule importedComplexQuery = GraalToVLog4JModelConverter.convertQuery(complexQuery,
 				graal_complex_query);
 		assertEquals(complexQueryAtom, importedComplexQuery.getQuery());
+
 		assertEquals(complexQueryRule, importedComplexQuery.getRule());
 	}
 

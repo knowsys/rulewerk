@@ -25,7 +25,7 @@ You need to use Java 1.8 or above. Available modules include:
 * **vlog4j-rdf**: support for reading from RDF files
 * **vlog4j-owlapi**: support for converting rules from OWL ontology, loaded with the OWL API
 
-The released packages use vlog4j-base, which packages system-dependent binaries for Linux, MacOS, and Windows, and should work out of the box with current versions of these systems. In case of problems, own binaries can be compiled as follows:
+The released packages use vlog4j-base, which packages system-dependent binaries for Linux, MacOS, and Windows, and should work out of the box with current versions of these systems. In case of problems, or if you are using the current development version, own binaries can be compiled as follows:
 
 * Run [build-vlog-library.sh](https://github.com/mkroetzsch/vlog4j/blob/master/build-vlog-library.sh) or execute the commands in this file manually. This will compile a local jar file on your system, copy it to ```./vlog4j-core/lib/jvlog-local.jar```, and install the new jar locally in Maven in place of the distributed version of vlog4j-base.
 * Run ```mvn install``` to test if the setup works
