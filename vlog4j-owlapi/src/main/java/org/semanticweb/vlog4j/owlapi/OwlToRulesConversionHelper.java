@@ -35,6 +35,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -45,7 +46,8 @@ import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 import org.semanticweb.vlog4j.owlapi.AbstractClassToRuleConverter.SimpleConjunction;
 
 /**
- * Utility class for helper functions that are used to convert OWL API objects to rules.
+ * Utility class for helper functions that are used to convert OWL API objects
+ * to rules.
  * 
  * @author Markus Kroetzsch
  *
@@ -55,8 +57,7 @@ public class OwlToRulesConversionHelper {
 	/**
 	 * Returns a {@link Term} to represent an {@link OWLIndividual} in rules.
 	 * 
-	 * @param owlIndividual
-	 *            the individual to get a term for
+	 * @param owlIndividual the individual to get a term for
 	 * @return a suitable term
 	 */
 	public static Term getIndividualTerm(final OWLIndividual owlIndividual) {
@@ -65,15 +66,15 @@ public class OwlToRulesConversionHelper {
 		} else if (owlIndividual instanceof OWLAnonymousIndividual) {
 			return new BlankImpl(((OWLAnonymousIndividual) owlIndividual).getID().toString());
 		} else {
-			throw new OwlFeatureNotSupportedException("Could not convert OWL individual '" + owlIndividual.toString() + "' to a term.");
+			throw new OwlFeatureNotSupportedException(
+					"Could not convert OWL individual '" + owlIndividual.toString() + "' to a term.");
 		}
 	}
 
 	/**
 	 * Returns a {@link Predicate} to represent an {@link OWLClass} in rules.
 	 * 
-	 * @param owlClass
-	 *            the atomic class to get a predicate for
+	 * @param owlClass the atomic class to get a predicate for
 	 * @return a suitable unary predicate
 	 */
 	public static Predicate getClassPredicate(final OWLClass owlClass) {
@@ -81,10 +82,10 @@ public class OwlToRulesConversionHelper {
 	}
 
 	/**
-	 * Returns a {@link Predicate} to represent an {@link OWLObjectProperty} in rules.
+	 * Returns a {@link Predicate} to represent an {@link OWLObjectProperty} in
+	 * rules.
 	 * 
-	 * @param owlObjectProperty
-	 *            the atomic property to get a predicate for
+	 * @param owlObjectProperty the atomic property to get a predicate for
 	 * @return a suitable binary predicate
 	 */
 	public static Predicate getObjectPropertyPredicate(final OWLObjectProperty owlObjectProperty) {
@@ -107,18 +108,20 @@ public class OwlToRulesConversionHelper {
 	}
 
 	/**
-	 * Adds a binary predicate for a given OWL object property expression to the given conjunction. If the expression is an inverse, source and target terms are
-	 * swapped. If the expression is top or bottom, it is handled appropriately.
+	 * Adds a binary predicate for a given OWL object property expression to the
+	 * given conjunction. If the expression is an inverse, source and target terms
+	 * are swapped. If the expression is top or bottom, it is handled appropriately.
 	 * 
-	 * @param owlObjectPropertyExpression
-	 *            the property expression
-	 * @param sourceTerm
-	 *            the term that should be in the first parameter position of the original expression
-	 * @param targetTerm
-	 *            the term that should be in the second parameter position of the original expression
+	 * @param owlObjectPropertyExpression the property expression
+	 * @param sourceTerm                  the term that should be in the first
+	 *                                    parameter position of the original
+	 *                                    expression
+	 * @param targetTerm                  the term that should be in the second
+	 *                                    parameter position of the original
+	 *                                    expression
 	 */
-	static void addConjunctForPropertyExpression(final OWLObjectPropertyExpression owlObjectPropertyExpression, final Term sourceTerm, final Term targetTerm,
-			final SimpleConjunction conjuncts) {
+	static void <T extends Literal> addConjunctForPropertyExpression(final OWLObjectPropertyExpression owlObjectPropertyExpression,
+			final Term sourceTerm, final Term targetTerm, final SimpleConjunction<T> conjuncts) {
 		if (owlObjectPropertyExpression.isOWLTopObjectProperty()) {
 			conjuncts.init();
 		} else if (owlObjectPropertyExpression.isOWLBottomObjectProperty()) {
@@ -128,14 +131,15 @@ public class OwlToRulesConversionHelper {
 		}
 	}
 
-	public static PositiveLiteral getObjectPropertyAtom(final OWLObjectPropertyExpression owlObjectPropertyExpression, final Term sourceTerm,
-			final Term targetTerm) {
+	public static PositiveLiteral getObjectPropertyAtom(final OWLObjectPropertyExpression owlObjectPropertyExpression,
+			final Term sourceTerm, final Term targetTerm) {
 		if (owlObjectPropertyExpression.isAnonymous()) {
 			final Predicate predicate = OwlToRulesConversionHelper
 					.getObjectPropertyPredicate(owlObjectPropertyExpression.getInverseProperty().asOWLObjectProperty());
 			return new PositiveLiteralImpl(predicate, Arrays.asList(targetTerm, sourceTerm));
 		} else {
-			final Predicate predicate = OwlToRulesConversionHelper.getObjectPropertyPredicate(owlObjectPropertyExpression.asOWLObjectProperty());
+			final Predicate predicate = OwlToRulesConversionHelper
+					.getObjectPropertyPredicate(owlObjectPropertyExpression.asOWLObjectProperty());
 			return new PositiveLiteralImpl(predicate, Arrays.asList(sourceTerm, targetTerm));
 		}
 	}

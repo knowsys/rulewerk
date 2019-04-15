@@ -64,7 +64,7 @@ public class RuleImpl implements Rule {
 		this.head = head;
 		this.body = body;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

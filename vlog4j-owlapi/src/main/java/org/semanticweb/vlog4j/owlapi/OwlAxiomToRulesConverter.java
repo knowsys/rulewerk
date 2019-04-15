@@ -92,7 +92,8 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 	int freshVariableCounter = 0;
 
 	/**
-	 * Returns a fresh variable, which can be used as auxiliary variable in the current axiom's translation.
+	 * Returns a fresh variable, which can be used as auxiliary variable in the
+	 * current axiom's translation.
 	 * 
 	 * @return a variable
 	 */
@@ -107,14 +108,16 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 		}
 		Conjunction<PositiveLiteral> headConjunction;
 		if (converter.head.isFalseOrEmpty()) {
-			headConjunction = new ConjunctionImpl(Arrays.asList(OwlToRulesConversionHelper.getBottom(converter.mainTerm)));
+			headConjunction = new ConjunctionImpl<>(
+					Arrays.asList(OwlToRulesConversionHelper.getBottom(converter.mainTerm)));
 		} else {
-			headConjunction = new ConjunctionImpl(converter.head.getConjuncts());
+			headConjunction = new ConjunctionImpl<>(converter.head.getConjuncts());
 		}
 
 		Conjunction<Literal> bodyConjunction;
 		if (converter.body.isTrueOrEmpty()) {
-			bodyConjunction = new ConjunctionImpl(Arrays.asList(OwlToRulesConversionHelper.getTop(converter.mainTerm)));
+			bodyConjunction = new ConjunctionImpl<>(
+					Arrays.asList(OwlToRulesConversionHelper.getTop(converter.mainTerm)));
 			if (headConjunction.getVariables().isEmpty()) {
 				for (final PositiveLiteral conjunct : headConjunction.getLiterals()) {
 					this.facts.add(conjunct);
@@ -122,7 +125,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 				return;
 			}
 		} else {
-			bodyConjunction = new ConjunctionImpl(converter.body.getConjuncts());
+			bodyConjunction = new ConjunctionImpl<>(converter.body.getConjuncts());
 		}
 
 		this.rules.add(new RuleImpl(headConjunction, bodyConjunction));
@@ -140,7 +143,8 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 		final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(this.frontierVariable, this);
 		superClass.accept(headConverter);
-		final ClassToRuleBodyConverter bodyConverter = new ClassToRuleBodyConverter(this.frontierVariable, headConverter.body, headConverter.head, this);
+		final ClassToRuleBodyConverter bodyConverter = new ClassToRuleBodyConverter(this.frontierVariable,
+				headConverter.body, headConverter.head, this);
 		bodyConverter.handleDisjunction(subClass, this.frontierVariable);
 		this.addRule(bodyConverter);
 	}
@@ -156,22 +160,27 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject());
 		final Literal atom = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), subject, object);
 		final Literal bot = OwlToRulesConversionHelper.getBottom(subject);
-		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(bot)), new ConjunctionImpl(Arrays.asList(atom))));
+		this.rules.add(
+				new RuleImpl(new ConjunctionImpl<>(Arrays.asList(bot)), new ConjunctionImpl<>(Arrays.asList(atom))));
 	}
 
 	@Override
 	public void visit(final OWLAsymmetricObjectPropertyAxiom axiom) {
 		this.startAxiomConversion();
 		final Variable secondVariable = this.getFreshVariable();
-		final Literal atom1 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), this.frontierVariable, secondVariable);
-		final Literal atom2 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), secondVariable, this.frontierVariable);
-		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(OwlToRulesConversionHelper.getBottom(this.frontierVariable))),
+		final Literal atom1 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(),
+				this.frontierVariable, secondVariable);
+		final Literal atom2 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), secondVariable,
+				this.frontierVariable);
+		this.rules.add(new RuleImpl(
+				new ConjunctionImpl(Arrays.asList(OwlToRulesConversionHelper.getBottom(this.frontierVariable))),
 				new ConjunctionImpl(Arrays.asList(atom1, atom2))));
 	}
 
 	@Override
 	public void visit(final OWLReflexiveObjectPropertyAxiom axiom) {
-		final Literal atom1 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), this.frontierVariable, this.frontierVariable);
+		final Literal atom1 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(),
+				this.frontierVariable, this.frontierVariable);
 		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(atom1)),
 				new ConjunctionImpl(Arrays.asList(OwlToRulesConversionHelper.getTop(this.frontierVariable)))));
 	}
@@ -189,7 +198,8 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(final OWLObjectPropertyDomainAxiom axiom) {
-		final OWLClassExpression existsProperty = owlDataFactory.getOWLObjectSomeValuesFrom(axiom.getProperty(), owlDataFactory.getOWLThing());
+		final OWLClassExpression existsProperty = owlDataFactory.getOWLObjectSomeValuesFrom(axiom.getProperty(),
+				owlDataFactory.getOWLThing());
 		this.addSubClassAxiom(existsProperty, axiom.getDomain());
 	}
 
@@ -202,17 +212,20 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 		Literal previousAtom = null;
 		Literal currentAtom = null;
 		for (final OWLObjectPropertyExpression owlObjectPropertyExpression : axiom.getProperties()) {
-			currentAtom = OwlToRulesConversionHelper.getObjectPropertyAtom(owlObjectPropertyExpression, this.frontierVariable, secondVariable);
+			currentAtom = OwlToRulesConversionHelper.getObjectPropertyAtom(owlObjectPropertyExpression,
+					this.frontierVariable, secondVariable);
 			if (previousAtom == null) {
 				firstAtom = currentAtom;
 			} else {
-				this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(currentAtom)), new ConjunctionImpl(Arrays.asList(previousAtom))));
+				this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(currentAtom)),
+						new ConjunctionImpl(Arrays.asList(previousAtom))));
 			}
 			previousAtom = currentAtom;
 		}
 
 		if (currentAtom != null) {
-			this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(firstAtom)), new ConjunctionImpl(Arrays.asList(currentAtom))));
+			this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(firstAtom)),
+					new ConjunctionImpl(Arrays.asList(currentAtom))));
 		}
 	}
 
@@ -224,7 +237,8 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(final OWLDifferentIndividualsAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("DifferentIndividuals currently not supported, due to lack of equality support.");
+		throw new OwlFeatureNotSupportedException(
+				"DifferentIndividuals currently not supported, due to lack of equality support.");
 	}
 
 	@Override
@@ -241,7 +255,8 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 	@Override
 	public void visit(final OWLObjectPropertyRangeAxiom axiom) {
 		this.startAxiomConversion();
-		final OWLClassExpression forallPropertyDomain = owlDataFactory.getOWLObjectAllValuesFrom(axiom.getProperty(), axiom.getRange());
+		final OWLClassExpression forallPropertyDomain = owlDataFactory.getOWLObjectAllValuesFrom(axiom.getProperty(),
+				axiom.getRange());
 		final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(this.frontierVariable, this);
 		forallPropertyDomain.accept(headConverter);
 		this.addRule(headConverter);
@@ -256,16 +271,20 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(final OWLFunctionalObjectPropertyAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("FunctionalObjectProperty currently not supported, due to lack of equality support.");
+		throw new OwlFeatureNotSupportedException(
+				"FunctionalObjectProperty currently not supported, due to lack of equality support.");
 	}
 
 	@Override
 	public void visit(final OWLSubObjectPropertyOfAxiom axiom) {
 		this.startAxiomConversion();
 		final Variable secondVariable = this.getFreshVariable();
-		final Literal subRole = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getSubProperty(), this.frontierVariable, secondVariable);
-		final Literal superRole = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getSuperProperty(), this.frontierVariable, secondVariable);
-		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(superRole)), new ConjunctionImpl(Arrays.asList(subRole))));
+		final Literal subRole = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getSubProperty(),
+				this.frontierVariable, secondVariable);
+		final Literal superRole = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getSuperProperty(),
+				this.frontierVariable, secondVariable);
+		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(superRole)),
+				new ConjunctionImpl(Arrays.asList(subRole))));
 	}
 
 	@Override
@@ -278,9 +297,12 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 	public void visit(final OWLSymmetricObjectPropertyAxiom axiom) {
 		this.startAxiomConversion();
 		final Variable secondVariable = this.getFreshVariable();
-		final Literal atom1 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), this.frontierVariable, secondVariable);
-		final Literal atom2 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), secondVariable, this.frontierVariable);
-		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(atom2)), new ConjunctionImpl(Arrays.asList(atom1))));
+		final Literal atom1 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(),
+				this.frontierVariable, secondVariable);
+		final Literal atom2 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), secondVariable,
+				this.frontierVariable);
+		this.rules.add(
+				new RuleImpl(new ConjunctionImpl(Arrays.asList(atom2)), new ConjunctionImpl(Arrays.asList(atom1))));
 	}
 
 	@Override
@@ -337,16 +359,21 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 		this.startAxiomConversion();
 		final Variable var1 = this.getFreshVariable();
 		final Variable var2 = this.getFreshVariable();
-		final Literal atom1 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), this.frontierVariable, var1);
+		final Literal atom1 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(),
+				this.frontierVariable, var1);
 		final Literal atom2 = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), var1, var2);
-		final Literal atomHead = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), this.frontierVariable, var2);
-		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(atomHead)), new ConjunctionImpl(Arrays.asList(atom1, atom2))));
+		final Literal atomHead = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(),
+				this.frontierVariable, var2);
+		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(atomHead)),
+				new ConjunctionImpl(Arrays.asList(atom1, atom2))));
 	}
 
 	@Override
 	public void visit(final OWLIrreflexiveObjectPropertyAxiom axiom) {
-		final Literal atomSelf = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), this.frontierVariable, this.frontierVariable);
-		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(OwlToRulesConversionHelper.getBottom(this.frontierVariable))),
+		final Literal atomSelf = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(),
+				this.frontierVariable, this.frontierVariable);
+		this.rules.add(new RuleImpl(
+				new ConjunctionImpl(Arrays.asList(OwlToRulesConversionHelper.getBottom(this.frontierVariable))),
 				new ConjunctionImpl(Arrays.asList(atomSelf))));
 	}
 
@@ -357,12 +384,14 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 	@Override
 	public void visit(final OWLInverseFunctionalObjectPropertyAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("InverseFunctionalObjectProperty currently not supported, due to lack of equality support.");
+		throw new OwlFeatureNotSupportedException(
+				"InverseFunctionalObjectProperty currently not supported, due to lack of equality support.");
 	}
 
 	@Override
 	public void visit(final OWLSameIndividualAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("SameIndividual currently not supported, due to lack of equality support.");
+		throw new OwlFeatureNotSupportedException(
+				"SameIndividual currently not supported, due to lack of equality support.");
 	}
 
 	@Override
@@ -374,11 +403,13 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 
 		for (final OWLObjectPropertyExpression owlObjectPropertyExpression : axiom.getPropertyChain()) {
 			currentVariable = this.getFreshVariable();
-			body.add(OwlToRulesConversionHelper.getObjectPropertyAtom(owlObjectPropertyExpression, previousVariable, currentVariable));
+			body.add(OwlToRulesConversionHelper.getObjectPropertyAtom(owlObjectPropertyExpression, previousVariable,
+					currentVariable));
 			previousVariable = currentVariable;
 		}
 
-		final Literal headAtom = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getSuperProperty(), this.frontierVariable, currentVariable);
+		final Literal headAtom = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getSuperProperty(),
+				this.frontierVariable, currentVariable);
 
 		this.rules.add(new RuleImpl(new ConjunctionImpl(Arrays.asList(headAtom)), new ConjunctionImpl(body)));
 	}
@@ -387,8 +418,10 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 	public void visit(final OWLInverseObjectPropertiesAxiom axiom) {
 		this.startAxiomConversion();
 		final Variable secondVariable = this.getFreshVariable();
-		final Literal firstRole = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getFirstProperty(), this.frontierVariable, secondVariable);
-		final Literal secondRole = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getSecondProperty(), secondVariable, this.frontierVariable);
+		final Literal firstRole = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getFirstProperty(),
+				this.frontierVariable, secondVariable);
+		final Literal secondRole = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getSecondProperty(),
+				secondVariable, this.frontierVariable);
 		final Conjunction firstRoleConjunction = new ConjunctionImpl(Arrays.asList(firstRole));
 		final Conjunction secondRoleConjunction = new ConjunctionImpl(Arrays.asList(secondRole));
 		this.rules.add(new RuleImpl(secondRoleConjunction, firstRoleConjunction));

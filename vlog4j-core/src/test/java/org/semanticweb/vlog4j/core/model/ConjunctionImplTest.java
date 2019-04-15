@@ -96,8 +96,8 @@ public class ConjunctionImplTest {
 		final PositiveLiteral positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
 		final List<PositiveLiteral> PositiveLiteralList = Arrays.asList(positiveLiteral1, positiveLiteral2, positiveLiteral3);
 		final Conjunction<PositiveLiteral> conjunction1 = new ConjunctionImpl<>(PositiveLiteralList);
-		final Conjunction<PositiveLiteral> conjunction2 = Expressions.makeConjunction(positiveLiteral1, positiveLiteral2, positiveLiteral3);
-		final Conjunction<PositiveLiteral> conjunction3 = Expressions.makeConjunction(positiveLiteral1, positiveLiteral3, positiveLiteral2);
+		final Conjunction<PositiveLiteral> conjunction2 = Expressions.makePositiveConjunction(positiveLiteral1, positiveLiteral2, positiveLiteral3);
+		final Conjunction<PositiveLiteral> conjunction3 = Expressions.makePositiveConjunction(positiveLiteral1, positiveLiteral3, positiveLiteral2);
 
 		assertEquals(conjunction1, conjunction1);
 		assertEquals(conjunction2, conjunction1);
@@ -118,7 +118,7 @@ public class ConjunctionImplTest {
 		final Variable x = Expressions.makeVariable("X");
 		final PositiveLiteral PositiveLiteral1 = Expressions.makePositiveLiteral("p", x);
 		final List<PositiveLiteral> PositiveLiteralList = Arrays.asList(PositiveLiteral1, null);
-		Expressions.makePositiveLiteralsConjunction(PositiveLiteralList);
+		Expressions.makeConjunction(PositiveLiteralList);
 	}
 	
 	@Test(expected = NullPointerException.class)

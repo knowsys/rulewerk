@@ -205,7 +205,7 @@ public final class Expressions {
 	public static NegativeLiteral makeNegativeLiteral(final Predicate predicate, final Term... terms) {
 		return new NegativeLiteralImpl(predicate, Arrays.asList(terms));
 	}
-	
+
 	/**
 	 * Creates a {@code Conjunction} of {@link Literal} objects.
 	 *
@@ -213,7 +213,7 @@ public final class Expressions {
 	 *            list of non-null literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static Conjunction<Literal> makeConjunction(final List<Literal> literals) {
+	public static  <T extends Literal> Conjunction<T> makeConjunction(final List<T> literals) {
 		return new ConjunctionImpl<>(literals);
 	}
 
@@ -224,21 +224,10 @@ public final class Expressions {
 	 *            array of non-null literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static Conjunction<Literal> makeConjunction(final Literal... literals) {
+	public static   Conjunction<Literal> makeConjunction(final Literal... literals) {
 		return new ConjunctionImpl<>(Arrays.asList(literals));
 	}
-	
-	
-	/**
-	 * Creates a {@code Conjunction} of {@link PositiveLiteral} objects.
-	 *
-	 * @param literals
-	 *            list of non-null positive literals
-	 * @return a {@link Conjunction} corresponding to the input
-	 */
-	public static Conjunction<PositiveLiteral> makePositiveLiteralsConjunction(final List<PositiveLiteral> literals) {
-		return new ConjunctionImpl<>(literals);
-	}
+
 	
 	/**
 	 * Creates a {@code Conjunction} of {@link PositiveLiteral} objects.
@@ -247,13 +236,10 @@ public final class Expressions {
 	 *            array of non-null positive literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static Conjunction<PositiveLiteral> makePositiveLiteralsConjunction(final PositiveLiteral... literals) {
+	public static Conjunction<PositiveLiteral> makePositiveConjunction(final PositiveLiteral... literals) {
 		return new ConjunctionImpl<>(Arrays.asList(literals));
 	}
 
-	
-	
-	
 	/**
 	 * Creates a {@code Rule} with a single atom in its head.
 	 *
@@ -267,21 +253,8 @@ public final class Expressions {
 		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
 				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
 	}
-	
-	/**
-	 * Creates a {@code Rule} with a single atom in its head.
-	 *
-	 * @param headLiteral
-	 *            the single positive literal in the rule head
-	 * @param bodyLiterals
-	 *            array of non-null literals
-	 * @return a {@link Rule} corresponding to the input
-	 */
-	public static Rule makeRule(final PositiveLiteral headLiteral, final PositiveLiteral... bodyLiterals) {
-		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
-				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
-	}
-	
+
+
 	/**
 	 * Creates a {@code Rule}.
 	 *
@@ -291,8 +264,11 @@ public final class Expressions {
 	 *            conjunction of literals (negated or not)
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static Rule makeRule(final Conjunction<PositiveLiteral> head, final Conjunction<Literal> body) {
+	public static  Rule makeRule(final Conjunction<PositiveLiteral> head,
+			final Conjunction<Literal> body) {
 		return new RuleImpl(head, body);
 	}
+
+
 
 }

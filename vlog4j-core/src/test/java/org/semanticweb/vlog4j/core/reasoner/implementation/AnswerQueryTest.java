@@ -106,7 +106,7 @@ public class AnswerQueryTest {
 		final Variable z = Expressions.makeVariable("Z");
 		final PositiveLiteral pYY = Expressions.makePositiveLiteral(predicate, y, y);
 		final PositiveLiteral pYZ = Expressions.makePositiveLiteral(predicate, y, z);
-		final Rule pX__pYY_pYZ = Expressions.makeRule(Expressions.makePositiveLiteralsConjunction(pYY, pYZ),
+		final Rule pX__pYY_pYZ = Expressions.makeRule(Expressions.makePositiveConjunction(pYY, pYZ),
 				Expressions.makeConjunction(Expressions.makePositiveLiteral(predicate, x)));
 		assertEquals(Sets.newSet(y, z), pX__pYY_pYZ.getExistentiallyQuantifiedVariables());
 

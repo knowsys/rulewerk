@@ -23,10 +23,10 @@ import static org.junit.Assert.assertEquals;
  */
 
 import static org.junit.Assert.assertTrue;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-import static org.semanticweb.vlog4j.rdf.RdfModelToAtomsConverter.RDF_TRIPLE_PREDICATE_NAME;
+import static org.semanticweb.vlog4j.rdf.RdfModelToPositiveLiteralsConverter.RDF_TRIPLE_PREDICATE_NAME;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +40,8 @@ import org.openrdf.model.Model;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -53,7 +53,8 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 public class TestReasonOverRdfFacts {
 
 	private static final Set<List<Term>> expectedQueryResultsInvention = new HashSet<>(Arrays.asList(
-			Arrays.asList(makeConstant("https://example.org/Carl-Benz"), makeConstant("https://example.org/invention"), makeConstant("\"car\"@en")),
+			Arrays.asList(makeConstant("https://example.org/Carl-Benz"), makeConstant("https://example.org/invention"),
+					makeConstant("\"car\"@en")),
 			Arrays.asList(makeConstant("https://example.org/Carl-Benz"), makeConstant("https://example.org/invention"),
 					makeConstant("\"\\u81EA\\u52A8\\u8F66\"@zh-hans"))));
 
@@ -63,27 +64,28 @@ public class TestReasonOverRdfFacts {
 
 	@Test
 	public void testCanLoadRdfFactsIntoReasoner() throws RDFParseException, RDFHandlerException, IOException,
-	ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
-		final Set<Atom> facts = RdfModelToAtomsConverter.rdfModelToAtoms(model);
+		final Set<PositiveLiteral> facts = RdfModelToPositiveLiteralsConverter.rdfModelToPositiveLiterals(model);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFacts(facts);
 			reasoner.load();
 
-			final Atom universalQuery = makeAtom(RDF_TRIPLE_PREDICATE_NAME, subject, predicate, object);
-			final Set<List<Term>> queryResults = getQueryResults(reasoner, universalQuery);
+			final PositiveLiteral universalQuery = makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, subject, predicate,
+					object);
+			final Set<List<Term>> queryResults = this.getQueryResults(reasoner, universalQuery);
 			assertTrue(!queryResults.isEmpty());
 		}
 	}
 
 	@Test
 	public void testQueryAnsweringOverRdfFacts() throws RDFParseException, RDFHandlerException, IOException,
-	ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final Model model = RdfTestUtils.parseFile(
-				new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"), RDFFormat.TURTLE);
-		final Set<Atom> facts = RdfModelToAtomsConverter.rdfModelToAtoms(model);
+			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
+				RDFFormat.TURTLE);
+		final Set<PositiveLiteral> facts = RdfModelToPositiveLiteralsConverter.rdfModelToPositiveLiterals(model);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFacts(facts);
@@ -92,15 +94,15 @@ public class TestReasonOverRdfFacts {
 			final Constant inventionPredicate = makeConstant("https://example.org/invention");
 			final Constant carlBenzSubject = makeConstant("https://example.org/Carl-Benz");
 
-			final Atom inventionQuery = makeAtom(RDF_TRIPLE_PREDICATE_NAME, carlBenzSubject, inventionPredicate,
-					object);
-			assertEquals(expectedQueryResultsInvention, getQueryResults(reasoner, inventionQuery));
+			final PositiveLiteral inventionQuery = makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, carlBenzSubject,
+					inventionPredicate, object);
+			assertEquals(expectedQueryResultsInvention, this.getQueryResults(reasoner, inventionQuery));
 		}
 	}
 
-	private Set<List<Term>> getQueryResults(final Reasoner reasoner, final Atom queryAtom)
+	private Set<List<Term>> getQueryResults(final Reasoner reasoner, final PositiveLiteral query)
 			throws ReasonerStateException {
-		final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true);
+		final QueryResultIterator queryResultIterator = reasoner.answerQuery(query, true);
 
 		final Set<List<Term>> queryResults = new HashSet<>();
 		queryResultIterator.forEachRemaining(queryResult -> queryResults.add(queryResult.getTerms()));

@@ -104,7 +104,7 @@ final class ModelToVLogConverter {
 	static karmaresearch.vlog.Atom toVLogAtom(final Literal literal) {
 		final karmaresearch.vlog.Term[] vLogTerms = toVLogTermArray(literal.getTerms());
 		final String vLogPredicate = toVLogPredicate(literal.getPredicate());
-		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(vLogPredicate, vLogTerms);
+		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(vLogPredicate,literal.isNegated(), vLogTerms);
 		return vLogAtom;
 	}
 

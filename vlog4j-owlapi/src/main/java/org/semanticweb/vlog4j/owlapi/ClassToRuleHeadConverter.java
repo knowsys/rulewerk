@@ -41,12 +41,15 @@ import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 
 /**
- * Helper class for transforming OWL class expressions that occur as superclasses into suitable head literals for rules.
+ * Helper class for transforming OWL class expressions that occur as
+ * superclasses into suitable head literals for rules.
  * 
  * @author Markus Krötzsch
  *
@@ -55,12 +58,13 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	boolean currentIsExistential = false;
 
-	public ClassToRuleHeadConverter(final Term mainTerm, final SimpleConjunction body, final SimpleConjunction head, final OwlAxiomToRulesConverter parent) {
+	public ClassToRuleHeadConverter(final Term mainTerm, final SimpleConjunction<Literal> body,
+			final SimpleConjunction<PositiveLiteral> head, final OwlAxiomToRulesConverter parent) {
 		super(mainTerm, body, head, parent);
 	}
 
 	public ClassToRuleHeadConverter(final Term mainTerm, final OwlAxiomToRulesConverter parent) {
-		this(mainTerm, new SimpleConjunction(), new SimpleConjunction(), parent);
+		this(mainTerm, new SimpleConjunction<>(), new SimpleConjunction<>(), parent);
 	}
 
 	@Override
@@ -92,7 +96,8 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectComplementOf ce) {
-		final ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.mainTerm, this.body, this.head, this.parent);
+		final ClassToRuleBodyConverter converter = new ClassToRuleBodyConverter(this.mainTerm, this.body, this.head,
+				this.parent);
 		ce.getOperand().accept(converter);
 	}
 
@@ -126,7 +131,8 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectExactCardinality ce) {
-		throw new OwlFeatureNotSupportedException("Exact cardinality restrictions in superclass positions are not supported in rules.");
+		throw new OwlFeatureNotSupportedException(
+				"Exact cardinality restrictions in superclass positions are not supported in rules.");
 	}
 
 	@Override
@@ -137,7 +143,8 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectHasSelf ce) {
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, this.mainTerm, this.head);
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, this.mainTerm,
+				this.head);
 	}
 
 	@Override

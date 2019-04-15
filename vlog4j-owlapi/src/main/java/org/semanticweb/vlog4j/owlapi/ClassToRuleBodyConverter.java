@@ -41,13 +41,16 @@ import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 
 /**
- * Helper class for transforming OWL class expressions that occur as subclasses into suitable body literals for rules. Auxiliary rules might be created to
+ * Helper class for transforming OWL class expressions that occur as subclasses
+ * into suitable body literals for rules. Auxiliary rules might be created to
  * capture the semantics of some constructs.
  * 
  * @author Markus Krötzsch
@@ -55,12 +58,13 @@ import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
  */
 public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter implements OWLClassExpressionVisitor {
 
-	public ClassToRuleBodyConverter(final Term mainTerm, final SimpleConjunction body, final SimpleConjunction head, final OwlAxiomToRulesConverter parent) {
+	public ClassToRuleBodyConverter(final Term mainTerm, final SimpleConjunction<Literal> body,
+			final SimpleConjunction<PositiveLiteral> head, final OwlAxiomToRulesConverter parent) {
 		super(mainTerm, body, head, parent);
 	}
 
 	public ClassToRuleBodyConverter(final Term mainTerm, final OwlAxiomToRulesConverter parent) {
-		this(mainTerm, new SimpleConjunction(), new SimpleConjunction(), parent);
+		this(mainTerm, new SimpleConjunction<>(), new SimpleConjunction<PositiveLiteral>(), parent);
 	}
 
 	@Override
@@ -92,7 +96,8 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectComplementOf ce) {
-		final ClassToRuleHeadConverter converter = new ClassToRuleHeadConverter(this.mainTerm, this.body, this.head, this.parent);
+		final ClassToRuleHeadConverter converter = new ClassToRuleHeadConverter(this.mainTerm, this.body, this.head,
+				this.parent);
 		ce.getOperand().accept(converter);
 	}
 
@@ -104,7 +109,8 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 	@Override
 	public void visit(final OWLObjectAllValuesFrom ce) {
 		final Variable variable = this.parent.getFreshVariable();
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, variable, this.head);
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, variable,
+				this.head);
 		if (!this.head.isFalse()) {
 			this.handleConjunction(Arrays.asList(ce.getFiller()), variable);
 		}
@@ -130,17 +136,20 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectExactCardinality ce) {
-		throw new OwlFeatureNotSupportedException("Exact cardinality restrictions in subclass positions are not supported in rules.");
+		throw new OwlFeatureNotSupportedException(
+				"Exact cardinality restrictions in subclass positions are not supported in rules.");
 	}
 
 	@Override
 	public void visit(final OWLObjectMaxCardinality ce) {
-		throw new OwlFeatureNotSupportedException("Maximal cardinality restrictions in subclass positions are not supported in rules.");
+		throw new OwlFeatureNotSupportedException(
+				"Maximal cardinality restrictions in subclass positions are not supported in rules.");
 	}
 
 	@Override
 	public void visit(final OWLObjectHasSelf ce) {
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, this.mainTerm, this.body);
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, this.mainTerm,
+				this.body);
 	}
 
 	@Override
