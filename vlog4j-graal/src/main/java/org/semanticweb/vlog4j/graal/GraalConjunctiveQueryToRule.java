@@ -23,7 +23,7 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeP
  */
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteralsRule;
 
 import java.util.List;
 
@@ -42,11 +42,11 @@ import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
  * <a href="http://graphik-team.github.io/graal/">Graal</a>
  * {@link ConjunctiveQuery} over a certain knowledge base is equivalent to
  * adding a {@link Rule} to the knowledge base, <em> prior to reasoning</em>.
- * The rule consists of the query literals as the body and a single
- * PositiveLiteral with a new predicate containing all the answer variables of
- * the query as the head. After the reasoning process, in which the rule is
- * materialised, is completed, this rule head can then be used as a query
- * PositiveLiteral to obtain the results of the Graal {@link ConjunctiveQuery}.
+ * The rule consists of the query {@link Literal}s as the body and a single
+ * {@link PositiveLiteral} with a new predicate containing all the answer
+ * variables of the query as the head. After the reasoning process, in which the
+ * rule is materialised, is completed, this rule head can then be used as a
+ * query to obtain the results of the Graal {@link ConjunctiveQuery}.
  * 
  * @author Adrian Bielefeldt
  */
@@ -66,9 +66,9 @@ public class GraalConjunctiveQueryToRule {
 	 * @param conjunction           the query body. Becomes the rule body.
 	 */
 	protected GraalConjunctiveQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables,
-			final Conjunction<Literal> conjunction) {
+			final Conjunction<PositiveLiteral> conjunction) {
 		this.query = makePositiveLiteral(ruleHeadPredicateName, answerVariables);
-		this.rule = makeRule(makePositiveConjunction(this.query), conjunction);
+		this.rule = makePositiveLiteralsRule(makePositiveConjunction(this.query), conjunction);
 	}
 
 	/**
@@ -86,15 +86,15 @@ public class GraalConjunctiveQueryToRule {
 	}
 
 	/**
-	 * A query PositiveLiteral that returns the results of the
+	 * A query {@link PositiveLiteral} that returns the results of the
 	 * {@link ConjunctiveQuery Graal ConjunctiveQuery} represented by this object,
 	 * provided the corresponding rule ({@link #getRule()}) has been added to the
 	 * program. It is equal to the head of the rule returned by {@link #getRule()}.
 	 * 
-	 * @return The query PositiveLiteral to obtain the results of the Graal
+	 * @return The query {@link PositiveLiteral} to obtain the results of the Graal
 	 *         ConjunctiveQuery represented by this object.
 	 */
-	public PositiveLiteral getQueryPositiveLiteral() {
+	public PositiveLiteral getQuery() {
 		return this.query;
 	}
 

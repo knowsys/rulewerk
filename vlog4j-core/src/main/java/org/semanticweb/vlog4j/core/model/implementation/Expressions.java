@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+import java.util.ArrayList;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -23,6 +25,7 @@ package org.semanticweb.vlog4j.core.model.implementation;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
@@ -50,8 +53,7 @@ public final class Expressions {
 	/**
 	 * Creates a {@link Variable}.
 	 * 
-	 * @param name
-	 *            name of the variable
+	 * @param name name of the variable
 	 * @return a {@link Variable} corresponding to the input.
 	 */
 	public static Variable makeVariable(String name) {
@@ -61,8 +63,7 @@ public final class Expressions {
 	/**
 	 * Creates a {@link Constant}.
 	 * 
-	 * @param name
-	 *            name of the constant
+	 * @param name name of the constant
 	 * @return a {@link Constant} corresponding to the input.
 	 */
 	public static Constant makeConstant(String name) {
@@ -72,10 +73,8 @@ public final class Expressions {
 	/**
 	 * Creates a {@link Predicate}.
 	 * 
-	 * @param name
-	 *            non-blank predicate name
-	 * @param arity
-	 *            predicate arity, strictly greater than 0
+	 * @param name  non-blank predicate name
+	 * @param arity predicate arity, strictly greater than 0
 	 * @return a {@link Predicate} corresponding to the input.
 	 */
 	public static Predicate makePredicate(String name, int arity) {
@@ -85,10 +84,8 @@ public final class Expressions {
 	/**
 	 * Creates a {@code PositiveLiteral}.
 	 *
-	 * @param predicateName
-	 *            non-blank {@link Predicate} name
-	 * @param terms
-	 *            non-empty, non-null list of non-null terms
+	 * @param predicateName non-blank {@link Predicate} name
+	 * @param terms         non-empty, non-null list of non-null terms
 	 * @return a {@link PositiveLiteral} with given {@code terms} and
 	 *         {@link Predicate} constructed from name given {@code predicateName}
 	 *         and {@code arity} given {@code terms} size.
@@ -102,10 +99,8 @@ public final class Expressions {
 	/**
 	 * Creates a {@code PositiveLiteral}.
 	 *
-	 * @param predicateName
-	 *            non-blank {@link Predicate} name
-	 * @param terms
-	 *            non-empty, non-null array of non-null terms
+	 * @param predicateName non-blank {@link Predicate} name
+	 * @param terms         non-empty, non-null array of non-null terms
 	 * @return a {@link PositiveLiteral} with given {@code terms} and
 	 *         {@link Predicate} constructed from name given {@code predicateName}
 	 *         and {@code arity} given {@code terms} length.
@@ -119,11 +114,9 @@ public final class Expressions {
 	/**
 	 * Creates a {@code PositiveLiteral}.
 	 *
-	 * @param predicate
-	 *            a non-null {@link Predicate}
-	 * @param terms
-	 *            non-empty, non-null list of non-null terms. List size must be the
-	 *            same as the given {@code predicate} arity.
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null list of non-null terms. List size must
+	 *                  be the same as the given {@code predicate} arity.
 	 * @return a {@link PositiveLiteral} corresponding to the input.
 	 */
 	public static PositiveLiteral makePositiveLiteral(final Predicate predicate, final List<Term> terms) {
@@ -133,11 +126,9 @@ public final class Expressions {
 	/**
 	 * Creates a {@code PositiveLiteral}.
 	 *
-	 * @param predicate
-	 *            a non-null {@link Predicate}
-	 * @param terms
-	 *            non-empty, non-null array of non-null terms. Array size must be
-	 *            the same as the given {@code predicate} arity.
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null array of non-null terms. Array size must
+	 *                  be the same as the given {@code predicate} arity.
 	 * @return a {@link PositiveLiteral} corresponding to the input
 	 */
 	public static PositiveLiteral makePositiveLiteral(final Predicate predicate, final Term... terms) {
@@ -147,10 +138,8 @@ public final class Expressions {
 	/**
 	 * Creates a {@code NegativeLiteral}.
 	 *
-	 * @param predicateName
-	 *            non-blank {@link Predicate} name
-	 * @param terms
-	 *            non-empty, non-null list of non-null terms
+	 * @param predicateName non-blank {@link Predicate} name
+	 * @param terms         non-empty, non-null list of non-null terms
 	 * @return a {@link NegativeLiteral} with given {@code terms} and
 	 *         {@link Predicate} constructed from name given {@code predicateName}
 	 *         and {@code arity} given {@code terms} size.
@@ -164,10 +153,8 @@ public final class Expressions {
 	/**
 	 * Creates a {@code NegativeLiteral}.
 	 *
-	 * @param predicateName
-	 *            non-blank {@link Predicate} name
-	 * @param terms
-	 *            non-empty, non-null array of non-null terms
+	 * @param predicateName non-blank {@link Predicate} name
+	 * @param terms         non-empty, non-null array of non-null terms
 	 * @return a {@link NegativeLiteral} with given {@code terms} and
 	 *         {@link Predicate} constructed from name given {@code predicateName}
 	 *         and {@code arity} given {@code terms} length.
@@ -181,11 +168,9 @@ public final class Expressions {
 	/**
 	 * Creates a {@code NegativeLiteral}.
 	 *
-	 * @param predicate
-	 *            a non-null {@link Predicate}
-	 * @param terms
-	 *            non-empty, non-null list of non-null terms. List size must be the
-	 *            same as the given {@code predicate} arity.
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null list of non-null terms. List size must
+	 *                  be the same as the given {@code predicate} arity.
 	 * @return a {@link NegativeLiteral} corresponding to the input.
 	 */
 	public static NegativeLiteral makeNegativeLiteral(final Predicate predicate, final List<Term> terms) {
@@ -195,11 +180,9 @@ public final class Expressions {
 	/**
 	 * Creates a {@code NegativeLiteral}.
 	 *
-	 * @param predicate
-	 *            a non-null {@link Predicate}
-	 * @param terms
-	 *            non-empty, non-null array of non-null terms. Array size must be
-	 *            the same as the given {@code predicate} arity.
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null array of non-null terms. Array size must
+	 *                  be the same as the given {@code predicate} arity.
 	 * @return a {@link NegativeLiteral} corresponding to the input
 	 */
 	public static NegativeLiteral makeNegativeLiteral(final Predicate predicate, final Term... terms) {
@@ -207,33 +190,29 @@ public final class Expressions {
 	}
 
 	/**
-	 * Creates a {@code Conjunction} of {@link Literal} objects.
+	 * Creates a {@code Conjunction} of {@link T} ({@link Literal} type) objects.
 	 *
-	 * @param literals
-	 *            list of non-null literals
+	 * @param literals list of non-null literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static  <T extends Literal> Conjunction<T> makeConjunction(final List<T> literals) {
+	public static <T extends Literal> Conjunction<T> makeConjunction(final List<T> literals) {
 		return new ConjunctionImpl<>(literals);
 	}
 
 	/**
 	 * Creates a {@code Conjunction} of {@link Literal} objects.
 	 *
-	 * @param literals
-	 *            array of non-null literals
+	 * @param literals array of non-null literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static   Conjunction<Literal> makeConjunction(final Literal... literals) {
+	public static Conjunction<Literal> makeConjunction(final Literal... literals) {
 		return new ConjunctionImpl<>(Arrays.asList(literals));
 	}
 
-	
 	/**
 	 * Creates a {@code Conjunction} of {@link PositiveLiteral} objects.
 	 *
-	 * @param literals
-	 *            array of non-null positive literals
+	 * @param literals array of non-null positive literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
 	public static Conjunction<PositiveLiteral> makePositiveConjunction(final PositiveLiteral... literals) {
@@ -243,32 +222,39 @@ public final class Expressions {
 	/**
 	 * Creates a {@code Rule} with a single atom in its head.
 	 *
-	 * @param headLiteral
-	 *            the single positive literal in the rule head
-	 * @param bodyLiterals
-	 *            array of non-null literals
+	 * @param headLiteral  the single positive literal in the rule head
+	 * @param bodyLiterals array of non-null literals
 	 * @return a {@link Rule} corresponding to the input
 	 */
 	public static Rule makeRule(final PositiveLiteral headLiteral, final Literal... bodyLiterals) {
 		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
 				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
 	}
-
+	
+	/**
+	 * Creates a {@code Rule}.
+	 *
+	 * @param head conjunction of positive (non-negated) literals
+	 * @param body conjunction of literals (negated or not)
+	 * @return a {@link Rule} corresponding to the input
+	 */
+	public static Rule makeRule(final Conjunction<PositiveLiteral> head, final Conjunction<Literal> body) {
+		return new RuleImpl(head, body);
+	}
 
 	/**
 	 * Creates a {@code Rule}.
 	 *
-	 * @param head
-	 *            conjunction of positive (non-negated) literals
-	 * @param body
-	 *            conjunction of literals (negated or not)
+	 * @param head conjunction of positive (non-negated) literals
+	 * @param body conjunction of positive (non-negated) literals
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static  Rule makeRule(final Conjunction<PositiveLiteral> head,
-			final Conjunction<Literal> body) {
-		return new RuleImpl(head, body);
+	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head, final Conjunction<PositiveLiteral> body) {
+		final List<Literal> bodyLiteralList = new ArrayList<>(body.getLiterals());
+		@NonNull
+		final Conjunction<Literal> literalsBody = makeConjunction(bodyLiteralList);
+		return new RuleImpl(head, literalsBody);
+	
 	}
-
-
 
 }

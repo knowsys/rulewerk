@@ -24,8 +24,8 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeC
  */
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteralsRule;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.text.MessageFormat;
@@ -47,9 +47,8 @@ import fr.lirmm.graphik.util.stream.IteratorException;
 
 /**
  * Utility class to convert
- * <a href="http://graphik-team.github.io/graal/">Graal</a> data structures
- * ("model classes") into VLog4J data structures. Labels
- * ({@link ConjunctiveQuery#getLabel()},
+ * <a href="http://graphik-team.github.io/graal/">Graal</a> data structures into
+ * VLog4J data structures. Labels ({@link ConjunctiveQuery#getLabel()},
  * {@link fr.lirmm.graphik.graal.api.core.Rule#getLabel() Rule.getLabel()}, or
  * {@link fr.lirmm.graphik.graal.api.core.Term#getLabel() Term.getLabel()}) are
  * not converted since VLog4J does not support them.
@@ -84,8 +83,7 @@ public final class GraalToVLog4JModelConverter {
 	 *                 Graal Atoms}.
 	 * @return A {@link List} of {@link PositiveLiteral VLog4J PositiveLiterals}.
 	 */
-	public static List<PositiveLiteral> convertPositiveLiterals(
-			final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
+	public static List<PositiveLiteral> convertAtoms(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
 		final List<PositiveLiteral> result = new ArrayList<>();
 		for (final fr.lirmm.graphik.graal.api.core.Atom atom : atoms) {
 			result.add(convertAtom(atom));
@@ -95,7 +93,7 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link AtomSet Graal AtomSet} into a {@link Conjunction VLog4J
-	 * Conjunction}.
+	 * Conjunction} of {@link PositiveLiteral}s.
 	 *
 	 * @param atomSet A {@link AtomSet Graal AtomSet}
 	 * @return A {@link Conjunction VLog4J Conjunction}
@@ -168,7 +166,7 @@ public final class GraalToVLog4JModelConverter {
 					conjunctiveQuery));
 		}
 
-		final Conjunction conjunction = convertAtomSet(conjunctiveQuery.getPositiveLiteralSet());
+		final Conjunction<PositiveLiteral> conjunction = convertAtomSet(conjunctiveQuery.getAtomSet());
 		final List<Term> answerVariables = convertTerms(conjunctiveQuery.getAnswerVariables());
 
 		return new GraalConjunctiveQueryToRule(ruleHeadPredicateName, answerVariables, conjunction);
@@ -182,9 +180,9 @@ public final class GraalToVLog4JModelConverter {
 	 * @return A {@link Rule Vlog4J Rule}.
 	 */
 	public static Rule convertRule(final fr.lirmm.graphik.graal.api.core.Rule rule) {
-		final Conjunction head = convertAtomSet(rule.getHead());
-		final Conjunction body = convertAtomSet(rule.getBody());
-		return makeRule(head, body);
+		final Conjunction<PositiveLiteral> head = convertAtomSet(rule.getHead());
+		final Conjunction<PositiveLiteral> body = convertAtomSet(rule.getBody());
+		return makePositiveLiteralsRule(head, body);
 	}
 
 	/**

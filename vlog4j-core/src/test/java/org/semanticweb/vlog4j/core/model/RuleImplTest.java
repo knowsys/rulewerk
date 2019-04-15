@@ -58,6 +58,7 @@ public class RuleImplTest {
 		assertEquals(Collections.singleton(y), rule.getExistentiallyQuantifiedVariables());
 		assertEquals(Sets.newSet(x, z), rule.getUniversallyQuantifiedVariables());
 	}
+	
 
 	@Test
 	public void testEquals() {
@@ -65,23 +66,40 @@ public class RuleImplTest {
 		final Variable y = Expressions.makeVariable("Y");
 		final Variable z = Expressions.makeVariable("Z");
 		final Constant c = Expressions.makeConstant("c");
+		
 		final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
 		final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
 		final PositiveLiteral atom3 = Expressions.makePositiveLiteral("q", x, y);
-		final Conjunction<Literal> body1 = Expressions.makeConjunction(atom1, atom2);
-		final Conjunction<PositiveLiteral> head1 = Expressions.makePositiveConjunction(atom3);
-		final Conjunction<PositiveLiteral> body2 = Expressions.makePositiveConjunction(atom1, atom2);
-		final Conjunction<Literal> head2 = Expressions.makeConjunction(atom3);
 		
-		final Rule rule1 = new RuleImpl(head1, body1);
+		final Conjunction<Literal> bodyLiterals = Expressions.makeConjunction(atom1, atom2);
+		final Conjunction<PositiveLiteral> headPositiveLiterals = Expressions.makePositiveConjunction(atom3);
+		
+		final Conjunction<PositiveLiteral> bodyPositiveLiterals = Expressions.makePositiveConjunction(atom1, atom2);
+		final Conjunction<Literal> headLiterals = Expressions.makeConjunction(atom3);
+		
+		final Rule rule1 = new RuleImpl(headPositiveLiterals, bodyLiterals);
 		final Rule rule2 = Expressions.makeRule(atom3, atom1, atom2);
-		final Rule rule3 = new RuleImpl(head1, head2);
-		final Rule rule4 = new RuleImpl(body2, body1);
-		final Rule rule5 = new RuleImpl(body2, head2);
+		
+		
+		final Rule rule6 = Expressions.makeRule(atom3, atom1, atom2);
+		final Rule rule7 = Expressions.makeRule(atom3, atom1, atom2);
+		final Rule rule8 = Expressions.makePositiveLiteralsRule(headPositiveLiterals, bodyPositiveLiterals);
 
 		assertEquals(rule1, rule1);
 		assertEquals(rule2, rule1);
 		assertEquals(rule2.hashCode(), rule1.hashCode());
+		
+		assertEquals(rule6, rule1);
+		assertEquals(rule6.hashCode(), rule1.hashCode());
+		assertEquals(rule7, rule1);
+		assertEquals(rule7.hashCode(), rule1.hashCode());
+		assertEquals(rule8, rule1);
+		assertEquals(rule8.hashCode(), rule1.hashCode());
+
+		final Rule rule3 = new RuleImpl(headPositiveLiterals, headLiterals);
+		final Rule rule4 = new RuleImpl(bodyPositiveLiterals, bodyLiterals);
+		final Rule rule5 = new RuleImpl(bodyPositiveLiterals, headLiterals);
+		
 		assertNotEquals(rule3, rule1);
 		assertNotEquals(rule3.hashCode(), rule1.hashCode());
 		assertNotEquals(rule4, rule1);
