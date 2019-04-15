@@ -1,23 +1,15 @@
 package org.semanticweb.vlog4j.core.reasoner.vlog;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.semanticweb.vlog4j.core.reasoner.vlog.VLogExpressions.makeAtom;
-import static org.semanticweb.vlog4j.core.reasoner.vlog.VLogExpressions.makeConstant;
 import static org.semanticweb.vlog4j.core.reasoner.vlog.VLogExpressions.makeNegatedAtom;
 import static org.semanticweb.vlog4j.core.reasoner.vlog.VLogExpressions.makeRule;
 import static org.semanticweb.vlog4j.core.reasoner.vlog.VLogExpressions.makeVariable;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
 
-import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.Atom;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.MaterializationException;
@@ -29,58 +21,9 @@ import karmaresearch.vlog.VLog;
 import karmaresearch.vlog.VLog.LogLevel;
 import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
-public class TestStratifiedNegation {
+public class StratifiedNegationTest {
 
-	/**
-	 * P(x,y), Not(Q(x,y)) -> Q(x,y)
-	 * 
-	 * @throws EDBConfigurationException
-	 * @throws NotStartedException
-	 * @throws IOException
-	 * @throws AlreadyStartedException
-	 */
-	@Test
-	public void testSimpleInputNegationArity2()
-			throws EDBConfigurationException, NotStartedException, AlreadyStartedException, IOException {
-		final Term varX = makeVariable("X");
-		final Term varY = makeVariable("Y");
 
-		final Atom ruleHead = makeAtom("Q", varX, varY);
-
-		final Rule rule = makeRule(ruleHead, VLogExpressions.makeAtom("P", varX, varY));
-
-		final VLog vLog = new VLog();
-		vLog.setLogLevel(LogLevel.DEBUG);
-
-		final String[][] factTermsForP = { { "c", "d" } };
-		vLog.addData("P", factTermsForP);
-
-		final String[][] factTermsForQ = { { "e", "f" } };
-		vLog.addData("Q", factTermsForQ);
-
-		System.out.println(rule);
-		vLog.setRules(new Rule[] { rule }, RuleRewriteStrategy.NONE);
-
-		try (final TermQueryResultIterator queryResult = vLog.query(makeAtom("P", varX, varY), true, false);) {
-			assertTrue(queryResult.hasNext());
-			final Term[] next = queryResult.next();
-			assertArrayEquals(new Term[] { makeConstant("c"), makeConstant("d") }, next);
-		}
-
-		vLog.materialize(false);
-
-		try (final TermQueryResultIterator queryResult = vLog.query(ruleHead, true, false);) {
-
-			final List<List<Term>> result = new ArrayList<>(VLogQueryResultUtils.collectResults(queryResult));
-
-			final List<List<Term>> expectedResult = Arrays.asList(Arrays.asList(makeConstant("c")),
-					Arrays.asList(makeConstant("d")), Arrays.asList(makeConstant("e")),
-					Arrays.asList(makeConstant("f")));
-			
-			assertEquals(expectedResult, result);
-
-		}
-	}
 
 	/**
 	 * P(x), Not(Q(x)) -> R(x) Q - EDB.
