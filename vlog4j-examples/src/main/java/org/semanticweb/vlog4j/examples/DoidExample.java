@@ -60,7 +60,7 @@ public class DoidExample {
 	public static void main(String[] args)
 			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 
-		/* Create rule with negated literals (they will be used latter) */
+		/* Create rules with negated literals (they will be used latter) */
 		final Variable x = makeVariable("x");
 		final Variable y = makeVariable("y");
 		final Variable z = makeVariable("z");
@@ -120,7 +120,10 @@ public class DoidExample {
 				}
 			}
 
-			reasoner.addRules(rule1, rule2);
+			vlogRules.add(rule1);
+			vlogRules.add(rule2);
+
+			/* Add all rules to the reasoner */
 			reasoner.addRules(vlogRules);
 
 			System.out.println("Rules configured:\n--");
