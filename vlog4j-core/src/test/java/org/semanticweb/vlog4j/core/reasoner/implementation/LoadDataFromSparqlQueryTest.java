@@ -64,7 +64,7 @@ public class LoadDataFromSparqlQueryTest {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makeAtom(fatherOfPredicate,
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
 					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
@@ -89,7 +89,7 @@ public class LoadDataFromSparqlQueryTest {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makeAtom(fatherOfPredicate,
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
 					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
@@ -122,7 +122,7 @@ public class LoadDataFromSparqlQueryTest {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makeAtom(fatherOfPredicate,
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
 					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
@@ -145,7 +145,7 @@ public class LoadDataFromSparqlQueryTest {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
 			reasoner.load();
-			reasoner.answerQuery(Expressions.makeAtom(haveChildrenTogether, Expressions.makeVariable("x"),
+			reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether, Expressions.makeVariable("x"),
 					Expressions.makeVariable("y")), false);
 		}
 	}
@@ -165,7 +165,7 @@ public class LoadDataFromSparqlQueryTest {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makeAtom(haveChildrenTogether,
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether,
 					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());

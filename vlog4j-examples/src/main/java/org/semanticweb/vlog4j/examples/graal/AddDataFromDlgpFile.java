@@ -88,9 +88,9 @@ public class AddDataFromDlgpFile {
 		}
 
 		/*
-		 * 2. ConjunctiveQueries consist of a conjunction of atoms and a set of answer
-		 * variables. To query this with VLog4J, an additional rule needs to be added
-		 * for each ConjunctiveQuery. See GraalConjunctiveQueryToRule for details.
+		 * 2. ConjunctiveQueries consist of a conjunction of literals and a set of
+		 * answer variables. To query this with VLog4J, an additional rule needs to be
+		 * added for each ConjunctiveQuery. See GraalConjunctiveQueryToRule for details.
 		 */
 		final List<GraalConjunctiveQueryToRule> convertedConjunctiveQueries = new ArrayList<>();
 
@@ -113,14 +113,14 @@ public class AddDataFromDlgpFile {
 			reasoner.load();
 			System.out.println("Before materialisation:");
 			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
-				ExamplesUtils.printOutQueryAnswers(graalConjunctiveQueryToRule.getQueryAtom(), reasoner);
+				ExamplesUtils.printOutQueryAnswers(graalConjunctiveQueryToRule.getQuery(), reasoner);
 			}
 
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
 			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
-				ExamplesUtils.printOutQueryAnswers(graalConjunctiveQueryToRule.getQueryAtom(), reasoner);
+				ExamplesUtils.printOutQueryAnswers(graalConjunctiveQueryToRule.getQuery(), reasoner);
 			}
 		}
 	}

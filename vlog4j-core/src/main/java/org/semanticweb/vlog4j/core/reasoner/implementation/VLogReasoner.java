@@ -13,11 +13,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
-import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -31,9 +34,11 @@ import org.slf4j.LoggerFactory;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
+import karmaresearch.vlog.MaterializationException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
+import karmaresearch.vlog.VLog.CyclicCheckResult;
 
 /*
  * #%L
@@ -67,7 +72,7 @@ public class VLogReasoner implements Reasoner {
 	private RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
 
 	private final List<Rule> rules = new ArrayList<>();
-	private final Map<Predicate, Set<Atom>> factsForPredicate = new HashMap<>();
+	private final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = new HashMap<>();
 	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
 
 	/**
@@ -142,18 +147,18 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void addFacts(final Atom... facts) throws ReasonerStateException {
+	public void addFacts(final PositiveLiteral... facts) throws ReasonerStateException {
 		addFacts(Arrays.asList(facts));
 	}
 
 	@Override
-	public void addFacts(final Collection<Atom> facts) throws ReasonerStateException {
+	public void addFacts(final Collection<PositiveLiteral> facts) throws ReasonerStateException {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
 					"Facts cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
 		}
 		Validate.noNullElements(facts, "Null facts are not alowed! The list contains a fact at position [%d].");
-		for (final Atom fact : facts) {
+		for (final PositiveLiteral fact : facts) {
 			validateFactTermsAreConstant(fact);
 
 			final Predicate predicate = fact.getPredicate();
@@ -185,11 +190,11 @@ public class VLogReasoner implements Reasoner {
 			LOGGER.warn("Adding facts to a closed reasoner.");
 	}
 
-	private void validateFactTermsAreConstant(Atom fact) {
+	private void validateFactTermsAreConstant(PositiveLiteral fact) {
 		final Set<Term> nonConstantTerms = new HashSet<>(fact.getTerms());
 		nonConstantTerms.removeAll(fact.getConstants());
 		Validate.isTrue(nonConstantTerms.isEmpty(),
-				"Only Constant terms alowed in Fact atoms! The following non-constant terms [%s] appear for fact [%s]!",
+				"Only Constant terms alowed in Fact literals! The following non-constant terms [%s] appear for fact [%s]!",
 				nonConstantTerms, fact);
 
 	}
@@ -201,7 +206,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void load() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void load()
+			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
 			throw new ReasonerStateException(reasonerState, "Loading is not allowed after closing.");
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
@@ -278,22 +284,26 @@ public class VLogReasoner implements Reasoner {
 				}
 			} catch (final NotStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
+			} catch (final MaterializationException e) {
+				throw new RuntimeException(
+						"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
+						e);
 			}
 		}
 		return this.reasoningCompleted;
 	}
 
 	@Override
-	public QueryResultIterator answerQuery(Atom queryAtom, boolean includeBlanks) throws ReasonerStateException {
+	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) throws ReasonerStateException {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
 			throw new ReasonerStateException(reasonerState, "Querying is not allowed after closing.");
 		}
-		Validate.notNull(queryAtom, "Query atom must not be null!");
+		Validate.notNull(query, "Query atom must not be null!");
 
-		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
+		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 		TermQueryResultIterator stringQueryResultIterator;
 		try {
 			stringQueryResultIterator = this.vLog.query(vLogAtom, true, filterBlanks);
@@ -304,20 +314,19 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void exportQueryAnswersToCsv(final Atom queryAtom, final String csvFilePath, final boolean includeBlanks)
-			throws ReasonerStateException, IOException {
+	public void exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
+			final boolean includeBlanks) throws ReasonerStateException, IOException {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
 			throw new ReasonerStateException(reasonerState, "Querying is not allowed after closing.");
 		}
-		Validate.notNull(queryAtom, "Query atom must not be null!");
+		Validate.notNull(query, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
-		Validate.isTrue(csvFilePath.endsWith(".csv"),
-				"Expected .csv extension for file [%s]!", csvFilePath);
+		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
 
-		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
+		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 		try {
 			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath, filterBlanks);
 		} catch (final NotStartedException e) {
@@ -362,7 +371,7 @@ public class VLogReasoner implements Reasoner {
 	private Set<Predicate> collectIdbPredicates() {
 		final Set<Predicate> idbPredicates = new HashSet<>();
 		for (final Rule rule : this.rules) {
-			for (final Atom headAtom : rule.getHead()) {
+			for (final Literal headAtom : rule.getHead()) {
 				idbPredicates.add(headAtom.getPredicate());
 			}
 		}
@@ -385,7 +394,7 @@ public class VLogReasoner implements Reasoner {
 
 	private void loadInMemoryFacts() {
 		for (final Predicate predicate : this.factsForPredicate.keySet()) {
-			final Set<Atom> factsForPredicate = this.factsForPredicate.get(predicate);
+			final Set<PositiveLiteral> factsForPredicate = this.factsForPredicate.get(predicate);
 
 			final String vLogPredicate = ModelToVLogConverter.toVLogPredicate(predicate);
 			final String[][] tuplesForPredicate = ModelToVLogConverter.toVLogFactTuples(factsForPredicate);
@@ -427,6 +436,68 @@ public class VLogReasoner implements Reasoner {
 		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
 			throw new ReasonerStateException(reasonerState, "Setting log file is not allowed after closing.");
 		this.vLog.setLogFile(filePath);
+	}
+
+	@Override
+	public boolean isJA() throws ReasonerStateException, NotStartedException {
+		return checkAcyclicity(AcyclicityNotion.JA);
+	}
+
+	@Override
+	public boolean isRJA() throws ReasonerStateException, NotStartedException {
+		return checkAcyclicity(AcyclicityNotion.RJA);
+	}
+
+	@Override
+	public boolean isMFA() throws ReasonerStateException, NotStartedException {
+		return checkAcyclicity(AcyclicityNotion.MFA);
+	}
+
+	@Override
+	public boolean isRMFA() throws ReasonerStateException, NotStartedException {
+		return checkAcyclicity(AcyclicityNotion.RMFA);
+	}
+
+	@Override
+	public boolean isMFC() throws ReasonerStateException, NotStartedException {
+		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+			throw new ReasonerStateException(this.reasonerState,
+					"checking rules acyclicity is not allowed before loading!");
+		}
+
+		final CyclicCheckResult checkCyclic = this.vLog.checkCyclic("MFC");
+		if (checkCyclic.equals(CyclicCheckResult.CYCLIC)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion)
+			throws ReasonerStateException, NotStartedException {
+		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+			throw new ReasonerStateException(this.reasonerState,
+					"checking rules acyclicity is not allowed before loading!");
+		}
+
+		final CyclicCheckResult checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
+		if (checkCyclic.equals(CyclicCheckResult.NON_CYCLIC)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public CyclicityResult checkForCycles() throws ReasonerStateException, NotStartedException {
+		final boolean acyclic = isJA() || isRJA() || isMFA() || isRMFA();
+		if (acyclic) {
+			return CyclicityResult.ACYCLIC;
+		} else {
+			final boolean cyclic = isMFC();
+			if (cyclic) {
+				return CyclicityResult.CYCLIC;
+			}
+			return CyclicityResult.UNDETERMINED;
+		}
 	}
 
 }

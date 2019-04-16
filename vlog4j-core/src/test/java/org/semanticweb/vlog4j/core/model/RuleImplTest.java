@@ -19,16 +19,18 @@ package org.semanticweb.vlog4j.core.model;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import java.util.Collections;
 
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -38,45 +40,66 @@ public class RuleImplTest {
 
 	@Test
 	public void testGetters() {
-		Variable x = Expressions.makeVariable("X");
-		Variable y = Expressions.makeVariable("Y");
-		Variable z = Expressions.makeVariable("Z");
-		Constant c = Expressions.makeConstant("c");
-		Constant d = Expressions.makeConstant("d");
-		Atom atom1 = Expressions.makeAtom("p", x, c);
-		Atom atom2 = Expressions.makeAtom("p", x, z);
-		Atom atom3 = Expressions.makeAtom("q", x, y);
-		Atom atom4 = Expressions.makeAtom("r", x, d);
-		Conjunction body = Expressions.makeConjunction(atom1, atom2);
-		Conjunction head = Expressions.makeConjunction(atom3, atom4);
-		Rule rule = Expressions.makeRule(head, body);
+		final Variable x = Expressions.makeVariable("X");
+		final Variable y = Expressions.makeVariable("Y");
+		final Variable z = Expressions.makeVariable("Z");
+		final Constant c = Expressions.makeConstant("c");
+		final Constant d = Expressions.makeConstant("d");
+		final Literal atom1 = Expressions.makePositiveLiteral("p", x, c);
+		final Literal atom2 = Expressions.makePositiveLiteral("p", x, z);
+		final PositiveLiteral atom3 = Expressions.makePositiveLiteral("q", x, y);
+		final PositiveLiteral atom4 = Expressions.makePositiveLiteral("r", x, d);
+		final Conjunction<Literal> body = Expressions.makeConjunction(atom1, atom2);
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(atom3, atom4);
+		final Rule rule = Expressions.makeRule(head, body);
 
 		assertEquals(body, rule.getBody());
 		assertEquals(head, rule.getHead());
 		assertEquals(Collections.singleton(y), rule.getExistentiallyQuantifiedVariables());
 		assertEquals(Sets.newSet(x, z), rule.getUniversallyQuantifiedVariables());
 	}
+	
 
 	@Test
 	public void testEquals() {
-		Variable x = Expressions.makeVariable("X");
-		Variable y = Expressions.makeVariable("Y");
-		Variable z = Expressions.makeVariable("Z");
-		Constant c = Expressions.makeConstant("c");
-		Atom atom1 = Expressions.makeAtom("p", x, c);
-		Atom atom2 = Expressions.makeAtom("p", x, z);
-		Atom atom3 = Expressions.makeAtom("q", x, y);
-		Conjunction body = Expressions.makeConjunction(atom1, atom2);
-		Conjunction head = Expressions.makeConjunction(atom3);
-		Rule rule1 = new RuleImpl(head, body);
-		Rule rule2 = Expressions.makeRule(atom3, atom1, atom2);
-		Rule rule3 = new RuleImpl(head, head);
-		Rule rule4 = new RuleImpl(body, body);
-		Rule rule5 = new RuleImpl(body, head);
+		final Variable x = Expressions.makeVariable("X");
+		final Variable y = Expressions.makeVariable("Y");
+		final Variable z = Expressions.makeVariable("Z");
+		final Constant c = Expressions.makeConstant("c");
+		
+		final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
+		final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
+		final PositiveLiteral atom3 = Expressions.makePositiveLiteral("q", x, y);
+		
+		final Conjunction<Literal> bodyLiterals = Expressions.makeConjunction(atom1, atom2);
+		final Conjunction<PositiveLiteral> headPositiveLiterals = Expressions.makePositiveConjunction(atom3);
+		
+		final Conjunction<PositiveLiteral> bodyPositiveLiterals = Expressions.makePositiveConjunction(atom1, atom2);
+		final Conjunction<Literal> headLiterals = Expressions.makeConjunction(atom3);
+		
+		final Rule rule1 = new RuleImpl(headPositiveLiterals, bodyLiterals);
+		final Rule rule2 = Expressions.makeRule(atom3, atom1, atom2);
+		
+		
+		final Rule rule6 = Expressions.makeRule(atom3, atom1, atom2);
+		final Rule rule7 = Expressions.makeRule(atom3, atom1, atom2);
+		final Rule rule8 = Expressions.makePositiveLiteralsRule(headPositiveLiterals, bodyPositiveLiterals);
 
 		assertEquals(rule1, rule1);
 		assertEquals(rule2, rule1);
 		assertEquals(rule2.hashCode(), rule1.hashCode());
+		
+		assertEquals(rule6, rule1);
+		assertEquals(rule6.hashCode(), rule1.hashCode());
+		assertEquals(rule7, rule1);
+		assertEquals(rule7.hashCode(), rule1.hashCode());
+		assertEquals(rule8, rule1);
+		assertEquals(rule8.hashCode(), rule1.hashCode());
+
+		final Rule rule3 = new RuleImpl(headPositiveLiterals, headLiterals);
+		final Rule rule4 = new RuleImpl(bodyPositiveLiterals, bodyLiterals);
+		final Rule rule5 = new RuleImpl(bodyPositiveLiterals, headLiterals);
+		
 		assertNotEquals(rule3, rule1);
 		assertNotEquals(rule3.hashCode(), rule1.hashCode());
 		assertNotEquals(rule4, rule1);
@@ -88,24 +111,26 @@ public class RuleImplTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void bodyNonEmpty() {
-		Expressions.makeRule(Expressions.makeAtom("p", Expressions.makeVariable("X")));
+		Expressions.makeRule(Expressions.makePositiveLiteral("p", Expressions.makeVariable("X")));
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void bodyNotNull() {
-		Conjunction head = Expressions.makeConjunction(Expressions.makeAtom("p", Expressions.makeVariable("X")));
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(Expressions.makePositiveLiteral("p", Expressions.makeVariable("X")));
 		Expressions.makeRule(head, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void headNonEmpty() {
-		Conjunction body = Expressions.makeConjunction(Expressions.makeAtom("p", Expressions.makeVariable("X")));
-		Expressions.makeRule(Expressions.makeConjunction(), body);
+		final Literal literal = Expressions.makePositiveLiteral("p", Expressions.makeVariable("X"));
+		final Conjunction<Literal> body = Expressions.makeConjunction(literal);
+		Expressions.makeRule(Expressions.makePositiveConjunction(), body);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void headNotNull() {
-		Conjunction body = Expressions.makeConjunction(Expressions.makeAtom("p", Expressions.makeVariable("X")));
+		final Literal literal = Expressions.makePositiveLiteral("p", Expressions.makeVariable("X"));
+		final Conjunction<Literal> body = Expressions.makeConjunction(literal);
 		Expressions.makeRule(null, body);
 	}
 

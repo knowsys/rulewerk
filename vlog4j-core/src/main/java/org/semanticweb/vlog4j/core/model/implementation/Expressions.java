@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+import java.util.ArrayList;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -23,9 +25,12 @@ package org.semanticweb.vlog4j.core.model.implementation;
 import java.util.Arrays;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -48,8 +53,7 @@ public final class Expressions {
 	/**
 	 * Creates a {@link Variable}.
 	 * 
-	 * @param name
-	 *            name of the variable
+	 * @param name name of the variable
 	 * @return a {@link Variable} corresponding to the input.
 	 */
 	public static Variable makeVariable(String name) {
@@ -59,8 +63,7 @@ public final class Expressions {
 	/**
 	 * Creates a {@link Constant}.
 	 * 
-	 * @param name
-	 *            name of the constant
+	 * @param name name of the constant
 	 * @return a {@link Constant} corresponding to the input.
 	 */
 	public static Constant makeConstant(String name) {
@@ -70,10 +73,8 @@ public final class Expressions {
 	/**
 	 * Creates a {@link Predicate}.
 	 * 
-	 * @param name
-	 *            non-blank predicate name
-	 * @param arity
-	 *            predicate arity, strictly greater than 0
+	 * @param name  non-blank predicate name
+	 * @param arity predicate arity, strictly greater than 0
 	 * @return a {@link Predicate} corresponding to the input.
 	 */
 	public static Predicate makePredicate(String name, int arity) {
@@ -81,114 +82,179 @@ public final class Expressions {
 	}
 
 	/**
-	 * Creates an {@code Atom}.
+	 * Creates a {@code PositiveLiteral}.
 	 *
-	 * @param predicateName
-	 *            non-blank {@link Predicate} name
-	 * @param terms
-	 *            non-empty, non-null list of non-null terms
-	 * @return an {@link Atom} with given {@code terms} and {@link Predicate}
-	 *         constructed from name given {@code predicateName} and {@code arity}
-	 *         given {@code terms} size.
+	 * @param predicateName non-blank {@link Predicate} name
+	 * @param terms         non-empty, non-null list of non-null terms
+	 * @return a {@link PositiveLiteral} with given {@code terms} and
+	 *         {@link Predicate} constructed from name given {@code predicateName}
+	 *         and {@code arity} given {@code terms} size.
 	 */
-	public static Atom makeAtom(final String predicateName, final List<Term> terms) {
+	public static PositiveLiteral makePositiveLiteral(final String predicateName, final List<Term> terms) {
 		final Predicate predicate = makePredicate(predicateName, terms.size());
 
-		return new AtomImpl(predicate, terms);
+		return new PositiveLiteralImpl(predicate, terms);
 	}
 
 	/**
-	 * Creates an {@code Atom}.
+	 * Creates a {@code PositiveLiteral}.
 	 *
-	 * @param predicateName
-	 *            non-blank {@link Predicate} name
-	 * @param terms
-	 *            non-empty, non-null array of non-null terms
-	 * @return an {@link Atom} with given {@code terms} and {@link Predicate}
-	 *         constructed from name given {@code predicateName} and {@code arity}
-	 *         given {@code terms} length.
+	 * @param predicateName non-blank {@link Predicate} name
+	 * @param terms         non-empty, non-null array of non-null terms
+	 * @return a {@link PositiveLiteral} with given {@code terms} and
+	 *         {@link Predicate} constructed from name given {@code predicateName}
+	 *         and {@code arity} given {@code terms} length.
 	 */
-	public static Atom makeAtom(final String predicateName, final Term... terms) {
+	public static PositiveLiteral makePositiveLiteral(final String predicateName, final Term... terms) {
 		final Predicate predicate = makePredicate(predicateName, terms.length);
 
-		return new AtomImpl(predicate, Arrays.asList(terms));
+		return new PositiveLiteralImpl(predicate, Arrays.asList(terms));
 	}
 
 	/**
-	 * Creates an {@code Atom}.
+	 * Creates a {@code PositiveLiteral}.
 	 *
-	 * @param predicate
-	 *            a non-null {@link Predicate}
-	 * @param terms
-	 *            non-empty, non-null list of non-null terms. List size must be the
-	 *            same as the given {@code predicate} arity.
-	 * @return an {@link Atom} corresponding to the input.
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null list of non-null terms. List size must
+	 *                  be the same as the given {@code predicate} arity.
+	 * @return a {@link PositiveLiteral} corresponding to the input.
 	 */
-	public static Atom makeAtom(final Predicate predicate, final List<Term> terms) {
-		return new AtomImpl(predicate, terms);
+	public static PositiveLiteral makePositiveLiteral(final Predicate predicate, final List<Term> terms) {
+		return new PositiveLiteralImpl(predicate, terms);
 	}
 
 	/**
-	 * Creates an {@code Atom}.
+	 * Creates a {@code PositiveLiteral}.
 	 *
-	 * @param predicate
-	 *            a non-null {@link Predicate}
-	 * @param terms
-	 *            non-empty, non-null array of non-null terms. Aray size must be the
-	 *            same as the given {@code predicate} arity.
-	 * @return an {@link Atom} corresponding to the input
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null array of non-null terms. Array size must
+	 *                  be the same as the given {@code predicate} arity.
+	 * @return a {@link PositiveLiteral} corresponding to the input
 	 */
-	public static Atom makeAtom(final Predicate predicate, final Term... terms) {
-		return new AtomImpl(predicate, Arrays.asList(terms));
+	public static PositiveLiteral makePositiveLiteral(final Predicate predicate, final Term... terms) {
+		return new PositiveLiteralImpl(predicate, Arrays.asList(terms));
 	}
 
 	/**
-	 * Creates a {@code Conjunction}.
+	 * Creates a {@code NegativeLiteral}.
 	 *
-	 * @param atoms
-	 *            list of non-null atoms
+	 * @param predicateName non-blank {@link Predicate} name
+	 * @param terms         non-empty, non-null list of non-null terms
+	 * @return a {@link NegativeLiteral} with given {@code terms} and
+	 *         {@link Predicate} constructed from name given {@code predicateName}
+	 *         and {@code arity} given {@code terms} size.
+	 */
+	public static NegativeLiteral makeNegativeLiteral(final String predicateName, final List<Term> terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.size());
+
+		return new NegativeLiteralImpl(predicate, terms);
+	}
+
+	/**
+	 * Creates a {@code NegativeLiteral}.
+	 *
+	 * @param predicateName non-blank {@link Predicate} name
+	 * @param terms         non-empty, non-null array of non-null terms
+	 * @return a {@link NegativeLiteral} with given {@code terms} and
+	 *         {@link Predicate} constructed from name given {@code predicateName}
+	 *         and {@code arity} given {@code terms} length.
+	 */
+	public static NegativeLiteral makeNegativeLiteral(final String predicateName, final Term... terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.length);
+
+		return new NegativeLiteralImpl(predicate, Arrays.asList(terms));
+	}
+
+	/**
+	 * Creates a {@code NegativeLiteral}.
+	 *
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null list of non-null terms. List size must
+	 *                  be the same as the given {@code predicate} arity.
+	 * @return a {@link NegativeLiteral} corresponding to the input.
+	 */
+	public static NegativeLiteral makeNegativeLiteral(final Predicate predicate, final List<Term> terms) {
+		return new NegativeLiteralImpl(predicate, terms);
+	}
+
+	/**
+	 * Creates a {@code NegativeLiteral}.
+	 *
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null array of non-null terms. Array size must
+	 *                  be the same as the given {@code predicate} arity.
+	 * @return a {@link NegativeLiteral} corresponding to the input
+	 */
+	public static NegativeLiteral makeNegativeLiteral(final Predicate predicate, final Term... terms) {
+		return new NegativeLiteralImpl(predicate, Arrays.asList(terms));
+	}
+
+	/**
+	 * Creates a {@code Conjunction} of {@link T} ({@link Literal} type) objects.
+	 *
+	 * @param literals list of non-null literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static Conjunction makeConjunction(final List<Atom> atoms) {
-		return new ConjunctionImpl(atoms);
+	public static <T extends Literal> Conjunction<T> makeConjunction(final List<T> literals) {
+		return new ConjunctionImpl<>(literals);
 	}
 
 	/**
-	 * Creates a {@code Conjunction}.
+	 * Creates a {@code Conjunction} of {@link Literal} objects.
 	 *
-	 * @param atoms
-	 *            array of non-null atoms
+	 * @param literals array of non-null literals
 	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static Conjunction makeConjunction(final Atom... atoms) {
-		return new ConjunctionImpl(Arrays.asList(atoms));
+	public static Conjunction<Literal> makeConjunction(final Literal... literals) {
+		return new ConjunctionImpl<>(Arrays.asList(literals));
 	}
 
 	/**
-	 * Creates a {@code Rule}.
+	 * Creates a {@code Conjunction} of {@link PositiveLiteral} objects.
 	 *
-	 * @param head
-	 *            conjunction of atoms
-	 * @param body
-	 *            conjunction of atoms
-	 * @return a {@link Rule} corresponding to the input
+	 * @param literals array of non-null positive literals
+	 * @return a {@link Conjunction} corresponding to the input
 	 */
-	public static Rule makeRule(final Conjunction head, final Conjunction body) {
-		return new RuleImpl(head, body);
+	public static Conjunction<PositiveLiteral> makePositiveConjunction(final PositiveLiteral... literals) {
+		return new ConjunctionImpl<>(Arrays.asList(literals));
 	}
 
 	/**
 	 * Creates a {@code Rule} with a single atom in its head.
 	 *
-	 * @param headAtom
-	 *            the single atom in the rule head
-	 * @param bodyAtoms
-	 *            array of non-null atoms
+	 * @param headLiteral  the single positive literal in the rule head
+	 * @param bodyLiterals array of non-null literals
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static Rule makeRule(final Atom headAtom, final Atom... bodyAtoms) {
-		return new RuleImpl(new ConjunctionImpl(Arrays.asList(headAtom)),
-				new ConjunctionImpl(Arrays.asList(bodyAtoms)));
+	public static Rule makeRule(final PositiveLiteral headLiteral, final Literal... bodyLiterals) {
+		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
+				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
+	}
+	
+	/**
+	 * Creates a {@code Rule}.
+	 *
+	 * @param head conjunction of positive (non-negated) literals
+	 * @param body conjunction of literals (negated or not)
+	 * @return a {@link Rule} corresponding to the input
+	 */
+	public static Rule makeRule(final Conjunction<PositiveLiteral> head, final Conjunction<Literal> body) {
+		return new RuleImpl(head, body);
+	}
+
+	/**
+	 * Creates a {@code Rule}.
+	 *
+	 * @param head conjunction of positive (non-negated) literals
+	 * @param body conjunction of positive (non-negated) literals
+	 * @return a {@link Rule} corresponding to the input
+	 */
+	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head, final Conjunction<PositiveLiteral> body) {
+		final List<Literal> bodyLiteralList = new ArrayList<>(body.getLiterals());
+		@NonNull
+		final Conjunction<Literal> literalsBody = makeConjunction(bodyLiteralList);
+		return new RuleImpl(head, literalsBody);
+	
 	}
 
 }

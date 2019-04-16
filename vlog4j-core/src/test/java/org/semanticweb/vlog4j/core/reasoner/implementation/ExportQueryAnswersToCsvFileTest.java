@@ -28,8 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -48,7 +48,7 @@ public class ExportQueryAnswersToCsvFileTest {
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
 		final Variable z = Expressions.makeVariable("Z");
-		final Atom fact = Expressions.makeAtom(predicate, constantC, constantC, constantD);
+		final PositiveLiteral fact = Expressions.makePositiveLiteral(predicate, constantC, constantC, constantD);
 
 		final boolean includeBlanks = false;
 		// final String csvFilePath = CSV_EXPORT_FOLDER + "output";
@@ -58,25 +58,25 @@ public class ExportQueryAnswersToCsvFileTest {
 			reasoner.addFacts(fact);
 			reasoner.load();
 
-			final Atom queryAtomXYZ = Expressions.makeAtom(predicate, x, y, z);
+			final PositiveLiteral queryAtomXYZ = Expressions.makePositiveLiteral(predicate, x, y, z);
 			final String csvFilePathXYZ = FileDataSourceTestUtils.OUTPUT_FOLDER + "outputXYZ.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXYZ, csvFilePathXYZ, includeBlanks);
 			final List<List<String>> csvContentXYZ = FileDataSourceTestUtils.getCSVContent(csvFilePathXYZ);
 			assertEquals(factCCD, csvContentXYZ);
 
-			final Atom queryAtomXXZ = Expressions.makeAtom(predicate, x, x, z);
+			final PositiveLiteral queryAtomXXZ = Expressions.makePositiveLiteral(predicate, x, x, z);
 			final String csvFilePathXXZ = FileDataSourceTestUtils.OUTPUT_FOLDER + "outputXXZ.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXXZ, csvFilePathXXZ, includeBlanks);
 			final List<List<String>> csvContentXXZ = FileDataSourceTestUtils.getCSVContent(csvFilePathXXZ);
 			assertEquals(factCCD, csvContentXXZ);
 
-			final Atom queryAtomXXX = Expressions.makeAtom("q", x, x, x);
+			final PositiveLiteral queryAtomXXX = Expressions.makePositiveLiteral("q", x, x, x);
 			final String csvFilePathXXX = FileDataSourceTestUtils.OUTPUT_FOLDER + "outputXXX.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXXX, csvFilePathXXX, includeBlanks);
 			final List<List<String>> csvContentXXX = FileDataSourceTestUtils.getCSVContent(csvFilePathXXX);
 			assertTrue(csvContentXXX.isEmpty());
 
-			final Atom queryAtomXYX = Expressions.makeAtom("q", x, y, x);
+			final PositiveLiteral queryAtomXYX = Expressions.makePositiveLiteral("q", x, y, x);
 			final String csvFilePathXYX = FileDataSourceTestUtils.OUTPUT_FOLDER + "outputXYX.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXYX, csvFilePathXYX, includeBlanks);
 			final List<List<String>> csvContentXYX = FileDataSourceTestUtils.getCSVContent(csvFilePathXYX);
@@ -88,7 +88,7 @@ public class ExportQueryAnswersToCsvFileTest {
 	@Test
 	public void testExportQueryEmptyKnowledgeBase()
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
-		final Atom queryAtom = Expressions.makeAtom("p", Expressions.makeVariable("?x"),
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.load();

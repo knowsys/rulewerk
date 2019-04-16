@@ -37,15 +37,22 @@ import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
 
 /**
- * This example shows how facts and rules can be imported from objects of the <a href="http://graphik-team.github.io/graal/">Graal</a> library. Special care
- * must be taken with the import of Graal {@link ConjunctiveQuery}-objects, since unlike with VLog4J, they represent both the query atom and the corresponding
- * rule.
+ * This example shows how facts and rules can be imported from objects of the
+ * <a href="http://graphik-team.github.io/graal/">Graal</a> library. Special
+ * care must be taken with the import of Graal {@link ConjunctiveQuery}-objects,
+ * since unlike with VLog4J, they represent both the query atom and the
+ * corresponding rule.
  * <p>
- * In VLog4J, the reasoner is queried by a query Atom and the results are all facts matching this query Atom.<br>
- * Answering a Graal {@link ConjunctiveQuery} over a certain knowledge base is equivalent to adding a {@link Rule} to the knowledge base, <em> prior to
- * reasoning</em>. The rule consists of the query Atoms as the Rule body and a single Atom with a fresh predicate containing all the answer variables of the
- * {@link ConjunctiveQuery} as the Rule head. After the reasoning process, in which the rule is materialised, is completed, this Rule head can then be used as a
- * a query Atom to obtain the results of the Graal {@link ConjunctiveQuery}.
+ * In VLog4J, the reasoner is queried by a query Atom and the results are all
+ * facts matching this query Atom.<br>
+ * Answering a Graal {@link ConjunctiveQuery} over a certain knowledge base is
+ * equivalent to adding a {@link Rule} to the knowledge base, <em> prior to
+ * reasoning</em>. The rule consists of the query Atoms as the Rule body and a
+ * single Atom with a fresh predicate containing all the answer variables of the
+ * {@link ConjunctiveQuery} as the Rule head. After the reasoning process, in
+ * which the rule is materialised, is completed, this Rule head can then be used
+ * as a a query Atom to obtain the results of the Graal
+ * {@link ConjunctiveQuery}.
  * </p>
  * 
  * @author Adrian Bielefeldt
@@ -53,14 +60,16 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  */
 public class AddDataFromGraal {
 
-	public static void main(final String[] args) throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+	public static void main(final String[] args)
+			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
 		/*
 		 * 1. Instantiating rules
 		 */
 		final List<fr.lirmm.graphik.graal.api.core.Rule> graalRules = new ArrayList<>();
 
 		/*
-		 * 1.1 Rules to map external database (EDB) predicates to internal database predicates (IDB). Necessary because VLog4J requires separation between input
+		 * 1.1 Rules to map external database (EDB) predicates to internal database
+		 * predicates (IDB). Necessary because VLog4J requires separation between input
 		 * predicates and predicates for which additional facts can be derived.
 		 */
 		graalRules.add(DlgpParser.parseRule("bicycleIDB(X) :- bicycleEDB(X)."));
@@ -69,7 +78,8 @@ public class AddDataFromGraal {
 		graalRules.add(DlgpParser.parseRule("isPartOfIDB(X, Y) :- isPartOfEDB(X, Y)."));
 
 		/*
-		 * 1.2 Rules modelling that every bicycle has wheels and that the has part relation is inverse to the is part of relation.
+		 * 1.2 Rules modelling that every bicycle has wheels and that the has part
+		 * relation is inverse to the is part of relation.
 		 */
 		graalRules.add(DlgpParser.parseRule("hasPartIDB(X, Y), wheelIDB(Y) :- bicycleIDB(X)."));
 		graalRules.add(DlgpParser.parseRule("isPartOfIDB(X, Y) :- wheelIDB(X)."));
@@ -101,14 +111,17 @@ public class AddDataFromGraal {
 		graalAtoms.add(DlgpParser.parseAtom("hasPartEDB(blueBike, blueWheel)."));
 
 		/*
-		 * 3. Instantiating a Graal conjunctive query. This is equivalent to adding the rule query(?b, ?w) :- bicycleIDB(?b), wheelIDB(?w), isPartOfIDB(?w, ?b)
-		 * and then querying with query(?b, ?w) The rule from convertedGraalConjunctiveQuery needs to be added to the reasoner.
+		 * 3. Instantiating a Graal conjunctive query. This is equivalent to adding the
+		 * rule query(?b, ?w) :- bicycleIDB(?b), wheelIDB(?w), isPartOfIDB(?w, ?b) and
+		 * then querying with query(?b, ?w) The rule from convertedGraalConjunctiveQuery
+		 * needs to be added to the reasoner.
 		 */
-		final GraalConjunctiveQueryToRule convertedGraalConjunctiveQuery = GraalToVLog4JModelConverter.convertQuery("graalQuery",
-				DlgpParser.parseQuery("?(B, W) :- bicycleIDB(B), wheelIDB(W), isPartOfIDB(W, B)."));
+		final GraalConjunctiveQueryToRule convertedGraalConjunctiveQuery = GraalToVLog4JModelConverter.convertQuery(
+				"graalQuery", DlgpParser.parseQuery("?(B, W) :- bicycleIDB(B), wheelIDB(W), isPartOfIDB(W, B)."));
 
 		/*
-		 * 4. Loading, reasoning, and querying while using try-with-resources to close the reasoner automatically.
+		 * 4. Loading, reasoning, and querying while using try-with-resources to close
+		 * the reasoner automatically.
 		 */
 		try (Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
@@ -117,12 +130,12 @@ public class AddDataFromGraal {
 
 			reasoner.load();
 			System.out.println("Before materialisation:");
-			ExamplesUtils.printOutQueryAnswers(convertedGraalConjunctiveQuery.getQueryAtom(), reasoner);
+			ExamplesUtils.printOutQueryAnswers(convertedGraalConjunctiveQuery.getQuery(), reasoner);
 
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
-			ExamplesUtils.printOutQueryAnswers(convertedGraalConjunctiveQuery.getQueryAtom(), reasoner);
+			ExamplesUtils.printOutQueryAnswers(convertedGraalConjunctiveQuery.getQuery(), reasoner);
 
 		}
 

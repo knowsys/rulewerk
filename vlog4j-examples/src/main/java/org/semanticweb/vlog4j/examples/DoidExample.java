@@ -29,7 +29,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -57,22 +58,22 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  */
 public class DoidExample {
 
-	public static void main(String[] args)
+	public static void main(final String[] args)
 			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 
 		/* Create rules with negated literals (they will be used latter) */
 		final Variable x = makeVariable("x");
 		final Variable y = makeVariable("y");
 		final Variable z = makeVariable("z");
-		final Atom neg_hasDoid = Expressions.makeAtom("neg_hasDoid", y);
-		final Atom neg_cancerDisease = Expressions.makeAtom("neg_cancerDisease", z);
-		final Atom diseaseId = Expressions.makeAtom("diseaseId", y, z);
-		final Atom deathCause = Expressions.makeAtom("deathCause", x, y);
-		final Atom humansWhoDiedOfCancer = Expressions.makeAtom("humansWhoDiedOfCancer", x);
-		final Atom humansWhoDiedOfNoncancer = Expressions.makeAtom("humansWhoDiedOfNoncancer", x);
-		final Rule rule1 = Expressions.makeRule(Expressions.makeConjunction(humansWhoDiedOfNoncancer),
+		final NegativeLiteral neg_hasDoid = Expressions.makeNegativeLiteral("hasDoid", y);
+		final NegativeLiteral neg_cancerDisease = Expressions.makeNegativeLiteral("cancerDisease", z);
+		final PositiveLiteral diseaseId = Expressions.makePositiveLiteral("diseaseId", y, z);
+		final PositiveLiteral deathCause = Expressions.makePositiveLiteral("deathCause", x, y);
+		final PositiveLiteral humansWhoDiedOfCancer = Expressions.makePositiveLiteral("humansWhoDiedOfCancer", x);
+		final PositiveLiteral humansWhoDiedOfNoncancer = Expressions.makePositiveLiteral("humansWhoDiedOfNoncancer", x);
+		final Rule rule1 = Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
 				Expressions.makeConjunction(deathCause, diseaseId, neg_cancerDisease));
-		final Rule rule2 = Expressions.makeRule(Expressions.makeConjunction(humansWhoDiedOfNoncancer),
+		final Rule rule2 = Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
 				Expressions.makeConjunction(deathCause, neg_hasDoid));
 
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
@@ -136,11 +137,12 @@ public class DoidExample {
 			System.out.println("... reasoning completed.");
 
 			final QueryResultIterator answersCancer = reasoner.answerQuery(humansWhoDiedOfCancer, true);
-			System.out.println("Humans in Wikidata who died of cancer in 2018: " + ExamplesUtils.iteratorSize(answersCancer));
+			System.out.println(
+					"Humans in Wikidata who died of cancer in 2018: " + ExamplesUtils.iteratorSize(answersCancer));
 
 			final QueryResultIterator answersNoncancer = reasoner.answerQuery(humansWhoDiedOfNoncancer, true);
-			System.out.println(
-					"Humans in Wikidata who died of some other cause in 2018: " + ExamplesUtils.iteratorSize(answersNoncancer));
+			System.out.println("Humans in Wikidata who died of some other cause in 2018: "
+					+ ExamplesUtils.iteratorSize(answersNoncancer));
 			System.out.println("Done.");
 		}
 

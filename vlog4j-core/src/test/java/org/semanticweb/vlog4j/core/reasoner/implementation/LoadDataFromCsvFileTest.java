@@ -33,7 +33,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -56,7 +56,7 @@ public class LoadDataFromCsvFileTest {
 	@Test
 	public void testLoadEmptyCsvFile()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final Atom queryAtom = Expressions.makeAtom(unaryPredicate1, makeVariable("x"));
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(unaryPredicate1, makeVariable("x"));
 
 		FileDataSourceTestUtils.testLoadEmptyFile(unaryPredicate1, queryAtom,
 				new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.csv")));
@@ -81,10 +81,10 @@ public class LoadDataFromCsvFileTest {
 			reasoner.load();
 
 			final QueryResultIterator queryResultIterator1 = reasoner
-					.answerQuery(Expressions.makeAtom(unaryPredicate1, makeVariable("x")), true);
+					.answerQuery(Expressions.makePositiveLiteral(unaryPredicate1, makeVariable("x")), true);
 			final Set<List<Term>> queryResult1 = QueryResultsUtils.collectQueryResults(queryResultIterator1);
 			final QueryResultIterator queryResultIterator2 = reasoner
-					.answerQuery(Expressions.makeAtom(unaryPredicate2, makeVariable("x")), true);
+					.answerQuery(Expressions.makePositiveLiteral(unaryPredicate2, makeVariable("x")), true);
 			final Set<List<Term>> queryResult2 = QueryResultsUtils.collectQueryResults(queryResultIterator2);
 
 			assertEquals(expectedUnaryQueryResult, queryResult1);

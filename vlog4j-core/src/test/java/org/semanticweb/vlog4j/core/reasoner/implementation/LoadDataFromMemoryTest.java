@@ -23,7 +23,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
@@ -40,9 +40,9 @@ public class LoadDataFromMemoryTest {
 	public void loadEdbIdbNotSeparated()
 			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
 		final Variable vx = Expressions.makeVariable("x");
-		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
-		final Atom factIDBpredQ1 = Expressions.makeAtom("q", Expressions.makeConstant("c"));
-		final Atom factEDBpredQ2 = Expressions.makeAtom("q", Expressions.makeConstant("d"),
+		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx), Expressions.makePositiveLiteral("p", vx));
+		final PositiveLiteral factIDBpredQ1 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("c"));
+		final PositiveLiteral factEDBpredQ2 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addRules(rule);
@@ -55,8 +55,8 @@ public class LoadDataFromMemoryTest {
 	public void loadEdbIdbSeparated()
 			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
 		final Variable vx = Expressions.makeVariable("x");
-		final Rule rule = Expressions.makeRule(Expressions.makeAtom("q", vx), Expressions.makeAtom("p", vx));
-		final Atom factEDBpred = Expressions.makeAtom("q", Expressions.makeConstant("d"),
+		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx), Expressions.makePositiveLiteral("p", vx));
+		final PositiveLiteral factEDBpred = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
@@ -68,7 +68,7 @@ public class LoadDataFromMemoryTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void addFactsWithVariableTerms() throws ReasonerStateException {
-		final Atom factWithVariableTerms = Expressions.makeAtom("q", Expressions.makeConstant("d"),
+		final PositiveLiteral factWithVariableTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeVariable("x"));
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
@@ -78,7 +78,7 @@ public class LoadDataFromMemoryTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void addFactsWithBlankTerms() throws ReasonerStateException {
-		final Atom factWithBlankTerms = Expressions.makeAtom("q", Expressions.makeConstant("d"), new BlankImpl("b"));
+		final PositiveLiteral factWithBlankTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"), new BlankImpl("b"));
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(factWithBlankTerms);

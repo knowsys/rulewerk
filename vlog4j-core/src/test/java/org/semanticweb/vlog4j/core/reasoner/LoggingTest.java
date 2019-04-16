@@ -31,8 +31,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -46,12 +46,12 @@ public class LoggingTest {
 
 	private static final Variable vx = Expressions.makeVariable("x");
 	// p(?x) -> q(?x)
-	private static final Atom ruleHeadQx = Expressions.makeAtom("q", vx);
-	private static final Atom ruleBodyPx = Expressions.makeAtom("p", vx);
+	private static final PositiveLiteral ruleHeadQx = Expressions.makePositiveLiteral("q", vx);
+	private static final PositiveLiteral ruleBodyPx = Expressions.makePositiveLiteral("p", vx);
 	private static final Rule rule = Expressions.makeRule(ruleHeadQx, ruleBodyPx);
 
 	private static final Constant constantC = Expressions.makeConstant("c");
-	private static final Atom factPc = Expressions.makeAtom("p", constantC);
+	private static final PositiveLiteral factPc = Expressions.makePositiveLiteral("p", constantC);
 
 	// TODO remaining tests: change log file
 	// TODO remaining tests: test that the log level and the log files can be set

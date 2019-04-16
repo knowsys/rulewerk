@@ -32,21 +32,22 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Blank;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 /**
- * Class for converting RDF {@link Model}s to {@link Atom} sets. Converts each
- * {@code <subject, predicate, object>} triple statement of the given
- * {@code rdfModel} into an {@link Atom} of the form
+ * Class for converting RDF {@link Model}s to {@link PositiveLiteral} sets.
+ * Converts each {@code <subject, predicate, object>} triple statement of the
+ * given {@code rdfModel} into an {@link PositiveLiteral} of the form
  * {@code TRIPLE(subject, predicate, object)}. The ternary predicate used for
- * all atoms generated from RDF triples is
- * {@link RdfModelToAtomsConverter#RDF_TRIPLE_PREDICATE}. Subject, predicate and
- * object {@link Value}s are converted to corresponding {@link Term}s:
+ * all literals generated from RDF triples is
+ * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}. Subject,
+ * predicate and object {@link Value}s are converted to corresponding
+ * {@link Term}s:
  * <ul>
  * <li>{@link URI}s are converted to {@link Constant}s with the escaped URI
  * String as name.</li>
@@ -61,49 +62,49 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  * @author Irina Dragoste
  *
  */
-public final class RdfModelToAtomsConverter {
+public final class RdfModelConverter {
 
 	/**
-	 * The name of the ternary predicate of atoms generated from RDF triples:
+	 * The name of the ternary predicate of literals generated from RDF triples:
 	 * "TRIPLE".
 	 */
 	public static final String RDF_TRIPLE_PREDICATE_NAME = "TRIPLE";
 
 	/**
-	 * The ternary predicate of atoms generated from RDF triples. It has
+	 * The ternary predicate of literals generated from RDF triples. It has
 	 * {@code name}({@link Predicate#getName()}) "TRIPLE" and
 	 * {@code arity}({@link Predicate#getArity()}) 3.
 	 */
 	public static final Predicate RDF_TRIPLE_PREDICATE = Expressions.makePredicate(RDF_TRIPLE_PREDICATE_NAME, 3);
 
-	private RdfModelToAtomsConverter() {
+	private RdfModelConverter() {
 	}
 
 	/**
 	 * Converts each {@code <subject, predicate, object>} triple statement of the
-	 * given {@code rdfModel} into an {@link Atom} of the form
+	 * given {@code rdfModel} into a {@link PositiveLiteral} of the form
 	 * {@code TRIPLE(subject, predicate, object)}. See
-	 * {@link RdfModelToAtomsConverter#RDF_TRIPLE_PREDICATE}, the ternary predicate
-	 * used for all atoms generated from RDF triples.
+	 * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}, the ternary
+	 * predicate used for all literals generated from RDF triples.
 	 *
-	 * @param rdfModel
-	 *            a {@link Model} of an RDF document, containing triple statements
-	 *            that will be converter to facts.
-	 * @return a set of atoms corresponding to the statements of given
+	 * @param rdfModel a {@link Model} of an RDF document, containing triple
+	 *                 statements that will be converter to facts.
+	 * @return a set of literals corresponding to the statements of given
 	 *         {@code rdfModel}.
 	 */
-	public static Set<Atom> rdfModelToAtoms(final Model rdfModel) {
-		return rdfModel.stream().map(RdfModelToAtomsConverter::rdfStatementToAtom).collect(Collectors.toSet());
+	public static Set<PositiveLiteral> rdfModelToPositiveLiterals(final Model rdfModel) {
+		return rdfModel.stream().map(RdfModelConverter::rdfStatementToPositiveLiteral)
+				.collect(Collectors.toSet());
 	}
 
-	static Atom rdfStatementToAtom(final Statement statement) {
+	static PositiveLiteral rdfStatementToPositiveLiteral(final Statement statement) {
 		final Resource subject = statement.getSubject();
 
 		final URI predicate = statement.getPredicate();
 
 		final Value object = statement.getObject();
 
-		return Expressions.makeAtom(RDF_TRIPLE_PREDICATE, rdfValueToTerm(subject), rdfValueToTerm(predicate),
+		return Expressions.makePositiveLiteral(RDF_TRIPLE_PREDICATE, rdfValueToTerm(subject), rdfValueToTerm(predicate),
 				rdfValueToTerm(object));
 	}
 
