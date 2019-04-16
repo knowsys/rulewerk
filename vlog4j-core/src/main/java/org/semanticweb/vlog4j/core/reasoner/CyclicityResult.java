@@ -20,9 +20,30 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 
-//TODO javadoc
+/**
+ * Enumeration for the cyclicity property of a set of rules and predicates. The
+ * cyclicity property determines whether the Restricted Chase
+ * ({@link Algorithm#RESTRICTED_CHASE}) is guaranteed to terminate for given
+ * rules and any set of facts over given EDB predicates.
+ *
+ * @author Irina Dragoste
+ *
+ */
 public enum CyclicityResult {
+	/**
+	 * Reasoning with restricted chase algorithm
+	 * ({@link Algorithm#RESTRICTED_CHASE}) is guaranteed to terminate for given set
+	 * of rules and any facts over given EDB predicates.
+	 */
 	CYCLIC,
-	ACYCLIC, 
+	/**
+	 * There exists a set of facts over given EDB predicates for which reasoning
+	 * with restricted chase algorithm ({@link Algorithm#RESTRICTED_CHASE})
+	 * guaranteed to not terminate for given set of rules.
+	 */
+	ACYCLIC,
+	/**
+	 * (A)cyclicity cannot be determined.
+	 */
 	UNDETERMINED
 }
