@@ -20,7 +20,6 @@ package org.semanticweb.vlog4j.examples;
  * #L%
  */
 
-
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.IOException;
@@ -28,6 +27,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -51,11 +54,40 @@ public final class ExamplesUtils {
 	}
 
 	/**
-	 * Prints out the {@code reasoner} answer's to given query ({@code queryAtom}).
+	 * Defines how messages should be logged. This method can be modified to
+	 * restrict the logging messages that are shown on the console or to change
+	 * their formatting. See the documentation of Log4J for details on how to do
+	 * this.
+	 * 
+	 * Note: The VLog C++ backend performs its own logging. The log-level for this
+	 * can be configured using
+	 * {@link Reasoner#setLogLevel(org.semanticweb.vlog4j.core.reasoner.LogLevel)}.
+	 * It is also possible to specify a separate log file for this part of the logs.
+	 */
+	public static void configureLogging() {
+		// Create the appender that will write log messages to the console.
+		ConsoleAppender consoleAppender = new ConsoleAppender();
+		// Define the pattern of log messages.
+		// Insert the string "%c{1}:%L" to also show class name and line.
+		String pattern = "%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n";
+		consoleAppender.setLayout(new PatternLayout(pattern));
+		// Change to Level.ERROR for fewer messages:
+		consoleAppender.setThreshold(Level.INFO);
+
+		consoleAppender.activateOptions();
+		Logger.getRootLogger().addAppender(consoleAppender);
+	}
+
+	/**
+	 * Prints out the answers given by {@code reasoner} to the query
+	 * ({@code queryAtom}).
 	 *
-	 * @param queryAtom query to be answered
-	 * @param reasoner  reasoner to query on
-	 * @throws ReasonerStateException in case the reasoner has not yet been loaded.
+	 * @param queryAtom
+	 *            query to be answered
+	 * @param reasoner
+	 *            reasoner to query on
+	 * @throws ReasonerStateException
+	 *             in case the reasoner has not yet been loaded.
 	 */
 	public static void printOutQueryAnswers(final PositiveLiteral queryAtom, final Reasoner reasoner)
 			throws ReasonerStateException {
@@ -67,9 +99,13 @@ public final class ExamplesUtils {
 	}
 
 	/**
-	 * Returns the size of an Iterator
+	 * Returns the size of an iterator.
 	 *
-	 * @param Iterator<T> to iterate over
+	 * @FIXME This is an inefficient way of counting results. It should be done at a
+	 *        lower level instead
+	 * @param Iterator<T>
+	 *            to iterate over
+	 * @return number of elements in iterator
 	 */
 	public static <T> int iteratorSize(Iterator<T> iterator) {
 		int size = 0;
@@ -81,8 +117,10 @@ public final class ExamplesUtils {
 	/**
 	 * Creates an Atom with @numberOfVariables distinct variables
 	 *
-	 * @param predicateName for the new predicate
-	 * @param arity     number of variables
+	 * @param predicateName
+	 *            for the new predicate
+	 * @param arity
+	 *            number of variables
 	 */
 	private static PositiveLiteral makeQueryAtom(String predicateName, int arity) {
 		final List<Term> vars = new ArrayList<>();
@@ -94,9 +132,12 @@ public final class ExamplesUtils {
 	/**
 	 * Exports the extension of the Atom with name @predicateName
 	 *
-	 * @param reasoner reasoner to query on
-	 * @param atomName atom's name
-	 * @param arity    atom's arity
+	 * @param reasoner
+	 *            reasoner to query on
+	 * @param atomName
+	 *            atom's name
+	 * @param arity
+	 *            atom's arity
 	 */
 	public static void exportQueryAnswersToCSV(Reasoner reasoner, String atomName, int arity)
 			throws ReasonerStateException, IOException {

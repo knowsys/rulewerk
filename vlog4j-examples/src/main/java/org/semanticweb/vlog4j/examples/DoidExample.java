@@ -59,6 +59,8 @@ public class DoidExample {
 	public static void main(final String[] args)
 			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 
+		ExamplesUtils.configureLogging();
+
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
