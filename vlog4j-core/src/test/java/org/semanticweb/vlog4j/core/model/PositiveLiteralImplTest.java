@@ -40,7 +40,7 @@ import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 public class PositiveLiteralImplTest {
 	
 	//FIXME add also test class for negative literals
-	// move general methods for test class for AbstractLiteral
+	// move general methods for test class for AbstractLiteralImpl
 
 	@Test
 	public void testGetters() {
