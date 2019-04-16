@@ -65,16 +65,16 @@ public class DoidExample {
 		final Variable x = makeVariable("x");
 		final Variable y = makeVariable("y");
 		final Variable z = makeVariable("z");
-		final NegativeLiteral neg_hasDoid = Expressions.makeNegativeLiteral("hasDoid", y);
-		final NegativeLiteral neg_cancerDisease = Expressions.makeNegativeLiteral("cancerDisease", z);
+		final NegativeLiteral hasNotDoid = Expressions.makeNegativeLiteral("hasDoid", y);
+		final NegativeLiteral notCancerDisease = Expressions.makeNegativeLiteral("cancerDisease", z);
 		final PositiveLiteral diseaseId = Expressions.makePositiveLiteral("diseaseId", y, z);
 		final PositiveLiteral deathCause = Expressions.makePositiveLiteral("deathCause", x, y);
 		final PositiveLiteral humansWhoDiedOfCancer = Expressions.makePositiveLiteral("humansWhoDiedOfCancer", x);
 		final PositiveLiteral humansWhoDiedOfNoncancer = Expressions.makePositiveLiteral("humansWhoDiedOfNoncancer", x);
 		final Rule rule1 = Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
-				Expressions.makeConjunction(deathCause, diseaseId, neg_cancerDisease));
+				Expressions.makeConjunction(deathCause, diseaseId, notCancerDisease));
 		final Rule rule2 = Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
-				Expressions.makeConjunction(deathCause, neg_hasDoid));
+				Expressions.makeConjunction(deathCause, hasNotDoid));
 
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
 
