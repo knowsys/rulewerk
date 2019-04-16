@@ -29,7 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -47,18 +47,19 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
 
 public class DoidExample {
 
-	public static void saveData(Reasoner reasoner, String predicateName, int numberOfVariables)
+	public static void saveData(final Reasoner reasoner, final String predicateName, final int numberOfVariables)
 			throws ReasonerStateException, IOException {
 		final List<Term> vars = new ArrayList<>();
-		for (int i = 0; i < numberOfVariables; i++)
+		for (int i = 0; i < numberOfVariables; i++) {
 			vars.add(makeVariable("x" + i));
+		}
 		final Predicate predicate = Expressions.makePredicate(predicateName, numberOfVariables);
-		final Atom atom = Expressions.makeAtom(predicate, vars);
-		String path = ExamplesUtils.OUTPUT_FOLDER + predicateName + ".csv";
+		final PositiveLiteral atom = Expressions.makePositiveLiteral(predicate, vars);
+		final String path = ExamplesUtils.OUTPUT_FOLDER + predicateName + ".csv";
 		reasoner.exportQueryAnswersToCsv(atom, path, true);
 	}
 
-	public static void main(String[] args)
+	public static void main(final String[] args)
 			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 
 		/* Configure data sources */
@@ -72,9 +73,10 @@ public class DoidExample {
 
 		final String sparqlRecentDeaths = "?human wdt:P31 wd:Q5; wdt:P570 ?dateofdeath . \n"
 				+ "FILTER (YEAR(?dateofdeath) = 2018)";
-				//+ "FILTER (?dateofdeath > \"2018-01-01\"^^xsd:dateTime && ?dateofdeath < \"2019-01-01\"^^xsd:dateTime)";
-		final DataSource recentDeathsDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-				"human", sparqlRecentDeaths);
+		// + "FILTER (?dateofdeath > \"2018-01-01\"^^xsd:dateTime && ?dateofdeath <
+		// \"2019-01-01\"^^xsd:dateTime)";
+		final DataSource recentDeathsDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint, "human",
+				sparqlRecentDeaths);
 
 		final String sparqlRecentDeathsCause = sparqlRecentDeaths + "?human wdt:P509 ?causeOfDeath . ";
 		final DataSource recentDeathsCauseDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
@@ -90,7 +92,7 @@ public class DoidExample {
 
 			final Predicate diseaseIdPredicate = Expressions.makePredicate("diseaseId", 2);
 			reasoner.addFactsFromDataSource(diseaseIdPredicate, diseasesDataSource);
-			final Predicate recentDeathsPredicate = Expressions.makePredicate("recentDeaths",1);
+			final Predicate recentDeathsPredicate = Expressions.makePredicate("recentDeaths", 1);
 			reasoner.addFactsFromDataSource(recentDeathsPredicate, recentDeathsDataSource);
 			final Predicate recentDeathsCausePredicate = Expressions.makePredicate("recentDeathsCause", 2);
 			reasoner.addFactsFromDataSource(recentDeathsCausePredicate, recentDeathsCauseDataSource);
@@ -125,7 +127,7 @@ public class DoidExample {
 //						.add(GraalToVLog4JModelConverter.convertQuery(queryUniqueId, conjunctiveQuery));
 //			}
 
-			List<org.semanticweb.vlog4j.core.model.api.Rule> vlogRules = GraalToVLog4JModelConverter
+			final List<org.semanticweb.vlog4j.core.model.api.Rule> vlogRules = GraalToVLog4JModelConverter
 					.convertRules(graalRules);
 			reasoner.addRules(vlogRules);
 
