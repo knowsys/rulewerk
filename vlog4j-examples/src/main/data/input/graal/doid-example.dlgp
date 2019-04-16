@@ -16,11 +16,5 @@ diseaseHierarchy(X,Y) :- doidTriple(X,<http://www.w3.org/2000/01/rdf-schema#subC
 diseaseHierarchy(X,Z) :- diseaseHierarchy(X,Y), doidTriple(Y,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,Z).
 
 cancerDisease(Xdoid) :- diseaseHierarchy(X,Y), doid(Y, "DOID:162"), doid(X, Xdoid).
-% nonCancerDisease(Xdoid) :- doid(X, Xdoid), neg_cancerDisease(Xdoid) .
 
 humansWhoDiedOfCancer(X) :- deathCause(X,Y), diseaseId(Y,Z), cancerDisease(Z).
-humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), diseaseId(Y,Z),  neg_cancerDisease(Z).
-humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), neg_hasDoid(Y) .
-
-@queries
-?(X, Y) :- deathCause(X, Y).

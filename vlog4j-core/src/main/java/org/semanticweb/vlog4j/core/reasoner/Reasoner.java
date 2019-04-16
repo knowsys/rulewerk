@@ -228,6 +228,14 @@ public interface Reasoner extends AutoCloseable {
 	void addRules(@NonNull List<Rule> rules) throws ReasonerStateException;
 
 	/**
+	 * Get the list of all rules that have been added to the reasoner. The list is
+	 * read-only and cannot be modified to add or delete rules.
+	 * 
+	 * @return list of {@link Rule}
+	 */
+	List<Rule> getRules();
+
+	/**
 	 * Adds non-null facts to the reasoner <b>knowledge base</b>. A <b>fact</b> is a
 	 * {@link PositiveLiteral} with all terms ({@link PositiveLiteral#getTerms()})
 	 * of type {@link TermType#CONSTANT}. <br>

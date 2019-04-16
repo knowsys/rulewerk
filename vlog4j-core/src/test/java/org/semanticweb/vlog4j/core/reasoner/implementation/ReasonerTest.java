@@ -45,8 +45,23 @@ import karmaresearch.vlog.EDBConfigurationException;
 
 public class ReasonerTest {
 
+	final String constantNameC = "c";
+	final String constantNameD = "d";
+
+	final Constant constantC = Expressions.makeConstant(constantNameC);
+	final Constant constantD = Expressions.makeConstant(constantNameD);
+	final Variable x = Expressions.makeVariable("x");
+	final PositiveLiteral factAc = Expressions.makePositiveLiteral("A", constantC);
+	final PositiveLiteral factAd = Expressions.makePositiveLiteral("A", constantD);
+	final PositiveLiteral atomAx = Expressions.makePositiveLiteral("A", x);
+	final PositiveLiteral atomBx = Expressions.makePositiveLiteral("B", x);
+	final PositiveLiteral atomCx = Expressions.makePositiveLiteral("C", x);
+	final Rule ruleBxAx = Expressions.makeRule(atomBx, atomAx);
+	final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
+
 	@Test
-	public void testCloseRepeatedly() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void testCloseRepeatedly()
+			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.close();
 		}
@@ -59,21 +74,18 @@ public class ReasonerTest {
 	}
 
 	@Test
-	public void testSimpleInference()
-			throws EDBConfigurationException, IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final String constantNameC = "c";
-		final String constantNameD = "d";
+	public void testLoadRules()
+			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addRules(ruleBxAx, ruleCxBx);
+			reasoner.addRules(ruleBxAx);
+			assertEquals(reasoner.getRules(), Arrays.asList(ruleBxAx, ruleCxBx, ruleBxAx));
+		}
+	}
 
-		final Constant constantC = Expressions.makeConstant(constantNameC);
-		final Constant constantD = Expressions.makeConstant(constantNameD);
-		final Variable x = Expressions.makeVariable("x");
-		final PositiveLiteral factAc = Expressions.makePositiveLiteral("A", constantC);
-		final PositiveLiteral factAd = Expressions.makePositiveLiteral("A", constantD);
-		final PositiveLiteral atomAx = Expressions.makePositiveLiteral("A", x);
-		final PositiveLiteral atomBx = Expressions.makePositiveLiteral("B", x);
-		final PositiveLiteral atomCx = Expressions.makePositiveLiteral("C", x);
-		final Rule ruleBxAx = Expressions.makeRule(atomBx, atomAx);
-		final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
+	@Test
+	public void testSimpleInference() throws EDBConfigurationException, IOException, ReasonerStateException,
+			EdbIdbSeparationException, IncompatiblePredicateArityException {
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(factAc, factAd);
@@ -86,12 +98,13 @@ public class ReasonerTest {
 			reasoner.reason();
 
 			final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx, true);
-			final Set<List<Term>> actualResults = QueryResultsUtils.collectQueryResults(cxQueryResultEnumAfterReasoning);
+			final Set<List<Term>> actualResults = QueryResultsUtils
+					.collectQueryResults(cxQueryResultEnumAfterReasoning);
 
 			final Set<List<Constant>> expectedResults = new HashSet<>(
 					Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));
-			assertEquals(expectedResults, actualResults);
 
+			assertEquals(expectedResults, actualResults);
 		}
 	}
 
