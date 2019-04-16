@@ -44,7 +44,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import karmaresearch.vlog.EDBConfigurationException;
 
 public class ReasonerTest {
-	
+
 	final String constantNameC = "c";
 	final String constantNameD = "d";
 
@@ -60,7 +60,8 @@ public class ReasonerTest {
 	final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
 
 	@Test
-	public void testCloseRepeatedly() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void testCloseRepeatedly()
+			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.close();
 		}
@@ -71,19 +72,20 @@ public class ReasonerTest {
 			reasoner.close();
 		}
 	}
-	
+
 	@Test
-	public void testLoadRules() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void testLoadRules()
+			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addRules(ruleBxAx, ruleCxBx);
-			assertEquals(new HashSet<Rule>(reasoner.getRules()), new HashSet<>(Arrays.asList(ruleBxAx, ruleCxBx)));
+			reasoner.addRules(ruleBxAx);
+			assertEquals(reasoner.getRules(), Arrays.asList(ruleBxAx, ruleCxBx, ruleBxAx));
 		}
 	}
 
 	@Test
-	public void testSimpleInference()
-			throws EDBConfigurationException, IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-
+	public void testSimpleInference() throws EDBConfigurationException, IOException, ReasonerStateException,
+			EdbIdbSeparationException, IncompatiblePredicateArityException {
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(factAc, factAd);
@@ -96,7 +98,8 @@ public class ReasonerTest {
 			reasoner.reason();
 
 			final QueryResultIterator cxQueryResultEnumAfterReasoning = reasoner.answerQuery(atomCx, true);
-			final Set<List<Term>> actualResults = QueryResultsUtils.collectQueryResults(cxQueryResultEnumAfterReasoning);
+			final Set<List<Term>> actualResults = QueryResultsUtils
+					.collectQueryResults(cxQueryResultEnumAfterReasoning);
 
 			final Set<List<Constant>> expectedResults = new HashSet<>(
 					Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));
