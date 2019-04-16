@@ -332,12 +332,12 @@ public interface Reasoner extends AutoCloseable {
 	CyclicityResult checkForCycles() throws ReasonerStateException, NotStartedException;
 
 	/**
-	 * Check the Joint-Acyclicity property of loaded rules and  EDB predicates of loaded facts. 
+	 * Check the <b>Joint Acyclicity (JA)</b> property of loaded rules and  EDB predicates of loaded facts. 
 	 * If a set of rules and EDB predicates is JA, then, for the given set of
 	 *         rules and any facts over the given EDB predicates, reasoning by {@link Algorithm#SKOLEM_CHASE Skolem
 	 *         chase} (and, implicitly, the {@link Algorithm#RESTRICTED_CHASE Restricted
 	 *         chase}) will always terminate
-	 * @return {@code true}, if the loaded set of rules is Joint-Acyclic with respect to the
+	 * @return {@code true}, if the loaded set of rules is Joint Acyclic with respect to the
 	 *         EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
 	 * @throws ReasonerStateException
@@ -346,11 +346,11 @@ public interface Reasoner extends AutoCloseable {
 	boolean isJA() throws ReasonerStateException, NotStartedException;
 
 	/**
-	 * Check the Restricted Joint-Acyclicity property of loaded rules and  EDB predicates of loaded facts. 
+	 * Check the <b>Restricted Joint Acyclicity (RJA)</b> property of loaded rules and  EDB predicates of loaded facts. 
 	 * If a set of rules and EDB predicates is RJA, then, for the given set of
 	 *         rules and any facts over the given EDB predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE Restricted
 	 *         chase} will always terminate
-	 * @return {@code true}, if the loaded set of rules is Restricted Joint-Acyclic with respect to the
+	 * @return {@code true}, if the loaded set of rules is Restricted Joint Acyclic with respect to the
 	 *         EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
 	 * @throws ReasonerStateException
@@ -359,12 +359,12 @@ public interface Reasoner extends AutoCloseable {
 	boolean isRJA() throws ReasonerStateException, NotStartedException;
 
 	/**
-	 * Check the Joint-Acyclicity property of loaded rules and  EDB predicates of loaded facts. 
-	 * If a set of rules and EDB predicates is JA, then, for the given set of
+	 * Check the <b>Model-Faithful Acyclicity (MFA)</b> property of loaded rules and  EDB predicates of loaded facts. 
+	 * If a set of rules and EDB predicates is MFA, then, for the given set of
 	 *         rules and any facts over the given EDB predicates, reasoning by {@link Algorithm#SKOLEM_CHASE Skolem
 	 *         chase} (and, implicitly, the {@link Algorithm#RESTRICTED_CHASE Restricted
 	 *         chase}) will always terminate
-	 * @return {@code true}, if the loaded set of rules is Joint-Acyclic with respect to the
+	 * @return {@code true}, if the loaded set of rules is Model-Faithful Acyclic with respect to the
 	 *         EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
 	 * @throws ReasonerStateException
@@ -372,6 +372,17 @@ public interface Reasoner extends AutoCloseable {
 	 */
 	boolean isMFA() throws ReasonerStateException, NotStartedException;
 
+	/**
+	 * Check the <b>Restricted Model-Faithful Acyclicity (RMFA)</b> property of loaded rules and  EDB predicates of loaded facts. 
+	 * If a set of rules and EDB predicates is RMFA, then, for the given set of
+	 *         rules and any facts over the given EDB predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE Restricted
+	 *         chase} will always terminate
+	 * @return {@code true}, if the loaded set of rules is Restricted Model-Faithful Acyclic with respect to the
+	 *         EDB predicates of loaded facts.<br>
+	 *         {@code false}, otherwise
+	 * @throws ReasonerStateException
+	 * @throws NotStartedException
+	 */
 	boolean isRMFA() throws ReasonerStateException, NotStartedException;
 
 	boolean isMFC() throws ReasonerStateException, NotStartedException;
