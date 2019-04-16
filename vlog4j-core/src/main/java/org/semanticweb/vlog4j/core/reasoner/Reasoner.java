@@ -338,7 +338,9 @@ public interface Reasoner extends AutoCloseable {
 			throws IOException, EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException;
 
 	/**
-	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic, Cyclic, or cyclicity cannot be determined.
+	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic,
+	 * Cyclic, or cyclicity cannot be determined.
+	 * 
 	 * @return
 	 * @throws ReasonerStateException
 	 * @throws NotStartedException
