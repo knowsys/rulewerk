@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -54,12 +54,12 @@ public class ReasonerStateTest {
 	private static final Variable x = Expressions.makeVariable("x");
 	private static final Constant c = Expressions.makeConstant("c");
 	// private static final Constant d = Expressions.makeConstant("d");
-	private static final Atom exampleQueryAtom = Expressions.makeAtom("q", x);
+	private static final PositiveLiteral exampleQueryAtom = Expressions.makePositiveLiteral("q", x);
 
-	private static final Atom ruleHeadQx = Expressions.makeAtom(q, x);
-	private static final Atom ruleBodyPx = Expressions.makeAtom(p, x);
+	private static final PositiveLiteral ruleHeadQx = Expressions.makePositiveLiteral(q, x);
+	private static final PositiveLiteral ruleBodyPx = Expressions.makePositiveLiteral(p, x);
 	private static final Rule ruleQxPx = Expressions.makeRule(ruleHeadQx, ruleBodyPx);
-	private static final Atom factPc = Expressions.makeAtom(p, c);
+	private static final PositiveLiteral factPc = Expressions.makePositiveLiteral(p, c);
 	// private static final Atom factPd = Expressions.makeAtom(q, d);
 
 	@Test(expected = NullPointerException.class)
@@ -114,7 +114,7 @@ public class ReasonerStateTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddFacts2() throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 		try (final Reasoner reasoner = Reasoner.getInstance();) {
-			final List<Atom> facts = new ArrayList<>();
+			final List<PositiveLiteral> facts = new ArrayList<>();
 			facts.add(factPc);
 			facts.add(null);
 			reasoner.addFacts(facts);
@@ -224,7 +224,7 @@ public class ReasonerStateTest {
 			assertFalse(queryResultIteratorPx.hasNext());
 		}
 		try (final QueryResultIterator queryResultIteratorRx = reasoner
-				.answerQuery(Expressions.makeAtom(predicateR1, x), true)) {
+				.answerQuery(Expressions.makePositiveLiteral(predicateR1, x), true)) {
 			assertTrue(queryResultIteratorRx.hasNext());
 			assertEquals(Arrays.asList(Expressions.makeConstant("d")), queryResultIteratorRx.next().getTerms());
 			assertFalse(queryResultIteratorRx.hasNext());

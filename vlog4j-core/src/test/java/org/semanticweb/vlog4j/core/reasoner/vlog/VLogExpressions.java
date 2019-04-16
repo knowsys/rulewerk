@@ -36,8 +36,7 @@ final class VLogExpressions {
 	 * Creates a {@link karmaresearch.vlog.Term} object with given name and type
 	 * {@link karmaresearch.vlog.Term.TermType#VARIABLE}
 	 * 
-	 * @param name
-	 *            term name
+	 * @param name term name
 	 * @return a {@link karmaresearch.vlog.Term.TermType#VARIABLE} type term with
 	 *         given name.
 	 */
@@ -51,8 +50,7 @@ final class VLogExpressions {
 	 * Creates a {@link karmaresearch.vlog.Term} object with given name and type
 	 * {@link karmaresearch.vlog.Term.TermType#CONSTANT}
 	 * 
-	 * @param name
-	 *            term name
+	 * @param name term name
 	 * @return a {@link karmaresearch.vlog.Term.TermType#CONSTANT} type term with
 	 *         given name.
 	 */
@@ -63,13 +61,11 @@ final class VLogExpressions {
 	}
 
 	/**
-	 * Creates an {@link karmaresearch.vlog.Atom} object with given predicate name
-	 * and terms.
+	 * Creates a positive {@link karmaresearch.vlog.Atom} object with given
+	 * predicate name and terms.
 	 * 
-	 * @param predicateName
-	 *            the name of the internal vlog atom predicate.
-	 * @param terms
-	 *            atom terms.
+	 * @param predicateName the name of the internal vlog atom predicate.
+	 * @param terms         atom terms.
 	 * @return an {@link karmaresearch.vlog.Atom} object with given
 	 *         {@code predicateName} and {@link karmaresearch.vlog.Term}
 	 *         {@code terms}.
@@ -79,13 +75,25 @@ final class VLogExpressions {
 	}
 
 	/**
+	 * Creates a negated {@link karmaresearch.vlog.Atom} object with given predicate
+	 * name and terms, and negated value {@code true}.
+	 * 
+	 * @param predicateName the name of the internal vlog atom predicate.
+	 * @param terms         atom terms.
+	 * @return an {@link karmaresearch.vlog.Atom} object with given
+	 *         {@code predicateName} and {@link karmaresearch.vlog.Term}
+	 *         {@code terms}.
+	 */
+	static karmaresearch.vlog.Atom makeNegatedAtom(final String predicateName, final karmaresearch.vlog.Term... terms) {
+		return new karmaresearch.vlog.Atom(predicateName, true, terms);
+	}
+
+	/**
 	 * Creates a {@link karmaresearch.vlog.Rule} object with given head and body
 	 * conjuncts.
 	 * 
-	 * @param headAtom
-	 *            rule head atom
-	 * @param bodyAtoms
-	 *            rule body conjuncts
+	 * @param headAtom  rule head atom
+	 * @param bodyAtoms rule body conjuncts
 	 * @return a {@link karmaresearch.vlog.Rule} object with given {@code headAtom}
 	 *         and body conjuncts ({@code bodyAtoms}).
 	 */

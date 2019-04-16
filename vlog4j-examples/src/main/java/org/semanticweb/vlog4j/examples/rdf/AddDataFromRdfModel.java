@@ -38,8 +38,8 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -50,19 +50,19 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArit
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
-import org.semanticweb.vlog4j.rdf.RdfModelToAtomsConverter;
+import org.semanticweb.vlog4j.rdf.RdfModelConverter;
 
 /**
  * This example shows how <b>vlog4j-rdf</b> library's utility class
- * {@link RdfModelToAtomsConverter} can be used to convert RDF {@link Model}s
- * from various types of RDF resources to <b>vlog4j-core</b> {@code Atom} sets.
- *  
+ * {@link RdfModelConverter} can be used to convert RDF {@link Model}s from
+ * various types of RDF resources to <b>vlog4j-core</b> {@code Atom} sets.
+ * 
  * @author Irina Dragoste
  *
  */
 public class AddDataFromRdfModel {
 
-	public static void main(String[] args) throws IOException, RDFParseException, RDFHandlerException,
+	public static void main(final String[] args) throws IOException, RDFParseException, RDFHandlerException,
 			URISyntaxException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 
 		/*
@@ -79,7 +79,7 @@ public class AddDataFromRdfModel {
 		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
-		final Set<Atom> tripleFactsISWC2016 = RdfModelToAtomsConverter.rdfModelToAtoms(rdfModelISWC2016);
+		final Set<PositiveLiteral> tripleFactsISWC2016 = RdfModelConverter.rdfModelToPositiveLiterals(rdfModelISWC2016);
 		System.out.println("Example triple fact from iswc-2016");
 		System.out.println(" - " + tripleFactsISWC2016.iterator().next());
 
@@ -98,7 +98,7 @@ public class AddDataFromRdfModel {
 		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
-		final Set<Atom> tripleFactsISWC2017 = RdfModelToAtomsConverter.rdfModelToAtoms(rdfModelISWC2017);
+		final Set<PositiveLiteral> tripleFactsISWC2017 = RdfModelConverter.rdfModelToPositiveLiterals(rdfModelISWC2017);
 		System.out.println("Example triple fact from iswc-2017");
 		System.out.println(" - " + tripleFactsISWC2017.iterator().next());
 
@@ -122,25 +122,25 @@ public class AddDataFromRdfModel {
 		final Variable varAfiliation = Expressions.makeVariable("affiliation");
 
 		/* Patterns for facts extracted from RDF triples. */
-		final Atom personHasAffiliation = Expressions.makeAtom(RdfModelToAtomsConverter.RDF_TRIPLE_PREDICATE, varPerson,
-				constHasAffiiation, varAfiliation);
-		final Atom affiliationWithOrganization = Expressions.makeAtom(RdfModelToAtomsConverter.RDF_TRIPLE_PREDICATE,
-				varAfiliation, constWithOrganization, varOganization);
-		final Atom organizationHasName = Expressions.makeAtom(RdfModelToAtomsConverter.RDF_TRIPLE_PREDICATE,
-				varOganization, constName, varOganizationName);
+		final PositiveLiteral personHasAffiliation = Expressions.makePositiveLiteral(
+				RdfModelConverter.RDF_TRIPLE_PREDICATE, varPerson, constHasAffiiation, varAfiliation);
+		final PositiveLiteral affiliationWithOrganization = Expressions.makePositiveLiteral(
+				RdfModelConverter.RDF_TRIPLE_PREDICATE, varAfiliation, constWithOrganization, varOganization);
+		final PositiveLiteral organizationHasName = Expressions.makePositiveLiteral(
+				RdfModelConverter.RDF_TRIPLE_PREDICATE, varOganization, constName, varOganizationName);
 
 		/*
 		 * We create a Rule that retrieves pairs of persons and their organization name,
 		 * from facts extracted from RDF triples.
 		 */
 		final Predicate predicateHasOrganizationName = Expressions.makePredicate("hasOrganizationName", 2);
-		final Atom creatorOrganizationName = Expressions.makeAtom(predicateHasOrganizationName, varPerson,
-				varOganizationName);
+		final PositiveLiteral creatorOrganizationName = Expressions.makePositiveLiteral(predicateHasOrganizationName,
+				varPerson, varOganizationName);
 
 		/*
-		 * hasOrganizationName(?person, ?organizationName) :- TRIPLE(?person, <hasAffiliation>, ?affiliation), 
-		 * 													  TRIPLE(?affiliation, <withOrganisation>, ?organization),
-		 * 												      TRIPLE(?organization, <name>, ?organizationName) .
+		 * hasOrganizationName(?person, ?organizationName) :- TRIPLE(?person,
+		 * <hasAffiliation>, ?affiliation), TRIPLE(?affiliation, <withOrganisation>,
+		 * ?organization), TRIPLE(?organization, <name>, ?organizationName) .
 		 */
 		final Rule organizationRule = Expressions.makeRule(creatorOrganizationName, personHasAffiliation,
 				affiliationWithOrganization, organizationHasName);
@@ -163,10 +163,10 @@ public class AddDataFromRdfModel {
 
 			/* We query for persons whose organization name is "TU Dresden" . */
 			final Constant constantTuDresdenOrganization = Expressions.makeConstant("\"TU Dresden\"");
-			/*  hasOrganizationName(?person, "TU Dresden") */
+			/* hasOrganizationName(?person, "TU Dresden") */
 			@NonNull
-			final Atom queryTUDresdenParticipantsAtISWC = Expressions.makeAtom(predicateHasOrganizationName, varPerson,
-					constantTuDresdenOrganization);
+			final PositiveLiteral queryTUDresdenParticipantsAtISWC = Expressions
+					.makePositiveLiteral(predicateHasOrganizationName, varPerson, constantTuDresdenOrganization);
 
 			System.out.println("Participants at ISWC'16 and '17 from Organization 'TU Dresden':");
 			System.out.println("( Answers to query " + queryTUDresdenParticipantsAtISWC + " )");
@@ -184,24 +184,19 @@ public class AddDataFromRdfModel {
 	 * Parses the data from the supplied InputStream, using the supplied baseURI to
 	 * resolve any relative URI references.
 	 * 
-	 * @param inputStream
-	 *            The content to be parsed, expected to be in the given
-	 *            {@code rdfFormat}.
-	 * @param baseURI
-	 *            The URI associated with the data in the InputStream.
-	 * @param rdfFormat
-	 *            The expected RDFformat of the inputStream resource that is to be
-	 *            parsed.
+	 * @param inputStream The content to be parsed, expected to be in the given
+	 *                    {@code rdfFormat}.
+	 * @param baseURI     The URI associated with the data in the InputStream.
+	 * @param rdfFormat   The expected RDFformat of the inputStream resource that is
+	 *                    to be parsed.
 	 * @return A Model containing the RDF triples. Blanks have unique ids across
 	 *         different models.
-	 * @throws IOException
-	 *             If an I/O error occurred while data was read from the
-	 *             InputStream.
-	 * @throws RDFParseException
-	 *             If the parser has found an unrecoverable parse error.
-	 * @throws RDFHandlerException
-	 *             If the configured statement handler has encountered an
-	 *             unrecoverable error.
+	 * @throws IOException         If an I/O error occurred while data was read from
+	 *                             the InputStream.
+	 * @throws RDFParseException   If the parser has found an unrecoverable parse
+	 *                             error.
+	 * @throws RDFHandlerException If the configured statement handler has
+	 *                             encountered an unrecoverable error.
 	 */
 	private static Model parseRDFResource(final InputStream inputStream, final URI baseURI, final RDFFormat rdfFormat)
 			throws IOException, RDFParseException, RDFHandlerException {

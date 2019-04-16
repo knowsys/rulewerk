@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -67,11 +67,11 @@ public class ReasonerTest {
 		final Constant constantC = Expressions.makeConstant(constantNameC);
 		final Constant constantD = Expressions.makeConstant(constantNameD);
 		final Variable x = Expressions.makeVariable("x");
-		final Atom factAc = Expressions.makeAtom("A", constantC);
-		final Atom factAd = Expressions.makeAtom("A", constantD);
-		final Atom atomAx = Expressions.makeAtom("A", x);
-		final Atom atomBx = Expressions.makeAtom("B", x);
-		final Atom atomCx = Expressions.makeAtom("C", x);
+		final PositiveLiteral factAc = Expressions.makePositiveLiteral("A", constantC);
+		final PositiveLiteral factAd = Expressions.makePositiveLiteral("A", constantD);
+		final PositiveLiteral atomAx = Expressions.makePositiveLiteral("A", x);
+		final PositiveLiteral atomBx = Expressions.makePositiveLiteral("B", x);
+		final PositiveLiteral atomCx = Expressions.makePositiveLiteral("C", x);
 		final Rule ruleBxAx = Expressions.makeRule(atomBx, atomAx);
 		final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
 

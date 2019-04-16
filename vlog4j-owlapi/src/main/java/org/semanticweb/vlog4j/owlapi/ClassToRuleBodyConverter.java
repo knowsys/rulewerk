@@ -44,11 +44,11 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
+import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 
 /**
  * Helper class for transforming OWL class expressions that occur as subclasses
- * into suitable body atoms for rules. Auxiliary rules might be created to
+ * into suitable body literals for rules. Auxiliary rules might be created to
  * capture the semantics of some constructs.
  * 
  * @author Markus Krötzsch
@@ -56,77 +56,76 @@ import org.semanticweb.vlog4j.core.model.implementation.AtomImpl;
  */
 public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter implements OWLClassExpressionVisitor {
 
-	public ClassToRuleBodyConverter(Term mainTerm, SimpleConjunction body, SimpleConjunction head,
-			OwlAxiomToRulesConverter parent) {
+	public ClassToRuleBodyConverter(final Term mainTerm, final SimpleConjunction body, final SimpleConjunction head,
+			final OwlAxiomToRulesConverter parent) {
 		super(mainTerm, body, head, parent);
 	}
 
-	public ClassToRuleBodyConverter(Term mainTerm, OwlAxiomToRulesConverter parent) {
+	public ClassToRuleBodyConverter(final Term mainTerm, final OwlAxiomToRulesConverter parent) {
 		this(mainTerm, new SimpleConjunction(), new SimpleConjunction(), parent);
 	}
 
 	@Override
-	public AbstractClassToRuleConverter makeChildConverter(Term mainTerm) {
+	public AbstractClassToRuleConverter makeChildConverter(final Term mainTerm) {
 		return new ClassToRuleBodyConverter(mainTerm, this.parent);
 	}
 
 	@Override
-	public void visit(OWLClass ce) {
+	public void visit(final OWLClass ce) {
 		if (ce.isOWLNothing()) {
 			this.body.makeFalse();
 		} else if (ce.isOWLThing()) {
 			this.body.init();
 		} else {
-			Predicate predicate = OwlToRulesConversionHelper.getClassPredicate(ce);
-			this.body.add(new AtomImpl(predicate, Arrays.asList(this.mainTerm)));
+			final Predicate predicate = OwlToRulesConversionHelper.getClassPredicate(ce);
+			this.body.add(new PositiveLiteralImpl(predicate, Arrays.asList(this.mainTerm)));
 		}
 	}
 
 	@Override
-	public void visit(OWLObjectIntersectionOf ce) {
-		handleDisjunction(ce.getOperands());
+	public void visit(final OWLObjectIntersectionOf ce) {
+		this.handleDisjunction(ce.getOperands());
 	}
 
 	@Override
-	public void visit(OWLObjectUnionOf ce) {
-		handleConjunction(ce.getOperands(), this.mainTerm);
+	public void visit(final OWLObjectUnionOf ce) {
+		this.handleConjunction(ce.getOperands(), this.mainTerm);
 	}
 
 	@Override
-	public void visit(OWLObjectComplementOf ce) {
-		ClassToRuleHeadConverter converter = new ClassToRuleHeadConverter(this.mainTerm, this.body, this.head,
+	public void visit(final OWLObjectComplementOf ce) {
+		final ClassToRuleHeadConverter converter = new ClassToRuleHeadConverter(this.mainTerm, this.body, this.head,
 				this.parent);
 		ce.getOperand().accept(converter);
 	}
 
 	@Override
-	public void visit(OWLObjectSomeValuesFrom ce) {
-		handleObjectAllValues(ce.getProperty(), ce.getFiller());
+	public void visit(final OWLObjectSomeValuesFrom ce) {
+		this.handleObjectAllValues(ce.getProperty(), ce.getFiller());
 	}
 
 	@Override
-	public void visit(OWLObjectAllValuesFrom ce) {
-		Variable variable = this.parent.getFreshVariable();
+	public void visit(final OWLObjectAllValuesFrom ce) {
+		final Variable variable = this.parent.getFreshVariable();
 		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, variable,
 				this.head);
 		if (!this.head.isFalse()) {
-			handleConjunction(Arrays.asList(ce.getFiller()), variable);
+			this.handleConjunction(Arrays.asList(ce.getFiller()), variable);
 		}
 	}
 
 	@Override
-	public void visit(OWLObjectHasValue ce) {
-		Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller());
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, term,
-				this.body);
+	public void visit(final OWLObjectHasValue ce) {
+		final Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller());
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, term, this.body);
 	}
 
 	@Override
-	public void visit(OWLObjectMinCardinality ce) {
+	public void visit(final OWLObjectMinCardinality ce) {
 		if (ce.getCardinality() == 0) {
 			this.body.init(); // tautological
 		} else if (ce.getCardinality() == 1) {
-			handleObjectAllValues(ce.getProperty(), ce.getFiller());
+			this.handleObjectAllValues(ce.getProperty(), ce.getFiller());
 		} else {
 			throw new OwlFeatureNotSupportedException(
 					"Min cardinality restrictions with values greater than 1 in subclass positions are not supported in rules.");
@@ -134,56 +133,56 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 	}
 
 	@Override
-	public void visit(OWLObjectExactCardinality ce) {
+	public void visit(final OWLObjectExactCardinality ce) {
 		throw new OwlFeatureNotSupportedException(
 				"Exact cardinality restrictions in subclass positions are not supported in rules.");
 	}
 
 	@Override
-	public void visit(OWLObjectMaxCardinality ce) {
+	public void visit(final OWLObjectMaxCardinality ce) {
 		throw new OwlFeatureNotSupportedException(
 				"Maximal cardinality restrictions in subclass positions are not supported in rules.");
 	}
 
 	@Override
-	public void visit(OWLObjectHasSelf ce) {
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm,
-				this.mainTerm, this.body);
+	public void visit(final OWLObjectHasSelf ce) {
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, this.mainTerm,
+				this.body);
 	}
 
 	@Override
-	public void visit(OWLObjectOneOf ce) {
+	public void visit(final OWLObjectOneOf ce) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void visit(OWLDataSomeValuesFrom ce) {
+	public void visit(final OWLDataSomeValuesFrom ce) {
 		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
-	public void visit(OWLDataAllValuesFrom ce) {
+	public void visit(final OWLDataAllValuesFrom ce) {
 		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
-	public void visit(OWLDataHasValue ce) {
+	public void visit(final OWLDataHasValue ce) {
 		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
-	public void visit(OWLDataMinCardinality ce) {
+	public void visit(final OWLDataMinCardinality ce) {
 		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
-	public void visit(OWLDataExactCardinality ce) {
+	public void visit(final OWLDataExactCardinality ce) {
 		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 
 	@Override
-	public void visit(OWLDataMaxCardinality ce) {
+	public void visit(final OWLDataMaxCardinality ce) {
 		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
 	}
 

@@ -26,8 +26,8 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -43,8 +43,9 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultData
 
 /**
  * This is a simple example of adding data from the result of a SPARQL query on
- * a remote database endpoint, using {@link SparqlQueryResultDataSource}. In this example, we will query WikiData for
- * titles of publications that have authors who have children together.
+ * a remote database endpoint, using {@link SparqlQueryResultDataSource}. In
+ * this example, we will query WikiData for titles of publications that have
+ * authors who have children together.
  * 
  * @author Irina Dragoste
  *
@@ -73,7 +74,7 @@ public class AddDataFromSparqlQueryResults {
 	 */
 	private static final String WIKIDATA_FATHER_PROPERTY = "wdt:P22";
 
-	public static void main(String[] args)
+	public static void main(final String[] args)
 			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
 
 		/*
@@ -132,33 +133,35 @@ public class AddDataFromSparqlQueryResults {
 			reasoner.load();
 
 			/*
-			 * We construct a query atom for the predicated associated to the SPARQL query
-			 * result.
+			 * We construct a query PositiveLiteral for the predicated associated to the
+			 * SPARQL query result.
 			 */
-			Atom queryAtom = Expressions.makeAtom(titleOfPublicationThatHasAuthorsWhoParentTheSameChild,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y"), Expressions.makeVariable("z"));
+			final PositiveLiteral query = Expressions.makePositiveLiteral(
+					titleOfPublicationThatHasAuthorsWhoParentTheSameChild, Expressions.makeVariable("x"),
+					Expressions.makeVariable("y"), Expressions.makeVariable("z"));
 
 			/* We query the reasoner for facts of the SPARQL query result predicate. */
 			System.out.println("Titles of publications that have authors who parent the same child:");
-			try (QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, false)) {
+			try (QueryResultIterator queryResultIterator = reasoner.answerQuery(query, false)) {
 				queryResultIterator.forEachRemaining(queryResult -> {
-					List<Term> queryResultTerms = queryResult.getTerms();
+					final List<Term> queryResultTerms = queryResult.getTerms();
 
 					System.out.println("- title: " + queryResultTerms.get(0) + ", mother author: "
 							+ queryResultTerms.get(1) + ", father author: " + queryResultTerms.get(2));
 				});
 			}
 
-			Atom haveChildrenTogether = Expressions.makeAtom("haveChildrenTogether", Expressions.makeVariable("y"),
-					Expressions.makeVariable("z"));
-			Atom isMother = Expressions.makeAtom("isMother", Expressions.makeVariable("y"));
-			Atom isFather = Expressions.makeAtom("isFather", Expressions.makeVariable("z"));
-			Conjunction ruleHeadConjunction = Expressions.makeConjunction(haveChildrenTogether, isMother, isFather);
+			final PositiveLiteral haveChildrenTogether = Expressions.makePositiveLiteral("haveChildrenTogether",
+					Expressions.makeVariable("y"), Expressions.makeVariable("z"));
+			final PositiveLiteral isMother = Expressions.makePositiveLiteral("isMother", Expressions.makeVariable("y"));
+			final PositiveLiteral isFather = Expressions.makePositiveLiteral("isFather", Expressions.makeVariable("z"));
+			final Conjunction<PositiveLiteral> ruleHeadConjunction = Expressions
+					.makePositiveConjunction(haveChildrenTogether, isMother, isFather);
 			/*
 			 * haveChildrenTogether(?y, ?z), isMother(?y), isFather(?z) :-
 			 * publicationAndAuthorsWhoParentTheSameChild(?x, ?y, ?z)
 			 */
-			Rule rule = Expressions.makeRule(ruleHeadConjunction, Expressions.makeConjunction(queryAtom));
+			final Rule rule = Expressions.makeRule(ruleHeadConjunction, Expressions.makeConjunction(query));
 
 			/*
 			 * We reset the reasoner in order to add the created rule, and reason on the
@@ -173,35 +176,32 @@ public class AddDataFromSparqlQueryResults {
 			System.out.println("Pairs of authors who have children together and wrote publications together:");
 			try (QueryResultIterator queryResultIterator = reasoner.answerQuery(haveChildrenTogether, false)) {
 				queryResultIterator.forEachRemaining(queryResult -> {
-					List<Term> queryResultTerms = queryResult.getTerms();
+					final List<Term> queryResultTerms = queryResult.getTerms();
 
 					System.out
 							.println("- author1: " + queryResultTerms.get(0) + ", author2: " + queryResultTerms.get(1));
 				});
 			}
-			
+
 			/* We query the reasoner for facts of the isMother predicate. */
 			System.out.println("Mothers:");
 			try (QueryResultIterator queryResultIterator = reasoner.answerQuery(isMother, false)) {
 				queryResultIterator.forEachRemaining(queryResult -> {
-					List<Term> queryResultTerms = queryResult.getTerms();
+					final List<Term> queryResultTerms = queryResult.getTerms();
 
-					System.out
-							.println("- mother: " + queryResultTerms.get(0));
+					System.out.println("- mother: " + queryResultTerms.get(0));
 				});
 			}
-			
+
 			/* We query the reasoner for facts of the isFather predicate. */
 			System.out.println("Fathers:");
 			try (QueryResultIterator queryResultIterator = reasoner.answerQuery(isFather, false)) {
 				queryResultIterator.forEachRemaining(queryResult -> {
-					List<Term> queryResultTerms = queryResult.getTerms();
+					final List<Term> queryResultTerms = queryResult.getTerms();
 
-					System.out
-							.println("- father: " + queryResultTerms.get(0));
+					System.out.println("- father: " + queryResultTerms.get(0));
 				});
 			}
-			
 
 		}
 	}

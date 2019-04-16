@@ -4,7 +4,7 @@ package org.semanticweb.vlog4j.core.model.api;
  * #%L
  * VLog4j Core Components
  * %%
- * Copyright (C) 2018 VLog4j Developers
+ * Copyright (C) 2018 - 2019 VLog4j Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.Set;
 
 /**
  * Interface for classes representing a rule. This implementation assumes that
- * rules are defined by their head and body atoms, without explicitly specifying
+ * rules are defined by their head and body literals, without explicitly specifying
  * quantifiers. All variables in the body are considered universally quantified;
  * all variables in the head that do not occur in the body are considered
  * existentially quantified.
@@ -33,33 +33,33 @@ import java.util.Set;
  *
  */
 public interface Rule {
+	
+	/**
+	 * Returns the conjunction of head literals (the consequence of the rule).
+	 *
+	 * @return conjunction of literals
+	 */
+	Conjunction<PositiveLiteral> getHead();
 
 	/**
-	 * Returns the conjunction of head atoms (the consequence of the rule).
+	 * Returns the conjunction of body literals (the premise of the rule).
 	 *
-	 * @return conjunction of atoms
+	 * @return conjunction of literals
 	 */
-	public Conjunction getHead();
-
-	/**
-	 * Returns the conjunction of body atoms (the premise of the rule).
-	 *
-	 * @return conjunction of atoms
-	 */
-	public Conjunction getBody();
+	Conjunction<Literal> getBody();
 
 	/**
 	 * Returns the existentially quantified head variables of this rule.
 	 *
 	 * @return a set of variables
 	 */
-	public Set<Variable> getExistentiallyQuantifiedVariables();
+	Set<Variable> getExistentiallyQuantifiedVariables();
 
 	/**
 	 * Returns the universally quantified variables of this rule.
 	 *
 	 * @return a set of variables
 	 */
-	public Set<Variable> getUniversallyQuantifiedVariables();
+	Set<Variable> getUniversallyQuantifiedVariables();
 
 }

@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.graal;
 
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
+
 /*-
  * #%L
  * VLog4J Graal Import Components
@@ -20,25 +22,31 @@ package org.semanticweb.vlog4j.graal;
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteralsRule;
 
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
+import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 
 import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 
 /**
- * A utility class containing a <a href="http://graphik-team.github.io/graal/">Graal</a> {@link ConjunctiveQuery}. Answering a
- * <a href="http://graphik-team.github.io/graal/">Graal</a> {@link ConjunctiveQuery} over a certain knowledge base is equivalent to adding a {@link Rule} to the
- * knowledge base, <em> prior to reasoning</em>. The rule consists of the query atoms as the body and a single atom with a new predicate containing all the
- * answer variables of the query as the head. After the reasoning process, in which the rule is materialised, is completed, this rule head can then be used as a
- * query atom to obtain the results of the Graal {@link ConjunctiveQuery}.
+ * A utility class containing a
+ * <a href="http://graphik-team.github.io/graal/">Graal</a>
+ * {@link ConjunctiveQuery}. Answering a
+ * <a href="http://graphik-team.github.io/graal/">Graal</a>
+ * {@link ConjunctiveQuery} over a certain knowledge base is equivalent to
+ * adding a {@link Rule} to the knowledge base, <em> prior to reasoning</em>.
+ * The rule consists of the query {@link Literal}s as the body and a single
+ * {@link PositiveLiteral} with a new predicate containing all the answer
+ * variables of the query as the head. After the reasoning process, in which the
+ * rule is materialised, is completed, this rule head can then be used as a
+ * query to obtain the results of the Graal {@link ConjunctiveQuery}.
  * 
  * @author Adrian Bielefeldt
  */
@@ -46,40 +54,47 @@ public class GraalConjunctiveQueryToRule {
 
 	private final Rule rule;
 
-	private final Atom query;
+	private final PositiveLiteral query;
 
 	/**
 	 * Constructor for a GraalConjunctiveQueryToRule.
 	 * 
-	 * @param ruleHeadPredicateName
-	 *            the query predicate name. Becomes the name of the rule head Predicate.
-	 * @param answerVariables
-	 *            the query answer variables. They become the terms of the rule head Atom.
-	 * @param conjunction
-	 *            the query body. Becomes the rule body.
+	 * @param ruleHeadPredicateName the query predicate name. Becomes the name of
+	 *                              the rule head Predicate.
+	 * @param answerVariables       the query answer variables. They become the
+	 *                              terms of the rule head PositiveLiteral.
+	 * @param conjunction           the query body. Becomes the rule body.
 	 */
-	protected GraalConjunctiveQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables, final Conjunction conjunction) {
-		this.query = makeAtom(ruleHeadPredicateName, answerVariables);
-		this.rule = makeRule(makeConjunction(this.query), conjunction);
+	protected GraalConjunctiveQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables,
+			final Conjunction<PositiveLiteral> conjunction) {
+		this.query = makePositiveLiteral(ruleHeadPredicateName, answerVariables);
+		this.rule = makePositiveLiteralsRule(makePositiveConjunction(this.query), conjunction);
 	}
 
 	/**
-	 * A rule that needs to be added to the program to answer the {@link ConjunctiveQuery Graal ConjunctiveQuery} represented by this object. It consists of all
-	 * query atoms from the original Graal ConjunctiveQuery as the body and a single atom containing all the answer variables of the query as the head.
+	 * A rule that needs to be added to the program to answer the
+	 * {@link ConjunctiveQuery Graal ConjunctiveQuery} represented by this object.
+	 * It consists of all query literals from the original Graal ConjunctiveQuery as
+	 * the body and a single PositiveLiteral containing all the answer variables of
+	 * the query as the head.
 	 * 
-	 * @return The rule equivalent to the Graal ConjunctiveQuery represented by this object.
+	 * @return The rule equivalent to the Graal ConjunctiveQuery represented by this
+	 *         object.
 	 */
 	public Rule getRule() {
 		return this.rule;
 	}
 
 	/**
-	 * A query atom that returns the results of the {@link ConjunctiveQuery Graal ConjunctiveQuery} represented by this object, provided the corresponding rule
-	 * ({@link #getRule()}) has been added to the program. It is equal to the head of the rule returned by {@link #getRule()}.
+	 * A query {@link PositiveLiteral} that returns the results of the
+	 * {@link ConjunctiveQuery Graal ConjunctiveQuery} represented by this object,
+	 * provided the corresponding rule ({@link #getRule()}) has been added to the
+	 * program. It is equal to the head of the rule returned by {@link #getRule()}.
 	 * 
-	 * @return The query atom to obtain the results of the Graal ConjunctiveQuery represented by this object.
+	 * @return The query {@link PositiveLiteral} to obtain the results of the Graal
+	 *         ConjunctiveQuery represented by this object.
 	 */
-	public Atom getQueryAtom() {
+	public PositiveLiteral getQuery() {
 		return this.query;
 	}
 

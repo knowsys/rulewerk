@@ -22,8 +22,8 @@ package org.semanticweb.vlog4j.examples.core;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -36,15 +36,18 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
- * This example shows non-termination of the Skolem Chase, versus termination of the Restricted Chase on the same set of rules and facts. Note that the
- * Restricted Chase is the default reasoning algorithm, as it terminates in most cases and generates a smaller number of facts.
+ * This example shows non-termination of the Skolem Chase, versus termination of
+ * the Restricted Chase on the same set of rules and facts. Note that the
+ * Restricted Chase is the default reasoning algorithm, as it terminates in most
+ * cases and generates a smaller number of facts.
  *
  * @author Irina Dragoste
  *
  */
 public class SkolemVsRestrictedChaseTermination {
 
-	public static void main(final String[] args) throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+	public static void main(final String[] args)
+			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
 		/* 1. Instantiating entities, rules and facts */
 		final Predicate bicycleIDB = Expressions.makePredicate("BicycleIDB", 1);
 		final Predicate bicycleEDB = Expressions.makePredicate("BicycleEDB", 1);
@@ -61,59 +64,62 @@ public class SkolemVsRestrictedChaseTermination {
 		final Variable y = Expressions.makeVariable("y");
 
 		/* BicycleIDB(?x) :- BicycleEDB(?x) . */
-		final Atom bicycleIDBX = Expressions.makeAtom(bicycleIDB, x);
-		final Atom bicycleEDBX = Expressions.makeAtom(bicycleEDB, x);
+		final PositiveLiteral bicycleIDBX = Expressions.makePositiveLiteral(bicycleIDB, x);
+		final PositiveLiteral bicycleEDBX = Expressions.makePositiveLiteral(bicycleEDB, x);
 		final Rule rule1 = Expressions.makeRule(bicycleIDBX, bicycleEDBX);
 
 		/* WheelIDB(?x) :- WheelEDB(?x) . */
-		final Atom wheelIDBX = Expressions.makeAtom(wheelIDB, x);
-		final Atom wheelEDBX = Expressions.makeAtom(wheelEDB, x);
+		final PositiveLiteral wheelIDBX = Expressions.makePositiveLiteral(wheelIDB, x);
+		final PositiveLiteral wheelEDBX = Expressions.makePositiveLiteral(wheelEDB, x);
 		final Rule rule2 = Expressions.makeRule(wheelIDBX, wheelEDBX);
 
 		/* hasPartIDB(?x, ?y) :- hasPartEDB(?x, ?y) . */
-		final Atom hasPartIDBXY = Expressions.makeAtom(hasPartIDB, x, y);
-		final Atom hasPartEDBXY = Expressions.makeAtom(hasPartEDB, x, y);
+		final PositiveLiteral hasPartIDBXY = Expressions.makePositiveLiteral(hasPartIDB, x, y);
+		final PositiveLiteral hasPartEDBXY = Expressions.makePositiveLiteral(hasPartEDB, x, y);
 		final Rule rule3 = Expressions.makeRule(hasPartIDBXY, hasPartEDBXY);
 
 		/* isPartOfIDB(?x, ?y) :- isPartOfEDB(?x, ?y) . */
-		final Atom isPartOfIDBXY = Expressions.makeAtom(isPartOfIDB, x, y);
-		final Atom isPartOfEDBXY = Expressions.makeAtom(isPartOfEDB, x, y);
+		final PositiveLiteral isPartOfIDBXY = Expressions.makePositiveLiteral(isPartOfIDB, x, y);
+		final PositiveLiteral isPartOfEDBXY = Expressions.makePositiveLiteral(isPartOfEDB, x, y);
 		final Rule rule4 = Expressions.makeRule(isPartOfIDBXY, isPartOfEDBXY);
 
 		/*
 		 * exists y. HasPartIDB(?x, !y), WheelIDB(!y) :- BicycleIDB(?x) .
 		 */
-		final Atom wheelIDBY = Expressions.makeAtom(wheelIDB, y);
-		final Rule rule5 = Expressions.makeRule(Expressions.makeConjunction(hasPartIDBXY, wheelIDBY), Expressions.makeConjunction(bicycleIDBX));
+		final PositiveLiteral wheelIDBY = Expressions.makePositiveLiteral(wheelIDB, y);
+		final Rule rule5 = Expressions.makeRule(Expressions.makePositiveConjunction(hasPartIDBXY, wheelIDBY),
+				Expressions.makeConjunction(bicycleIDBX));
 
 		/*
 		 * exists y. IsPartOfIDB(?x, !y), BicycleIDB(!y) :- WheelIDB(?x) .
 		 */
-		final Atom bycicleIDBY = Expressions.makeAtom(bicycleIDB, y);
-		final Rule rule6 = Expressions.makeRule(Expressions.makeConjunction(isPartOfIDBXY, bycicleIDBY), Expressions.makeConjunction(wheelIDBX));
+		final PositiveLiteral bycicleIDBY = Expressions.makePositiveLiteral(bicycleIDB, y);
+		final Rule rule6 = Expressions.makeRule(Expressions.makePositiveConjunction(isPartOfIDBXY, bycicleIDBY),
+				Expressions.makeConjunction(wheelIDBX));
 
 		/* IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) . */
-		final Atom hasPartIDBYX = Expressions.makeAtom(hasPartIDB, y, x);
+		final PositiveLiteral hasPartIDBYX = Expressions.makePositiveLiteral(hasPartIDB, y, x);
 		final Rule rule7 = Expressions.makeRule(isPartOfIDBXY, hasPartIDBYX);
 
 		/* HasPartIDB(?x, ?y) :- IsPartOfIDB(?y, ?x) . */
-		final Atom isPartOfIDBYX = Expressions.makeAtom(isPartOfIDB, y, x);
+		final PositiveLiteral isPartOfIDBYX = Expressions.makePositiveLiteral(isPartOfIDB, y, x);
 		final Rule rule8 = Expressions.makeRule(hasPartIDBXY, isPartOfIDBYX);
 
 		/* BicycleEDB(bicycle1) . */
-		final Atom fact1 = Expressions.makeAtom(bicycleEDB, bicycle1);
+		final PositiveLiteral fact1 = Expressions.makePositiveLiteral(bicycleEDB, bicycle1);
 
 		/* HasPartEDB(bicycle1, wheel1) . */
-		final Atom fact2 = Expressions.makeAtom(hasPartEDB, bicycle1, wheel1);
+		final PositiveLiteral fact2 = Expressions.makePositiveLiteral(hasPartEDB, bicycle1, wheel1);
 
 		/* Wheel(wheel1) . */
-		final Atom fact3 = Expressions.makeAtom(wheelEDB, wheel1);
+		final PositiveLiteral fact3 = Expressions.makePositiveLiteral(wheelEDB, wheel1);
 
 		/* BicycleEDB(b) . */
-		final Atom fact4 = Expressions.makeAtom(bicycleEDB, bicycle2);
+		final PositiveLiteral fact4 = Expressions.makePositiveLiteral(bicycleEDB, bicycle2);
 
 		/*
-		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to call close() to free the reasoner resources.
+		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to
+		 * call close() to free the reasoner resources.
 		 */
 		try (Reasoner reasoner = Reasoner.getInstance()) {
 
@@ -126,7 +132,8 @@ public class SkolemVsRestrictedChaseTermination {
 			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 			/*
-			 * As the Skolem Chase is known not to terminate for this set of rules and facts, it is interrupted after one second.
+			 * As the Skolem Chase is known not to terminate for this set of rules and
+			 * facts, it is interrupted after one second.
 			 */
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			reasoner.setReasoningTimeout(1);
@@ -137,14 +144,17 @@ public class SkolemVsRestrictedChaseTermination {
 			System.out.println("Has Skolem Chase algorithm finished before 1 second timeout? " + skolemChaseFinished);
 
 			/*
-			 * See that the Skolem Chase generated a very large number of facts in 1 second, extensively introducing new unnamed individuals to satisfy
-			 * existential restrictions.
+			 * See that the Skolem Chase generated a very large number of facts in 1 second,
+			 * extensively introducing new unnamed individuals to satisfy existential
+			 * restrictions.
 			 */
-			System.out.println("Answers to query " + hasPartIDBXY + " after reasoning with the Skolem Chase for 1 second:");
+			System.out.println(
+					"Answers to query " + hasPartIDBXY + " after reasoning with the Skolem Chase for 1 second:");
 			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 			/*
-			 * We reset the reasoner and apply the Restricted Chase on the same set of rules and facts
+			 * We reset the reasoner and apply the Restricted Chase on the same set of rules
+			 * and facts
 			 */
 			System.out.println();
 			System.out.println("Reseting reasoner; discarding facts generated during reasoning.");
@@ -152,13 +162,15 @@ public class SkolemVsRestrictedChaseTermination {
 			reasoner.load();
 
 			/*
-			 * See that there is no fact HasPartIDB before reasoning. All inferred facts have been discarded when the reasoner was reset.
+			 * See that there is no fact HasPartIDB before reasoning. All inferred facts
+			 * have been discarded when the reasoner was reset.
 			 */
 			System.out.println("Answers to query " + hasPartIDBXY + " before reasoning:");
 			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 			/*
-			 * As the Restricted Chase is known to terminate for this set of rules and facts, we will not interrupt it.
+			 * As the Restricted Chase is known to terminate for this set of rules and
+			 * facts, we will not interrupt it.
 			 */
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			reasoner.setReasoningTimeout(null);
@@ -168,10 +180,12 @@ public class SkolemVsRestrictedChaseTermination {
 			/* Indeed, the Restricted Chase did terminate (in less than 1 second) */
 			final boolean restrictedChaseFinished = reasoner.reason();
 			final long restrictedChaseDuration = System.currentTimeMillis() - restrictedChaseStartTime;
-			System.out.println("Has Restricted Chase algorithm finished? " + restrictedChaseFinished + ". (Duration: " + restrictedChaseDuration + " ms)");
+			System.out.println("Has Restricted Chase algorithm finished? " + restrictedChaseFinished + ". (Duration: "
+					+ restrictedChaseDuration + " ms)");
 
 			/*
-			 * See that the Restricted Chase generated a small number of facts, reusing individuals that satisfy existential restrictions.
+			 * See that the Restricted Chase generated a small number of facts, reusing
+			 * individuals that satisfy existential restrictions.
 			 */
 			System.out.println("Answers to query " + hasPartIDBXY + " after reasoning with the Restricted Chase:");
 			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);

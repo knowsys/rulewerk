@@ -1,13 +1,10 @@
-/**
- * 
- */
 package org.semanticweb.vlog4j.core.model.implementation;
 
 /*-
  * #%L
  * VLog4j Core Components
  * %%
- * Copyright (C) 2018 VLog4j Developers
+ * Copyright (C) 2018 - 2019 VLog4j Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +27,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
+import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -41,24 +38,26 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
  * 
  * @author Markus Krötzsch
  */
-public class ConjunctionImpl implements Conjunction {
-
-	final List<Atom> atoms;
+public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
+	
+	final List<T> literals;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param atoms
-	 *            a non-null list of atoms, that cannot contain null elements.
+	 * @param literals
+	 *            a non-null list of literals, that cannot contain null elements.
 	 */
-	public ConjunctionImpl(@NonNull List<Atom> atoms) {
-		Validate.noNullElements(atoms);
-		this.atoms = atoms;
+	public ConjunctionImpl(@NonNull List<T> literals) {
+		Validate.noNullElements(literals);
+		this.literals = literals;
 	}
 
+
+
 	@Override
-	public List<Atom> getAtoms() {
-		return Collections.unmodifiableList(this.atoms);
+	public List<T> getLiterals() {
+		return Collections.unmodifiableList(this.literals);
 	}
 
 	/**
@@ -71,8 +70,8 @@ public class ConjunctionImpl implements Conjunction {
 	 */
 	TermFilter getTermFilter(TermType termType) {
 		final TermFilter termFilter = new TermFilter(termType);
-		for (final Atom atom : this.atoms) {
-			for (final Term term : atom.getTerms()) {
+		for (final T literal : this.literals) {
+			for (final Term term : literal.getTerms()) {
 				term.accept(termFilter);
 			}
 		}
@@ -96,7 +95,7 @@ public class ConjunctionImpl implements Conjunction {
 
 	@Override
 	public int hashCode() {
-		return this.atoms.hashCode();
+		return this.literals.hashCode();
 	}
 
 	@Override
@@ -107,31 +106,32 @@ public class ConjunctionImpl implements Conjunction {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Conjunction)) {
+		if (!(obj instanceof Conjunction<?>)) {
 			return false;
 		}
-		final Conjunction other = (Conjunction) obj;
-		return this.atoms.equals(other.getAtoms());
+		final Conjunction<?> other = (Conjunction<?>) obj;
+		return this.literals.equals(other.getLiterals());
 	}
 
 	@Override
-	public Iterator<Atom> iterator() {
-		return this.atoms.iterator();
+	public Iterator<T> iterator() {
+		return this.literals.iterator();
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder stringBuilder = new StringBuilder();
 		boolean first = true;
-		for (final Atom atom : this.atoms) {
+		for (final T literal : this.literals) {
 			if (first) {
 				first = false;
 			} else {
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(atom.toString());
+			stringBuilder.append(literal.toString());
 		}
 		return stringBuilder.toString();
 	}
+
 
 }

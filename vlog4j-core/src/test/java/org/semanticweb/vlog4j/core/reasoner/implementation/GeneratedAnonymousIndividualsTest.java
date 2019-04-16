@@ -29,8 +29,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -53,8 +53,8 @@ public class GeneratedAnonymousIndividualsTest {
 	
 	// rule: P(?x) -> P(?x,!y), P(?x,!z)
 	private static final Rule existentialRule = Expressions.makeRule(
-			Expressions.makeConjunction(Expressions.makeAtom(p, vx, vy), Expressions.makeAtom(p, vx, vz)),
-			Expressions.makeConjunction(Expressions.makeAtom(p, vx)));
+			Expressions.makePositiveConjunction(Expressions.makePositiveLiteral(p, vx, vy), Expressions.makePositiveLiteral(p, vx, vz)),
+			Expressions.makeConjunction(Expressions.makePositiveLiteral(p, vx)));
 	static {
 		// y,z existential variables that can introduce blanks (anonymous individuals)
 		assertEquals(Sets.newSet(vy, vz), existentialRule.getExistentiallyQuantifiedVariables());
@@ -62,10 +62,10 @@ public class GeneratedAnonymousIndividualsTest {
 
 	// fact: P(c)
 	private static final Constant constantC = Expressions.makeConstant("c");
-	private static final Atom fact = Expressions.makeAtom(p, constantC);
+	private static final PositiveLiteral fact = Expressions.makePositiveLiteral(p, constantC);
 
 	// query: P(?x,?y) ?
-	final Atom queryAtom = Expressions.makeAtom(p, Expressions.makeVariable("?x"), Expressions.makeVariable("?y"));
+	final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(p, Expressions.makeVariable("?x"), Expressions.makeVariable("?y"));
 
 	@Test
 	public void testBlanksSkolemChaseNoRuleRewrite()

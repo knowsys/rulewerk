@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -20,8 +22,7 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
@@ -35,7 +36,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -59,7 +60,7 @@ public class ReasonerTimeoutTest {
 	/**
 	 * A list of facts to be used in multiple test runs.
 	 */
-	private static List<Atom> facts = new ArrayList<>();
+	private static List<PositiveLiteral> facts = new ArrayList<>();
 	/**
 	 * A list of rules to be used in multiple test runs.
 	 */
@@ -84,24 +85,24 @@ public class ReasonerTimeoutTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		Predicate infinite_EDB = makePredicate("infinite_EDB", 2);
-		Predicate infinite_IDB = makePredicate("infinite_IDB", 2);
+		final Predicate infinite_EDB = makePredicate("infinite_EDB", 2);
+		final Predicate infinite_IDB = makePredicate("infinite_IDB", 2);
 		
-		facts.add(makeAtom(infinite_EDB, makeConstant("A"), makeConstant("B")));
+		facts.add(makePositiveLiteral(infinite_EDB, makeConstant("A"), makeConstant("B")));
 		
-		Variable x = makeVariable("x");
-		Variable y = makeVariable("y");
+		final Variable x = makeVariable("x");
+		final Variable y = makeVariable("y");
 
-		Atom infinite_IDB_xy = makeAtom(infinite_IDB, x, y);
-		Atom infinite_EDB_xy = makeAtom(infinite_EDB, x, y);
+		final PositiveLiteral infinite_IDB_xy = makePositiveLiteral(infinite_IDB, x, y);
+		final PositiveLiteral infinite_EDB_xy = makePositiveLiteral(infinite_EDB, x, y);
 		
-		Rule import_rule = makeRule(infinite_IDB_xy, infinite_EDB_xy);
+		final Rule import_rule = makeRule(infinite_IDB_xy, infinite_EDB_xy);
 		rules.add(import_rule);
 		
-		Variable z = makeVariable("z");
+		final Variable z = makeVariable("z");
 		
-		Atom infinite_IDB_yz = makeAtom(infinite_IDB, y, z);
-		Rule infinite_rule = makeRule(infinite_IDB_yz, infinite_IDB_xy);
+		final PositiveLiteral infinite_IDB_yz = makePositiveLiteral(infinite_IDB, y, z);
+		final Rule infinite_rule = makeRule(infinite_IDB_yz, infinite_IDB_xy);
 		rules.add(infinite_rule);
 	}
 

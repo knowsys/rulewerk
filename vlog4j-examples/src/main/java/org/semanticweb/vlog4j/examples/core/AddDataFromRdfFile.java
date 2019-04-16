@@ -1,5 +1,9 @@
 package org.semanticweb.vlog4j.examples.core;
 
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
+
 /*-
  * #%L
  * VLog4j Examples
@@ -20,9 +24,7 @@ package org.semanticweb.vlog4j.examples.core;
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
@@ -30,8 +32,8 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeV
 import java.io.File;
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -90,39 +92,40 @@ public class AddDataFromRdfFile {
 		 *
 		 * triplesIDB(?s, ?p, ?o) :- triplesEDB(?s, ?p, ?o) .
 		 */
-		final Atom factIDB = makeAtom(triplesIDB, s, p, o);
-		final Atom factEDB = makeAtom(triplesEDB, s, p, o);
+		final PositiveLiteral factIDB = makePositiveLiteral(triplesIDB, s, p, o);
+		final PositiveLiteral factEDB = makePositiveLiteral(triplesEDB, s, p, o);
 		final Rule rule1 = makeRule(factIDB, factEDB);
 
 		/*
 		 * exists x. triplesIDB(?s, <~/hasPart>, !x), triplesIDB(!x, <~#type>,
 		 * <~/wheel>) :- triplesIDB(?s, <~#type>, <~/bicycle>) .
 		 */
-		final Atom existsHasPartIDB = makeAtom(triplesIDB, s, hasPartPredicate, x);
-		final Atom existsWheelIDB = makeAtom(triplesIDB, x, hasTypePredicate, wheelObject);
-		final Atom bicycleIDB = makeAtom(triplesIDB, s, hasTypePredicate, bicycleObject);
-		final Rule rule2 = makeRule(makeConjunction(existsHasPartIDB, existsWheelIDB), makeConjunction(bicycleIDB));
+		final PositiveLiteral existsHasPartIDB = makePositiveLiteral(triplesIDB, s, hasPartPredicate, x);
+		final PositiveLiteral existsWheelIDB = makePositiveLiteral(triplesIDB, x, hasTypePredicate, wheelObject);
+		final PositiveLiteral bicycleIDB = makePositiveLiteral(triplesIDB, s, hasTypePredicate, bicycleObject);
+		final Rule rule2 = makeRule(makePositiveConjunction(existsHasPartIDB, existsWheelIDB),
+				makeConjunction(bicycleIDB));
 
 		/*
 		 * exists x. triplesIDB(?s, <~/isPartOf>, !x) :- triplesIDB(?s, <~#type>,
 		 * <~/wheel>) .
 		 */
-		final Atom existsIsPartOfIDB = makeAtom(triplesIDB, s, isPartOfPredicate, x);
-		final Atom wheelIDB = makeAtom(triplesIDB, s, hasTypePredicate, wheelObject);
-		final Rule rule3 = makeRule(makeConjunction(existsIsPartOfIDB), makeConjunction(wheelIDB));
+		final PositiveLiteral existsIsPartOfIDB = makePositiveLiteral(triplesIDB, s, isPartOfPredicate, x);
+		final PositiveLiteral wheelIDB = makePositiveLiteral(triplesIDB, s, hasTypePredicate, wheelObject);
+		final Rule rule3 = makeRule(makePositiveConjunction(existsIsPartOfIDB), makeConjunction(wheelIDB));
 
 		/*
 		 * triplesIDB(?s, <~/isPartOf>, ?o) :- triplesIDB(?o, <~/hasPart>, ?s) .
 		 */
-		final Atom isPartOfIDB = makeAtom(triplesIDB, s, isPartOfPredicate, o);
-		final Atom hasPartIDBReversed = makeAtom(triplesIDB, o, hasPartPredicate, s);
+		final PositiveLiteral isPartOfIDB = makePositiveLiteral(triplesIDB, s, isPartOfPredicate, o);
+		final PositiveLiteral hasPartIDBReversed = makePositiveLiteral(triplesIDB, o, hasPartPredicate, s);
 		final Rule rule4 = makeRule(isPartOfIDB, hasPartIDBReversed);
 
 		/*
 		 * triplesIDB(?s, <~/hasPart>, ?o) :- triplesIDB(?o, <~/isPartOf>, ?s) .
 		 */
-		final Atom hasPartIDB = makeAtom(triplesIDB, s, hasPartPredicate, o);
-		final Atom isPartOfIDBReversed = makeAtom(triplesIDB, o, isPartOfPredicate, s);
+		final PositiveLiteral hasPartIDB = makePositiveLiteral(triplesIDB, s, hasPartPredicate, o);
+		final PositiveLiteral isPartOfIDBReversed = makePositiveLiteral(triplesIDB, o, isPartOfPredicate, s);
 		final Rule rule5 = makeRule(hasPartIDB, isPartOfIDBReversed);
 
 		/*
@@ -140,7 +143,7 @@ public class AddDataFromRdfFile {
 			reasoner.load();
 			System.out.println("Before materialisation:");
 			/* triplesEDB(?s, <~/hasPart>, ?o) */
-			final Atom hasPartEDB = makeAtom(triplesEDB, s, hasPartPredicate, o);
+			final PositiveLiteral hasPartEDB = makePositiveLiteral(triplesEDB, s, hasPartPredicate, o);
 			ExamplesUtils.printOutQueryAnswers(hasPartEDB, reasoner);
 
 			/* The reasoner will use the Restricted Chase by default. */
@@ -155,7 +158,8 @@ public class AddDataFromRdfFile {
 					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
 
 			final Constant redBikeSubject = makeConstant("<https://example.org/redBike>");
-			final Atom existsHasPartRedBike = makeAtom(triplesIDB, redBikeSubject, hasPartPredicate, x);
+			final PositiveLiteral existsHasPartRedBike = makePositiveLiteral(triplesIDB, redBikeSubject,
+					hasPartPredicate, x);
 			reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
 					ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);
 		}

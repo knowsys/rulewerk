@@ -30,9 +30,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Blank;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -116,8 +116,8 @@ public class ModelToVLogConverterTest {
 		final Constant c1 = Expressions.makeConstant("1");
 		final Constant c2 = Expressions.makeConstant("2");
 		final Constant c3 = Expressions.makeConstant("3");
-		final Atom atom1 = Expressions.makeAtom("p1", c1);
-		final Atom atom2 = Expressions.makeAtom("p2", c2, c3);
+		final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p1", c1);
+		final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p2", c2, c3);
 
 		final String[][] vLogTuples = ModelToVLogConverter.toVLogFactTuples(Arrays.asList(atom1, atom2));
 
@@ -137,7 +137,7 @@ public class ModelToVLogConverterTest {
 		final Constant c = Expressions.makeConstant("c");
 		final Variable x = Expressions.makeVariable("x");
 		final Blank b = new BlankImpl("_:b");
-		final Atom atom = Expressions.makeAtom("pred", c, x, b);
+		final PositiveLiteral atom = Expressions.makePositiveLiteral("pred", c, x, b);
 
 		final karmaresearch.vlog.Term expectedC = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, "c");
 		final karmaresearch.vlog.Term expectedX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "x");
@@ -158,14 +158,14 @@ public class ModelToVLogConverterTest {
 		final Variable z = Expressions.makeVariable("z");
 		final Variable w = Expressions.makeVariable("w");
 		final Variable v = Expressions.makeVariable("v");
-		final Atom atomP1X = Expressions.makeAtom("p1", x);
-		final Atom atomP2XY = Expressions.makeAtom("p2", x, y);
-		final Atom atomP3YZ = Expressions.makeAtom("p3", y, z);
+		final PositiveLiteral atomP1X = Expressions.makePositiveLiteral("p1", x);
+		final PositiveLiteral atomP2XY = Expressions.makePositiveLiteral("p2", x, y);
+		final PositiveLiteral atomP3YZ = Expressions.makePositiveLiteral("p3", y, z);
 		final Rule rule1 = Expressions.makeRule(atomP1X, atomP2XY, atomP3YZ);
-		final Atom atomQXYZ = Expressions.makeAtom("q", x, y, z);
-		final Atom atomQYW = Expressions.makeAtom("q", y, w);
-		final Atom atomQ1XWZ = Expressions.makeAtom("q1", x, w, z);
-		final Atom atomQ2XV = Expressions.makeAtom("q2", x, v);
+		final PositiveLiteral atomQXYZ = Expressions.makePositiveLiteral("q", x, y, z);
+		final PositiveLiteral atomQYW = Expressions.makePositiveLiteral("q", y, w);
+		final PositiveLiteral atomQ1XWZ = Expressions.makePositiveLiteral("q1", x, w, z);
+		final PositiveLiteral atomQ2XV = Expressions.makePositiveLiteral("q2", x, v);
 		final Rule rule2 = Expressions.makeRule(atomQ2XV, atomQ1XWZ, atomQYW, atomQXYZ);
 
 		final karmaresearch.vlog.Term expX = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "x");

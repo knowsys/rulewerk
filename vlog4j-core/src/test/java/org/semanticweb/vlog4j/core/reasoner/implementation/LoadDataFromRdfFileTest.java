@@ -33,7 +33,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.semanticweb.vlog4j.core.model.api.Atom;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -47,7 +47,7 @@ import karmaresearch.vlog.EDBConfigurationException;
 public class LoadDataFromRdfFileTest {
 
 	private static final Predicate ternaryPredicate = Expressions.makePredicate("triple", 3);
-	private static final Atom queryAtom = Expressions.makeAtom(ternaryPredicate, makeVariable("s"), makeVariable("p"),
+	private static final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(ternaryPredicate, makeVariable("s"), makeVariable("p"),
 			makeVariable("o"));
 
 	@SuppressWarnings("unchecked")

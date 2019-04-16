@@ -4,7 +4,7 @@ package org.semanticweb.vlog4j.core.model.api;
  * #%L
  * VLog4j Core Components
  * %%
- * Copyright (C) 2018 VLog4j Developers
+ * Copyright (C) 2018 - 2019 VLog4j Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +24,21 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Interface for representing conjunctions of {@link Atom}s, i.e., lists of
- * atomic formulas that are connected with logical AND. Conjunctions may have
+ * Interface for representing conjunctions of {@link Literal}s, i.e., lists of
+ * (negated or positive) atomic formulas that are connected with logical AND. Conjunctions may have
  * free variables, since they contain no quantifiers.
  * 
  * @author Markus Krötzsch
  *
  */
-public interface Conjunction extends Iterable<Atom> {
-
+public interface Conjunction<T extends Literal> extends Iterable<T> {
+	
 	/**
-	 * Returns the list of atoms that are part of this conjunction.
+	 * Returns the list of literals that are part of this conjunction.
 	 * 
-	 * @return list of atoms
+	 * @return list of literals
 	 */
-	public List<Atom> getAtoms();
+	List<T> getLiterals();
 
 	/**
 	 * Returns the set of terms of a certain type that occur in this conjunction.
@@ -47,19 +47,20 @@ public interface Conjunction extends Iterable<Atom> {
 	 *            the type of the term requested
 	 * @return set of matching terms used in this conjunction
 	 */
-	public Set<? extends Term> getTerms(TermType termType);
-	
+	Set<? extends Term> getTerms(TermType termType);
+
 	/**
-	 * Returns the set of all terms  that occur in this conjunction.
+	 * Returns the set of all terms that occur in this conjunction.
 	 * 
 	 * @return set of terms used in this conjunction
 	 */
-	public Set<Term> getTerms();
+	Set<Term> getTerms();
 
 	/**
 	 * Returns the {@link Variable}s that occur in this conjunction.
 	 *
 	 * @return a set of variables
 	 */
-	public Set<Variable> getVariables();
+	Set<Variable> getVariables();
+
 }

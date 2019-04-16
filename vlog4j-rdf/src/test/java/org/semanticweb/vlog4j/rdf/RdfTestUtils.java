@@ -37,8 +37,8 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 
 public final class RdfTestUtils {
@@ -73,15 +73,15 @@ public final class RdfTestUtils {
 		return model;
 	}
 
-	static Term getSubjectFromTriple(final Atom triple) {
+	static Term getSubjectFromTriple(final PositiveLiteral triple) {
 		return triple.getTerms().get(0);
 	}
 
-	static Term getPredicateFromTriple(final Atom triple) {
+	static Term getPredicateFromTriple(final PositiveLiteral triple) {
 		return triple.getTerms().get(1);
 	}
 
-	static Term getObjectFromTriple(final Atom triple) {
+	static Term getObjectFromTriple(final PositiveLiteral triple) {
 		return triple.getTerms().get(2);
 	}
 
@@ -91,15 +91,18 @@ public final class RdfTestUtils {
 	 * type).
 	 *
 	 * @param abbreviatedValue value in abbreviated form
+	 * 
 	 * @param type type of {@code abbreviated}
+	 * 
 	 * @return {@code abbreviatedValue} in lexical form
 	 */
 	static String intoLexical(final String abbreviatedValue, final String type) {
 		return "\"" + abbreviatedValue + "\"^^<http://www.w3.org/2001/XMLSchema#" + type + ">";
 	}
 
-	static Term getObjectOfFirstMatchedTriple(final Term subject, final Term predicate, final Set<Atom> atoms) {
-		return atoms.stream()
+	static Term getObjectOfFirstMatchedTriple(final Term subject, final Term predicate,
+			final Set<PositiveLiteral> PositiveLiterals) {
+		return PositiveLiterals.stream()
 				.filter(triple -> getSubjectFromTriple(triple).equals(subject)
 						&& getPredicateFromTriple(triple).equals(predicate))
 				.findFirst().map(triple -> getObjectFromTriple(triple)).get();

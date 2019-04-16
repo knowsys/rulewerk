@@ -1,5 +1,9 @@
 package org.semanticweb.vlog4j.examples.core;
 
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
+
 /*-
  * #%L
  * VLog4j Examples
@@ -20,9 +24,7 @@ package org.semanticweb.vlog4j.examples.core;
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeAtom;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
@@ -30,8 +32,8 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeV
 import java.io.File;
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.model.api.Atom;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -62,7 +64,8 @@ import org.semanticweb.vlog4j.examples.ExamplesUtils;
  */
 public class AddDataFromCsvFile {
 
-	public static void main(final String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public static void main(final String[] args)
+			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
 		/* 1. Instantiating entities and rules. */
 		final Predicate bicycleIDB = makePredicate("BicycleIDB", 1);
@@ -79,53 +82,56 @@ public class AddDataFromCsvFile {
 		/*
 		 * BicycleIDB(?x) :- BicycleEDB(?x) .
 		 */
-		final Atom bicycleIDBX = makeAtom(bicycleIDB, x);
-		final Atom bicycleEDBX = makeAtom(bicycleEDB, x);
+		final PositiveLiteral bicycleIDBX = makePositiveLiteral(bicycleIDB, x);
+		final PositiveLiteral bicycleEDBX = makePositiveLiteral(bicycleEDB, x);
 		final Rule rule1 = makeRule(bicycleIDBX, bicycleEDBX);
 
 		/*
 		 * WheelIDB(?x) :- WheelEDB(?x) .
 		 */
-		final Atom wheelIDBX = makeAtom(wheelIDB, x);
-		final Atom wheelEDBX = makeAtom(wheelEDB, x);
+		final PositiveLiteral wheelIDBX = makePositiveLiteral(wheelIDB, x);
+		final PositiveLiteral wheelEDBX = makePositiveLiteral(wheelEDB, x);
 		final Rule rule2 = makeRule(wheelIDBX, wheelEDBX);
 
 		/*
 		 * hasPartIDB(?x, ?y) :- hasPartEDB(?x, ?y) .
 		 */
-		final Atom hasPartIDBXY = makeAtom(hasPartIDB, x, y);
-		final Atom hasPartEDBXY = makeAtom(hasPartEDB, x, y);
+		final PositiveLiteral hasPartIDBXY = makePositiveLiteral(hasPartIDB, x, y);
+		final PositiveLiteral hasPartEDBXY = makePositiveLiteral(hasPartEDB, x, y);
 		final Rule rule3 = makeRule(hasPartIDBXY, hasPartEDBXY);
 
 		/*
 		 * isPartOfIDB(?x, ?y) :- isPartOfEDB(?x, ?y) .
 		 */
-		final Atom isPartOfIDBXY = makeAtom(isPartOfIDB, x, y);
-		final Atom isPartOfEDBXY = makeAtom(isPartOfEDB, x, y);
+		final PositiveLiteral isPartOfIDBXY = makePositiveLiteral(isPartOfIDB, x, y);
+		final PositiveLiteral isPartOfEDBXY = makePositiveLiteral(isPartOfEDB, x, y);
 		final Rule rule4 = makeRule(isPartOfIDBXY, isPartOfEDBXY);
 
 		/*
 		 * exists y. HasPartIDB(?x, !y), WheelIDB(!y) :- BicycleIDB(?x) .
 		 */
-		final Atom wheelIDBY = makeAtom(wheelIDB, y);
-		final Rule rule5 = makeRule(makeConjunction(hasPartIDBXY, wheelIDBY), makeConjunction(bicycleIDBX));
+		final PositiveLiteral wheelIDBY = makePositiveLiteral(wheelIDB, y);
+		final Rule rule5 = makeRule(makePositiveConjunction(hasPartIDBXY, wheelIDBY), makeConjunction(bicycleIDBX));
 
 		/*
 		 * exists y. IsPartOfIDB(?x, !y) :- WheelIDB(?x) .
 		 */
-		final Rule rule6 = makeRule(makeConjunction(isPartOfIDBXY), makeConjunction(wheelIDBX));
+		final Rule rule6 = makeRule(makePositiveConjunction(isPartOfIDBXY), makeConjunction(wheelIDBX));
 
 		/* IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) . */
-		final Atom hasPartIDBYX = makeAtom(hasPartIDB, y, x);
+		final PositiveLiteral hasPartIDBYX = makePositiveLiteral(hasPartIDB, y, x);
 		final Rule rule7 = makeRule(isPartOfIDBXY, hasPartIDBYX);
 
 		/*
 		 * HasPartIDB(?x, ?y) :- IsPartOfIDB(?y, ?x) .
 		 */
-		final Atom isPartOfIDBYX = makeAtom(isPartOfIDB, y, x);
+		final PositiveLiteral isPartOfIDBYX = makePositiveLiteral(isPartOfIDB, y, x);
 		final Rule rule8 = makeRule(hasPartIDBXY, isPartOfIDBYX);
 
-		/* 2. Loading, reasoning, and querying while using try-with-resources to close the reasoner automatically. */
+		/*
+		 * 2. Loading, reasoning, and querying while using try-with-resources to close
+		 * the reasoner automatically.
+		 */
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 
@@ -150,12 +156,13 @@ public class AddDataFromCsvFile {
 			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
 
 			/* 3. Exporting query answers to {@code .csv} files. */
-			reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithBlanks.csv", true);
-			reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithoutBlanks.csv",
-					false);
+			reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithBlanks.csv",
+					true);
+			reasoner.exportQueryAnswersToCsv(hasPartIDBXY,
+					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithoutBlanks.csv", false);
 
 			final Constant redBike = makeConstant("redBike");
-			final Atom hasPartIDBRedBikeY = makeAtom(hasPartIDB, redBike, y);
+			final PositiveLiteral hasPartIDBRedBikeY = makePositiveLiteral(hasPartIDB, redBike, y);
 			reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
 					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBRedBikeYWithBlanks.csv", true);
 		}
