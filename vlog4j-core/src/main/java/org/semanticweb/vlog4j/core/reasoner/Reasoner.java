@@ -173,7 +173,8 @@ public interface Reasoner extends AutoCloseable {
 	 *
 	 * @param logLevel
 	 *            the logging level to be set for VLog C++ resource.
-	 * @throws ReasonerStateException if the method is called on a closed reasoner.
+	 * @throws ReasonerStateException
+	 *             if the method is called on a closed reasoner.
 	 */
 	void setLogLevel(@NonNull LogLevel logLevel) throws ReasonerStateException;
 
@@ -195,7 +196,8 @@ public interface Reasoner extends AutoCloseable {
 	 *            the file for the internal VLog C++ resource to log to. If
 	 *            {@code null} or an invalid file path, the reasoner will log to the
 	 *            default system output.
-	 * @throws ReasonerStateException if the method is called on a closed reasoner.
+	 * @throws ReasonerStateException
+	 *             if the method is called on a closed reasoner.
 	 */
 	void setLogFile(@Nullable String filePath) throws ReasonerStateException;
 
@@ -231,6 +233,14 @@ public interface Reasoner extends AutoCloseable {
 	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
 	 */
 	void addRules(@NonNull List<Rule> rules) throws ReasonerStateException;
+
+	/**
+	 * Get the list of all rules that have been added to the reasoner. The list is
+	 * read-only and cannot be modified to add or delete rules.
+	 * 
+	 * @return list of {@link Rule}
+	 */
+	List<Rule> getRules();
 
 	/**
 	 * Adds non-null facts to the reasoner <b>knowledge base</b>. A <b>fact</b> is
@@ -280,18 +290,23 @@ public interface Reasoner extends AutoCloseable {
 	void addFacts(@NonNull Collection<Atom> facts) throws ReasonerStateException;
 
 	/**
-	 * Adds facts stored in given {@code dataSource} for given {@code predicate} to the reasoner <b>knowledge base</b>. Facts predicates cannot have multiple
-	 * data sources, including in-memory {@link Atom} objects added trough {@link #addFacts}.
+	 * Adds facts stored in given {@code dataSource} for given {@code predicate} to
+	 * the reasoner <b>knowledge base</b>. Facts predicates cannot have multiple
+	 * data sources, including in-memory {@link Atom} objects added trough
+	 * {@link #addFacts}.
 	 *
 	 * @param predicate
-	 *            the {@link Predicate} for which the given {@code dataSource} contains <b>fact terms</b>.
+	 *            the {@link Predicate} for which the given {@code dataSource}
+	 *            contains <b>fact terms</b>.
 	 * @param dataSource
-	 *            data source containing the fact terms to be associated to given predicate and added to the reasoner
+	 *            data source containing the fact terms to be associated to given
+	 *            predicate and added to the reasoner
 	 * @throws ReasonerStateException
 	 *             if the reasoner has already been loaded ({@link #load()}).
 	 * @throws IllegalArgumentException
-	 *             if the <b>knowledge base</b> contains facts in memory (added using {@link #addFacts}) or from a data source with the same {@link Predicate}
-	 *             as given {@code predicate}.
+	 *             if the <b>knowledge base</b> contains facts in memory (added
+	 *             using {@link #addFacts}) or from a data source with the same
+	 *             {@link Predicate} as given {@code predicate}.
 	 */
 	// TODO add example to javadoc with two datasources and with in-memory facts for
 	// the same predicate.
@@ -321,11 +336,13 @@ public interface Reasoner extends AutoCloseable {
 	 *             source ({@link #addFactsFromDataSource(Predicate, DataSource)})
 	 *             does nor match the arity of the facts in the corresponding data
 	 *             source.
-	 * @throws ReasonerStateException if the method is called on a closed reasoner.
+	 * @throws ReasonerStateException
+	 *             if the method is called on a closed reasoner.
 	 */
 	// FIXME should EdbIdbSeparationException be thrown when users try to add
 	// facts/rules?
-	void load() throws IOException, EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException;
+	void load()
+			throws IOException, EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException;
 
 	/**
 	 * Performs reasoning on the loaded <b>knowledge base</b>, depending on the set
@@ -358,7 +375,8 @@ public interface Reasoner extends AutoCloseable {
 	 * @throws IOException
 	 *             if I/O exceptions occur during reasoning.
 	 * @throws ReasonerStateException
-	 *             if this method is called before loading ({@link Reasoner#load()} or after closing ({@link Reasoner#close()}).
+	 *             if this method is called before loading ({@link Reasoner#load()}
+	 *             or after closing ({@link Reasoner#close()}).
 	 */
 	boolean reason() throws IOException, ReasonerStateException;
 
@@ -385,22 +403,24 @@ public interface Reasoner extends AutoCloseable {
 	 * multiple, distinct query answers. This method returns an Iterator over these
 	 * answers.
 	 *
-	 * @param queryAtom     an {@link Atom} representing the query to be answered.
-	 * @param includeBlanks if {@code true}, facts containing terms of type
-	 *                      {@link TermType#BLANK} (representing anonymous
-	 *                      individuals introduced to satisfy rule existentially
-	 *                      quantified variables) will be included into the query
-	 *                      results. Otherwise, the query results will only contain
-	 *                      the facts with terms of type {@link TermType#CONSTANT}
-	 *                      (representing named individuals).
+	 * @param queryAtom
+	 *            an {@link Atom} representing the query to be answered.
+	 * @param includeBlanks
+	 *            if {@code true}, facts containing terms of type
+	 *            {@link TermType#BLANK} (representing anonymous individuals
+	 *            introduced to satisfy rule existentially quantified variables)
+	 *            will be included into the query results. Otherwise, the query
+	 *            results will only contain the facts with terms of type
+	 *            {@link TermType#CONSTANT} (representing named individuals).
 	 * @return an {@link AutoCloseable} iterator for {@link QueryResult}s,
 	 *         representing distinct answers to the query.
-	 * @throws ReasonerStateException   if this method is called before loading
-	 *                                  ({@link Reasoner#load()} or after closing ({@link Reasoner#close()}).
-	 * @throws IllegalArgumentException if the given {@code queryAtom} contains
-	 *                                  terms ({@link Atom#getTerms()}) which are
-	 *                                  not of type {@link TermType#CONSTANT} or
-	 *                                  {@link TermType#VARIABLE}.
+	 * @throws ReasonerStateException
+	 *             if this method is called before loading ({@link Reasoner#load()}
+	 *             or after closing ({@link Reasoner#close()}).
+	 * @throws IllegalArgumentException
+	 *             if the given {@code queryAtom} contains terms
+	 *             ({@link Atom#getTerms()}) which are not of type
+	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.
 	 */
 	QueryResultIterator answerQuery(@NonNull Atom queryAtom, boolean includeBlanks) throws ReasonerStateException;
 
@@ -427,33 +447,35 @@ public interface Reasoner extends AutoCloseable {
 	 * A query answer is represented by a {@link QueryResult}. A query can have
 	 * multiple, distinct query answers.
 	 *
-	 * @param queryAtom     an {@link Atom} representing the query to be answered.
-	 * @param csvFilePath   path to a <i><b>.csv</b></i> file where the query
-	 *                      answers will be written. Each line of the
-	 *                      <i><b>.csv</b></i> file represents a query answer fact,
-	 *                      and it will contain the fact term names as columns.
-	 * @param includeBlanks if {@code true}, facts containing terms of type
-	 *                      {@link TermType#BLANK} (representing anonymous
-	 *                      individuals introduced to satisfy rule existentially
-	 *                      quantified variables) will be included into the query
-	 *                      answers. Otherwise, the query answers will only contain
-	 *                      the facts with terms of type {@link TermType#CONSTANT}
-	 *                      (representing named individuals).
+	 * @param queryAtom
+	 *            an {@link Atom} representing the query to be answered.
+	 * @param csvFilePath
+	 *            path to a <i><b>.csv</b></i> file where the query answers will be
+	 *            written. Each line of the <i><b>.csv</b></i> file represents a
+	 *            query answer fact, and it will contain the fact term names as
+	 *            columns.
+	 * @param includeBlanks
+	 *            if {@code true}, facts containing terms of type
+	 *            {@link TermType#BLANK} (representing anonymous individuals
+	 *            introduced to satisfy rule existentially quantified variables)
+	 *            will be included into the query answers. Otherwise, the query
+	 *            answers will only contain the facts with terms of type
+	 *            {@link TermType#CONSTANT} (representing named individuals).
 	 *
-	 * @throws ReasonerStateException   if this method is called before loading
-	 *                                  ({@link Reasoner#load()} or after closing ({@link Reasoner#close()}).
-	 * @throws IOException              if an I/O error occurs regarding given file
-	 *                                  ({@code csvFilePath)}.
+	 * @throws ReasonerStateException
+	 *             if this method is called before loading ({@link Reasoner#load()}
+	 *             or after closing ({@link Reasoner#close()}).
+	 * @throws IOException
+	 *             if an I/O error occurs regarding given file
+	 *             ({@code csvFilePath)}.
 	 * @throws IllegalArgumentException
-	 *                                  <ul>
-	 *                                  <li>if the given {@code queryAtom} contains
-	 *                                  terms ({@link Atom#getTerms()}) which are
-	 *                                  not of type {@link TermType#CONSTANT} or
-	 *                                  {@link TermType#VARIABLE}.</li>
-	 *                                  <li>if the given {@code csvFilePath} does
-	 *                                  not end with <i><b>.csv</b></i>
-	 *                                  extension.</li>
-	 *                                  </ul>
+	 *             <ul>
+	 *             <li>if the given {@code queryAtom} contains terms
+	 *             ({@link Atom#getTerms()}) which are not of type
+	 *             {@link TermType#CONSTANT} or {@link TermType#VARIABLE}.</li>
+	 *             <li>if the given {@code csvFilePath} does not end with
+	 *             <i><b>.csv</b></i> extension.</li>
+	 *             </ul>
 	 */
 	void exportQueryAnswersToCsv(@NonNull Atom queryAtom, @NonNull String csvFilePath, boolean includeBlanks)
 			throws ReasonerStateException, IOException;
@@ -463,7 +485,9 @@ public interface Reasoner extends AutoCloseable {
 	 * {@link #load()} method). All facts inferred by reasoning are discarded. Rules
 	 * and facts added to the reasoner need to be loaded again, to be able to
 	 * perform querying and reasoning.
-	 * @throws ReasonerStateException if the method is called on a closed reasoner.
+	 * 
+	 * @throws ReasonerStateException
+	 *             if the method is called on a closed reasoner.
 	 */
 	void resetReasoner() throws ReasonerStateException;
 

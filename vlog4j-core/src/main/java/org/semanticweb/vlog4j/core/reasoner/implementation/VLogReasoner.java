@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -118,6 +119,10 @@ public class VLogReasoner implements Reasoner {
 		this.rules.addAll(new ArrayList<>(rules));
 		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
 			LOGGER.warn("Adding rules to a closed reasoner.");
+	}
+
+	public List<Rule> getRules() {
+		return  Collections.unmodifiableList(this.rules);
 	}
 
 	@Override

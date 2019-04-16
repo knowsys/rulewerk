@@ -44,6 +44,20 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import karmaresearch.vlog.EDBConfigurationException;
 
 public class ReasonerTest {
+	
+	final String constantNameC = "c";
+	final String constantNameD = "d";
+
+	final Constant constantC = Expressions.makeConstant(constantNameC);
+	final Constant constantD = Expressions.makeConstant(constantNameD);
+	final Variable x = Expressions.makeVariable("x");
+	final Atom factAc = Expressions.makeAtom("A", constantC);
+	final Atom factAd = Expressions.makeAtom("A", constantD);
+	final Atom atomAx = Expressions.makeAtom("A", x);
+	final Atom atomBx = Expressions.makeAtom("B", x);
+	final Atom atomCx = Expressions.makeAtom("C", x);
+	final Rule ruleBxAx = Expressions.makeRule(atomBx, atomAx);
+	final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
 
 	@Test
 	public void testCloseRepeatedly() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
@@ -57,23 +71,19 @@ public class ReasonerTest {
 			reasoner.close();
 		}
 	}
+	
+	@Test
+	public void testLoadRules() throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+		try (final VLogReasoner reasoner = new VLogReasoner()) {
+			reasoner.addRules(ruleBxAx, ruleCxBx);
+			assertEquals(new HashSet<Rule>(reasoner.getRules()), new HashSet<>(Arrays.asList(ruleBxAx, ruleCxBx)));
+		}
+	}
 
 	@Test
 	public void testSimpleInference()
 			throws EDBConfigurationException, IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final String constantNameC = "c";
-		final String constantNameD = "d";
 
-		final Constant constantC = Expressions.makeConstant(constantNameC);
-		final Constant constantD = Expressions.makeConstant(constantNameD);
-		final Variable x = Expressions.makeVariable("x");
-		final Atom factAc = Expressions.makeAtom("A", constantC);
-		final Atom factAd = Expressions.makeAtom("A", constantD);
-		final Atom atomAx = Expressions.makeAtom("A", x);
-		final Atom atomBx = Expressions.makeAtom("B", x);
-		final Atom atomCx = Expressions.makeAtom("C", x);
-		final Rule ruleBxAx = Expressions.makeRule(atomBx, atomAx);
-		final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
 
 		try (final VLogReasoner reasoner = new VLogReasoner()) {
 			reasoner.addFacts(factAc, factAd);
@@ -90,8 +100,8 @@ public class ReasonerTest {
 
 			final Set<List<Constant>> expectedResults = new HashSet<>(
 					Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));
-			assertEquals(expectedResults, actualResults);
 
+			assertEquals(expectedResults, actualResults);
 		}
 	}
 
