@@ -37,6 +37,11 @@
 			<artifactId>vlog4j-graal</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency> 
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
 		
 		<dependency>
 			<!-- Rio parser and writer implementation for the Turtle file format. -->
