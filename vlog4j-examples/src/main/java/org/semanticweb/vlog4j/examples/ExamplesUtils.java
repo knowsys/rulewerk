@@ -79,7 +79,8 @@ public final class ExamplesUtils {
 	}
 
 	/**
-	 * Prints out the {@code reasoner} answer's to given query ({@code queryAtom}).
+	 * Prints out the answers given by {@code reasoner} to the query
+	 * ({@code queryAtom}).
 	 *
 	 * @param queryAtom
 	 *            query to be answered
@@ -98,10 +99,13 @@ public final class ExamplesUtils {
 	}
 
 	/**
-	 * Returns the size of an Iterator
+	 * Returns the size of an iterator.
 	 *
+	 * @FIXME This is an inefficient way of counting results. It should be done at a
+	 *        lower level instead
 	 * @param Iterator<T>
 	 *            to iterate over
+	 * @return number of elements in iterator
 	 */
 	public static <T> int iteratorSize(Iterator<T> iterator) {
 		int size = 0;

@@ -334,21 +334,97 @@ public interface Reasoner extends AutoCloseable {
 	 * @throws ReasonerStateException              if the method is called on a
 	 *                                             closed reasoner.
 	 */
-	// FIXME should EdbIdbSeparationException be thrown when users try to add
-	// facts/rules?
 	void load()
 			throws IOException, EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException;
 
+	/**
+	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic,
+	 * Cyclic, or cyclicity cannot be determined.
+	 * 
+	 * @return
+	 * @throws ReasonerStateException
+	 * @throws NotStartedException
+	 */
 	CyclicityResult checkForCycles() throws ReasonerStateException, NotStartedException;
 
+	/**
+	 * Check the <b>Joint Acyclicity (JA)</b> property of loaded rules and EDB
+	 * predicates of loaded facts. If a set of rules and EDB predicates is JA, then,
+	 * for the given set of rules and any facts over the given EDB predicates,
+	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and, implicitly,
+	 * the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will always
+	 * terminate
+	 * 
+	 * @return {@code true}, if the loaded set of rules is Joint Acyclic with
+	 *         respect to the EDB predicates of loaded facts.<br>
+	 *         {@code false}, otherwise
+	 * @throws ReasonerStateException
+	 * @throws NotStartedException
+	 */
 	boolean isJA() throws ReasonerStateException, NotStartedException;
 
+	/**
+	 * Check the <b>Restricted Joint Acyclicity (RJA)</b> property of loaded rules
+	 * and EDB predicates of loaded facts. If a set of rules and EDB predicates is
+	 * RJA, then, for the given set of rules and any facts over the given EDB
+	 * predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE Restricted chase}
+	 * will always terminate
+	 * 
+	 * @return {@code true}, if the loaded set of rules is Restricted Joint Acyclic
+	 *         with respect to the EDB predicates of loaded facts.<br>
+	 *         {@code false}, otherwise
+	 * @throws ReasonerStateException
+	 * @throws NotStartedException
+	 */
 	boolean isRJA() throws ReasonerStateException, NotStartedException;
 
+	/**
+	 * Check the <b>Model-Faithful Acyclicity (MFA)</b> property of loaded rules and
+	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is MFA,
+	 * then, for the given set of rules and any facts over the given EDB predicates,
+	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and, implicitly,
+	 * the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will always
+	 * terminate
+	 * 
+	 * @return {@code true}, if the loaded set of rules is Model-Faithful Acyclic
+	 *         with respect to the EDB predicates of loaded facts.<br>
+	 *         {@code false}, otherwise
+	 * @throws ReasonerStateException
+	 * @throws NotStartedException
+	 */
 	boolean isMFA() throws ReasonerStateException, NotStartedException;
 
+	/**
+	 * Check the <b>Restricted Model-Faithful Acyclicity (RMFA)</b> property of
+	 * loaded rules and EDB predicates of loaded facts. If a set of rules and EDB
+	 * predicates is RMFA, then, for the given set of rules and any facts over the
+	 * given EDB predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE
+	 * Restricted chase} will always terminate. If a set of rules and EDB predicates
+	 * is MFA, then it is also JA.
+	 * 
+	 * @return {@code true}, if the loaded set of rules is Restricted Model-Faithful
+	 *         Acyclic with respect to the EDB predicates of loaded facts.<br>
+	 *         {@code false}, otherwise
+	 * @throws ReasonerStateException
+	 * @throws NotStartedException
+	 */
 	boolean isRMFA() throws ReasonerStateException, NotStartedException;
 
+	/**
+	 * Check the <b>Model-Faithful Cyclicity (MFC)</b> property of loaded rules and
+	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is MFC,
+	 * then there exists a set of facts over the given EDB predicates for which
+	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} algorithm is
+	 * guaranteed not to terminate for the loaded rules. If a set of rules and EDB
+	 * predicates is RMFA, then it is also RJA. Therefore, if a set or rules and EDB
+	 * predicates is MFC, it is not MFA, nor JA.
+	 * 
+	 * @return {@code true}, if the loaded set of rules is Model-Faithful Cyclic
+	 *         with respect to the EDB predicates of loaded facts.<br>
+	 *         {@code false}, otherwise
+	 * @throws ReasonerStateException
+	 * @throws NotStartedException
+	 */
 	boolean isMFC() throws ReasonerStateException, NotStartedException;
 
 	/**
