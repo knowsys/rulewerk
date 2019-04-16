@@ -4,7 +4,7 @@ package org.semanticweb.vlog4j.core.model;
  * #%L
  * VLog4j Core Components
  * %%
- * Copyright (C) 2018 VLog4j Developers
+ * Copyright (C) 2018 - 2019 VLog4j Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.semanticweb.vlog4j.core.model;
  * limitations under the License.
  * #L%
  */
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -31,7 +32,7 @@ import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -39,16 +40,16 @@ import org.semanticweb.vlog4j.core.model.implementation.NegativeLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 
-public class PositiveLiteralImplTest {
-
+public class NegativeLiteralImplTest {
+	
 	@Test
 	public void testGetters() {
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
 		final Constant c = Expressions.makeConstant("c");
 		final Constant d = Expressions.makeConstant("d");
-		final PositiveLiteral atomP = Expressions.makePositiveLiteral("p", x, c, d, y);
-		final PositiveLiteral atomQ = Expressions.makePositiveLiteral("q", c, d);
+		final NegativeLiteral atomP = Expressions.makeNegativeLiteral("p", x, c, d, y);
+		final NegativeLiteral atomQ = Expressions.makeNegativeLiteral("q", c, d);
 
 		final Set<Variable> variables = Sets.newSet(x, y);
 		final Set<Constant> constants = Sets.newSet(c, d);
@@ -68,8 +69,8 @@ public class PositiveLiteralImplTest {
 		assertEquals(Arrays.asList(c, d), atomQ.getTerms());
 		
 		
-		assertFalse(atomP.isNegated());
-		assertFalse(atomQ.isNegated());
+		assertTrue(atomP.isNegated());
+		assertTrue(atomQ.isNegated());
 	}
 
 	@Test
@@ -80,11 +81,11 @@ public class PositiveLiteralImplTest {
 		final Predicate predicateP = new PredicateImpl("p", 2);
 		final Predicate predicateQ = new PredicateImpl("q", 2);
 
-		final Literal atom1 = Expressions.makePositiveLiteral("p", Arrays.asList(x, c));
-		final Literal atom2 = Expressions.makePositiveLiteral("p", x, c);
-		final Literal atom3 = new PositiveLiteralImpl(predicateP, Arrays.asList(x, c));
-		final Literal atom4 = new PositiveLiteralImpl(predicateQ, Arrays.asList(x, c));
-		final Literal atom5 = new PositiveLiteralImpl(predicateP, Arrays.asList(c, x));
+		final Literal atom1 = Expressions.makeNegativeLiteral("p", Arrays.asList(x, c));
+		final Literal atom2 = Expressions.makeNegativeLiteral("p", x, c);
+		final Literal atom3 = new NegativeLiteralImpl(predicateP, Arrays.asList(x, c));
+		final Literal atom4 = new NegativeLiteralImpl(predicateQ, Arrays.asList(x, c));
+		final Literal atom5 = new NegativeLiteralImpl(predicateP, Arrays.asList(c, x));
 
 		assertEquals(atom1, atom1);
 		assertEquals(atom1, atom2);
@@ -98,57 +99,57 @@ public class PositiveLiteralImplTest {
 		assertFalse(atom1.equals(c));
 		
 		
-		assertNotEquals(atom1, new NegativeLiteralImpl(atom1.getPredicate(), atom1.getTerms()));
-		assertNotEquals(atom2, new NegativeLiteralImpl(atom2.getPredicate(), atom2.getTerms()));
-		assertNotEquals(atom3, new NegativeLiteralImpl(atom3.getPredicate(), atom3.getTerms()));
-		assertNotEquals(atom4, new NegativeLiteralImpl(atom4.getPredicate(), atom4.getTerms()));
-		assertNotEquals(atom5, new NegativeLiteralImpl(atom5.getPredicate(), atom5.getTerms()));
+		assertNotEquals(atom1, new PositiveLiteralImpl(atom1.getPredicate(), atom1.getTerms()));
+		assertNotEquals(atom2, new PositiveLiteralImpl(atom2.getPredicate(), atom2.getTerms()));
+		assertNotEquals(atom3, new PositiveLiteralImpl(atom3.getPredicate(), atom3.getTerms()));
+		assertNotEquals(atom4, new PositiveLiteralImpl(atom4.getPredicate(), atom4.getTerms()));
+		assertNotEquals(atom5, new PositiveLiteralImpl(atom5.getPredicate(), atom5.getTerms()));
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void termsNotNull() {
 		final Predicate predicate1 = Expressions.makePredicate("p", 1);
-		new PositiveLiteralImpl(predicate1, null);
+		new NegativeLiteralImpl(predicate1, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void termsNoNullElements() {
 		final Predicate predicate1 = Expressions.makePredicate("p", 1);
 		final Variable x = Expressions.makeVariable("X");
-		new PositiveLiteralImpl(predicate1, Arrays.asList(x, null));
+		new NegativeLiteralImpl(predicate1, Arrays.asList(x, null));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void termsNonEmpty() {
-		Expressions.makePositiveLiteral("p");
+		Expressions.makeNegativeLiteral("p");
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void predicateNotNull() {
 		final Predicate nullPredicate = null;
-		Expressions.makePositiveLiteral(nullPredicate, Expressions.makeConstant("c"));
+		Expressions.makeNegativeLiteral(nullPredicate, Expressions.makeConstant("c"));
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void predicateNameNotNull() {
 		final String nullPredicateName = null;
-		Expressions.makePositiveLiteral(nullPredicateName, Expressions.makeConstant("c"));
+		Expressions.makeNegativeLiteral(nullPredicateName, Expressions.makeConstant("c"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void predicateNameNotEmpty() {
-		Expressions.makePositiveLiteral("", Expressions.makeConstant("c"));
+		Expressions.makeNegativeLiteral("", Expressions.makeConstant("c"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void predicateNameNotWhitespace() {
-		Expressions.makePositiveLiteral("  ", Expressions.makeConstant("c"));
+		Expressions.makeNegativeLiteral("  ", Expressions.makeConstant("c"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void termSizeMatchesPredicateArity() {
 		final Predicate predicateArity1 = Expressions.makePredicate("p", 1);
-		Expressions.makePositiveLiteral(predicateArity1, Expressions.makeConstant("c"), Expressions.makeVariable("X"));
+		Expressions.makeNegativeLiteral(predicateArity1, Expressions.makeConstant("c"), Expressions.makeVariable("X"));
 	}
 
 }
