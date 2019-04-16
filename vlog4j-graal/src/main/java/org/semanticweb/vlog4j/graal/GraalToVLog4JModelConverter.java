@@ -208,8 +208,17 @@ public final class GraalToVLog4JModelConverter {
 	 * {@link fr.lirmm.graphik.graal.api.core.Term#isConstant() Constant}, a
 	 * {@link GraalConvertException} is thrown.
 	 *
-	 * @param term A {@link fr.lirmm.graphik.graal.api.core.Term Graal Term}
-	 * @return A {@link Term VLog4J Term}
+	 * @param term A {@link fr.lirmm.graphik.graal.api.core.Term Graal Term.
+	 * @return A {@link Term VLog4J Term}, with {@link Term#getName()} equal to
+	 *         {@link fr.lirmm.graphik.graal.api.core.Term#getIdentifier()}, if it
+	 *         is a Variable, and {@link Term#getName()} equal to
+	 *         <{@link fr.lirmm.graphik.graal.api.core.Term#getIdentifier()}>, if it
+	 *         is a Constant. <br>
+	 *         Graal Variable with identifier <b>"a"</b> will be transformed to
+	 *         vlog4j Variable with name <b>"a"</b>. Graal Constant with identifier
+	 *         <b>"c"</b> will be transformed to vlog4j Constant with name
+	 *         <b>"&lt;c&gt;"</b>.
+	 * 
 	 * @throws GraalConvertException If the term is neither variable nor constant.
 	 */
 	private static Term convertTerm(final fr.lirmm.graphik.graal.api.core.Term term) {

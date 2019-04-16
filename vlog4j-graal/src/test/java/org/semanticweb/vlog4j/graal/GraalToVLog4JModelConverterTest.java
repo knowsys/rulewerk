@@ -173,20 +173,6 @@ public class GraalToVLog4JModelConverterTest {
 		final String predicate4 = "predicate4";
 		final String stockholm = "stockholm";
 
-		final PositiveLiteral complexQueryAtom = makePositiveLiteral(makePredicate(complexQuery, 3), this.vlog4j_x,
-				this.vlog4j_x, this.vlog4j_y);
-
-		final PositiveLiteral vlog4j_predicate1_atom = makePositiveLiteral(makePredicate(predicate1, 1), this.vlog4j_x);
-		final PositiveLiteral vlog4j_predicate2_atom = makePositiveLiteral(makePredicate(predicate2, 2), this.vlog4j_y,
-				this.vlog4j_x);
-		final PositiveLiteral vlog4j_predicate3_atom = makePositiveLiteral(makePredicate(predicate3, 2), this.vlog4j_y,
-				makeConstant(stockholm));
-		final PositiveLiteral vlog4j_predicate4_atom = makePositiveLiteral(makePredicate(predicate4, 3), this.vlog4j_x,
-				this.vlog4j_y, this.vlog4j_z);
-
-		final Rule complexQueryRule = makeRule(complexQueryAtom, vlog4j_predicate1_atom, vlog4j_predicate2_atom,
-				vlog4j_predicate3_atom, vlog4j_predicate4_atom);
-
 		final fr.lirmm.graphik.graal.api.core.Predicate graal_predicate1 = new fr.lirmm.graphik.graal.api.core.Predicate(
 				predicate1, 1);
 		final fr.lirmm.graphik.graal.api.core.Predicate graal_predicate2 = new fr.lirmm.graphik.graal.api.core.Predicate(
@@ -202,6 +188,7 @@ public class GraalToVLog4JModelConverterTest {
 				this.graal_y, this.graal_x);
 		final fr.lirmm.graphik.graal.api.core.Atom graal_predicate3_atom = new DefaultAtom(graal_predicate3,
 				this.graal_y, this.termFactory.createConstant(stockholm));
+
 		final fr.lirmm.graphik.graal.api.core.Atom graal_predicate4_atom = new DefaultAtom(graal_predicate4,
 				this.graal_x, this.graal_y, this.graal_z);
 
@@ -212,9 +199,23 @@ public class GraalToVLog4JModelConverterTest {
 
 		final GraalConjunctiveQueryToRule importedComplexQuery = GraalToVLog4JModelConverter.convertQuery(complexQuery,
 				graal_complex_query);
-		assertEquals(complexQueryAtom, importedComplexQuery.getQuery());
 
-		assertEquals(complexQueryRule, importedComplexQuery.getRule());
+		final String expectedStockholm = "<" + stockholm + ">";
+		final PositiveLiteral expectedComplexQueryAtom = makePositiveLiteral(makePredicate(complexQuery, 3),
+				this.vlog4j_x, this.vlog4j_x, this.vlog4j_y);
+		final PositiveLiteral vlog4j_predicate1_atom = makePositiveLiteral(makePredicate(predicate1, 1), this.vlog4j_x);
+		final PositiveLiteral vlog4j_predicate2_atom = makePositiveLiteral(makePredicate(predicate2, 2), this.vlog4j_y,
+				this.vlog4j_x);
+		final PositiveLiteral vlog4j_predicate3_atom = makePositiveLiteral(makePredicate(predicate3, 2), this.vlog4j_y,
+				makeConstant(expectedStockholm));
+		final PositiveLiteral vlog4j_predicate4_atom = makePositiveLiteral(makePredicate(predicate4, 3), this.vlog4j_x,
+				this.vlog4j_y, this.vlog4j_z);
+		final Rule expectedComplexQueryRule = makeRule(expectedComplexQueryAtom, vlog4j_predicate1_atom,
+				vlog4j_predicate2_atom, vlog4j_predicate3_atom, vlog4j_predicate4_atom);
+
+		assertEquals(expectedComplexQueryAtom, importedComplexQuery.getQuery());
+
+		assertEquals(expectedComplexQueryRule, importedComplexQuery.getRule());
 	}
 
 	@Test(expected = GraalConvertException.class)
