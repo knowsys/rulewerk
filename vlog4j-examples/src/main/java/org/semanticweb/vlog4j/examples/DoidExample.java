@@ -127,7 +127,7 @@ public class DoidExample {
 			reasoner.addRules(vlogRules);
 
 			System.out.println("Rules configured:\n--");
-			vlogRules.forEach(System.out::println);
+			reasoner.getRules().forEach(System.out::println);
 			System.out.println("--");
 			reasoner.load();
 			System.out.println("Loading completed.");
@@ -136,12 +136,12 @@ public class DoidExample {
 			System.out.println("... reasoning completed.");
 
 			final QueryResultIterator answersCancer = reasoner.answerQuery(humansWhoDiedOfCancer, true);
-			System.out.println("Number of humans who died of Cancer: " + ExamplesUtils.iteratorSize(answersCancer));
+			System.out.println("Humans in Wikidata who died of cancer in 2018: " + ExamplesUtils.iteratorSize(answersCancer));
 
 			final QueryResultIterator answersNoncancer = reasoner.answerQuery(humansWhoDiedOfNoncancer, true);
 			System.out.println(
-					"Number of humans who died of Non cancer: " + ExamplesUtils.iteratorSize(answersNoncancer));
-
+					"Humans in Wikidata who died of some other cause in 2018: " + ExamplesUtils.iteratorSize(answersNoncancer));
+			System.out.println("Done.");
 		}
 
 	}
