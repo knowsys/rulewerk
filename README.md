@@ -9,19 +9,20 @@ A Java library based on the [VLog rule engine](https://github.com/karmaresearch/
 Installation
 ------------
 
-The current release of VLog4j is version 0.2.0. The easiest way of using the library is with Maven. Maven users must add the following dependency to the dependencies in their pom.xml file:
+The current release of VLog4j is version 0.3.0. The easiest way of using the library is with Maven. Maven users must add the following dependency to the dependencies in their pom.xml file:
 
 ```
 <dependency>
 	<groupId>org.semanticweb.vlog4j</groupId>
 	<artifactId>vlog4j-core</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 </dependency>
 ```
 
 You need to use Java 1.8 or above. Available modules include:
 
 * **vlog4j-core**: essential data models for rules and facts, and essential reasoner functionality
+* **vlog4j-graal**: support for converting rules, facts and queries from [Graal](http://graphik-team.github.io/graal/) API objects and [DLGP](http://graphik-team.github.io/graal/doc/dlgp) files
 * **vlog4j-rdf**: support for reading from RDF files
 * **vlog4j-owlapi**: support for converting rules from OWL ontology, loaded with the OWL API
 
