@@ -1,0 +1,13 @@
+org.semanticweb.vlog4j.core.model.api
+org.semanticweb.vlog4j.core.model.implementation
+org.semanticweb.vlog4j.core.reasoner
+org.semanticweb.vlog4j.core.reasoner.exceptions
+org.semanticweb.vlog4j.core.reasoner.implementation
+org.semanticweb.vlog4j.examples
+org.semanticweb.vlog4j.examples.core
+org.semanticweb.vlog4j.examples.graal
+org.semanticweb.vlog4j.examples.owlapi
+org.semanticweb.vlog4j.examples.rdf
+org.semanticweb.vlog4j.graal
+org.semanticweb.vlog4j.owlapi
+org.semanticweb.vlog4j.rdf
