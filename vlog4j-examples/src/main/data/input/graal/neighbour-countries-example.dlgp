@@ -1,0 +1,9 @@
+% Data sources with predicate names:
+% neighbour(country1, country2) -- countries sharing a border (both Wikidata IRIs)
+
+@rules
+
+country(X), country(Y) :- neighbour(X,Y) .
+transitiveNeighbour(X,Y), transitiveNeighbour(Y,X) :- neighbour(X,Y) .
+transitiveNeighbour(X,Z) :- transitiveNeighbour(X,Y), neighbour(Y,Z) .
+
