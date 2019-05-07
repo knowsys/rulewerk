@@ -348,6 +348,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void resetReasoner() throws ReasonerStateException {
+		// TODO what should happen to the KB?
 		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING))
 			throw new ReasonerStateException(reasonerState, "Resetting is not allowed after closing.");
 		this.reasonerState = ReasonerState.BEFORE_LOADING;
@@ -359,7 +360,7 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void close() {
 		this.reasonerState = ReasonerState.AFTER_CLOSING;
-		
+
 		this.knowledgeBase.deleteObserver(this);
 		this.vLog.stop();
 	}
