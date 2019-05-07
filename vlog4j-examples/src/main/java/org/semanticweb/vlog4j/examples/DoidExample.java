@@ -47,7 +47,7 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
 /**
  * This example reasons about human diseases, based on information from the
  * Disease Ontology (DOID) and Wikidata. It illustrates how to load data from
- * different sources (RDF file, SPARQL), and reason about these input using
+ * different sources (RDF file, SPARQL), and reason about these inputs using
  * rules that are loaded from a file. The rules used here employ existential
  * quantifiers and stratified negation.
  * 
