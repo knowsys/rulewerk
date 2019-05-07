@@ -3,6 +3,7 @@ package org.semanticweb.vlog4j.core.reasoner;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Observer;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -90,7 +91,7 @@ import karmaresearch.vlog.NotStartedException;
  * @author Irina Dragoste
  *
  */
-public interface Reasoner extends AutoCloseable {
+public interface Reasoner  extends AutoCloseable, Observer  {
 
 	/**
 	 * Factory method that to instantiate a Reasoner.

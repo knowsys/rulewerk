@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
@@ -61,6 +62,7 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
  */
 
 public class VLogReasoner implements Reasoner {
+	
 	private static Logger LOGGER = LoggerFactory.getLogger(VLogReasoner.class);
 
 	private final VLog vLog = new VLog();
@@ -126,6 +128,7 @@ public class VLogReasoner implements Reasoner {
 			LOGGER.warn("Adding rules to a closed reasoner.");
 	}
 
+	@Override
 	public List<Rule> getRules() {
 		return  Collections.unmodifiableList(this.rules);
 	}
@@ -498,6 +501,13 @@ public class VLogReasoner implements Reasoner {
 			}
 			return CyclicityResult.UNDETERMINED;
 		}
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO update reasoning state for query answering
+		// TODO compute KB diff
+		
 	}
 
 }

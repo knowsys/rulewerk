@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
+import java.util.Observable;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -20,6 +22,6 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 
-public class KnowledgeBase {
+public class KnowledgeBase extends Observable {
 
 }
