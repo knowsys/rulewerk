@@ -44,6 +44,7 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -69,7 +70,7 @@ public class TestReasonOverRdfFacts {
 				RDFFormat.TURTLE);
 		final Set<PositiveLiteral> facts = RdfModelConverter.rdfModelToPositiveLiterals(model);
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addFacts(facts);
 			reasoner.load();
 
@@ -87,7 +88,7 @@ public class TestReasonOverRdfFacts {
 				RDFFormat.TURTLE);
 		final Set<PositiveLiteral> facts = RdfModelConverter.rdfModelToPositiveLiterals(model);
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addFacts(facts);
 			reasoner.load();
 

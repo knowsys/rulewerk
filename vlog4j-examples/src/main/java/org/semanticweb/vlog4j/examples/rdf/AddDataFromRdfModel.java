@@ -44,6 +44,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -145,7 +146,7 @@ public class AddDataFromRdfModel {
 		final Rule organizationRule = Expressions.makeRule(creatorOrganizationName, personHasAffiliation,
 				affiliationWithOrganization, organizationHasName);
 
-		try (final Reasoner reasoner = Reasoner.getInstance();) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase());) {
 			/*
 			 * Facts extracted from the RDF resources are added to the Reasoner's knowledge
 			 * base.

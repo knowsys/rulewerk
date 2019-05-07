@@ -108,7 +108,7 @@ public class ReasonerTimeoutTest {
 
 	@Before
 	public void setUp() throws ReasonerStateException {
-		reasoner = Reasoner.getInstance();
+		reasoner = Reasoner.getInstance(new KnowledgeBase());
 		
 		reasoner.addFacts(facts);
 		reasoner.addRules(rules);

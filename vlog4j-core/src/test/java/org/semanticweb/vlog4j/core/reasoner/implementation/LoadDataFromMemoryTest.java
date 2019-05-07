@@ -28,6 +28,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -44,7 +45,7 @@ public class LoadDataFromMemoryTest {
 		final PositiveLiteral factIDBpredQ1 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("c"));
 		final PositiveLiteral factEDBpredQ2 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.addRules(rule);
 			reasoner.addFacts(factIDBpredQ1, factEDBpredQ2);
 			reasoner.load();
@@ -59,7 +60,7 @@ public class LoadDataFromMemoryTest {
 		final PositiveLiteral factEDBpred = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
 
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.addRules(rule);
 			reasoner.addFacts(factEDBpred);
 			reasoner.load();
@@ -71,7 +72,7 @@ public class LoadDataFromMemoryTest {
 		final PositiveLiteral factWithVariableTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeVariable("x"));
 
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.addFacts(factWithVariableTerms);
 		}
 	}
@@ -80,7 +81,7 @@ public class LoadDataFromMemoryTest {
 	public void addFactsWithBlankTerms() throws ReasonerStateException {
 		final PositiveLiteral factWithBlankTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"), new BlankImpl("b"));
 
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.addFacts(factWithBlankTerms);
 		}
 	}

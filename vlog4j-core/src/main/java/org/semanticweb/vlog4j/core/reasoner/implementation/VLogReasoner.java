@@ -23,6 +23,7 @@ import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
@@ -62,8 +63,10 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
  */
 
 public class VLogReasoner implements Reasoner {
-	
+
 	private static Logger LOGGER = LoggerFactory.getLogger(VLogReasoner.class);
+
+	private final KnowledgeBase knowledgeBase;
 
 	private final VLog vLog = new VLog();
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
@@ -76,6 +79,12 @@ public class VLogReasoner implements Reasoner {
 	private final List<Rule> rules = new ArrayList<>();
 	private final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = new HashMap<>();
 	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
+
+	public VLogReasoner(KnowledgeBase knowledgeBase) {
+		super();
+		this.knowledgeBase = knowledgeBase;
+		this.knowledgeBase.addObserver(this);
+	}
 
 	/**
 	 * Holds the state of the reasoning result. Has value {@code true} if reasoning
@@ -130,7 +139,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public List<Rule> getRules() {
-		return  Collections.unmodifiableList(this.rules);
+		return Collections.unmodifiableList(this.rules);
 	}
 
 	@Override
@@ -339,7 +348,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void resetReasoner() throws ReasonerStateException {
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING))
 			throw new ReasonerStateException(reasonerState, "Resetting is not allowed after closing.");
 		this.reasonerState = ReasonerState.BEFORE_LOADING;
 		this.vLog.stop();
@@ -349,7 +358,9 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void close() {
-		reasonerState = ReasonerState.AFTER_CLOSING;
+		this.reasonerState = ReasonerState.AFTER_CLOSING;
+		
+		this.knowledgeBase.deleteObserver(this);
 		this.vLog.stop();
 	}
 
@@ -507,7 +518,7 @@ public class VLogReasoner implements Reasoner {
 	public void update(Observable o, Object arg) {
 		// TODO update reasoning state for query answering
 		// TODO compute KB diff
-		
+
 	}
 
 }

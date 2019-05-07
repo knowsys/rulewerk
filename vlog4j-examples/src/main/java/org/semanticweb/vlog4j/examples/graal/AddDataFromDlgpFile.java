@@ -27,6 +27,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -103,7 +104,7 @@ public class AddDataFromDlgpFile {
 		 * 3. Loading, reasoning, and querying while using try-with-resources to close
 		 * the reasoner automatically.
 		 */
-		try (Reasoner reasoner = Reasoner.getInstance()) {
+		try (Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
 			reasoner.addFacts(GraalToVLog4JModelConverter.convertAtoms(graalAtoms));
 			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {

@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -95,7 +96,7 @@ public class ConfigureReasonerLogging {
 
 	public static void main(final String[] args)
 			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 
 			reasoner.addRules(rules);
 			reasoner.addFacts(fact);

@@ -59,7 +59,7 @@ public class LoggingTest {
 
 	@Test
 	public void testSetLogFileNull() throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		try (final Reasoner instance = Reasoner.getInstance()) {
+		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
 			instance.setLogFile(null);
 			instance.setLogLevel(LogLevel.INFO);
 
@@ -75,7 +75,7 @@ public class LoggingTest {
 	public void testSetLogFileInexistent() throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final String inexistentFilePath = LOGS_FOLDER + "a/b";
 
-		try (final Reasoner instance = Reasoner.getInstance()) {
+		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
 			instance.setLogFile(inexistentFilePath);
 			assertFalse(new File(inexistentFilePath).exists());
 			instance.setLogLevel(LogLevel.INFO);
@@ -91,7 +91,7 @@ public class LoggingTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testSetLogLevelNull() throws ReasonerStateException {
-		try (final Reasoner instance = Reasoner.getInstance()) {
+		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
 			instance.setLogLevel(null);
 		}
 	}
@@ -102,7 +102,7 @@ public class LoggingTest {
 		assertFalse(new File(logFilePath).exists());
 		int countLinesBeforeReset = 0;
 
-		try (final Reasoner instance = Reasoner.getInstance()) {
+		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
 			instance.addFacts(factPc);
 			instance.addRules(rule);
 			instance.setLogLevel(LogLevel.INFO);
@@ -128,7 +128,7 @@ public class LoggingTest {
 		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelInfo.log";
 		assertFalse(new File(logFilePath).exists());
 
-		try (final Reasoner instance = Reasoner.getInstance()) {
+		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
 			instance.addFacts(factPc);
 			instance.addRules(rule);
 
@@ -149,7 +149,7 @@ public class LoggingTest {
 		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelDebug.log";
 		assertFalse(new File(logFilePath).exists());
 
-		try (final Reasoner instance = Reasoner.getInstance()) {
+		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
 			instance.addFacts(factPc);
 			instance.addRules(rule);
 

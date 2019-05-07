@@ -37,6 +37,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -75,7 +76,7 @@ public class LoadDataFromCsvFileTest {
 
 	private void testLoadUnaryFactsFromSingleCsvDataSource(final FileDataSource fileDataSource) throws ReasonerStateException,
 	EdbIdbSeparationException, EDBConfigurationException, IOException, IncompatiblePredicateArityException {
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 			reasoner.addFactsFromDataSource(unaryPredicate2, fileDataSource);
 			reasoner.load();
@@ -108,7 +109,7 @@ public class LoadDataFromCsvFileTest {
 		assertFalse(nonexistingFile.exists());
 		final FileDataSource fileDataSource = new CsvFileDataSource(nonexistingFile);
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 			reasoner.load();
 		}
@@ -120,7 +121,7 @@ public class LoadDataFromCsvFileTest {
 		final FileDataSource fileDataSource = new CsvFileDataSource(
 				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.binaryCsvFileNameRoot + ".csv"));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 			reasoner.load();
 		}

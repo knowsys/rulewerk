@@ -39,6 +39,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -60,7 +61,7 @@ public class StratifiedNegationTest {
 		final Rule rule = makeRule(qXY, pXY, notQXY);
 		final PositiveLiteral fact = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addRules(rule);
 			reasoner.addFacts(fact);
 
@@ -82,7 +83,7 @@ public class StratifiedNegationTest {
 		final Rule rule = makeRule(qXY, pXY, notQXY);
 		final PositiveLiteral fact = makePositiveLiteral("P", makeConstant("c"), makeConstant("d"));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addRules(rule);
 			reasoner.addFacts(fact);
 
@@ -111,7 +112,7 @@ public class StratifiedNegationTest {
 		
 		final PositiveLiteral qCD = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addRules(rule);
 			reasoner.addFacts(pCD, pEF, qCD);
 
@@ -146,7 +147,7 @@ public class StratifiedNegationTest {
 		
 		final PositiveLiteral qCD = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addRules(rule);
 			reasoner.addFacts(pCD, pEF, qCD);
 

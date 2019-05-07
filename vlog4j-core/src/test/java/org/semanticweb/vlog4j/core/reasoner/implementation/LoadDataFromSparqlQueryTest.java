@@ -34,6 +34,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -61,7 +62,7 @@ public class LoadDataFromSparqlQueryTest {
 				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
 			reasoner.load();
 			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
@@ -86,7 +87,7 @@ public class LoadDataFromSparqlQueryTest {
 				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
 			reasoner.load();
 			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
@@ -119,7 +120,7 @@ public class LoadDataFromSparqlQueryTest {
 				"?a wdt:P22 ?b .");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
 			reasoner.load();
 			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
@@ -142,7 +143,7 @@ public class LoadDataFromSparqlQueryTest {
 				"?b wdt:P22 ?a .\n" + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
 			reasoner.load();
 			reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether, Expressions.makeVariable("x"),
@@ -162,7 +163,7 @@ public class LoadDataFromSparqlQueryTest {
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
 			reasoner.load();
 			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether,
@@ -184,7 +185,7 @@ public class LoadDataFromSparqlQueryTest {
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			// TODO must validate predicate arity sonner
 			reasoner.addFactsFromDataSource(Expressions.makePredicate("ternary", 3), dataSource);
 			reasoner.load();

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -123,7 +124,7 @@ public class AddDataFromGraal {
 		 * 4. Loading, reasoning, and querying while using try-with-resources to close
 		 * the reasoner automatically.
 		 */
-		try (Reasoner reasoner = Reasoner.getInstance()) {
+		try (Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
 			reasoner.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
 			reasoner.addRules(convertedGraalConjunctiveQuery.getRule());
 			reasoner.addFacts(GraalToVLog4JModelConverter.convertAtoms(graalAtoms));

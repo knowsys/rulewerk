@@ -37,6 +37,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -62,11 +63,11 @@ public class ReasonerTest {
 	@Test
 	public void testCloseRepeatedly()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.close();
 		}
 
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.load();
 			reasoner.close();
 			reasoner.close();
@@ -76,7 +77,7 @@ public class ReasonerTest {
 	@Test
 	public void testLoadRules()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.addRules(ruleBxAx, ruleCxBx);
 			reasoner.addRules(ruleBxAx);
 			assertEquals(reasoner.getRules(), Arrays.asList(ruleBxAx, ruleCxBx, ruleBxAx));
@@ -87,7 +88,7 @@ public class ReasonerTest {
 	public void testSimpleInference() throws EDBConfigurationException, IOException, ReasonerStateException,
 			EdbIdbSeparationException, IncompatiblePredicateArityException {
 
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.addFacts(factAc, factAd);
 			reasoner.addRules(ruleBxAx, ruleCxBx);
 			reasoner.load();
@@ -110,7 +111,7 @@ public class ReasonerTest {
 
 	@Test
 	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
 			assertTrue(dataSourcesConfig.isEmpty());
 		}

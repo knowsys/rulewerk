@@ -94,12 +94,13 @@ import karmaresearch.vlog.NotStartedException;
 public interface Reasoner  extends AutoCloseable, Observer  {
 
 	/**
-	 * Factory method that to instantiate a Reasoner.
+	 * Factory method that to instantiate a Reasoner with given knowledge base.
+	 * @param knowledgeBase Knowledge Base containing data associated to the reasoner
 	 *
 	 * @return a {@link VLogReasoner} instance.
 	 */
-	public static Reasoner getInstance() {
-		return new VLogReasoner();
+	public static Reasoner getInstance(KnowledgeBase knowledgeBase) {
+		return new VLogReasoner(knowledgeBase);
 	}
 
 	/**
