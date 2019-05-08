@@ -35,7 +35,6 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
@@ -51,38 +50,42 @@ public class GeneratedAnonymousIndividualsTest {
 	private static final Variable vy = Expressions.makeVariable("y");
 	private static final Variable vz = Expressions.makeVariable("z");
 	private static final String p = "p";
-	
+
 	// rule: P(?x) -> P(?x,!y), P(?x,!z)
 	private static final Rule existentialRule = Expressions.makeRule(
-			Expressions.makePositiveConjunction(Expressions.makePositiveLiteral(p, vx, vy), Expressions.makePositiveLiteral(p, vx, vz)),
+			Expressions.makePositiveConjunction(Expressions.makePositiveLiteral(p, vx, vy),
+					Expressions.makePositiveLiteral(p, vx, vz)),
 			Expressions.makeConjunction(Expressions.makePositiveLiteral(p, vx)));
-	static {
-		// y,z existential variables that can introduce blanks (anonymous individuals)
-		assertEquals(Sets.newSet(vy, vz), existentialRule.getExistentiallyQuantifiedVariables());
-	}
 
+	private static VLogKnowledgeBase kb = new VLogKnowledgeBase();
 	// fact: P(c)
 	private static final Constant constantC = Expressions.makeConstant("c");
 	private static final PositiveLiteral fact = Expressions.makePositiveLiteral(p, constantC);
 
 	// query: P(?x,?y) ?
-	final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(p, Expressions.makeVariable("?x"), Expressions.makeVariable("?y"));
+	final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(p, Expressions.makeVariable("?x"),
+			Expressions.makeVariable("?y"));
+
+	static {
+		// y,z existential variables that can introduce blanks (anonymous individuals)
+		assertEquals(Sets.newSet(vy, vz), existentialRule.getExistentiallyQuantifiedVariables());
+
+		kb.addRules(existentialRule);
+		kb.addFacts(fact);
+	}
 
 	@Test
 	public void testBlanksSkolemChaseNoRuleRewrite()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-		kb.addRules(existentialRule);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			assertEquals(RuleRewriteStrategy.NONE, reasoner.getRuleRewriteStrategy());
-			
-			reasoner.addFacts(fact);
+
 			reasoner.load();
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
-			
+
 			checkTowDistinctBlanksGenerated(reasoner);
 		}
 	}
@@ -90,20 +93,17 @@ public class GeneratedAnonymousIndividualsTest {
 	@Test
 	public void testBlanksSkolemChaseSplitHeadPieces()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-		kb.addRules(existentialRule);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			// P(?x) -> P(?x,!y), P(?x,!z)
 			// after split becomes {{P(?x) -> P(?x,!y), {P(?x)-> P(?x,!z)}}
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
-			
-			reasoner.addFacts(fact);
+
 			reasoner.load();
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
-			
+
 			checkTowDistinctBlanksGenerated(reasoner);
 		}
 	}
@@ -111,18 +111,15 @@ public class GeneratedAnonymousIndividualsTest {
 	@Test
 	public void testBlanksRestrictedChaseNoRuleRewrite()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-		kb.addRules(existentialRule);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			assertEquals(RuleRewriteStrategy.NONE, reasoner.getRuleRewriteStrategy());
-			
-			reasoner.addFacts(fact);
+
 			reasoner.load();
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
-			
+
 			checkTowDistinctBlanksGenerated(reasoner);
 		}
 	}
@@ -130,22 +127,20 @@ public class GeneratedAnonymousIndividualsTest {
 	@Test
 	public void testBlanksRestrictedChaseSplitHeadPieces()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-		kb.addRules(existentialRule);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 
 			// {P(?x) -> P(?x,!y), P(?x,!z)}
 			// after split becomes {{P(?x) -> P(?x,!y), {P(?x)-> P(?x,!z)}}
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
-			reasoner.addFacts(fact);
 			reasoner.load();
 			reasoner.reason();
 
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
 			// expected fact: P(c, _:b)
-			final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils.getCSVContent(includeBlanksFilePath);
+			final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils
+					.getCSVContent(includeBlanksFilePath);
 			assertTrue(csvContentIncludeBlanks.size() == 1);
 			for (final List<String> queryResult : csvContentIncludeBlanks) {
 				assertTrue(queryResult.size() == 2);
@@ -155,7 +150,8 @@ public class GeneratedAnonymousIndividualsTest {
 			assertNotEquals("c", blank);
 
 			reasoner.exportQueryAnswersToCsv(queryAtom, excludeBlanksFilePath, false);
-			final List<List<String>> csvContentExcludeBlanks = FileDataSourceTestUtils.getCSVContent(excludeBlanksFilePath);
+			final List<List<String>> csvContentExcludeBlanks = FileDataSourceTestUtils
+					.getCSVContent(excludeBlanksFilePath);
 			assertTrue(csvContentExcludeBlanks.isEmpty());
 
 		}

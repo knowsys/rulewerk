@@ -39,8 +39,6 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -60,17 +58,16 @@ public class StratifiedNegationTest {
 
 		final Rule rule = makeRule(qXY, pXY, notQXY);
 		final PositiveLiteral fact = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
-		
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule);
+		kb.addFacts(fact);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFacts(fact);
-
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 		}
 	}
-	
+
 	@Test(expected = RuntimeException.class)
 	public void testNotStratifiable()
 			throws EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException, IOException {
@@ -84,18 +81,17 @@ public class StratifiedNegationTest {
 
 		final Rule rule = makeRule(qXY, pXY, notQXY);
 		final PositiveLiteral fact = makePositiveLiteral("P", makeConstant("c"), makeConstant("d"));
-		
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule);
+		kb.addFacts(fact);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFacts(fact);
-
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.reason();
 		}
 	}
-	
+
 	@Test
 	public void testStratifiable()
 			throws EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException, IOException {
@@ -113,27 +109,26 @@ public class StratifiedNegationTest {
 		final Constant e = makeConstant("e");
 		final Constant f = makeConstant("f");
 		final PositiveLiteral pEF = makePositiveLiteral("P", e, f);
-		
+
 		final PositiveLiteral qCD = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
 
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule);
+		kb.addFacts(pCD, pEF, qCD);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFacts(pCD, pEF, qCD);
-
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.reason();
-			
-			try(QueryResultIterator result=reasoner.answerQuery(sXY, true)){
+
+			try (QueryResultIterator result = reasoner.answerQuery(sXY, true)) {
 				assertTrue(result.hasNext());
 				final QueryResult answer = result.next();
-				assertEquals(answer.getTerms(),Arrays.asList(e, f));
+				assertEquals(answer.getTerms(), Arrays.asList(e, f));
 				assertFalse(result.hasNext());
 			}
 		}
 	}
-	
+
 	@Test
 	public void testInputNegation()
 			throws EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException, IOException {
@@ -150,22 +145,21 @@ public class StratifiedNegationTest {
 		final Constant e = makeConstant("e");
 		final Constant f = makeConstant("f");
 		final PositiveLiteral pEF = makePositiveLiteral("P", e, f);
-		
+
 		final PositiveLiteral qCD = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
 
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule);
+		kb.addFacts(pCD, pEF, qCD);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFacts(pCD, pEF, qCD);
-
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.reason();
-			
-			try(QueryResultIterator result=reasoner.answerQuery(sXY, true)){
+
+			try (QueryResultIterator result = reasoner.answerQuery(sXY, true)) {
 				assertTrue(result.hasNext());
 				final QueryResult answer = result.next();
-				assertEquals(answer.getTerms(),Arrays.asList(e, f));
+				assertEquals(answer.getTerms(), Arrays.asList(e, f));
 				assertFalse(result.hasNext());
 			}
 		}

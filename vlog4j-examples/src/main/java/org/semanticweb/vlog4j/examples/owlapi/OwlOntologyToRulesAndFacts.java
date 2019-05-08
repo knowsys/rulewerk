@@ -35,13 +35,12 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.owlapi.OwlToRulesConverter;
 
@@ -86,12 +85,12 @@ public class OwlOntologyToRulesAndFacts {
 		}
 		System.out.println();
 
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(new ArrayList<>(owlToRulesConverter.getRules()));
+		kb.addFacts(owlToRulesConverter.getFacts());
 
-		try (Reasoner reasoner = Reasoner.getInstance(kb)) {
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			/* Load rules and facts obtained from the ontology */
-			reasoner.addFacts(owlToRulesConverter.getFacts());
 			reasoner.load();
 
 			/* Reason over loaded ontology with the default algorithm Restricted Chase */

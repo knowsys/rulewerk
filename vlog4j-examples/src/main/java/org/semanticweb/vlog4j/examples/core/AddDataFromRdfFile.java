@@ -43,7 +43,6 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
@@ -130,19 +129,18 @@ public class AddDataFromRdfFile {
 		final PositiveLiteral isPartOfIDBReversed = makePositiveLiteral(triplesIDB, o, isPartOfPredicate, s);
 		final Rule rule5 = makeRule(hasPartIDB, isPartOfIDBReversed);
 
-		/*
-		 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
-		 * to close the reasoner automatically.
-		 */
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-		kb.addRules(rule1, rule2, rule3, rule4, rule5);
-
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			/*
+			 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
+			 * to close the reasoner automatically.
+			 */
+			final KnowledgeBase kb = reasoner.getKnowledgeBase();
+			kb.addRules(rule1, rule2, rule3, rule4, rule5);
 
 			/* Importing {@code .nt.gz} file as data source. */
 			final DataSource triplesEDBDataSource = new RdfFileDataSource(
 					new File(ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt.gz"));
-			reasoner.addFactsFromDataSource(triplesEDB, triplesEDBDataSource);
+			kb.addFactsFromDataSource(triplesEDB, triplesEDBDataSource);
 
 			reasoner.load();
 			System.out.println("Before materialisation:");

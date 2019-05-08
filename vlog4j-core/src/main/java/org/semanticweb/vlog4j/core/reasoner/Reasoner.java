@@ -1,7 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Observer;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -15,6 +14,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 import karmaresearch.vlog.Atom;
@@ -93,14 +93,20 @@ import karmaresearch.vlog.NotStartedException;
 public interface Reasoner  extends AutoCloseable, Observer  {
 
 	/**
-	 * Factory method that to instantiate a Reasoner with given knowledge base.
-	 * @param knowledgeBase Knowledge Base containing data associated to the reasoner
+	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
 	 *
 	 * @return a {@link VLogReasoner} instance.
 	 */
-	public static Reasoner getInstance(KnowledgeBase knowledgeBase) {
+	public static Reasoner getInstance() {
+		final VLogKnowledgeBase knowledgeBase= new VLogKnowledgeBase();
 		return new VLogReasoner(knowledgeBase);
 	}
+	
+	/**
+	 * Getter for the knowledge base to reason on.
+	 * @return the reasoner's knowledge base
+	 */
+	KnowledgeBase getKnowledgeBase();
 
 	/**
 	 * Sets the algorithm that will be used for reasoning over the knowledge base.
@@ -198,76 +204,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	void setLogFile(@Nullable String filePath) throws ReasonerStateException;
 
 	
-	/**
-	 * Adds non-null facts to the reasoner <b>knowledge base</b>. A <b>fact</b> is a
-	 * {@link PositiveLiteral} with all terms ({@link PositiveLiteral#getTerms()})
-	 * of type {@link TermType#CONSTANT}. <br>
-	 * Facts can only be added before loading ({@link #load()}). <br>
-	 * Facts predicates ({@link PositiveLiteral#getPredicate()}) cannot have
-	 * multiple data sources.
-	 *
-	 * @param facts facts to be added to the <b>knowledge base</b>. The given order
-	 *              is not maintained.
-	 * @throws ReasonerStateException   if the reasoner has already been loaded
-	 *                                  ({@link #load()}).
-	 * @throws IllegalArgumentException if the <b>knowledge base</b> contains facts
-	 *                                  from a data source with the same predicate
-	 *                                  ({@link PositiveLiteral#getPredicate()}) as
-	 *                                  a {@link PositiveLiteral} among given
-	 *                                  {@code facts}.
-	 * @throws IllegalArgumentException if the {@code facts} literals contain terms
-	 *                                  which are not of type
-	 *                                  {@link TermType#CONSTANT}.
-	 */
-	// TODO add examples to javadoc about multiple sources per predicate and EDB/IDB
-	void addFacts(@NonNull PositiveLiteral... facts) throws ReasonerStateException;
-
-	/**
-	 * Adds non-null facts to the reasoner <b>knowledge base</b>. A <b>fact</b> is a
-	 * {@link PositiveLiteral} with all terms ({@link PositiveLiteral#getTerms()})
-	 * of type {@link TermType#CONSTANT}. <br>
-	 * Facts can only be added before loading ({@link #load()}). <br>
-	 * Facts predicates ({@link PositiveLiteral#getPredicate()}) cannot have
-	 * multiple data sources.
-	 *
-	 * @param facts facts to be added to the <b>knowledge base</b>.
-	 * @throws ReasonerStateException   if the reasoner has already been loaded
-	 *                                  ({@link #load()}).
-	 * @throws IllegalArgumentException if the <b>knowledge base</b> contains facts
-	 *                                  from a data source with the same predicate
-	 *                                  ({@link PositiveLiteral#getPredicate()}) as
-	 *                                  an {@link PositiveLiteral} among given
-	 *                                  {@code facts}.
-	 * @throws IllegalArgumentException if the {@code facts} literals contain terms
-	 *                                  which are not of type
-	 *                                  {@link TermType#CONSTANT}.
-	 */
-	// TODO add examples to javadoc about multiple sources per predicate and EDB/IDB
-	void addFacts(@NonNull Collection<PositiveLiteral> facts) throws ReasonerStateException;
-
-	/**
-	 * Adds facts stored in given {@code dataSource} for given {@code predicate} to
-	 * the reasoner <b>knowledge base</b>. Facts predicates cannot have multiple
-	 * data sources, including in-memory {@link Atom} objects added trough
-	 * {@link #addFacts}.
-	 *
-	 * @param predicate  the {@link Predicate} for which the given
-	 *                   {@code dataSource} contains <b>fact terms</b>.
-	 * @param dataSource data source containing the fact terms to be associated to
-	 *                   given predicate and added to the reasoner
-	 * @throws ReasonerStateException   if the reasoner has already been loaded
-	 *                                  ({@link #load()}).
-	 * @throws IllegalArgumentException if the <b>knowledge base</b> contains facts
-	 *                                  in memory (added using {@link #addFacts}) or
-	 *                                  from a data source with the same
-	 *                                  {@link Predicate} as given
-	 *                                  {@code predicate}.
-	 */
-	// TODO add example to javadoc with two datasources and with in-memory facts for
-	// the same predicate.
-	// TODO validate predicate arity corresponds to the dataSource facts arity
-	void addFactsFromDataSource(@NonNull Predicate predicate, @NonNull DataSource dataSource)
-			throws ReasonerStateException;
+	
 
 	/**
 	 * Loads the <b>knowledge base</b>, consisting of the current rules and facts,

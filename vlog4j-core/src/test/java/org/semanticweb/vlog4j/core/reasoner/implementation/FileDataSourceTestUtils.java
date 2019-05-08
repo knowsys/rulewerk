@@ -36,7 +36,6 @@ import org.apache.commons.csv.CSVParser;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
@@ -105,10 +104,10 @@ public final class FileDataSourceTestUtils {
 			final FileDataSource emptyFileDataSource)
 					throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		kb.addFactsFromDataSource(predicate, emptyFileDataSource);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFactsFromDataSource(predicate, emptyFileDataSource);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			reasoner.reason();

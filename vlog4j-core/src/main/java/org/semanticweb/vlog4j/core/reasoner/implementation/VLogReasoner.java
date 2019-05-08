@@ -1,21 +1,13 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
-import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
@@ -63,7 +55,7 @@ public class VLogReasoner implements Reasoner {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(VLogReasoner.class);
 
-	private final KnowledgeBase knowledgeBase;
+	private final VLogKnowledgeBase knowledgeBase;
 
 	private final VLog vLog = new VLog();
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
@@ -73,20 +65,22 @@ public class VLogReasoner implements Reasoner {
 	private Integer timeoutAfterSeconds;
 	private RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
 
-	private final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = new HashMap<>();
-	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
-
-	public VLogReasoner(KnowledgeBase knowledgeBase) {
-		super();
-		this.knowledgeBase = knowledgeBase;
-		this.knowledgeBase.addObserver(this);
-	}
-
 	/**
 	 * Holds the state of the reasoning result. Has value {@code true} if reasoning
 	 * has completed, {@code false} if it has been interrupted.
 	 */
 	private boolean reasoningCompleted;
+
+	public VLogReasoner(VLogKnowledgeBase knowledgeBase) {
+		super();
+		this.knowledgeBase = knowledgeBase;
+		this.knowledgeBase.addObserver(this);
+	}
+
+	@Override
+	public KnowledgeBase getKnowledgeBase() {
+		return knowledgeBase;
+	}
 
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
@@ -133,65 +127,6 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void addFacts(final PositiveLiteral... facts) throws ReasonerStateException {
-		addFacts(Arrays.asList(facts));
-	}
-
-	@Override
-	public void addFacts(final Collection<PositiveLiteral> facts) throws ReasonerStateException {
-		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Facts cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
-		}
-		Validate.noNullElements(facts, "Null facts are not alowed! The list contains a fact at position [%d].");
-		for (final PositiveLiteral fact : facts) {
-			validateFactTermsAreConstant(fact);
-
-			final Predicate predicate = fact.getPredicate();
-			validateNoDataSourceForPredicate(predicate);
-
-			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
-			this.factsForPredicate.get(predicate).add(fact);
-		}
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			LOGGER.warn("Adding facts to a closed reasoner.");
-	}
-
-	@Override
-	public void addFactsFromDataSource(final Predicate predicate, final DataSource dataSource)
-			throws ReasonerStateException {
-		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Data sources cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
-		}
-		Validate.notNull(predicate, "Null predicates are not allowed!");
-		Validate.notNull(dataSource, "Null dataSources are not allowed!");
-		validateNoDataSourceForPredicate(predicate);
-		Validate.isTrue(!this.factsForPredicate.containsKey(predicate),
-				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added in memory: %s",
-				predicate, this.factsForPredicate.get(predicate));
-
-		this.dataSourceForPredicate.put(predicate, dataSource);
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			LOGGER.warn("Adding facts to a closed reasoner.");
-	}
-
-	private void validateFactTermsAreConstant(PositiveLiteral fact) {
-		final Set<Term> nonConstantTerms = new HashSet<>(fact.getTerms());
-		nonConstantTerms.removeAll(fact.getConstants());
-		Validate.isTrue(nonConstantTerms.isEmpty(),
-				"Only Constant terms alowed in Fact literals! The following non-constant terms [%s] appear for fact [%s]!",
-				nonConstantTerms, fact);
-
-	}
-
-	private void validateNoDataSourceForPredicate(final Predicate predicate) {
-		Validate.isTrue(!this.dataSourceForPredicate.containsKey(predicate),
-				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added from data source: %s",
-				predicate, this.dataSourceForPredicate.get(predicate));
-	}
-
-	@Override
 	public void load()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
@@ -199,16 +134,16 @@ public class VLogReasoner implements Reasoner {
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
 			LOGGER.warn("This method call is ineffective: the Reasoner has already been loaded.");
 		} else {
-			validateEdbIdbSeparation();
+			this.knowledgeBase.validateEdbIdbSeparation();
 
 			this.reasonerState = ReasonerState.AFTER_LOADING;
 
-			if (this.dataSourceForPredicate.isEmpty() && this.factsForPredicate.isEmpty()) {
+			if (!this.knowledgeBase.hasFacts()) {
 				LOGGER.warn("No facts have been provided.");
 			}
 
 			try {
-				this.vLog.start(generateDataSourcesConfig(), false);
+				this.vLog.start(this.knowledgeBase.generateDataSourcesConfig(), false);
 			} catch (final AlreadyStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
 			} catch (final EDBConfigurationException e) {
@@ -230,7 +165,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	private void validateDataSourcePredicateArities() throws IncompatiblePredicateArityException {
-		for (final Predicate predicate : this.dataSourceForPredicate.keySet()) {
+		final Map<Predicate, DataSource> dataSourceForPredicate = this.knowledgeBase.getDataSourceForPredicate();
+		for (final Predicate predicate : dataSourceForPredicate.keySet()) {
 			final int dataSourcePredicateArity;
 			try {
 				dataSourcePredicateArity = this.vLog.getPredicateArity(ModelToVLogConverter.toVLogPredicate(predicate));
@@ -238,11 +174,11 @@ public class VLogReasoner implements Reasoner {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
 			}
 			if (dataSourcePredicateArity == -1) {
-				LOGGER.warn("Data source {} for predicate {} is empty: ", this.dataSourceForPredicate.get(predicate),
+				LOGGER.warn("Data source {} for predicate {} is empty: ", dataSourceForPredicate.get(predicate),
 						predicate);
 			} else if (predicate.getArity() != dataSourcePredicateArity) {
 				throw new IncompatiblePredicateArityException(predicate, dataSourcePredicateArity,
-						this.dataSourceForPredicate.get(predicate));
+						dataSourceForPredicate.get(predicate));
 			}
 		}
 
@@ -339,54 +275,13 @@ public class VLogReasoner implements Reasoner {
 		this.vLog.stop();
 	}
 
-	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
-		final Set<Predicate> edbPredicates = collectEdbPredicates();
-		final Set<Predicate> idbPredicates = collectIdbPredicates();
-		final Set<Predicate> intersection = new HashSet<>(edbPredicates);
-		intersection.retainAll(idbPredicates);
-
-		if (!intersection.isEmpty()) {
-			throw new EdbIdbSeparationException(intersection);
-		}
-	}
-
-	private Set<Predicate> collectEdbPredicates() {
-		final Set<Predicate> edbPredicates = new HashSet<>();
-		edbPredicates.addAll(this.dataSourceForPredicate.keySet());
-		edbPredicates.addAll(this.factsForPredicate.keySet());
-		return edbPredicates;
-	}
-
-	private Set<Predicate> collectIdbPredicates() {
-		final Set<Predicate> idbPredicates = new HashSet<>();
-		for (final Rule rule : this.knowledgeBase.getRules()) {
-			for (final Literal headAtom : rule.getHead()) {
-				idbPredicates.add(headAtom.getPredicate());
-			}
-		}
-		return idbPredicates;
-	}
-
-	String generateDataSourcesConfig() {
-		final StringBuilder configStringBuilder = new StringBuilder();
-		int dataSourceIndex = 0;
-		for (final Predicate predicate : this.dataSourceForPredicate.keySet()) {
-			final DataSource dataSource = this.dataSourceForPredicate.get(predicate);
-			try (final Formatter formatter = new Formatter(configStringBuilder);) {
-				formatter.format(dataSource.toConfigString(), dataSourceIndex,
-						ModelToVLogConverter.toVLogPredicate(predicate));
-			}
-			dataSourceIndex++;
-		}
-		return configStringBuilder.toString();
-	}
-
 	private void loadInMemoryFacts() {
-		for (final Predicate predicate : this.factsForPredicate.keySet()) {
-			final Set<PositiveLiteral> factsForPredicate = this.factsForPredicate.get(predicate);
+		final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = this.knowledgeBase.getFactsForPredicate();
+		for (final Predicate predicate : factsForPredicate.keySet()) {
+			final Set<PositiveLiteral> facts = factsForPredicate.get(predicate);
 
 			final String vLogPredicate = ModelToVLogConverter.toVLogPredicate(predicate);
-			final String[][] tuplesForPredicate = ModelToVLogConverter.toVLogFactTuples(factsForPredicate);
+			final String[][] tuplesForPredicate = ModelToVLogConverter.toVLogFactTuples(facts);
 			try {
 				this.vLog.addData(vLogPredicate, tuplesForPredicate);
 			} catch (final EDBConfigurationException e) {
@@ -396,7 +291,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	private void loadRules() {
-		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(this.knowledgeBase.getRules());
+		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter
+				.toVLogRuleArray(this.knowledgeBase.getRules());
 		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
 				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
 		try {

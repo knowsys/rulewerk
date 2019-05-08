@@ -33,15 +33,14 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.graal.GraalToVLog4JModelConverter;
 
 import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
@@ -65,7 +64,8 @@ public class DoidExample {
 
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
 
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+
 		/* Load rules from DLGP file */
 		try (final DlgpParser parser = new DlgpParser(
 				new File(ExamplesUtils.INPUT_FOLDER + "/graal", "doid-example.dlgp"))) {
@@ -91,36 +91,34 @@ public class DoidExample {
 		final NegativeLiteral hasNotDoid = Expressions.makeNegativeLiteral("hasDoid", y);
 		kb.addRules(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
 				Expressions.makeConjunction(deathCause, hasNotDoid)));
+		/* Configure RDF data source */
+		final Predicate doidTriplePredicate = makePredicate("doidTriple", 3);
+		final DataSource doidDataSource = new RdfFileDataSource(new File(ExamplesUtils.INPUT_FOLDER + "doid.nt.gz"));
+		kb.addFactsFromDataSource(doidTriplePredicate, doidDataSource);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
+		/* Configure SPARQL data sources */
+		final String sparqlHumansWithDisease = "?disease wdt:P699 ?doid .";
+		// (wdt:P669 = "Disease Ontology ID")
+		final DataSource diseasesDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint, "disease,doid",
+				sparqlHumansWithDisease);
+		final Predicate diseaseIdPredicate = Expressions.makePredicate("diseaseId", 2);
+		kb.addFactsFromDataSource(diseaseIdPredicate, diseasesDataSource);
 
-			/* Configure RDF data source */
-			final Predicate doidTriplePredicate = makePredicate("doidTriple", 3);
-			final DataSource doidDataSource = new RdfFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "doid.nt.gz"));
-			reasoner.addFactsFromDataSource(doidTriplePredicate, doidDataSource);
+		final String sparqlRecentDeaths = "?human wdt:P31 wd:Q5; wdt:P570 ?deathDate . FILTER (YEAR(?deathDate) = 2018)";
+		// (wdt:P31 = "instance of"; wd:Q5 = "human", wdt:570 = "date of death")
+		final DataSource recentDeathsDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint, "human",
+				sparqlRecentDeaths);
+		final Predicate recentDeathsPredicate = Expressions.makePredicate("recentDeaths", 1);
+		kb.addFactsFromDataSource(recentDeathsPredicate, recentDeathsDataSource);
 
-			/* Configure SPARQL data sources */
-			final String sparqlHumansWithDisease = "?disease wdt:P699 ?doid .";
-			// (wdt:P669 = "Disease Ontology ID")
-			final DataSource diseasesDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-					"disease,doid", sparqlHumansWithDisease);
-			final Predicate diseaseIdPredicate = Expressions.makePredicate("diseaseId", 2);
-			reasoner.addFactsFromDataSource(diseaseIdPredicate, diseasesDataSource);
+		final String sparqlRecentDeathsCause = sparqlRecentDeaths + "?human wdt:P509 ?causeOfDeath . ";
+		// (wdt:P509 = "cause of death")
+		final DataSource recentDeathsCauseDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
+				"human,causeOfDeath", sparqlRecentDeathsCause);
+		final Predicate recentDeathsCausePredicate = Expressions.makePredicate("recentDeathsCause", 2);
+		kb.addFactsFromDataSource(recentDeathsCausePredicate, recentDeathsCauseDataSource);
 
-			final String sparqlRecentDeaths = "?human wdt:P31 wd:Q5; wdt:P570 ?deathDate . FILTER (YEAR(?deathDate) = 2018)";
-			// (wdt:P31 = "instance of"; wd:Q5 = "human", wdt:570 = "date of death")
-			final DataSource recentDeathsDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint, "human",
-					sparqlRecentDeaths);
-			final Predicate recentDeathsPredicate = Expressions.makePredicate("recentDeaths", 1);
-			reasoner.addFactsFromDataSource(recentDeathsPredicate, recentDeathsDataSource);
-
-			final String sparqlRecentDeathsCause = sparqlRecentDeaths + "?human wdt:P509 ?causeOfDeath . ";
-			// (wdt:P509 = "cause of death")
-			final DataSource recentDeathsCauseDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-					"human,causeOfDeath", sparqlRecentDeathsCause);
-			final Predicate recentDeathsCausePredicate = Expressions.makePredicate("recentDeathsCause", 2);
-			reasoner.addFactsFromDataSource(recentDeathsCausePredicate, recentDeathsCauseDataSource);
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 
 			System.out.println("Rules configured:\n--");
 			kb.getRules().forEach(System.out::println);

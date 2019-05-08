@@ -37,7 +37,6 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -63,11 +62,11 @@ public class ReasonerTest {
 	@Test
 	public void testCloseRepeatedly()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBaseImpl())) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new VLogKnowledgeBase())) {
 			reasoner.close();
 		}
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBaseImpl())) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new VLogKnowledgeBase())) {
 			reasoner.load();
 			reasoner.close();
 			reasoner.close();
@@ -77,7 +76,7 @@ public class ReasonerTest {
 	@Test
 	public void testLoadRules()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(ruleBxAx, ruleCxBx);
 		kb.addRules(ruleBxAx);
 
@@ -89,11 +88,11 @@ public class ReasonerTest {
 	@Test
 	public void testSimpleInference() throws EDBConfigurationException, IOException, ReasonerStateException,
 			EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(ruleBxAx, ruleCxBx);
+		kb.addFacts(factAc, factAd);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.addFacts(factAc, factAd);
 			reasoner.load();
 
 			final QueryResultIterator cxQueryResultEnumBeforeReasoning = reasoner.answerQuery(atomCx, true);
@@ -112,12 +111,12 @@ public class ReasonerTest {
 		}
 	}
 
+	// TODO move to a test class for KnowledgeBase
 	@Test
 	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBaseImpl())) {
-			final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
-			assertTrue(dataSourcesConfig.isEmpty());
-		}
+		final VLogKnowledgeBase knowledgeBase = new VLogKnowledgeBase();
+		final String dataSourcesConfig = knowledgeBase.generateDataSourcesConfig();
+		assertTrue(dataSourcesConfig.isEmpty());
 	}
 
 }

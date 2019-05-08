@@ -32,8 +32,6 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -55,10 +53,10 @@ public class ExportQueryAnswersToCsvFileTest {
 		// final String csvFilePath = CSV_EXPORT_FOLDER + "output";
 		final List<List<String>> factCCD = Arrays.asList(Arrays.asList("c", "c", "d"));
 		
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		kb.addFacts(fact);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFacts(fact);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final PositiveLiteral queryAtomXYZ = Expressions.makePositiveLiteral(predicate, x, y, z);
@@ -94,9 +92,9 @@ public class ExportQueryAnswersToCsvFileTest {
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));
 		
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, true);

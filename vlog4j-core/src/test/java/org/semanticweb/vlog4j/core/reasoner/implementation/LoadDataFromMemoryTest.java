@@ -38,57 +38,56 @@ import karmaresearch.vlog.EDBConfigurationException;
 public class LoadDataFromMemoryTest {
 
 	@Test(expected = EdbIdbSeparationException.class)
-	public void loadEdbIdbNotSeparated()
-			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void loadEdbIdbNotSeparated() throws EDBConfigurationException, IOException, EdbIdbSeparationException,
+			ReasonerStateException, IncompatiblePredicateArityException {
 		final Variable vx = Expressions.makeVariable("x");
-		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx), Expressions.makePositiveLiteral("p", vx));
+		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx),
+				Expressions.makePositiveLiteral("p", vx));
 		final PositiveLiteral factIDBpredQ1 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("c"));
 		final PositiveLiteral factEDBpredQ2 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule);
+		kb.addFacts(factIDBpredQ1, factEDBpredQ2);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.addFacts(factIDBpredQ1, factEDBpredQ2);
 			reasoner.load();
 		}
 	}
 
 	@Test
-	public void loadEdbIdbSeparated()
-			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void loadEdbIdbSeparated() throws EDBConfigurationException, IOException, EdbIdbSeparationException,
+			ReasonerStateException, IncompatiblePredicateArityException {
 		final Variable vx = Expressions.makeVariable("x");
-		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx), Expressions.makePositiveLiteral("p", vx));
+		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx),
+				Expressions.makePositiveLiteral("p", vx));
 		final PositiveLiteral factEDBpred = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule);
+		kb.addFacts(factEDBpred);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.addFacts(factEDBpred);
 			reasoner.load();
 		}
 	}
 
+	// TODO move to a test class for KnowledgeBase
 	@Test(expected = IllegalArgumentException.class)
 	public void addFactsWithVariableTerms() throws ReasonerStateException {
-		final PositiveLiteral factWithVariableTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
-				Expressions.makeVariable("x"));
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-
-		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.addFacts(factWithVariableTerms);
-		}
+		final PositiveLiteral factWithVariableTerms = Expressions.makePositiveLiteral("q",
+				Expressions.makeConstant("d"), Expressions.makeVariable("x"));
+		final KnowledgeBase kb = new VLogKnowledgeBase();
+		kb.addFacts(factWithVariableTerms);
 	}
 
+	// TODO move to a test class for KnowledgeBase
 	@Test(expected = IllegalArgumentException.class)
 	public void addFactsWithBlankTerms() throws ReasonerStateException {
-		final PositiveLiteral factWithBlankTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"), new BlankImpl("b"));
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-
-		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.addFacts(factWithBlankTerms);
-		}
+		final PositiveLiteral factWithBlankTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
+				new BlankImpl("b"));
+		final KnowledgeBase kb = new VLogKnowledgeBase();
+		kb.addFacts(factWithBlankTerms);
 	}
 
 }

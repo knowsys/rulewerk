@@ -43,21 +43,25 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 /**
- * Test case ensuring {@link Reasoner#setReasoningTimeout(Integer)} works as expected and terminates reasoning after the given {@link #timeout}.
- * Results are accepted within one second to account for setup and tear down of reasoning resources.
+ * Test case ensuring {@link Reasoner#setReasoningTimeout(Integer)} works as
+ * expected and terminates reasoning after the given {@link #timeout}. Results
+ * are accepted within one second to account for setup and tear down of
+ * reasoning resources.
+ * 
  * @author Adrian Bielefeldt
  *
  */
 public class ReasonerTimeoutTest {
-	
+
 	/**
 	 * The timeout after which reasoning should be completed in seconds.
 	 */
 	private static int timeout = 1;
-	
+
 	/**
 	 * A list of facts to be used in multiple test runs.
 	 */
@@ -66,11 +70,14 @@ public class ReasonerTimeoutTest {
 	 * A list of rules to be used in multiple test runs.
 	 */
 	private static List<Rule> rules = new ArrayList<>();
-	
+
 	private Reasoner reasoner;
-	
+
+	private final static VLogKnowledgeBase kb = new VLogKnowledgeBase();
+
 	/**
-	 * The timeout after which reasoning should be completed. One second is added to account for setup and tear down of reasoning resources.
+	 * The timeout after which reasoning should be completed. One second is added to
+	 * account for setup and tear down of reasoning resources.
 	 */
 	@org.junit.Rule
 	public Timeout globalTimeout = Timeout.seconds(timeout + 1);
@@ -105,60 +112,62 @@ public class ReasonerTimeoutTest {
 		final PositiveLiteral infinite_IDB_yz = makePositiveLiteral(infinite_IDB, y, z);
 		final Rule infinite_rule = makeRule(infinite_IDB_yz, infinite_IDB_xy);
 		rules.add(infinite_rule);
+		
+		kb.addRules(rules);
+		kb.addFacts(facts);
 	}
 
 	@Before
 	public void setUp() throws ReasonerStateException {
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-		kb.addRules(rules);
-
-		reasoner = Reasoner.getInstance(kb);
-		
-		reasoner.addFacts(facts);
+		reasoner = new VLogReasoner(kb);
 	}
 
 	@Test
-	public void skolem() throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+	public void skolem()
+			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
 		reasoner.setReasoningTimeout(timeout);
 		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
-		
+
 		reasoner.load();
-		
+
 		reasoner.reason();
 	}
-	
+
 	@Test
-	public void restricted() throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+	public void restricted()
+			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
 		reasoner.setReasoningTimeout(timeout);
 		reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
-		
+
 		reasoner.load();
-		
+
 		reasoner.reason();
 	}
-	
+
 	@Test
-	public void skolemAfterLoad() throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+	public void skolemAfterLoad()
+			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
 		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
-		
+
 		reasoner.load();
-		
+
 		reasoner.setReasoningTimeout(timeout);
-		
+
 		reasoner.reason();
 	}
-	
+
 	@Test
-	public void restrictedAfterLoad() throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+	public void restrictedAfterLoad()
+			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
 		reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
-		
+
 		reasoner.load();
-		
+
 		reasoner.setReasoningTimeout(timeout);
-		
+
 		reasoner.reason();
 	}
-	
+
 	@After
 	public void tearDown() {
 		reasoner.close();

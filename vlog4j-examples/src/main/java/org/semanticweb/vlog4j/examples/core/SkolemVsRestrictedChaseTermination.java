@@ -29,12 +29,11 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
@@ -123,12 +122,12 @@ public class SkolemVsRestrictedChaseTermination {
 		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to
 		 * call close() to free the reasoner resources.
 		 */
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
+		kb.addFacts(fact1, fact2, fact3, fact4);
 
-		try (Reasoner reasoner = Reasoner.getInstance(kb)) {
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 
-			reasoner.addFacts(fact1, fact2, fact3, fact4);
 			reasoner.load();
 
 			/* See that there is no fact HasPartIDB before reasoning. */

@@ -42,7 +42,6 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 
 /**
  * This class exemplifies setting a log file and log level for VLog reasoner
@@ -97,12 +96,11 @@ public class ConfigureReasonerLogging {
 
 	public static void main(final String[] args)
 			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-		kb.addRules(rules);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-
-			reasoner.addFacts(fact);
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			final KnowledgeBase kb = reasoner.getKnowledgeBase();
+			kb.addRules(rules);
+			kb.addFacts(fact);
 
 			/*
 			 * Default reasoner log level is WARNING.

@@ -44,13 +44,12 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.rdf.RdfModelConverter;
 
@@ -147,21 +146,20 @@ public class AddDataFromRdfModel {
 		final Rule organizationRule = Expressions.makeRule(creatorOrganizationName, personHasAffiliation,
 				affiliationWithOrganization, organizationHasName);
 
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		/*
 		 * The rule that maps people to their organization name based on facts extracted
 		 * from RDF triples is added to the Reasoner's knowledge base.
 		 */
 		kb.addRules(organizationRule);
+		/*
+		 * Facts extracted from the RDF resources are added to the Reasoner's knowledge
+		 * base.
+		 */
+		kb.addFacts(tripleFactsISWC2016);
+		kb.addFacts(tripleFactsISWC2017);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb);) {
-			/*
-			 * Facts extracted from the RDF resources are added to the Reasoner's knowledge
-			 * base.
-			 */
-			reasoner.addFacts(tripleFactsISWC2016);
-			reasoner.addFacts(tripleFactsISWC2017);
-
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.reason();
 

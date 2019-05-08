@@ -44,7 +44,6 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
@@ -130,15 +129,13 @@ public class AddDataFromCsvFile {
 		final PositiveLiteral isPartOfIDBYX = makePositiveLiteral(isPartOfIDB, y, x);
 		final Rule rule8 = makeRule(hasPartIDBXY, isPartOfIDBYX);
 
-		/*
-		 * 2. Loading, reasoning, and querying while using try-with-resources to close
-		 * the reasoner automatically.
-		 */
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-		kb.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
-
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			/*
+			 * 2. Loading, reasoning, and querying while using try-with-resources to close
+			 * the reasoner automatically.
+			 */
+			final KnowledgeBase kb = reasoner.getKnowledgeBase();
+			kb.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 			/* Importing {@code .csv} files as data sources. */
 			final DataSource bicycleEDBDataSource = new CsvFileDataSource(
 					new File(ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz"));
@@ -146,9 +143,9 @@ public class AddDataFromCsvFile {
 					new File(ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz"));
 			final DataSource wheelDataSource = new CsvFileDataSource(
 					new File(ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz"));
-			reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBDataSource);
-			reasoner.addFactsFromDataSource(hasPartEDB, hasPartDataSource);
-			reasoner.addFactsFromDataSource(wheelEDB, wheelDataSource);
+			kb.addFactsFromDataSource(bicycleEDB, bicycleEDBDataSource);
+			kb.addFactsFromDataSource(hasPartEDB, hasPartDataSource);
+			kb.addFactsFromDataSource(wheelEDB, wheelDataSource);
 
 			reasoner.load();
 			System.out.println("Before materialisation:");

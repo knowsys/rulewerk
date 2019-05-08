@@ -32,7 +32,6 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.graal.GraalConjunctiveQueryToRule;
 import org.semanticweb.vlog4j.graal.GraalToVLog4JModelConverter;
@@ -105,14 +104,14 @@ public class AddDataFromDlgpFile {
 		 * 3. Loading, reasoning, and querying while using try-with-resources to close
 		 * the reasoner automatically.
 		 */
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
-		kb.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
-		for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
-			kb.addRules(graalConjunctiveQueryToRule.getRule());
-		}
 
-		try (Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFacts(GraalToVLog4JModelConverter.convertAtoms(graalAtoms));
+		try (Reasoner reasoner = Reasoner.getInstance()) {
+			final KnowledgeBase kb = reasoner.getKnowledgeBase();
+			kb.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
+			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
+				kb.addRules(graalConjunctiveQueryToRule.getRule());
+			}
+			kb.addFacts(GraalToVLog4JModelConverter.convertAtoms(graalAtoms));
 
 			reasoner.load();
 			System.out.println("Before materialisation:");

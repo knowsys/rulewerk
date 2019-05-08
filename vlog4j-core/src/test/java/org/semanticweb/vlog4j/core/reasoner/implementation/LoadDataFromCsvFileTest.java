@@ -37,8 +37,6 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
@@ -76,11 +74,11 @@ public class LoadDataFromCsvFileTest {
 
 	private void testLoadUnaryFactsFromSingleCsvDataSource(final FileDataSource fileDataSource) throws ReasonerStateException,
 	EdbIdbSeparationException, EDBConfigurationException, IOException, IncompatiblePredicateArityException {
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
+		kb.addFactsFromDataSource(unaryPredicate2, fileDataSource);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
-			reasoner.addFactsFromDataSource(unaryPredicate2, fileDataSource);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final QueryResultIterator queryResultIterator1 = reasoner
@@ -110,10 +108,10 @@ public class LoadDataFromCsvFileTest {
 		final File nonexistingFile = new File("nonexistingFile.csv");
 		assertFalse(nonexistingFile.exists());
 		final FileDataSource fileDataSource = new CsvFileDataSource(nonexistingFile);
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 		}
 	}
@@ -123,10 +121,10 @@ public class LoadDataFromCsvFileTest {
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final FileDataSource fileDataSource = new CsvFileDataSource(
 				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.binaryCsvFileNameRoot + ".csv"));
-		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 		}
 	}
