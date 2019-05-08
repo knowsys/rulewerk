@@ -34,6 +34,7 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
@@ -122,9 +123,11 @@ public class SkolemVsRestrictedChaseTermination {
 		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to
 		 * call close() to free the reasoner resources.
 		 */
-		try (Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
 
-			reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
+		try (Reasoner reasoner = Reasoner.getInstance(kb)) {
+
 			reasoner.addFacts(fact1, fact2, fact3, fact4);
 			reasoner.load();
 

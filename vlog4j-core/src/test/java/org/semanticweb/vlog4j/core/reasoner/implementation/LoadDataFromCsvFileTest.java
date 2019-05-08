@@ -76,7 +76,9 @@ public class LoadDataFromCsvFileTest {
 
 	private void testLoadUnaryFactsFromSingleCsvDataSource(final FileDataSource fileDataSource) throws ReasonerStateException,
 	EdbIdbSeparationException, EDBConfigurationException, IOException, IncompatiblePredicateArityException {
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 			reasoner.addFactsFromDataSource(unaryPredicate2, fileDataSource);
 			reasoner.load();
@@ -108,8 +110,9 @@ public class LoadDataFromCsvFileTest {
 		final File nonexistingFile = new File("nonexistingFile.csv");
 		assertFalse(nonexistingFile.exists());
 		final FileDataSource fileDataSource = new CsvFileDataSource(nonexistingFile);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 			reasoner.load();
 		}
@@ -120,8 +123,9 @@ public class LoadDataFromCsvFileTest {
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final FileDataSource fileDataSource = new CsvFileDataSource(
 				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.binaryCsvFileNameRoot + ".csv"));
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 			reasoner.load();
 		}

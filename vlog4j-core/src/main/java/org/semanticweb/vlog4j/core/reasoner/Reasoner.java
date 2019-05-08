@@ -2,7 +2,6 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Observer;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -198,45 +197,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 */
 	void setLogFile(@Nullable String filePath) throws ReasonerStateException;
 
-	/**
-	 * Adds rules to the reasoner <b>knowledge base</b> in the given order. After
-	 * the reasoner has been loaded ({@link #load()}), the rules may be rewritten
-	 * internally according to the set {@link RuleRewriteStrategy}.
-	 *
-	 * @param rules non-null rules to be added to the <b>knowledge base</b> for
-	 *              reasoning.
-	 * @throws ReasonerStateException   if the reasoner has already been loaded.
-	 * @throws IllegalArgumentException if the {@code rules} literals contain terms
-	 *                                  which are not of type
-	 *                                  {@link TermType#CONSTANT} or
-	 *                                  {@link TermType#VARIABLE}.
-	 */
-	void addRules(@NonNull Rule... rules) throws ReasonerStateException;
-
-	/**
-	 * Adds rules to the reasoner <b>knowledge base</b> in the given order. Rules
-	 * can only be added before loading ({@link #load()}). After the reasoner has
-	 * been loaded, the rules may be rewritten internally according to the set
-	 * {@link RuleRewriteStrategy}.
-	 *
-	 * @param rules non-null rules to be added to the <b>knowledge base</b> for
-	 *              reasoning.
-	 * @throws ReasonerStateException   if the reasoner has already been loaded.
-	 * @throws IllegalArgumentException if the {@code rules} literals contain terms
-	 *                                  which are not of type
-	 *                                  {@link TermType#CONSTANT} or
-	 *                                  {@link TermType#VARIABLE}.
-	 */
-	void addRules(@NonNull List<Rule> rules) throws ReasonerStateException;
-
-	/**
-	 * Get the list of all rules that have been added to the reasoner. The list is
-	 * read-only and cannot be modified to add or delete rules.
-	 * 
-	 * @return list of {@link Rule}
-	 */
-	List<Rule> getRules();
-
+	
 	/**
 	 * Adds non-null facts to the reasoner <b>knowledge base</b>. A <b>fact</b> is a
 	 * {@link PositiveLiteral} with all terms ({@link PositiveLiteral#getTerms()})

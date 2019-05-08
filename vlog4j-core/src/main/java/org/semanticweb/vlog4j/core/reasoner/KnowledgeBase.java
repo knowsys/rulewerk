@@ -1,6 +1,11 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
+import java.util.List;
 import java.util.Observable;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.TermType;
 
 /*-
  * #%L
@@ -22,6 +27,42 @@ import java.util.Observable;
  * #L%
  */
 
-public class KnowledgeBase extends Observable {
+public abstract class KnowledgeBase extends Observable {
+
+	/**
+	 * Adds rules to the <b>knowledge base</b> in the given order. The reasoner may
+	 * rewrite the rules internally according to the set
+	 * {@link RuleRewriteStrategy}.
+	 *
+	 * @param rules non-null rules to be added to the <b>knowledge base</b> for
+	 *              reasoning.
+	 * @throws IllegalArgumentException if the {@code rules} literals contain terms
+	 *                                  which are not of type
+	 *                                  {@link TermType#CONSTANT} or
+	 *                                  {@link TermType#VARIABLE}.
+	 */
+	public abstract void addRules(@NonNull Rule... rules);
+
+	/**
+	 * Adds rules to the <b>knowledge base</b> in the given order. The reasoner may
+	 * rewrite the rules internally according to the set
+	 * {@link RuleRewriteStrategy}.
+	 *
+	 * @param rules non-null rules to be added to the <b>knowledge base</b> for
+	 *              reasoning.
+	 * @throws IllegalArgumentException if the {@code rules} literals contain terms
+	 *                                  which are not of type
+	 *                                  {@link TermType#CONSTANT} or
+	 *                                  {@link TermType#VARIABLE}.
+	 */
+	public abstract void addRules(@NonNull List<Rule> rules);
+
+	/**
+	 * Get the list of all rules that have been added to the reasoner. The list is
+	 * read-only and cannot be modified to add or delete rules.
+	 * 
+	 * @return list of {@link Rule}
+	 */
+	public abstract List<Rule> getRules();
 
 }

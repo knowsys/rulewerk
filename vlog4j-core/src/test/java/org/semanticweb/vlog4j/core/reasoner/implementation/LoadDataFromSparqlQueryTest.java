@@ -61,8 +61,9 @@ public class LoadDataFromSparqlQueryTest {
 				// a has father b
 				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
 			reasoner.load();
 			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
@@ -86,8 +87,9 @@ public class LoadDataFromSparqlQueryTest {
 				// a has father b
 				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
 			reasoner.load();
 			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
@@ -119,8 +121,9 @@ public class LoadDataFromSparqlQueryTest {
 				// a has father b
 				"?a wdt:P22 ?b .");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
 			reasoner.load();
 			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
@@ -142,8 +145,9 @@ public class LoadDataFromSparqlQueryTest {
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a .\n" + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
 			reasoner.load();
 			reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether, Expressions.makeVariable("x"),
@@ -162,8 +166,9 @@ public class LoadDataFromSparqlQueryTest {
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
 			reasoner.load();
 			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether,
@@ -184,8 +189,9 @@ public class LoadDataFromSparqlQueryTest {
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			// TODO must validate predicate arity sonner
 			reasoner.addFactsFromDataSource(Expressions.makePredicate("ternary", 3), dataSource);
 			reasoner.load();

@@ -54,8 +54,10 @@ public class ExportQueryAnswersToCsvFileTest {
 		final boolean includeBlanks = false;
 		// final String csvFilePath = CSV_EXPORT_FOLDER + "output";
 		final List<List<String>> factCCD = Arrays.asList(Arrays.asList("c", "c", "d"));
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFacts(fact);
 			reasoner.load();
 
@@ -91,7 +93,10 @@ public class ExportQueryAnswersToCsvFileTest {
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.load();
 			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, true);

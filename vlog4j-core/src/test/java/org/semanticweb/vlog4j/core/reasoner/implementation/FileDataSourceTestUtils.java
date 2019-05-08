@@ -104,7 +104,10 @@ public final class FileDataSourceTestUtils {
 	public static void testLoadEmptyFile(final Predicate predicate, final PositiveLiteral queryAtom,
 			final FileDataSource emptyFileDataSource)
 					throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(predicate, emptyFileDataSource);
 			reasoner.load();
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);

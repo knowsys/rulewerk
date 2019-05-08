@@ -71,12 +71,14 @@ public class GeneratedAnonymousIndividualsTest {
 	@Test
 	public void testBlanksSkolemChaseNoRuleRewrite()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(existentialRule);
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			assertEquals(RuleRewriteStrategy.NONE, reasoner.getRuleRewriteStrategy());
 			
 			reasoner.addFacts(fact);
-			reasoner.addRules(existentialRule);
 			reasoner.load();
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
@@ -88,14 +90,16 @@ public class GeneratedAnonymousIndividualsTest {
 	@Test
 	public void testBlanksSkolemChaseSplitHeadPieces()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(existentialRule);
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			// P(?x) -> P(?x,!y), P(?x,!z)
 			// after split becomes {{P(?x) -> P(?x,!y), {P(?x)-> P(?x,!z)}}
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 			
 			reasoner.addFacts(fact);
-			reasoner.addRules(existentialRule);
 			reasoner.load();
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
@@ -107,12 +111,14 @@ public class GeneratedAnonymousIndividualsTest {
 	@Test
 	public void testBlanksRestrictedChaseNoRuleRewrite()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(existentialRule);
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			assertEquals(RuleRewriteStrategy.NONE, reasoner.getRuleRewriteStrategy());
 			
 			reasoner.addFacts(fact);
-			reasoner.addRules(existentialRule);
 			reasoner.load();
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
@@ -124,15 +130,16 @@ public class GeneratedAnonymousIndividualsTest {
 	@Test
 	public void testBlanksRestrictedChaseSplitHeadPieces()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(existentialRule);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 
 			// {P(?x) -> P(?x,!y), P(?x,!z)}
 			// after split becomes {{P(?x) -> P(?x,!y), {P(?x)-> P(?x,!z)}}
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 			reasoner.addFacts(fact);
-			reasoner.addRules(existentialRule);
 			reasoner.load();
 			reasoner.reason();
 

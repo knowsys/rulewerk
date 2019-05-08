@@ -77,7 +77,9 @@ public class LoadDataFromRdfFileTest {
 	public void testLoadTernaryFactsFromSingleRdfDataSource(final FileDataSource fileDataSource)
 			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException,
 			IncompatiblePredicateArityException {
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);
 			reasoner.load();
 
@@ -94,8 +96,9 @@ public class LoadDataFromRdfFileTest {
 		final File nonexistingFile = new File("nonexistingFile.nt");
 		assertFalse(nonexistingFile.exists());
 		final FileDataSource fileDataSource = new RdfFileDataSource(nonexistingFile);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);
 			reasoner.load();
 		}
@@ -106,8 +109,9 @@ public class LoadDataFromRdfFileTest {
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final FileDataSource fileDataSource = new RdfFileDataSource(
 				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.invalidFormatNtFileNameRoot + ".nt"));
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFactsFromDataSource(ternaryPredicate, fileDataSource);
 			reasoner.load();
 			FileDataSourceTestUtils.testNoFactsOverPredicate(reasoner, queryAtom);

@@ -1,14 +1,11 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
@@ -76,7 +73,6 @@ public class VLogReasoner implements Reasoner {
 	private Integer timeoutAfterSeconds;
 	private RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
 
-	private final List<Rule> rules = new ArrayList<>();
 	private final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = new HashMap<>();
 	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
 
@@ -118,28 +114,6 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public Integer getReasoningTimeout() {
 		return this.timeoutAfterSeconds;
-	}
-
-	@Override
-	public void addRules(final Rule... rules) throws ReasonerStateException {
-		addRules(Arrays.asList(rules));
-	}
-
-	@Override
-	public void addRules(final List<Rule> rules) throws ReasonerStateException {
-		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Rules cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
-		}
-		Validate.noNullElements(rules, "Null rules are not alowed! The list contains a null at position [%d].");
-		this.rules.addAll(new ArrayList<>(rules));
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			LOGGER.warn("Adding rules to a closed reasoner.");
-	}
-
-	@Override
-	public List<Rule> getRules() {
-		return Collections.unmodifiableList(this.rules);
 	}
 
 	@Override
@@ -245,7 +219,7 @@ public class VLogReasoner implements Reasoner {
 
 			loadInMemoryFacts();
 
-			if (this.rules.isEmpty()) {
+			if (this.knowledgeBase.getRules().isEmpty()) {
 				LOGGER.warn("No rules have been provided for reasoning.");
 			} else {
 				loadRules();
@@ -385,7 +359,7 @@ public class VLogReasoner implements Reasoner {
 
 	private Set<Predicate> collectIdbPredicates() {
 		final Set<Predicate> idbPredicates = new HashSet<>();
-		for (final Rule rule : this.rules) {
+		for (final Rule rule : this.knowledgeBase.getRules()) {
 			for (final Literal headAtom : rule.getHead()) {
 				idbPredicates.add(headAtom.getPredicate());
 			}
@@ -422,7 +396,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	private void loadRules() {
-		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(this.rules);
+		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(this.knowledgeBase.getRules());
 		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
 				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
 		try {

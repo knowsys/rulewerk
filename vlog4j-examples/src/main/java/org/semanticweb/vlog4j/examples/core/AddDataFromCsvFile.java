@@ -44,6 +44,7 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
@@ -133,8 +134,10 @@ public class AddDataFromCsvFile {
 		 * 2. Loading, reasoning, and querying while using try-with-resources to close
 		 * the reasoner automatically.
 		 */
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
-			reasoner.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 
 			/* Importing {@code .csv} files as data sources. */
 			final DataSource bicycleEDBDataSource = new CsvFileDataSource(

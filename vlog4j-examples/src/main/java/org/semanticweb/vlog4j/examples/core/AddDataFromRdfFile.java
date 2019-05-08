@@ -43,6 +43,7 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
@@ -133,8 +134,10 @@ public class AddDataFromRdfFile {
 		 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
 		 * to close the reasoner automatically.
 		 */
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
-			reasoner.addRules(rule1, rule2, rule3, rule4, rule5);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule1, rule2, rule3, rule4, rule5);
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 
 			/* Importing {@code .nt.gz} file as data source. */
 			final DataSource triplesEDBDataSource = new RdfFileDataSource(

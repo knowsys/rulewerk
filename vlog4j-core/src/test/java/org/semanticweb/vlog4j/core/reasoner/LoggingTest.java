@@ -39,6 +39,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 
 public class LoggingTest {
 
@@ -59,12 +60,14 @@ public class LoggingTest {
 
 	@Test
 	public void testSetLogFileNull() throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
+
+		try (final Reasoner instance = Reasoner.getInstance(kb)) {
 			instance.setLogFile(null);
 			instance.setLogLevel(LogLevel.INFO);
 
 			instance.addFacts(factPc);
-			instance.addRules(rule);
 			instance.load();
 			instance.reason();
 		}
@@ -74,14 +77,15 @@ public class LoggingTest {
 	@Test
 	public void testSetLogFileInexistent() throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final String inexistentFilePath = LOGS_FOLDER + "a/b";
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
 
-		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner instance = Reasoner.getInstance(kb)) {
 			instance.setLogFile(inexistentFilePath);
 			assertFalse(new File(inexistentFilePath).exists());
 			instance.setLogLevel(LogLevel.INFO);
 
 			instance.addFacts(factPc);
-			instance.addRules(rule);
 			instance.load();
 			instance.reason();
 		}
@@ -91,7 +95,7 @@ public class LoggingTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testSetLogLevelNull() throws ReasonerStateException {
-		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBaseImpl())) {
 			instance.setLogLevel(null);
 		}
 	}
@@ -102,9 +106,11 @@ public class LoggingTest {
 		assertFalse(new File(logFilePath).exists());
 		int countLinesBeforeReset = 0;
 
-		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
+
+		try (final Reasoner instance = Reasoner.getInstance(kb)) {
 			instance.addFacts(factPc);
-			instance.addRules(rule);
 			instance.setLogLevel(LogLevel.INFO);
 			instance.setLogFile(logFilePath);
 			instance.load();
@@ -127,10 +133,12 @@ public class LoggingTest {
 	public void testLogLevelInfo() throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelInfo.log";
 		assertFalse(new File(logFilePath).exists());
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
 
-		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner instance = Reasoner.getInstance(kb)) {
 			instance.addFacts(factPc);
-			instance.addRules(rule);
 
 			instance.setLogLevel(LogLevel.INFO);
 			instance.setLogFile(logFilePath);
@@ -149,9 +157,11 @@ public class LoggingTest {
 		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelDebug.log";
 		assertFalse(new File(logFilePath).exists());
 
-		try (final Reasoner instance = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
+
+		try (final Reasoner instance = Reasoner.getInstance(kb)) {
 			instance.addFacts(factPc);
-			instance.addRules(rule);
 
 			instance.setLogLevel(LogLevel.DEBUG);
 			instance.setLogFile(logFilePath);

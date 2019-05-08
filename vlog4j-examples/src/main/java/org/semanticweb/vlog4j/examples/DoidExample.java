@@ -38,6 +38,7 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
@@ -64,7 +65,34 @@ public class DoidExample {
 
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		/* Load rules from DLGP file */
+		try (final DlgpParser parser = new DlgpParser(
+				new File(ExamplesUtils.INPUT_FOLDER + "/graal", "doid-example.dlgp"))) {
+			while (parser.hasNext()) {
+				final Object object = parser.next();
+				if (object instanceof fr.lirmm.graphik.graal.api.core.Rule) {
+					kb.addRules(GraalToVLog4JModelConverter.convertRule((fr.lirmm.graphik.graal.api.core.Rule) object));
+				}
+			}
+		}
+		/* Create additional rules with negated literals */
+		final Variable x = makeVariable("X");
+		final Variable y = makeVariable("Y");
+		final Variable z = makeVariable("Z");
+		// humansWhoDiedOfNoncancer(X):-deathCause(X,Y),diseaseId(Y,Z),~cancerDisease(Z)
+		final NegativeLiteral notCancerDisease = Expressions.makeNegativeLiteral("cancerDisease", z);
+		final PositiveLiteral diseaseId = Expressions.makePositiveLiteral("diseaseId", y, z);
+		final PositiveLiteral deathCause = Expressions.makePositiveLiteral("deathCause", x, y);
+		final PositiveLiteral humansWhoDiedOfNoncancer = Expressions.makePositiveLiteral("humansWhoDiedOfNoncancer", x);
+		kb.addRules(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
+				Expressions.makeConjunction(deathCause, diseaseId, notCancerDisease)));
+		// humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), ~hasDoid(Y)
+		final NegativeLiteral hasNotDoid = Expressions.makeNegativeLiteral("hasDoid", y);
+		kb.addRules(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
+				Expressions.makeConjunction(deathCause, hasNotDoid)));
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 
 			/* Configure RDF data source */
 			final Predicate doidTriplePredicate = makePredicate("doidTriple", 3);
@@ -94,37 +122,8 @@ public class DoidExample {
 			final Predicate recentDeathsCausePredicate = Expressions.makePredicate("recentDeathsCause", 2);
 			reasoner.addFactsFromDataSource(recentDeathsCausePredicate, recentDeathsCauseDataSource);
 
-			/* Load rules from DLGP file */
-			try (final DlgpParser parser = new DlgpParser(
-					new File(ExamplesUtils.INPUT_FOLDER + "/graal", "doid-example.dlgp"))) {
-				while (parser.hasNext()) {
-					final Object object = parser.next();
-					if (object instanceof fr.lirmm.graphik.graal.api.core.Rule) {
-						reasoner.addRules(
-								GraalToVLog4JModelConverter.convertRule((fr.lirmm.graphik.graal.api.core.Rule) object));
-					}
-				}
-			}
-
-			/* Create additional rules with negated literals */
-			final Variable x = makeVariable("X");
-			final Variable y = makeVariable("Y");
-			final Variable z = makeVariable("Z");
-			// humansWhoDiedOfNoncancer(X):-deathCause(X,Y),diseaseId(Y,Z),~cancerDisease(Z)
-			final NegativeLiteral notCancerDisease = Expressions.makeNegativeLiteral("cancerDisease", z);
-			final PositiveLiteral diseaseId = Expressions.makePositiveLiteral("diseaseId", y, z);
-			final PositiveLiteral deathCause = Expressions.makePositiveLiteral("deathCause", x, y);
-			final PositiveLiteral humansWhoDiedOfNoncancer = Expressions.makePositiveLiteral("humansWhoDiedOfNoncancer",
-					x);
-			reasoner.addRules(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
-					Expressions.makeConjunction(deathCause, diseaseId, notCancerDisease)));
-			// humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), ~hasDoid(Y)
-			final NegativeLiteral hasNotDoid = Expressions.makeNegativeLiteral("hasDoid", y);
-			reasoner.addRules(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
-					Expressions.makeConjunction(deathCause, hasNotDoid)));
-
 			System.out.println("Rules configured:\n--");
-			reasoner.getRules().forEach(System.out::println);
+			kb.getRules().forEach(System.out::println);
 			System.out.println("--");
 			reasoner.load();
 			System.out.println("Loading completed.");

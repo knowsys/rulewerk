@@ -68,8 +68,10 @@ public class AnswerQueryTest {
 		final boolean includeBlanks = false;
 		@SuppressWarnings("unchecked")
 		final Set<List<Constant>> factCCD = Sets.newSet(Arrays.asList(constantC, constantC, constantD));
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFacts(fact);
 			reasoner.load();
 
@@ -110,12 +112,14 @@ public class AnswerQueryTest {
 		final Rule pX__pYY_pYZ = Expressions.makeRule(Expressions.makePositiveConjunction(pYY, pYZ),
 				Expressions.makeConjunction(Expressions.makePositiveLiteral(predicate, x)));
 		assertEquals(Sets.newSet(y, z), pX__pYY_pYZ.getExistentiallyQuantifiedVariables());
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(pX__pYY_pYZ);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 			reasoner.addFacts(Expressions.makePositiveLiteral(predicate, Expressions.makeConstant("c")));
-			reasoner.addRules(pX__pYY_pYZ);
 			reasoner.load();
 			reasoner.reason();
 
@@ -152,10 +156,12 @@ public class AnswerQueryTest {
 		final Constant constantC = Expressions.makeConstant("c");
 		final Constant constantD = Expressions.makeConstant("d");
 		final PositiveLiteral factPcd = Expressions.makePositiveLiteral(predicate, constantC, constantD);
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(pXY__pXYYZZT);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFacts(factPcd);
-			reasoner.addRules(pXY__pXYYZZT);
 			reasoner.load();
 			reasoner.reason();
 
@@ -218,9 +224,11 @@ public class AnswerQueryTest {
 		final PositiveLiteral fact = Expressions.makePositiveLiteral("p", constantC);
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("q", Expressions.makeVariable("?x"));
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(existentialRule);
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFacts(fact);
-			reasoner.addRules(existentialRule);
 			reasoner.load();
 			reasoner.reason();
 
@@ -241,7 +249,9 @@ public class AnswerQueryTest {
 
 	@Test
 	public void queryEmptyKnowledgeBase() throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
@@ -259,7 +269,9 @@ public class AnswerQueryTest {
 
 	@Test
 	public void queryEmptyRules() throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			final PositiveLiteral fact = Expressions.makePositiveLiteral("P", Expressions.makeConstant("c"));
 			reasoner.addFacts(fact);
 			reasoner.load();
@@ -283,8 +295,10 @@ public class AnswerQueryTest {
 		final Variable vx = Expressions.makeVariable("x");
 		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx), Expressions.makePositiveLiteral("p", vx));
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
-			reasoner.addRules(rule);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));

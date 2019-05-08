@@ -55,7 +55,9 @@ public class AddDataSourceTest {
 		final Predicate predicateLArity1 = Expressions.makePredicate("l", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFacts(factPredicatePArity2, factPredicateQArity1);
 			reasoner.addFactsFromDataSource(predicateLArity1, dataSource);
 			reasoner.addFactsFromDataSource(predicateParity1, dataSource);
@@ -79,7 +81,10 @@ public class AddDataSourceTest {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFactsFromDataSource(predicateP, dataSource);
 			reasoner.addFactsFromDataSource(predicateQ, dataSource);
 			reasoner.load();
@@ -92,7 +97,10 @@ public class AddDataSourceTest {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFactsFromDataSource(predicateP, dataSource);
 			reasoner.load();
 			reasoner.addFactsFromDataSource(predicateQ, dataSource);
@@ -105,7 +113,10 @@ public class AddDataSourceTest {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFactsFromDataSource(predicateP, dataSource);
 			reasoner.load();
 			reasoner.reason();
@@ -117,7 +128,10 @@ public class AddDataSourceTest {
 	public void testAddDataSourceNoMultipleDataSourcesForPredicate() throws ReasonerStateException, IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFactsFromDataSource(predicate, dataSource);
 			reasoner.addFactsFromDataSource(predicate, dataSource);
 		}
@@ -128,7 +142,10 @@ public class AddDataSourceTest {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		final PositiveLiteral fact = Expressions.makePositiveLiteral(Expressions.makePredicate("p", 1), Expressions.makeConstant("a"));
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFacts(fact);
 			reasoner.addFactsFromDataSource(predicate, dataSource);
 		}
@@ -137,7 +154,10 @@ public class AddDataSourceTest {
 	@Test(expected = NullPointerException.class)
 	public void testAddDataSourcePredicateNotNull() throws ReasonerStateException, IOException {
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFactsFromDataSource(null, dataSource);
 		}
 	}
@@ -145,7 +165,10 @@ public class AddDataSourceTest {
 	@Test(expected = NullPointerException.class)
 	public void testAddDataSourceNotNullDataSource() throws ReasonerStateException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFactsFromDataSource(predicate, null);
 		}
 	}

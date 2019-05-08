@@ -43,6 +43,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 
 /**
  * Test case ensuring {@link Reasoner#setReasoningTimeout(Integer)} works as expected and terminates reasoning after the given {@link #timeout}.
@@ -108,10 +109,12 @@ public class ReasonerTimeoutTest {
 
 	@Before
 	public void setUp() throws ReasonerStateException {
-		reasoner = Reasoner.getInstance(new KnowledgeBase());
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rules);
+
+		reasoner = Reasoner.getInstance(kb);
 		
 		reasoner.addFacts(facts);
-		reasoner.addRules(rules);
 	}
 
 	@Test

@@ -39,6 +39,7 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 
@@ -121,7 +122,9 @@ public class AddDataFromSparqlQueryResults {
 		final Predicate titleOfPublicationThatHasAuthorsWhoParentTheSameChild = Expressions
 				.makePredicate("publicationAndAuthorsWhoParentTheSameChild", 3);
 
-		try (Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+
+		try (Reasoner reasoner = Reasoner.getInstance(kb)) {
 
 			/*
 			 * The SPARQL query results will be added to the reasoner knowledge base, as
@@ -169,7 +172,8 @@ public class AddDataFromSparqlQueryResults {
 			 * data added from the WikiData SPARQL query result.
 			 */
 			reasoner.resetReasoner();
-			reasoner.addRules(rule);
+
+			kb.addRules(rule);
 			reasoner.load();
 			reasoner.reason();
 

@@ -63,11 +63,11 @@ public class ReasonerTest {
 	@Test
 	public void testCloseRepeatedly()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBaseImpl())) {
 			reasoner.close();
 		}
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBaseImpl())) {
 			reasoner.load();
 			reasoner.close();
 			reasoner.close();
@@ -77,20 +77,23 @@ public class ReasonerTest {
 	@Test
 	public void testLoadRules()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
-			reasoner.addRules(ruleBxAx, ruleCxBx);
-			reasoner.addRules(ruleBxAx);
-			assertEquals(reasoner.getRules(), Arrays.asList(ruleBxAx, ruleCxBx, ruleBxAx));
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(ruleBxAx, ruleCxBx);
+		kb.addRules(ruleBxAx);
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			assertEquals(kb.getRules(), Arrays.asList(ruleBxAx, ruleCxBx, ruleBxAx));
 		}
 	}
 
 	@Test
 	public void testSimpleInference() throws EDBConfigurationException, IOException, ReasonerStateException,
 			EdbIdbSeparationException, IncompatiblePredicateArityException {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(ruleBxAx, ruleCxBx);
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFacts(factAc, factAd);
-			reasoner.addRules(ruleBxAx, ruleCxBx);
 			reasoner.load();
 
 			final QueryResultIterator cxQueryResultEnumBeforeReasoning = reasoner.answerQuery(atomCx, true);
@@ -111,7 +114,7 @@ public class ReasonerTest {
 
 	@Test
 	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBaseImpl())) {
 			final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
 			assertTrue(dataSourcesConfig.isEmpty());
 		}

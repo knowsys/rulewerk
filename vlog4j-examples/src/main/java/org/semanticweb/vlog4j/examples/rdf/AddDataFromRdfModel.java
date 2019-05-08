@@ -49,6 +49,7 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.rdf.RdfModelConverter;
@@ -146,18 +147,20 @@ public class AddDataFromRdfModel {
 		final Rule organizationRule = Expressions.makeRule(creatorOrganizationName, personHasAffiliation,
 				affiliationWithOrganization, organizationHasName);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase());) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		/*
+		 * The rule that maps people to their organization name based on facts extracted
+		 * from RDF triples is added to the Reasoner's knowledge base.
+		 */
+		kb.addRules(organizationRule);
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb);) {
 			/*
 			 * Facts extracted from the RDF resources are added to the Reasoner's knowledge
 			 * base.
 			 */
 			reasoner.addFacts(tripleFactsISWC2016);
 			reasoner.addFacts(tripleFactsISWC2017);
-			/*
-			 * The rule that maps people to their organization name based on facts extracted
-			 * from RDF triples is added to the Reasoner's knowledge base.
-			 */
-			reasoner.addRules(organizationRule);
 
 			reasoner.load();
 			reasoner.reason();

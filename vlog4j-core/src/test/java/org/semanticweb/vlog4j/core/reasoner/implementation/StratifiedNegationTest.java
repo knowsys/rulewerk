@@ -60,9 +60,11 @@ public class StratifiedNegationTest {
 
 		final Rule rule = makeRule(qXY, pXY, notQXY);
 		final PositiveLiteral fact = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
-			reasoner.addRules(rule);
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFacts(fact);
 
 			reasoner.load();
@@ -82,9 +84,11 @@ public class StratifiedNegationTest {
 
 		final Rule rule = makeRule(qXY, pXY, notQXY);
 		final PositiveLiteral fact = makePositiveLiteral("P", makeConstant("c"), makeConstant("d"));
+		
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
-			reasoner.addRules(rule);
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFacts(fact);
 
 			reasoner.load();
@@ -112,8 +116,10 @@ public class StratifiedNegationTest {
 		
 		final PositiveLiteral qCD = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
-			reasoner.addRules(rule);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFacts(pCD, pEF, qCD);
 
 			reasoner.load();
@@ -147,8 +153,10 @@ public class StratifiedNegationTest {
 		
 		final PositiveLiteral qCD = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
 
-		try (final Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
-			reasoner.addRules(rule);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
+
+		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
 			reasoner.addFacts(pCD, pEF, qCD);
 
 			reasoner.load();

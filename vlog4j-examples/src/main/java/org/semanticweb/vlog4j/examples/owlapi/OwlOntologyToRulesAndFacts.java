@@ -40,6 +40,7 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.implementation.KnowledgeBaseImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.owlapi.OwlToRulesConverter;
@@ -85,9 +86,11 @@ public class OwlOntologyToRulesAndFacts {
 		}
 		System.out.println();
 
-		try (Reasoner reasoner = Reasoner.getInstance(new KnowledgeBase())) {
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(new ArrayList<>(owlToRulesConverter.getRules()));
+
+		try (Reasoner reasoner = Reasoner.getInstance(kb)) {
 			/* Load rules and facts obtained from the ontology */
-			reasoner.addRules(new ArrayList<>(owlToRulesConverter.getRules()));
 			reasoner.addFacts(owlToRulesConverter.getFacts());
 			reasoner.load();
 

@@ -45,8 +45,10 @@ public class LoadDataFromMemoryTest {
 		final PositiveLiteral factIDBpredQ1 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("c"));
 		final PositiveLiteral factEDBpredQ2 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
-			reasoner.addRules(rule);
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFacts(factIDBpredQ1, factEDBpredQ2);
 			reasoner.load();
 		}
@@ -59,9 +61,10 @@ public class LoadDataFromMemoryTest {
 		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx), Expressions.makePositiveLiteral("p", vx));
 		final PositiveLiteral factEDBpred = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
+		kb.addRules(rule);
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
-			reasoner.addRules(rule);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFacts(factEDBpred);
 			reasoner.load();
 		}
@@ -71,8 +74,9 @@ public class LoadDataFromMemoryTest {
 	public void addFactsWithVariableTerms() throws ReasonerStateException {
 		final PositiveLiteral factWithVariableTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeVariable("x"));
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFacts(factWithVariableTerms);
 		}
 	}
@@ -80,8 +84,9 @@ public class LoadDataFromMemoryTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void addFactsWithBlankTerms() throws ReasonerStateException {
 		final PositiveLiteral factWithBlankTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"), new BlankImpl("b"));
+		final KnowledgeBase kb = new KnowledgeBaseImpl();
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.addFacts(factWithBlankTerms);
 		}
 	}
