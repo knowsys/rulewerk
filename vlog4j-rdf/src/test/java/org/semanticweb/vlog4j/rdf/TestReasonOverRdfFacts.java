@@ -44,13 +44,13 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 public class TestReasonOverRdfFacts {
 
@@ -71,10 +71,10 @@ public class TestReasonOverRdfFacts {
 				RDFFormat.TURTLE);
 		final Set<PositiveLiteral> facts = RdfModelConverter.rdfModelToPositiveLiterals(model);
 
-		final KnowledgeBase kb = new VLogKnowledgeBase();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		kb.addFacts(facts);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFacts(facts);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final PositiveLiteral universalQuery = makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, subject, predicate,
@@ -91,10 +91,10 @@ public class TestReasonOverRdfFacts {
 				RDFFormat.TURTLE);
 		final Set<PositiveLiteral> facts = RdfModelConverter.rdfModelToPositiveLiterals(model);
 
-		final KnowledgeBase kb = new VLogKnowledgeBase();
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		kb.addFacts(facts);
 
-		try (final Reasoner reasoner = Reasoner.getInstance(kb)) {
-			reasoner.addFacts(facts);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final Constant inventionPredicate = makeConstant("https://example.org/invention");
