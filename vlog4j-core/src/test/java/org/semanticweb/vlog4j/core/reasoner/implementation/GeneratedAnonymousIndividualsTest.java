@@ -84,7 +84,7 @@ public class GeneratedAnonymousIndividualsTest {
 
 			reasoner.load();
 			reasoner.reason();
-			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
+			reasoner.exportQueryAnswersToCsv(this.queryAtom, includeBlanksFilePath, true);
 
 			checkTowDistinctBlanksGenerated(reasoner);
 		}
@@ -102,7 +102,7 @@ public class GeneratedAnonymousIndividualsTest {
 
 			reasoner.load();
 			reasoner.reason();
-			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
+			reasoner.exportQueryAnswersToCsv(this.queryAtom, includeBlanksFilePath, true);
 
 			checkTowDistinctBlanksGenerated(reasoner);
 		}
@@ -118,7 +118,7 @@ public class GeneratedAnonymousIndividualsTest {
 
 			reasoner.load();
 			reasoner.reason();
-			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
+			reasoner.exportQueryAnswersToCsv(this.queryAtom, includeBlanksFilePath, true);
 
 			checkTowDistinctBlanksGenerated(reasoner);
 		}
@@ -137,7 +137,7 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.load();
 			reasoner.reason();
 
-			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
+			reasoner.exportQueryAnswersToCsv(this.queryAtom, includeBlanksFilePath, true);
 			// expected fact: P(c, _:b)
 			final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils
 					.getCSVContent(includeBlanksFilePath);
@@ -149,7 +149,7 @@ public class GeneratedAnonymousIndividualsTest {
 			final String blank = csvContentIncludeBlanks.get(0).get(1);
 			assertNotEquals("c", blank);
 
-			reasoner.exportQueryAnswersToCsv(queryAtom, excludeBlanksFilePath, false);
+			reasoner.exportQueryAnswersToCsv(this.queryAtom, excludeBlanksFilePath, false);
 			final List<List<String>> csvContentExcludeBlanks = FileDataSourceTestUtils
 					.getCSVContent(excludeBlanksFilePath);
 			assertTrue(csvContentExcludeBlanks.isEmpty());
@@ -158,7 +158,7 @@ public class GeneratedAnonymousIndividualsTest {
 	}
 
 	private void checkTowDistinctBlanksGenerated(final Reasoner reasoner)
-			throws ReasonerStateException, IOException, EdbIdbSeparationException {
+			throws ReasonerStateException, IOException {
 		// expected facts: P(c, _:b1), P(c, _:b2)
 		final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils.getCSVContent(includeBlanksFilePath);
 		assertTrue(csvContentIncludeBlanks.size() == 2);
@@ -172,7 +172,7 @@ public class GeneratedAnonymousIndividualsTest {
 		assertNotEquals("c", blank1);
 		assertNotEquals("c", blank2);
 
-		reasoner.exportQueryAnswersToCsv(queryAtom, excludeBlanksFilePath, false);
+		reasoner.exportQueryAnswersToCsv(this.queryAtom, excludeBlanksFilePath, false);
 		final List<List<String>> csvContentExcludeBlanks = FileDataSourceTestUtils.getCSVContent(excludeBlanksFilePath);
 		assertTrue(csvContentExcludeBlanks.isEmpty());
 	}

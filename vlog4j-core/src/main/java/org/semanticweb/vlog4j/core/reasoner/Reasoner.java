@@ -355,12 +355,16 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *         <li>{@code false}, if reasoning has been interrupted before
 	 *         completion.</li>
 	 *         </ul>
-	 * @throws IOException            if I/O exceptions occur during reasoning.
-	 * @throws ReasonerStateException if this method is called before loading
-	 *                                ({@link Reasoner#load()} or after closing
-	 *                                ({@link Reasoner#close()}).
+	 * @throws IOException
+	 *             if I/O exceptions occur during reasoning.
+	 * @throws ReasonerStateException
+	 *             if this method is called before loading ({@link Reasoner#load()}
+	 *             or after closing ({@link Reasoner#close()}).
+	 * @throws IncompatiblePredicateArityException
+	 * @throws EdbIdbSeparationException
 	 */
-	boolean reason() throws IOException, ReasonerStateException;
+	boolean reason()
+			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException;
 
 	// TODO add examples to query javadoc
 	/**
@@ -460,7 +464,9 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *                                  extension.</li>
 	 *                                  </ul>
 	 */
-	void exportQueryAnswersToCsv(@NonNull PositiveLiteral query, @NonNull String csvFilePath, boolean includeBlanks)
+	// TODO update javadoc with return type
+	MaterialisationState exportQueryAnswersToCsv(@NonNull PositiveLiteral query, @NonNull String csvFilePath,
+			boolean includeBlanks)
 			throws ReasonerStateException, IOException;
 
 	/**

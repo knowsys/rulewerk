@@ -185,7 +185,7 @@ public class ReasonerStateTest {
 				reasoner.reason();
 				try (final QueryResultIterator queryQxIterator = reasoner.answerQuery(ruleHeadQx, true)) {
 					final Set<List<Term>> queryQxResults = QueryResultsUtils.collectQueryResults(queryQxIterator);
-					final Set<List<Term>> queryQxExpectedResults = new HashSet<List<Term>>();
+					final Set<List<Term>> queryQxExpectedResults = new HashSet<>();
 					queryQxExpectedResults.add(Arrays.asList(c));
 					assertEquals(queryQxResults, queryQxExpectedResults);
 				}
@@ -198,7 +198,7 @@ public class ReasonerStateTest {
 				}
 				try (final QueryResultIterator queryPxIterator = reasoner.answerQuery(ruleBodyPx, true)) {
 					final Set<List<Term>> queryPxResults = QueryResultsUtils.collectQueryResults(queryPxIterator);
-					final Set<List<Term>> queryPxExpectedResults = new HashSet<List<Term>>();
+					final Set<List<Term>> queryPxExpectedResults = new HashSet<>();
 					queryPxExpectedResults.add(Arrays.asList(c));
 					assertEquals(queryPxResults, queryPxExpectedResults);
 				}
@@ -290,11 +290,13 @@ public class ReasonerStateTest {
 		}
 	}
 
-	@Test(expected = ReasonerStateException.class)
-	public void testFailReasonBeforeLoad() throws ReasonerStateException, IOException {
+	@Test
+	public void testFailReasonBeforeLoad()
+			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.reason();
 		}
+
 	}
 
 	@Test(expected = ReasonerStateException.class)
@@ -305,7 +307,8 @@ public class ReasonerStateTest {
 	}
 
 	@Test(expected = ReasonerStateException.class)
-	public void testFailExportQueryAnswerToCsvBeforeLoad() throws ReasonerStateException, IOException {
+	public void testFailExportQueryAnswerToCsvBeforeLoad()
+			throws ReasonerStateException, IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, FileDataSourceTestUtils.OUTPUT_FOLDER + "output.csv",
 					true);

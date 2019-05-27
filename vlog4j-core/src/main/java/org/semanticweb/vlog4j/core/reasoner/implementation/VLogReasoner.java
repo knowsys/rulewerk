@@ -14,6 +14,7 @@ import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
+import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
@@ -59,6 +60,7 @@ public class VLogReasoner implements Reasoner {
 
 	private final VLog vLog = new VLog();
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
+	private MaterialisationState materialisationState = MaterialisationState.INCOMPLETE;
 
 	private LogLevel internalLogLevel = LogLevel.WARNING;
 	private Algorithm algorithm = Algorithm.RESTRICTED_CHASE;
@@ -79,15 +81,16 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public KnowledgeBase getKnowledgeBase() {
-		return knowledgeBase;
+		return this.knowledgeBase;
 	}
 
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm, "Algorithm cannot be null!");
 		this.algorithm = algorithm;
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
 			LOGGER.warn("Setting algorithm on a closed reasoner.");
+		}
 	}
 
 	@Override
@@ -101,8 +104,9 @@ public class VLogReasoner implements Reasoner {
 			Validate.isTrue(seconds > 0, "Only strictly positive timeout period alowed!", seconds);
 		}
 		this.timeoutAfterSeconds = seconds;
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
+		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
 			LOGGER.warn("Setting timeout on a closed reasoner.");
+		}
 	}
 
 	@Override
@@ -129,9 +133,11 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void load()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			throw new ReasonerStateException(reasonerState, "Loading is not allowed after closing.");
+		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(this.reasonerState, "Loading is not allowed after closing.");
+		}
 		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
+			// TODO check if this is correct.
 			LOGGER.warn("This method call is ineffective: the Reasoner has already been loaded.");
 		} else {
 			this.knowledgeBase.validateEdbIdbSeparation();
@@ -185,34 +191,52 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public boolean reason() throws IOException, ReasonerStateException {
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
-			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed before loading!");
-		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(reasonerState, "Reasoning is not allowed after closing.");
-		} else if (this.reasonerState == ReasonerState.AFTER_REASONING) {
-			LOGGER.warn(
-					"This method call is ineffective: this Reasoner has already reasoned. Successive reason() calls are not supported. Call reset() to undo loading and reasoning and reload to be able to reason again");
-		} else {
-			this.reasonerState = ReasonerState.AFTER_REASONING;
-
-			final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
-			try {
-				if (this.timeoutAfterSeconds == null) {
-					this.vLog.materialize(skolemChase);
-					this.reasoningCompleted = true;
-				} else {
-					this.reasoningCompleted = this.vLog.materialize(skolemChase, this.timeoutAfterSeconds);
-				}
-			} catch (final NotStartedException e) {
-				throw new RuntimeException("Inconsistent reasoner state.", e);
-			} catch (final MaterializationException e) {
-				throw new RuntimeException(
-						"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
-						e);
-			}
+	public boolean reason()
+			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+		switch (this.reasonerState) {
+		case BEFORE_LOADING:
+			load();
+			runChase();
+			break;
+		case AFTER_LOADING:
+			// TODO check if changes occurred in the KB. If yes, only runChase(); otherwise,
+			// reset and reload.
+			runChase();
+			break;
+		case AFTER_REASONING:
+			// TODO check if changes occurred in the KB. If yes, reset, reload, and run
+			// chase. If not, do nothing.
+			resetReasoner();
+			load();
+			runChase();
+			break;
+		case AFTER_CLOSING:
+			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed after closing.");
 		}
 		return this.reasoningCompleted;
+	}
+
+	private void runChase() {
+		this.reasonerState = ReasonerState.AFTER_REASONING;
+
+		final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
+		try {
+			if (this.timeoutAfterSeconds == null) {
+				this.vLog.materialize(skolemChase);
+				this.reasoningCompleted = true;
+			} else {
+				this.reasoningCompleted = this.vLog.materialize(skolemChase, this.timeoutAfterSeconds);
+			}
+			this.materialisationState = this.reasoningCompleted ? MaterialisationState.COMPLETE
+					: MaterialisationState.INCOMPLETE;
+
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		} catch (final MaterializationException e) {
+			throw new RuntimeException(
+					"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
+					e);
+		}
 	}
 
 	@Override
@@ -220,8 +244,8 @@ public class VLogReasoner implements Reasoner {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(reasonerState, "Querying is not allowed after closing.");
+		} else if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(this.reasonerState, "Querying is not allowed after closing.");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
 
@@ -232,17 +256,17 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
-		return new QueryResultIterator(stringQueryResultIterator);
+		return new QueryResultIterator(stringQueryResultIterator, this.materialisationState);
 	}
 
 	@Override
-	public void exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
+	public MaterialisationState exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws ReasonerStateException, IOException {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(reasonerState, "Querying is not allowed after closing.");
+		} else if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(this.reasonerState, "Querying is not allowed after closing.");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
@@ -254,13 +278,15 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
+		return this.materialisationState;
 	}
 
 	@Override
 	public void resetReasoner() throws ReasonerStateException {
 		// TODO what should happen to the KB?
-		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			throw new ReasonerStateException(reasonerState, "Resetting is not allowed after closing.");
+		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(this.reasonerState, "Resetting is not allowed after closing.");
+		}
 		this.reasonerState = ReasonerState.BEFORE_LOADING;
 		this.vLog.stop();
 		LOGGER.warn(
@@ -304,8 +330,9 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setLogLevel(LogLevel logLevel) throws ReasonerStateException {
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			throw new ReasonerStateException(reasonerState, "Setting log level is not allowed after closing.");
+		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(this.reasonerState, "Setting log level is not allowed after closing.");
+		}
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
 		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(this.internalLogLevel));
@@ -318,8 +345,9 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setLogFile(String filePath) throws ReasonerStateException {
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			throw new ReasonerStateException(reasonerState, "Setting log file is not allowed after closing.");
+		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+			throw new ReasonerStateException(this.reasonerState, "Setting log file is not allowed after closing.");
+		}
 		this.vLog.setLogFile(filePath);
 	}
 
@@ -387,7 +415,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		// TODO update reasoning state for query answering
+		// TODO update materialisation state for query answering
 		// TODO compute KB diff
 
 	}

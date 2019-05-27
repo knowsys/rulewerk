@@ -23,6 +23,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import java.util.Iterator;
 
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
+import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
 
 import karmaresearch.vlog.Term;
 import karmaresearch.vlog.TermQueryResultIterator;
@@ -38,8 +39,13 @@ public class QueryResultIterator implements Iterator<QueryResult>, AutoCloseable
 
 	private final TermQueryResultIterator vLogTermQueryResultIterator;
 
-	public QueryResultIterator(TermQueryResultIterator termQueryResultIterator) {
+	private final MaterialisationState materialisationState;
+
+	// TODO add reasoningState to constructor
+	public QueryResultIterator(final TermQueryResultIterator termQueryResultIterator,
+			final MaterialisationState materialisationState) {
 		this.vLogTermQueryResultIterator = termQueryResultIterator;
+		this.materialisationState = materialisationState;
 	}
 
 	@Override
@@ -56,6 +62,10 @@ public class QueryResultIterator implements Iterator<QueryResult>, AutoCloseable
 	@Override
 	public void close() {
 		this.vLogTermQueryResultIterator.close();
+	}
+
+	public MaterialisationState getMaterialisationState() {
+		return this.materialisationState;
 	}
 
 }

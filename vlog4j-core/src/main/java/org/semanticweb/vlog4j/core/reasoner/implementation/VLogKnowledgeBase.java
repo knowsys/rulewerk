@@ -115,12 +115,12 @@ public class VLogKnowledgeBase extends KnowledgeBase {
 	}
 	
 	Set<Predicate> getEdbPredicates() {
-		// TODO use chache
+		// TODO use cache
 		return collectEdbPredicates();
 	}
 
 	Set<Predicate> getIdbPredicates() {
-		// TODO use chache
+		// TODO use cache
 		return collectIdbPredicates();
 	}
 	
