@@ -1,0 +1,562 @@
+options
+{
+    // Use \ u escapes in streams AND use a reader for the query
+    // => get both raw and escaped unicode
+    //JAVA_UNICODE_ESCAPE = true;
+    //UNICODE_INPUT = false;
+    UNICODE_INPUT = true;
+    STATIC = false;
+    //DEBUG_PARSER = true;
+    //DEBUG_TOKEN_MANAGER   = true ;
+}
+
+PARSER_BEGIN(JavaCCRuleParser)
+package org.semanticweb.vlog4j.parser.implementation.javacc;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import org.semanticweb.vlog4j.parser.implementation.RuleParserBase;
+import org.semanticweb.vlog4j.parser.implementation.PrologueException;
+
+import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.Constant;
+
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeNegativeLiteral;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+
+
+public class JavaCCRuleParser extends RuleParserBase
+{
+}
+
+PARSER_END(JavaCCRuleParser)
+
+
+void parse() throws PrologueException:
+{
+}
+{
+    ( base() )?
+    ( prefix() )*
+    ( statement() )*
+    < EOF >
+}
+
+void base() throws PrologueException:
+{
+    String iriString;
+}
+{
+    < BASE > iriString = IRIREF() < DOT >
+    {
+        localPrologue.setBase(iriString);
+    }
+}
+
+void prefix() throws PrologueException:
+{
+    Token t;
+    String iriString;
+}
+{
+    < PREFIX > t = < PNAME_NS > iriString = IRIREF() < DOT >
+    {
+         //note that prefix includes the colon (:)
+         localPrologue.setPrefix(t.image, iriString);
+    }
+}
+
+void statement() throws PrologueException:
+{
+    Rule r;
+    PositiveLiteral l;
+}
+{
+    LOOKAHEAD(rule()) r = rule() { listOfRules.add(r);}
+|   l = positiveLiteral() < DOT >
+    {
+         if (l.getVariables().isEmpty())
+             listOfFacts.add(l);
+         else
+             listOfQueries.add(l);
+    }
+}
+
+Rule rule() throws PrologueException:
+{
+    List < PositiveLiteral > head;
+    List < Literal > body;
+}
+{
+    head = listOfPositiveLiterals() < ARROW > body = listOfLiterals() < DOT >
+    { return makeRule(makePositiveConjunction(head), makeConjunction(body)); }
+}
+
+List < PositiveLiteral > listOfPositiveLiterals() throws PrologueException:
+{
+    PositiveLiteral l;
+    List < PositiveLiteral > list = new ArrayList < PositiveLiteral > ();
+}
+{
+    l = positiveLiteral()             { list.add(l); }
+    ( < COMMA > l = positiveLiteral() { list.add(l); } )*
+    { return list; }
+}
+
+List < Literal > listOfLiterals() throws PrologueException:
+{
+    Literal l;
+    List < Literal > list = new ArrayList < Literal > ();
+}
+{
+    l = literal()             { list.add(l); }
+    ( < COMMA > l = literal() { list.add(l); } )*
+    { return list; }
+}
+
+Literal literal() throws PrologueException:
+{
+    Literal l = null;
+}
+{
+    l = positiveLiteral() { return l; }
+|   l = negativeLiteral() { return l; }
+}
+
+PositiveLiteral positiveLiteral() throws PrologueException:
+{
+    Token t;
+    List < Term > terms;
+    String predicateName;
+}
+{
+    predicateName = predicateName() < LPAREN > terms = listOfTerms() < RPAREN >
+    { return makePositiveLiteral(predicateName, terms); }
+}
+
+NegativeLiteral negativeLiteral() throws PrologueException:
+{
+    List < Term > terms;
+    String predicateName;
+}
+{
+    < TILDE > predicateName = predicateName() < LPAREN > terms = listOfTerms() < RPAREN >
+    { return makeNegativeLiteral(predicateName, terms); }
+}
+
+List < Term > listOfTerms() throws PrologueException:
+{
+    Term t;
+    List < Term > list = new ArrayList < Term > ();
+}
+{
+    t = term()             { list.add(t); }
+    ( < COMMA > t = term() { list.add(t); } )*
+    { return list; }
+}
+
+String predicateName() throws PrologueException:
+{
+    String s;
+    Token t;
+}
+{
+    s = IRI() { return s; }
+|   t = < VARORPREDNAME > { return t.image; }
+}
+
+Term term() throws PrologueException:
+{
+    String s;
+    Token t;
+}
+{
+    s = IRI()        { return makeConstant(s); }
+|   s = RDFLiteral() { return makeConstant(s); }
+|   t = < VAR >      { return makeVariable(t.image.substring(1)); }
+}
+
+/** [16] */
+Constant NumericLiteral() :
+{
+    Token t;
+}
+{
+    t = < INTEGER > { return createLiteralInteger(t.image); }
+|   t = < DECIMAL > { return createLiteralDecimal(t.image); }
+|   t = < DOUBLE >  {  return createLiteralDouble(t.image); }
+}
+
+String RDFLiteral() throws PrologueException:
+{
+    Token t;
+    String lex = null;
+    String lang = null;   // Optional lang tag and datatype.
+    String dt = null;
+}
+{
+    lex = String() ( lang = Langtag() | < DATATYPE > dt = IRI() )?
+    { return strRDFLiteral(lex, lang, dt); }
+}
+
+String Langtag() :
+{
+    Token t;
+}
+{
+    // Enumerate the directives here because they look like language tags.
+    (
+        t = < LANGTAG >
+    )
+    {
+        String lang = stripChars(t.image, 1);
+        return lang;
+    }
+}
+
+String BooleanLiteral() :
+{
+}
+{
+    < TRUE >   { return "true^^http://www.w3.org/2001/XMLSchema#boolean";  }
+|   < FALSE >  { return "false^^http://www.w3.org/2001/XMLSchema#boolean"; }
+}
+
+String String():
+{
+    Token t;
+    String lex;
+}
+{
+    (
+         t = < STRING_LITERAL1 >      { lex = stripQuotes(t.image);  }
+    |    t = < STRING_LITERAL2 >      { lex = stripQuotes(t.image);  }
+    |    t = < STRING_LITERAL_LONG1 > { lex = stripQuotes3(t.image); }
+    |    t = < STRING_LITERAL_LONG2 > { lex = stripQuotes3(t.image); }
+    )
+    {
+        lex = unescapeStr(lex, t.beginLine, t.beginColumn);
+        return lex;
+    }
+}
+
+String IRI() throws PrologueException:
+{
+    String iri;
+}
+{
+    (
+        iri = IRIREF()
+    |   iri = PrefixedName()
+    )
+    { return "<"+iri+">"; }
+}
+
+String PrefixedName() throws PrologueException:
+{
+    Token t;
+}
+{
+    (
+        t = < PNAME_LN >
+    |   t = < PNAME_NS >
+    )
+    { return localPrologue.resolvePName(t.image);}
+    //{ return localPrologue.resolvePName(t.image, t.beginLine, t.beginColumn);}
+}
+
+String IRIREF() :
+{
+    Token t;
+}
+{
+    t = < IRI >
+    {
+        // we remove '<' and '>'
+        return t.image.substring(1,t.image.length()-1);
+    }
+}
+
+// ------------------------------------------
+// Tokens
+// Comments and whitespace
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+TOKEN :
+{
+  < #WS :
+    " "
+  | "\t"
+  | "\n"
+  | "\r"
+  | "\f" >
+}
+
+SPECIAL_TOKEN :
+{
+  < SINGLE_LINE_COMMENT :
+    "#" (~[ "\n", "\r" ])*
+    (
+      "\n"
+    | "\r"
+    | "\r\n"
+    )? >
+}
+
+// -------------------------------------------------
+// Keywords : directives before LANGTAG
+TOKEN :
+{
+  < PREFIX : "@prefix" >
+| < BASE : "@base" >
+}
+
+TOKEN [ IGNORE_CASE ] :
+{
+  < TRUE : "true" >
+| < FALSE : "false" >
+  // -------------------------------------------------
+| < INTEGER : ([ "-", "+" ])? < DIGITS > >
+| 
+  < DECIMAL :
+    ([ "-", "+" ])?
+    (
+      (< DIGITS >)+ "." (< DIGITS >)*
+    | "." (< DIGITS >)+
+    ) 
+  >
+  // Required exponent.
+| < DOUBLE :
+    ([ "+", "-" ])?
+    (
+      ([ "0"-"9" ])+ "." ([ "0"-"9" ])* < EXPONENT >
+    | "." ([ "0"-"9" ])+ (< EXPONENT >)
+    | ([ "0"-"9" ])+ < EXPONENT >
+    ) 
+  >
+| < #EXPONENT : [ "e", "E" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >
+| < #QUOTE_3D : "\"\"\"" >
+| < #QUOTE_3S : "'''" >
+  // "u" done by javacc input stream.  
+  // "U" escapes not supported yet for Java strings
+| < ECHAR :
+    "\\"
+    (
+      "t"
+    | "b"
+    | "n"
+    | "r"
+    | "f"
+    | "\\"
+    | "\""
+    | "'"
+    ) >
+| < STRING_LITERAL1 :
+    // Single quoted string
+    "'"
+    (
+      (~[ "'", "\\", "\n", "\r" ])
+    | < ECHAR >
+    )*
+    "'" >
+| < STRING_LITERAL2 :
+    // Double quoted string
+    "\""
+    (
+      (~[ "\"", "\\", "\n", "\r" ])
+    | < ECHAR >
+    )*
+    "\"" >
+| < STRING_LITERAL_LONG1 :
+    < QUOTE_3S >
+    (
+      ~[ "'", "\\" ]
+    | < ECHAR >
+    | ("'" ~[ "'" ])
+    | ("''" ~[ "'" ])
+    )*
+    < QUOTE_3S > >
+| < STRING_LITERAL_LONG2 :
+    < QUOTE_3D >
+    (
+      ~[ "\"", "\\" ]
+    | < ECHAR >
+    | ("\"" ~[ "\"" ])
+    | ("\"\"" ~[ "\"" ])
+    )*
+    < QUOTE_3D > >
+| < DIGITS : ([ "0"-"9" ])+ >
+  // | <HEX: ["0"-"9"] | ["A"-"F"] | ["a"-"f"]>
+}
+
+TOKEN :
+{
+  // Includes # for relative URIs
+  < IRI : "<" (~[ ">", "<", "\"", "{", "}", "^", "\\", "|", "`", "\u0000"-"\u0020" ])* ">" >
+| < PNAME_NS : (< PN_PREFIX >)? ":" >
+| < PNAME_LN : < PNAME_NS > < PN_LOCAL > >
+| < BLANK_NODE_LABEL : "_:" < PN_LOCAL > >
+| < VAR : "?" < VARORPREDNAME > >
+| < LANGTAG :
+    < AT > (< A2Z >)+
+    (
+      "-" (< A2ZN >)+
+    )* >
+| < #A2Z : [ "a"-"z", "A"-"Z" ] >
+| < #A2ZN : [ "a"-"z", "A"-"Z", "0"-"9" ] >
+}
+
+TOKEN :
+{
+  < LPAREN : "(" >
+| < RPAREN : ")" >
+| < NIL :
+    < LPAREN >
+    (
+      < WS >
+    | < SINGLE_LINE_COMMENT >
+    )*
+    < RPAREN > >
+| < LBRACE : "{" >
+| < RBRACE : "}" >
+| < LBRACKET : "[" >
+| < RBRACKET : "]" >
+| < ANON :
+    < LBRACKET >
+    (
+      < WS >
+    | < SINGLE_LINE_COMMENT >
+    )*
+    < RBRACKET > >
+| < SEMICOLON : ";" >
+| < COMMA : "," >
+| < DOT : "." >
+}
+
+// Operator
+TOKEN :
+{
+  < EQ : "=" >
+| < ARROW : ":-" >
+| < DOLLAR : "$" >
+| < QMARK : "?" >
+| < TILDE : "~" >
+| < COLON : ":" >
+  // | < PLUS:    "+" >
+  // | < MINUS:   "-" >
+| < STAR : "*" >
+| < SLASH : "/" >
+| < RSLASH : "\\" >
+| < BOM : "\ufeff" >
+  //| < AMP: "&" >
+  //| < REM: "%" >
+| < DATATYPE : "^^" >
+| < AT : "@" >
+}
+
+TOKEN :
+{
+  < #PN_CHARS_BASE :
+    [ "A"-"Z" ]
+  | [ "a"-"z" ]
+  | 
+    [ "\u00c0"-"\u00d6" ]
+  | [ "\u00d8"-"\u00f6" ]
+  | [ "\u00f8"-"\u02ff" ]
+  | 
+    [ "\u0370"-"\u037d" ]
+  | [ "\u037f"-"\u1fff" ]
+  | 
+    [ "\u200c"-"\u200d" ]
+  | [ "\u2070"-"\u218f" ]
+  | [ "\u2c00"-"\u2fef" ]
+  | 
+    [ "\u3001"-"\ud7ff" ]
+  | [ "\uf900"-"\ufffd" ] 
+  >
+  // [#x10000-#xEFFFF]
+| 
+  < #PN_CHARS_U :
+    < PN_CHARS_BASE >
+  | "_" >
+| 
+  // No DOT
+  < #PN_CHARS :
+    (
+      < PN_CHARS_U >
+    | "-"
+    | [ "0"-"9" ]
+    | "\u00b7"
+    | 
+      [ "\u0300"-"\u036f" ]
+    | [ "\u203f"-"\u2040" ]
+    ) >
+| 
+  // No leading "_", no trailing ".", can have dot inside prefix name.
+  < #PN_PREFIX :
+    < PN_CHARS_BASE >
+    (
+      (
+        < PN_CHARS >
+      | "."
+      )*
+      < PN_CHARS >
+    )? >
+| 
+  // With a leading "_", no dot at end of local name.
+  < #PN_LOCAL :
+    (
+      < PN_CHARS_U >
+    | [ "0"-"9" ]
+    )
+    (
+      (
+        < PN_CHARS >
+      | "."
+      )*
+      < PN_CHARS >
+    )? >
+| 
+  // NCNAME without "-" and ".", allowing leading digits.
+  < VARORPREDNAME :
+    (
+      < PN_CHARS_U >
+    | [ "0"-"9" ]
+    )
+    (
+      < PN_CHARS_U >
+    | [ "0"-"9" ]
+    | "\u00b7"
+    | 
+      [ "\u0300"-"\u036f" ]
+    | [ "\u203f"-"\u2040" ]
+    )* >
+}
+
+// Catch-all tokens.  Must be last.  
+// Any non-whitespace.  Causes a parser exception, rather than a
+// token manager error (with hidden line numbers).
+// Only bad IRIs (e.g. spaces) now give unhelpful parse errors.
+TOKEN :
+{
+  < #UNKNOWN : (~[ " ", "\t", "\n", "\r", "\f" ])+ >
+}
+
+SKIP :{< "%" (~["\n"])* "\n" >}
