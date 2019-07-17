@@ -1,0 +1,26 @@
+@base <http://xmlns.com/foaf/0.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+%this is a comment
+
+deathCause(?X, ?Z) :- recentDeathsCause(?X, ?Z) .
+deathCause(?X, ?Z) :- recentDeaths(?X) .
+
+doid(?Iri,?DoidId) :- doidTriple(?Iri,<http://www.geneontology.org/formats/oboInOwl#id>,?DoidId) .
+hasDoid(?X) :- diseaseId(?X,?DoidId) . 
+
+diseaseHierarchy(?X,?Y) :- doidTriple(?X,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,?Y) .
+diseaseHierarchy(?X,?Z) :- diseaseHierarchy(?X,?Y), doidTriple(?Y,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,?Z) .
+
+%the next three rules are the same
+%cancerDisease(?Xdoid) :- diseaseHierarchy(?X,?Y), doid(?Y,"DOID:162"^^<http://www.w3.org/2001/XMLSchema#string>), doid(?X, ?Xdoid) .
+%cancerDisease(?Xdoid) :- diseaseHierarchy(?X,?Y), doid(?Y,"DOID:162"^^xsd:string), doid(?X, ?Xdoid) .
+cancerDisease(?Xdoid) :- diseaseHierarchy(?X,?Y), doid(?Y,"DOID:162"), doid(?X, ?Xdoid) .
+
+humansWhoDiedOfCancer(?X) :- deathCause(?X,?Y), diseaseId(?Y,?Z), cancerDisease(?Z) .
+humansWhoDiedOfNoncancer(?X) :- deathCause(?X,?Y), diseaseId(?Y,?Z), ~cancerDisease(?Z) .
+humansWhoDiedOfNoncancer(?X) :- deathCause(?X,?y), ~hasDoid(?y) .
+
+humansWhoDiedOfCancer(?X) .
+humansWhoDiedOfNoncancer(?X) .
+
