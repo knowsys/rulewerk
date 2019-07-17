@@ -1,5 +1,25 @@
 package org.semanticweb.vlog4j.examples;
 
+/*-
+ * #%L
+ * VLog4j Examples
+ * %%
+ * Copyright (C) 2018 - 2019 VLog4j Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -78,11 +98,8 @@ public class DoidExampleLocalSyntax {
 
 			RuleParser rp = new RuleParser(
 					new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/localSyntax/doid-example.txt"));
-			for (Rule rule : rp.getRules())
-				System.out.println(rule);
 			rp.parse();
 
-			reasoner.addFacts(rp.getFacts());
 			reasoner.addRules(rp.getRules());
 
 			System.out.println("Rules configured:\n--");
