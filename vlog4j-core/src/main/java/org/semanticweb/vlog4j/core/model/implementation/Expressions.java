@@ -210,6 +210,17 @@ public final class Expressions {
 	}
 
 	/**
+	 * Creates a {@code Conjunction} of {@link T} ({@link PositiveLiteral} type)
+	 * objects.
+	 *
+	 * @param literals list of non-null positive literals
+	 * @return a {@link Conjunction} corresponding to the input
+	 */
+	public static <T extends PositiveLiteral> Conjunction<T> makePositiveConjunction(final List<T> literals) {
+		return new ConjunctionImpl<>(literals);
+	}
+
+	/**
 	 * Creates a {@code Conjunction} of {@link PositiveLiteral} objects.
 	 *
 	 * @param literals array of non-null positive literals
@@ -230,7 +241,7 @@ public final class Expressions {
 		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
 				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
 	}
-	
+
 	/**
 	 * Creates a {@code Rule}.
 	 *
@@ -249,12 +260,13 @@ public final class Expressions {
 	 * @param body conjunction of positive (non-negated) literals
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head, final Conjunction<PositiveLiteral> body) {
+	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head,
+			final Conjunction<PositiveLiteral> body) {
 		final List<Literal> bodyLiteralList = new ArrayList<>(body.getLiterals());
 		@NonNull
 		final Conjunction<Literal> literalsBody = makeConjunction(bodyLiteralList);
 		return new RuleImpl(head, literalsBody);
-	
+
 	}
 
 }
