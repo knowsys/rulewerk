@@ -19,6 +19,7 @@ package org.semanticweb.vlog4j.examples;
  * limitations under the License.
  * #L%
  */
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +28,6 @@ import java.net.URL;
 
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
@@ -43,7 +43,7 @@ import org.semanticweb.vlog4j.parser.api.RuleParser;
 import org.semanticweb.vlog4j.parser.implementation.PrologueException;
 import org.semanticweb.vlog4j.parser.implementation.javacc.ParseException;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
+
 
 /**
  * This example reasons about human diseases, based on information from the
