@@ -12,7 +12,7 @@
 
 	<name>VLog4j</name>
 	<description>A Java library for working with the VLog rule engine</description>
-	<url>https://github.com/mkroetzsch/vlog4j</url>
+	<url>https://github.com/knowsys/vlog4j</url>
 
 	<modules>
 		<module>vlog4j-core</module>
