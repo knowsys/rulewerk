@@ -80,7 +80,7 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
 			
-			checkTowDistinctBlanksGenerated(reasoner);
+			checkTwoDistinctBlanksGenerated(reasoner);
 		}
 	}
 
@@ -89,8 +89,8 @@ public class GeneratedAnonymousIndividualsTest {
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
-			// P(?x) -> P(?x,!y), P(?x,!z)
-			// after split becomes {{P(?x) -> P(?x,!y), {P(?x)-> P(?x,!z)}}
+			// {P(?x) -> P(?x,!y), P(?x,!z)}
+			// after split becomes { {P(?x) -> P(?x,!y,!z)}, {P(?x,!y,!z) ->, P(?x,!y)}, {P(?x,!y,!z) ->, P(?x,!z)} }
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 			
 			reasoner.addFacts(fact);
@@ -99,7 +99,7 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
 			
-			checkTowDistinctBlanksGenerated(reasoner);
+			checkTwoDistinctBlanksGenerated(reasoner);
 		}
 	}
 
@@ -116,7 +116,7 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
 			
-			checkTowDistinctBlanksGenerated(reasoner);
+			checkTwoDistinctBlanksGenerated(reasoner);
 		}
 	}
 
@@ -128,32 +128,18 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 
 			// {P(?x) -> P(?x,!y), P(?x,!z)}
-			// after split becomes {{P(?x) -> P(?x,!y), {P(?x)-> P(?x,!z)}}
+			// after split becomes { {P(?x) -> P(?x,!y,!z)}, {P(?x,!y,!z) ->, P(?x,!y)}, {P(?x,!y,!z) ->, P(?x,!z)} }
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 			reasoner.addFacts(fact);
 			reasoner.addRules(existentialRule);
 			reasoner.load();
 			reasoner.reason();
 
-			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
-			// expected fact: P(c, _:b)
-			final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils.getCSVContent(includeBlanksFilePath);
-			assertTrue(csvContentIncludeBlanks.size() == 1);
-			for (final List<String> queryResult : csvContentIncludeBlanks) {
-				assertTrue(queryResult.size() == 2);
-				assertEquals(queryResult.get(0), "c");
-			}
-			final String blank = csvContentIncludeBlanks.get(0).get(1);
-			assertNotEquals("c", blank);
-
-			reasoner.exportQueryAnswersToCsv(queryAtom, excludeBlanksFilePath, false);
-			final List<List<String>> csvContentExcludeBlanks = FileDataSourceTestUtils.getCSVContent(excludeBlanksFilePath);
-			assertTrue(csvContentExcludeBlanks.isEmpty());
-
+			checkTwoDistinctBlanksGenerated(reasoner);
 		}
 	}
 
-	private void checkTowDistinctBlanksGenerated(final Reasoner reasoner)
+	private void checkTwoDistinctBlanksGenerated(final Reasoner reasoner)
 			throws ReasonerStateException, IOException, EdbIdbSeparationException {
 		// expected facts: P(c, _:b1), P(c, _:b2)
 		final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils.getCSVContent(includeBlanksFilePath);

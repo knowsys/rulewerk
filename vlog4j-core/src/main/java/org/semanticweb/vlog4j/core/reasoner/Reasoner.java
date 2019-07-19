@@ -146,7 +146,7 @@ public interface Reasoner extends AutoCloseable {
 
 	/**
 	 * Loaded {@link Rule}s can be re-written internally to an equivalent set of
-	 * rules, according to given {@code ruleRewritingStrategy}. If no staregy is
+	 * rules, according to given {@code ruleRewritingStrategy}. If no strategy is
 	 * set, the default value is {@link RuleRewriteStrategy#NONE}, meaning that the
 	 * rules will not be re-written.
 	 *
