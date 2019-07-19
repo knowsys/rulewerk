@@ -135,7 +135,7 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.load();
 			reasoner.reason();
 
-			checkTowDistinctBlanksGenerated(reasoner);
+			checkTwoDistinctBlanksGenerated(reasoner);
 		}
 	}
 
