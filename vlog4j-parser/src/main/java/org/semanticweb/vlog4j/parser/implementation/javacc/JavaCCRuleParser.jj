@@ -15,6 +15,8 @@ package org.semanticweb.vlog4j.parser.implementation.javacc;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.semanticweb.vlog4j.parser.implementation.RuleParserBase;
 import org.semanticweb.vlog4j.parser.implementation.PrologueException;
@@ -99,7 +101,9 @@ Rule rule() throws PrologueException:
 }
 {
     head = listOfPositiveLiterals() < ARROW > body = listOfLiterals() < DOT >
-    { return makeRule(makePositiveConjunction(head), makeConjunction(body)); }
+    {
+        return makeRule(makePositiveConjunction(head), makeConjunction(body));
+    }
 }
 
 List < PositiveLiteral > listOfPositiveLiterals() throws PrologueException:
@@ -183,7 +187,8 @@ Term term() throws PrologueException:
 {
     s = IRI()        { return makeConstant(s); }
 |   s = RDFLiteral() { return makeConstant(s); }
-|   t = < VAR >      { return makeVariable(t.image.substring(1)); }
+|   t = < UNIVAR >   { return makeVariable(t.image.substring(1)); }
+|   t = < EXIVAR >   { return makeVariable(t.image.substring(1)); }
 }
 
 /** [16] */
@@ -413,7 +418,8 @@ TOKEN :
 | < PNAME_NS : (< PN_PREFIX >)? ":" >
 | < PNAME_LN : < PNAME_NS > < PN_LOCAL > >
 | < BLANK_NODE_LABEL : "_:" < PN_LOCAL > >
-| < VAR : "?" < VARORPREDNAME > >
+| < UNIVAR : "?" < VARORPREDNAME > >
+| < EXIVAR : "!" < VARORPREDNAME > >
 | < LANGTAG :
     < AT > (< A2Z >)+
     (
