@@ -89,8 +89,8 @@ public class GeneratedAnonymousIndividualsTest {
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
-			// {P(?x) -> P(?x,!y), P(?x,!z)}
-			// after split becomes { {P(?x) -> P(?x,!y,!z)}, {P(?x,!y,!z) ->, P(?x,!y)}, {P(?x,!y,!z) ->, P(?x,!z)} }
+			// the rule {P(?x) -> P(?x,!y), P(?x,!z)} after split  becomes:
+			// { {P(?x) -> P(?x,!y,!z)}, {P(?x,?y,?z) ->, P(?x,?y)}, {P(?x,?y,?z) ->, P(?x,?z)} }
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 			
 			reasoner.addFacts(fact);
@@ -126,11 +126,11 @@ public class GeneratedAnonymousIndividualsTest {
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
-
-			// {P(?x) -> P(?x,!y), P(?x,!z)}
-			// after split becomes { {P(?x) -> P(?x,!y,!z)}, {P(?x,!y,!z) ->, P(?x,!y)}, {P(?x,!y,!z) ->, P(?x,!z)} }
+			// the rule {P(?x) -> P(?x,!y), P(?x,!z)} after split  becomes:
+			// { {P(?x) -> P(?x,!y,!z)}, {P(?x,?y,?z) ->, P(?x,?y)}, {P(?x,?y,?z) ->, P(?x,?z)} }
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
-			reasoner.addFacts(fact);
+
+            reasoner.addFacts(fact);
 			reasoner.addRules(existentialRule);
 			reasoner.load();
 			reasoner.reason();
