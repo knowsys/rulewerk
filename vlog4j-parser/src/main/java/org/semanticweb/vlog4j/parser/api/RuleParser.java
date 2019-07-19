@@ -36,7 +36,6 @@ public class RuleParser extends JavaCCRuleParser {
 		super(stream, encoding);
 	}
 
-	
 	public RuleParser(String rules) {
 		super(new ByteArrayInputStream(rules.getBytes()), "UTF-8");
 	}

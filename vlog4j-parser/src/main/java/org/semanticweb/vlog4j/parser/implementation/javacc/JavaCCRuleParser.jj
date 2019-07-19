@@ -259,7 +259,7 @@ String IRI() throws PrologueException:
         iri = IRIREF()
     |   iri = PrefixedName()
     )
-    { return "<"+iri+">"; }
+    { return "<"+localPrologue.absolutize(iri)+">"; }
 }
 
 String PrefixedName() throws PrologueException:

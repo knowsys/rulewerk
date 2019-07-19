@@ -34,4 +34,6 @@ public interface Prologue {
 
     String resolvePName(String prefixedName) throws PrologueException;
 
+    String absolutize(String prefixedName) throws PrologueException;
+
 }

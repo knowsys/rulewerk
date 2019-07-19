@@ -30,7 +30,7 @@ import org.semanticweb.vlog4j.parser.api.Prologue;
 
 final public class LocalPrologue implements Prologue {
 
-	//??? Can I use default logguer
+	// ??? Can I use default logguer
 	final static Logger logger = LoggerFactory.getLogger(LocalPrologue.class.getName());
 
 	private static Prologue prologue;
@@ -86,28 +86,42 @@ final public class LocalPrologue implements Prologue {
 			throw new PrologueException("Base must be ab absolute IRI: " + baseString);
 		}
 		baseURI = newBase;
+		System.out.println(baseString);
+		System.out.println(baseURI.toString());
 	}
 
 	public String resolvePName(String prefixedName) throws PrologueException {
 		// from the parser we know that prefixedName is of the form:
 		// prefix:something
 		// remember that the prefixes are stored with the colon symbol
-		// This does not return the surrounding <>
+		// This does not return the surrounding angle brackes <>
 
 		int idx = prefixedName.indexOf(":") + 1;
 		String prefix = prefixedName.substring(0, idx);
 		String sufix = prefixedName.substring(idx);
 
-		if (prefixes.containsKey(prefix)) {
-			// if the last character of the fullUri is '#', the resolve method of
-			// java.net.URI does not work well
-			String fullUri = prefixes.get(prefix).toString();
-			if (fullUri.charAt(fullUri.length() - 1) == '#')
-				return fullUri + sufix;
-			// if it is different, then it works
-			return prefixes.get(prefix).resolve(sufix).toString();
-		}
+		if (prefixes.containsKey(prefix))
+			localResolver(prefixes.get(prefix), sufix);
 		throw new PrologueException("@prefix not found: " + prefixedName);
+	}
+
+	public String absolutize(String iri) throws PrologueException {
+		URI relative = URI.create(iri);
+		if (relative.isAbsolute())
+			return iri;
+		if (baseURI == null)
+			throw new PrologueException("@base not defined");
+		return localResolver(baseURI, iri);
+	}
+
+	private String localResolver(URI uri, String relative) {
+		// if the last character of the uri is '#', the resolve method of
+		// java.net.URI does not work well
+		String uriString = uri.toString();
+		if (uriString.charAt(uriString.length() - 1) == '#')
+			return uriString + relative;
+		else
+			return uri.resolve(relative).toString();
 	}
 
 }
