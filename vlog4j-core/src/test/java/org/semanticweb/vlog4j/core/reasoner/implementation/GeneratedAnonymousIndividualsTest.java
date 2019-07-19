@@ -80,7 +80,7 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
 			
-			checkTowDistinctBlanksGenerated(reasoner);
+			checkTwoDistinctBlanksGenerated(reasoner);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
 			
-			checkTowDistinctBlanksGenerated(reasoner);
+			checkTwoDistinctBlanksGenerated(reasoner);
 		}
 	}
 
@@ -116,7 +116,7 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(queryAtom, includeBlanksFilePath, true);
 			
-			checkTowDistinctBlanksGenerated(reasoner);
+			checkTwoDistinctBlanksGenerated(reasoner);
 		}
 	}
 
@@ -139,7 +139,7 @@ public class GeneratedAnonymousIndividualsTest {
 		}
 	}
 
-	private void checkTowDistinctBlanksGenerated(final Reasoner reasoner)
+	private void checkTwoDistinctBlanksGenerated(final Reasoner reasoner)
 			throws ReasonerStateException, IOException, EdbIdbSeparationException {
 		// expected facts: P(c, _:b1), P(c, _:b2)
 		final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils.getCSVContent(includeBlanksFilePath);
