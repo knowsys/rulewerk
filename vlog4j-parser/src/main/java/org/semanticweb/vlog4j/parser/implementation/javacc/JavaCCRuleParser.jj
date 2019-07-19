@@ -39,6 +39,13 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeC
 
 public class JavaCCRuleParser extends RuleParserBase
 {
+    // we use an int to specify where a variable comes from
+    // 0 if the variable does not come from a rule
+    // 1 if the variable comes from the head of a rule
+    // 2 if the variable comes from the body of a rule
+    Set <String> bodyVars;
+    Set <String> headExiVars;
+    Set <String> headUniVars;
 }
 
 PARSER_END(JavaCCRuleParser)
@@ -85,7 +92,7 @@ void statement() throws PrologueException:
 }
 {
     LOOKAHEAD(rule()) r = rule() { listOfRules.add(r);}
-|   l = positiveLiteral() < DOT >
+|   l = positiveLiteral(0) < DOT > //not from a rule
     {
          if (l.getVariables().isEmpty())
              listOfFacts.add(l);
@@ -96,76 +103,106 @@ void statement() throws PrologueException:
 
 Rule rule() throws PrologueException:
 {
+    Rule rule;
     List < PositiveLiteral > head;
     List < Literal > body;
+    bodyVars = new HashSet<String>();
+    headExiVars = new HashSet<String>();
+    headUniVars = new HashSet<String>();
+    Set<String> headExiVarsInterBodyVars;
+    Set<String> headExiVarsInterheadUniVars;
+    Set<String> headUniVarsInterBodyVars;
 }
 {
-    head = listOfPositiveLiterals() < ARROW > body = listOfLiterals() < DOT >
+    // 1 rule's head 
+    // 2 rule's body
+    head = listOfPositiveLiterals(1) < ARROW > body = listOfLiterals(2) < DOT >
     {
-        return makeRule(makePositiveConjunction(head), makeConjunction(body));
+        
+        rule = makeRule(makePositiveConjunction(head), makeConjunction(body));
+        // check that the intersection between headExiVars and BodyVars is empty
+        headExiVarsInterBodyVars = new HashSet<String>(headExiVars);
+        headExiVarsInterBodyVars.retainAll(bodyVars);
+        if (!headExiVarsInterBodyVars.isEmpty()) {
+             throw new ParseException("\nMalformed Rule:\nSome existential variables appers in the body.\nRule: " + rule.toString());
+            }
+        // check that the intersection between headExiVars and headUniVars is empty
+        headExiVarsInterheadUniVars = new HashSet<String>(headExiVars);
+        headExiVarsInterheadUniVars.retainAll(headUniVars);
+        if (!headExiVarsInterBodyVars.isEmpty()) {
+             throw new ParseException("\nMalformed Rule:\nSome existential variables appers as universal variables in the head.\nRule: " + rule.toString());
+            }
+        // check that bodyVars contains headUniVars
+        headUniVarsInterBodyVars = new HashSet<String>(headUniVars);
+        headUniVarsInterBodyVars.retainAll(bodyVars);
+        if (!headUniVarsInterBodyVars.equals(headUniVars)) {
+             throw new ParseException("\nMalformed Rule:\nSome universal variables appearing in the head does not apper in the body.\nRule: " + rule.toString());
+            }
+
+        return rule;
     }
 }
 
-List < PositiveLiteral > listOfPositiveLiterals() throws PrologueException:
+List < PositiveLiteral > listOfPositiveLiterals(int itComesFrom) throws PrologueException:
 {
     PositiveLiteral l;
     List < PositiveLiteral > list = new ArrayList < PositiveLiteral > ();
 }
 {
-    l = positiveLiteral()             { list.add(l); }
-    ( < COMMA > l = positiveLiteral() { list.add(l); } )*
+    l = positiveLiteral(itComesFrom)             { list.add(l); }
+    ( < COMMA > l = positiveLiteral(itComesFrom) { list.add(l); } )*
     { return list; }
 }
 
-List < Literal > listOfLiterals() throws PrologueException:
+List < Literal > listOfLiterals(int itComesFrom) throws PrologueException:
 {
     Literal l;
     List < Literal > list = new ArrayList < Literal > ();
 }
 {
-    l = literal()             { list.add(l); }
-    ( < COMMA > l = literal() { list.add(l); } )*
+    l = literal(itComesFrom)             { list.add(l); }
+    ( < COMMA > l = literal(itComesFrom) { list.add(l); } )*
     { return list; }
 }
 
-Literal literal() throws PrologueException:
+Literal literal(int itComesFrom) throws PrologueException:
 {
     Literal l = null;
 }
 {
-    l = positiveLiteral() { return l; }
-|   l = negativeLiteral() { return l; }
+    l = positiveLiteral(itComesFrom) { return l; }
+|   l = negativeLiteral(itComesFrom) { return l; }
 }
 
-PositiveLiteral positiveLiteral() throws PrologueException:
+PositiveLiteral positiveLiteral(int itComesFrom) throws PrologueException:
 {
     Token t;
     List < Term > terms;
     String predicateName;
 }
 {
-    predicateName = predicateName() < LPAREN > terms = listOfTerms() < RPAREN >
+    predicateName = predicateName() < LPAREN > terms = listOfTerms(itComesFrom) < RPAREN >
     { return makePositiveLiteral(predicateName, terms); }
 }
 
-NegativeLiteral negativeLiteral() throws PrologueException:
+NegativeLiteral negativeLiteral(int itComesFrom) throws PrologueException:
 {
     List < Term > terms;
     String predicateName;
 }
 {
-    < TILDE > predicateName = predicateName() < LPAREN > terms = listOfTerms() < RPAREN >
+    < TILDE > predicateName = predicateName() < LPAREN > terms = listOfTerms(itComesFrom) < RPAREN >
     { return makeNegativeLiteral(predicateName, terms); }
 }
 
-List < Term > listOfTerms() throws PrologueException:
+List < Term > listOfTerms(int itComesFrom) throws PrologueException:
 {
     Term t;
     List < Term > list = new ArrayList < Term > ();
 }
 {
-    t = term()             { list.add(t); }
-    ( < COMMA > t = term() { list.add(t); } )*
+    t = term(itComesFrom)             { list.add(t); }
+    ( < COMMA > t = term(itComesFrom) { list.add(t); } )*
     { return list; }
 }
 
@@ -179,7 +216,11 @@ String predicateName() throws PrologueException:
 |   t = < VARORPREDNAME > { return t.image; }
 }
 
-Term term() throws PrologueException:
+// we use an int to specify where a variable comes from
+// 0 if the variable does not come from a rule
+// 1 if the variable comes from the head of a rule
+// 2 if the variable comes from the body of a rule
+Term term(int itComesFrom) throws PrologueException:
 {
     String s;
     Token t;
@@ -187,8 +228,24 @@ Term term() throws PrologueException:
 {
     s = IRI()        { return makeConstant(s); }
 |   s = RDFLiteral() { return makeConstant(s); }
-|   t = < UNIVAR >   { return makeVariable(t.image.substring(1)); }
-|   t = < EXIVAR >   { return makeVariable(t.image.substring(1)); }
+|   t = < UNIVAR >
+    {
+        s = t.image.substring(1);
+        if (itComesFrom == 1)
+            headUniVars.add(s);
+        if (itComesFrom == 2)
+            bodyVars.add(s);
+        return makeVariable(t.image.substring(1));
+    }
+|   t = < EXIVAR >
+    {
+        s = t.image.substring(1);
+        if (itComesFrom == 1)
+            headExiVars.add(s);
+        if (itComesFrom == 2)
+            throw new ParseException("Existentialy quantified variables can not appear in the body. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
+        return makeVariable(t.image.substring(1));
+    }
 }
 
 /** [16] */

@@ -4,7 +4,7 @@
 %this is a comment
 
 deathCause(?X, ?Z) :- recentDeathsCause(?X, ?Z) .
-deathCause(?X, ?Z) :- recentDeaths(?X) .
+deathCause(?X, !Z) :- recentDeaths(?X) .
 
 doid(?Iri,?DoidId) :- doidTriple(?Iri,<http://www.geneontology.org/formats/oboInOwl#id>,?DoidId) .
 hasDoid(?X) :- diseaseId(?X,?DoidId) . 
