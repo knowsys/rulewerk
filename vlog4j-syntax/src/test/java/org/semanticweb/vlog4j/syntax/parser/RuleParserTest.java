@@ -82,11 +82,11 @@ public class RuleParserTest {
 	}
 
 	@Test
-	public void tesNoBaseRelativeIri() throws ParsingException {
-		PositiveLiteral atom = Expressions.makePositiveLiteral("s", Expressions.makeConstant("c"));
+	public void testNoBaseRelativeIri() throws ParsingException {
 		String input = "s(c) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
+		PositiveLiteral atom = Expressions.makePositiveLiteral("s", Expressions.makeConstant("c"));
 		assertEquals(Arrays.asList(atom), ruleParser.getFacts());
 	}
 
