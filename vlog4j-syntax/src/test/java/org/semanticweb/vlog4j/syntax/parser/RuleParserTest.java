@@ -44,7 +44,7 @@ public class RuleParserTest {
 	final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
 	final PositiveLiteral atom3 = Expressions.makePositiveLiteral("http://example.org/q", x, y);
 	final PositiveLiteral atom4 = Expressions.makePositiveLiteral("http://example.org/r", x, d);
-	final PositiveLiteral atom5 = Expressions.makePositiveLiteral("http://example.org/s", c);
+	final PositiveLiteral fact = Expressions.makePositiveLiteral("http://example.org/s", c);
 	final Conjunction<Literal> body = Expressions.makeConjunction(atom1, atom2);
 	final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(atom3, atom4);
 	final Rule rule = Expressions.makeRule(head, body);
@@ -54,7 +54,7 @@ public class RuleParserTest {
 		String input = "<http://example.org/s>(<http://example.org/c>) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		assertEquals(Arrays.asList(atom5), ruleParser.getFacts());
+		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class RuleParserTest {
 		String input = "@prefix ex: <http://example.org/> . ex:s(ex:c) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		assertEquals(Arrays.asList(atom5), ruleParser.getFacts());
+		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class RuleParserTest {
 		String input = "@base <http://example.org/> . <s>(<c>) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		assertEquals(Arrays.asList(atom5), ruleParser.getFacts());
+		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class RuleParserTest {
 		String input = "@base <http://example.org/> . s(c) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		assertEquals(Arrays.asList(atom5), ruleParser.getFacts());
+		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
 
 	@Test
@@ -90,4 +90,33 @@ public class RuleParserTest {
 		assertEquals(Arrays.asList(atom), ruleParser.getFacts());
 	}
 
+	@Test(expected = ParsingException.class)
+	public void testPrefixConflict() throws ParsingException {
+		String input = "@prefix ex: <http://example.org/> . @prefix ex: <http://example.org/2/> . s(c) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testBaseConflict() throws ParsingException {
+		String input = "@base <http://example.org/> . @base <http://example.org/2/> . s(c) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+	
+	@Test(expected = ParsingException.class)
+	public void testMissingPrefix() throws ParsingException {
+		String input = "ex:s(c) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+	
+	@Test
+	public void testSimpleRule() throws ParsingException {
+		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- p(?X,c), p(?X,?Z) . ";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		assertEquals(Arrays.asList(rule), ruleParser.getRules());
+	}
+	
 }
