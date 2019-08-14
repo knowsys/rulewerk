@@ -1,5 +1,25 @@
 package org.semanticweb.vlog4j.syntax.parser;
 
+/*-
+ * #%L
+ * VLog4j Syntax
+ * %%
+ * Copyright (C) 2018 - 2019 VLog4j Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -36,7 +56,7 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(atom5), ruleParser.getFacts());
 	}
-	
+
 	@Test
 	public void testPrefixResolution() throws ParsingException {
 		String input = "@prefix ex: <http://example.org/> . ex:s(ex:c) .";
@@ -52,13 +72,22 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(atom5), ruleParser.getFacts());
 	}
-	
+
 	@Test
 	public void testBaseResolution() throws ParsingException {
 		String input = "@base <http://example.org/> . s(c) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(atom5), ruleParser.getFacts());
+	}
+
+	@Test
+	public void tesNoBaseRelativeIri() throws ParsingException {
+		PositiveLiteral atom = Expressions.makePositiveLiteral("s", Expressions.makeConstant("c"));
+		String input = "s(c) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		assertEquals(Arrays.asList(atom), ruleParser.getFacts());
 	}
 
 }

@@ -29,11 +29,6 @@ package org.semanticweb.vlog4j.syntax.common;
 public interface PrefixDeclarations {
 
 	/**
-	 * Default base IRI to be assumed if no base is given.
-	 */
-	static public String DEFAULT_BASE = "http://localhost/LocalHostBase/";
-
-	/**
 	 * Returns the relevant base namespace. This should always return a result,
 	 * possibly using a local default value if no base was declared.
 	 * 

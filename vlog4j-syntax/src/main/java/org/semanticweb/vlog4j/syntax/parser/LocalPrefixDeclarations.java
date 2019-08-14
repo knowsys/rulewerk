@@ -46,7 +46,7 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 
 	public String getBase() {
 		if (this.baseUri == null) {
-			this.baseUri = PrefixDeclarations.DEFAULT_BASE;
+			this.baseUri = ""; // empty string encodes: "no base" (use relative IRIs)
 		}
 		return baseUri.toString();
 	}
