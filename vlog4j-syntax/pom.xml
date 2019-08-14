@@ -11,9 +11,9 @@
 		<version>0.4.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>vlog4j-parser</artifactId>
+	<artifactId>vlog4j-syntax</artifactId>
 
-	<name>vlog4j-parser</name>
+	<name>vlog4j-syntax</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

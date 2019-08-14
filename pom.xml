@@ -20,7 +20,7 @@
 		<module>vlog4j-examples</module>
 		<module>vlog4j-owlapi</module>
 		<module>vlog4j-graal</module>
-		<module>vlog4j-parser</module>
+		<module>vlog4j-syntax</module>
 	</modules>
 
 	<licenses>
