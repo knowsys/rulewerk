@@ -103,14 +103,14 @@ public class RuleParserTest {
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 	}
-	
+
 	@Test(expected = ParsingException.class)
 	public void testMissingPrefix() throws ParsingException {
 		String input = "ex:s(c) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 	}
-	
+
 	@Test
 	public void testSimpleRule() throws ParsingException {
 		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- p(?X,c), p(?X,?Z) . ";
@@ -118,5 +118,14 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(rule), ruleParser.getRules());
 	}
-	
+
+	@Test
+	public void testWhiteSpace() throws ParsingException {
+		String input = "@base \n\n<http://example.org/> . "
+				+ " q(?X, !Y)  , r(?X,    d\t ) \n\n:- p(?X,c), p(?X,\n?Z) \n. ";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		assertEquals(Arrays.asList(rule), ruleParser.getRules());
+	}
+
 }
