@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.parser.api;
+package org.semanticweb.vlog4j.syntax.parser;
 
 /*-
  * #%L
@@ -20,20 +20,23 @@ package org.semanticweb.vlog4j.parser.api;
  * #L%
  */
 
-import org.semanticweb.vlog4j.parser.implementation.PrologueException;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
-public interface Prologue {
+import org.semanticweb.vlog4j.parser.implementation.javacc.JavaCCRuleParser;
 
-    String getBase() throws PrologueException;
 
-    void setBase(String base) throws PrologueException;
+public class RuleParser extends JavaCCRuleParser {
 
-    String getPrefix(String prefix) throws PrologueException;
+	public RuleParser(InputStream stream) {
+		super(stream, "UTF-8");
+	}
+	
+	public RuleParser(InputStream stream, String encoding) {
+		super(stream, encoding);
+	}
 
-    void setPrefix(String prefix, String iri) throws PrologueException;
-
-    String resolvePName(String prefixedName) throws PrologueException;
-
-    String absolutize(String prefixedName) throws PrologueException;
-
+	public RuleParser(String rules) {
+		super(new ByteArrayInputStream(rules.getBytes()), "UTF-8");
+	}
 }

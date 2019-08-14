@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.parser.implementation;
+package org.semanticweb.vlog4j.syntax.parser;
 
 /*-
  * #%L
@@ -26,9 +26,8 @@ import java.util.ArrayList;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.parser.api.Prologue;
-
 import org.semanticweb.vlog4j.parser.implementation.javacc.ParseException;
+import org.semanticweb.vlog4j.syntax.common.Prologue;
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 

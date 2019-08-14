@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.parser.implementation;
+package org.semanticweb.vlog4j.syntax.parser;
 
 /*-
  * #%L
@@ -23,10 +23,10 @@ package org.semanticweb.vlog4j.parser.implementation;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.semanticweb.vlog4j.syntax.common.Prologue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.semanticweb.vlog4j.parser.api.Prologue;
 
 final public class LocalPrologue implements Prologue {
 
