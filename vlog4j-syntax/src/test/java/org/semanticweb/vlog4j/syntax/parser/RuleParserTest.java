@@ -40,11 +40,13 @@ public class RuleParserTest {
 	final Variable z = Expressions.makeVariable("Z");
 	final Constant c = Expressions.makeConstant("http://example.org/c");
 	final Constant d = Expressions.makeConstant("http://example.org/d");
+	final Constant abc = Expressions.makeConstant("\"abc\"^^<http://www.w3.org/2001/XMLSchema#string>");
 	final Literal atom1 = Expressions.makePositiveLiteral("http://example.org/p", x, c);
 	final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
 	final PositiveLiteral atom3 = Expressions.makePositiveLiteral("http://example.org/q", x, y);
 	final PositiveLiteral atom4 = Expressions.makePositiveLiteral("http://example.org/r", x, d);
 	final PositiveLiteral fact = Expressions.makePositiveLiteral("http://example.org/s", c);
+	final PositiveLiteral fact2 = Expressions.makePositiveLiteral("p", abc);
 	final Conjunction<Literal> body = Expressions.makeConjunction(atom1, atom2);
 	final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(atom3, atom4);
 	final Rule rule = Expressions.makeRule(head, body);
@@ -126,6 +128,37 @@ public class RuleParserTest {
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(rule), ruleParser.getRules());
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testNoUnsafeVariables() throws ParsingException {
+		String input = "p(?X,?Y) :- q(?X) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+
+	@Test
+	public void testStringLiteral() throws ParsingException {
+		String input = "p(\"abc\") .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testFullLiteral() throws ParsingException {
+		String input = "p(\"abc\"^^<http://www.w3.org/2001/XMLSchema#string>) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testPrefixedLiteral() throws ParsingException {
+		String input = "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> . " + "p(\"abc\"^^xsd:string) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
 	}
 
 }
