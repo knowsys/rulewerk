@@ -27,24 +27,24 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.parser.implementation.javacc.ParseException;
-import org.semanticweb.vlog4j.syntax.common.Prologue;
+import org.semanticweb.vlog4j.syntax.common.PrefixDeclarations;
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 
 public class RuleParserBase {
-	protected Prologue localPrologue;
+	protected PrefixDeclarations localPrologue;
 	protected List<Rule> listOfRules;
 	protected List<PositiveLiteral> listOfFacts;
 	protected List<PositiveLiteral> listOfQueries;
 
 	public RuleParserBase() {
-		localPrologue = LocalPrologue.getPrologue();
+		localPrologue = new LocalPrefixDeclarations("http://example.org/todo/");
 		listOfRules = new ArrayList<Rule>();
 		listOfFacts = new ArrayList<PositiveLiteral>();
 		listOfQueries = new ArrayList<PositiveLiteral>();
 	}
 
-	public RuleParserBase(Prologue prologue, List<Rule> listOfRules, List<PositiveLiteral> listOfFacts,
+	public RuleParserBase(PrefixDeclarations prologue, List<Rule> listOfRules, List<PositiveLiteral> listOfFacts,
 			List<PositiveLiteral> listOfQueries) {
 		this.localPrologue = prologue;
 		this.listOfRules = listOfRules;
