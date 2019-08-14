@@ -39,7 +39,7 @@
 		</dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>vlog4j-parser</artifactId>
+            <artifactId>vlog4j-syntax</artifactId>
             <version>${project.version}</version>
         </dependency>
 		<dependency> 

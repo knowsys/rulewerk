@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.semanticweb.vlog4j.syntax.parser.RuleParserBase;
-import org.semanticweb.vlog4j.syntax.parser.PrologueException;
+import org.semanticweb.vlog4j.syntax.common.PrefixDeclarationException;
 
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Literal;
@@ -51,7 +51,7 @@ public class JavaCCRuleParser extends RuleParserBase
 PARSER_END(JavaCCRuleParser)
 
 
-void parse() throws PrologueException:
+void parse() throws PrefixDeclarationException:
 {
 }
 {
@@ -61,18 +61,18 @@ void parse() throws PrologueException:
     < EOF >
 }
 
-void base() throws PrologueException:
+void base() throws PrefixDeclarationException:
 {
     String iriString;
 }
 {
     < BASE > iriString = IRIREF() < DOT >
     {
-        localPrologue.setBase(iriString);
+        prefixDeclarations.setBase(iriString);
     }
 }
 
-void prefix() throws PrologueException:
+void prefix() throws PrefixDeclarationException:
 {
     Token t;
     String iriString;
@@ -81,11 +81,11 @@ void prefix() throws PrologueException:
     < PREFIX > t = < PNAME_NS > iriString = IRIREF() < DOT >
     {
          //note that prefix includes the colon (:)
-         localPrologue.setPrefix(t.image, iriString);
+         prefixDeclarations.setPrefix(t.image, iriString);
     }
 }
 
-void statement() throws PrologueException:
+void statement() throws PrefixDeclarationException:
 {
     Rule r;
     PositiveLiteral l;
@@ -101,7 +101,7 @@ void statement() throws PrologueException:
     }
 }
 
-Rule rule() throws PrologueException:
+Rule rule() throws PrefixDeclarationException:
 {
     Rule rule;
     List < PositiveLiteral > head;
@@ -143,7 +143,7 @@ Rule rule() throws PrologueException:
     }
 }
 
-List < PositiveLiteral > listOfPositiveLiterals(int itComesFrom) throws PrologueException:
+List < PositiveLiteral > listOfPositiveLiterals(int itComesFrom) throws PrefixDeclarationException:
 {
     PositiveLiteral l;
     List < PositiveLiteral > list = new ArrayList < PositiveLiteral > ();
@@ -154,7 +154,7 @@ List < PositiveLiteral > listOfPositiveLiterals(int itComesFrom) throws Prologue
     { return list; }
 }
 
-List < Literal > listOfLiterals(int itComesFrom) throws PrologueException:
+List < Literal > listOfLiterals(int itComesFrom) throws PrefixDeclarationException:
 {
     Literal l;
     List < Literal > list = new ArrayList < Literal > ();
@@ -165,7 +165,7 @@ List < Literal > listOfLiterals(int itComesFrom) throws PrologueException:
     { return list; }
 }
 
-Literal literal(int itComesFrom) throws PrologueException:
+Literal literal(int itComesFrom) throws PrefixDeclarationException:
 {
     Literal l = null;
 }
@@ -174,7 +174,7 @@ Literal literal(int itComesFrom) throws PrologueException:
 |   l = negativeLiteral(itComesFrom) { return l; }
 }
 
-PositiveLiteral positiveLiteral(int itComesFrom) throws PrologueException:
+PositiveLiteral positiveLiteral(int itComesFrom) throws PrefixDeclarationException:
 {
     Token t;
     List < Term > terms;
@@ -185,7 +185,7 @@ PositiveLiteral positiveLiteral(int itComesFrom) throws PrologueException:
     { return makePositiveLiteral(predicateName, terms); }
 }
 
-NegativeLiteral negativeLiteral(int itComesFrom) throws PrologueException:
+NegativeLiteral negativeLiteral(int itComesFrom) throws PrefixDeclarationException:
 {
     List < Term > terms;
     String predicateName;
@@ -195,7 +195,7 @@ NegativeLiteral negativeLiteral(int itComesFrom) throws PrologueException:
     { return makeNegativeLiteral(predicateName, terms); }
 }
 
-List < Term > listOfTerms(int itComesFrom) throws PrologueException:
+List < Term > listOfTerms(int itComesFrom) throws PrefixDeclarationException:
 {
     Term t;
     List < Term > list = new ArrayList < Term > ();
@@ -206,7 +206,7 @@ List < Term > listOfTerms(int itComesFrom) throws PrologueException:
     { return list; }
 }
 
-String predicateName() throws PrologueException:
+String predicateName() throws PrefixDeclarationException:
 {
     String s;
     Token t;
@@ -220,7 +220,7 @@ String predicateName() throws PrologueException:
 // 0 if the variable does not come from a rule
 // 1 if the variable comes from the head of a rule
 // 2 if the variable comes from the body of a rule
-Term term(int itComesFrom) throws PrologueException:
+Term term(int itComesFrom) throws PrefixDeclarationException:
 {
     String s;
     Token t;
@@ -259,7 +259,7 @@ Constant NumericLiteral() :
 |   t = < DOUBLE >  {  return createLiteralDouble(t.image); }
 }
 
-String RDFLiteral() throws PrologueException:
+String RDFLiteral() throws PrefixDeclarationException:
 {
     Token t;
     String lex = null;
@@ -312,7 +312,7 @@ String String():
     }
 }
 
-String IRI() throws PrologueException:
+String IRI() throws PrefixDeclarationException:
 {
     String iri;
 }
@@ -321,10 +321,10 @@ String IRI() throws PrologueException:
         iri = IRIREF()
     |   iri = PrefixedName()
     )
-    { return "<"+localPrologue.absolutize(iri)+">"; }
+    { return "<"+prefixDeclarations.absolutize(iri)+">"; }
 }
 
-String PrefixedName() throws PrologueException:
+String PrefixedName() throws PrefixDeclarationException:
 {
     Token t;
 }
@@ -333,8 +333,8 @@ String PrefixedName() throws PrologueException:
         t = < PNAME_LN >
     |   t = < PNAME_NS >
     )
-    { return localPrologue.resolvePrefixedName(t.image);}
-    //{ return localPrologue.resolvePrefixedName(t.image, t.beginLine, t.beginColumn);}
+    { return prefixDeclarations.resolvePrefixedName(t.image);}
+    //{ return prefixDeclarations.resolvePrefixedName(t.image, t.beginLine, t.beginColumn);}
 }
 
 String IRIREF() :

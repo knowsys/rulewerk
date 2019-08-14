@@ -38,12 +38,8 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
-
-import org.semanticweb.vlog4j.parser.api.RuleParser;
-import org.semanticweb.vlog4j.parser.implementation.PrologueException;
-import org.semanticweb.vlog4j.parser.implementation.javacc.ParseException;
-
-
+import org.semanticweb.vlog4j.syntax.parser.ParsingException;
+import org.semanticweb.vlog4j.syntax.parser.RuleParser;
 
 /**
  * This example reasons about human diseases, based on information from the
@@ -57,15 +53,15 @@ import org.semanticweb.vlog4j.parser.implementation.javacc.ParseException;
  */
 public class DoidExampleLocalSyntax {
 
-	public static void main(final String[] args) throws ReasonerStateException, IOException, EdbIdbSeparationException,
-			IncompatiblePredicateArityException, ParseException, PrologueException {
+	public static void main(final String[] args)
+			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 
 		ExamplesUtils.configureLogging();
 
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER+"vlog.log");
+			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER + "vlog.log");
 			reasoner.setLogLevel(LogLevel.DEBUG);
 
 			/* Configure RDF data source */
@@ -96,9 +92,13 @@ public class DoidExampleLocalSyntax {
 			final Predicate recentDeathsCausePredicate = Expressions.makePredicate("recentDeathsCause", 2);
 			reasoner.addFactsFromDataSource(recentDeathsCausePredicate, recentDeathsCauseDataSource);
 
-			RuleParser rp = new RuleParser(
-					new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/localSyntax/doid-example.txt"));
-			rp.parse();
+			RuleParser rp = new RuleParser();
+			try {
+				rp.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/localSyntax/doid-example.txt"));
+			} catch (ParsingException e) {
+				System.out.println("Failed to parse rules: " + e.getMessage());
+				return;
+			}
 
 			reasoner.addRules(rp.getRules());
 

@@ -31,26 +31,17 @@ import org.semanticweb.vlog4j.syntax.common.PrefixDeclarations;
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 
+/**
+ * Basic methods used in the JavaCC-generated parser.
+ * 
+ * @author Markus Kroetzsch
+ *
+ */
 public class RuleParserBase {
-	protected PrefixDeclarations localPrologue;
-	protected List<Rule> listOfRules;
-	protected List<PositiveLiteral> listOfFacts;
-	protected List<PositiveLiteral> listOfQueries;
-
-	public RuleParserBase() {
-		localPrologue = new LocalPrefixDeclarations("http://example.org/todo/");
-		listOfRules = new ArrayList<Rule>();
-		listOfFacts = new ArrayList<PositiveLiteral>();
-		listOfQueries = new ArrayList<PositiveLiteral>();
-	}
-
-	public RuleParserBase(PrefixDeclarations prologue, List<Rule> listOfRules, List<PositiveLiteral> listOfFacts,
-			List<PositiveLiteral> listOfQueries) {
-		this.localPrologue = prologue;
-		this.listOfRules = listOfRules;
-		this.listOfFacts = listOfFacts;
-		this.listOfQueries = listOfQueries;
-	}
+	final protected PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
+	final protected List<Rule> listOfRules = new ArrayList<>();
+	final protected List<PositiveLiteral> listOfFacts = new ArrayList<>();
+	final protected List<PositiveLiteral> listOfQueries = new ArrayList<>();
 
 	protected Constant createLiteralInteger(String lexicalForm) {
 		// this method should be eliminated

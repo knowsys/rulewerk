@@ -22,21 +22,57 @@ package org.semanticweb.vlog4j.syntax.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.List;
 
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.parser.implementation.javacc.JavaCCRuleParser;
+import org.semanticweb.vlog4j.parser.implementation.javacc.ParseException;
+import org.semanticweb.vlog4j.syntax.common.PrefixDeclarationException;
 
+/**
+ * Class to access VLog parsing functionality.
+ * 
+ * @FIXME Support parsing from multiple files (into one KB).
+ * 
+ * @author Markus Kroetzsch
+ *
+ */
+public class RuleParser {
 
-public class RuleParser extends JavaCCRuleParser {
+	JavaCCRuleParser parser;
 
-	public RuleParser(InputStream stream) {
-		super(stream, "UTF-8");
+	public void parse(InputStream stream, String encoding) throws ParsingException {
+		parser = new JavaCCRuleParser(stream, encoding);
+		doParse();
 	}
 	
-	public RuleParser(InputStream stream, String encoding) {
-		super(stream, encoding);
+	public void parse(InputStream stream) throws ParsingException {
+		parse(stream, "UTF-8");
 	}
 
-	public RuleParser(String rules) {
-		super(new ByteArrayInputStream(rules.getBytes()), "UTF-8");
+	public void parse(String input) throws ParsingException {
+		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+		parse(inputStream, "UTF-8");
+	}
+
+	void doParse() throws ParsingException {
+		try {
+			parser.parse();
+		} catch (ParseException | PrefixDeclarationException e) {
+			throw new ParsingException(e.getMessage(), e);
+		}
+	}
+
+	public List<Rule> getRules() {
+		return parser.getRules();
+	}
+
+	public List<PositiveLiteral> getQueries() {
+		return parser.getQueries();
+	}
+
+	public List<PositiveLiteral> getFacts() {
+		return parser.getFacts();
 	}
 }

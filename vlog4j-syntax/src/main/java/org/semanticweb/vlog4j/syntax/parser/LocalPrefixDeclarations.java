@@ -25,37 +25,42 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.semanticweb.vlog4j.syntax.common.PrefixDeclarations;
+import org.semanticweb.vlog4j.syntax.common.PrefixDeclarationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Implementation of {@link PrefixDeclarations} that is used when parsing data
+ * from a single source. In this case, attempts to re-declare prefixes or the
+ * base IRI will lead to errors.
+ * 
+ * @author Markus Kroetzsch
+ *
+ */
 final public class LocalPrefixDeclarations implements PrefixDeclarations {
 
 	final static Logger logger = LoggerFactory.getLogger(LocalPrefixDeclarations.class.getName());
 
 	Map<String, String> prefixes = new HashMap<>();
-	final String defaultBaseUri;
 	String baseUri;
-
-	LocalPrefixDeclarations(String defaultBaseUri) {
-		this.defaultBaseUri = defaultBaseUri;
-	}
 
 	public String getBase() {
 		if (this.baseUri == null) {
-			this.baseUri = this.defaultBaseUri;
+			this.baseUri = PrefixDeclarations.DEFAULT_BASE;
 		}
 		return baseUri.toString();
 	}
 
-	public String getPrefix(String prefix) throws PrologueException {
-		if (!prefixes.containsKey(prefix))
-			throw new PrologueException("@prefix " + prefix + " not defined");
+	public String getPrefix(String prefix) throws PrefixDeclarationException {
+		if (!prefixes.containsKey(prefix)) {
+			throw new PrefixDeclarationException("@prefix " + prefix + " not defined");
+		}
 		return prefixes.get(prefix).toString();
 	}
 
-	public void setPrefix(String prefix, String uri) throws PrologueException {
+	public void setPrefix(String prefix, String uri) throws PrefixDeclarationException {
 		if (prefixes.containsKey(prefix)) {
-			throw new PrologueException("Prefix " + prefix + " is already defined as <" + prefixes.get(prefix)
+			throw new PrefixDeclarationException("Prefix " + prefix + " is already defined as <" + prefixes.get(prefix)
 					+ ">. It cannot be redefined to mean <" + uri + ">.");
 		}
 
@@ -63,15 +68,15 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 		prefixes.put(prefix, uri);
 	}
 
-	public void setBase(String baseUri) throws PrologueException {
+	public void setBase(String baseUri) throws PrefixDeclarationException {
 		if (this.baseUri != null)
-			throw new PrologueException(
+			throw new PrefixDeclarationException(
 					"Base is already defined as <" + this.baseUri + "> and cannot be re-defined as " + baseUri);
 		logger.info("Setting base URI: " + baseUri);
 		this.baseUri = baseUri;
 	}
 
-	public String resolvePrefixedName(String prefixedName) throws PrologueException {
+	public String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException {
 		// from the parser we know that prefixedName is of the form:
 		// prefix:something
 		// remember that the prefixes are stored with the colon symbol
@@ -84,11 +89,11 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 		if (prefixes.containsKey(prefix)) {
 			return this.prefixes.get(prefix) + suffix;
 		} else {
-			throw new PrologueException("Prefix " + prefixedName + " cannot be resolved (not declared yet).");
+			throw new PrefixDeclarationException("Prefix " + prefixedName + " cannot be resolved (not declared yet).");
 		}
 	}
 
-	public String absolutize(String iri) throws PrologueException {
+	public String absolutize(String iri) throws PrefixDeclarationException {
 		URI relative = URI.create(iri);
 		if (relative.isAbsolute()) {
 			return iri;

@@ -28,13 +28,12 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException
 import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.parser.api.RuleParser;
-import org.semanticweb.vlog4j.parser.implementation.PrologueException;
-import org.semanticweb.vlog4j.parser.implementation.javacc.ParseException;
+import org.semanticweb.vlog4j.syntax.parser.ParsingException;
+import org.semanticweb.vlog4j.syntax.parser.RuleParser;
 
 public class SimpleExampleJavaCC {
-	public static void main(final String[] args) throws ParseException, PrologueException, ReasonerStateException,
-			EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+	public static void main(final String[] args)
+			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
 
 		ExamplesUtils.configureLogging();
 
@@ -48,8 +47,13 @@ public class SimpleExampleJavaCC {
 			rules += "<r>(?x,?y) :- <q>(?x) .               \n";
 			rules += "<r>(?x,?y) .                          \n";
 
-			RuleParser rp = new RuleParser(rules);
-			rp.parse();
+			RuleParser rp = new RuleParser();
+			try {
+				rp.parse(rules);
+			} catch (ParsingException e) {
+				System.out.println("Failed to parse rules: " + e.getMessage());
+				return;
+			}
 
 			reasoner.addFacts(rp.getFacts());
 			reasoner.addRules(rp.getRules());

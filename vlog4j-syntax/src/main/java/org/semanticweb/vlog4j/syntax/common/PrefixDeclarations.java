@@ -20,8 +20,6 @@ package org.semanticweb.vlog4j.syntax.common;
  * #L%
  */
 
-import org.semanticweb.vlog4j.syntax.parser.PrologueException;
-
 /**
  * Registry that manages prefixes and base namespace declarations as used for
  * parsing and serialising inputs.
@@ -29,6 +27,11 @@ import org.semanticweb.vlog4j.syntax.parser.PrologueException;
  * @author Markus Kroetzsch
  */
 public interface PrefixDeclarations {
+
+	/**
+	 * Default base IRI to be assumed if no base is given.
+	 */
+	static public String DEFAULT_BASE = "http://localhost/LocalHostBase/";
 
 	/**
 	 * Returns the relevant base namespace. This should always return a result,
@@ -43,16 +46,16 @@ public interface PrefixDeclarations {
 	 * and not after the base namespace was assumed to be an implicit default value.
 	 * 
 	 * @param base the new base namespace
-	 * @throws PrologueException
+	 * @throws PrefixDeclarationException if base was already defined
 	 */
-	void setBase(String base) throws PrologueException;
+	void setBase(String base) throws PrefixDeclarationException;
 
-	String getPrefix(String prefix) throws PrologueException;
+	String getPrefix(String prefix) throws PrefixDeclarationException;
 
-	void setPrefix(String prefix, String iri) throws PrologueException;
+	void setPrefix(String prefix, String iri) throws PrefixDeclarationException;
 
-	String resolvePrefixedName(String prefixedName) throws PrologueException;
+	String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException;
 
-	String absolutize(String prefixedName) throws PrologueException;
+	String absolutize(String prefixedName) throws PrefixDeclarationException;
 
 }
