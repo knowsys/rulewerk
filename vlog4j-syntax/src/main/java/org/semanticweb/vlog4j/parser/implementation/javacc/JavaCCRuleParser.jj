@@ -212,7 +212,7 @@ String predicateName() throws PrefixDeclarationException:
     Token t;
 }
 {
-    s = IRI() { return s; }
+    s = IRI(false) { return s; }
 |   t = < VARORPREDNAME > { return prefixDeclarations.absolutize(t.image); }
 }
 
@@ -226,7 +226,7 @@ Term term(int itComesFrom) throws PrefixDeclarationException:
     Token t;
 }
 {
-    s = IRI()        { return makeConstant(s); }
+    s = IRI(false)   { return makeConstant(s); }
 |   s = RDFLiteral() { return makeConstant(s); }
 |   t = < UNIVAR >
     {
@@ -268,7 +268,7 @@ String RDFLiteral() throws PrefixDeclarationException:
     String dt = null;
 }
 {
-    lex = String() ( lang = Langtag() | < DATATYPE > dt = IRI() )?
+    lex = String() ( lang = Langtag() | < DATATYPE > dt = IRI(true) )?
     { return strRDFLiteral(lex, lang, dt); }
 }
 
@@ -313,7 +313,7 @@ String String():
     }
 }
 
-String IRI() throws PrefixDeclarationException:
+String IRI(boolean includeAngleBrackets) throws PrefixDeclarationException:
 {
     String iri;
 }
@@ -322,7 +322,10 @@ String IRI() throws PrefixDeclarationException:
         iri = IRIREF()
     |   iri = PrefixedName()
     )
-    { return prefixDeclarations.absolutize(iri);
+    { String result = prefixDeclarations.absolutize(iri);
+      if (includeAngleBrackets)
+          result = "<"+result+">";
+      return result;
       //return "<"+prefixDeclarations.absolutize(iri)+">";
      }
 }
