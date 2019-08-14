@@ -30,7 +30,6 @@ import org.semanticweb.vlog4j.parser.api.Prologue;
 
 final public class LocalPrologue implements Prologue {
 
-	// ??? Can I use default logguer
 	final static Logger logger = LoggerFactory.getLogger(LocalPrologue.class.getName());
 
 	private static Prologue prologue;

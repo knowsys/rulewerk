@@ -347,7 +347,8 @@ public class RuleParserBase {
 				sb.append(ch2);
 				break;
 			default:
-				throw new ParseException("Illegal prefix name escape: " + ch2+", line:" + line + ", column: " + column);
+				throw new ParseException(
+						"Illegal prefix name escape: " + ch2 + ", line:" + line + ", column: " + column);
 			}
 		}
 		return sb.toString();
@@ -364,6 +365,5 @@ public class RuleParserBase {
 	public List<PositiveLiteral> getQueries() {
 		return listOfQueries;
 	}
-
 
 }
