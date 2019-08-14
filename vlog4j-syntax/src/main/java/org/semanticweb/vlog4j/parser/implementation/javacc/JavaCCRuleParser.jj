@@ -213,7 +213,7 @@ String predicateName() throws PrefixDeclarationException:
 }
 {
     s = IRI() { return s; }
-|   t = < VARORPREDNAME > { return t.image; }
+|   t = < VARORPREDNAME > { return prefixDeclarations.absolutize(t.image); }
 }
 
 // we use an int to specify where a variable comes from
@@ -246,6 +246,7 @@ Term term(int itComesFrom) throws PrefixDeclarationException:
             throw new ParseException("Existentialy quantified variables can not appear in the body. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
         return makeVariable(t.image.substring(1));
     }
+|   t = < VARORPREDNAME > { return makeConstant(prefixDeclarations.absolutize(t.image));}
 }
 
 /** [16] */
@@ -321,7 +322,9 @@ String IRI() throws PrefixDeclarationException:
         iri = IRIREF()
     |   iri = PrefixedName()
     )
-    { return "<"+prefixDeclarations.absolutize(iri)+">"; }
+    { return prefixDeclarations.absolutize(iri);
+      //return "<"+prefixDeclarations.absolutize(iri)+">";
+     }
 }
 
 String PrefixedName() throws PrefixDeclarationException:
