@@ -53,7 +53,7 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 
 	public String getPrefix(String prefix) throws PrefixDeclarationException {
 		if (!prefixes.containsKey(prefix)) {
-			throw new PrefixDeclarationException("@prefix " + prefix + " not defined");
+			throw new PrefixDeclarationException("Prefix " + prefix + " cannot be resolved (not declared yet).");
 		}
 		return prefixes.get(prefix).toString();
 	}
@@ -86,11 +86,7 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 		String prefix = prefixedName.substring(0, idx);
 		String suffix = prefixedName.substring(idx);
 
-		if (prefixes.containsKey(prefix)) {
-			return this.prefixes.get(prefix) + suffix;
-		} else {
-			throw new PrefixDeclarationException("Prefix " + prefixedName + " cannot be resolved (not declared yet).");
-		}
+		return getPrefix(prefix) + suffix;
 	}
 
 	public String absolutize(String iri) throws PrefixDeclarationException {
