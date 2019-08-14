@@ -19,7 +19,6 @@ package org.semanticweb.vlog4j.examples;
  * limitations under the License.
  * #L%
  */
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,7 +64,7 @@ public class DoidExampleLocalSyntax {
 			reasoner.setLogLevel(LogLevel.DEBUG);
 
 			/* Configure RDF data source */
-			final Predicate doidTriplePredicate = makePredicate("doidTriple", 3);
+			final Predicate doidTriplePredicate = Expressions.makePredicate("doidTriple", 3);
 			final DataSource doidDataSource = new RdfFileDataSource(
 					new File(ExamplesUtils.INPUT_FOLDER + "doid.nt.gz"));
 			reasoner.addFactsFromDataSource(doidTriplePredicate, doidDataSource);
