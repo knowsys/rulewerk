@@ -35,21 +35,24 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public class RuleParserTest {
 
-	final Variable x = Expressions.makeVariable("X");
-	final Variable y = Expressions.makeVariable("Y");
-	final Variable z = Expressions.makeVariable("Z");
-	final Constant c = Expressions.makeConstant("http://example.org/c");
-	final Constant d = Expressions.makeConstant("http://example.org/d");
-	final Constant abc = Expressions.makeConstant("\"abc\"^^<http://www.w3.org/2001/XMLSchema#string>");
-	final Literal atom1 = Expressions.makePositiveLiteral("http://example.org/p", x, c);
-	final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
-	final PositiveLiteral atom3 = Expressions.makePositiveLiteral("http://example.org/q", x, y);
-	final PositiveLiteral atom4 = Expressions.makePositiveLiteral("http://example.org/r", x, d);
-	final PositiveLiteral fact = Expressions.makePositiveLiteral("http://example.org/s", c);
-	final PositiveLiteral fact2 = Expressions.makePositiveLiteral("p", abc);
-	final Conjunction<Literal> body = Expressions.makeConjunction(atom1, atom2);
-	final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(atom3, atom4);
-	final Rule rule = Expressions.makeRule(head, body);
+	private final Variable x = Expressions.makeVariable("X");
+	private final Variable y = Expressions.makeVariable("Y");
+	private final Variable z = Expressions.makeVariable("Z");
+	private final Constant c = Expressions.makeConstant("http://example.org/c");
+	private final Constant d = Expressions.makeConstant("http://example.org/d");
+	private final Constant abc = Expressions.makeConstant("\"abc\"^^<http://www.w3.org/2001/XMLSchema#string>");
+	private final Literal atom1 = Expressions.makePositiveLiteral("http://example.org/p", x, c);
+	private final Literal negAtom1 = Expressions.makeNegativeLiteral("http://example.org/p", x, c);
+	private final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
+	private final PositiveLiteral atom3 = Expressions.makePositiveLiteral("http://example.org/q", x, y);
+	private final PositiveLiteral atom4 = Expressions.makePositiveLiteral("http://example.org/r", x, d);
+	private final PositiveLiteral fact = Expressions.makePositiveLiteral("http://example.org/s", c);
+	private final PositiveLiteral fact2 = Expressions.makePositiveLiteral("p", abc);
+	private final Conjunction<Literal> body1 = Expressions.makeConjunction(atom1, atom2);
+	private final Conjunction<Literal> body2 = Expressions.makeConjunction(negAtom1, atom2);
+	private final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(atom3, atom4);
+	private final Rule rule1 = Expressions.makeRule(head, body1);
+	private final Rule rule2 = Expressions.makeRule(head, body2);
 
 	@Test
 	public void testExplicitIri() throws ParsingException {
@@ -118,7 +121,22 @@ public class RuleParserTest {
 		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- p(?X,c), p(?X,?Z) . ";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		assertEquals(Arrays.asList(rule), ruleParser.getRules());
+		assertEquals(Arrays.asList(rule1), ruleParser.getRules());
+	}
+	
+	@Test
+	public void testNegationRule() throws ParsingException {
+		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- ~p(?X,c), p(?X,?Z) . ";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		assertEquals(Arrays.asList(rule2), ruleParser.getRules());
+	}
+	
+	@Test(expected = ParsingException.class)
+	public void testUnsafeNegationRule() throws ParsingException {
+		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- ~p(?Y,c), p(?X,?Z) . ";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
 	}
 
 	@Test
@@ -127,7 +145,7 @@ public class RuleParserTest {
 				+ " q(?X, !Y)  , r(?X,    d\t ) \n\n:- p(?X,c), p(?X,\n?Z) \n. ";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		assertEquals(Arrays.asList(rule), ruleParser.getRules());
+		assertEquals(Arrays.asList(rule1), ruleParser.getRules());
 	}
 
 	@Test(expected = ParsingException.class)
@@ -159,6 +177,16 @@ public class RuleParserTest {
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
+	}
+	
+	@Test
+	public void testLineComments() throws ParsingException {
+		String input = "@prefix ex: <http://example.org/> . % comment \n"
+				+ "%@prefix ex: <http:nourl> \n"
+				+ " ex:s(ex:c) . % comment \n";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
 
 }
