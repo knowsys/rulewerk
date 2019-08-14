@@ -34,7 +34,15 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeC
 /**
  * Basic methods used in the JavaCC-generated parser.
  * 
+ * Implementation of some string escaping methods adapted from Apache Jena,
+ * released under Apache 2.0 license terms.
+ * 
+ * @see <a href=
+ *      "https://github.com/apache/jena/blob/master/jena-core/src/main/java/org/apache/jena/n3/turtle/ParserBase.java">https://github.com/apache/jena/blob/master/jena-core/src/main/java/org/apache/jena/n3/turtle/ParserBase.java</a>
+ * 
  * @author Markus Kroetzsch
+ * @author Larry Gonzalez
+ * @author Jena developers, Apache Software Foundation (ASF)
  *
  */
 public class RuleParserBase {
