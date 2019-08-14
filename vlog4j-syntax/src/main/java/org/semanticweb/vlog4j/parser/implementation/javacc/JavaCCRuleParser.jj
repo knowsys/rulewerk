@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.semanticweb.vlog4j.parser.implementation.RuleParserBase;
-import org.semanticweb.vlog4j.parser.implementation.PrologueException;
+import org.semanticweb.vlog4j.syntax.parser.RuleParserBase;
+import org.semanticweb.vlog4j.syntax.parser.PrologueException;
 
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Literal;
@@ -333,8 +333,8 @@ String PrefixedName() throws PrologueException:
         t = < PNAME_LN >
     |   t = < PNAME_NS >
     )
-    { return localPrologue.resolvePName(t.image);}
-    //{ return localPrologue.resolvePName(t.image, t.beginLine, t.beginColumn);}
+    { return localPrologue.resolvePrefixedName(t.image);}
+    //{ return localPrologue.resolvePrefixedName(t.image, t.beginLine, t.beginColumn);}
 }
 
 String IRIREF() :
