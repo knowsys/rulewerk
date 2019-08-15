@@ -175,7 +175,7 @@ public class RuleParserTest {
 		String input = "p('true') .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"true\"^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
+		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("true^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
 		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
 	}
 
@@ -184,7 +184,34 @@ public class RuleParserTest {
 		String input = "p('false') .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"false\"^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
+		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("false^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
+		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testIntegerLiteral() throws ParsingException {
+		String input = "p(42) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("42^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
+		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testDecimalLiteral() throws ParsingException {
+		String input = "p(-5.0) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("-5.0^^<" + PrefixDeclarations.XSD_DECIMAL + ">"));
+		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testDoubleLiteral() throws ParsingException {
+		String input = "p(4.2E9) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("4.2E9^^<" + PrefixDeclarations.XSD_DOUBLE + ">"));
 		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
 	}
 
