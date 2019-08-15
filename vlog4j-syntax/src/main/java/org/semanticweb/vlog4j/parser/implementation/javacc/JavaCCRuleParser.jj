@@ -91,13 +91,13 @@ void statement() throws PrefixDeclarationException:
     PositiveLiteral l;
 }
 {
-    LOOKAHEAD(rule()) r = rule() { listOfRules.add(r);}
+    LOOKAHEAD(rule()) r = rule() { rules.add(r);}
 |   l = positiveLiteral(0) < DOT > //not from a rule
     {
          if (l.getVariables().isEmpty())
-             listOfFacts.add(l);
+             facts.add(l);
          else
-             listOfQueries.add(l);
+             queries.add(l);
     }
 }
 
@@ -109,35 +109,25 @@ Rule rule() throws PrefixDeclarationException:
     bodyVars = new HashSet<String>();
     headExiVars = new HashSet<String>();
     headUniVars = new HashSet<String>();
-    Set<String> headExiVarsInterBodyVars;
-    Set<String> headExiVarsInterheadUniVars;
-    Set<String> headUniVarsInterBodyVars;
 }
 {
     // 1 rule's head 
     // 2 rule's body
     head = listOfPositiveLiterals(1) < ARROW > body = listOfLiterals(2) < DOT >
     {
-        
         rule = makeRule(makePositiveConjunction(head), makeConjunction(body));
+        
         // check that the intersection between headExiVars and BodyVars is empty
-        headExiVarsInterBodyVars = new HashSet<String>(headExiVars);
-        headExiVarsInterBodyVars.retainAll(bodyVars);
-        if (!headExiVarsInterBodyVars.isEmpty()) {
-             throw new ParseException("\nMalformed Rule:\nSome existential variables appers in the body.\nRule: " + rule.toString());
-            }
-        // check that the intersection between headExiVars and headUniVars is empty
-        headExiVarsInterheadUniVars = new HashSet<String>(headExiVars);
-        headExiVarsInterheadUniVars.retainAll(headUniVars);
-        if (!headExiVarsInterBodyVars.isEmpty()) {
-             throw new ParseException("\nMalformed Rule:\nSome existential variables appers as universal variables in the head.\nRule: " + rule.toString());
-            }
+        for (String variable : headExiVars) {
+          if (bodyVars.contains(variable)) 
+            throw new ParseException("Malformed rule " + rule.toString() + "\nExistential variable " + variable + " also used in rule body.");
+        }
+
         // check that bodyVars contains headUniVars
-        headUniVarsInterBodyVars = new HashSet<String>(headUniVars);
-        headUniVarsInterBodyVars.retainAll(bodyVars);
-        if (!headUniVarsInterBodyVars.equals(headUniVars)) {
-             throw new ParseException("\nMalformed Rule:\nSome universal variables appearing in the head does not apper in the body.\nRule: " + rule.toString());
-            }
+        for (String variable : headUniVars) {
+          if (!bodyVars.contains(variable)) 
+            throw new ParseException("Unsafe rule " + rule.toString() + "\nUniversal variable " + variable + " occurs in head but not in body.");
+        }
 
         return rule;
     }

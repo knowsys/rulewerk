@@ -154,6 +154,13 @@ public class RuleParserTest {
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 	}
+	
+	@Test(expected = ParsingException.class)
+	public void testNoConflictingQuantificationVariables() throws ParsingException {
+		String input = "p(?X,!X) :- q(?X) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
 
 	@Test(expected = ParsingException.class)
 	public void testNoDollarVariables() throws ParsingException {
