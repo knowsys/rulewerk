@@ -73,11 +73,16 @@ public final class Expressions {
 	/**
 	 * Creates a {@link Constant} that represents a datatype literal.
 	 * 
+	 * Note that datatype literal is the common name of the representation of
+	 * specific values for a datatype. We mostly avoid this meaning of
+	 * <i>literal</i> since a literal in logic is typically a negated or non-negated
+	 * atom.
+	 * 
 	 * @param lexicalValue the lexical representation of the data value
 	 * @param datatypeIri  the full absolute IRI of the datatype of this literal
 	 * @return a {@link Constant} corresponding to the input.
 	 */
-	public static Constant makeDatatypeLiteral(String lexicalValue, String datatypeIri) {
+	public static Constant makeDatatypeConstant(String lexicalValue, String datatypeIri) {
 		return new ConstantImpl("\"" + lexicalValue + "\"^^<" + datatypeIri + ">");
 	}
 

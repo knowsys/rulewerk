@@ -26,8 +26,6 @@ import java.util.Map;
 
 import org.semanticweb.vlog4j.syntax.common.PrefixDeclarations;
 import org.semanticweb.vlog4j.syntax.common.PrefixDeclarationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link PrefixDeclarations} that is used when parsing data
@@ -38,8 +36,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 final public class LocalPrefixDeclarations implements PrefixDeclarations {
-
-	final static Logger logger = LoggerFactory.getLogger(LocalPrefixDeclarations.class.getName());
 
 	Map<String, String> prefixes = new HashMap<>();
 	String baseUri;
@@ -64,7 +60,6 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 					+ ">. It cannot be redefined to mean <" + uri + ">.");
 		}
 
-		logger.info("Setting new prefix: " + prefix + ", " + uri);
 		prefixes.put(prefix, uri);
 	}
 
@@ -72,7 +67,6 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 		if (this.baseUri != null)
 			throw new PrefixDeclarationException(
 					"Base is already defined as <" + this.baseUri + "> and cannot be re-defined as " + baseUri);
-		logger.info("Setting base URI: " + baseUri);
 		this.baseUri = baseUri;
 	}
 
@@ -80,7 +74,7 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 		// from the parser we know that prefixedName is of the form:
 		// prefix:something
 		// remember that the prefixes are stored with the colon symbol
-		// This does not return the surrounding angle brackes <>
+		// This does not return the surrounding angle brackets <>
 
 		int idx = prefixedName.indexOf(":") + 1;
 		String prefix = prefixedName.substring(0, idx);
