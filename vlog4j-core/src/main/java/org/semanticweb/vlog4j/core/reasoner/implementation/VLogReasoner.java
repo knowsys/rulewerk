@@ -127,7 +127,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	public List<Rule> getRules() {
-		return  Collections.unmodifiableList(this.rules);
+		return Collections.unmodifiableList(this.rules);
 	}
 
 	@Override
@@ -304,12 +304,14 @@ public class VLogReasoner implements Reasoner {
 		Validate.notNull(query, "Query atom must not be null!");
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
+
 		TermQueryResultIterator stringQueryResultIterator;
 		try {
 			stringQueryResultIterator = this.vLog.query(vLogAtom, true, filterBlanks);
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
+
 		return new QueryResultIterator(stringQueryResultIterator);
 	}
 

@@ -63,12 +63,12 @@ final class RdfValueToTermConverter {
 	}
 
 	/**
-	 * Serializes the given {@code literal} to the the NTriples format for
+	 * Serializes the given {@code literal} to the NTriples format for
 	 * {@link Literal}s, using a canonical representation.
 	 *
 	 * @param literal
 	 * @return a unique string representation of given {@code literal} in canonical
-	 *         form.
+	 *         form
 	 */
 	static String buildNormalizedStringValue(final Literal literal) {
 		final URI datatype = literal.getDatatype();
