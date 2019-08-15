@@ -69,7 +69,7 @@ public class AddDataFromRdfFile {
 	public static void main(final String[] args)
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
-		/* 1. Prepare rules and create some related vocabulary objects used later */
+		/* 1. Prepare rules and create some related vocabulary objects used later. */
 		final Predicate triplesEDB = makePredicate("triplesEDB", 3); // predicate to load RDF
 		final Predicate triplesIDB = makePredicate("triplesIDB", 3); // predicate for inferred triples
 		final Constant hasPartPredicate = makeConstant("https://example.org/hasPart"); // RDF property used in query
