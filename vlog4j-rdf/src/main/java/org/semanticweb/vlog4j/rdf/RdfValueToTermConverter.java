@@ -86,10 +86,11 @@ final class RdfValueToTermConverter {
 			sb.append("@");
 			sb.append(literal.getLanguage());
 		} else {
-			if (datatype != null) {
-				// Append the literal's datatype
+			if (datatype != null) { // Append the literal's datatype
 				sb.append("^^");
 				sb.append(NTriplesUtil.toNTriplesString(datatype));
+			} else { // Default to string for untyped literals:
+				sb.append("^^<http://www.w3.org/2001/XMLSchema#string>");
 			}
 		}
 
