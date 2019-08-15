@@ -31,6 +31,7 @@ public interface PrefixDeclarations {
 	static final String XSD = "http://www.w3.org/2001/XMLSchema#";
 	static final String XSD_STRING = "http://www.w3.org/2001/XMLSchema#string";
 	static final String XSD_DECIMAL = "http://www.w3.org/2001/XMLSchema#decimal";
+	static final String XSD_DOUBLE = "http://www.w3.org/2001/XMLSchema#double";
 	static final String XSD_FLOAT = "http://www.w3.org/2001/XMLSchema#float";
 	static final String XSD_INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
 	static final String XSD_BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
