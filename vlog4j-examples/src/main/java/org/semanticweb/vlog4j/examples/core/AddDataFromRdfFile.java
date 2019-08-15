@@ -1,8 +1,6 @@
 package org.semanticweb.vlog4j.examples.core;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
 
 /*-
  * #%L
@@ -26,7 +24,6 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeP
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.File;
@@ -35,7 +32,6 @@ import java.io.IOException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -44,6 +40,8 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArit
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
+import org.semanticweb.vlog4j.syntax.parser.ParsingException;
+import org.semanticweb.vlog4j.syntax.parser.RuleParser;
 
 /**
  * This example shows how facts can be imported from files in the RDF N-Triples
@@ -71,69 +69,38 @@ public class AddDataFromRdfFile {
 	public static void main(final String[] args)
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
-		/* 1. Instantiating entities and rules. */
-		final Predicate triplesEDB = makePredicate("triplesEDB", 3);
-		final Predicate triplesIDB = makePredicate("triplesIDB", 3);
+		/* 1. Prepare rules and create some related vocabulary objects used later */
+		final Predicate triplesEDB = makePredicate("triplesEDB", 3); // predicate to load RDF
+		final Predicate triplesIDB = makePredicate("triplesIDB", 3); // predicate for inferred triples
+		final Constant hasPartPredicate = makeConstant("https://example.org/hasPart"); // RDF property used in query
 
-		final Constant hasPartPredicate = makeConstant("<https://example.org/hasPart>");
-		final Constant isPartOfPredicate = makeConstant("<https://example.org/isPartOf>");
-		final Constant hasTypePredicate = makeConstant("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>");
-		final Constant bicycleObject = makeConstant("<https://example.org/bicycle>");
-		final Constant wheelObject = makeConstant("<https://example.org/wheel>");
+		final String rules = "%%%% We specify the rules syntactically for convenience %%%\n"
+				+ "@prefix ex: <https://example.org/> ."
+				+ "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
+				// load all triples from file:
+				+ "triplesIDB(?s, ?p, ?o) :- triplesEDB(?s, ?p, ?o) ."
+				// every bicycle has some part that is a wheel:
+				+ "triplesIDB(?s, ex:hasPart, !x), triplesIDB(!x, rdf:type, ex:wheel) :- triplesIDB(?s, rdf:type, ex:bicycle) ."
+				// every wheel is part of some bicycle:
+				+ "triplesIDB(?s, ex:isPartOf, !x) :- triplesIDB(?s, rdf:type, ex:wheel) ."
+				// hasPart and isPartOf are mutually inverse relations:
+				+ "triplesIDB(?s, ex:isPartOf, ?o) :- triplesIDB(?o, ex:hasPart, ?s) ."
+				+ "triplesIDB(?s, ex:hasPart, ?o) :- triplesIDB(?o, ex:isPartOf, ?s) .";
 
-		final Variable x = makeVariable("x");
-		final Variable s = makeVariable("s");
-		final Variable p = makeVariable("p");
-		final Variable o = makeVariable("o");
-
-		/*
-		 * We will write <~/someName> instead of <https://example.org/someName> and
-		 * <~#someName> instead of <www.w3.org/1999/02/22-rdf-syntax-ns#someName>.
-		 *
-		 * triplesIDB(?s, ?p, ?o) :- triplesEDB(?s, ?p, ?o) .
-		 */
-		final PositiveLiteral factIDB = makePositiveLiteral(triplesIDB, s, p, o);
-		final PositiveLiteral factEDB = makePositiveLiteral(triplesEDB, s, p, o);
-		final Rule rule1 = makeRule(factIDB, factEDB);
-
-		/*
-		 * exists x. triplesIDB(?s, <~/hasPart>, !x), triplesIDB(!x, <~#type>,
-		 * <~/wheel>) :- triplesIDB(?s, <~#type>, <~/bicycle>) .
-		 */
-		final PositiveLiteral existsHasPartIDB = makePositiveLiteral(triplesIDB, s, hasPartPredicate, x);
-		final PositiveLiteral existsWheelIDB = makePositiveLiteral(triplesIDB, x, hasTypePredicate, wheelObject);
-		final PositiveLiteral bicycleIDB = makePositiveLiteral(triplesIDB, s, hasTypePredicate, bicycleObject);
-		final Rule rule2 = makeRule(makePositiveConjunction(existsHasPartIDB, existsWheelIDB),
-				makeConjunction(bicycleIDB));
-
-		/*
-		 * exists x. triplesIDB(?s, <~/isPartOf>, !x) :- triplesIDB(?s, <~#type>,
-		 * <~/wheel>) .
-		 */
-		final PositiveLiteral existsIsPartOfIDB = makePositiveLiteral(triplesIDB, s, isPartOfPredicate, x);
-		final PositiveLiteral wheelIDB = makePositiveLiteral(triplesIDB, s, hasTypePredicate, wheelObject);
-		final Rule rule3 = makeRule(makePositiveConjunction(existsIsPartOfIDB), makeConjunction(wheelIDB));
-
-		/*
-		 * triplesIDB(?s, <~/isPartOf>, ?o) :- triplesIDB(?o, <~/hasPart>, ?s) .
-		 */
-		final PositiveLiteral isPartOfIDB = makePositiveLiteral(triplesIDB, s, isPartOfPredicate, o);
-		final PositiveLiteral hasPartIDBReversed = makePositiveLiteral(triplesIDB, o, hasPartPredicate, s);
-		final Rule rule4 = makeRule(isPartOfIDB, hasPartIDBReversed);
-
-		/*
-		 * triplesIDB(?s, <~/hasPart>, ?o) :- triplesIDB(?o, <~/isPartOf>, ?s) .
-		 */
-		final PositiveLiteral hasPartIDB = makePositiveLiteral(triplesIDB, s, hasPartPredicate, o);
-		final PositiveLiteral isPartOfIDBReversed = makePositiveLiteral(triplesIDB, o, isPartOfPredicate, s);
-		final Rule rule5 = makeRule(hasPartIDB, isPartOfIDBReversed);
+		RuleParser ruleParser = new RuleParser();
+		try {
+			ruleParser.parse(rules);
+		} catch (ParsingException e) {
+			System.out.println("Failed to parse rules: " + e.getMessage());
+			return;
+		}
 
 		/*
 		 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
 		 * to close the reasoner automatically.
 		 */
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addRules(rule1, rule2, rule3, rule4, rule5);
+			reasoner.addRules(ruleParser.getRules());
 
 			/* Importing {@code .nt.gz} file as data source. */
 			final DataSource triplesEDBDataSource = new RdfFileDataSource(
@@ -142,13 +109,15 @@ public class AddDataFromRdfFile {
 
 			reasoner.load();
 			System.out.println("Before materialisation:");
-			/* triplesEDB(?s, <~/hasPart>, ?o) */
-			final PositiveLiteral hasPartEDB = makePositiveLiteral(triplesEDB, s, hasPartPredicate, o);
+			final Variable x = makeVariable("x");
+			final Variable y = makeVariable("y");
+			final PositiveLiteral hasPartEDB = makePositiveLiteral(triplesEDB, x, hasPartPredicate, y);
 			ExamplesUtils.printOutQueryAnswers(hasPartEDB, reasoner);
 
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
+			final PositiveLiteral hasPartIDB = makePositiveLiteral(triplesIDB, x, hasPartPredicate, y);
 			ExamplesUtils.printOutQueryAnswers(hasPartIDB, reasoner);
 
 			/* Exporting query answers to {@code .csv} files. */
@@ -157,7 +126,7 @@ public class AddDataFromRdfFile {
 			reasoner.exportQueryAnswersToCsv(hasPartIDB,
 					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
 
-			final Constant redBikeSubject = makeConstant("<https://example.org/redBike>");
+			final Constant redBikeSubject = makeConstant("https://example.org/redBike");
 			final PositiveLiteral existsHasPartRedBike = makePositiveLiteral(triplesIDB, redBikeSubject,
 					hasPartPredicate, x);
 			reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
