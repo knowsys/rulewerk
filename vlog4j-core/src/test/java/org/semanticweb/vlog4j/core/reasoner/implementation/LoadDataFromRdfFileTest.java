@@ -23,6 +23,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeDatatypeLiteral;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.File;
@@ -55,7 +56,7 @@ public class LoadDataFromRdfFileTest {
 			Arrays.asList(makeConstant("http://example.org/c1"), makeConstant("http://example.org/p"),
 					makeConstant("http://example.org/c2")),
 			Arrays.asList(makeConstant("http://example.org/c1"), makeConstant("http://example.org/q"),
-					makeConstant("\"test string\"^^<http://www.w3.org/2001/XMLSchema#string>")));
+					makeDatatypeLiteral("test string", "http://www.w3.org/2001/XMLSchema#string")));
 
 	@Test
 	public void testLoadEmptyRdfFile()

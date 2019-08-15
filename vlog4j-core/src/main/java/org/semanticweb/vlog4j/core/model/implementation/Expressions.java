@@ -71,6 +71,17 @@ public final class Expressions {
 	}
 
 	/**
+	 * Creates a {@link Constant} that represents a datatype literal.
+	 * 
+	 * @param lexicalValue the lexical representation of the data value
+	 * @param datatypeIri  the full absolute IRI of the datatype of this literal
+	 * @return a {@link Constant} corresponding to the input.
+	 */
+	public static Constant makeDatatypeLiteral(String lexicalValue, String datatypeIri) {
+		return new ConstantImpl("\"" + lexicalValue + "\"^^<" + datatypeIri + ">");
+	}
+
+	/**
 	 * Creates a {@link Predicate}.
 	 * 
 	 * @param name  non-blank predicate name
