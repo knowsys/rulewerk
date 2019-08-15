@@ -207,7 +207,7 @@ public class RuleParserTest {
 	}
 
 	@Test
-	public void testCompleteIntegerLiteral() throws ParsingException {
+	public void testFullIntegerLiteral() throws ParsingException {
 		String input = "p(\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + "> ) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
@@ -267,6 +267,22 @@ public class RuleParserTest {
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testUnicodeLiteral() throws ParsingException {
+		String input = "p(\"\u0061\u0062\u0063\") ." ; //"abc"
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testUnicodeUri() throws ParsingException {
+		String input = "@base <http://example.org/> . @prefix ex: <http://example.org/> .  ex:\u0073(c) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
 
 	@Test
