@@ -271,7 +271,7 @@ public class RuleParserTest {
 
 	@Test
 	public void testUnicodeLiteral() throws ParsingException {
-		String input = "p(\"\u0061\u0062\u0063\") ." ; //"abc"
+		String input = "p(\"\\u0061\\u0062\\u0063\") ." ; //"abc"
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
@@ -279,7 +279,7 @@ public class RuleParserTest {
 
 	@Test
 	public void testUnicodeUri() throws ParsingException {
-		String input = "@base <http://example.org/> . @prefix ex: <http://example.org/> .  ex:\u0073(c) .";
+		String input = "@base <http://example.org/> . @prefix ex: <http://example.org/> .  ex:\\u0073(c) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
