@@ -32,6 +32,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.syntax.common.PrefixDeclarations;
 
 public class RuleParserTest {
 
@@ -40,7 +41,7 @@ public class RuleParserTest {
 	private final Variable z = Expressions.makeVariable("Z");
 	private final Constant c = Expressions.makeConstant("http://example.org/c");
 	private final Constant d = Expressions.makeConstant("http://example.org/d");
-	private final Constant abc = Expressions.makeConstant("\"abc\"^^<http://www.w3.org/2001/XMLSchema#string>");
+	private final Constant abc = Expressions.makeConstant("\"abc\"^^<" + PrefixDeclarations.XSD_STRING + ">");
 	private final Literal atom1 = Expressions.makePositiveLiteral("http://example.org/p", x, c);
 	private final Literal negAtom1 = Expressions.makeNegativeLiteral("http://example.org/p", x, c);
 	private final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
@@ -154,7 +155,7 @@ public class RuleParserTest {
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 	}
-	
+
 	@Test(expected = ParsingException.class)
 	public void testNoConflictingQuantificationVariables() throws ParsingException {
 		String input = "p(?X,!X) :- q(?X) .";
@@ -179,26 +180,24 @@ public class RuleParserTest {
 
 	@Test
 	public void testStringLiteralEscapes() throws ParsingException {
-		String input = "p(\"_\\\"_\\\\_\\n_\\t_\") .";  // User input: p("_\"_\\_\n_\t_")
+		String input = "p(\"_\\\"_\\\\_\\n_\\t_\") ."; // User input: p("_\"_\\_\n_\t_")
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("\"_\"_\\_\n_\t_\"^^<http://www.w3.org/2001/XMLSchema#string>"));
+				Expressions.makeConstant("\"_\"_\\_\n_\t_\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
 		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
 
 	@Test
 	public void testStringLiteralMultiLine() throws ParsingException {
-		String input = "p('''line 1\n\n"
-				+ "line 2\n"
-				+ "line 3''') .";  // User input: p("a\"b\\c")
+		String input = "p('''line 1\n\n" + "line 2\n" + "line 3''') ."; // User input: p("a\"b\\c")
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("\"line 1\n\nline 2\nline 3\"^^<http://www.w3.org/2001/XMLSchema#string>"));
+				Expressions.makeConstant("\"line 1\n\nline 2\nline 3\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
 		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
-	
+
 	@Test
 	public void testFullLiteral() throws ParsingException {
 		String input = "p(\"abc\"^^<http://www.w3.org/2001/XMLSchema#string>) .";
@@ -209,19 +208,18 @@ public class RuleParserTest {
 
 	@Test
 	public void testPrefixedLiteral() throws ParsingException {
-		String input = "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> . " + "p(\"abc\"^^xsd:string) .";
+		String input = "@prefix xsd: <" + PrefixDeclarations.XSD + "> . " + "p(\"abc\"^^xsd:string) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
 	}
-	
+
 	@Test
 	public void testLangStringLiteral() throws ParsingException {
 		String input = "p(\"abc\"@en-gb) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("\"abc\"@en-gb"));
+		PositiveLiteral fact = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"abc\"@en-gb"));
 		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
 
