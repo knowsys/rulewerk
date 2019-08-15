@@ -214,6 +214,16 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
 	}
+	
+	@Test
+	public void testLangStringLiteral() throws ParsingException {
+		String input = "p(\"abc\"@en-gb) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("\"abc\"@en-gb"));
+		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+	}
 
 	@Test
 	public void testLineComments() throws ParsingException {
