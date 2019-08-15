@@ -29,7 +29,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.parser.implementation.javacc.ParseException;
 import org.semanticweb.vlog4j.syntax.common.PrefixDeclarations;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 /**
  * Basic methods used in the JavaCC-generated parser.
@@ -51,19 +51,23 @@ public class RuleParserBase {
 	final protected List<PositiveLiteral> facts = new ArrayList<>();
 	final protected List<PositiveLiteral> queries = new ArrayList<>();
 
-	protected Constant createLiteralInteger(String lexicalForm) {
-		// this method should be eliminated
-		return makeConstant(lexicalForm);
+	protected Constant createBooleanLiteral(String lexicalForm) {
+		// lexicalForm is one of ['true' or 'false']
+		// we remove the quotes and add data type
+		lexicalForm = lexicalForm.substring(1,lexicalForm.length()-1);
+		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_BOOLEAN + ">");
 	}
 
-	protected Constant createLiteralDouble(String lexicalForm) {
-		// this method should be eliminated
-		return makeConstant(lexicalForm);
+	protected Constant createIntegerLiteral(String lexicalForm) {
+		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_INTEGER + ">");
 	}
 
-	protected Constant createLiteralDecimal(String lexicalForm) {
-		// this method should be eliminated
-		return makeConstant(lexicalForm);
+	protected Constant createDecimalLiteral(String lexicalForm) {
+		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DECIMAL + ">");
+	}
+
+	protected Constant createDoubleLiteral(String lexicalForm) {
+		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DOUBLE + ">");
 	}
 
 	protected static String unescapeStr(String s) throws ParseException {

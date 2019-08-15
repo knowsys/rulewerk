@@ -206,12 +206,14 @@ String predicateName() throws PrefixDeclarationException:
 // 2 if the variable comes from the body of a rule
 Term term(int itComesFrom) throws PrefixDeclarationException:
 {
-    String s;
     Token t;
+    String s;
+    Constant c;
 }
 {
     s = IRI(false)       { return Expressions.makeConstant(s); }
-|   LOOKAHEAD(booleanLiteral()) s = booleanLiteral() { return Expressions.makeConstant(s); }
+|   LOOKAHEAD(booleanLiteral()) c = booleanLiteral() { return c; }
+|   c = NumericLiteral() { return c; }
 |   s = RDFLiteral()     { return Expressions.makeConstant(s); }
 |   t = < UNIVAR >
     {
@@ -240,9 +242,9 @@ Constant NumericLiteral() :
     Token t;
 }
 {
-    t = < INTEGER > { return createLiteralInteger(t.image); }
-|   t = < DECIMAL > { return createLiteralDecimal(t.image); }
-|   t = < DOUBLE >  {  return createLiteralDouble(t.image); }
+    t = < INTEGER > { return createIntegerLiteral(t.image); }
+|   t = < DECIMAL > { return createDecimalLiteral(t.image); }
+|   t = < DOUBLE >  { return createDoubleLiteral(t.image); }
 }
 
 String RDFLiteral() throws PrefixDeclarationException:
@@ -272,12 +274,13 @@ String Langtag() :
     }
 }
 
-String booleanLiteral() :
+Constant booleanLiteral() :
 {
+      Token t;
 }
 {
-    < TRUE >   { return "\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>";  }
-|   < FALSE >  { return "\"false\"^^<http://www.w3.org/2001/XMLSchema#boolean>"; }
+    t = < TRUE >   { return createBooleanLiteral(t.image); }
+|   t = < FALSE >  { return createBooleanLiteral(t.image); }
 }
 
 String String():
