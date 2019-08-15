@@ -123,7 +123,7 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(rule1), ruleParser.getRules());
 	}
-	
+
 	@Test
 	public void testNegationRule() throws ParsingException {
 		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- ~p(?X,c), p(?X,?Z) . ";
@@ -131,7 +131,7 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(rule2), ruleParser.getRules());
 	}
-	
+
 	@Test(expected = ParsingException.class)
 	public void testUnsafeNegationRule() throws ParsingException {
 		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- ~p(?Y,c), p(?X,?Z) . ";
@@ -155,6 +155,13 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 	}
 
+	@Test(expected = ParsingException.class)
+	public void testNoDollarVariables() throws ParsingException {
+		String input = "p($X) :- q($X) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+
 	@Test
 	public void testStringLiteral() throws ParsingException {
 		String input = "p(\"abc\") .";
@@ -163,6 +170,28 @@ public class RuleParserTest {
 		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
 	}
 
+	@Test
+	public void testStringLiteralEscapes() throws ParsingException {
+		String input = "p(\"_\\\"_\\\\_\\n_\\t_\") .";  // User input: p("_\"_\\_\n_\t_")
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("\"_\"_\\_\n_\t_\"^^<http://www.w3.org/2001/XMLSchema#string>"));
+		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testStringLiteralMultiLine() throws ParsingException {
+		String input = "p('''line 1\n\n"
+				+ "line 2\n"
+				+ "line 3''') .";  // User input: p("a\"b\\c")
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("\"line 1\n\nline 2\nline 3\"^^<http://www.w3.org/2001/XMLSchema#string>"));
+		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+	}
+	
 	@Test
 	public void testFullLiteral() throws ParsingException {
 		String input = "p(\"abc\"^^<http://www.w3.org/2001/XMLSchema#string>) .";
@@ -178,11 +207,10 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
 	}
-	
+
 	@Test
 	public void testLineComments() throws ParsingException {
-		String input = "@prefix ex: <http://example.org/> . % comment \n"
-				+ "%@prefix ex: <http:nourl> \n"
+		String input = "@prefix ex: <http://example.org/> . % comment \n" + "%@prefix ex: <http:nourl> \n"
 				+ " ex:s(ex:c) . % comment \n";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
