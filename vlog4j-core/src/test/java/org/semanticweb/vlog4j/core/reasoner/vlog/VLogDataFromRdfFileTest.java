@@ -23,13 +23,16 @@ import static org.junit.Assert.assertEquals;
  */
 
 import static org.junit.Assert.assertTrue;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUtils;
 
 import karmaresearch.vlog.AlreadyStartedException;
@@ -47,10 +50,12 @@ public class VLogDataFromRdfFileTest {
 	private static final String emptyTernaryPredicateName = "empty";
 
 	private static final List<List<Term>> expectedTernaryQueryResult = Arrays.asList(
-			Arrays.asList(VLogExpressions.makeConstant("<c1>"), VLogExpressions.makeConstant("<q>"),
-					VLogExpressions.makeConstant("<c2>")),
-			Arrays.asList(VLogExpressions.makeConstant("<c1>"), VLogExpressions.makeConstant("<p>"),
-					VLogExpressions.makeConstant("<c2>")));
+			Arrays.asList(VLogExpressions.makeConstant("<http://example.org/c1>"),
+					VLogExpressions.makeConstant("<http://example.org/p>"),
+					VLogExpressions.makeConstant("<http://example.org/c2>")),
+			Arrays.asList(VLogExpressions.makeConstant("<http://example.org/c1>"),
+					VLogExpressions.makeConstant("<http://example.org/q>"),
+					VLogExpressions.makeConstant("\"test string\"^^<http://www.w3.org/2001/XMLSchema#string>")));
 
 	private static List<List<Term>> getTernaryQueryResults(final VLog vLog, final String predicateName)
 			throws NotStartedException {
@@ -63,13 +68,14 @@ public class VLogDataFromRdfFileTest {
 	}
 
 	@Test
-	public void testLoadDataFomRdfString()
+	public void testLoadDataFromRdfString()
 			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
 		final String ternaryPredicateEDBConfig = "EDB0_predname=" + unzippedTernaryPredicateName + "\n"
 				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
 				+ "EDB0_param1=" + FileDataSourceTestUtils.unzippedNtFileRoot + "\n" + "EDB1_predname="
 				+ zippedTernaryPredicateName + "\n" + "EDB1_type=INMEMORY" + "\n" + "EDB1_param0="
-				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB1_param1=" + FileDataSourceTestUtils.zippedNtFileRoot;
+				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB1_param1="
+				+ FileDataSourceTestUtils.zippedNtFileRoot;
 
 		final VLog vLog = new VLog();
 		vLog.start(ternaryPredicateEDBConfig, false);

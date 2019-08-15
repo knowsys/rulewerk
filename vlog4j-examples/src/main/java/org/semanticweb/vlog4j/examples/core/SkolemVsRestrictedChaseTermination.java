@@ -40,6 +40,9 @@ import org.semanticweb.vlog4j.examples.ExamplesUtils;
  * the Restricted Chase on the same set of rules and facts. Note that the
  * Restricted Chase is the default reasoning algorithm, as it terminates in most
  * cases and generates a smaller number of facts.
+ * 
+ * @TODO Convert to use string-based rules and parse them, instead of building
+ *       rules tediously in Java.
  *
  * @author Irina Dragoste
  *
@@ -48,6 +51,9 @@ public class SkolemVsRestrictedChaseTermination {
 
 	public static void main(final String[] args)
 			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+
+		ExamplesUtils.configureLogging();
+
 		/* 1. Instantiating entities, rules and facts */
 		final Predicate bicycleIDB = Expressions.makePredicate("BicycleIDB", 1);
 		final Predicate bicycleEDB = Expressions.makePredicate("BicycleEDB", 1);
