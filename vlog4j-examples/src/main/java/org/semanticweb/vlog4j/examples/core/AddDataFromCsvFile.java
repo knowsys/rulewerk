@@ -65,6 +65,8 @@ public class AddDataFromCsvFile {
 	public static void main(final String[] args)
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
+		ExamplesUtils.configureLogging();
+
 		/* 1. Prepare rules and create some related vocabulary objects used later. */
 		final Predicate bicycleEDB = makePredicate("bicycleEDB", 1);
 		final Predicate wheelEDB = makePredicate("wheelEDB", 1);
@@ -73,16 +75,17 @@ public class AddDataFromCsvFile {
 
 		final String rules = "%%%% We specify the rules syntactically for convenience %%%\n"
 				// load all data from the file-based ("EDB") predicates:
-				+ "bicycleIDB(?x) :- bicycleEDB(?x) ." //
-				+ "wheelIDB(?x) :- wheelEDB(?x) ." //
-				+ "hasPartIDB(?x, ?y) :- hasPartEDB(?x, ?y) ." //
-				+ "isPartOfIDB(?x, ?y) :- isPartOfEDB(?x, ?y) ."
+				+ "bicycleIDB(?X) :- bicycleEDB(?X) ." //
+				+ "wheelIDB(?X) :- wheelEDB(?X) ." //
+				+ "hasPartIDB(?X, ?Y) :- hasPartEDB(?X, ?Y) ." //
+				+ "isPartOfIDB(?X, ?Y) :- isPartOfEDB(?X, ?Y) ."
 				// every bicycle has some part that is a wheel:
-				+ "hasPartIDB(?x, !y), wheelIDB(!y) :- bicycleIDB(?x) ."
+				+ "hasPartIDB(?X, !Y), wheelIDB(!Y) :- bicycleIDB(?X) ."
 				// every wheel is part of some bicycle:
-				+ "isPartOfIDB(?x, !y) :- wheelIDB(?x) ."
+				+ "isPartOfIDB(?X, !Y) :- wheelIDB(?X) ."
 				// hasPart and isPartOf are mutually inverse relations:
-				+ "hasPartIDB(?x, ?y) :- isPartOfIDB(?y, ?x) ." + "isPartOfIDB(?x, ?y) :- hasPartIDB(?y, ?x) .";
+				+ "hasPartIDB(?X, ?Y) :- isPartOfIDB(?Y, ?X) ." //
+				+ "isPartOfIDB(?X, ?Y) :- hasPartIDB(?Y, ?X) .";
 
 		RuleParser ruleParser = new RuleParser();
 		try {
@@ -112,8 +115,8 @@ public class AddDataFromCsvFile {
 
 			reasoner.load();
 			System.out.println("Before materialisation:");
-			final Variable x = makeVariable("x");
-			final Variable y = makeVariable("y");
+			final Variable x = makeVariable("X");
+			final Variable y = makeVariable("Y");
 			final PositiveLiteral hasPartEDBXY = makePositiveLiteral(hasPartEDB, x, y);
 			ExamplesUtils.printOutQueryAnswers(hasPartEDBXY, reasoner);
 

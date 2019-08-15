@@ -68,6 +68,7 @@ public class AddDataFromRdfFile {
 
 	public static void main(final String[] args)
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+		ExamplesUtils.configureLogging();
 
 		/* 1. Prepare rules and create some related vocabulary objects used later. */
 		final Predicate triplesEDB = makePredicate("triplesEDB", 3); // predicate to load RDF
@@ -78,14 +79,14 @@ public class AddDataFromRdfFile {
 				+ "@prefix ex: <https://example.org/> ."
 				+ "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
 				// load all triples from file:
-				+ "triplesIDB(?s, ?p, ?o) :- triplesEDB(?s, ?p, ?o) ."
+				+ "triplesIDB(?S, ?P, ?O) :- triplesEDB(?S, ?P, ?O) ."
 				// every bicycle has some part that is a wheel:
-				+ "triplesIDB(?s, ex:hasPart, !x), triplesIDB(!x, rdf:type, ex:wheel) :- triplesIDB(?s, rdf:type, ex:bicycle) ."
+				+ "triplesIDB(?S, ex:hasPart, !X), triplesIDB(!X, rdf:type, ex:wheel) :- triplesIDB(?S, rdf:type, ex:bicycle) ."
 				// every wheel is part of some bicycle:
-				+ "triplesIDB(?s, ex:isPartOf, !x) :- triplesIDB(?s, rdf:type, ex:wheel) ."
+				+ "triplesIDB(?S, ex:isPartOf, !X) :- triplesIDB(?S, rdf:type, ex:wheel) ."
 				// hasPart and isPartOf are mutually inverse relations:
-				+ "triplesIDB(?s, ex:isPartOf, ?o) :- triplesIDB(?o, ex:hasPart, ?s) ."
-				+ "triplesIDB(?s, ex:hasPart, ?o) :- triplesIDB(?o, ex:isPartOf, ?s) .";
+				+ "triplesIDB(?S, ex:isPartOf, ?O) :- triplesIDB(?O, ex:hasPart, ?S) ."
+				+ "triplesIDB(?S, ex:hasPart, ?O) :- triplesIDB(?O, ex:isPartOf, ?S) .";
 
 		RuleParser ruleParser = new RuleParser();
 		try {
@@ -109,8 +110,8 @@ public class AddDataFromRdfFile {
 
 			reasoner.load();
 			System.out.println("Before materialisation:");
-			final Variable x = makeVariable("x");
-			final Variable y = makeVariable("y");
+			final Variable x = makeVariable("X");
+			final Variable y = makeVariable("Y");
 			final PositiveLiteral hasPartEDB = makePositiveLiteral(triplesEDB, x, hasPartPredicate, y);
 			ExamplesUtils.printOutQueryAnswers(hasPartEDB, reasoner);
 
