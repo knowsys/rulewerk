@@ -184,8 +184,8 @@ public class RuleParserTest {
 		String input = "p('false') .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("false^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
-		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
+		PositiveLiteral falseLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("false^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
+		assertEquals(Arrays.asList(falseLiteral), ruleParser.getFacts());
 	}
 
 	@Test
@@ -193,8 +193,26 @@ public class RuleParserTest {
 		String input = "p(42) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("42^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
-		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
+		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("42^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
+		assertEquals(Arrays.asList(integerLiteral), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testAbbreviatedIntegerLiteral() throws ParsingException {
+		String input = "@prefix xsd: <" + PrefixDeclarations.XSD + "> . " + "p(\"42\"^^xsd:integer) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
+		assertEquals(Arrays.asList(integerLiteral), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testCompleteIntegerLiteral() throws ParsingException {
+		String input = "p(\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + "> ) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
+		assertEquals(Arrays.asList(integerLiteral), ruleParser.getFacts());
 	}
 
 	@Test
@@ -202,8 +220,8 @@ public class RuleParserTest {
 		String input = "p(-5.0) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("-5.0^^<" + PrefixDeclarations.XSD_DECIMAL + ">"));
-		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
+		PositiveLiteral decimalLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("-5.0^^<" + PrefixDeclarations.XSD_DECIMAL + ">"));
+		assertEquals(Arrays.asList(decimalLiteral), ruleParser.getFacts());
 	}
 
 	@Test
@@ -211,8 +229,8 @@ public class RuleParserTest {
 		String input = "p(4.2E9) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("4.2E9^^<" + PrefixDeclarations.XSD_DOUBLE + ">"));
-		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
+		PositiveLiteral doubleLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("4.2E9^^<" + PrefixDeclarations.XSD_DOUBLE + ">"));
+		assertEquals(Arrays.asList(doubleLiteral), ruleParser.getFacts());
 	}
 
 	@Test
