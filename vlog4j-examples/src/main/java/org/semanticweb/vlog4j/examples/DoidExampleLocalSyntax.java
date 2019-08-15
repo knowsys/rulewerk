@@ -93,7 +93,7 @@ public class DoidExampleLocalSyntax {
 
 			RuleParser rp = new RuleParser();
 			try {
-				rp.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/localSyntax/doid-example.txt"));
+				rp.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/doid.rls"));
 			} catch (ParsingException e) {
 				System.out.println("Failed to parse rules: " + e.getMessage());
 				return;

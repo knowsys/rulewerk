@@ -1,0 +1,34 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+%%%%% Data sources used in this example (with input predicate names):
+%  doidTriple(S,P,O) -- triples from DOID ontology (loaded from RDF)
+%  recentDeaths(human) -- human who died recently (Wikidata IRI)
+%  recentDeathsCause(human, deathCause) -- cause of death of a human (both Wikidata IRIs)
+%  diseaseId(diseaseIri, doid) -- disease from Wikidata (IRI) with DOID (string identifier) 
+
+% Combine recent death data (infer "unknown" cause if no cause given):
+deathCause(?X, ?Z) :- recentDeathsCause(?X, ?Z) .
+deathCause(?X, !Z) :- recentDeaths(?X) .
+
+% Mark Wikidata diseases that have a DOID: 
+hasDoid(?X) :- diseaseId(?X, ?DoidId) . 
+
+% Relate DOID string ID (used on Wikidata) to DOID IRI (used in DOID ontology)
+doid(?Iri, ?DoidId) :- doidTriple(?Iri, <http://www.geneontology.org/formats/oboInOwl#id>,?DoidId) .
+
+% Compute transitive closure of DOID subclass hierarchy
+diseaseHierarchy(?X, ?Y) :- doidTriple(?X, rdfs:subClassOf, ?Y) .
+diseaseHierarchy(?X, ?Z) :- diseaseHierarchy(?X, ?Y), doidTriple(?Y, rdfs:subClassOf, ?Z) .
+
+% Find DOID ids for all subclasses of cancer:
+cancerDisease(?Xdoid) :- diseaseHierarchy(?X, ?Y), doid(?Y, "DOID:162"), doid(?X, ?Xdoid) .
+
+% Compute who died of cancer and who died of something else (including diseases unknown to DOID):
+humansWhoDiedOfCancer(?X) :- deathCause(?X, ?Y), diseaseId(?Y, ?Z), cancerDisease(?Z) .
+humansWhoDiedOfNoncancer(?X) :- deathCause(?X, ?Y), diseaseId(?Y, ?Z), ~cancerDisease(?Z) .
+humansWhoDiedOfNoncancer(?X) :- deathCause(?X, ?Y), ~hasDoid(?Y) .
+
+% Queries to be used in example application:
+humansWhoDiedOfCancer(?X) .
+humansWhoDiedOfNoncancer(?X) .
+
