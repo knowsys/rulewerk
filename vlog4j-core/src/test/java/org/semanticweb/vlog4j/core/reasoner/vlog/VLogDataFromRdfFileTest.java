@@ -23,16 +23,13 @@ import static org.junit.Assert.assertEquals;
  */
 
 import static org.junit.Assert.assertTrue;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUtils;
 
 import karmaresearch.vlog.AlreadyStartedException;
