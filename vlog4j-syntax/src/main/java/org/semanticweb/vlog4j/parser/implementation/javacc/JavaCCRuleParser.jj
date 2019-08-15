@@ -28,13 +28,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeNegativeLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 
 public class JavaCCRuleParser extends RuleParserBase
@@ -115,7 +109,7 @@ Rule rule() throws PrefixDeclarationException:
     // 2 rule's body
     head = listOfPositiveLiterals(1) < ARROW > body = listOfLiterals(2) < DOT >
     {
-        rule = makeRule(makePositiveConjunction(head), makeConjunction(body));
+        rule = Expressions.makeRule(Expressions.makePositiveConjunction(head), Expressions.makeConjunction(body));
         
         // check that the intersection between headExiVars and BodyVars is empty
         for (String variable : headExiVars) {
@@ -172,7 +166,7 @@ PositiveLiteral positiveLiteral(int itComesFrom) throws PrefixDeclarationExcepti
 }
 {
     predicateName = predicateName() < LPAREN > terms = listOfTerms(itComesFrom) < RPAREN >
-    { return makePositiveLiteral(predicateName, terms); }
+    { return Expressions.makePositiveLiteral(predicateName, terms); }
 }
 
 NegativeLiteral negativeLiteral(int itComesFrom) throws PrefixDeclarationException:
@@ -182,7 +176,7 @@ NegativeLiteral negativeLiteral(int itComesFrom) throws PrefixDeclarationExcepti
 }
 {
     < TILDE > predicateName = predicateName() < LPAREN > terms = listOfTerms(itComesFrom) < RPAREN >
-    { return makeNegativeLiteral(predicateName, terms); }
+    { return Expressions.makeNegativeLiteral(predicateName, terms); }
 }
 
 List < Term > listOfTerms(int itComesFrom) throws PrefixDeclarationException:
@@ -216,8 +210,9 @@ Term term(int itComesFrom) throws PrefixDeclarationException:
     Token t;
 }
 {
-    s = IRI(false)   { return makeConstant(s); }
-|   s = RDFLiteral() { return makeConstant(s); }
+    s = IRI(false)       { return Expressions.makeConstant(s); }
+|   LOOKAHEAD(booleanLiteral()) s = booleanLiteral() { return Expressions.makeConstant(s); }
+|   s = RDFLiteral()     { return Expressions.makeConstant(s); }
 |   t = < UNIVAR >
     {
         s = t.image.substring(1);
@@ -225,7 +220,7 @@ Term term(int itComesFrom) throws PrefixDeclarationException:
             headUniVars.add(s);
         if (itComesFrom == 2)
             bodyVars.add(s);
-        return makeVariable(t.image.substring(1));
+        return Expressions.makeVariable(t.image.substring(1));
     }
 |   t = < EXIVAR >
     {
@@ -234,9 +229,9 @@ Term term(int itComesFrom) throws PrefixDeclarationException:
             headExiVars.add(s);
         if (itComesFrom == 2)
             throw new ParseException("Existentialy quantified variables can not appear in the body. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
-        return makeVariable(t.image.substring(1));
+        return Expressions.makeVariable(t.image.substring(1));
     }
-|   t = < VARORPREDNAME > { return makeConstant(prefixDeclarations.absolutize(t.image));}
+|   t = < VARORPREDNAME > { return Expressions.makeConstant(prefixDeclarations.absolutize(t.image));}
 }
 
 /** [16] */
@@ -277,12 +272,12 @@ String Langtag() :
     }
 }
 
-String BooleanLiteral() :
+String booleanLiteral() :
 {
 }
 {
-    < TRUE >   { return "true^^http://www.w3.org/2001/XMLSchema#boolean";  }
-|   < FALSE >  { return "false^^http://www.w3.org/2001/XMLSchema#boolean"; }
+    < TRUE >   { return "\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>";  }
+|   < FALSE >  { return "\"false\"^^<http://www.w3.org/2001/XMLSchema#boolean>"; }
 }
 
 String String():
@@ -388,8 +383,8 @@ TOKEN :
 
 TOKEN [ IGNORE_CASE ] :
 {
-  < TRUE : "true" >
-| < FALSE : "false" >
+  < TRUE : "'true'" >
+| < FALSE : "'false'" >
   // -------------------------------------------------
 | < INTEGER : ([ "-", "+" ])? < DIGITS > >
 | 
