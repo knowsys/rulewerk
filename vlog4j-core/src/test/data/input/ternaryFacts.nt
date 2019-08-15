@@ -1,2 +1,2 @@
-<c1> <p> <c2> .
-<c1> <q> <c2> .
+<http://example.org/c1> <http://example.org/p> <http://example.org/c2> .
+<http://example.org/c1> <http://example.org/q> "test string" .
