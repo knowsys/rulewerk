@@ -171,11 +171,20 @@ public class RuleParserTest {
 	}
 
 	@Test
-	public void testBooleanLiteral() throws ParsingException {
+	public void testTrueBooleanLiteral() throws ParsingException {
 		String input = "p('true') .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"true\"^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
+		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testFalseBooleanLiteral() throws ParsingException {
+		String input = "p('false') .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"false\"^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
 		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
 	}
 
