@@ -44,7 +44,7 @@ public class SimpleExampleJavaCC {
 			rules += "<p>(<a>) .                            \n";
 			rules += "<q>(?x) :- <p>(?x) .                  \n";
 			rules += "<q>(?y) .                             \n";
-			rules += "<r>(?x,?y) :- <q>(?x) .               \n";
+			rules += "<r>(?x,!y) :- <q>(?x) .               \n";
 			rules += "<r>(?x,?y) .                          \n";
 
 			RuleParser rp = new RuleParser();
