@@ -51,8 +51,8 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  * about human diseases, based on information from the Disease Ontology (DOID)
  * and Wikidata. It illustrates how to load data from different sources (RDF
  * file, SPARQL), and reason about these inputs using rules that are loaded from
- * a filein DLGP syntax. Since DLGP doesnot support negation, an additional rule
- * with stratified negation is added through custom Java code.
+ * a file in DLGP syntax. Since DLGP does not support negation, an additional
+ * rule with stratified negation is added through custom Java code.
  * 
  * @author Markus Kroetzsch
  * @author Larry Gonzalez
