@@ -47,9 +47,9 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeC
  */
 public class RuleParserBase {
 	final protected PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
-	final protected List<Rule> listOfRules = new ArrayList<>();
-	final protected List<PositiveLiteral> listOfFacts = new ArrayList<>();
-	final protected List<PositiveLiteral> listOfQueries = new ArrayList<>();
+	final protected List<Rule> rules = new ArrayList<>();
+	final protected List<PositiveLiteral> facts = new ArrayList<>();
+	final protected List<PositiveLiteral> queries = new ArrayList<>();
 
 	protected Constant createLiteralInteger(String lexicalForm) {
 		// this method should be eliminated
@@ -353,15 +353,15 @@ public class RuleParserBase {
 	}
 
 	public List<Rule> getRules() {
-		return listOfRules;
+		return rules;
 	}
 
 	public List<PositiveLiteral> getFacts() {
-		return listOfFacts;
+		return facts;
 	}
 
 	public List<PositiveLiteral> getQueries() {
-		return listOfQueries;
+		return queries;
 	}
 
 }
