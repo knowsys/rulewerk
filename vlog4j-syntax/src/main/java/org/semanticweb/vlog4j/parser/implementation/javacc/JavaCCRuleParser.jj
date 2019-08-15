@@ -1,13 +1,13 @@
 options
 {
-    // Use \ u escapes in streams AND use a reader for the query
-    // => get both raw and escaped unicode
-    //JAVA_UNICODE_ESCAPE = true;
-    //UNICODE_INPUT = false;
-    UNICODE_INPUT = true;
-    STATIC = false;
-    //DEBUG_PARSER = true;
-    //DEBUG_TOKEN_MANAGER   = true ;
+	// Use \ u escapes in streams AND use a reader for the query
+	// => get both raw and escaped unicode
+	JAVA_UNICODE_ESCAPE = true;
+	UNICODE_INPUT = false;
+
+	STATIC = false;
+	// DEBUG_PARSER = true;
+	// DEBUG_TOKEN_MANAGER   = true ;
 }
 
 PARSER_BEGIN(JavaCCRuleParser)
