@@ -68,10 +68,6 @@ public class RuleParser {
 		return parser.getRules();
 	}
 
-	public List<PositiveLiteral> getQueries() {
-		return parser.getQueries();
-	}
-
 	public List<PositiveLiteral> getFacts() {
 		return parser.getFacts();
 	}
