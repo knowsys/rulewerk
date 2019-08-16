@@ -252,6 +252,17 @@ public class RuleParserTest {
 	}
 
 	@Test
+	public void testStringLiteralAllEscapes() throws ParsingException {
+		// User input: p("_\n_\t_\r_\b_\f_\'_\"_\\_")
+		String input = "p(\"_\\n_\\t_\\r_\\b_\\f_\\'_\\\"_\\\\_\") .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("\"_\n_\t_\r_\b_\f_\'_\"_\\_\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
+		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+	}
+
+	@Test
 	public void testStringLiteralMultiLine() throws ParsingException {
 		String input = "p('''line 1\n\n" + "line 2\n" + "line 3''') ."; // User input: p("a\"b\\c")
 		RuleParser ruleParser = new RuleParser();
