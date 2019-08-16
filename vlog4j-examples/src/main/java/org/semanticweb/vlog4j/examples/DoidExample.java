@@ -112,11 +112,11 @@ public class DoidExample {
 
 			System.out.println("Number of results in queries:");
 			QueryResultIterator answers;
-			for (PositiveLiteral l : ruleParser.getQueries()) {
-				answers = reasoner.answerQuery(l, true);
-				System.out.print(l.toString());
-				System.out.println(": " + ExamplesUtils.iteratorSize(answers));
-			}
+//			for (PositiveLiteral l : ruleParser.getQueries()) {
+//				answers = reasoner.answerQuery(l, true);
+//				System.out.print(l.toString());
+//				System.out.println(": " + ExamplesUtils.iteratorSize(answers));
+//			}
 			System.out.println("Done.");
 
 		}
