@@ -31,9 +31,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
@@ -52,9 +50,7 @@ import org.semanticweb.vlog4j.syntax.parser.RuleParser;
  */
 public class DoidExample {
 
-	public static void main(final String[] args)
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-
+	public static void main(final String[] args) throws IOException {
 		ExamplesUtils.configureLogging();
 
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
@@ -119,6 +115,8 @@ public class DoidExample {
 			}
 			System.out.println("Done.");
 
+		} catch (VLog4jException e) {
+			System.out.println(e.getMessage());
 		}
 
 	}
