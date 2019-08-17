@@ -90,7 +90,7 @@ public class SimpleReasoningExample {
 
 			System.out.println("Number of results in queries:");
 			QueryResultIterator answers;
-			// TODO fix query
+			// TODO get queries and answer them
 //			for (PositiveLiteral l : ruleParser.getQueries()) {
 //				answers = reasoner.answerQuery(l, true);
 //				System.out.print(l.toString());
