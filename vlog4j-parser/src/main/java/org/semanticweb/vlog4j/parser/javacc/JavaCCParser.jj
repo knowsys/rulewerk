@@ -16,7 +16,7 @@ package org.semanticweb.vlog4j.parser.javacc;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.semanticweb.vlog4j.parser.JavaCCParserBase;
+import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 
 import org.semanticweb.vlog4j.core.model.api.Rule;
