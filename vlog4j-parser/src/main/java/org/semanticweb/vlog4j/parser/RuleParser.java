@@ -32,6 +32,7 @@ import org.semanticweb.vlog4j.parser.RuleParserBase.FormulaContext;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCRuleParser;
 import org.semanticweb.vlog4j.parser.javacc.ParseException;
 import org.semanticweb.vlog4j.parser.javacc.TokenMgrError;
+import org.semanticweb.vlog4j.parser.ParsingException;
 
 /**
  * Class to access VLog parsing functionality.

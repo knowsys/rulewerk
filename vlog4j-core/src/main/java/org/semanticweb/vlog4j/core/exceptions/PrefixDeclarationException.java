@@ -20,13 +20,13 @@ package org.semanticweb.vlog4j.core.exceptions;
  * #L%
  */
 
-public class PrefixDeclarationException extends Exception {
-    /** 
-     * 
-     */
-    private static final long serialVersionUID = 1L; 
+public class PrefixDeclarationException extends VLog4jException {
+	/** 
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    public PrefixDeclarationException(String errorMessage) {
-        super(errorMessage);
-    }   
+	public PrefixDeclarationException(String errorMessage) {
+		super(errorMessage);
+	}
 }
