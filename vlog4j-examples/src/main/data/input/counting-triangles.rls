@@ -1,0 +1,15 @@
+@prefix wdqs: <https://query.wikidata.org/> .
+
+@source shareBorderWith(2): sparql(wdqs:sparql, "country1,country2", 
+   '''?country1 wdt:P31 wd:Q6256 .
+      ?country2 wdt:P31 wd:Q6256 .
+      ?country1 wdt:P47 ?country2 .''') .
+
+
+% compute the reflexive relation of SharingBorders
+reflexiveShareBorderWith(?X,?Y) :- shareBorderWith(?X,?Y) .
+reflexiveShareBorderWith(?Y,?X) :- reflexiveShareBorderWith(?X,?Y) .
+
+% compute the triangles
+triangle(?X,?Y,?Z) :- reflexiveShareBorderWith(?X,?Y), reflexiveShareBorderWith(?Y,?Z), reflexiveShareBorderWith(?Z,?X) .
+

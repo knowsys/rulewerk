@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.examples;
 
+import java.io.FileInputStream;
+
 /*-
  * #%L
  * VLog4j Examples
@@ -21,17 +23,15 @@ package org.semanticweb.vlog4j.examples;
  */
 
 import java.io.IOException;
-import java.net.URL;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -46,50 +46,37 @@ import org.semanticweb.vlog4j.parser.RuleParser;
 public class CountingTriangles {
 
 	public static void main(final String[] args) throws IOException {
-
-		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
-
-		ExamplesUtils.configureLogging(); // use simple logger for the example
+		ExamplesUtils.configureLogging();
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER + "vlog.log");
 			reasoner.setLogLevel(LogLevel.DEBUG);
 
-			// (wdt:P47 = "Sharing border with")
-			// list of sharing border countries
-			final String sparqlCountriesSharingBorders = "?country1 wdt:P31 wd:Q6256 . ?country2 wdt:P31 wd:Q6256 . ?country1 wdt:P47 ?country2 .";
-
-			final DataSource sharingBordersDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-					"country1,country2", sparqlCountriesSharingBorders);
-			final Predicate sharingBordersPredicate = Expressions.makePredicate("sharingBorders", 2);
-			reasoner.addFactsFromDataSource(sharingBordersPredicate, sharingBordersDataSource);
-
-			// We compute the reflexive relation from "sharingBorders", and then the
-			// triangle relation
-			String rules = "reflexiveBorder(?X,?Y) :- sharingBorders(?X,?Y) .\n"
-					+ "reflexiveBorder(?Y,?X) :- reflexiveBorder(?X,?Y) .\n"
-					+ "triangle(?X,?Y,?Z) :- reflexiveBorder(?X,?Y), reflexiveBorder(?Y,?Z), reflexiveBorder(?Z,?X) . \n";
-
+			/* Configure rules */
 			RuleParser ruleParser = new RuleParser();
 			try {
-				ruleParser.parse(rules);
+				ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/counting-triangles.rls"));
 			} catch (ParsingException e) {
 				System.out.println("Failed to parse rules: " + e.getMessage());
 				return;
 			}
-
+			for (Pair<Predicate, DataSource> pair : ruleParser.getDataSources()) {
+				reasoner.addFactsFromDataSource(pair.getLeft(), pair.getRight());
+			}
 			reasoner.addRules(ruleParser.getRules());
-
-			System.out.println("Rules configured:\n--");
+			System.out.println("Rules used in this example:");
 			reasoner.getRules().forEach(System.out::println);
-			System.out.println("--");
+			System.out.println("");
 
+			/* Initialise reasoner and compute inferences */
+			System.out.print("Initialising rules and data sources ... ");
 			reasoner.load();
+			System.out.println("completed.");
 
-			System.out.println("Loading completed.");
-			System.out.println("Starting reasoning ...");
+			System.out.print("Reasoning (including SPARQL query answering) ... ");
 			reasoner.reason();
-			System.out.println("... reasoning completed.\n--");
+			System.out.println("completed.");
+
 
 			/* Execute a query */
 			try {
@@ -97,7 +84,7 @@ public class CountingTriangles {
 				QueryResultIterator answers = reasoner.answerQuery(query, true);
 				// Note that we divide it by 6
 				System.out.println("The number of triangles in the sharesBorderWith relation (from Wikidata) is: "
-						+ ": " + ExamplesUtils.iteratorSize(answers) / 6);
+						+ ExamplesUtils.iteratorSize(answers) / 6);
 			} catch (ParsingException e) {
 				System.out.println("Failed to parse query: " + e.getMessage());
 			}
