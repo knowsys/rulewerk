@@ -16,7 +16,7 @@ package org.semanticweb.vlog4j.parser.javacc;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.semanticweb.vlog4j.parser.JavaCCParserBase;
+import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -201,7 +201,6 @@ Term term(FormulaContext context) throws PrefixDeclarationException:
 }
 {
     s = IRI(false)       { return Expressions.makeConstant(s); }
-|   LOOKAHEAD(booleanLiteral()) c = booleanLiteral() { return c; }
 |   c = NumericLiteral() { return c; }
 |   s = RDFLiteral()     { return Expressions.makeConstant(s); }
 |   t = < UNIVAR >
@@ -261,15 +260,6 @@ String Langtag() :
         String lang = stripChars(t.image, 1);
         return lang;
     }
-}
-
-Constant booleanLiteral() :
-{
-      Token t;
-}
-{
-    t = < TRUE >   { return createBooleanLiteral(t.image); }
-|   t = < FALSE >  { return createBooleanLiteral(t.image); }
 }
 
 String String():
