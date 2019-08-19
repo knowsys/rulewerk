@@ -46,24 +46,25 @@ public class SimpleReasoningExample {
 		// Define some facts and rules in VLog's basic syntax:
 		String rules = "% --- Some facts --- \n" //
 				+ "location(germany,europe). " //
-				+ "location(uk,europe). " //
+//				+ "location(uk,europe). " //
 				+ "location(saxony,germany). " //
-				+ "location(dresden,saxony). " //
-				+ "city(dresden). " //
-				+ "country(germany).  country(uk). " //
+//				+ "location(dresden,saxony). " //
+//				+ "city(dresden). " //
+//				+ "country(germany).  country(uk). " //
 				+ "university(tudresden, germany) . university(uoxford, uk) . " //
-				+ "streetAddress(tudresden, \"Mommsenstraße 9\", \"01069\", \"Dresden\") ." //
+//				+ "streetAddress(tudresden, \"Mommsenstraße 9\", \"01069\", \"Dresden\") ." //
 				+ "zipLocation(\"01069\", dresden) ." //
-				+ "% --- Standard recursion: locations are transitive --- \n" //
+//				+ "% --- Standard recursion: locations are transitive --- \n" //
 				+ "locatedIn(?X,?Y) :- location(?X,?Y) . " //
-				+ "locatedIn(?X,?Z) :- location(?X,?Y), locatedIn(?Y,?Z) . " //
-				+ "% --- Build address facts using the city constant --- \n" //
-				+ "address(?Uni, ?Street, ?ZIP, ?City) :- address(?Uni, ?Street, ?ZIP, ?CityName), zipLocation(?ZIP,?City) ."
-				+ "% --- Value invention: universities have some address --- \n" //
+//				+ "locatedIn(?X,?Z) :- location(?X,?Y), locatedIn(?Y,?Z) . " //
+//				+ "% --- Build address facts using the city constant --- \n" //
+//				+ "address(?Uni, ?Street, ?ZIP, ?City) :- address(?Uni, ?Street, ?ZIP, ?CityName), zipLocation(?ZIP,?City) ."
+//				+ "% --- Value invention: universities have some address --- \n" //
 				+ "address(?Uni, !Street, !ZIP, !City), locatedIn(!City, ?Country) :- university(?Uni, ?Country) ."
-				+ "% --- Negation: organisations in Europe but not in Germany --- \n" //
-				+ "inEuropeOutsideGermany(?Org) :- address(?Org, ?S, ?Z, ?City), locatedIn(?City, europe), ~locatedIn(?City, germany) .";
-
+//				+ "% --- Negation: organisations in Europe but not in Germany --- \n" //
+				+ "inEuropeOutsideGermany(?Org) :- address(?Org, ?S, ?Z, ?City), locatedIn(?City, europe), ~locatedIn(?City, germany) ."
+				+ "";
+				
 		RuleParser ruleParser = new RuleParser();
 		try {
 			ruleParser.parse(rules);
