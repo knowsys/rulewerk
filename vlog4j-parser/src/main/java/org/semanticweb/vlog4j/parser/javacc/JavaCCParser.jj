@@ -201,7 +201,6 @@ Term term(FormulaContext context) throws PrefixDeclarationException:
 }
 {
     s = IRI(false)       { return Expressions.makeConstant(s); }
-|   LOOKAHEAD(booleanLiteral()) c = booleanLiteral() { return c; }
 |   c = NumericLiteral() { return c; }
 |   s = RDFLiteral()     { return Expressions.makeConstant(s); }
 |   t = < UNIVAR >
@@ -261,15 +260,6 @@ String Langtag() :
         String lang = stripChars(t.image, 1);
         return lang;
     }
-}
-
-Constant booleanLiteral() :
-{
-      Token t;
-}
-{
-    t = < TRUE >   { return createBooleanLiteral(t.image); }
-|   t = < FALSE >  { return createBooleanLiteral(t.image); }
 }
 
 String String():

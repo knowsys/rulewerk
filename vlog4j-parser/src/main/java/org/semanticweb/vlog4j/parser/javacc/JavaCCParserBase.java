@@ -24,12 +24,15 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 
 /**
  * Basic methods used in the JavaCC-generated parser.
@@ -50,7 +53,7 @@ public class JavaCCParserBase {
 
 	final protected List<Rule> rules = new ArrayList<>();
 	final protected List<PositiveLiteral> facts = new ArrayList<>();
-	final protected List<PositiveLiteral> queries = new ArrayList<>();
+//	final protected List<Pair<Predicate, DataSource>> dataSources = new ArrayList<>();
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -82,13 +85,6 @@ public class JavaCCParserBase {
 		 * occurrence).
 		 */
 		BODY
-	}
-
-	protected Constant createBooleanLiteral(String lexicalForm) {
-		// lexicalForm is one of ['true' or 'false']
-		// we remove the quotes and add data type
-		lexicalForm = lexicalForm.substring(1, lexicalForm.length() - 1);
-		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_BOOLEAN + ">");
 	}
 
 	protected Constant createIntegerLiteral(String lexicalForm) {
