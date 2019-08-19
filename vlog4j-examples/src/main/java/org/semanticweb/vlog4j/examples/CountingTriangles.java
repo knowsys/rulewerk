@@ -29,9 +29,7 @@ import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
-import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -49,13 +47,10 @@ public class CountingTriangles {
 		ExamplesUtils.configureLogging();
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER + "vlog.log");
-			reasoner.setLogLevel(LogLevel.DEBUG);
-
 			/* Configure rules */
 			RuleParser ruleParser = new RuleParser();
 			try {
-				ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/counting-triangles.rls"));
+				ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "counting-triangles.rls"));
 			} catch (ParsingException e) {
 				System.out.println("Failed to parse rules: " + e.getMessage());
 				return;
@@ -77,21 +72,28 @@ public class CountingTriangles {
 			reasoner.reason();
 			System.out.println("completed.");
 
-
-			/* Execute a query */
+			/* Execute queries */
 			try {
-				PositiveLiteral query = ruleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)");
-				QueryResultIterator answers = reasoner.answerQuery(query, true);
-				// Note that we divide it by 6
-				System.out.println("The number of triangles in the sharesBorderWith relation (from Wikidata) is: "
-						+ ExamplesUtils.iteratorSize(answers) / 6);
+				PositiveLiteral query;
+
+				query = ruleParser.parsePositiveLiteral("country(?X)");
+				System.out.print("Found " + ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true))
+						+ " countries in Wikidata");
+				// Due to symmetry, each joint border is found twice, hence we divide by 2:
+				query = ruleParser.parsePositiveLiteral("shareBorder(?X,?Y)");
+				System.out.println(", with " + ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 2
+						+ " pairs of them sharing a border.");
+				// Due to symmetry, each triangle is found six times, hence we divide by 6:
+				query = ruleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)");
+				System.out.println("The number of triangles of countries that mutually border each other was "
+						+ ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 6 + ".");
 			} catch (ParsingException e) {
 				System.out.println("Failed to parse query: " + e.getMessage());
 			}
 
 			System.out.println("Done.");
 		} catch (VLog4jException e) {
-			System.out.println("The reasoner encountered a problem:" + e.getMessage());
+			System.out.println("The reasoner encountered a problem: " + e.getMessage());
 		}
 
 	}

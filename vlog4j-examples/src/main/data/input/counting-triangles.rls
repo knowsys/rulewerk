@@ -1,15 +1,18 @@
 @prefix wdqs: <https://query.wikidata.org/> .
 
-@source shareBorderWith(2): sparql(wdqs:sparql, "country1,country2", 
-   '''?country1 wdt:P31 wd:Q6256 .
-      ?country2 wdt:P31 wd:Q6256 .
+% From Wikidata, get all countries (items with P31 relation to Q6256, or subclasses thereof: P279*)
+% that border (P47) each other:
+@source borders(2): sparql(wdqs:sparql, "country1,country2", 
+   '''?country1 wdt:P31/wdt:P279* wd:Q6256 .
+      ?country2 wdt:P31/wdt:P279* wd:Q6256 .
       ?country1 wdt:P47 ?country2 .''') .
 
+% Compute the symmetric closure of borders:
+shareBorder(?X, ?Y) :- borders(?X, ?Y) .
+shareBorder(?X, ?Y) :- borders(?Y, ?X) .
 
-% compute the reflexive relation of SharingBorders
-reflexiveShareBorderWith(?X,?Y) :- shareBorderWith(?X,?Y) .
-reflexiveShareBorderWith(?Y,?X) :- reflexiveShareBorderWith(?X,?Y) .
+country(?X) :- shareBorder(?X, ?Y) .
 
-% compute the triangles
-triangle(?X,?Y,?Z) :- reflexiveShareBorderWith(?X,?Y), reflexiveShareBorderWith(?Y,?Z), reflexiveShareBorderWith(?Z,?X) .
+% Compute all triangles:
+triangle(?X,?Y,?Z) :- shareBorder(?X,?Y), shareBorder(?Y,?Z), shareBorder(?Z,?X) .
 
