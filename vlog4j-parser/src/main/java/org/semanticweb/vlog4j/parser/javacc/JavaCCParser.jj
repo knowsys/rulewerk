@@ -365,10 +365,7 @@ TOKEN :
 
 TOKEN [ IGNORE_CASE ] :
 {
-  < TRUE : "'true'" >
-| < FALSE : "'false'" >
-  // -------------------------------------------------
-| < INTEGER : ([ "-", "+" ])? < DIGITS > >
+  < INTEGER : ([ "-", "+" ])? < DIGITS > >
 | 
   < DECIMAL :
     ([ "-", "+" ])?
