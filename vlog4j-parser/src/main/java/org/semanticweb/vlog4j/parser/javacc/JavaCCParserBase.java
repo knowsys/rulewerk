@@ -50,7 +50,6 @@ public class JavaCCParserBase {
 
 	final protected List<Rule> rules = new ArrayList<>();
 	final protected List<PositiveLiteral> facts = new ArrayList<>();
-	final protected List<PositiveLiteral> queries = new ArrayList<>();
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
