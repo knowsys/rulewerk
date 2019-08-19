@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.syntax.common;
+package org.semanticweb.vlog4j.core.model.api;
 
 /*-
  * #%L

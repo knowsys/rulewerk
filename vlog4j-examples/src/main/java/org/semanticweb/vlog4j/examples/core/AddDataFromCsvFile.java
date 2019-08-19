@@ -40,8 +40,8 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArit
 import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
-import org.semanticweb.vlog4j.syntax.parser.ParsingException;
-import org.semanticweb.vlog4j.syntax.parser.RuleParser;
+import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
  * This example shows how facts can be imported from files in the CSV format.

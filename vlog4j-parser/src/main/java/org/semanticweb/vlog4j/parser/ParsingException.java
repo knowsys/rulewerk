@@ -1,8 +1,8 @@
-package org.semanticweb.vlog4j.syntax.common;
+package org.semanticweb.vlog4j.parser;
 
 /*-
  * #%L
- * vlog4j-parser
+ * vlog4j-syntax
  * %%
  * Copyright (C) 2018 - 2019 VLog4j Developers
  * %%
@@ -20,13 +20,31 @@ package org.semanticweb.vlog4j.syntax.common;
  * #L%
  */
 
-public class PrefixDeclarationException extends Exception {
-    /** 
-     * 
-     */
-    private static final long serialVersionUID = 1L; 
+public class ParsingException extends Exception {
 
-    public PrefixDeclarationException(String errorMessage) {
-        super(errorMessage);
-    }   
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2849123381757026724L;
+
+	public ParsingException() {
+		super();
+	}
+
+	public ParsingException(String message) {
+		super(message);
+	}
+
+	public ParsingException(Throwable cause) {
+		super(cause);
+	}
+
+	public ParsingException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public ParsingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+
 }

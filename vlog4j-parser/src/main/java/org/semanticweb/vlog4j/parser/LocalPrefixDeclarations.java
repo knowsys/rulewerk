@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.syntax.parser;
+package org.semanticweb.vlog4j.parser;
 
 /*-
  * #%L
@@ -24,8 +24,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.semanticweb.vlog4j.syntax.common.PrefixDeclarations;
-import org.semanticweb.vlog4j.syntax.common.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 
 /**
  * Implementation of {@link PrefixDeclarations} that is used when parsing data

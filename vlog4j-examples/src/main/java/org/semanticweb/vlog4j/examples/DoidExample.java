@@ -37,8 +37,8 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
-import org.semanticweb.vlog4j.syntax.parser.ParsingException;
-import org.semanticweb.vlog4j.syntax.parser.RuleParser;
+import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
  * This example reasons about human diseases, based on information from the

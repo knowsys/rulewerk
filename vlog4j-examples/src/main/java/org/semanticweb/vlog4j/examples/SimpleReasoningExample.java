@@ -22,12 +22,10 @@ package org.semanticweb.vlog4j.examples;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.exceptions.VLog4jException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.syntax.parser.ParsingException;
-import org.semanticweb.vlog4j.syntax.parser.RuleParser;
+import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
  * This example demonstrates the basic usage of VLog4j for rule reasoning. We
@@ -64,7 +62,7 @@ public class SimpleReasoningExample {
 //				+ "% --- Negation: organisations in Europe but not in Germany --- \n" //
 				+ "inEuropeOutsideGermany(?Org) :- address(?Org, ?S, ?Z, ?City), locatedIn(?City, europe), ~locatedIn(?City, germany) ."
 				+ "";
-				
+
 		RuleParser ruleParser = new RuleParser();
 		try {
 			ruleParser.parse(rules);
@@ -89,14 +87,9 @@ public class SimpleReasoningExample {
 			reasoner.reason();
 			System.out.println("... reasoning completed.\n--");
 
-			System.out.println("Number of results in queries:");
-			QueryResultIterator answers;
-			// TODO get queries and answer them
-//			for (PositiveLiteral l : ruleParser.getQueries()) {
-//				answers = reasoner.answerQuery(l, true);
-//				System.out.print(l.toString());
-//				System.out.println(": " + ExamplesUtils.iteratorSize(answers));
-//			}
+			/* Execute some queries */
+			ExamplesUtils.printOutQueryAnswers("inEuropeOutsideGermany(?Org)", reasoner);
+
 			System.out.println("Done.");
 		} catch (VLog4jException e) {
 			System.out.println("Error: " + e.getMessage());

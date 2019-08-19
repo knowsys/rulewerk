@@ -11,13 +11,13 @@ options
 }
 
 PARSER_BEGIN(JavaCCRuleParser)
-package org.semanticweb.vlog4j.parser.implementation.javacc;
+package org.semanticweb.vlog4j.parser.javacc;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import org.semanticweb.vlog4j.syntax.parser.RuleParserBase;
-import org.semanticweb.vlog4j.syntax.common.PrefixDeclarationException;
+import org.semanticweb.vlog4j.parser.RuleParserBase;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationException;
 
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Literal;

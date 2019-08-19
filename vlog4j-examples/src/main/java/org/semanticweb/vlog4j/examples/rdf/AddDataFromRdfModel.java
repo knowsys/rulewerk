@@ -49,8 +49,8 @@ import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.rdf.RdfModelConverter;
-import org.semanticweb.vlog4j.syntax.parser.ParsingException;
-import org.semanticweb.vlog4j.syntax.parser.RuleParser;
+import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
  * This example shows how <b>vlog4j-rdf</b> library's utility class
