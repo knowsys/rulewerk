@@ -28,7 +28,3 @@ humansWhoDiedOfCancer(?X) :- deathCause(?X, ?Y), diseaseId(?Y, ?Z), cancerDiseas
 humansWhoDiedOfNoncancer(?X) :- deathCause(?X, ?Y), diseaseId(?Y, ?Z), ~cancerDisease(?Z) .
 humansWhoDiedOfNoncancer(?X) :- deathCause(?X, ?Y), ~hasDoid(?Y) .
 
-% Queries to be used in example application:
-humansWhoDiedOfCancer(?X) .
-humansWhoDiedOfNoncancer(?X) .
-

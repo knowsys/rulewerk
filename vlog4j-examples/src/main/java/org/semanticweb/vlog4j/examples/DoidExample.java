@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -87,6 +89,7 @@ public class DoidExample {
 			final Predicate recentDeathsCausePredicate = Expressions.makePredicate("recentDeathsCause", 2);
 			reasoner.addFactsFromDataSource(recentDeathsCausePredicate, recentDeathsCauseDataSource);
 
+			/* Configure rules */
 			RuleParser ruleParser = new RuleParser();
 			try {
 				ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/doid.rls"));
@@ -94,32 +97,38 @@ public class DoidExample {
 				System.out.println("Failed to parse rules: " + e.getMessage());
 				return;
 			}
-
 			reasoner.addRules(ruleParser.getRules());
-
-			System.out.println("Rules configured:\n--");
+			System.out.println("Rules used in this example:");
 			reasoner.getRules().forEach(System.out::println);
-			System.out.println("--");
+			System.out.println("");
+
+			/* Initialise reasoner and compute inferences */
+			System.out.print("Initialising rules and data sources ... ");
 			reasoner.load();
-			System.out.println("Loading completed.");
-			System.out.println("Starting reasoning (including SPARQL query answering) ...");
+			System.out.println("completed.");
+
+			System.out.print("Reasoning (including SPARQL query answering) ... ");
 			reasoner.reason();
-			System.out.println("... reasoning completed.\n--");
+			System.out.println("completed.");
 
-			System.out.println("Number of results in queries:");
+			/* Execute some queries */
+			List<String> queries = Arrays.asList("humansWhoDiedOfCancer(?X)", "humansWhoDiedOfNoncancer(?X)");
 			QueryResultIterator answers;
-			// TODO get queries and answer them
-//			for (PositiveLiteral l : ruleParser.getQueries()) {
-//				answers = reasoner.answerQuery(l, true);
-//				System.out.print(l.toString());
-//				System.out.println(": " + ExamplesUtils.iteratorSize(answers));
-//			}
-			System.out.println("Done.");
+			System.out.println("\nNumber of inferred tuples for selected query atoms:");
+			for (String queryString : queries) {
+				try {
+					PositiveLiteral query = ruleParser.parsePositiveLiteral(queryString);
+					answers = reasoner.answerQuery(query, true);
+					System.out.println("  " + query.toString() + ": " + ExamplesUtils.iteratorSize(answers));
+				} catch (ParsingException e) {
+					System.out.println("Failed to parse query: " + e.getMessage());
+				}
+			}
 
+			System.out.println("\nDone.");
 		} catch (VLog4jException e) {
-			System.out.println(e.getMessage());
+			System.out.println("The reasoner encountered a problem:" + e.getMessage());
 		}
-
 	}
 
 }
