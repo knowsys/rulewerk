@@ -20,23 +20,19 @@ package org.semanticweb.vlog4j.examples;
  * #L%
  */
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -55,39 +51,9 @@ public class DoidExample {
 	public static void main(final String[] args) throws IOException {
 		ExamplesUtils.configureLogging();
 
-		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
-
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER + "vlog.log");
 			reasoner.setLogLevel(LogLevel.DEBUG);
-
-			/* Configure RDF data source */
-			final Predicate doidTriplePredicate = Expressions.makePredicate("doidTriple", 3);
-			final DataSource doidDataSource = new RdfFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "doid.nt.gz"));
-			reasoner.addFactsFromDataSource(doidTriplePredicate, doidDataSource);
-
-			/* Configure SPARQL data sources */
-			final String sparqlHumansWithDisease = "?disease wdt:P699 ?doid .";
-			// (wdt:P669 = "Disease Ontology ID")
-			final DataSource diseasesDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-					"disease,doid", sparqlHumansWithDisease);
-			final Predicate diseaseIdPredicate = Expressions.makePredicate("diseaseId", 2);
-			reasoner.addFactsFromDataSource(diseaseIdPredicate, diseasesDataSource);
-
-			final String sparqlRecentDeaths = "?human wdt:P31 wd:Q5; wdt:P570 ?deathDate . FILTER (YEAR(?deathDate) = 2018)";
-			// (wdt:P31 = "instance of"; wd:Q5 = "human", wdt:570 = "date of death")
-			final DataSource recentDeathsDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint, "human",
-					sparqlRecentDeaths);
-			final Predicate recentDeathsPredicate = Expressions.makePredicate("recentDeaths", 1);
-			reasoner.addFactsFromDataSource(recentDeathsPredicate, recentDeathsDataSource);
-
-			final String sparqlRecentDeathsCause = sparqlRecentDeaths + "?human wdt:P509 ?causeOfDeath . ";
-			// (wdt:P509 = "cause of death")
-			final DataSource recentDeathsCauseDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-					"human,causeOfDeath", sparqlRecentDeathsCause);
-			final Predicate recentDeathsCausePredicate = Expressions.makePredicate("recentDeathsCause", 2);
-			reasoner.addFactsFromDataSource(recentDeathsCausePredicate, recentDeathsCauseDataSource);
 
 			/* Configure rules */
 			RuleParser ruleParser = new RuleParser();
@@ -96,6 +62,9 @@ public class DoidExample {
 			} catch (ParsingException e) {
 				System.out.println("Failed to parse rules: " + e.getMessage());
 				return;
+			}
+			for (Pair<Predicate, DataSource> pair : ruleParser.getDataSources()) {
+				reasoner.addFactsFromDataSource(pair.getLeft(), pair.getRight());
 			}
 			reasoner.addRules(ruleParser.getRules());
 			System.out.println("Rules used in this example:");

@@ -53,7 +53,7 @@ public class JavaCCParserBase {
 
 	final protected List<Rule> rules = new ArrayList<>();
 	final protected List<PositiveLiteral> facts = new ArrayList<>();
-//	final protected List<Pair<Predicate, DataSource>> dataSources = new ArrayList<>();
+	final protected List<Pair<Predicate, DataSource>> dataSources = new ArrayList<>();
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -97,6 +97,11 @@ public class JavaCCParserBase {
 
 	protected Constant createDoubleLiteral(String lexicalForm) {
 		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DOUBLE + ">");
+	}
+	
+	void addDataSource(String predicateName, int arity, DataSource dataSource) {
+		Predicate predicate = Expressions.makePredicate(predicateName, arity);
+	    dataSources.add(Pair.of(predicate,dataSource));
 	}
 
 	protected static String unescapeStr(String s, int line, int column) throws ParseException {
@@ -219,6 +224,10 @@ public class JavaCCParserBase {
 
 	public List<PositiveLiteral> getFacts() {
 		return facts;
+	}
+	
+	public List<Pair<Predicate, DataSource>> getDataSources() {
+		return dataSources;
 	}
 
 }

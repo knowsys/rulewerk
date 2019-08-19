@@ -1,10 +1,17 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wdqs: <https://query.wikidata.org/> .
 
-%%%%% Data sources used in this example (with input predicate names):
-%  doidTriple(S,P,O) -- triples from DOID ontology (loaded from RDF)
-%  recentDeaths(human) -- human who died recently (Wikidata IRI)
-%  recentDeathsCause(human, deathCause) -- cause of death of a human (both Wikidata IRIs)
-%  diseaseId(diseaseIri, doid) -- disease from Wikidata (IRI) with DOID (string identifier) 
+@source doidTriple(3): load-rdf("src/main/data/input/doid.nt.gz") .
+@source diseaseId(2): sparql(wdqs:sparql, "disease,doid", "?disease wdt:P699 ?doid .") .
+@source recentDeaths(1): sparql(wdqs:sparql, "human", 
+   '''?human wdt:P31 wd:Q5;
+      wdt:P570 ?deathDate .
+      FILTER (YEAR(?deathDate) = 2018)''') .
+@source recentDeathsCause(2): sparql(wdqs:sparql, "human,causeOfDeath", 
+   '''?human wdt:P31 wd:Q5;
+      wdt:P570 ?deathDate ;
+      wdt:P509 ?causeOfDeath . 
+      FILTER (YEAR(?deathDate) = 2018)''') .
 
 % Combine recent death data (infer "unknown" cause if no cause given):
 deathCause(?X, ?Z) :- recentDeathsCause(?X, ?Z) .

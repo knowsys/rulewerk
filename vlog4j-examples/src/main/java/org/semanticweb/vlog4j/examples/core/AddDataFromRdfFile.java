@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.examples.core;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-
 /*-
  * #%L
  * VLog4j Examples
@@ -22,20 +20,14 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeC
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-
-import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
@@ -60,25 +52,27 @@ import org.semanticweb.vlog4j.parser.RuleParser;
  * such an {@code .nt} file.
  * <p>
  * For exporting, a path to the output {@code .csv} file must be specified.
+ * <p>
+ * Exception handling is omitted for simplicity.
  *
  * @author Christian Lewe
+ * @author Markus Kroetzsch
  *
  */
 public class AddDataFromRdfFile {
 
-	public static void main(final String[] args)
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public static void main(final String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException,
+			IncompatiblePredicateArityException, ParsingException {
 		ExamplesUtils.configureLogging();
 
 		/* 1. Prepare rules and create some related vocabulary objects used later. */
-		final Predicate triplesEDB = makePredicate("triplesEDB", 3); // predicate to load RDF
-		final Predicate triplesIDB = makePredicate("triplesIDB", 3); // predicate for inferred triples
-		final Constant hasPartPredicate = makeConstant("https://example.org/hasPart"); // RDF property used in query
 
-		final String rules = "%%%% We specify the rules syntactically for convenience %%%\n"
+		final String rules = "" // first define some namespaces and abbreviations:
 				+ "@prefix ex: <https://example.org/> ."
 				+ "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
-				// load all triples from file:
+				// specify data sources:
+				+ "@source triplesEDB(3) : load-rdf(\"" + ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt.gz\") ."
+				// rule for loading all triples from file:
 				+ "triplesIDB(?S, ?P, ?O) :- triplesEDB(?S, ?P, ?O) ."
 				// every bicycle has some part that is a wheel:
 				+ "triplesIDB(?S, ex:hasPart, !X), triplesIDB(!X, rdf:type, ex:wheel) :- triplesIDB(?S, rdf:type, ex:bicycle) ."
@@ -89,12 +83,7 @@ public class AddDataFromRdfFile {
 				+ "triplesIDB(?S, ex:hasPart, ?O) :- triplesIDB(?O, ex:isPartOf, ?S) .";
 
 		RuleParser ruleParser = new RuleParser();
-		try {
-			ruleParser.parse(rules);
-		} catch (ParsingException e) {
-			System.out.println("Failed to parse rules: " + e.getMessage());
-			return;
-		}
+		ruleParser.parse(rules);
 
 		/*
 		 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
@@ -102,23 +91,20 @@ public class AddDataFromRdfFile {
 		 */
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addRules(ruleParser.getRules());
-
-			/* Importing {@code .nt.gz} file as data source. */
-			final DataSource triplesEDBDataSource = new RdfFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt.gz"));
-			reasoner.addFactsFromDataSource(triplesEDB, triplesEDBDataSource);
-
+			for (Pair<Predicate, DataSource> pair : ruleParser.getDataSources()) {
+				reasoner.addFactsFromDataSource(pair.getLeft(), pair.getRight());
+			}
 			reasoner.load();
+
 			System.out.println("Before materialisation:");
-			final Variable x = makeVariable("X");
-			final Variable y = makeVariable("Y");
-			final PositiveLiteral hasPartEDB = makePositiveLiteral(triplesEDB, x, hasPartPredicate, y);
-			ExamplesUtils.printOutQueryAnswers(hasPartEDB, reasoner);
+
+			ExamplesUtils.printOutQueryAnswers("triplesEDB(?X, <https://example.org/hasPart>, ?Y)", reasoner);
 
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
-			final PositiveLiteral hasPartIDB = makePositiveLiteral(triplesIDB, x, hasPartPredicate, y);
+			final PositiveLiteral hasPartIDB = ruleParser
+					.parsePositiveLiteral("triplesIDB(?X, <https://example.org/hasPart>, ?Y)");
 			ExamplesUtils.printOutQueryAnswers(hasPartIDB, reasoner);
 
 			/* Exporting query answers to {@code .csv} files. */
@@ -127,9 +113,8 @@ public class AddDataFromRdfFile {
 			reasoner.exportQueryAnswersToCsv(hasPartIDB,
 					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
 
-			final Constant redBikeSubject = makeConstant("https://example.org/redBike");
-			final PositiveLiteral existsHasPartRedBike = makePositiveLiteral(triplesIDB, redBikeSubject,
-					hasPartPredicate, x);
+			final PositiveLiteral existsHasPartRedBike = ruleParser.parsePositiveLiteral(
+					"triplesIDB(<https://example.org/redBike>, <https://example.org/hasPart>, ?X)");
 			reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
 					ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);
 		}

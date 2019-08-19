@@ -22,6 +22,10 @@ package org.semanticweb.vlog4j.syntax.parser;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -29,10 +33,14 @@ import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -374,6 +382,50 @@ public class RuleParserTest {
 		String input = "<http://example.org/p>(?X,<http://example.org/c)";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parseLiteral(input);
+	}
+
+	@Test
+	public void testCsvSource() throws ParsingException, IOException {
+		String input = "@source p(2) : load-csv(\"src/main/data/input/example.csv\") .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		CsvFileDataSource csvds = new CsvFileDataSource(new File("src/main/data/input/example.csv"));
+		Predicate p = Expressions.makePredicate("p", 2);
+		assertEquals(1, ruleParser.getDataSources().size());
+		assertEquals(p, ruleParser.getDataSources().get(0).getLeft());
+		assertEquals(csvds, ruleParser.getDataSources().get(0).getRight());
+	}
+
+	@Test
+	public void testRdfSource() throws ParsingException, IOException {
+		String input = "@source p(3) : load-rdf(\"src/main/data/input/example.nt.gz\") .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		RdfFileDataSource rdfds = new RdfFileDataSource(new File("src/main/data/input/example.nt.gz"));
+		Predicate p = Expressions.makePredicate("p", 3);
+		assertEquals(1, ruleParser.getDataSources().size());
+		assertEquals(p, ruleParser.getDataSources().get(0).getLeft());
+		assertEquals(rdfds, ruleParser.getDataSources().get(0).getRight());
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testRdfSourceInvalidArity() throws ParsingException, IOException {
+		String input = "@source p(2) : load-rdf(\"src/main/data/input/example.nt.gz\") .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+
+	@Test
+	public void testSparqlSource() throws ParsingException, MalformedURLException {
+		String input = "@source p(2) : sparql(<https://query.wikidata.org/sparql>,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+		SparqlQueryResultDataSource sparqlds = new SparqlQueryResultDataSource(
+				new URL("https://query.wikidata.org/sparql"), "disease, doid", "?disease wdt:P699 ?doid .");
+		Predicate p = Expressions.makePredicate("p", 2);
+		assertEquals(1, ruleParser.getDataSources().size());
+		assertEquals(p, ruleParser.getDataSources().get(0).getLeft());
+		assertEquals(sparqlds, ruleParser.getDataSources().get(0).getRight());
 	}
 
 }

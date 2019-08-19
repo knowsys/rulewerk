@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.examples.core;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-
 /*-
  * #%L
  * VLog4j Examples
@@ -22,20 +20,14 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeC
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-
-import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
@@ -58,23 +50,23 @@ import org.semanticweb.vlog4j.parser.RuleParser;
  *
  * @author Christian Lewe
  * @author Irina Dragoste
+ * @author Markus Kroetzsch
  *
  */
 public class AddDataFromCsvFile {
 
-	public static void main(final String[] args)
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public static void main(final String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException,
+			IncompatiblePredicateArityException, ParsingException {
 
 		ExamplesUtils.configureLogging();
 
-		/* 1. Prepare rules and create some related vocabulary objects used later. */
-		final Predicate bicycleEDB = makePredicate("bicycleEDB", 1);
-		final Predicate wheelEDB = makePredicate("wheelEDB", 1);
-		final Predicate hasPartIDB = makePredicate("hasPartIDB", 2);
-		final Predicate hasPartEDB = makePredicate("hasPartEDB", 2);
+		/* 1. Load data and prepare rules. */
 
-		final String rules = "%%%% We specify the rules syntactically for convenience %%%\n"
-				// load all data from the file-based ("EDB") predicates:
+		final String rules = "" // first declare file inputs:
+				+ "@source bicycleEDB(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz\") ."
+				+ "@source hasPartEDB(2) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz\") ."
+				+ "@source wheelEDB(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz\") ."
+				// rules to load all data from the file-based ("EDB") predicates:
 				+ "bicycleIDB(?X) :- bicycleEDB(?X) ." //
 				+ "wheelIDB(?X) :- wheelEDB(?X) ." //
 				+ "hasPartIDB(?X, ?Y) :- hasPartEDB(?X, ?Y) ." //
@@ -88,12 +80,7 @@ public class AddDataFromCsvFile {
 				+ "isPartOfIDB(?X, ?Y) :- hasPartIDB(?Y, ?X) .";
 
 		RuleParser ruleParser = new RuleParser();
-		try {
-			ruleParser.parse(rules);
-		} catch (ParsingException e) {
-			System.out.println("Failed to parse rules: " + e.getMessage());
-			return;
-		}
+		ruleParser.parse(rules);
 
 		/*
 		 * 2. Loading, reasoning, and querying while using try-with-resources to close
@@ -101,39 +88,27 @@ public class AddDataFromCsvFile {
 		 */
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.addRules(ruleParser.getRules());
-
-			/* Importing {@code .csv} files as data sources. */
-			final DataSource bicycleEDBDataSource = new CsvFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz"));
-			final DataSource hasPartDataSource = new CsvFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz"));
-			final DataSource wheelDataSource = new CsvFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz"));
-			reasoner.addFactsFromDataSource(bicycleEDB, bicycleEDBDataSource);
-			reasoner.addFactsFromDataSource(hasPartEDB, hasPartDataSource);
-			reasoner.addFactsFromDataSource(wheelEDB, wheelDataSource);
-
+			for (Pair<Predicate, DataSource> pair : ruleParser.getDataSources()) {
+				reasoner.addFactsFromDataSource(pair.getLeft(), pair.getRight());
+			}
 			reasoner.load();
+
 			System.out.println("Before materialisation:");
-			final Variable x = makeVariable("X");
-			final Variable y = makeVariable("Y");
-			final PositiveLiteral hasPartEDBXY = makePositiveLiteral(hasPartEDB, x, y);
-			ExamplesUtils.printOutQueryAnswers(hasPartEDBXY, reasoner);
+			ExamplesUtils.printOutQueryAnswers("hasPartEDB(?X, ?Y)", reasoner);
 
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
-			final PositiveLiteral hasPartIDBXY = makePositiveLiteral(hasPartIDB, x, y);
-			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
+			final PositiveLiteral hasPartIdbXY = ruleParser.parsePositiveLiteral("hasPartIDB(?X, ?Y)");
+			ExamplesUtils.printOutQueryAnswers(hasPartIdbXY, reasoner);
 
 			/* 3. Exporting query answers to {@code .csv} files. */
-			reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithBlanks.csv",
+			reasoner.exportQueryAnswersToCsv(hasPartIdbXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithBlanks.csv",
 					true);
-			reasoner.exportQueryAnswersToCsv(hasPartIDBXY,
+			reasoner.exportQueryAnswersToCsv(hasPartIdbXY,
 					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithoutBlanks.csv", false);
 
-			final Constant redBike = makeConstant("redBike");
-			final PositiveLiteral hasPartIDBRedBikeY = makePositiveLiteral(hasPartIDB, redBike, y);
+			final PositiveLiteral hasPartIDBRedBikeY = ruleParser.parsePositiveLiteral("hasPartIDB(redBike, ?Y)");
 			reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
 					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBRedBikeYWithBlanks.csv", true);
 		}

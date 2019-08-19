@@ -13,11 +13,17 @@ options
 PARSER_BEGIN(JavaCCParser)
 package org.semanticweb.vlog4j.parser.javacc;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.MalformedURLException;
+
 import java.util.List;
 import java.util.ArrayList;
 
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Literal;
@@ -25,6 +31,10 @@ import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.reasoner.DataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
@@ -42,6 +52,7 @@ void parse() throws PrefixDeclarationException:
 {
     ( base() )?
     ( prefix() )*
+    ( source() )*
     ( statement() )*
     < EOF >
 }
@@ -63,12 +74,68 @@ void prefix() throws PrefixDeclarationException:
     String iriString;
 }
 {
-    < PREFIX > t = < PNAME_NS > iriString = IRIREF() < DOT >
+  (
+    LOOKAHEAD(< COLON >) < PREFIX > t = < COLON > iriString = IRIREF() < DOT >
+  | < PREFIX > t = < PNAME_NS > iriString = IRIREF() < DOT >
+  )
     {
          //note that prefix includes the colon (:)
          prefixDeclarations.setPrefix(t.image, iriString);
     }
 }
+
+void source() throws PrefixDeclarationException:
+{
+    String predicateName;
+    DataSource dataSource;
+    Token arity;
+}
+{
+    < SOURCE > predicateName = predicateName() < LPAREN > arity = < INTEGER > < RPAREN > < COLON > dataSource = dataSource() < DOT >
+    {
+      int nArity;
+      nArity = Integer.parseInt(arity.image);
+      // Do not catch NumberFormatException: < INTEGER > matches must parse as int in Java!
+      if ( dataSource instanceof RdfFileDataSource && nArity != 3 )
+        throw new ParseException("Cannot load RDF data into predicate of arity " + nArity +".");
+      addDataSource(predicateName, nArity,dataSource);
+    }
+}
+
+DataSource dataSource() throws PrefixDeclarationException:
+{
+  String fileName;
+  String endpoint;
+  String variables;
+  String query;
+}
+{
+    < LOADCSV > < LPAREN > fileName = String() < RPAREN >
+    {
+     try { 
+       return new CsvFileDataSource(new File(fileName)) ;
+     } catch (IOException e) {
+       throw new ParseException("Could not use source file \"" + fileName +"\": " + e.getMessage());
+     }
+    }
+|   < LOADRDF > < LPAREN > fileName = String() < RPAREN >
+    {
+     try {
+       return new RdfFileDataSource(new File(fileName)) ;
+     } catch (IOException e) {
+       throw new ParseException("Could not use source file \"" + fileName +"\": " + e.getMessage());
+     }
+    }
+|   < SPARQL > < LPAREN > endpoint = IRI(false) < COMMA > variables = String() < COMMA > query = String() < RPAREN >
+    {
+     try {
+       return new SparqlQueryResultDataSource(new URL(endpoint), variables, query);
+     } catch (MalformedURLException e) {
+       throw new ParseException("SPARQL endoint \"" + endpoint +"\" is not a valid URL: " + e.getMessage());
+     }
+    }    
+}
+
 
 void statement() throws PrefixDeclarationException:
 {
@@ -302,10 +369,10 @@ String PrefixedName() throws PrefixDeclarationException:
     Token t;
 }
 {
-    (
+    //(
         t = < PNAME_LN >
-    |   t = < PNAME_NS >
-    )
+    //|   t = < PNAME_NS >
+    //)
     { return prefixDeclarations.resolvePrefixedName(t.image);}
     //{ return prefixDeclarations.resolvePrefixedName(t.image, t.beginLine, t.beginColumn);}
 }
@@ -361,16 +428,16 @@ TOKEN :
 {
   < PREFIX : "@prefix" >
 | < BASE : "@base" >
+| < SOURCE : "@source" >
+| < LOADCSV : "load-csv">
+| < LOADRDF : "load-rdf">
+| < SPARQL : "sparql">
 }
 
 TOKEN [ IGNORE_CASE ] :
 {
-  < TRUE : "'true'" >
-| < FALSE : "'false'" >
-  // -------------------------------------------------
-| < INTEGER : ([ "-", "+" ])? < DIGITS > >
-| 
-  < DECIMAL :
+  < INTEGER : ([ "-", "+" ])? < DIGITS > >
+| < DECIMAL :
     ([ "-", "+" ])?
     (
       (< DIGITS >)+ "." (< DIGITS >)*
@@ -445,8 +512,8 @@ TOKEN :
 {
   // Includes # for relative URIs
   < IRI : "<" (~[ ">", "<", "\"", "{", "}", "^", "\\", "|", "`", "\u0000"-"\u0020" ])* ">" >
-| < PNAME_NS : (< PN_PREFIX >)? ":" >
-| < PNAME_LN : < PNAME_NS > < PN_LOCAL > >
+| < PNAME_LN : (< PN_PREFIX >)? ":" < PN_LOCAL > >
+| < PNAME_NS : < PN_PREFIX > ":" >
 | < BLANK_NODE_LABEL : "_:" < PN_LOCAL > >
 | < UNIVAR : "?" < VARORPREDNAME > >
 | < EXIVAR : "!" < VARORPREDNAME > >
