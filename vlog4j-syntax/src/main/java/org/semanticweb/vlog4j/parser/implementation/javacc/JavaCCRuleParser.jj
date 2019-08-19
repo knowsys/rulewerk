@@ -83,7 +83,7 @@ void statement() throws PrefixDeclarationException:
 		if (l.getVariables().isEmpty()) {
 			facts.add(l);
 		} else {
-			throw new ParseException("Queries are not supported: " + l.toString());
+			throw new ParseException("Facts with variables are not allowed: " + l.toString());
 		}
 
     }

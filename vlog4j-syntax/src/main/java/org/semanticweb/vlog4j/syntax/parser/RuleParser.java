@@ -22,14 +22,17 @@ package org.semanticweb.vlog4j.syntax.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.format.FormatStyle;
 import java.util.List;
 
+import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.parser.implementation.javacc.JavaCCRuleParser;
 import org.semanticweb.vlog4j.parser.implementation.javacc.ParseException;
 import org.semanticweb.vlog4j.parser.implementation.javacc.TokenMgrError;
 import org.semanticweb.vlog4j.syntax.common.PrefixDeclarationException;
+import org.semanticweb.vlog4j.syntax.parser.RuleParserBase.FormulaContext;
 
 /**
  * Class to access VLog parsing functionality.
@@ -55,6 +58,26 @@ public class RuleParser {
 	public void parse(String input) throws ParsingException {
 		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		parse(inputStream, "UTF-8");
+	}
+
+	public Literal parseLiteral(String input) throws ParsingException {
+		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+		JavaCCRuleParser localParser = new JavaCCRuleParser(inputStream, "UTF-8");
+		try {
+			return localParser.literal(FormulaContext.HEAD);
+		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
+			throw new ParsingException(e.getMessage(), e);
+		}
+	}
+	
+	public PositiveLiteral parsePositiveLiteral(String input) throws ParsingException {
+		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+		JavaCCRuleParser localParser = new JavaCCRuleParser(inputStream, "UTF-8");
+		try {
+			return localParser.positiveLiteral(FormulaContext.HEAD);
+		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
+			throw new ParsingException(e.getMessage(), e);
+		}
 	}
 
 	void doParse() throws ParsingException {

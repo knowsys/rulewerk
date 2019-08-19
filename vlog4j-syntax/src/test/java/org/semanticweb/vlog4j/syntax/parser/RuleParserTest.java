@@ -268,7 +268,7 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
 	}
-	
+
 	@Test(expected = ParsingException.class)
 	public void testIncompleteStringLiteral() throws ParsingException {
 		String input = "p(\"abc) .";
@@ -306,7 +306,7 @@ public class RuleParserTest {
 				Expressions.makeConstant("\"line 1\n\nline 2\nline 3\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
 		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
-	
+
 	@Test(expected = ParsingException.class)
 	public void testIncompleteStringLiteralMultiLine() throws ParsingException {
 		String input = "p('''abc\ndef'') .";
@@ -362,6 +362,36 @@ public class RuleParserTest {
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+	}
+
+	@Test
+	public void testPositiveLiteral() throws ParsingException {
+		String input = "<http://example.org/p>(?X,<http://example.org/c>)";
+		RuleParser ruleParser = new RuleParser();
+		Literal literal = ruleParser.parsePositiveLiteral(input);
+		assertEquals(atom1, literal);
+	}
+	
+	@Test(expected = ParsingException.class)
+	public void testPositiveLiteralError() throws ParsingException {
+		String input = "~ <http://example.org/p>(?X,<http://example.org/c>)";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parsePositiveLiteral(input);
+	}
+	
+	@Test
+	public void testLiteral() throws ParsingException {
+		String input = "~ <http://example.org/p>(?X,<http://example.org/c>)";
+		RuleParser ruleParser = new RuleParser();
+		Literal literal = ruleParser.parseLiteral(input);
+		assertEquals(negAtom1, literal);
+	}
+	
+	@Test(expected = ParsingException.class)
+	public void tesLiteralError() throws ParsingException {
+		String input = "<http://example.org/p>(?X,<http://example.org/c)";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parseLiteral(input);
 	}
 
 }
