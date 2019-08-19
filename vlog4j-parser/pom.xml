@@ -36,7 +36,7 @@
                     <execution>
                         <id>ruleparser</id>
                         <configuration>
-                            <sourceDirectory>${basedir}/src/main/java/org/semanticweb/vlog4j/parser/implementation/javacc/</sourceDirectory>
+                            <sourceDirectory>${basedir}/src/main/java/org/semanticweb/vlog4j/parser/javacc/</sourceDirectory>
                         </configuration>
                         <goals>
                             <goal>javacc</goal>
