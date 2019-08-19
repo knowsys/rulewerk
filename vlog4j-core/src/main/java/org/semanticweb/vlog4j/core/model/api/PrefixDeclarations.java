@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.api;
 
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+
 /*-
  * #%L
  * vlog4j-syntax

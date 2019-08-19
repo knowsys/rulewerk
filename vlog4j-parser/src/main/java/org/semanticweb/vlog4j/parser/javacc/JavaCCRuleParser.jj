@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.semanticweb.vlog4j.parser.RuleParserBase;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Literal;

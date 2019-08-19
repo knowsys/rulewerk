@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.model.api;
+package org.semanticweb.vlog4j.core.exceptions;
 
 /*-
  * #%L

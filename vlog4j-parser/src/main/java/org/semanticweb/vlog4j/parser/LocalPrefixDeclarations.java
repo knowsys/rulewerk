@@ -24,7 +24,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 
 /**
