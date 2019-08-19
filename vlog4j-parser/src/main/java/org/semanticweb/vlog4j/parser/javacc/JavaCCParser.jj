@@ -411,7 +411,7 @@ TOKEN :
 | < SPARQL : "sparql">
 }
 
-TOKEN [ IGNORE_CASE ] :
+TOKEN:
 {
   < INTEGER : ([ "-", "+" ])? < DIGITS > >
 | < DECIMAL :
@@ -429,22 +429,13 @@ TOKEN [ IGNORE_CASE ] :
     | ([ "0"-"9" ])+ < EXPONENT >
     ) 
   >
+| < #DIGITS : ([ "0"-"9" ])+ >
 | < #EXPONENT : [ "e", "E" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >
-| < #QUOTE_3D : "\"\"\"" >
-| < #QUOTE_3S : "'''" >
-| < ECHAR :
-    "\\"
-    (
-      "t"
-    | "b"
-    | "n"
-    | "r"
-    | "f"
-    | "\\"
-    | "\""
-    | "'"
-    ) >
-| < STRING_LITERAL1 :
+}
+
+TOKEN:
+{
+  < STRING_LITERAL1 :
     // Single quoted string
     "'"
     (
@@ -461,24 +452,35 @@ TOKEN [ IGNORE_CASE ] :
     )*
     "\"" >
 | < STRING_LITERAL_LONG1 :
-    < QUOTE_3S >
+    "'''"
     (
       ~[ "'", "\\" ]
     | < ECHAR >
     | ("'" ~[ "'" ])
     | ("''" ~[ "'" ])
     )*
-    < QUOTE_3S > >
+    "'''" >
 | < STRING_LITERAL_LONG2 :
-    < QUOTE_3D >
+    "\"\"\""
     (
       ~[ "\"", "\\" ]
     | < ECHAR >
     | ("\"" ~[ "\"" ])
     | ("\"\"" ~[ "\"" ])
     )*
-    < QUOTE_3D > >
-| < DIGITS : ([ "0"-"9" ])+ >
+    "\"\"\"" >
+| < #ECHAR :
+    "\\"
+    (
+      "t"
+    | "b"
+    | "n"
+    | "r"
+    | "f"
+    | "\\"
+    | "\""
+    | "'"
+    ) >
 }
 
 TOKEN :
@@ -494,6 +496,7 @@ TOKEN :
     (
       "-" (< A2ZN >)+
     )* >
+| < VARORPREDNAME : < A2Z> (< A2ZN >)* >
 | < #A2Z : [ "a"-"z", "A"-"Z" ] >
 | < #A2ZN : [ "a"-"z", "A"-"Z", "0"-"9" ] >
 }
@@ -518,41 +521,32 @@ TOKEN :
   < #PN_CHARS_BASE :
     [ "A"-"Z" ]
   | [ "a"-"z" ]
-  | 
-    [ "\u00c0"-"\u00d6" ]
+  | [ "\u00c0"-"\u00d6" ]
   | [ "\u00d8"-"\u00f6" ]
   | [ "\u00f8"-"\u02ff" ]
-  | 
-    [ "\u0370"-"\u037d" ]
+  | [ "\u0370"-"\u037d" ]
   | [ "\u037f"-"\u1fff" ]
-  | 
-    [ "\u200c"-"\u200d" ]
+  | [ "\u200c"-"\u200d" ]
   | [ "\u2070"-"\u218f" ]
   | [ "\u2c00"-"\u2fef" ]
-  | 
-    [ "\u3001"-"\ud7ff" ]
+  | [ "\u3001"-"\ud7ff" ]
   | [ "\uf900"-"\ufffd" ] 
   >
-  // [#x10000-#xEFFFF]
+  //  | [ ""#x10000-#xEFFFF]
 | 
   < #PN_CHARS_U :
     < PN_CHARS_BASE >
   | "_" >
-| 
-  // No DOT
-  < #PN_CHARS :
+| < #PN_CHARS :
     (
       < PN_CHARS_U >
     | "-"
     | [ "0"-"9" ]
     | "\u00b7"
-    | 
-      [ "\u0300"-"\u036f" ]
+    | [ "\u0300"-"\u036f" ]
     | [ "\u203f"-"\u2040" ]
     ) >
-| 
-  // No leading "_", no trailing ".", can have dot inside prefix name.
-  < #PN_PREFIX :
+| < #PN_PREFIX :
     < PN_CHARS_BASE >
     (
       (
@@ -561,31 +555,19 @@ TOKEN :
       )*
       < PN_CHARS >
     )? >
-| 
-  // With a leading "_", no dot at end of local name.
-  < #PN_LOCAL :
+| < #PN_LOCAL :
     (
       < PN_CHARS_U >
+    |  ":"
     | [ "0"-"9" ]
     )
     (
       (
         < PN_CHARS >
       | "."
+      | ":"
       )*
       < PN_CHARS >
     )? >
-| < VARORPREDNAME :
-    (
-      < PN_CHARS_U >
-    | [ "0"-"9" ]
-    )
-    (
-      < PN_CHARS_U >
-    | [ "0"-"9" ]
-    | "\u00b7"
-    | [ "\u0300"-"\u036f" ]
-    | [ "\u203f"-"\u2040" ]
-    )* >
 }
 
