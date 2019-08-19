@@ -10,13 +10,13 @@ options
 	// DEBUG_TOKEN_MANAGER   = true ;
 }
 
-PARSER_BEGIN(JavaCCRuleParser)
+PARSER_BEGIN(JavaCCParser)
 package org.semanticweb.vlog4j.parser.javacc;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import org.semanticweb.vlog4j.parser.RuleParserBase;
+import org.semanticweb.vlog4j.parser.JavaCCParserBase;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -29,11 +29,11 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 
-public class JavaCCRuleParser extends RuleParserBase
+public class JavaCCParser extends JavaCCParserBase
 {
 }
 
-PARSER_END(JavaCCRuleParser)
+PARSER_END(JavaCCParser)
 
 
 void parse() throws PrefixDeclarationException:

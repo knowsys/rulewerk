@@ -45,7 +45,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  * @author Jena developers, Apache Software Foundation (ASF)
  *
  */
-public class RuleParserBase {
+public class JavaCCParserBase {
 	final protected PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
 
 	final protected List<Rule> rules = new ArrayList<>();

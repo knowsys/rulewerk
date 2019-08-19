@@ -28,8 +28,8 @@ import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.parser.RuleParserBase.FormulaContext;
-import org.semanticweb.vlog4j.parser.javacc.JavaCCRuleParser;
+import org.semanticweb.vlog4j.parser.JavaCCParserBase.FormulaContext;
+import org.semanticweb.vlog4j.parser.javacc.JavaCCParser;
 import org.semanticweb.vlog4j.parser.javacc.ParseException;
 import org.semanticweb.vlog4j.parser.javacc.TokenMgrError;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -44,10 +44,10 @@ import org.semanticweb.vlog4j.parser.ParsingException;
  */
 public class RuleParser {
 
-	JavaCCRuleParser parser;
+	JavaCCParser parser;
 
 	public void parse(InputStream stream, String encoding) throws ParsingException {
-		parser = new JavaCCRuleParser(stream, encoding);
+		parser = new JavaCCParser(stream, encoding);
 		doParse();
 	}
 
@@ -62,17 +62,17 @@ public class RuleParser {
 
 	public Literal parseLiteral(String input) throws ParsingException {
 		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		JavaCCRuleParser localParser = new JavaCCRuleParser(inputStream, "UTF-8");
+		JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 		try {
 			return localParser.literal(FormulaContext.HEAD);
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
 			throw new ParsingException(e.getMessage(), e);
 		}
 	}
-	
+
 	public PositiveLiteral parsePositiveLiteral(String input) throws ParsingException {
 		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		JavaCCRuleParser localParser = new JavaCCRuleParser(inputStream, "UTF-8");
+		JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 		try {
 			return localParser.positiveLiteral(FormulaContext.HEAD);
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
