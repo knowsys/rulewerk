@@ -28,10 +28,10 @@ import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.parser.JavaCCParserBase.FormulaContext;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParser;
 import org.semanticweb.vlog4j.parser.javacc.ParseException;
 import org.semanticweb.vlog4j.parser.javacc.TokenMgrError;
+import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.FormulaContext;
 import org.semanticweb.vlog4j.parser.ParsingException;
 
 /**

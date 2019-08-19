@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.parser;
+package org.semanticweb.vlog4j.parser.javacc;
 
 /*-
  * #%L
@@ -28,8 +28,8 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.parser.javacc.ParseException;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
 
 /**
  * Basic methods used in the JavaCC-generated parser.
@@ -71,7 +71,7 @@ public class JavaCCParserBase {
 	 * @author Markus Kroetzsch
 	 *
 	 */
-	protected enum FormulaContext {
+	public enum FormulaContext {
 		/**
 		 * Formula is to be interpreted in the context of a rule head (positive
 		 * occurrence).
