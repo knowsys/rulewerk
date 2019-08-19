@@ -64,10 +64,9 @@ public class CountingTriangles {
 			final Predicate sharingBordersPredicate = Expressions.makePredicate("sharingBorders", 2);
 			reasoner.addFactsFromDataSource(sharingBordersPredicate, sharingBordersDataSource);
 
-			// We compute the reflexive relation from "sharingBorders", and then we count
-			// the number of triangles
-			String rules = "" //
-					+ "reflexiveBorder(?X,?Y) :- sharingBorders(?X,?Y) .\n"
+			// We compute the reflexive relation from "sharingBorders", and then the
+			// triangle relation
+			String rules = "reflexiveBorder(?X,?Y) :- sharingBorders(?X,?Y) .\n"
 					+ "reflexiveBorder(?Y,?X) :- reflexiveBorder(?X,?Y) .\n"
 					+ "triangle(?X,?Y,?Z) :- reflexiveBorder(?X,?Y), reflexiveBorder(?Y,?Z), reflexiveBorder(?Z,?X) . \n";
 
