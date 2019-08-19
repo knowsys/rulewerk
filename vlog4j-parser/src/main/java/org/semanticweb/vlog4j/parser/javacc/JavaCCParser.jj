@@ -256,17 +256,13 @@ String predicateName() throws PrefixDeclarationException:
 |   t = < VARORPREDNAME > { return prefixDeclarations.absolutize(t.image); }
 }
 
-// we use an int to specify where a variable comes from
-// 0 if the variable does not come from a rule
-// 1 if the variable comes from the head of a rule
-// 2 if the variable comes from the body of a rule
 Term term(FormulaContext context) throws PrefixDeclarationException:
 {
     Token t;
     String s;
     Constant c;
 }
-{
+{   //TODO move Expressions.makeConstant to JavaCCParserBase
     s = IRI(false)       { return Expressions.makeConstant(s); }
 |   c = NumericLiteral() { return c; }
 |   s = RDFLiteral()     { return Expressions.makeConstant(s); }
@@ -277,7 +273,7 @@ Term term(FormulaContext context) throws PrefixDeclarationException:
             headUniVars.add(s);
         else if (context == FormulaContext.BODY)
             bodyVars.add(s);
-        return Expressions.makeVariable(t.image.substring(1));
+        return Expressions.makeVariable(s);
     }
 |   t = < EXIVAR >
     {
@@ -286,7 +282,7 @@ Term term(FormulaContext context) throws PrefixDeclarationException:
             headExiVars.add(s);
         if (context == FormulaContext.BODY)
             throw new ParseException("Existentialy quantified variables can not appear in the body. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
-        return Expressions.makeVariable(t.image.substring(1));
+        return Expressions.makeVariable(s);
     }
 |   t = < VARORPREDNAME > { return Expressions.makeConstant(prefixDeclarations.absolutize(t.image));}
 }
@@ -356,12 +352,13 @@ String IRI(boolean includeAngleBrackets) throws PrefixDeclarationException:
         iri = IRIREF()
     |   iri = PrefixedName()
     )
-    { String result = prefixDeclarations.absolutize(iri);
-      if (includeAngleBrackets)
-          result = "<"+result+">";
-      return result;
-      //return "<"+prefixDeclarations.absolutize(iri)+">";
-     }
+    {
+		String result = prefixDeclarations.absolutize(iri);
+		if (includeAngleBrackets) {
+			result = "<"+result+">";
+		}
+		return result;
+	}
 }
 
 String PrefixedName() throws PrefixDeclarationException:
@@ -390,8 +387,7 @@ String IRIREF() :
 }
 
 // ------------------------------------------
-// Tokens
-// Comments and whitespace
+// Whitespace
 SKIP :
 {
   " "
@@ -401,29 +397,10 @@ SKIP :
 | "\f"
 }
 
-TOKEN :
-{
-  < #WS :
-    " "
-  | "\t"
-  | "\n"
-  | "\r"
-  | "\f" >
-}
+//Comments
+SKIP :{< "%" (~["\n"])* "\n" >}
 
-SPECIAL_TOKEN :
-{
-  < SINGLE_LINE_COMMENT :
-    "#" (~[ "\n", "\r" ])*
-    (
-      "\n"
-    | "\r"
-    | "\r\n"
-    )? >
-}
-
-// -------------------------------------------------
-// Keywords : directives before LANGTAG
+// ------------------------------------------
 TOKEN :
 {
   < PREFIX : "@prefix" >
@@ -444,7 +421,6 @@ TOKEN [ IGNORE_CASE ] :
     | "." (< DIGITS >)+
     ) 
   >
-  // Required exponent.
 | < DOUBLE :
     ([ "+", "-" ])?
     (
@@ -456,8 +432,6 @@ TOKEN [ IGNORE_CASE ] :
 | < #EXPONENT : [ "e", "E" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >
 | < #QUOTE_3D : "\"\"\"" >
 | < #QUOTE_3S : "'''" >
-  // "u" done by javacc input stream.  
-  // "U" escapes not supported yet for Java strings
 | < ECHAR :
     "\\"
     (
@@ -505,7 +479,6 @@ TOKEN [ IGNORE_CASE ] :
     )*
     < QUOTE_3D > >
 | < DIGITS : ([ "0"-"9" ])+ >
-  // | <HEX: ["0"-"9"] | ["A"-"F"] | ["a"-"f"]>
 }
 
 TOKEN :
@@ -514,9 +487,8 @@ TOKEN :
   < IRI : "<" (~[ ">", "<", "\"", "{", "}", "^", "\\", "|", "`", "\u0000"-"\u0020" ])* ">" >
 | < PNAME_LN : (< PN_PREFIX >)? ":" < PN_LOCAL > >
 | < PNAME_NS : < PN_PREFIX > ":" >
-| < BLANK_NODE_LABEL : "_:" < PN_LOCAL > >
-| < UNIVAR : "?" < VARORPREDNAME > >
-| < EXIVAR : "!" < VARORPREDNAME > >
+| < UNIVAR : < QMARK > < VARORPREDNAME > >
+| < EXIVAR : < EMARK > < VARORPREDNAME > >
 | < LANGTAG :
     < AT > (< A2Z >)+
     (
@@ -530,46 +502,13 @@ TOKEN :
 {
   < LPAREN : "(" >
 | < RPAREN : ")" >
-| < NIL :
-    < LPAREN >
-    (
-      < WS >
-    | < SINGLE_LINE_COMMENT >
-    )*
-    < RPAREN > >
-| < LBRACE : "{" >
-| < RBRACE : "}" >
-| < LBRACKET : "[" >
-| < RBRACKET : "]" >
-| < ANON :
-    < LBRACKET >
-    (
-      < WS >
-    | < SINGLE_LINE_COMMENT >
-    )*
-    < RBRACKET > >
-| < SEMICOLON : ";" >
 | < COMMA : "," >
 | < DOT : "." >
-}
-
-// Operator
-TOKEN :
-{
-  < EQ : "=" >
 | < ARROW : ":-" >
-| < DOLLAR : "$" >
 | < QMARK : "?" >
+| < EMARK : "!" >
 | < TILDE : "~" >
 | < COLON : ":" >
-  // | < PLUS:    "+" >
-  // | < MINUS:   "-" >
-| < STAR : "*" >
-| < SLASH : "/" >
-| < RSLASH : "\\" >
-| < BOM : "\ufeff" >
-  //| < AMP: "&" >
-  //| < REM: "%" >
 | < DATATYPE : "^^" >
 | < AT : "@" >
 }
@@ -636,9 +575,7 @@ TOKEN :
       )*
       < PN_CHARS >
     )? >
-| 
-  // NCNAME without "-" and ".", allowing leading digits.
-  < VARORPREDNAME :
+| < VARORPREDNAME :
     (
       < PN_CHARS_U >
     | [ "0"-"9" ]
@@ -652,13 +589,3 @@ TOKEN :
     )* >
 }
 
-// Catch-all tokens.  Must be last.  
-// Any non-whitespace.  Causes a parser exception, rather than a
-// token manager error (with hidden line numbers).
-// Only bad IRIs (e.g. spaces) now give unhelpful parse errors.
-TOKEN :
-{
-  < #UNKNOWN : (~[ " ", "\t", "\n", "\r", "\f" ])+ >
-}
-
-SKIP :{< "%" (~["\n"])* "\n" >}
