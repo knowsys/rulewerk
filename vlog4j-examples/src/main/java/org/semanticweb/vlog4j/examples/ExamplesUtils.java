@@ -20,8 +20,6 @@ package org.semanticweb.vlog4j.examples;
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -140,7 +138,7 @@ public final class ExamplesUtils {
 	private static PositiveLiteral makeQueryAtom(String predicateName, int arity) {
 		final List<Term> vars = new ArrayList<>();
 		for (int i = 0; i < arity; i++)
-			vars.add(makeVariable("x" + i));
+			vars.add(Expressions.makeVariable("x" + i));
 		return Expressions.makePositiveLiteral(predicateName, vars);
 	}
 
