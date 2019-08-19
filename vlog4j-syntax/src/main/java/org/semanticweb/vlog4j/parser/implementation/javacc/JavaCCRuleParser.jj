@@ -15,8 +15,6 @@ package org.semanticweb.vlog4j.parser.implementation.javacc;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
 
 import org.semanticweb.vlog4j.syntax.parser.RuleParserBase;
 import org.semanticweb.vlog4j.syntax.common.PrefixDeclarationException;
@@ -33,13 +31,6 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public class JavaCCRuleParser extends RuleParserBase
 {
-    // we use an int to specify where a variable comes from
-    // 0 if the variable does not come from a rule
-    // 1 if the variable comes from the head of a rule
-    // 2 if the variable comes from the body of a rule
-    Set <String> bodyVars;
-    Set <String> headExiVars;
-    Set <String> headUniVars;
 }
 
 PARSER_END(JavaCCRuleParser)
@@ -83,10 +74,11 @@ void statement() throws PrefixDeclarationException:
 {
     Rule r;
     PositiveLiteral l;
+    resetVariableSets();
 }
 {
     LOOKAHEAD(rule()) r = rule() { rules.add(r);}
-|   l = positiveLiteral(0) < DOT > //not from a rule
+|   l = positiveLiteral(FormulaContext.HEAD) < DOT > //not from a rule
     {
 		if (l.getVariables().isEmpty()) {
 			facts.add(l);
@@ -102,14 +94,9 @@ Rule rule() throws PrefixDeclarationException:
     Rule rule;
     List < PositiveLiteral > head;
     List < Literal > body;
-    bodyVars = new HashSet<String>();
-    headExiVars = new HashSet<String>();
-    headUniVars = new HashSet<String>();
 }
 {
-    // 1 rule's head 
-    // 2 rule's body
-    head = listOfPositiveLiterals(1) < ARROW > body = listOfLiterals(2) < DOT >
+    head = listOfPositiveLiterals(FormulaContext.HEAD) < ARROW > body = listOfLiterals(FormulaContext.BODY) < DOT >
     {
         rule = Expressions.makeRule(Expressions.makePositiveConjunction(head), Expressions.makeConjunction(body));
         
@@ -129,66 +116,66 @@ Rule rule() throws PrefixDeclarationException:
     }
 }
 
-List < PositiveLiteral > listOfPositiveLiterals(int itComesFrom) throws PrefixDeclarationException:
+List < PositiveLiteral > listOfPositiveLiterals(FormulaContext context) throws PrefixDeclarationException:
 {
     PositiveLiteral l;
     List < PositiveLiteral > list = new ArrayList < PositiveLiteral > ();
 }
 {
-    l = positiveLiteral(itComesFrom)             { list.add(l); }
-    ( < COMMA > l = positiveLiteral(itComesFrom) { list.add(l); } )*
+    l = positiveLiteral(context)             { list.add(l); }
+    ( < COMMA > l = positiveLiteral(context) { list.add(l); } )*
     { return list; }
 }
 
-List < Literal > listOfLiterals(int itComesFrom) throws PrefixDeclarationException:
+List < Literal > listOfLiterals(FormulaContext context) throws PrefixDeclarationException:
 {
     Literal l;
     List < Literal > list = new ArrayList < Literal > ();
 }
 {
-    l = literal(itComesFrom)             { list.add(l); }
-    ( < COMMA > l = literal(itComesFrom) { list.add(l); } )*
+    l = literal(context)             { list.add(l); }
+    ( < COMMA > l = literal(context) { list.add(l); } )*
     { return list; }
 }
 
-Literal literal(int itComesFrom) throws PrefixDeclarationException:
+Literal literal(FormulaContext context) throws PrefixDeclarationException:
 {
     Literal l = null;
 }
 {
-    l = positiveLiteral(itComesFrom) { return l; }
-|   l = negativeLiteral(itComesFrom) { return l; }
+    l = positiveLiteral(context) { return l; }
+|   l = negativeLiteral(context) { return l; }
 }
 
-PositiveLiteral positiveLiteral(int itComesFrom) throws PrefixDeclarationException:
+PositiveLiteral positiveLiteral(FormulaContext context) throws PrefixDeclarationException:
 {
     Token t;
     List < Term > terms;
     String predicateName;
 }
 {
-    predicateName = predicateName() < LPAREN > terms = listOfTerms(itComesFrom) < RPAREN >
+    predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN >
     { return Expressions.makePositiveLiteral(predicateName, terms); }
 }
 
-NegativeLiteral negativeLiteral(int itComesFrom) throws PrefixDeclarationException:
+NegativeLiteral negativeLiteral(FormulaContext context) throws PrefixDeclarationException:
 {
     List < Term > terms;
     String predicateName;
 }
 {
-    < TILDE > predicateName = predicateName() < LPAREN > terms = listOfTerms(itComesFrom) < RPAREN >
+    < TILDE > predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN >
     { return Expressions.makeNegativeLiteral(predicateName, terms); }
 }
 
-List < Term > listOfTerms(int itComesFrom) throws PrefixDeclarationException:
+List < Term > listOfTerms(FormulaContext context) throws PrefixDeclarationException:
 {
     Term t;
     List < Term > list = new ArrayList < Term > ();
 }
 {
-    t = term(itComesFrom)             { list.add(t); }
-    ( < COMMA > t = term(itComesFrom) { list.add(t); } )*
+    t = term(context)             { list.add(t); }
+    ( < COMMA > t = term(context) { list.add(t); } )*
     { return list; }
 }
 
@@ -206,7 +193,7 @@ String predicateName() throws PrefixDeclarationException:
 // 0 if the variable does not come from a rule
 // 1 if the variable comes from the head of a rule
 // 2 if the variable comes from the body of a rule
-Term term(int itComesFrom) throws PrefixDeclarationException:
+Term term(FormulaContext context) throws PrefixDeclarationException:
 {
     Token t;
     String s;
@@ -220,18 +207,18 @@ Term term(int itComesFrom) throws PrefixDeclarationException:
 |   t = < UNIVAR >
     {
         s = t.image.substring(1);
-        if (itComesFrom == 1)
+        if (context == FormulaContext.HEAD)
             headUniVars.add(s);
-        if (itComesFrom == 2)
+        else if (context == FormulaContext.BODY)
             bodyVars.add(s);
         return Expressions.makeVariable(t.image.substring(1));
     }
 |   t = < EXIVAR >
     {
         s = t.image.substring(1);
-        if (itComesFrom == 1)
+        if (context == FormulaContext.HEAD)
             headExiVars.add(s);
-        if (itComesFrom == 2)
+        if (context == FormulaContext.BODY)
             throw new ParseException("Existentialy quantified variables can not appear in the body. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
         return Expressions.makeVariable(t.image.substring(1));
     }

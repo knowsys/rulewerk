@@ -22,6 +22,7 @@ package org.semanticweb.vlog4j.syntax.parser;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -47,14 +48,47 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  */
 public class RuleParserBase {
 	final protected PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
+
 	final protected List<Rule> rules = new ArrayList<>();
 	final protected List<PositiveLiteral> facts = new ArrayList<>();
 	final protected List<PositiveLiteral> queries = new ArrayList<>();
 
+	/**
+	 * "Local" variable to remember (universal) body variables during parsing.
+	 */
+	final protected HashSet<String> bodyVars = new HashSet<String>();
+	/**
+	 * "Local" variable to remember existential head variables during parsing.
+	 */
+	final protected HashSet<String> headExiVars = new HashSet<String>();;
+	/**
+	 * "Local" variable to remember universal head variables during parsing.
+	 */
+	final protected HashSet<String> headUniVars = new HashSet<String>();;
+
+	/**
+	 * Defines the context for parsing sub-formulas.
+	 * 
+	 * @author Markus Kroetzsch
+	 *
+	 */
+	protected enum FormulaContext {
+		/**
+		 * Formula is to be interpreted in the context of a rule head (positive
+		 * occurrence).
+		 */
+		HEAD,
+		/**
+		 * Formula is to be interpreted in the context of a rule body (negative
+		 * occurrence).
+		 */
+		BODY
+	}
+
 	protected Constant createBooleanLiteral(String lexicalForm) {
 		// lexicalForm is one of ['true' or 'false']
 		// we remove the quotes and add data type
-		lexicalForm = lexicalForm.substring(1,lexicalForm.length()-1);
+		lexicalForm = lexicalForm.substring(1, lexicalForm.length() - 1);
 		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_BOOLEAN + ">");
 	}
 
@@ -175,6 +209,14 @@ public class RuleParserBase {
 		return ret + "^^<http://www.w3.org/2001/XMLSchema#string>";
 	}
 
+	/**
+	 * Reset the local set variables used when parsing a rule.
+	 */
+	protected void resetVariableSets() {
+		this.bodyVars.clear();
+		this.headExiVars.clear();
+		this.headUniVars.clear();
+	}
 
 	public List<Rule> getRules() {
 		return rules;

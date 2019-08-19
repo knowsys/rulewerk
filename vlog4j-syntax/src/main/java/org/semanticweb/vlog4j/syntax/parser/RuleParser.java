@@ -28,6 +28,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.parser.implementation.javacc.JavaCCRuleParser;
 import org.semanticweb.vlog4j.parser.implementation.javacc.ParseException;
+import org.semanticweb.vlog4j.parser.implementation.javacc.TokenMgrError;
 import org.semanticweb.vlog4j.syntax.common.PrefixDeclarationException;
 
 /**
@@ -46,7 +47,7 @@ public class RuleParser {
 		parser = new JavaCCRuleParser(stream, encoding);
 		doParse();
 	}
-	
+
 	public void parse(InputStream stream) throws ParsingException {
 		parse(stream, "UTF-8");
 	}
@@ -59,7 +60,7 @@ public class RuleParser {
 	void doParse() throws ParsingException {
 		try {
 			parser.parse();
-		} catch (ParseException | PrefixDeclarationException e) {
+		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
 			throw new ParsingException(e.getMessage(), e);
 		}
 	}

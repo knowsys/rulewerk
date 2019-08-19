@@ -117,6 +117,20 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 	}
 
+	@Test(expected = ParsingException.class)
+	public void testNoUniversalLiterals() throws ParsingException {
+		String input = "p(?X) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testNoExistentialLiterals() throws ParsingException {
+		String input = "p(!X) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+
 	@Test
 	public void testSimpleRule() throws ParsingException {
 		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- p(?X,c), p(?X,?Z) . ";
@@ -164,6 +178,13 @@ public class RuleParserTest {
 	}
 
 	@Test(expected = ParsingException.class)
+	public void testNoBodyExistential() throws ParsingException {
+		String input = "p(?X) :- q(?X,!Y) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+
+	@Test(expected = ParsingException.class)
 	public void testNoDollarVariables() throws ParsingException {
 		String input = "p($X) :- q($X) .";
 		RuleParser ruleParser = new RuleParser();
@@ -175,7 +196,8 @@ public class RuleParserTest {
 		String input = "p('true') .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("true^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
+		PositiveLiteral trueLiteral = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("true^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
 		assertEquals(Arrays.asList(trueLiteral), ruleParser.getFacts());
 	}
 
@@ -184,7 +206,8 @@ public class RuleParserTest {
 		String input = "p('false') .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral falseLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("false^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
+		PositiveLiteral falseLiteral = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("false^^<" + PrefixDeclarations.XSD_BOOLEAN + ">"));
 		assertEquals(Arrays.asList(falseLiteral), ruleParser.getFacts());
 	}
 
@@ -193,7 +216,8 @@ public class RuleParserTest {
 		String input = "p(42) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("42^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
+		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("42^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
 		assertEquals(Arrays.asList(integerLiteral), ruleParser.getFacts());
 	}
 
@@ -202,7 +226,8 @@ public class RuleParserTest {
 		String input = "@prefix xsd: <" + PrefixDeclarations.XSD + "> . " + "p(\"42\"^^xsd:integer) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
+		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
 		assertEquals(Arrays.asList(integerLiteral), ruleParser.getFacts());
 	}
 
@@ -211,7 +236,8 @@ public class RuleParserTest {
 		String input = "p(\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + "> ) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
+		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
 		assertEquals(Arrays.asList(integerLiteral), ruleParser.getFacts());
 	}
 
@@ -220,7 +246,8 @@ public class RuleParserTest {
 		String input = "p(-5.0) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral decimalLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("-5.0^^<" + PrefixDeclarations.XSD_DECIMAL + ">"));
+		PositiveLiteral decimalLiteral = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("-5.0^^<" + PrefixDeclarations.XSD_DECIMAL + ">"));
 		assertEquals(Arrays.asList(decimalLiteral), ruleParser.getFacts());
 	}
 
@@ -229,7 +256,8 @@ public class RuleParserTest {
 		String input = "p(4.2E9) .";
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
-		PositiveLiteral doubleLiteral = Expressions.makePositiveLiteral("p", Expressions.makeConstant("4.2E9^^<" + PrefixDeclarations.XSD_DOUBLE + ">"));
+		PositiveLiteral doubleLiteral = Expressions.makePositiveLiteral("p",
+				Expressions.makeConstant("4.2E9^^<" + PrefixDeclarations.XSD_DOUBLE + ">"));
 		assertEquals(Arrays.asList(doubleLiteral), ruleParser.getFacts());
 	}
 
@@ -239,6 +267,13 @@ public class RuleParserTest {
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
+	}
+	
+	@Test(expected = ParsingException.class)
+	public void testIncompleteStringLiteral() throws ParsingException {
+		String input = "p(\"abc) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
 	}
 
 	@Test
@@ -271,6 +306,13 @@ public class RuleParserTest {
 				Expressions.makeConstant("\"line 1\n\nline 2\nline 3\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
 		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
 	}
+	
+	@Test(expected = ParsingException.class)
+	public void testIncompleteStringLiteralMultiLine() throws ParsingException {
+		String input = "p('''abc\ndef'') .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
 
 	@Test
 	public void testFullLiteral() throws ParsingException {
@@ -282,7 +324,7 @@ public class RuleParserTest {
 
 	@Test
 	public void testUnicodeLiteral() throws ParsingException {
-		String input = "p(\"\\u0061\\u0062\\u0063\") ." ; //"abc"
+		String input = "p(\"\\u0061\\u0062\\u0063\") ."; // "abc"
 		RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(input);
 		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
