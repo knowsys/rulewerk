@@ -6,14 +6,14 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
@@ -146,7 +146,7 @@ public interface Reasoner extends AutoCloseable {
 
 	/**
 	 * Loaded {@link Rule}s can be re-written internally to an equivalent set of
-	 * rules, according to given {@code ruleRewritingStrategy}. If no staregy is
+	 * rules, according to given {@code ruleRewritingStrategy}. If no strategy is
 	 * set, the default value is {@link RuleRewriteStrategy#NONE}, meaning that the
 	 * rules will not be re-written.
 	 *

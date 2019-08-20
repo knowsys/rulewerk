@@ -36,13 +36,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 /**
  * Test case ensuring {@link Reasoner#setReasoningTimeout(Integer)} works as expected and terminates reasoning after the given {@link #timeout}.

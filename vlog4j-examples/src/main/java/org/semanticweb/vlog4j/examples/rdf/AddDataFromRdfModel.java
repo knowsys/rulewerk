@@ -29,7 +29,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.openrdf.model.Model;
 import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.rio.RDFFormat;
@@ -38,19 +37,20 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.rdf.RdfModelConverter;
+import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
  * This example shows how <b>vlog4j-rdf</b> library's utility class
@@ -65,6 +65,8 @@ public class AddDataFromRdfModel {
 	public static void main(final String[] args) throws IOException, RDFParseException, RDFHandlerException,
 			URISyntaxException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 
+		ExamplesUtils.configureLogging();
+
 		/*
 		 * Local file containing metadata of publications from ISWC'16 conference, in
 		 * RDF/XML format.
@@ -72,15 +74,15 @@ public class AddDataFromRdfModel {
 		final File rdfXMLResourceFile = new File(ExamplesUtils.INPUT_FOLDER + "rdf/iswc-2016-complete-alignments.rdf");
 		final FileInputStream inputStreamISWC2016 = new FileInputStream(rdfXMLResourceFile);
 		/* An RDF Model is obtained from parsing the RDF/XML resource. */
-		final Model rdfModelISWC2016 = parseRDFResource(inputStreamISWC2016, rdfXMLResourceFile.toURI(),
+		final Model rdfModelISWC2016 = parseRdfResource(inputStreamISWC2016, rdfXMLResourceFile.toURI(),
 				RDFFormat.RDFXML);
-
+		
 		/*
 		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
 		final Set<PositiveLiteral> tripleFactsISWC2016 = RdfModelConverter.rdfModelToPositiveLiterals(rdfModelISWC2016);
-		System.out.println("Example triple fact from iswc-2016");
+		System.out.println("Example triple fact from iswc-2016 dataset:");
 		System.out.println(" - " + tripleFactsISWC2016.iterator().next());
 
 		/*
@@ -91,7 +93,7 @@ public class AddDataFromRdfModel {
 				"http://www.scholarlydata.org/dumps/conferences/alignments/iswc-2017-complete-alignments.ttl");
 		final InputStream inputStreamISWC2017 = turtleResourceURL.openStream();
 		/* An RDF Model is obtained from parsing the TURTLE resource. */
-		final Model rdfModelISWC2017 = parseRDFResource(inputStreamISWC2017, turtleResourceURL.toURI(),
+		final Model rdfModelISWC2017 = parseRdfResource(inputStreamISWC2017, turtleResourceURL.toURI(),
 				RDFFormat.TURTLE);
 
 		/*
@@ -99,7 +101,7 @@ public class AddDataFromRdfModel {
 		 * the ternary predicate "TRIPLE".
 		 */
 		final Set<PositiveLiteral> tripleFactsISWC2017 = RdfModelConverter.rdfModelToPositiveLiterals(rdfModelISWC2017);
-		System.out.println("Example triple fact from iswc-2017");
+		System.out.println("Example triple fact from iswc-2017 dataset:");
 		System.out.println(" - " + tripleFactsISWC2017.iterator().next());
 
 		/**
@@ -109,41 +111,24 @@ public class AddDataFromRdfModel {
 		 */
 
 		/* Predicate names of the triples found in both RDF files. */
-		final Constant constHasAffiiation = Expressions
-				.makeConstant("https://w3id.org/scholarlydata/ontology/conference-ontology.owl#hasAffiliation");
-		final Constant constWithOrganization = Expressions
-				.makeConstant("https://w3id.org/scholarlydata/ontology/conference-ontology.owl#withOrganisation");
-		final Constant constName = Expressions
-				.makeConstant("https://w3id.org/scholarlydata/ontology/conference-ontology.owl#name");
-
-		final Variable varOganization = Expressions.makeVariable("organization");
-		final Variable varOganizationName = Expressions.makeVariable("organizationName");
 		final Variable varPerson = Expressions.makeVariable("person");
-		final Variable varAfiliation = Expressions.makeVariable("affiliation");
-
-		/* Patterns for facts extracted from RDF triples. */
-		final PositiveLiteral personHasAffiliation = Expressions.makePositiveLiteral(
-				RdfModelConverter.RDF_TRIPLE_PREDICATE, varPerson, constHasAffiiation, varAfiliation);
-		final PositiveLiteral affiliationWithOrganization = Expressions.makePositiveLiteral(
-				RdfModelConverter.RDF_TRIPLE_PREDICATE, varAfiliation, constWithOrganization, varOganization);
-		final PositiveLiteral organizationHasName = Expressions.makePositiveLiteral(
-				RdfModelConverter.RDF_TRIPLE_PREDICATE, varOganization, constName, varOganizationName);
-
-		/*
-		 * We create a Rule that retrieves pairs of persons and their organization name,
-		 * from facts extracted from RDF triples.
-		 */
 		final Predicate predicateHasOrganizationName = Expressions.makePredicate("hasOrganizationName", 2);
-		final PositiveLiteral creatorOrganizationName = Expressions.makePositiveLiteral(predicateHasOrganizationName,
-				varPerson, varOganizationName);
 
 		/*
-		 * hasOrganizationName(?person, ?organizationName) :- TRIPLE(?person,
-		 * <hasAffiliation>, ?affiliation), TRIPLE(?affiliation, <withOrganisation>,
-		 * ?organization), TRIPLE(?organization, <name>, ?organizationName) .
+		 * Rule that retrieves pairs of persons and their organization name:
 		 */
-		final Rule organizationRule = Expressions.makeRule(creatorOrganizationName, personHasAffiliation,
-				affiliationWithOrganization, organizationHasName);
+		final String rules = "%%%% We specify the rules syntactically for convenience %%%\n"
+				+ "@prefix cnf: <https://w3id.org/scholarlydata/ontology/conference-ontology.owl#> ."
+				+ "hasOrganizationName(?Person, ?OrgName) :- "
+				+ "  TRIPLE(?Person, cnf:hasAffiliation, ?Aff), TRIPLE(?Aff, cnf:withOrganisation, ?Org),"
+				+ "  TRIPLE(?Org, cnf:name, ?OrgName) .";
+		RuleParser ruleParser = new RuleParser();
+		try {
+			ruleParser.parse(rules);
+		} catch (ParsingException e) {
+			System.out.println("Failed to parse rules: " + e.getMessage());
+			return;
+		}
 
 		try (final Reasoner reasoner = Reasoner.getInstance();) {
 			/*
@@ -156,20 +141,20 @@ public class AddDataFromRdfModel {
 			 * The rule that maps people to their organization name based on facts extracted
 			 * from RDF triples is added to the Reasoner's knowledge base.
 			 */
-			reasoner.addRules(organizationRule);
+			reasoner.addRules(ruleParser.getRules());
 
 			reasoner.load();
 			reasoner.reason();
 
 			/* We query for persons whose organization name is "TU Dresden" . */
-			final Constant constantTuDresdenOrganization = Expressions.makeConstant("\"TU Dresden\"");
+			final Constant constantTuDresden = Expressions.makeDatatypeConstant("TU Dresden",
+					"http://www.w3.org/2001/XMLSchema#string");
 			/* hasOrganizationName(?person, "TU Dresden") */
-			@NonNull
 			final PositiveLiteral queryTUDresdenParticipantsAtISWC = Expressions
-					.makePositiveLiteral(predicateHasOrganizationName, varPerson, constantTuDresdenOrganization);
+					.makePositiveLiteral(predicateHasOrganizationName, varPerson, constantTuDresden);
 
-			System.out.println("Participants at ISWC'16 and '17 from Organization 'TU Dresden':");
-			System.out.println("( Answers to query " + queryTUDresdenParticipantsAtISWC + " )");
+			System.out.println("\nParticipants at ISWC'16 and '17 from Organization 'TU Dresden':");
+			System.out.println("(Answers to query " + queryTUDresdenParticipantsAtISWC + ")\n");
 			try (QueryResultIterator queryResultIterator = reasoner.answerQuery(queryTUDresdenParticipantsAtISWC,
 					false)) {
 				queryResultIterator.forEachRemaining(answer -> System.out
@@ -198,10 +183,9 @@ public class AddDataFromRdfModel {
 	 * @throws RDFHandlerException If the configured statement handler has
 	 *                             encountered an unrecoverable error.
 	 */
-	private static Model parseRDFResource(final InputStream inputStream, final URI baseURI, final RDFFormat rdfFormat)
+	private static Model parseRdfResource(final InputStream inputStream, final URI baseURI, final RDFFormat rdfFormat)
 			throws IOException, RDFParseException, RDFHandlerException {
 		final Model model = new LinkedHashModel();
-
 		final RDFParser rdfParser = Rio.createParser(rdfFormat);
 		rdfParser.setRDFHandler(new StatementCollector(model));
 		rdfParser.parse(inputStream, baseURI.toString());
