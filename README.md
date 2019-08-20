@@ -22,6 +22,7 @@ The current release of VLog4j is version 0.3.0. The easiest way of using the lib
 You need to use Java 1.8 or above. Available modules include:
 
 * **vlog4j-core**: essential data models for rules and facts, and essential reasoner functionality
+* **vlog4j-parser**: support for processing knowledge bases in VLog4j syntax
 * **vlog4j-graal**: support for converting rules, facts and queries from [Graal](http://graphik-team.github.io/graal/) API objects and [DLGP](http://graphik-team.github.io/graal/doc/dlgp) files
 * **vlog4j-rdf**: support for reading from RDF files
 * **vlog4j-owlapi**: support for converting rules from OWL ontology, loaded with the OWL API
@@ -36,3 +37,9 @@ Documentation
 
 * The module **vlog4j-examples** includes short example programs that demonstrate some common use cases
 * [JavaDoc](https://knowsys.github.io/vlog4j/) is available online and through the Maven packages.
+
+Development
+-----------
+
+* Pull requests are welcome.
+* Users of Eclipse should install the javacc plugin to generate the parser sources. After installing the plugin, right-click on the file `JavaCCParser.jj` in `org.semanticweb.vlog4j.parser.javacc`, and select "compile with javacc". This step needs to be repeated when the file changes. 
