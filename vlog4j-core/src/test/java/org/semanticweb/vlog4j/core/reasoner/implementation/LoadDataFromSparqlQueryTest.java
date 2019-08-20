@@ -48,7 +48,7 @@ public class LoadDataFromSparqlQueryTest {
 	 * @throws IOException
 	 * @throws IncompatiblePredicateArityException
 	 */
-	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
+	//@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
 	public void testSimpleSparqlQuery()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
