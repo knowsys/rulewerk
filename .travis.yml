@@ -18,8 +18,10 @@ before_install:
  ## Uncomment line below to build unreleased snapshots of karmaresearch/vlog into vlog4j-base jar
   - sh ./build-vlog-library.sh
 
+install: mvn install $OPTIONS -DskipTests=true
+
 after_success:
-  - mvn clean cobertura:cobertura coveralls:cobertura
+  - mvn clean cobertura:cobertura coveralls:report
 
 dist: trusty
 sudo: false

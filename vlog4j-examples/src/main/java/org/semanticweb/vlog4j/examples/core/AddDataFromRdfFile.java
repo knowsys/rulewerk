@@ -1,9 +1,5 @@
 package org.semanticweb.vlog4j.examples.core;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
-
 /*-
  * #%L
  * VLog4j Examples
@@ -24,27 +20,21 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeP
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-
-import java.io.File;
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.apache.commons.lang3.tuple.Pair;
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
+import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
  * This example shows how facts can be imported from files in the RDF N-Triples
@@ -63,94 +53,64 @@ import org.semanticweb.vlog4j.examples.ExamplesUtils;
  * such an {@code .nt} file.
  * <p>
  * For exporting, a path to the output {@code .csv} file must be specified.
+ * <p>
+ * Exception handling is omitted for simplicity.
  *
  * @author Christian Lewe
+ * @author Markus Kroetzsch
  *
  */
 public class AddDataFromRdfFile {
 
-	public static void main(final String[] args)
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public static void main(final String[] args) throws EdbIdbSeparationException, IOException, ReasonerStateException,
+			IncompatiblePredicateArityException, ParsingException {
+		ExamplesUtils.configureLogging();
 
-		/* 1. Instantiating entities and rules. */
-		final Predicate triplesEDB = makePredicate("triplesEDB", 3);
-		final Predicate triplesIDB = makePredicate("triplesIDB", 3);
+		/* 1. Prepare rules and create some related vocabulary objects used later. */
 
-		final Constant hasPartPredicate = makeConstant("<https://example.org/hasPart>");
-		final Constant isPartOfPredicate = makeConstant("<https://example.org/isPartOf>");
-		final Constant hasTypePredicate = makeConstant("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>");
-		final Constant bicycleObject = makeConstant("<https://example.org/bicycle>");
-		final Constant wheelObject = makeConstant("<https://example.org/wheel>");
+		final String rules = "" // first define some namespaces and abbreviations:
+				+ "@prefix ex: <https://example.org/> ."
+				+ "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
+				// specify data sources:
+				+ "@source triplesEDB(3) : load-rdf(\"" + ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt.gz\") ."
+				// rule for loading all triples from file:
+				+ "triplesIDB(?S, ?P, ?O) :- triplesEDB(?S, ?P, ?O) ."
+				// every bicycle has some part that is a wheel:
+				+ "triplesIDB(?S, ex:hasPart, !X), triplesIDB(!X, rdf:type, ex:wheel) :- triplesIDB(?S, rdf:type, ex:bicycle) ."
+				// every wheel is part of some bicycle:
+				+ "triplesIDB(?S, ex:isPartOf, !X) :- triplesIDB(?S, rdf:type, ex:wheel) ."
+				// hasPart and isPartOf are mutually inverse relations:
+				+ "triplesIDB(?S, ex:isPartOf, ?O) :- triplesIDB(?O, ex:hasPart, ?S) ."
+				+ "triplesIDB(?S, ex:hasPart, ?O) :- triplesIDB(?O, ex:isPartOf, ?S) .";
 
-		final Variable x = makeVariable("x");
-		final Variable s = makeVariable("s");
-		final Variable p = makeVariable("p");
-		final Variable o = makeVariable("o");
-
-		/*
-		 * We will write <~/someName> instead of <https://example.org/someName> and
-		 * <~#someName> instead of <www.w3.org/1999/02/22-rdf-syntax-ns#someName>.
-		 *
-		 * triplesIDB(?s, ?p, ?o) :- triplesEDB(?s, ?p, ?o) .
-		 */
-		final PositiveLiteral factIDB = makePositiveLiteral(triplesIDB, s, p, o);
-		final PositiveLiteral factEDB = makePositiveLiteral(triplesEDB, s, p, o);
-		final Rule rule1 = makeRule(factIDB, factEDB);
-
-		/*
-		 * exists x. triplesIDB(?s, <~/hasPart>, !x), triplesIDB(!x, <~#type>,
-		 * <~/wheel>) :- triplesIDB(?s, <~#type>, <~/bicycle>) .
-		 */
-		final PositiveLiteral existsHasPartIDB = makePositiveLiteral(triplesIDB, s, hasPartPredicate, x);
-		final PositiveLiteral existsWheelIDB = makePositiveLiteral(triplesIDB, x, hasTypePredicate, wheelObject);
-		final PositiveLiteral bicycleIDB = makePositiveLiteral(triplesIDB, s, hasTypePredicate, bicycleObject);
-		final Rule rule2 = makeRule(makePositiveConjunction(existsHasPartIDB, existsWheelIDB),
-				makeConjunction(bicycleIDB));
-
-		/*
-		 * exists x. triplesIDB(?s, <~/isPartOf>, !x) :- triplesIDB(?s, <~#type>,
-		 * <~/wheel>) .
-		 */
-		final PositiveLiteral existsIsPartOfIDB = makePositiveLiteral(triplesIDB, s, isPartOfPredicate, x);
-		final PositiveLiteral wheelIDB = makePositiveLiteral(triplesIDB, s, hasTypePredicate, wheelObject);
-		final Rule rule3 = makeRule(makePositiveConjunction(existsIsPartOfIDB), makeConjunction(wheelIDB));
-
-		/*
-		 * triplesIDB(?s, <~/isPartOf>, ?o) :- triplesIDB(?o, <~/hasPart>, ?s) .
-		 */
-		final PositiveLiteral isPartOfIDB = makePositiveLiteral(triplesIDB, s, isPartOfPredicate, o);
-		final PositiveLiteral hasPartIDBReversed = makePositiveLiteral(triplesIDB, o, hasPartPredicate, s);
-		final Rule rule4 = makeRule(isPartOfIDB, hasPartIDBReversed);
-
-		/*
-		 * triplesIDB(?s, <~/hasPart>, ?o) :- triplesIDB(?o, <~/isPartOf>, ?s) .
-		 */
-		final PositiveLiteral hasPartIDB = makePositiveLiteral(triplesIDB, s, hasPartPredicate, o);
-		final PositiveLiteral isPartOfIDBReversed = makePositiveLiteral(triplesIDB, o, isPartOfPredicate, s);
-		final Rule rule5 = makeRule(hasPartIDB, isPartOfIDBReversed);
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(rules);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
+
 			/*
 			 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
 			 * to close the reasoner automatically.
 			 */
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
-			kb.addRules(rule1, rule2, rule3, rule4, rule5);
-
+			kb.addRules(ruleParser.getRules());
+			
 			/* Importing {@code .nt.gz} file as data source. */
-			final DataSource triplesEDBDataSource = new RdfFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt.gz"));
-			kb.addFactsFromDataSource(triplesEDB, triplesEDBDataSource);
-
+			for (Pair<Predicate, DataSource> pair : ruleParser.getDataSources()) {
+				reasoner.addFactsFromDataSource(pair.getLeft(), pair.getRight());
+			}
+			
 			reasoner.load();
+
 			System.out.println("Before materialisation:");
-			/* triplesEDB(?s, <~/hasPart>, ?o) */
-			final PositiveLiteral hasPartEDB = makePositiveLiteral(triplesEDB, s, hasPartPredicate, o);
-			ExamplesUtils.printOutQueryAnswers(hasPartEDB, reasoner);
+
+			ExamplesUtils.printOutQueryAnswers("triplesEDB(?X, <https://example.org/hasPart>, ?Y)", reasoner);
 
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
+			final PositiveLiteral hasPartIDB = ruleParser
+					.parsePositiveLiteral("triplesIDB(?X, <https://example.org/hasPart>, ?Y)");
 			ExamplesUtils.printOutQueryAnswers(hasPartIDB, reasoner);
 
 			/* Exporting query answers to {@code .csv} files. */
@@ -159,9 +119,8 @@ public class AddDataFromRdfFile {
 			reasoner.exportQueryAnswersToCsv(hasPartIDB,
 					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
 
-			final Constant redBikeSubject = makeConstant("<https://example.org/redBike>");
-			final PositiveLiteral existsHasPartRedBike = makePositiveLiteral(triplesIDB, redBikeSubject,
-					hasPartPredicate, x);
+			final PositiveLiteral existsHasPartRedBike = ruleParser.parsePositiveLiteral(
+					"triplesIDB(<https://example.org/redBike>, <https://example.org/hasPart>, ?X)");
 			reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
 					ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);
 		}

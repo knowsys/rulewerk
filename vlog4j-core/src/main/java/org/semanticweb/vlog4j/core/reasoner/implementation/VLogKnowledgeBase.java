@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -39,7 +40,6 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
 
 public class VLogKnowledgeBase extends KnowledgeBase {
 
@@ -63,10 +63,26 @@ public class VLogKnowledgeBase extends KnowledgeBase {
 		// TODO notify listeners with the diff
 	}
 
+	// @Override
+	// public void addRules(final List<Rule> rules) throws ReasonerStateException {
+	// if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
+	// throw new ReasonerStateException(this.reasonerState,
+	// "Rules cannot be added after the reasoner has been loaded! Call reset() to
+	// undo loading and reasoning.");
+	// }
+	// Validate.noNullElements(rules, "Null rules are not alowed! The list contains
+	// a null at position [%d].");
+	// this.rules.addAll(new ArrayList<>(rules));
+	// if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
+	// LOGGER.warn("Adding rules to a closed reasoner.");
+	// }
+	// }
+
 	@Override
 	public List<Rule> getRules() {
 		return Collections.unmodifiableList(this.rules);
 	}
+
 
 	@Override
 	public void addFacts(final PositiveLiteral... facts) {

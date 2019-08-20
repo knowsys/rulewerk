@@ -40,7 +40,13 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 */
 	@Override
 	public karmaresearch.vlog.Term visit(Constant term) {
-		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
+		if (term.getName().startsWith("\"")) { // keep datatype literal strings unchanged
+			return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
+		} else if (term.getName().contains(":")) { // enclose IRIs with < >
+			return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, "<" + term.getName() + ">");
+		} else { // keep relative IRIs unchanged
+			return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
+		}
 	}
 
 	/**

@@ -36,15 +36,16 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
+
 
 /**
  * Test case ensuring {@link Reasoner#setReasoningTimeout(Integer)} works as
@@ -119,57 +120,57 @@ public class ReasonerTimeoutTest {
 
 	@Before
 	public void setUp() throws ReasonerStateException {
-		reasoner = new VLogReasoner(kb);
+		this.reasoner = new VLogReasoner(kb);
 	}
 
 	@Test
 	public void skolem()
 			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
-		reasoner.setReasoningTimeout(timeout);
-		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
+		this.reasoner.setReasoningTimeout(timeout);
+		this.reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 
-		reasoner.load();
+		this.reasoner.load();
 
-		reasoner.reason();
+		this.reasoner.reason();
 	}
 
 	@Test
 	public void restricted()
 			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
-		reasoner.setReasoningTimeout(timeout);
-		reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
+		this.reasoner.setReasoningTimeout(timeout);
+		this.reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 
-		reasoner.load();
+		this.reasoner.load();
 
-		reasoner.reason();
+		this.reasoner.reason();
 	}
 
 	@Test
 	public void skolemAfterLoad()
 			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
-		reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
+		this.reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 
-		reasoner.load();
+		this.reasoner.load();
 
-		reasoner.setReasoningTimeout(timeout);
+		this.reasoner.setReasoningTimeout(timeout);
 
-		reasoner.reason();
+		this.reasoner.reason();
 	}
 
 	@Test
 	public void restrictedAfterLoad()
 			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
-		reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
+		this.reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 
-		reasoner.load();
+		this.reasoner.load();
 
-		reasoner.setReasoningTimeout(timeout);
+		this.reasoner.setReasoningTimeout(timeout);
 
-		reasoner.reason();
+		this.reasoner.reason();
 	}
 
 	@After
 	public void tearDown() {
-		reasoner.close();
+		this.reasoner.close();
 	}
 }

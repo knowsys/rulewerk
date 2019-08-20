@@ -6,6 +6,9 @@ import java.util.Observable;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
@@ -18,9 +21,6 @@ import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -250,12 +250,14 @@ public class VLogReasoner implements Reasoner {
 		Validate.notNull(query, "Query atom must not be null!");
 
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
+
 		TermQueryResultIterator stringQueryResultIterator;
 		try {
 			stringQueryResultIterator = this.vLog.query(vLogAtom, true, filterBlanks);
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
+
 		return new QueryResultIterator(stringQueryResultIterator, this.materialisationState);
 	}
 

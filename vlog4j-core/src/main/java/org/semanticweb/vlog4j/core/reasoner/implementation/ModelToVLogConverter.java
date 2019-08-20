@@ -81,8 +81,8 @@ final class ModelToVLogConverter {
 		final String[] vLogFactTuple = new String[terms.size()];
 		int i = 0;
 		for (final Term term : terms) {
-			final String vLogTupleTerm = term.getName();
-			vLogFactTuple[i] = vLogTupleTerm;
+			final karmaresearch.vlog.Term vLogTupleTerm = toVLogTerm(term);
+			vLogFactTuple[i] = vLogTupleTerm.getName();
 			i++;
 		}
 		return vLogFactTuple;

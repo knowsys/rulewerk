@@ -20,30 +20,24 @@ package org.semanticweb.vlog4j.examples;
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
+import org.apache.commons.lang3.tuple.Pair;
+import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.LogLevel;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
-import org.semanticweb.vlog4j.graal.GraalToVLog4JModelConverter;
-
-import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
+import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
  * This example reasons about human diseases, based on information from the
@@ -57,89 +51,63 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  */
 public class DoidExample {
 
-	public static void main(final String[] args)
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-
+	public static void main(final String[] args) throws IOException {
 		ExamplesUtils.configureLogging();
 
-		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
+		// <<<<<<< HEAD
+		// final URL wikidataSparqlEndpoint = new
+		// URL("https://query.wikidata.org/sparql");
 
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 
-		/* Load rules from DLGP file */
-		try (final DlgpParser parser = new DlgpParser(
-				new File(ExamplesUtils.INPUT_FOLDER + "/graal", "doid-example.dlgp"))) {
-			while (parser.hasNext()) {
-				final Object object = parser.next();
-				if (object instanceof fr.lirmm.graphik.graal.api.core.Rule) {
-					kb.addRules(GraalToVLog4JModelConverter.convertRule((fr.lirmm.graphik.graal.api.core.Rule) object));
+		try (Reasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER + "vlog.log");
+			reasoner.setLogLevel(LogLevel.DEBUG);
+
+			/* Configure rules */
+			RuleParser ruleParser = new RuleParser();
+			try {
+				ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/doid.rls"));
+			} catch (ParsingException e) {
+				System.out.println("Failed to parse rules: " + e.getMessage());
+				return;
+			}
+			for (Pair<Predicate, DataSource> pair : ruleParser.getDataSources()) {
+				kb.addFactsFromDataSource(pair.getLeft(), pair.getRight());
+			}
+			kb.addRules(ruleParser.getRules());
+			System.out.println("Rules used in this example:");
+			kb.getRules().forEach(System.out::println);
+			System.out.println("");
+
+			/* Initialise reasoner and compute inferences */
+			System.out.print("Initialising rules and data sources ... ");
+			reasoner.load();
+			System.out.println("completed.");
+
+			System.out.print("Reasoning (including SPARQL query answering) ... ");
+			reasoner.reason();
+			System.out.println("completed.");
+
+			/* Execute some queries */
+			List<String> queries = Arrays.asList("humansWhoDiedOfCancer(?X)", "humansWhoDiedOfNoncancer(?X)");
+			QueryResultIterator answers;
+			System.out.println("\nNumber of inferred tuples for selected query atoms:");
+			for (String queryString : queries) {
+				try {
+					PositiveLiteral query = ruleParser.parsePositiveLiteral(queryString);
+					answers = reasoner.answerQuery(query, true);
+					System.out.println("  " + query.toString() + ": " + ExamplesUtils.iteratorSize(answers));
+				} catch (ParsingException e) {
+					System.out.println("Failed to parse query: " + e.getMessage());
 				}
 			}
+
+			System.out.println("\nDone.");
+		} catch (VLog4jException e) {
+			System.out.println("The reasoner encountered a problem:" + e.getMessage());
+
 		}
-		/* Create additional rules with negated literals */
-		final Variable x = makeVariable("X");
-		final Variable y = makeVariable("Y");
-		final Variable z = makeVariable("Z");
-		// humansWhoDiedOfNoncancer(X):-deathCause(X,Y),diseaseId(Y,Z),~cancerDisease(Z)
-		final NegativeLiteral notCancerDisease = Expressions.makeNegativeLiteral("cancerDisease", z);
-		final PositiveLiteral diseaseId = Expressions.makePositiveLiteral("diseaseId", y, z);
-		final PositiveLiteral deathCause = Expressions.makePositiveLiteral("deathCause", x, y);
-		final PositiveLiteral humansWhoDiedOfNoncancer = Expressions.makePositiveLiteral("humansWhoDiedOfNoncancer", x);
-		kb.addRules(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
-				Expressions.makeConjunction(deathCause, diseaseId, notCancerDisease)));
-		// humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), ~hasDoid(Y)
-		final NegativeLiteral hasNotDoid = Expressions.makeNegativeLiteral("hasDoid", y);
-		kb.addRules(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
-				Expressions.makeConjunction(deathCause, hasNotDoid)));
-		/* Configure RDF data source */
-		final Predicate doidTriplePredicate = makePredicate("doidTriple", 3);
-		final DataSource doidDataSource = new RdfFileDataSource(new File(ExamplesUtils.INPUT_FOLDER + "doid.nt.gz"));
-		kb.addFactsFromDataSource(doidTriplePredicate, doidDataSource);
-
-		/* Configure SPARQL data sources */
-		final String sparqlHumansWithDisease = "?disease wdt:P699 ?doid .";
-		// (wdt:P669 = "Disease Ontology ID")
-		final DataSource diseasesDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint, "disease,doid",
-				sparqlHumansWithDisease);
-		final Predicate diseaseIdPredicate = Expressions.makePredicate("diseaseId", 2);
-		kb.addFactsFromDataSource(diseaseIdPredicate, diseasesDataSource);
-
-		final String sparqlRecentDeaths = "?human wdt:P31 wd:Q5; wdt:P570 ?deathDate . FILTER (YEAR(?deathDate) = 2018)";
-		// (wdt:P31 = "instance of"; wd:Q5 = "human", wdt:570 = "date of death")
-		final DataSource recentDeathsDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint, "human",
-				sparqlRecentDeaths);
-		final Predicate recentDeathsPredicate = Expressions.makePredicate("recentDeaths", 1);
-		kb.addFactsFromDataSource(recentDeathsPredicate, recentDeathsDataSource);
-
-		final String sparqlRecentDeathsCause = sparqlRecentDeaths + "?human wdt:P509 ?causeOfDeath . ";
-		// (wdt:P509 = "cause of death")
-		final DataSource recentDeathsCauseDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
-				"human,causeOfDeath", sparqlRecentDeathsCause);
-		final Predicate recentDeathsCausePredicate = Expressions.makePredicate("recentDeathsCause", 2);
-		kb.addFactsFromDataSource(recentDeathsCausePredicate, recentDeathsCauseDataSource);
-
-		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
-
-			System.out.println("Rules configured:\n--");
-			kb.getRules().forEach(System.out::println);
-			System.out.println("--");
-			reasoner.load();
-			System.out.println("Loading completed.");
-			System.out.println("Starting reasoning (including SPARQL query answering) ...");
-			reasoner.reason();
-			System.out.println("... reasoning completed.");
-
-			final PositiveLiteral humansWhoDiedOfCancer = Expressions.makePositiveLiteral("humansWhoDiedOfCancer", x);
-			final QueryResultIterator answersCancer = reasoner.answerQuery(humansWhoDiedOfCancer, true);
-			System.out.println(
-					"Humans in Wikidata who died in 2018 due to cancer: " + ExamplesUtils.iteratorSize(answersCancer));
-
-			final QueryResultIterator answersNoncancer = reasoner.answerQuery(humansWhoDiedOfNoncancer, true);
-			System.out.println("Humans in Wikidata who died in 2018 due to some other cause: "
-					+ ExamplesUtils.iteratorSize(answersNoncancer));
-			System.out.println("Done.");
-		}
-
 	}
 
 }

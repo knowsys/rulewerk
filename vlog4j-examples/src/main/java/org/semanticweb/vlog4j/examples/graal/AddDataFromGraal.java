@@ -24,12 +24,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.graal.GraalConjunctiveQueryToRule;
 import org.semanticweb.vlog4j.graal.GraalToVLog4JModelConverter;
@@ -129,7 +132,7 @@ public class AddDataFromGraal {
 		kb.addRules(convertedGraalConjunctiveQuery.getRule());
 		kb.addFacts(GraalToVLog4JModelConverter.convertAtoms(graalAtoms));
 
-		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
+		try (Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			System.out.println("Before materialisation:");
 			ExamplesUtils.printOutQueryAnswers(convertedGraalConjunctiveQuery.getQuery(), reasoner);

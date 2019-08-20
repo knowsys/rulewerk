@@ -23,6 +23,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeDatatypeConstant;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.File;
@@ -33,41 +34,53 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 import karmaresearch.vlog.EDBConfigurationException;
 
 public class LoadDataFromRdfFileTest {
 
 	private static final Predicate ternaryPredicate = Expressions.makePredicate("triple", 3);
-	private static final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(ternaryPredicate, makeVariable("s"), makeVariable("p"),
-			makeVariable("o"));
+	private static final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(ternaryPredicate,
+			makeVariable("s"), makeVariable("p"), makeVariable("o"));
 
 	@SuppressWarnings("unchecked")
 	private static final Set<List<Term>> expectedTernaryQueryResult = Sets.newSet(
-			Arrays.asList(makeConstant("<c1>"), makeConstant("<q>"), makeConstant("<c2>")),
-			Arrays.asList(makeConstant("<c1>"), makeConstant("<p>"), makeConstant("<c2>")));
+			Arrays.asList(makeConstant("http://example.org/c1"), makeConstant("http://example.org/p"),
+					makeConstant("http://example.org/c2")),
+			Arrays.asList(makeConstant("http://example.org/c1"), makeConstant("http://example.org/q"),
+					makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string")));
 
 	@Test
 	public void testLoadEmptyRdfFile()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		FileDataSourceTestUtils.testLoadEmptyFile(ternaryPredicate, queryAtom,
 				new RdfFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.nt")));
+	}
+
+	@Test
+	public void testLoadEmptyRdfFileGz()
+			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		FileDataSourceTestUtils.testLoadEmptyFile(ternaryPredicate, queryAtom,
 				new RdfFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.nt.gz")));
 	}
 
 	@Test
 	public void testLoadTernaryFactsFromRdfFile() throws ReasonerStateException, EdbIdbSeparationException,
-	EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
 		testLoadTernaryFactsFromSingleRdfDataSource(new RdfFileDataSource(
 				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.unzippedNtFileRoot + ".nt")));
+	}
+
+	@Test
+	public void testLoadTernaryFactsFromRdfFileGz() throws ReasonerStateException, EdbIdbSeparationException,
+			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
 		testLoadTernaryFactsFromSingleRdfDataSource(new RdfFileDataSource(
 				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.zippedNtFileRoot + ".nt.gz")));
 	}
@@ -105,8 +118,8 @@ public class LoadDataFromRdfFileTest {
 	@Test
 	public void testLoadRdfInvalidFormat()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final FileDataSource fileDataSource = new RdfFileDataSource(
-				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.invalidFormatNtFileNameRoot + ".nt"));
+		final FileDataSource fileDataSource = new RdfFileDataSource(new File(
+				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.invalidFormatNtFileNameRoot + ".nt"));
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addFactsFromDataSource(ternaryPredicate, fileDataSource);
 

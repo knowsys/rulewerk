@@ -26,6 +26,9 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
+import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -36,16 +39,14 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
+import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
 /**
  * This is a simple example of adding data from the result of a SPARQL query on
  * a remote database endpoint, using {@link SparqlQueryResultDataSource}. In
- * this example, we will query WikiData for titles of publications that have
+ * this example, we will query Wikidata for titles of publications that have
  * authors who have children together.
  * 
  * @author Irina Dragoste
@@ -78,6 +79,8 @@ public class AddDataFromSparqlQueryResults {
 	public static void main(final String[] args)
 			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
 
+		ExamplesUtils.configureLogging();
+
 		/*
 		 * The WikiData SPARQL query endpoint.
 		 */
@@ -106,7 +109,7 @@ public class AddDataFromSparqlQueryResults {
 				Arrays.asList(titleVariable, motherVariable, fatherVariable));
 
 		/*
-		 * We query WikiData with the SPARQL query composed of the query variables and
+		 * We query Wikidata with the SPARQL query composed of the query variables and
 		 * query body. The query result is a DataSource we will associate to a
 		 * predicate.
 		 */
@@ -118,32 +121,28 @@ public class AddDataFromSparqlQueryResults {
 		 * same arity as the query variables size. In this case, we have 3 query
 		 * variables (title, mother and father).
 		 */
-		final Predicate titleOfPublicationThatHasAuthorsWhoParentTheSameChild = Expressions
-				.makePredicate("publicationAndAuthorsWhoParentTheSameChild", 3);
+		final Predicate queryPredicate = Expressions.makePredicate("publicationParents", 3);
 
 		try (Reasoner reasoner = Reasoner.getInstance()) {
 
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
 			/*
 			 * The SPARQL query results will be added to the reasoner knowledge base, as
-			 * facts associated to the predicate
-			 * titleOfPublicationThatHasAuthorsWhoParentTheSameChild.
+			 * facts associated to the predicate publicationParents.
 			 */
-			kb.addFactsFromDataSource(titleOfPublicationThatHasAuthorsWhoParentTheSameChild,
-					sparqlQueryResultDataSource);
 
+			kb.addFactsFromDataSource(queryPredicate, sparqlQueryResultDataSource);
 			reasoner.load();
 
 			/*
 			 * We construct a query PositiveLiteral for the predicated associated to the
 			 * SPARQL query result.
 			 */
-			final PositiveLiteral query = Expressions.makePositiveLiteral(
-					titleOfPublicationThatHasAuthorsWhoParentTheSameChild, Expressions.makeVariable("x"),
+			final PositiveLiteral query = Expressions.makePositiveLiteral(queryPredicate, Expressions.makeVariable("x"),
 					Expressions.makeVariable("y"), Expressions.makeVariable("z"));
 
 			/* We query the reasoner for facts of the SPARQL query result predicate. */
-			System.out.println("Titles of publications that have authors who parent the same child:");
+			System.out.println("Titles of publications by co-authors who have a child together:");
 			try (QueryResultIterator queryResultIterator = reasoner.answerQuery(query, false)) {
 				queryResultIterator.forEachRemaining(queryResult -> {
 					final List<Term> queryResultTerms = queryResult.getTerms();
@@ -153,21 +152,23 @@ public class AddDataFromSparqlQueryResults {
 				});
 			}
 
+			/*
+			 * To do some basic reasoning, we would now like to add the following rule that
+			 * extracts (unique) mothers, fathers, and pairs from the queried data:
+			 * haveChildrenTogether(?y, ?z), isMother(?y), isFather(?z) :-
+			 * publicationParents(?x, ?y, ?z) .
+			 */
 			final PositiveLiteral haveChildrenTogether = Expressions.makePositiveLiteral("haveChildrenTogether",
 					Expressions.makeVariable("y"), Expressions.makeVariable("z"));
 			final PositiveLiteral isMother = Expressions.makePositiveLiteral("isMother", Expressions.makeVariable("y"));
 			final PositiveLiteral isFather = Expressions.makePositiveLiteral("isFather", Expressions.makeVariable("z"));
 			final Conjunction<PositiveLiteral> ruleHeadConjunction = Expressions
 					.makePositiveConjunction(haveChildrenTogether, isMother, isFather);
-			/*
-			 * haveChildrenTogether(?y, ?z), isMother(?y), isFather(?z) :-
-			 * publicationAndAuthorsWhoParentTheSameChild(?x, ?y, ?z)
-			 */
 			final Rule rule = Expressions.makeRule(ruleHeadConjunction, Expressions.makeConjunction(query));
 
 			/*
 			 * We reset the reasoner in order to add the created rule, and reason on the
-			 * data added from the WikiData SPARQL query result.
+			 * data added from the Wikidata SPARQL query result.
 			 */
 			reasoner.resetReasoner();
 
@@ -176,7 +177,7 @@ public class AddDataFromSparqlQueryResults {
 			reasoner.reason();
 
 			/* We query the reasoner for facts of the haveChildrenTogether predicate. */
-			System.out.println("Pairs of authors who have children together and wrote publications together:");
+			System.out.println("Co-authors who have a child:");
 			try (QueryResultIterator queryResultIterator = reasoner.answerQuery(haveChildrenTogether, false)) {
 				queryResultIterator.forEachRemaining(queryResult -> {
 					final List<Term> queryResultTerms = queryResult.getTerms();
