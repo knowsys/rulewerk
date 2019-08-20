@@ -36,11 +36,11 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.DoidExample;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
@@ -67,8 +67,8 @@ public class DoidExampleGraal {
 		ExamplesUtils.configureLogging();
 
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
-		
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+
+		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 

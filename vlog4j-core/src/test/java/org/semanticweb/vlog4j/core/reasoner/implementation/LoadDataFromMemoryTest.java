@@ -32,6 +32,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+
 import karmaresearch.vlog.EDBConfigurationException;
 
 public class LoadDataFromMemoryTest {
@@ -45,7 +46,7 @@ public class LoadDataFromMemoryTest {
 		final PositiveLiteral factIDBpredQ1 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("c"));
 		final PositiveLiteral factEDBpredQ2 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(rule);
 		kb.addFacts(factIDBpredQ1, factEDBpredQ2);
 
@@ -62,7 +63,7 @@ public class LoadDataFromMemoryTest {
 				Expressions.makePositiveLiteral("p", vx));
 		final PositiveLiteral factEDBpred = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				Expressions.makeConstant("d"));
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(rule);
 		kb.addFacts(factEDBpred);
 
@@ -76,7 +77,7 @@ public class LoadDataFromMemoryTest {
 	public void addFactsWithVariableTerms() throws ReasonerStateException {
 		final PositiveLiteral factWithVariableTerms = Expressions.makePositiveLiteral("q",
 				Expressions.makeConstant("d"), Expressions.makeVariable("x"));
-		final KnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFacts(factWithVariableTerms);
 	}
 
@@ -85,7 +86,7 @@ public class LoadDataFromMemoryTest {
 	public void addFactsWithBlankTerms() throws ReasonerStateException {
 		final PositiveLiteral factWithBlankTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
 				new BlankImpl("b"));
-		final KnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFacts(factWithBlankTerms);
 	}
 

@@ -23,8 +23,8 @@ package org.semanticweb.vlog4j.examples;
 import java.io.IOException;
 
 import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
@@ -44,7 +44,7 @@ public class SimpleReasoningExample {
 		ExamplesUtils.configureLogging(); // use simple logger for the example
 
 		// Define some facts and rules in VLog's basic syntax:
-		String rules = "% --- Some facts --- \n" //
+		final String rules = "% --- Some facts --- \n" //
 				+ "location(germany,europe). \n" //
 				+ "location(uk,europe). \n" //
 				+ "location(saxony,germany). \n" //
@@ -69,15 +69,15 @@ public class SimpleReasoningExample {
 
 		System.out.println("Knowledge base used in this example:\n\n" + rules);
 
-		RuleParser ruleParser = new RuleParser();
+		final RuleParser ruleParser = new RuleParser();
 		try {
 			ruleParser.parse(rules);
-		} catch (ParsingException e) {
+		} catch (final ParsingException e) {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;
 		}
-		
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(ruleParser.getRules());
 		kb.addFacts(ruleParser.getFacts());
 
@@ -97,7 +97,7 @@ public class SimpleReasoningExample {
 			ExamplesUtils.printOutQueryAnswers("inEuropeOutsideGermany(?Org)", reasoner);
 
 			System.out.println("Done.");
-		} catch (VLog4jException e) {
+		} catch (final VLog4jException e) {
 			System.out.println("Error: " + e.getMessage());
 		}
 	}

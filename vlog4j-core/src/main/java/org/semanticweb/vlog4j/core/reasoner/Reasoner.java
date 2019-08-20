@@ -15,7 +15,6 @@ import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 import karmaresearch.vlog.Atom;
@@ -99,7 +98,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 * @return a {@link VLogReasoner} instance.
 	 */
 	public static Reasoner getInstance() {
-		final VLogKnowledgeBase knowledgeBase= new VLogKnowledgeBase();
+		final KnowledgeBase knowledgeBase= new KnowledgeBase();
 		return new VLogReasoner(knowledgeBase);
 	}
 	

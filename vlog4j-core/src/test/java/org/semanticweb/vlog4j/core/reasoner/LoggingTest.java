@@ -39,7 +39,6 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 
@@ -56,7 +55,7 @@ public class LoggingTest {
 	private static final Constant constantC = Expressions.makeConstant("c");
 	private static final PositiveLiteral factPc = Expressions.makePositiveLiteral("p", constantC);
 
-	private static final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+	private static final KnowledgeBase kb = new KnowledgeBase();
 
 	static {
 		kb.addRules(rule);

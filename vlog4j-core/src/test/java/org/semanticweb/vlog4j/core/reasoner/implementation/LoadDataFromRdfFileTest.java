@@ -41,6 +41,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 import karmaresearch.vlog.EDBConfigurationException;
 
@@ -88,7 +89,7 @@ public class LoadDataFromRdfFileTest {
 	public void testLoadTernaryFactsFromSingleRdfDataSource(final FileDataSource fileDataSource)
 			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException,
 			IncompatiblePredicateArityException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(ternaryPredicate, fileDataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -107,7 +108,7 @@ public class LoadDataFromRdfFileTest {
 		final File nonexistingFile = new File("nonexistingFile.nt");
 		assertFalse(nonexistingFile.exists());
 		final FileDataSource fileDataSource = new RdfFileDataSource(nonexistingFile);
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(ternaryPredicate, fileDataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -120,7 +121,7 @@ public class LoadDataFromRdfFileTest {
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final FileDataSource fileDataSource = new RdfFileDataSource(new File(
 				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.invalidFormatNtFileNameRoot + ".nt"));
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(ternaryPredicate, fileDataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {

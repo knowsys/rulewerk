@@ -1,6 +1,8 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import java.io.IOException;
+import java.util.Formatter;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
@@ -10,7 +12,6 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
-import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
@@ -57,7 +58,7 @@ public class VLogReasoner implements Reasoner {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(VLogReasoner.class);
 
-	private final VLogKnowledgeBase knowledgeBase;
+	private final KnowledgeBase knowledgeBase;
 
 	private final VLog vLog = new VLog();
 	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
@@ -74,7 +75,7 @@ public class VLogReasoner implements Reasoner {
 	 */
 	private boolean reasoningCompleted;
 
-	public VLogReasoner(VLogKnowledgeBase knowledgeBase) {
+	public VLogReasoner(KnowledgeBase knowledgeBase) {
 		super();
 		this.knowledgeBase = knowledgeBase;
 		this.knowledgeBase.addObserver(this);
@@ -141,7 +142,7 @@ public class VLogReasoner implements Reasoner {
 			// TODO check if this is correct.
 			LOGGER.warn("This method call is ineffective: the Reasoner has already been loaded.");
 		} else {
-			this.knowledgeBase.validateEdbIdbSeparation();
+			validateEdbIdbSeparation();
 
 			this.reasonerState = ReasonerState.AFTER_LOADING;
 
@@ -150,7 +151,7 @@ public class VLogReasoner implements Reasoner {
 			}
 
 			try {
-				this.vLog.start(this.knowledgeBase.generateDataSourcesConfig(), false);
+				this.vLog.start(generateDataSourcesConfig(), false);
 			} catch (final AlreadyStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
 			} catch (final EDBConfigurationException e) {
@@ -168,6 +169,30 @@ public class VLogReasoner implements Reasoner {
 			}
 
 			setLogLevel(this.internalLogLevel);
+		}
+	}
+
+	String generateDataSourcesConfig() {
+		final StringBuilder configStringBuilder = new StringBuilder();
+		int dataSourceIndex = 0;
+		for (final Predicate predicate : this.knowledgeBase.getDataSourceForPredicate().keySet()) {
+			final DataSource dataSource = this.knowledgeBase.getDataSourceForPredicate().get(predicate);
+			try (final Formatter formatter = new Formatter(configStringBuilder);) {
+				formatter.format(dataSource.toConfigString(), dataSourceIndex,
+						ModelToVLogConverter.toVLogPredicate(predicate));
+			}
+			dataSourceIndex++;
+		}
+		return configStringBuilder.toString();
+	}
+
+	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
+		final Set<Predicate> edbPredicates = this.knowledgeBase.getEdbPredicates();
+		final Set<Predicate> idbPredicates = this.knowledgeBase.getIdbPredicates();
+		final Set<Predicate> intersection = new HashSet<>(edbPredicates);
+		intersection.retainAll(idbPredicates);
+		if (!intersection.isEmpty()) {
+			throw new EdbIdbSeparationException(intersection);
 		}
 	}
 

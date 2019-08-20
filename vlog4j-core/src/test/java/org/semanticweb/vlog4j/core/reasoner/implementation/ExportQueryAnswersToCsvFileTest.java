@@ -35,6 +35,7 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 public class ExportQueryAnswersToCsvFileTest {
 
@@ -53,7 +54,7 @@ public class ExportQueryAnswersToCsvFileTest {
 		// final String csvFilePath = CSV_EXPORT_FOLDER + "output";
 		final List<List<String>> factCCD = Arrays.asList(Arrays.asList("c", "c", "d"));
 		
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFacts(fact);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -92,7 +93,7 @@ public class ExportQueryAnswersToCsvFileTest {
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));
 		
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

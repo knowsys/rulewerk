@@ -38,8 +38,8 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.owlapi.OwlToRulesConverter;
@@ -85,7 +85,7 @@ public class OwlOntologyToRulesAndFacts {
 		}
 		System.out.println();
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(new ArrayList<>(owlToRulesConverter.getRules()));
 		kb.addFacts(owlToRulesConverter.getFacts());
 

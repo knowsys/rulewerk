@@ -42,6 +42,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 
 public class StratifiedNegationTest {
@@ -60,7 +61,7 @@ public class StratifiedNegationTest {
 		final Rule rule = makeRule(qXY, pXY, notQXY);
 		final PositiveLiteral fact = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(rule);
 		kb.addFacts(fact);
 
@@ -83,7 +84,7 @@ public class StratifiedNegationTest {
 		final Rule rule = makeRule(qXY, pXY, notQXY);
 		final PositiveLiteral fact = makePositiveLiteral("P", makeConstant("c"), makeConstant("d"));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(rule);
 		kb.addFacts(fact);
 
@@ -113,7 +114,7 @@ public class StratifiedNegationTest {
 
 		final PositiveLiteral qCD = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(rule);
 		kb.addFacts(pCD, pEF, qCD);
 
@@ -149,7 +150,7 @@ public class StratifiedNegationTest {
 
 		final PositiveLiteral qCD = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(rule);
 		kb.addFacts(pCD, pEF, qCD);
 

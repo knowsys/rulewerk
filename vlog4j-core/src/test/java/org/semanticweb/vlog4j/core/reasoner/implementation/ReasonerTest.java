@@ -35,11 +35,16 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 import karmaresearch.vlog.EDBConfigurationException;
 
@@ -62,11 +67,11 @@ public class ReasonerTest {
 	@Test
 	public void testCloseRepeatedly()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		try (final VLogReasoner reasoner = new VLogReasoner(new VLogKnowledgeBase())) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.close();
 		}
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new VLogKnowledgeBase())) {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.load();
 			reasoner.close();
 			reasoner.close();
@@ -76,7 +81,7 @@ public class ReasonerTest {
 	@Test
 	public void testLoadRules()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(ruleBxAx, ruleCxBx);
 		kb.addRules(ruleBxAx);
 
@@ -88,7 +93,7 @@ public class ReasonerTest {
 	@Test
 	public void testSimpleInference() throws EDBConfigurationException, IOException, ReasonerStateException,
 			EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(ruleBxAx, ruleCxBx);
 		kb.addFacts(factAc, factAd);
 
@@ -114,9 +119,37 @@ public class ReasonerTest {
 	// TODO move to a test class for KnowledgeBase
 	@Test
 	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
-		final VLogKnowledgeBase knowledgeBase = new VLogKnowledgeBase();
-		final String dataSourcesConfig = knowledgeBase.generateDataSourcesConfig();
-		assertTrue(dataSourcesConfig.isEmpty());
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+			final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
+			assertTrue(dataSourcesConfig.isEmpty());
+
+		}
+
+	}
+
+	@Test
+	public void testLoadRuleWithBlank()
+			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		final PositiveLiteral head = Expressions.makePositiveLiteral("B", new VariableImpl("v"));
+		final Literal body = Expressions.makePositiveLiteral("A", new BlankImpl("blank"));
+		final Rule ruleWithBlank = Expressions.makeRule(head, body);
+
+		kb.addRules(ruleWithBlank);
+
+		kb.addFacts(Expressions.makePositiveLiteral("A", new ConstantImpl("c")));
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			reasoner.reason();
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(head, true)) {
+				answerQuery.forEachRemaining(System.out::println);
+			}
+			
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral("A", new VariableImpl("v")), true)) {
+				answerQuery.forEachRemaining(System.out::println);
+			}
+		}
 	}
 
 }

@@ -43,7 +43,6 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 
@@ -74,7 +73,7 @@ public class ReasonerTimeoutTest {
 
 	private Reasoner reasoner;
 
-	private final static VLogKnowledgeBase kb = new VLogKnowledgeBase();
+	private final static KnowledgeBase kb = new KnowledgeBase();
 
 	/**
 	 * The timeout after which reasoning should be completed. One second is added to

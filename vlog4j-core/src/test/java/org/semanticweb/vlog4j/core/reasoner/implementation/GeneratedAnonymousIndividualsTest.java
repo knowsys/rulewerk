@@ -38,6 +38,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 
@@ -57,7 +58,7 @@ public class GeneratedAnonymousIndividualsTest {
 					Expressions.makePositiveLiteral(p, vx, vz)),
 			Expressions.makeConjunction(Expressions.makePositiveLiteral(p, vx)));
 
-	private static VLogKnowledgeBase kb = new VLogKnowledgeBase();
+	private static KnowledgeBase kb = new KnowledgeBase();
 	// fact: P(c)
 	private static final Constant constantC = Expressions.makeConstant("c");
 	private static final PositiveLiteral fact = Expressions.makePositiveLiteral(p, constantC);

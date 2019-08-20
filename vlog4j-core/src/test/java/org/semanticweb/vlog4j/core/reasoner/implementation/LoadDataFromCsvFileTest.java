@@ -40,6 +40,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 import karmaresearch.vlog.EDBConfigurationException;
 
@@ -75,7 +76,7 @@ public class LoadDataFromCsvFileTest {
 	private void testLoadUnaryFactsFromSingleCsvDataSource(final FileDataSource fileDataSource)
 			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException,
 			IncompatiblePredicateArityException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 		kb.addFactsFromDataSource(unaryPredicate2, fileDataSource);
 
@@ -109,7 +110,7 @@ public class LoadDataFromCsvFileTest {
 		final File nonexistingFile = new File("nonexistingFile.csv");
 		assertFalse(nonexistingFile.exists());
 		final FileDataSource fileDataSource = new CsvFileDataSource(nonexistingFile);
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -122,7 +123,7 @@ public class LoadDataFromCsvFileTest {
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final FileDataSource fileDataSource = new CsvFileDataSource(new File(
 				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.binaryCsvFileNameRoot + ".csv"));
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {

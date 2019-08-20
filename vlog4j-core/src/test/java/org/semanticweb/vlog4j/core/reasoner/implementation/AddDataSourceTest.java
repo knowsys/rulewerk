@@ -56,7 +56,7 @@ public class AddDataSourceTest {
 		final Predicate predicateLArity1 = Expressions.makePredicate("l", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFacts(factPredicatePArity2, factPredicateQArity1);
 		kb.addFactsFromDataSource(predicateLArity1, dataSource);
 		kb.addFactsFromDataSource(predicateParity1, dataSource);
@@ -83,7 +83,7 @@ public class AddDataSourceTest {
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			kb.addFactsFromDataSource(predicateP, dataSource);
@@ -101,7 +101,7 @@ public class AddDataSourceTest {
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			kb.addFactsFromDataSource(predicateP, dataSource);
@@ -119,7 +119,7 @@ public class AddDataSourceTest {
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			kb.addFactsFromDataSource(predicateP, dataSource);
@@ -129,18 +129,18 @@ public class AddDataSourceTest {
 		}
 	}
 
-	// TODO move to a test class for VLogKnowledgeBase
+	// TODO move to a test class for KnowledgeBase
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddDataSourceNoMultipleDataSourcesForPredicate() throws ReasonerStateException, IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(predicate, dataSource);
 		kb.addFactsFromDataSource(predicate, dataSource);
 	}
 
-	// TODO move to a test class for VLogKnowledgeBase
+	// TODO move to a test class for KnowledgeBase
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddDataSourceNoFactsForPredicate() throws ReasonerStateException, IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
@@ -148,26 +148,26 @@ public class AddDataSourceTest {
 		final PositiveLiteral fact = Expressions.makePositiveLiteral(Expressions.makePredicate("p", 1),
 				Expressions.makeConstant("a"));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFacts(fact);
 		kb.addFactsFromDataSource(predicate, dataSource);
 	}
 
-	// TODO move to a test class for VLogKnowledgeBase
+	// TODO move to a test class for KnowledgeBase
 	@Test(expected = NullPointerException.class)
 	public void testAddDataSourcePredicateNotNull() throws ReasonerStateException, IOException {
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(null, dataSource);
 	}
 
-	// TODO move to a test class for VLogKnowledgeBase
+	// TODO move to a test class for KnowledgeBase
 	@Test(expected = NullPointerException.class)
 	public void testAddDataSourceNotNullDataSource() throws ReasonerStateException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		
-		final KnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(predicate, null);
 	}
 

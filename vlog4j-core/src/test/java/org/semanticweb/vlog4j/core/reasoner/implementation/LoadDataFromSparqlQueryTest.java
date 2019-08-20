@@ -37,6 +37,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 
 public class LoadDataFromSparqlQueryTest {
@@ -60,7 +61,7 @@ public class LoadDataFromSparqlQueryTest {
 				// a has father b
 				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(fatherOfPredicate, dataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -86,7 +87,7 @@ public class LoadDataFromSparqlQueryTest {
 				// a has father b
 				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(fatherOfPredicate, dataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -120,7 +121,7 @@ public class LoadDataFromSparqlQueryTest {
 				// a has father b
 				"?a wdt:P22 ?b .");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(fatherOfPredicate, dataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -144,7 +145,7 @@ public class LoadDataFromSparqlQueryTest {
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a .\n" + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(haveChildrenTogether, dataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -165,7 +166,7 @@ public class LoadDataFromSparqlQueryTest {
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(haveChildrenTogether, dataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -188,7 +189,7 @@ public class LoadDataFromSparqlQueryTest {
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFactsFromDataSource(Expressions.makePredicate("ternary", 3), dataSource);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {

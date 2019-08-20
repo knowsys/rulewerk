@@ -92,7 +92,7 @@ public class ReasonerStateTest {
 	@Test
 	public void testAddRules2()
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(ruleQxPx);
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -102,7 +102,7 @@ public class ReasonerStateTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddRules3() {
-		final KnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		final List<Rule> rules = new ArrayList<>();
 		rules.add(ruleQxPx);
 		rules.add(null);
@@ -115,7 +115,7 @@ public class ReasonerStateTest {
 	public void testAddFacts1()
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFacts(factPc);
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -125,7 +125,7 @@ public class ReasonerStateTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddFacts2()
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		final List<PositiveLiteral> facts = new ArrayList<>();
 		facts.add(factPc);
 		facts.add(null);
@@ -172,7 +172,7 @@ public class ReasonerStateTest {
 	@Test
 	public void testResetDiscardInferences()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(ruleQxPx);
 		kb.addFacts(factPc);
 
@@ -209,7 +209,7 @@ public class ReasonerStateTest {
 	@Test
 	public void testResetKeepExplicitDatabase()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(ruleQxPx);
 		// assert p(c)
 		kb.addFacts(factPc);
@@ -256,7 +256,7 @@ public class ReasonerStateTest {
 	@Test
 	public void testResetEmptyKnowledgeBase()
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			// 1. load and reason

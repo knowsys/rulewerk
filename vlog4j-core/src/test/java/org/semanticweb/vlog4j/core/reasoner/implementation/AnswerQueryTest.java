@@ -113,7 +113,7 @@ public class AnswerQueryTest {
 				Expressions.makeConjunction(Expressions.makePositiveLiteral(predicate, x)));
 		assertEquals(Sets.newSet(y, z), pX__pYY_pYZ.getExistentiallyQuantifiedVariables());
 		
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(pX__pYY_pYZ);
 		kb.addFacts(Expressions.makePositiveLiteral(predicate, Expressions.makeConstant("c")));
 
@@ -157,7 +157,7 @@ public class AnswerQueryTest {
 		final Constant constantD = Expressions.makeConstant("d");
 		final PositiveLiteral factPcd = Expressions.makePositiveLiteral(predicate, constantC, constantD);
 		
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(pXY__pXYYZZT);
 		kb.addFacts(factPcd);
 
@@ -224,7 +224,7 @@ public class AnswerQueryTest {
 		final PositiveLiteral fact = Expressions.makePositiveLiteral("p", constantC);
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("q", Expressions.makeVariable("?x"));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(existentialRule);
 		kb.addFacts(fact);
 
@@ -249,7 +249,7 @@ public class AnswerQueryTest {
 
 	@Test
 	public void queryEmptyKnowledgeBase() throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -269,7 +269,7 @@ public class AnswerQueryTest {
 
 	@Test
 	public void queryEmptyRules() throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		final PositiveLiteral fact = Expressions.makePositiveLiteral("P", Expressions.makeConstant("c"));
 		kb.addFacts(fact);
 		
@@ -295,7 +295,7 @@ public class AnswerQueryTest {
 		final Variable vx = Expressions.makeVariable("x");
 		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx), Expressions.makePositiveLiteral("p", vx));
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(rule);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {

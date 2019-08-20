@@ -45,13 +45,13 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
-import org.semanticweb.vlog4j.rdf.RdfModelConverter;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
+import org.semanticweb.vlog4j.rdf.RdfModelConverter;
 
 /**
  * This example shows how <b>vlog4j-rdf</b> library's utility class
@@ -123,15 +123,15 @@ public class AddDataFromRdfModel {
 				+ "hasOrganizationName(?Person, ?OrgName) :- "
 				+ "  TRIPLE(?Person, cnf:hasAffiliation, ?Aff), TRIPLE(?Aff, cnf:withOrganisation, ?Org),"
 				+ "  TRIPLE(?Org, cnf:name, ?OrgName) .";
-		RuleParser ruleParser = new RuleParser();
+		final RuleParser ruleParser = new RuleParser();
 		try {
 			ruleParser.parse(rules);
-		} catch (ParsingException e) {
+		} catch (final ParsingException e) {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;
 		}
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		/*
 		 * The rule that maps people to their organization name based on facts extracted
 		 * from RDF triples is added to the Reasoner's knowledge base.

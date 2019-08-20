@@ -27,8 +27,8 @@ import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityExceptio
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -70,21 +70,21 @@ public class SkolemVsRestrictedChaseTermination {
 				+ "hasPartIDB(?X, ?Y) :- isPartOfIDB(?Y, ?X) ." //
 				+ "isPartOfIDB(?X, ?Y) :- hasPartIDB(?Y, ?X) .";
 
-		RuleParser ruleParser = new RuleParser();
+		final RuleParser ruleParser = new RuleParser();
 		ruleParser.parse(rules);
 
 		/*
 		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to
 		 * call close() to free the reasoner resources.
 		 */
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(ruleParser.getRules());
 		kb.addFacts(ruleParser.getFacts());
 
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
-			PositiveLiteral queryHasPart = ruleParser.parsePositiveLiteral("hasPartIDB(?X, ?Y)");
+			final PositiveLiteral queryHasPart = ruleParser.parsePositiveLiteral("hasPartIDB(?X, ?Y)");
 
 			/* See that there is no fact HasPartIDB before reasoning. */
 			System.out.println("Before reasoning is started, no inferrences have been computed yet.");
@@ -107,7 +107,7 @@ public class SkolemVsRestrictedChaseTermination {
 			 * extensively introducing new unnamed individuals to satisfy existential
 			 * restrictions.
 			 */
-			QueryResultIterator answers = reasoner.answerQuery(queryHasPart, true);
+			final QueryResultIterator answers = reasoner.answerQuery(queryHasPart, true);
 			System.out.println("Before the timeout, the Skolem chase had produced "
 					+ ExamplesUtils.iteratorSize(answers) + " results for hasPartIDB(?X, ?Y).");
 
