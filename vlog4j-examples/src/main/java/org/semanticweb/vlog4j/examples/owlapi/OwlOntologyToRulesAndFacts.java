@@ -33,6 +33,7 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -79,7 +80,7 @@ public class OwlOntologyToRulesAndFacts {
 
 		/* Print out Facts extracted from bike ontology */
 		System.out.println("Facts extracted from Bike ontology:");
-		final Set<PositiveLiteral> facts = owlToRulesConverter.getFacts();
+		final Set<Fact> facts = owlToRulesConverter.getFacts();
 		for (final PositiveLiteral fact : facts) {
 			System.out.println(" - fact: " + fact);
 		}

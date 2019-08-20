@@ -44,6 +44,7 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -69,7 +70,7 @@ public class TestReasonOverRdfFacts {
 			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> facts = RdfModelConverter.rdfModelToPositiveLiterals(model);
+		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
 
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addFacts(facts);
@@ -77,8 +78,8 @@ public class TestReasonOverRdfFacts {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
-			final PositiveLiteral universalQuery = makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, subject, predicate,
-					object);
+			final PositiveLiteral universalQuery = makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(subject, predicate, object));
 			final Set<List<Term>> queryResults = this.getQueryResults(reasoner, universalQuery);
 			assertTrue(!queryResults.isEmpty());
 		}
@@ -89,7 +90,7 @@ public class TestReasonOverRdfFacts {
 			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> facts = RdfModelConverter.rdfModelToPositiveLiterals(model);
+		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
 
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addFacts(facts);

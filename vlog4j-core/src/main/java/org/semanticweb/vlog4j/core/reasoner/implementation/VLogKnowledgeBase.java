@@ -34,6 +34,7 @@ import java.util.Set;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -46,8 +47,6 @@ public class VLogKnowledgeBase extends KnowledgeBase {
 	private final List<Rule> rules = new ArrayList<>();
 	private final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = new HashMap<>();
 	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
-
-	
 
 	@Override
 	public void addRules(final Rule... rules) {
@@ -83,9 +82,8 @@ public class VLogKnowledgeBase extends KnowledgeBase {
 		return Collections.unmodifiableList(this.rules);
 	}
 
-
 	@Override
-	public void addFacts(final PositiveLiteral... facts) {
+	public void addFacts(final Fact... facts) {
 		addFacts(Arrays.asList(facts));
 
 		// TODO setChanged
@@ -93,7 +91,7 @@ public class VLogKnowledgeBase extends KnowledgeBase {
 	}
 
 	@Override
-	public void addFacts(final Collection<PositiveLiteral> facts) {
+	public void addFacts(final Collection<Fact> facts) {
 		Validate.noNullElements(facts, "Null facts are not alowed! The list contains a fact at position [%d].");
 		for (final PositiveLiteral fact : facts) {
 			validateFactTermsAreConstant(fact);
@@ -117,11 +115,11 @@ public class VLogKnowledgeBase extends KnowledgeBase {
 
 		this.dataSourceForPredicate.put(predicate, dataSource);
 	}
-	
+
 	boolean hasFacts() {
 		return !this.dataSourceForPredicate.isEmpty() || !this.factsForPredicate.isEmpty();
 	}
-	
+
 	Map<Predicate, DataSource> getDataSourceForPredicate() {
 		return this.dataSourceForPredicate;
 	}
@@ -129,7 +127,7 @@ public class VLogKnowledgeBase extends KnowledgeBase {
 	Map<Predicate, Set<PositiveLiteral>> getFactsForPredicate() {
 		return this.factsForPredicate;
 	}
-	
+
 	Set<Predicate> getEdbPredicates() {
 		// TODO use cache
 		return collectEdbPredicates();
@@ -139,7 +137,7 @@ public class VLogKnowledgeBase extends KnowledgeBase {
 		// TODO use cache
 		return collectIdbPredicates();
 	}
-	
+
 	String generateDataSourcesConfig() {
 		final StringBuilder configStringBuilder = new StringBuilder();
 		int dataSourceIndex = 0;
@@ -153,7 +151,7 @@ public class VLogKnowledgeBase extends KnowledgeBase {
 		}
 		return configStringBuilder.toString();
 	}
-	
+
 	void validateEdbIdbSeparation() throws EdbIdbSeparationException {
 		final Set<Predicate> edbPredicates = getEdbPredicates();
 		final Set<Predicate> idbPredicates = getIdbPredicates();
@@ -163,7 +161,6 @@ public class VLogKnowledgeBase extends KnowledgeBase {
 			throw new EdbIdbSeparationException(intersection);
 		}
 	}
-
 
 	private void validateFactTermsAreConstant(PositiveLiteral fact) {
 		final Set<Term> nonConstantTerms = new HashSet<>(fact.getTerms());

@@ -22,6 +22,7 @@ package org.semanticweb.vlog4j.rdf;
 
 import static org.semanticweb.vlog4j.rdf.RdfValueToTermConverter.rdfValueToTerm;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.semanticweb.vlog4j.core.model.api.Blank;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -45,9 +47,8 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  * given {@code rdfModel} into an {@link PositiveLiteral} of the form
  * {@code TRIPLE(subject, predicate, object)}. The ternary predicate used for
  * all literals generated from RDF triples is
- * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}. Subject,
- * predicate and object {@link Value}s are converted to corresponding
- * {@link Term}s:
+ * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}. Subject, predicate and object
+ * {@link Value}s are converted to corresponding {@link Term}s:
  * <ul>
  * <li>{@link URI}s are converted to {@link Constant}s with the escaped URI
  * String as name.</li>
@@ -84,28 +85,25 @@ public final class RdfModelConverter {
 	 * Converts each {@code <subject, predicate, object>} triple statement of the
 	 * given {@code rdfModel} into a {@link PositiveLiteral} of the form
 	 * {@code TRIPLE(subject, predicate, object)}. See
-	 * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}, the ternary
-	 * predicate used for all literals generated from RDF triples.
+	 * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}, the ternary predicate used
+	 * for all literals generated from RDF triples.
 	 *
 	 * @param rdfModel a {@link Model} of an RDF document, containing triple
 	 *                 statements that will be converter to facts.
 	 * @return a set of literals corresponding to the statements of given
 	 *         {@code rdfModel}.
 	 */
-	public static Set<PositiveLiteral> rdfModelToPositiveLiterals(final Model rdfModel) {
-		return rdfModel.stream().map(RdfModelConverter::rdfStatementToPositiveLiteral)
-				.collect(Collectors.toSet());
+	public static Set<Fact> rdfModelToFacts(final Model rdfModel) {
+		return rdfModel.stream().map(RdfModelConverter::rdfStatementToFact).collect(Collectors.toSet());
 	}
 
-	static PositiveLiteral rdfStatementToPositiveLiteral(final Statement statement) {
+	static Fact rdfStatementToFact(final Statement statement) {
 		final Resource subject = statement.getSubject();
-
 		final URI predicate = statement.getPredicate();
-
 		final Value object = statement.getObject();
 
-		return Expressions.makePositiveLiteral(RDF_TRIPLE_PREDICATE, rdfValueToTerm(subject), rdfValueToTerm(predicate),
-				rdfValueToTerm(object));
+		return Expressions.makeFact(RDF_TRIPLE_PREDICATE,
+				Arrays.asList(rdfValueToTerm(subject), rdfValueToTerm(predicate), rdfValueToTerm(object)));
 	}
 
 }

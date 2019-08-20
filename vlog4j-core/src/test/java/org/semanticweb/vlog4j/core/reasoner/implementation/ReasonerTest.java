@@ -35,6 +35,7 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -51,8 +52,8 @@ public class ReasonerTest {
 	final Constant constantC = Expressions.makeConstant(constantNameC);
 	final Constant constantD = Expressions.makeConstant(constantNameD);
 	final Variable x = Expressions.makeVariable("x");
-	final PositiveLiteral factAc = Expressions.makePositiveLiteral("A", constantC);
-	final PositiveLiteral factAd = Expressions.makePositiveLiteral("A", constantD);
+	final Fact factAc = Expressions.makeFact("A", Arrays.asList(constantC));
+	final Fact factAd = Expressions.makeFact("A", Arrays.asList(constantD));
 	final PositiveLiteral atomAx = Expressions.makePositiveLiteral("A", x);
 	final PositiveLiteral atomBx = Expressions.makePositiveLiteral("B", x);
 	final PositiveLiteral atomCx = Expressions.makePositiveLiteral("C", x);

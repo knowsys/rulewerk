@@ -111,7 +111,7 @@ public class AddDataFromDlgpFile {
 			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
 				kb.addRules(graalConjunctiveQueryToRule.getRule());
 			}
-			kb.addFacts(GraalToVLog4JModelConverter.convertAtoms(graalAtoms));
+			kb.addFacts(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
 
 			reasoner.load();
 			System.out.println("Before materialisation:");

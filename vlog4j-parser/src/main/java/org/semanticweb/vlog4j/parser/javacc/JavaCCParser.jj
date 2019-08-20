@@ -29,6 +29,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
@@ -140,19 +141,14 @@ DataSource dataSource() throws PrefixDeclarationException:
 void statement() throws PrefixDeclarationException:
 {
     Rule r;
-    PositiveLiteral l;
+    Fact l;
     resetVariableSets();
 }
 {
     LOOKAHEAD(rule()) r = rule() { rules.add(r);}
-|   l = positiveLiteral(FormulaContext.HEAD) < DOT > //not from a rule
+|   l = fact(FormulaContext.HEAD) < DOT > //not from a rule
     {
-		if (l.getVariables().isEmpty()) {
-			facts.add(l);
-		} else {
-			throw new ParseException("Facts with variables are not allowed: " + l.toString());
-		}
-
+		facts.add(l);
     }
 }
 
@@ -223,6 +219,23 @@ PositiveLiteral positiveLiteral(FormulaContext context) throws PrefixDeclaration
 {
     predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN >
     { return Expressions.makePositiveLiteral(predicateName, terms); }
+}
+
+Fact fact(FormulaContext context) throws PrefixDeclarationException:
+{
+    Token t;
+    List < Term > terms;
+    String predicateName;
+}
+{
+    predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN >
+    {
+      try { 
+      	return Expressions.makeFact(predicateName, terms);
+      } catch (IllegalArgumentException e) {
+       throw new ParseException("Error parsing fact: " + e.toString());
+      }
+    }
 }
 
 NegativeLiteral negativeLiteral(FormulaContext context) throws PrefixDeclarationException:

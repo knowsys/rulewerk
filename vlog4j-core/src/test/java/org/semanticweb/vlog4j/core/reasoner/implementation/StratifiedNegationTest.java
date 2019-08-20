@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeNegativeLiteral;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeFact;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
@@ -38,11 +39,11 @@ import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityExceptio
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-
 
 public class StratifiedNegationTest {
 
@@ -58,7 +59,7 @@ public class StratifiedNegationTest {
 		final PositiveLiteral qXY = makePositiveLiteral("Q", x, y);
 
 		final Rule rule = makeRule(qXY, pXY, notQXY);
-		final PositiveLiteral fact = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
+		final Fact fact = makeFact("Q", Arrays.asList(makeConstant("c"), makeConstant("d")));
 
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule);
@@ -81,7 +82,7 @@ public class StratifiedNegationTest {
 		final PositiveLiteral qXY = makePositiveLiteral("Q", x, y);
 
 		final Rule rule = makeRule(qXY, pXY, notQXY);
-		final PositiveLiteral fact = makePositiveLiteral("P", makeConstant("c"), makeConstant("d"));
+		final Fact fact = makeFact("P", Arrays.asList(makeConstant("c"), makeConstant("d")));
 
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule);
@@ -106,12 +107,12 @@ public class StratifiedNegationTest {
 		final PositiveLiteral sXY = makePositiveLiteral("S", x, y);
 
 		final Rule rule = makeRule(sXY, pXY, notQXY, notRXY);
-		final PositiveLiteral pCD = makePositiveLiteral("P", makeConstant("c"), makeConstant("d"));
+		final Fact pCD = makeFact("P", Arrays.asList(makeConstant("c"), makeConstant("d")));
 		final Constant e = makeConstant("e");
 		final Constant f = makeConstant("f");
-		final PositiveLiteral pEF = makePositiveLiteral("P", e, f);
+		final Fact pEF = makeFact("P", Arrays.asList(e, f));
 
-		final PositiveLiteral qCD = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
+		final Fact qCD = makeFact("Q", Arrays.asList(makeConstant("c"), makeConstant("d")));
 
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule);
@@ -142,12 +143,12 @@ public class StratifiedNegationTest {
 		final PositiveLiteral sXY = makePositiveLiteral("S", x, y);
 
 		final Rule rule = makeRule(sXY, pXY, notQXY);
-		final PositiveLiteral pCD = makePositiveLiteral("P", makeConstant("c"), makeConstant("d"));
+		final Fact pCD = makeFact("P", Arrays.asList(makeConstant("c"), makeConstant("d")));
 		final Constant e = makeConstant("e");
 		final Constant f = makeConstant("f");
-		final PositiveLiteral pEF = makePositiveLiteral("P", e, f);
+		final Fact pEF = makeFact("P", Arrays.asList(e, f));
 
-		final PositiveLiteral qCD = makePositiveLiteral("Q", makeConstant("c"), makeConstant("d"));
+		final Fact qCD = makeFact("Q", Arrays.asList(makeConstant("c"), makeConstant("d")));
 
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addRules(rule);

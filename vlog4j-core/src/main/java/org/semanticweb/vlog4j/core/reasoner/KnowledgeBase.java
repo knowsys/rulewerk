@@ -6,6 +6,7 @@ import java.util.Observable;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -70,7 +71,7 @@ public abstract class KnowledgeBase extends Observable {
 	 * @return list of {@link Rule}
 	 */
 	public abstract List<Rule> getRules();
-	
+
 	/**
 	 * Adds non-null facts to the <b>knowledge base</b>. A <b>fact</b> is a
 	 * {@link PositiveLiteral} with all terms ({@link PositiveLiteral#getTerms()})
@@ -90,7 +91,7 @@ public abstract class KnowledgeBase extends Observable {
 	 *                                  {@link TermType#CONSTANT}.
 	 */
 	// TODO add examples to javadoc about multiple sources per predicate and EDB/IDB
-	public abstract void addFacts(@NonNull PositiveLiteral... facts);
+	public abstract void addFacts(Fact... facts);
 
 	/**
 	 * Adds non-null facts to the <b>knowledge base</b>. A <b>fact</b> is a
@@ -110,12 +111,12 @@ public abstract class KnowledgeBase extends Observable {
 	 *                                  {@link TermType#CONSTANT}.
 	 */
 	// TODO add examples to javadoc about multiple sources per predicate and EDB/IDB
-	public abstract void addFacts(@NonNull Collection<PositiveLiteral> facts);
+	public abstract void addFacts(Collection<Fact> facts);
 
 	/**
 	 * Adds facts stored in given {@code dataSource} for given {@code predicate} to
-	 * the <b>knowledge base</b>. Facts predicates cannot have multiple
-	 * data sources, including in-memory {@link Atom} objects added trough
+	 * the <b>knowledge base</b>. Facts predicates cannot have multiple data
+	 * sources, including in-memory {@link Atom} objects added trough
 	 * {@link #addFacts}.
 	 *
 	 * @param predicate  the {@link Predicate} for which the given

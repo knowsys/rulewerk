@@ -41,6 +41,7 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -82,7 +83,7 @@ public class AddDataFromRdfModel {
 		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
-		final Set<PositiveLiteral> tripleFactsISWC2016 = RdfModelConverter.rdfModelToPositiveLiterals(rdfModelISWC2016);
+		final Set<Fact> tripleFactsISWC2016 = RdfModelConverter.rdfModelToFacts(rdfModelISWC2016);
 		System.out.println("Example triple fact from iswc-2016 dataset:");
 		System.out.println(" - " + tripleFactsISWC2016.iterator().next());
 
@@ -101,7 +102,7 @@ public class AddDataFromRdfModel {
 		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
-		final Set<PositiveLiteral> tripleFactsISWC2017 = RdfModelConverter.rdfModelToPositiveLiterals(rdfModelISWC2017);
+		final Set<Fact> tripleFactsISWC2017 = RdfModelConverter.rdfModelToFacts(rdfModelISWC2017);
 		System.out.println("Example triple fact from iswc-2017 dataset:");
 		System.out.println(" - " + tripleFactsISWC2017.iterator().next());
 

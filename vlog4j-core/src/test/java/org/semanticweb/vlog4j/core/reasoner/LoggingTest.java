@@ -29,19 +29,20 @@ import java.io.FileReader;
  */
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
-
 
 public class LoggingTest {
 
@@ -54,7 +55,7 @@ public class LoggingTest {
 	private static final Rule rule = Expressions.makeRule(ruleHeadQx, ruleBodyPx);
 
 	private static final Constant constantC = Expressions.makeConstant("c");
-	private static final PositiveLiteral factPc = Expressions.makePositiveLiteral("p", constantC);
+	private static final Fact factPc = Expressions.makeFact("p", Arrays.asList(constantC));
 
 	private static final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 

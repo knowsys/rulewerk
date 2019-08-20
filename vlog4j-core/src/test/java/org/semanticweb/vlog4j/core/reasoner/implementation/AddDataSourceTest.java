@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -34,7 +35,7 @@ import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityExceptio
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -51,8 +52,8 @@ public class AddDataSourceTest {
 			EdbIdbSeparationException, EDBConfigurationException, IOException, IncompatiblePredicateArityException {
 		final Predicate predicateParity1 = Expressions.makePredicate("p", 1);
 		final Constant constantA = Expressions.makeConstant("a");
-		final PositiveLiteral factPredicatePArity2 = Expressions.makePositiveLiteral("p", constantA, constantA);
-		final PositiveLiteral factPredicateQArity1 = Expressions.makePositiveLiteral("q", constantA);
+		final Fact factPredicatePArity2 = Expressions.makeFact("p", Arrays.asList(constantA, constantA));
+		final Fact factPredicateQArity1 = Expressions.makeFact("q", Arrays.asList(constantA));
 		final Predicate predicateLArity1 = Expressions.makePredicate("l", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
@@ -145,8 +146,8 @@ public class AddDataSourceTest {
 	public void testAddDataSourceNoFactsForPredicate() throws ReasonerStateException, IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		final PositiveLiteral fact = Expressions.makePositiveLiteral(Expressions.makePredicate("p", 1),
-				Expressions.makeConstant("a"));
+		final Fact fact = Expressions.makeFact(Expressions.makePredicate("p", 1),
+				Arrays.asList(Expressions.makeConstant("a")));
 
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addFacts(fact);
@@ -166,7 +167,7 @@ public class AddDataSourceTest {
 	@Test(expected = NullPointerException.class)
 	public void testAddDataSourceNotNullDataSource() throws ReasonerStateException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
-		
+
 		final KnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addFactsFromDataSource(predicate, null);
 	}

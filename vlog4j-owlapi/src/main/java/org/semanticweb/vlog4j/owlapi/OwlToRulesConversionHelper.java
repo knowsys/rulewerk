@@ -35,11 +35,13 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
 import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.FactImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 import org.semanticweb.vlog4j.owlapi.AbstractClassToRuleConverter.SimpleConjunction;
@@ -140,6 +142,19 @@ public class OwlToRulesConversionHelper {
 			final Predicate predicate = OwlToRulesConversionHelper
 					.getObjectPropertyPredicate(owlObjectPropertyExpression.asOWLObjectProperty());
 			return new PositiveLiteralImpl(predicate, Arrays.asList(sourceTerm, targetTerm));
+		}
+	}
+
+	public static Fact getObjectPropertyFact(final OWLObjectPropertyExpression owlObjectPropertyExpression,
+			final Term sourceTerm, final Term targetTerm) {
+		if (owlObjectPropertyExpression.isAnonymous()) {
+			final Predicate predicate = OwlToRulesConversionHelper
+					.getObjectPropertyPredicate(owlObjectPropertyExpression.getInverseProperty().asOWLObjectProperty());
+			return new FactImpl(predicate, Arrays.asList(targetTerm, sourceTerm));
+		} else {
+			final Predicate predicate = OwlToRulesConversionHelper
+					.getObjectPropertyPredicate(owlObjectPropertyExpression.asOWLObjectProperty());
+			return new FactImpl(predicate, Arrays.asList(sourceTerm, targetTerm));
 		}
 	}
 
