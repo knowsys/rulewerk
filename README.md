@@ -42,4 +42,6 @@ Development
 -----------
 
 * Pull requests are welcome.
+* The master branch may require a development version of VLog.
+Use the script `build-vlog-library.sh` to create and install it on your machine (you may need to delete previous local builds first).
 * Users of Eclipse should install the javacc plugin to generate the parser sources. After installing the plugin, right-click on the file `JavaCCParser.jj` in `org.semanticweb.vlog4j.parser.javacc`, and select "compile with javacc". This step needs to be repeated when the file changes. 
