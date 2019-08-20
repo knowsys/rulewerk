@@ -427,5 +427,12 @@ public class RuleParserTest {
 		assertEquals(p, ruleParser.getDataSources().get(0).getLeft());
 		assertEquals(sparqlds, ruleParser.getDataSources().get(0).getRight());
 	}
+	
+	@Test(expected = ParsingException.class)
+	public void testSparqlSourceMalformedUrl() throws ParsingException, MalformedURLException {
+		String input = "@source p(2) : sparql(<not a URL>,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
 
 }
