@@ -24,13 +24,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 
@@ -53,7 +54,7 @@ public class JavaCCParserBase {
 
 	final List<Rule> rules = new ArrayList<>();
 	final List<PositiveLiteral> facts = new ArrayList<>();
-	final List<Pair<Predicate, DataSource>> dataSources = new ArrayList<>();
+	final List<DataSourceDeclaration> dataSourceDaclarations = new ArrayList<>();
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -101,7 +102,7 @@ public class JavaCCParserBase {
 
 	void addDataSource(String predicateName, int arity, DataSource dataSource) {
 		Predicate predicate = Expressions.makePredicate(predicateName, arity);
-		dataSources.add(Pair.of(predicate, dataSource));
+		dataSourceDaclarations.add(new DataSourceDeclarationImpl(predicate, dataSource));
 	}
 
 	static String unescapeStr(String s, int line, int column) throws ParseException {
@@ -225,8 +226,8 @@ public class JavaCCParserBase {
 		return facts;
 	}
 
-	public List<Pair<Predicate, DataSource>> getDataSources() {
-		return dataSources;
+	public List<DataSourceDeclaration> getDataSourceDeclartions() {
+		return dataSourceDaclarations;
 	}
 
 }
