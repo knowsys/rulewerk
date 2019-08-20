@@ -21,7 +21,7 @@ before_install:
 install: mvn install $OPTIONS -DskipTests=true
 
 after_success:
-  - mvn clean cobertura:cobertura coveralls:cobertura
+  - mvn clean cobertura:cobertura coveralls:report
 
 dist: trusty
 sudo: false
