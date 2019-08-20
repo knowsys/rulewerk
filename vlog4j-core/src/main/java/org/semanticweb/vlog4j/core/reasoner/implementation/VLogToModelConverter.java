@@ -43,8 +43,7 @@ class VLogToModelConverter {
 	 * Converts internal VLog query results (represented as arrays of
 	 * {@link karmaresearch.vlog.Term}s) into VLog model API QueryResults.
 	 * 
-	 * @param vLogQueryResult
-	 *            an array of terms that represent an answer to a query.
+	 * @param vLogQueryResult an array of terms that represent an answer to a query.
 	 * @return a QueryResult containing the corresponding {@code vLogQueryResult} as
 	 *         a List of {@link Term}s.
 	 */
@@ -56,9 +55,8 @@ class VLogToModelConverter {
 	 * Converts an array of internal VLog terms ({@link karmaresearch.vlog.Term})
 	 * into the corresponding list of VLog API model {@link Term}.
 	 * 
-	 * @param vLogTerms
-	 *            input terms array, to be converted to a list of corresponding
-	 *            {@link Term}s.
+	 * @param vLogTerms input terms array, to be converted to a list of
+	 *                  corresponding {@link Term}s.
 	 * @return list of {@link Term}s, where each element corresponds to the element
 	 *         in given {@code vLogTerms} at the same position.
 	 */
@@ -74,8 +72,7 @@ class VLogToModelConverter {
 	 * Converts an internal VLog term ({@link karmaresearch.vlog.Term}) to a VLog
 	 * API model {@link Term} of the same type and name.
 	 * 
-	 * @param vLogTerm
-	 *            term to be converted
+	 * @param vLogTerm term to be converted
 	 * @return a ({@link karmaresearch.vlog.Term}) with the same name as given
 	 *         {@code vLogTerm} and of the corresponding type.
 	 */
@@ -83,7 +80,11 @@ class VLogToModelConverter {
 		String name = vLogTerm.getName();
 		switch (vLogTerm.getTermType()) {
 		case CONSTANT:
-			return new ConstantImpl(name);
+			if (name.charAt(0) == '<' && name.charAt(name.length() - 1) == '>') { // strip <> off IRIs
+				return new ConstantImpl(name.substring(1, name.length() - 1));
+			} else {
+				return new ConstantImpl(name);
+			}
 		case BLANK:
 			return new BlankImpl(name);
 		case VARIABLE:

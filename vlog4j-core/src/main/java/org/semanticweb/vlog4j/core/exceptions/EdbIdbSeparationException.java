@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner.exceptions;
+package org.semanticweb.vlog4j.core.exceptions;
 
 import java.text.MessageFormat;
 

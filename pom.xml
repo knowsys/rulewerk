@@ -12,7 +12,7 @@
 
 	<name>VLog4j</name>
 	<description>A Java library for working with the VLog rule engine</description>
-	<url>https://github.com/mkroetzsch/vlog4j</url>
+	<url>https://github.com/knowsys/vlog4j</url>
 
 	<modules>
 		<module>vlog4j-core</module>
@@ -20,6 +20,7 @@
 		<module>vlog4j-examples</module>
 		<module>vlog4j-owlapi</module>
 		<module>vlog4j-graal</module>
+		<module>vlog4j-parser</module>
 	</modules>
 
 	<licenses>
@@ -242,7 +243,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven.javadoc.version}</version>
 				<configuration>
-					<bottom><![CDATA[Copyright &#169; {inceptionYear}&#x2018;{currentYear} {organizationName}. Generated from source code published under the Apache License 2.0. For more information, see the <a href="https://github.com/mkroetzsch/vlog4j">VLog4j homepage</a>]]></bottom>
+					<bottom><![CDATA[Copyright &#169; {inceptionYear}&#x2018;{currentYear} {organizationName}. Generated from source code published under the Apache License 2.0. For more information, see the <a href="https://github.com/knowsys/vlog4j">VLog4j homepage</a>]]></bottom>
 				</configuration>
 			</plugin>
 			<plugin>

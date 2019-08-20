@@ -71,6 +71,22 @@ public final class Expressions {
 	}
 
 	/**
+	 * Creates a {@link Constant} that represents a datatype literal.
+	 * 
+	 * Note that datatype literal is the common name of the representation of
+	 * specific values for a datatype. We mostly avoid this meaning of
+	 * <i>literal</i> since a literal in logic is typically a negated or non-negated
+	 * atom.
+	 * 
+	 * @param lexicalValue the lexical representation of the data value
+	 * @param datatypeIri  the full absolute IRI of the datatype of this literal
+	 * @return a {@link Constant} corresponding to the input.
+	 */
+	public static Constant makeDatatypeConstant(String lexicalValue, String datatypeIri) {
+		return new ConstantImpl("\"" + lexicalValue + "\"^^<" + datatypeIri + ">");
+	}
+
+	/**
 	 * Creates a {@link Predicate}.
 	 * 
 	 * @param name  non-blank predicate name
@@ -210,6 +226,17 @@ public final class Expressions {
 	}
 
 	/**
+	 * Creates a {@code Conjunction} of {@link T} ({@link PositiveLiteral} type)
+	 * objects.
+	 *
+	 * @param literals list of non-null positive literals
+	 * @return a {@link Conjunction} corresponding to the input
+	 */
+	public static <T extends PositiveLiteral> Conjunction<T> makePositiveConjunction(final List<T> literals) {
+		return new ConjunctionImpl<>(literals);
+	}
+
+	/**
 	 * Creates a {@code Conjunction} of {@link PositiveLiteral} objects.
 	 *
 	 * @param literals array of non-null positive literals
@@ -230,7 +257,7 @@ public final class Expressions {
 		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
 				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
 	}
-	
+
 	/**
 	 * Creates a {@code Rule}.
 	 *
@@ -249,12 +276,13 @@ public final class Expressions {
 	 * @param body conjunction of positive (non-negated) literals
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head, final Conjunction<PositiveLiteral> body) {
+	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head,
+			final Conjunction<PositiveLiteral> body) {
 		final List<Literal> bodyLiteralList = new ArrayList<>(body.getLiterals());
 		@NonNull
 		final Conjunction<Literal> literalsBody = makeConjunction(bodyLiteralList);
 		return new RuleImpl(head, literalsBody);
-	
+
 	}
 
 }
