@@ -9,6 +9,7 @@ Breaking changes:
 
 New features:
 * New own syntax for rules, facts, and data sources to create knowledge bases from files or strings in Java
+* New and updated example programs to illustrate use of syntax
 
 Bugfixes:
 * ...
