@@ -1,7 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
-import java.util.Observer;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -90,7 +89,7 @@ import karmaresearch.vlog.NotStartedException;
  * @author Irina Dragoste
  *
  */
-public interface Reasoner  extends AutoCloseable, Observer  {
+public interface Reasoner extends AutoCloseable {
 
 	/**
 	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
@@ -98,12 +97,13 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 * @return a {@link VLogReasoner} instance.
 	 */
 	public static Reasoner getInstance() {
-		final KnowledgeBase knowledgeBase= new KnowledgeBase();
+		final KnowledgeBase knowledgeBase = new KnowledgeBase();
 		return new VLogReasoner(knowledgeBase);
 	}
-	
+
 	/**
 	 * Getter for the knowledge base to reason on.
+	 * 
 	 * @return the reasoner's knowledge base
 	 */
 	KnowledgeBase getKnowledgeBase();
@@ -202,9 +202,6 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
 	void setLogFile(@Nullable String filePath) throws ReasonerStateException;
-
-	
-	
 
 	/**
 	 * Loads the <b>knowledge base</b>, consisting of the current rules and facts,
@@ -355,11 +352,12 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *         <li>{@code false}, if reasoning has been interrupted before
 	 *         completion.</li>
 	 *         </ul>
-	 * @throws IOException
-	 *             if I/O exceptions occur during reasoning.
-	 * @throws ReasonerStateException
-	 *             if this method is called before loading ({@link Reasoner#load()}
-	 *             or after closing ({@link Reasoner#close()}).
+	 * @throws IOException                         if I/O exceptions occur during
+	 *                                             reasoning.
+	 * @throws ReasonerStateException              if this method is called before
+	 *                                             loading ({@link Reasoner#load()}
+	 *                                             or after closing
+	 *                                             ({@link Reasoner#close()}).
 	 * @throws IncompatiblePredicateArityException
 	 * @throws EdbIdbSeparationException
 	 */
@@ -466,8 +464,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 */
 	// TODO update javadoc with return type
 	MaterialisationState exportQueryAnswersToCsv(@NonNull PositiveLiteral query, @NonNull String csvFilePath,
-			boolean includeBlanks)
-			throws ReasonerStateException, IOException;
+			boolean includeBlanks) throws ReasonerStateException, IOException;
 
 	/**
 	 * Resets the reasoner to a pre-loading state (before the call of

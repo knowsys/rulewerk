@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
@@ -45,7 +44,7 @@ import karmaresearch.vlog.Atom;
  * #L%
  */
 
-public class KnowledgeBase extends Observable {
+public class KnowledgeBase{
 
 	private final List<Rule> rules = new ArrayList<>();
 	private final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = new HashMap<>();

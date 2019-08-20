@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
@@ -78,7 +77,7 @@ public class VLogReasoner implements Reasoner {
 	public VLogReasoner(KnowledgeBase knowledgeBase) {
 		super();
 		this.knowledgeBase = knowledgeBase;
-		this.knowledgeBase.addObserver(this);
+		// TODO register as listener to KB
 	}
 
 	@Override
@@ -325,7 +324,7 @@ public class VLogReasoner implements Reasoner {
 	public void close() {
 		this.reasonerState = ReasonerState.AFTER_CLOSING;
 
-		this.knowledgeBase.deleteObserver(this);
+		// TODO unregister as listener of KB
 		this.vLog.stop();
 	}
 
@@ -439,13 +438,6 @@ public class VLogReasoner implements Reasoner {
 			}
 			return CyclicityResult.UNDETERMINED;
 		}
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO update materialisation state for query answering
-		// TODO compute KB diff
-
 	}
 
 }
