@@ -45,10 +45,6 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
@@ -81,7 +77,7 @@ public class AddDataFromRdfModel {
 		/* An RDF Model is obtained from parsing the RDF/XML resource. */
 		final Model rdfModelISWC2016 = parseRdfResource(inputStreamISWC2016, rdfXMLResourceFile.toURI(),
 				RDFFormat.RDFXML);
-		
+
 		/*
 		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".

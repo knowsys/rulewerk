@@ -24,6 +24,8 @@ import java.io.IOException;
 
 import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -74,10 +76,12 @@ public class SimpleReasoningExample {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;
 		}
+		
+		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
+		kb.addRules(ruleParser.getRules());
+		kb.addFacts(ruleParser.getFacts());
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFacts(ruleParser.getFacts());
-			reasoner.addRules(ruleParser.getRules());
+		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 
 			System.out.print("Loading rules and facts ... ");
 			reasoner.load();

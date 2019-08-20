@@ -40,10 +40,6 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-
 
 import karmaresearch.vlog.EDBConfigurationException;
 
@@ -69,15 +65,16 @@ public class LoadDataFromCsvFileTest {
 
 	@Test
 	public void testLoadUnaryFactsFromCsvFile() throws ReasonerStateException, EdbIdbSeparationException,
-	EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
 		testLoadUnaryFactsFromSingleCsvDataSource(new CsvFileDataSource(new File(
 				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + ".csv")));
 		testLoadUnaryFactsFromSingleCsvDataSource(new CsvFileDataSource(new File(
 				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.zippedUnaryCsvFileRoot + ".csv.gz")));
 	}
 
-	private void testLoadUnaryFactsFromSingleCsvDataSource(final FileDataSource fileDataSource) throws ReasonerStateException,
-	EdbIdbSeparationException, EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+	private void testLoadUnaryFactsFromSingleCsvDataSource(final FileDataSource fileDataSource)
+			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException,
+			IncompatiblePredicateArityException {
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 		kb.addFactsFromDataSource(unaryPredicate2, fileDataSource);
@@ -123,8 +120,8 @@ public class LoadDataFromCsvFileTest {
 	@Test(expected = IncompatiblePredicateArityException.class)
 	public void testLoadCsvFileWrongArity()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		final FileDataSource fileDataSource = new CsvFileDataSource(
-				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.binaryCsvFileNameRoot + ".csv"));
+		final FileDataSource fileDataSource = new CsvFileDataSource(new File(
+				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.binaryCsvFileNameRoot + ".csv"));
 		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
 		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
 

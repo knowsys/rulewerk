@@ -29,7 +29,8 @@ import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.reasoner.DataSource;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -64,7 +65,6 @@ public class CountingTriangles {
 		System.out.println("");
 
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
-			
 
 			/* Initialise reasoner and compute inferences */
 			System.out.print("Initialising rules and data sources ... ");

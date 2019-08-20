@@ -94,12 +94,12 @@ public class AddDataFromRdfFile {
 			 */
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
 			kb.addRules(ruleParser.getRules());
-			
+
 			/* Importing {@code .nt.gz} file as data source. */
 			for (Pair<Predicate, DataSource> pair : ruleParser.getDataSources()) {
-				reasoner.addFactsFromDataSource(pair.getLeft(), pair.getRight());
+				kb.addFactsFromDataSource(pair.getLeft(), pair.getRight());
 			}
-			
+
 			reasoner.load();
 
 			System.out.println("Before materialisation:");
