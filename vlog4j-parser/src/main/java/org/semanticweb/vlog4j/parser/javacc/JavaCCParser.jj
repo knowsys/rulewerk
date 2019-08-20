@@ -25,6 +25,7 @@ import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 
+import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
@@ -140,15 +141,14 @@ DataSource dataSource() throws PrefixDeclarationException:
 
 void statement() throws PrefixDeclarationException:
 {
-    Rule r;
-    Fact l;
+    Statement statement;
     resetVariableSets();
 }
 {
-    LOOKAHEAD(rule()) r = rule() { rules.add(r);}
-|   l = fact(FormulaContext.HEAD) < DOT > //not from a rule
+    LOOKAHEAD(rule()) statement = rule() { knowledgeBase.addStatement(statement);}
+|   statement = fact(FormulaContext.HEAD) < DOT > //not from a rule
     {
-		facts.add(l);
+		knowledgeBase.addStatement(statement);
     }
 }
 

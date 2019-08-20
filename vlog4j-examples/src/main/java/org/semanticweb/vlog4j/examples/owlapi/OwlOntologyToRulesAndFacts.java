@@ -87,8 +87,8 @@ public class OwlOntologyToRulesAndFacts {
 		System.out.println();
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(new ArrayList<>(owlToRulesConverter.getRules()));
-		kb.addFacts(owlToRulesConverter.getFacts());
+		kb.addStatements(new ArrayList<>(owlToRulesConverter.getRules()));
+		kb.addStatements(owlToRulesConverter.getFacts());
 
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			/* Load rules and facts obtained from the ontology */

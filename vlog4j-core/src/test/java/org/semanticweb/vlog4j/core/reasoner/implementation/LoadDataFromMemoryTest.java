@@ -49,8 +49,7 @@ public class LoadDataFromMemoryTest {
 		final Fact factEDBpredQ2 = Expressions.makeFact("q",
 				Arrays.asList(Expressions.makeConstant("d"), Expressions.makeConstant("d")));
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(rule);
-		kb.addFacts(factIDBpredQ1, factEDBpredQ2);
+		kb.addStatements(rule, factIDBpredQ1, factEDBpredQ2);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -67,8 +66,7 @@ public class LoadDataFromMemoryTest {
 		final Fact factEDBpred = Expressions.makeFact("q",
 				Arrays.asList(Expressions.makeConstant("d"), Expressions.makeConstant("d")));
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(rule);
-		kb.addFacts(factEDBpred);
+		kb.addStatements(rule, factEDBpred);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -82,17 +80,7 @@ public class LoadDataFromMemoryTest {
 		final Fact factWithVariableTerms = Expressions.makeFact("q",
 				Arrays.asList(Expressions.makeConstant("d"), Expressions.makeVariable("x")));
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFacts(factWithVariableTerms);
-	}
-
-	// TODO move to a test class for KnowledgeBase
-	@Test(expected = IllegalArgumentException.class)
-	public void addFactsWithBlankTerms() throws ReasonerStateException {
-
-		final Fact factWithBlankTerms = Expressions.makeFact("q", Arrays.asList(Expressions.makeConstant("d"),
-				new BlankImpl("b")));
-		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFacts(factWithBlankTerms);
+		kb.addStatement(factWithVariableTerms);
 	}
 
 }

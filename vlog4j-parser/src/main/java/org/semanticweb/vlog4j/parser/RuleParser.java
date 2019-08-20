@@ -22,14 +22,11 @@ package org.semanticweb.vlog4j.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.List;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
-import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParser;
 import org.semanticweb.vlog4j.parser.javacc.ParseException;
 import org.semanticweb.vlog4j.parser.javacc.TokenMgrError;
@@ -48,18 +45,18 @@ public class RuleParser {
 
 	JavaCCParser parser;
 
-	public void parse(InputStream stream, String encoding) throws ParsingException {
+	public KnowledgeBase parse(InputStream stream, String encoding) throws ParsingException {
 		parser = new JavaCCParser(stream, encoding);
-		doParse();
+		return doParse();
 	}
 
-	public void parse(InputStream stream) throws ParsingException {
-		parse(stream, "UTF-8");
+	public KnowledgeBase parse(InputStream stream) throws ParsingException {
+		return parse(stream, "UTF-8");
 	}
 
-	public void parse(String input) throws ParsingException {
+	public KnowledgeBase parse(String input) throws ParsingException {
 		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		parse(inputStream, "UTF-8");
+		return parse(inputStream, "UTF-8");
 	}
 
 	public Literal parseLiteral(String input) throws ParsingException {
@@ -82,24 +79,13 @@ public class RuleParser {
 		}
 	}
 
-	void doParse() throws ParsingException {
+	KnowledgeBase doParse() throws ParsingException {
 		try {
 			parser.parse();
+			return parser.getKnowledgeBase();
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
 			throw new ParsingException(e.getMessage(), e);
 		}
-	}
-
-	public List<Rule> getRules() {
-		return parser.getRules();
-	}
-
-	public List<Fact> getFacts() {
-		return parser.getFacts();
-	}
-
-	public List<DataSourceDeclaration> getDataSourceDeclartions() {
-		return parser.getDataSourceDeclartions();
 	}
 
 }

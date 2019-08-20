@@ -57,7 +57,7 @@ public class ExportQueryAnswersToCsvFileTest {
 		
 		final KnowledgeBase kb = new KnowledgeBase();
 
-		kb.addFacts(fact);
+		kb.addStatement(fact);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

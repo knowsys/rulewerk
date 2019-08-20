@@ -26,17 +26,21 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
@@ -69,41 +73,41 @@ public class RuleParserTest {
 	public void testExplicitIri() throws ParsingException {
 		String input = "<http://example.org/s>(<http://example.org/c>) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(fact), statements);
 	}
 
 	@Test
 	public void testPrefixResolution() throws ParsingException {
 		String input = "@prefix ex: <http://example.org/> . ex:s(ex:c) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(fact), statements);
 	}
 
 	@Test
 	public void testBaseRelativeResolution() throws ParsingException {
 		String input = "@base <http://example.org/> . <s>(<c>) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(fact), statements);
 	}
 
 	@Test
 	public void testBaseResolution() throws ParsingException {
 		String input = "@base <http://example.org/> . s(c) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(fact), statements);
 	}
 
 	@Test
 	public void testNoBaseRelativeIri() throws ParsingException {
 		String input = "s(c) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		PositiveLiteral atom = Expressions.makePositiveLiteral("s", Expressions.makeConstant("c"));
-		assertEquals(Arrays.asList(atom), ruleParser.getFacts());
+		assertEquals(Arrays.asList(atom), statements);
 	}
 
 	@Test(expected = ParsingException.class)
@@ -145,16 +149,16 @@ public class RuleParserTest {
 	public void testSimpleRule() throws ParsingException {
 		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- p(?X,c), p(?X,?Z) . ";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(rule1), ruleParser.getRules());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(rule1), statements);
 	}
 
 	@Test
 	public void testNegationRule() throws ParsingException {
 		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- ~p(?X,c), p(?X,?Z) . ";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(rule2), ruleParser.getRules());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(rule2), statements);
 	}
 
 	@Test(expected = ParsingException.class)
@@ -169,8 +173,8 @@ public class RuleParserTest {
 		String input = "@base \n\n<http://example.org/> . "
 				+ " q(?X, !Y)  , r(?X,    d\t ) \n\n:- p(?X,c), p(?X,\n?Z) \n. ";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(rule1), ruleParser.getRules());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(rule1), statements);
 	}
 
 	@Test(expected = ParsingException.class)
@@ -205,58 +209,58 @@ public class RuleParserTest {
 	public void testIntegerLiteral() throws ParsingException {
 		String input = "p(42) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
 				Expressions.makeConstant("42^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
-		assertEquals(Arrays.asList(integerLiteral), ruleParser.getFacts());
+		assertEquals(Arrays.asList(integerLiteral), statements);
 	}
 
 	@Test
 	public void testAbbreviatedIntegerLiteral() throws ParsingException {
 		String input = "@prefix xsd: <" + PrefixDeclarations.XSD + "> . " + "p(\"42\"^^xsd:integer) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
 				Expressions.makeConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
-		assertEquals(Arrays.asList(integerLiteral), ruleParser.getFacts());
+		assertEquals(Arrays.asList(integerLiteral), statements);
 	}
 
 	@Test
 	public void testFullIntegerLiteral() throws ParsingException {
 		String input = "p(\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + "> ) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
 				Expressions.makeConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
-		assertEquals(Arrays.asList(integerLiteral), ruleParser.getFacts());
+		assertEquals(Arrays.asList(integerLiteral), statements);
 	}
 
 	@Test
 	public void testDecimalLiteral() throws ParsingException {
 		String input = "p(-5.0) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		PositiveLiteral decimalLiteral = Expressions.makePositiveLiteral("p",
 				Expressions.makeConstant("-5.0^^<" + PrefixDeclarations.XSD_DECIMAL + ">"));
-		assertEquals(Arrays.asList(decimalLiteral), ruleParser.getFacts());
+		assertEquals(Arrays.asList(decimalLiteral), statements);
 	}
 
 	@Test
 	public void testDoubleLiteral() throws ParsingException {
 		String input = "p(4.2E9) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		PositiveLiteral doubleLiteral = Expressions.makePositiveLiteral("p",
 				Expressions.makeConstant("4.2E9^^<" + PrefixDeclarations.XSD_DOUBLE + ">"));
-		assertEquals(Arrays.asList(doubleLiteral), ruleParser.getFacts());
+		assertEquals(Arrays.asList(doubleLiteral), statements);
 	}
 
 	@Test
 	public void testStringLiteral() throws ParsingException {
 		String input = "p(\"abc\") .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(fact2), statements);
 	}
 
 	@Test(expected = ParsingException.class)
@@ -270,10 +274,10 @@ public class RuleParserTest {
 	public void testStringLiteralEscapes() throws ParsingException {
 		String input = "p(\"_\\\"_\\\\_\\n_\\t_\") ."; // User input: p("_\"_\\_\n_\t_")
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeConstant("\"_\"_\\_\n_\t_\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
-		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+		assertEquals(Arrays.asList(fact), statements);
 	}
 
 	@Test
@@ -281,20 +285,20 @@ public class RuleParserTest {
 		// User input: p("_\n_\t_\r_\b_\f_\'_\"_\\_")
 		String input = "p(\"_\\n_\\t_\\r_\\b_\\f_\\'_\\\"_\\\\_\") .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeConstant("\"_\n_\t_\r_\b_\f_\'_\"_\\_\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
-		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+		assertEquals(Arrays.asList(fact), statements);
 	}
 
 	@Test
 	public void testStringLiteralMultiLine() throws ParsingException {
 		String input = "p('''line 1\n\n" + "line 2\n" + "line 3''') ."; // User input: p("a\"b\\c")
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeConstant("\"line 1\n\nline 2\nline 3\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
-		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+		assertEquals(Arrays.asList(fact), statements);
 	}
 
 	@Test(expected = ParsingException.class)
@@ -308,41 +312,41 @@ public class RuleParserTest {
 	public void testFullLiteral() throws ParsingException {
 		String input = "p(\"abc\"^^<http://www.w3.org/2001/XMLSchema#string>) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(fact2), statements);
 	}
 
 	@Test
 	public void testUnicodeLiteral() throws ParsingException {
 		String input = "p(\"\\u0061\\u0062\\u0063\") ."; // "abc"
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(fact2), statements);
 	}
 
 	@Test
 	public void testUnicodeUri() throws ParsingException {
 		String input = "@base <http://example.org/> . @prefix ex: <http://example.org/> .  ex:\\u0073(c) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(fact), statements);
 	}
 
 	@Test
 	public void testPrefixedLiteral() throws ParsingException {
 		String input = "@prefix xsd: <" + PrefixDeclarations.XSD + "> . " + "p(\"abc\"^^xsd:string) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(fact2), ruleParser.getFacts());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(fact2), statements);
 	}
 
 	@Test
 	public void testLangStringLiteral() throws ParsingException {
 		String input = "p(\"abc\"@en-gb) .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"abc\"@en-gb"));
-		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+		assertEquals(Arrays.asList(fact), statements);
 	}
 
 	@Test
@@ -350,8 +354,8 @@ public class RuleParserTest {
 		String input = "@prefix ex: <http://example.org/> . % comment \n" + "%@prefix ex: <http:nourl> \n"
 				+ " ex:s(ex:c) . % comment \n";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
-		assertEquals(Arrays.asList(fact), ruleParser.getFacts());
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(fact), statements);
 	}
 
 	@Test
@@ -388,24 +392,22 @@ public class RuleParserTest {
 	public void testCsvSource() throws ParsingException, IOException {
 		String input = "@source p(2) : load-csv(\"src/main/data/input/example.csv\") .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		CsvFileDataSource csvds = new CsvFileDataSource(new File("src/main/data/input/example.csv"));
 		Predicate p = Expressions.makePredicate("p", 2);
-		assertEquals(1, ruleParser.getDataSourceDeclartions().size());
-		assertEquals(p, ruleParser.getDataSourceDeclartions().get(0).getPredicate());
-		assertEquals(csvds, ruleParser.getDataSourceDeclartions().get(0).getDataSource());
+		DataSourceDeclaration d = new DataSourceDeclarationImpl(p, csvds);
+		assertEquals(Arrays.asList(d), statements);
 	}
 
 	@Test
 	public void testRdfSource() throws ParsingException, IOException {
 		String input = "@source p(3) : load-rdf(\"src/main/data/input/example.nt.gz\") .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		RdfFileDataSource rdfds = new RdfFileDataSource(new File("src/main/data/input/example.nt.gz"));
 		Predicate p = Expressions.makePredicate("p", 3);
-		assertEquals(1, ruleParser.getDataSourceDeclartions().size());
-		assertEquals(p, ruleParser.getDataSourceDeclartions().get(0).getPredicate());
-		assertEquals(rdfds, ruleParser.getDataSourceDeclartions().get(0).getDataSource());
+		DataSourceDeclaration d = new DataSourceDeclarationImpl(p, rdfds);
+		assertEquals(Arrays.asList(d), statements);
 	}
 
 	@Test(expected = ParsingException.class)
@@ -419,13 +421,12 @@ public class RuleParserTest {
 	public void testSparqlSource() throws ParsingException, MalformedURLException {
 		String input = "@source p(2) : sparql(<https://query.wikidata.org/sparql>,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
 		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(input);
+		ArrayList<Statement> statements = new ArrayList<>(ruleParser.parse(input).getStatements());
 		SparqlQueryResultDataSource sparqlds = new SparqlQueryResultDataSource(
 				new URL("https://query.wikidata.org/sparql"), "disease, doid", "?disease wdt:P699 ?doid .");
 		Predicate p = Expressions.makePredicate("p", 2);
-		assertEquals(1, ruleParser.getDataSourceDeclartions().size());
-		assertEquals(p, ruleParser.getDataSourceDeclartions().get(0).getPredicate());
-		assertEquals(sparqlds, ruleParser.getDataSourceDeclartions().get(0).getDataSource());
+		DataSourceDeclaration d = new DataSourceDeclarationImpl(p, sparqlds);
+		assertEquals(Arrays.asList(d), statements);
 	}
 
 	@Test(expected = ParsingException.class)

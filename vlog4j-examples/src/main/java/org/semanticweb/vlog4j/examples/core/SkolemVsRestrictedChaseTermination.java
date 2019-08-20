@@ -71,16 +71,12 @@ public class SkolemVsRestrictedChaseTermination {
 				+ "isPartOfIDB(?X, ?Y) :- hasPartIDB(?Y, ?X) .";
 
 		final RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(rules);
+		final KnowledgeBase kb = ruleParser.parse(rules);
 
 		/*
 		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to
 		 * call close() to free the reasoner resources.
 		 */
-		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(ruleParser.getRules());
-		kb.addFacts(ruleParser.getFacts());
-
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 

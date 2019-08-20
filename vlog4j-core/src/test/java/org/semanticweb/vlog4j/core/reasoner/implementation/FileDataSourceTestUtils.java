@@ -38,6 +38,7 @@ import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityExceptio
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -94,8 +95,7 @@ public final class FileDataSourceTestUtils {
 	}
 
 	public static void testConstructor(final FileDataSource fileDataSource, final File expectedFile,
-			final String expectedDirCanonicalPath, final String expectedFileNameWithoutExtension)
-					throws IOException {
+			final String expectedDirCanonicalPath, final String expectedFileNameWithoutExtension) throws IOException {
 		assertEquals(expectedFile, fileDataSource.getFile());
 		assertEquals(expectedDirCanonicalPath, fileDataSource.getDirCanonicalPath());
 		assertEquals(expectedFileNameWithoutExtension, fileDataSource.getFileNameWithoutExtension());
@@ -103,10 +103,10 @@ public final class FileDataSourceTestUtils {
 
 	public static void testLoadEmptyFile(final Predicate predicate, final PositiveLiteral queryAtom,
 			final FileDataSource emptyFileDataSource)
-					throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		
+			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(predicate, emptyFileDataSource);
+		kb.addStatement(new DataSourceDeclarationImpl(predicate, emptyFileDataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

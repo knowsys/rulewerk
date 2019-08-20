@@ -73,7 +73,7 @@ public class TestReasonOverRdfFacts {
 		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFacts(facts);
+		kb.addStatements(facts);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -93,7 +93,7 @@ public class TestReasonOverRdfFacts {
 		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFacts(facts);
+		kb.addStatements(facts);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

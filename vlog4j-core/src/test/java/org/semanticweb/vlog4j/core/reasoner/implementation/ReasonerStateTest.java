@@ -44,6 +44,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -85,7 +86,7 @@ public class ReasonerStateTest {
 	public void testAddRules1()
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 		try (final Reasoner reasoner = Reasoner.getInstance();) {
-			reasoner.getKnowledgeBase().addRules(ruleQxPx);
+			reasoner.getKnowledgeBase().addStatement(ruleQxPx);
 			reasoner.load();
 		}
 	}
@@ -94,20 +95,20 @@ public class ReasonerStateTest {
 	public void testAddRules2()
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(ruleQxPx);
+		kb.addStatement(ruleQxPx);
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.resetReasoner();
 		}
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void testAddRules3() {
 		final KnowledgeBase kb = new KnowledgeBase();
 		final List<Rule> rules = new ArrayList<>();
 		rules.add(ruleQxPx);
 		rules.add(null);
-		kb.addRules(rules);
+		kb.addStatements(rules);
 	}
 
 	// FIXME update test
@@ -117,13 +118,13 @@ public class ReasonerStateTest {
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFacts(factPc);
+		kb.addStatement(factPc);
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 		}
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void testAddFacts2()
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
 
@@ -131,7 +132,7 @@ public class ReasonerStateTest {
 		final List<Fact> facts = new ArrayList<>();
 		facts.add(factPc);
 		facts.add(null);
-		kb.addFacts(facts);
+		kb.addStatements(facts);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -175,8 +176,7 @@ public class ReasonerStateTest {
 	public void testResetDiscardInferences()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(ruleQxPx);
-		kb.addFacts(factPc);
+		kb.addStatements(ruleQxPx, factPc);
 
 		for (final Algorithm algorithm : Algorithm.values()) {
 			// discard inferences regardless of the inference algorithm
@@ -212,13 +212,13 @@ public class ReasonerStateTest {
 	public void testResetKeepExplicitDatabase()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(ruleQxPx);
+		kb.addStatement(ruleQxPx);
 		// assert p(c)
-		kb.addFacts(factPc);
+		kb.addStatement(factPc);
 		// assert r(d)
 		final Predicate predicateR1 = Expressions.makePredicate("r", 1);
-		kb.addFactsFromDataSource(predicateR1,
-				new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER, "constantD.csv")));
+		kb.addStatement(new DataSourceDeclarationImpl(predicateR1,
+				new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER, "constantD.csv"))));
 		// p(?x) -> q(?x)
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {

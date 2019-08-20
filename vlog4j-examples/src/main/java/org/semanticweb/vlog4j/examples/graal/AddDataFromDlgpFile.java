@@ -107,11 +107,11 @@ public class AddDataFromDlgpFile {
 
 		try (Reasoner reasoner = Reasoner.getInstance()) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
-			kb.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
+			kb.addStatements(GraalToVLog4JModelConverter.convertRules(graalRules));
 			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
-				kb.addRules(graalConjunctiveQueryToRule.getRule());
+				kb.addStatement(graalConjunctiveQueryToRule.getRule());
 			}
-			kb.addFacts(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
+			kb.addStatements(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
 
 			reasoner.load();
 			System.out.println("Before materialisation:");

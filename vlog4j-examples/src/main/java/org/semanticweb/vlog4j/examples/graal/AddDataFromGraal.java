@@ -126,9 +126,9 @@ public class AddDataFromGraal {
 		 * the reasoner automatically.
 		 */
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
-		kb.addRules(convertedGraalConjunctiveQuery.getRule());
-		kb.addFacts(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
+		kb.addStatements(GraalToVLog4JModelConverter.convertRules(graalRules));
+		kb.addStatements(convertedGraalConjunctiveQuery.getRule());
+		kb.addStatements(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
 
 		try (Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

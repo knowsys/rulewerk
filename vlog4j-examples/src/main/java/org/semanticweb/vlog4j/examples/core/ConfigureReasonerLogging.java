@@ -100,8 +100,8 @@ public class ConfigureReasonerLogging {
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
-			kb.addRules(rules);
-			kb.addFacts(fact);
+			kb.addStatements(rules);
+			kb.addStatement(fact);
 
 			/*
 			 * Default reasoner log level is WARNING.

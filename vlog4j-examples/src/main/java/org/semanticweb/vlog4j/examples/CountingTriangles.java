@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
@@ -45,19 +44,15 @@ public class CountingTriangles {
 	public static void main(final String[] args) throws IOException {
 		ExamplesUtils.configureLogging();
 
-		final KnowledgeBase kb = new KnowledgeBase();
+		KnowledgeBase kb;
 		/* Configure rules */
 		final RuleParser ruleParser = new RuleParser();
 		try {
-			ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "counting-triangles.rls"));
+			kb = ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "counting-triangles.rls"));
 		} catch (final ParsingException e) {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;
 		}
-		for (final DataSourceDeclaration dataSourceDeclaration : ruleParser.getDataSourceDeclartions()) {
-			kb.addFactsFromDataSource(dataSourceDeclaration.getPredicate(), dataSourceDeclaration.getDataSource());
-		}
-		kb.addRules(ruleParser.getRules());
 		System.out.println("Rules used in this example:");
 		kb.getRules().forEach(System.out::println);
 		System.out.println("");

@@ -1,28 +1,26 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
-import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.TermType;
-
-import karmaresearch.vlog.Atom;
-
+import org.semanticweb.vlog4j.core.model.api.Statement;
+import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
 
 /*-
  * #%L
@@ -44,196 +42,257 @@ import karmaresearch.vlog.Atom;
  * #L%
  */
 
-public class KnowledgeBase{
-
-	private final List<Rule> rules = new ArrayList<>();
-	private final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = new HashMap<>();
-	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
-
-	/**
-	 * Adds rules to the <b>knowledge base</b> in the given order. The reasoner may
-	 * rewrite the rules internally according to the set
-	 * {@link RuleRewriteStrategy}.
-	 *
-	 * @param rules non-null rules to be added to the <b>knowledge base</b> for
-	 *              reasoning.
-	 * @throws IllegalArgumentException if the {@code rules} literals contain terms
-	 *                                  which are not of type
-	 *                                  {@link TermType#CONSTANT} or
-	 *                                  {@link TermType#VARIABLE}.
-	 */
-	public void addRules(@NonNull Rule... rules) {
-		addRules(Arrays.asList(rules));
-	}
+/**
+ * A knowledge base with rules, facts, and declartions for loading data from
+ * further sources. This is a "syntactic" object in that it represents some
+ * information that is not relevant for the semantics of reasoning, but that is
+ * needed to ensure faithful re-serialisation of knowledge bases loaded from
+ * files (e.g., preserving order).
+ * 
+ * @author Markus Kroetzsch
+ *
+ */
+public class KnowledgeBase {
 
 	/**
-	 * Adds rules to the <b>knowledge base</b> in the given order. The reasoner may
-	 * rewrite the rules internally according to the set
-	 * {@link RuleRewriteStrategy}.
-	 *
-	 * @param rules non-null rules to be added to the <b>knowledge base</b> for
-	 *              reasoning.
-	 * @throws IllegalArgumentException if the {@code rules} literals contain terms
-	 *                                  which are not of type
-	 *                                  {@link TermType#CONSTANT} or
-	 *                                  {@link TermType#VARIABLE}.
-	 */
-	public void addRules(@NonNull List<Rule> rules) {
-		Validate.noNullElements(rules, "Null rules are not alowed! The list contains a null at position [%d].");
-		this.rules.addAll(new ArrayList<>(rules));
-
-		// TODO setChanged
-		// TODO notify listeners with the diff
-	}
-
-	/**
-	 * Get the list of all rules that have been added to the reasoner. The list is
-	 * read-only and cannot be modified to add or delete rules.
+	 * Auxiliary class to process {@link Statement}s when added to the knowledge
+	 * base. Returns true if a statement was added successfully.
 	 * 
-	 * @return list of {@link Rule}
+	 * @author Markus Kroetzsch
+	 *
 	 */
-	public List<Rule> getRules() {
-		return Collections.unmodifiableList(this.rules);
+	class AddStatementVisitor implements StatementVisitor<Boolean> {
+		@Override
+		public Boolean visit(Fact statement) {
+			addFact(statement);
+			return true;
+		}
+
+		@Override
+		public Boolean visit(Rule statement) {
+			return true;
+		}
+
+		@Override
+		public Boolean visit(DataSourceDeclaration statement) {
+			dataSourceDeclarations.add(statement);
+			return true;
+		}
+	}
+
+	final AddStatementVisitor addStatementVisitor = new AddStatementVisitor();
+
+	class ExtractStatementsVisitor<T> implements StatementVisitor<Void> {
+
+		final ArrayList<T> extracted = new ArrayList<>();
+		final Class<T> ownType;
+
+		ExtractStatementsVisitor(Class<T> type) {
+			ownType = type;
+		}
+
+		ArrayList<T> getExtractedStatements() {
+			return extracted;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Void visit(Fact statement) {
+			if (ownType.equals(Fact.class)) {
+				extracted.add((T) statement);
+			}
+			return null;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Void visit(Rule statement) {
+			if (ownType.equals(Rule.class)) {
+				extracted.add((T) statement);
+			}
+			return null;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Void visit(DataSourceDeclaration statement) {
+			if (ownType.equals(DataSourceDeclaration.class)) {
+				extracted.add((T) statement);
+			}
+			return null;
+		}
+
 	}
 
 	/**
-	 * Adds non-null facts to the <b>knowledge base</b>. A <b>fact</b> is a
-	 * {@link PositiveLiteral} with all terms ({@link PositiveLiteral#getTerms()})
-	 * of type {@link TermType#CONSTANT}. <br>
-	 * Facts predicates ({@link PositiveLiteral#getPredicate()}) cannot have
-	 * multiple data sources.
-	 *
-	 * @param facts facts to be added to the <b>knowledge base</b>. The given order
-	 *              is not maintained.
-	 * @throws IllegalArgumentException if the <b>knowledge base</b> contains facts
-	 *                                  from a data source with the same predicate
-	 *                                  ({@link PositiveLiteral#getPredicate()}) as
-	 *                                  a {@link PositiveLiteral} among given
-	 *                                  {@code facts}.
-	 * @throws IllegalArgumentException if the {@code facts} literals contain terms
-	 *                                  which are not of type
-	 *                                  {@link TermType#CONSTANT}.
+	 * The primary storage for the contents of the knowledge base.
 	 */
-	public void addFacts(final Fact... facts) {
-		addFacts(Arrays.asList(facts));
-
-		// TODO setChanged
-		// TODO notify listeners with the diff
-	}
+	final LinkedHashSet<Statement> statements = new LinkedHashSet<>();
+	/**
+	 * Known prefixes that can be used to pretty-print the contents of the knowledge
+	 * base. We try to preserve user-provided prefixes found in files when loading
+	 * data.
+	 */
+	PrefixDeclarations prefixDeclarations;
 
 	/**
-	 * Adds non-null facts to the <b>knowledge base</b>. A <b>fact</b> is a
-	 * {@link PositiveLiteral} with all terms ({@link PositiveLiteral#getTerms()})
-	 * of type {@link TermType#CONSTANT}. <br>
-	 * Facts predicates ({@link PositiveLiteral#getPredicate()}) cannot have
-	 * multiple data sources.
-	 *
-	 * @param facts facts to be added to the <b>knowledge base</b>.
-	 * @throws IllegalArgumentException if the <b>knowledge base</b> contains facts
-	 *                                  from a data source with the same predicate
-	 *                                  ({@link PositiveLiteral#getPredicate()}) as
-	 *                                  an {@link PositiveLiteral} among given
-	 *                                  {@code facts}.
-	 * @throws IllegalArgumentException if the {@code facts} literals contain terms
-	 *                                  which are not of type
-	 *                                  {@link TermType#CONSTANT}.
+	 * Index structure that organises all facts by their predicate.
 	 */
-	// TODO add examples to javadoc about multiple sources per predicate and EDB/IDB
-	public void addFacts(final Collection<Fact> facts) {
-		Validate.noNullElements(facts, "Null facts are not alowed! The list contains a fact at position [%d].");
-		for (final PositiveLiteral fact : facts) {
-			validateFactTermsAreConstant(fact);
+	final Map<Predicate, Set<PositiveLiteral>> factsByPredicate = new HashMap<>();
+	/**
+	 * Index structure that holds all data source declarations of this knowledge
+	 * base.
+	 */
+	final Set<DataSourceDeclaration> dataSourceDeclarations = new HashSet<>();
 
-			final Predicate predicate = fact.getPredicate();
-			validateNoDataSourceForPredicate(predicate);
-
-			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
-			this.factsForPredicate.get(predicate).add(fact);
+	/**
+	 * Adds a single statement to the knowledge base.
+	 * 
+	 * @param statement
+	 */
+	public void addStatement(Statement statement) {
+		Validate.notNull(statement, "Statement cannot be Null.");
+		if (!this.statements.contains(statement) && statement.accept(this.addStatementVisitor)) {
+			this.statements.add(statement);
 		}
 	}
 
 	/**
-	 * Adds facts stored in given {@code dataSource} for given {@code predicate} to
-	 * the <b>knowledge base</b>. Facts predicates cannot have multiple data
-	 * sources, including in-memory {@link Atom} objects added trough
-	 * {@link #addFacts}.
-	 *
-	 * @param predicate  the {@link Predicate} for which the given
-	 *                   {@code dataSource} contains <b>fact terms</b>.
-	 * @param dataSource data source containing the fact terms to be associated to
-	 *                   given predicate and added to the reasoner
-	 * @throws IllegalArgumentException if the <b>knowledge base</b> contains facts
-	 *                                  in memory (added using {@link #addFacts}) or
-	 *                                  from a data source with the same
-	 *                                  {@link Predicate} as given
-	 *                                  {@code predicate}.
+	 * Adds a collection of statements to the knowledge base.
+	 * 
+	 * @param statements
 	 */
-	// TODO add example to javadoc with two datasources and with in-memory facts for
-	// the same predicate.
-	// TODO validate predicate arity corresponds to the dataSource facts arity
-	public void addFactsFromDataSource(Predicate predicate, DataSource dataSource) {
-		Validate.notNull(predicate, "Null predicates are not allowed!");
-		Validate.notNull(dataSource, "Null dataSources are not allowed!");
-		validateNoDataSourceForPredicate(predicate);
-		Validate.isTrue(!this.factsForPredicate.containsKey(predicate),
-				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added in memory: %s",
-				predicate, this.factsForPredicate.get(predicate));
-
-		this.dataSourceForPredicate.put(predicate, dataSource);
+	public void addStatements(Collection<? extends Statement> statements) {
+		for (Statement statement : statements) {
+			addStatement(statement);
+		}
 	}
 
+	/**
+	 * Adds a list of statements to the knowledge base.
+	 * 
+	 * @param statements
+	 */
+	public void addStatements(Statement... statements) {
+		for (Statement statement : statements) {
+			addStatement(statement);
+		}
+	}
+
+	/**
+	 * Get the list of all rules that have been added to the knowledge base. The
+	 * list is read-only and cannot be modified to add or delete rules.
+	 * 
+	 * @return list of {@link Rule}s
+	 */
+	public List<Rule> getRules() {
+		return getStatementsByType(Rule.class);
+	}
+
+	/**
+	 * Get the list of all facts that have been added to the knowledge base. The
+	 * list is read-only and cannot be modified to add or delete facts.
+	 * 
+	 * @return list of {@link Fact}s
+	 */
+	public List<Fact> getFacts() {
+		return getStatementsByType(Fact.class);
+	}
+
+	/**
+	 * Get the list of all data source declarations that have been added to the
+	 * knowledge base. The list is read-only and cannot be modified to add or delete
+	 * facts.
+	 * 
+	 * @return list of {@link DataSourceDeclaration}s
+	 */
+	public List<DataSourceDeclaration> getDataSourceDeclarations() {
+		return getStatementsByType(DataSourceDeclaration.class);
+	}
+
+	<T> List<T> getStatementsByType(Class<T> type) {
+		ExtractStatementsVisitor<T> visitor = new ExtractStatementsVisitor<>(type);
+		for (Statement statement : statements) {
+			statement.accept(visitor);
+		}
+		return Collections.unmodifiableList(visitor.getExtractedStatements());
+	}
+
+	/**
+	 * Add a single fact to the internal data structures. It is assumed that it has
+	 * already been checked that this fact is not present yet.
+	 * 
+	 * @param fact the fact to add
+	 */
+	void addFact(Fact fact) {
+		final Predicate predicate = fact.getPredicate();
+		this.factsByPredicate.putIfAbsent(predicate, new HashSet<>());
+		this.factsByPredicate.get(predicate).add(fact);
+	}
+
+	@Deprecated
 	public boolean hasFacts() {
-		return !this.dataSourceForPredicate.isEmpty() || !this.factsForPredicate.isEmpty();
+		// If needed, a more elegant implementation should be used
+		return !this.getFacts().isEmpty() || !this.getDataSourceDeclarations().isEmpty();
 	}
 
+	@Deprecated
 	public Map<Predicate, DataSource> getDataSourceForPredicate() {
-		return this.dataSourceForPredicate;
+		// Only for temporary functionality; the one-source-per-predicate model will be
+		// retired and is no longer enforced in the knowledge base
+		Map<Predicate, DataSource> result = new HashMap<>();
+		for (DataSourceDeclaration dsd : getDataSourceDeclarations()) {
+			result.put(dsd.getPredicate(), dsd.getDataSource());
+		}
+		return result;
 	}
 
+	@Deprecated
 	public Map<Predicate, Set<PositiveLiteral>> getFactsForPredicate() {
-		return this.factsForPredicate;
+		// Check if this is really the best format to access this data
+		return this.factsByPredicate;
 	}
 
+	@Deprecated
 	public Set<Predicate> getEdbPredicates() {
 		// TODO use cache
 		return collectEdbPredicates();
 	}
 
+	@Deprecated
 	public Set<Predicate> getIdbPredicates() {
 		// TODO use cache
 		return collectIdbPredicates();
 	}
 
-	private void validateFactTermsAreConstant(PositiveLiteral fact) {
-		final Set<Term> nonConstantTerms = new HashSet<>(fact.getTerms());
-		nonConstantTerms.removeAll(fact.getConstants());
-		Validate.isTrue(nonConstantTerms.isEmpty(),
-				"Only Constant terms alowed in Fact literals! The following non-constant terms [%s] appear for fact [%s]!",
-				nonConstantTerms, fact);
-
-	}
-
-	private void validateNoDataSourceForPredicate(final Predicate predicate) {
-		Validate.isTrue(!this.dataSourceForPredicate.containsKey(predicate),
-				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added from data source: %s",
-				predicate, this.dataSourceForPredicate.get(predicate));
-	}
-
-	private Set<Predicate> collectEdbPredicates() {
+	Set<Predicate> collectEdbPredicates() {
+		// not an efficient or elegant implementation
 		final Set<Predicate> edbPredicates = new HashSet<>();
-		edbPredicates.addAll(this.dataSourceForPredicate.keySet());
-		edbPredicates.addAll(this.factsForPredicate.keySet());
+		edbPredicates.addAll(this.getDataSourceForPredicate().keySet());
+		edbPredicates.addAll(this.factsByPredicate.keySet());
 		return edbPredicates;
 	}
 
-	private Set<Predicate> collectIdbPredicates() {
+	Set<Predicate> collectIdbPredicates() {
 		final Set<Predicate> idbPredicates = new HashSet<>();
-		for (final Rule rule : this.rules) {
+		for (final Rule rule : this.getRules()) {
 			for (final Literal headAtom : rule.getHead()) {
 				idbPredicates.add(headAtom.getPredicate());
 			}
 		}
 		return idbPredicates;
+	}
+
+	/**
+	 * Returns all {@link Statement}s of this knowledge base.
+	 * 
+	 * The result can be iterated over and will return statements in the original
+	 * order.
+	 * 
+	 * @return a collection of statements
+	 */
+	public Collection<Statement> getStatements() {
+		return this.statements;
 	}
 
 }

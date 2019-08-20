@@ -38,6 +38,7 @@ import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
@@ -58,9 +59,10 @@ public class AddDataSourceTest {
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFacts(factPredicatePArity2, factPredicateQArity1);
-		kb.addFactsFromDataSource(predicateLArity1, dataSource);
-		kb.addFactsFromDataSource(predicateParity1, dataSource);
+		kb.addStatement(factPredicatePArity2);
+		kb.addStatement(factPredicateQArity1);
+		kb.addStatement(new DataSourceDeclarationImpl(predicateLArity1, dataSource));
+		kb.addStatement(new DataSourceDeclarationImpl(predicateParity1, dataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -87,8 +89,8 @@ public class AddDataSourceTest {
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			kb.addFactsFromDataSource(predicateP, dataSource);
-			kb.addFactsFromDataSource(predicateQ, dataSource);
+			kb.addStatement(new DataSourceDeclarationImpl(predicateP, dataSource));
+			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
 			reasoner.load();
 		}
 	}
@@ -105,9 +107,9 @@ public class AddDataSourceTest {
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			kb.addFactsFromDataSource(predicateP, dataSource);
+			kb.addStatement(new DataSourceDeclarationImpl(predicateP, dataSource));
 			reasoner.load();
-			kb.addFactsFromDataSource(predicateQ, dataSource);
+			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
 		}
 	}
 
@@ -123,53 +125,11 @@ public class AddDataSourceTest {
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			kb.addFactsFromDataSource(predicateP, dataSource);
+			kb.addStatement(new DataSourceDeclarationImpl(predicateP, dataSource));
 			reasoner.load();
 			reasoner.reason();
-			kb.addFactsFromDataSource(predicateQ, dataSource);
+			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
 		}
-	}
-
-	// TODO move to a test class for KnowledgeBase
-	@Test(expected = IllegalArgumentException.class)
-	public void testAddDataSourceNoMultipleDataSourcesForPredicate() throws ReasonerStateException, IOException {
-		final Predicate predicate = Expressions.makePredicate("p", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-
-		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(predicate, dataSource);
-		kb.addFactsFromDataSource(predicate, dataSource);
-	}
-
-	// TODO move to a test class for KnowledgeBase
-	@Test(expected = IllegalArgumentException.class)
-	public void testAddDataSourceNoFactsForPredicate() throws ReasonerStateException, IOException {
-		final Predicate predicate = Expressions.makePredicate("p", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-		final Fact fact = Expressions.makeFact(Expressions.makePredicate("p", 1),
-				Arrays.asList(Expressions.makeConstant("a")));
-
-		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFacts(fact);
-		kb.addFactsFromDataSource(predicate, dataSource);
-	}
-
-	// TODO move to a test class for KnowledgeBase
-	@Test(expected = NullPointerException.class)
-	public void testAddDataSourcePredicateNotNull() throws ReasonerStateException, IOException {
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
-
-		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(null, dataSource);
-	}
-
-	// TODO move to a test class for KnowledgeBase
-	@Test(expected = NullPointerException.class)
-	public void testAddDataSourceNotNullDataSource() throws ReasonerStateException {
-		final Predicate predicate = Expressions.makePredicate("p", 1);
-
-		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(predicate, null);
 	}
 
 }
