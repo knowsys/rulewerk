@@ -32,6 +32,7 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -48,13 +49,14 @@ public class ExportQueryAnswersToCsvFileTest {
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
 		final Variable z = Expressions.makeVariable("Z");
-		final PositiveLiteral fact = Expressions.makePositiveLiteral(predicate, constantC, constantC, constantD);
+		final Fact fact = Expressions.makeFact(predicate, Arrays.asList(constantC, constantC, constantD));
 
 		final boolean includeBlanks = false;
 		// final String csvFilePath = CSV_EXPORT_FOLDER + "output";
 		final List<List<String>> factCCD = Arrays.asList(Arrays.asList("c", "c", "d"));
 		
 		final KnowledgeBase kb = new KnowledgeBase();
+
 		kb.addFacts(fact);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {

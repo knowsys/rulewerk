@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -33,6 +34,7 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -61,7 +63,7 @@ public class GeneratedAnonymousIndividualsTest {
 	private static KnowledgeBase kb = new KnowledgeBase();
 	// fact: P(c)
 	private static final Constant constantC = Expressions.makeConstant("c");
-	private static final PositiveLiteral fact = Expressions.makePositiveLiteral(p, constantC);
+	private static final Fact fact = Expressions.makeFact(p, Arrays.asList(constantC));
 
 	// query: P(?x,?y) ?
 	final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(p, Expressions.makeVariable("?x"),
@@ -98,8 +100,9 @@ public class GeneratedAnonymousIndividualsTest {
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
-			// the rule {P(?x) -> P(?x,!y), P(?x,!z)} after split  becomes:
-			// { {P(?x) -> P(?x,!y,!z)}, {P(?x,?y,?z) ->, P(?x,?y)}, {P(?x,?y,?z) ->, P(?x,?z)} }
+			// the rule {P(?x) -> P(?x,!y), P(?x,!z)} after split becomes:
+			// { {P(?x) -> P(?x,!y,!z)}, {P(?x,?y,?z) ->, P(?x,?y)}, {P(?x,?y,?z) ->,
+			// P(?x,?z)} }
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 
 			reasoner.load();
@@ -133,10 +136,11 @@ public class GeneratedAnonymousIndividualsTest {
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
-		
+
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
-			// the rule {P(?x) -> P(?x,!y), P(?x,!z)} after split  becomes:
-			// { {P(?x) -> P(?x,!y,!z)}, {P(?x,?y,?z) ->, P(?x,?y)}, {P(?x,?y,?z) ->, P(?x,?z)} }
+			// the rule {P(?x) -> P(?x,!y), P(?x,!z)} after split becomes:
+			// { {P(?x) -> P(?x,!y,!z)}, {P(?x,?y,?z) ->, P(?x,?y)}, {P(?x,?y,?z) ->,
+			// P(?x,?z)} }
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 
 			reasoner.load();
@@ -160,7 +164,6 @@ public class GeneratedAnonymousIndividualsTest {
 			checkTwoDistinctBlanksGenerated(reasoner);
 		}
 	}
-
 
 	private void checkTwoDistinctBlanksGenerated(final Reasoner reasoner)
 			throws ReasonerStateException, IOException, EdbIdbSeparationException {

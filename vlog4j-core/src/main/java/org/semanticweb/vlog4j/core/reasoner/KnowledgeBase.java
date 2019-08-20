@@ -14,12 +14,15 @@ import java.util.Set;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
+
+import karmaresearch.vlog.Atom;
 
 
 /*-
@@ -43,11 +46,10 @@ import org.semanticweb.vlog4j.core.model.api.TermType;
  */
 
 public class KnowledgeBase extends Observable {
-	
+
 	private final List<Rule> rules = new ArrayList<>();
 	private final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = new HashMap<>();
 	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
-
 
 	/**
 	 * Adds rules to the <b>knowledge base</b> in the given order. The reasoner may
@@ -77,7 +79,7 @@ public class KnowledgeBase extends Observable {
 	 *                                  {@link TermType#CONSTANT} or
 	 *                                  {@link TermType#VARIABLE}.
 	 */
-	public void addRules(@NonNull List<Rule> rules){
+	public void addRules(@NonNull List<Rule> rules) {
 		Validate.noNullElements(rules, "Null rules are not alowed! The list contains a null at position [%d].");
 		this.rules.addAll(new ArrayList<>(rules));
 
@@ -91,7 +93,7 @@ public class KnowledgeBase extends Observable {
 	 * 
 	 * @return list of {@link Rule}
 	 */
-	public List<Rule> getRules(){
+	public List<Rule> getRules() {
 		return Collections.unmodifiableList(this.rules);
 	}
 
@@ -113,8 +115,7 @@ public class KnowledgeBase extends Observable {
 	 *                                  which are not of type
 	 *                                  {@link TermType#CONSTANT}.
 	 */
-	// TODO add examples to javadoc about multiple sources per predicate and EDB/IDB
-	public  void addFacts(@NonNull PositiveLiteral... facts){
+	public void addFacts(final Fact... facts) {
 		addFacts(Arrays.asList(facts));
 
 		// TODO setChanged
@@ -139,7 +140,7 @@ public class KnowledgeBase extends Observable {
 	 *                                  {@link TermType#CONSTANT}.
 	 */
 	// TODO add examples to javadoc about multiple sources per predicate and EDB/IDB
-	public void addFacts(@NonNull Collection<PositiveLiteral> facts) {
+	public void addFacts(final Collection<Fact> facts) {
 		Validate.noNullElements(facts, "Null facts are not alowed! The list contains a fact at position [%d].");
 		for (final PositiveLiteral fact : facts) {
 			validateFactTermsAreConstant(fact);
@@ -171,7 +172,7 @@ public class KnowledgeBase extends Observable {
 	// TODO add example to javadoc with two datasources and with in-memory facts for
 	// the same predicate.
 	// TODO validate predicate arity corresponds to the dataSource facts arity
-	public void addFactsFromDataSource(Predicate predicate, DataSource dataSource){
+	public void addFactsFromDataSource(Predicate predicate, DataSource dataSource) {
 		Validate.notNull(predicate, "Null predicates are not allowed!");
 		Validate.notNull(dataSource, "Null dataSources are not allowed!");
 		validateNoDataSourceForPredicate(predicate);
@@ -181,12 +182,11 @@ public class KnowledgeBase extends Observable {
 
 		this.dataSourceForPredicate.put(predicate, dataSource);
 	}
-	
-	
+
 	public boolean hasFacts() {
 		return !this.dataSourceForPredicate.isEmpty() || !this.factsForPredicate.isEmpty();
 	}
-	
+
 	public Map<Predicate, DataSource> getDataSourceForPredicate() {
 		return this.dataSourceForPredicate;
 	}
@@ -194,7 +194,7 @@ public class KnowledgeBase extends Observable {
 	public Map<Predicate, Set<PositiveLiteral>> getFactsForPredicate() {
 		return this.factsForPredicate;
 	}
-	
+
 	public Set<Predicate> getEdbPredicates() {
 		// TODO use cache
 		return collectEdbPredicates();

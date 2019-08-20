@@ -35,15 +35,12 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
-import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
-import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 import karmaresearch.vlog.EDBConfigurationException;
@@ -56,8 +53,8 @@ public class ReasonerTest {
 	final Constant constantC = Expressions.makeConstant(constantNameC);
 	final Constant constantD = Expressions.makeConstant(constantNameD);
 	final Variable x = Expressions.makeVariable("x");
-	final PositiveLiteral factAc = Expressions.makePositiveLiteral("A", constantC);
-	final PositiveLiteral factAd = Expressions.makePositiveLiteral("A", constantD);
+	final Fact factAc = Expressions.makeFact("A", Arrays.asList(constantC));
+	final Fact factAd = Expressions.makeFact("A", Arrays.asList(constantD));
 	final PositiveLiteral atomAx = Expressions.makePositiveLiteral("A", x);
 	final PositiveLiteral atomBx = Expressions.makePositiveLiteral("B", x);
 	final PositiveLiteral atomCx = Expressions.makePositiveLiteral("C", x);
@@ -125,31 +122,6 @@ public class ReasonerTest {
 
 		}
 
-	}
-
-	@Test
-	public void testLoadRuleWithBlank()
-			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		final KnowledgeBase kb = new KnowledgeBase();
-		final PositiveLiteral head = Expressions.makePositiveLiteral("B", new VariableImpl("v"));
-		final Literal body = Expressions.makePositiveLiteral("A", new BlankImpl("blank"));
-		final Rule ruleWithBlank = Expressions.makeRule(head, body);
-
-		kb.addRules(ruleWithBlank);
-
-		kb.addFacts(Expressions.makePositiveLiteral("A", new ConstantImpl("c")));
-
-		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
-			reasoner.reason();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(head, true)) {
-				answerQuery.forEachRemaining(System.out::println);
-			}
-			
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral("A", new VariableImpl("v")), true)) {
-				answerQuery.forEachRemaining(System.out::println);
-			}
-		}
 	}
 
 }

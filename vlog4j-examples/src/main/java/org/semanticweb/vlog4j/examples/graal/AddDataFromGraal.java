@@ -128,7 +128,7 @@ public class AddDataFromGraal {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
 		kb.addRules(convertedGraalConjunctiveQuery.getRule());
-		kb.addFacts(GraalToVLog4JModelConverter.convertAtoms(graalAtoms));
+		kb.addFacts(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
 
 		try (Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

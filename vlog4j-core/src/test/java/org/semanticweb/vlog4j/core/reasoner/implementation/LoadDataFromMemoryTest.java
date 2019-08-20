@@ -21,12 +21,13 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  */
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
@@ -43,9 +44,10 @@ public class LoadDataFromMemoryTest {
 		final Variable vx = Expressions.makeVariable("x");
 		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx),
 				Expressions.makePositiveLiteral("p", vx));
-		final PositiveLiteral factIDBpredQ1 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("c"));
-		final PositiveLiteral factEDBpredQ2 = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
-				Expressions.makeConstant("d"));
+
+		final Fact factIDBpredQ1 = Expressions.makeFact("q", Arrays.asList(Expressions.makeConstant("c")));
+		final Fact factEDBpredQ2 = Expressions.makeFact("q",
+				Arrays.asList(Expressions.makeConstant("d"), Expressions.makeConstant("d")));
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(rule);
 		kb.addFacts(factIDBpredQ1, factEDBpredQ2);
@@ -61,8 +63,9 @@ public class LoadDataFromMemoryTest {
 		final Variable vx = Expressions.makeVariable("x");
 		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx),
 				Expressions.makePositiveLiteral("p", vx));
-		final PositiveLiteral factEDBpred = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
-				Expressions.makeConstant("d"));
+
+		final Fact factEDBpred = Expressions.makeFact("q",
+				Arrays.asList(Expressions.makeConstant("d"), Expressions.makeConstant("d")));
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addRules(rule);
 		kb.addFacts(factEDBpred);
@@ -75,8 +78,9 @@ public class LoadDataFromMemoryTest {
 	// TODO move to a test class for KnowledgeBase
 	@Test(expected = IllegalArgumentException.class)
 	public void addFactsWithVariableTerms() throws ReasonerStateException {
-		final PositiveLiteral factWithVariableTerms = Expressions.makePositiveLiteral("q",
-				Expressions.makeConstant("d"), Expressions.makeVariable("x"));
+
+		final Fact factWithVariableTerms = Expressions.makeFact("q",
+				Arrays.asList(Expressions.makeConstant("d"), Expressions.makeVariable("x")));
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFacts(factWithVariableTerms);
 	}
@@ -84,8 +88,9 @@ public class LoadDataFromMemoryTest {
 	// TODO move to a test class for KnowledgeBase
 	@Test(expected = IllegalArgumentException.class)
 	public void addFactsWithBlankTerms() throws ReasonerStateException {
-		final PositiveLiteral factWithBlankTerms = Expressions.makePositiveLiteral("q", Expressions.makeConstant("d"),
-				new BlankImpl("b"));
+
+		final Fact factWithBlankTerms = Expressions.makeFact("q", Arrays.asList(Expressions.makeConstant("d"),
+				new BlankImpl("b")));
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addFacts(factWithBlankTerms);
 	}

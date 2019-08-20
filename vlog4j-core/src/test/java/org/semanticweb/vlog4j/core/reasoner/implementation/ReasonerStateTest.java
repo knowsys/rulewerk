@@ -38,6 +38,7 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -61,7 +62,7 @@ public class ReasonerStateTest {
 	private static final PositiveLiteral ruleHeadQx = Expressions.makePositiveLiteral(q, x);
 	private static final PositiveLiteral ruleBodyPx = Expressions.makePositiveLiteral(p, x);
 	private static final Rule ruleQxPx = Expressions.makeRule(ruleHeadQx, ruleBodyPx);
-	private static final PositiveLiteral factPc = Expressions.makePositiveLiteral(p, c);
+	private static final Fact factPc = Expressions.makeFact(p, Arrays.asList(c));
 	// private static final Atom factPd = Expressions.makeAtom(q, d);
 
 	@Test(expected = NullPointerException.class)
@@ -125,8 +126,9 @@ public class ReasonerStateTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddFacts2()
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+
 		final KnowledgeBase kb = new KnowledgeBase();
-		final List<PositiveLiteral> facts = new ArrayList<>();
+		final List<Fact> facts = new ArrayList<>();
 		facts.add(factPc);
 		facts.add(null);
 		kb.addFacts(facts);
@@ -307,8 +309,7 @@ public class ReasonerStateTest {
 	}
 
 	@Test(expected = ReasonerStateException.class)
-	public void testFailExportQueryAnswerToCsvBeforeLoad()
-			throws ReasonerStateException, IOException {
+	public void testFailExportQueryAnswerToCsvBeforeLoad() throws ReasonerStateException, IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, FileDataSourceTestUtils.OUTPUT_FOLDER + "output.csv",
 					true);

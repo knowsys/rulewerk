@@ -24,7 +24,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 
 /**
@@ -55,7 +55,7 @@ public class OwlToRulesConverter {
 	 * 
 	 * @return set of facts
 	 */
-	public Set<PositiveLiteral> getFacts() {
+	public Set<Fact> getFacts() {
 		return this.owlAxiomToRulesConverter.facts;
 	}
 

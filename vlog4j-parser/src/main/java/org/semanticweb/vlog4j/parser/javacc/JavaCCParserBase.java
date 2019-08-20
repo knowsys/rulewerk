@@ -27,7 +27,7 @@ import java.util.HashSet;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
@@ -53,7 +53,7 @@ public class JavaCCParserBase {
 	final PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
 
 	final List<Rule> rules = new ArrayList<>();
-	final List<PositiveLiteral> facts = new ArrayList<>();
+	final List<Fact> facts = new ArrayList<>();
 	final List<DataSourceDeclaration> dataSourceDaclarations = new ArrayList<>();
 
 	/**
@@ -222,7 +222,7 @@ public class JavaCCParserBase {
 		return rules;
 	}
 
-	public List<PositiveLiteral> getFacts() {
+	public List<Fact> getFacts() {
 		return facts;
 	}
 

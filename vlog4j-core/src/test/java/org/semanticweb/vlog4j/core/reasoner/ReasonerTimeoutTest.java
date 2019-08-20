@@ -22,6 +22,7 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeC
  * #L%
  */
 
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeFact;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
@@ -29,6 +30,7 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeV
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
@@ -39,12 +41,12 @@ import org.junit.rules.Timeout;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
-
 
 /**
  * Test case ensuring {@link Reasoner#setReasoningTimeout(Integer)} works as
@@ -65,7 +67,7 @@ public class ReasonerTimeoutTest {
 	/**
 	 * A list of facts to be used in multiple test runs.
 	 */
-	private static List<PositiveLiteral> facts = new ArrayList<>();
+	private static List<Fact> facts = new ArrayList<>();
 	/**
 	 * A list of rules to be used in multiple test runs.
 	 */
@@ -83,36 +85,34 @@ public class ReasonerTimeoutTest {
 	public Timeout globalTimeout = Timeout.seconds(timeout + 1);
 
 	/**
-	 * This method provides the {@link #facts} and {@link #rules} to be used in all test runs.
-	 * To test if the timeout works as expected, a small set of facts and rules is used that results in an infinite chase.
-	 * Facts:
-	 * 	infinite_EDB(A, B)
-	 * Rules:
-	 * 	infinite_IDB(?x, ?y) :- infinite_EDB(?x, ?y) 
-	 * 	infinite_IDB(?y, ?z) :- infinite_IDB(?x, ?y)
+	 * This method provides the {@link #facts} and {@link #rules} to be used in all
+	 * test runs. To test if the timeout works as expected, a small set of facts and
+	 * rules is used that results in an infinite chase. Facts: infinite_EDB(A, B)
+	 * Rules: infinite_IDB(?x, ?y) :- infinite_EDB(?x, ?y) infinite_IDB(?y, ?z) :-
+	 * infinite_IDB(?x, ?y)
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		final Predicate infinite_EDB = makePredicate("infinite_EDB", 2);
 		final Predicate infinite_IDB = makePredicate("infinite_IDB", 2);
-		
-		facts.add(makePositiveLiteral(infinite_EDB, makeConstant("A"), makeConstant("B")));
-		
+
+		facts.add(makeFact(infinite_EDB, Arrays.asList(makeConstant("A"), makeConstant("B"))));
+
 		final Variable x = makeVariable("x");
 		final Variable y = makeVariable("y");
 
 		final PositiveLiteral infinite_IDB_xy = makePositiveLiteral(infinite_IDB, x, y);
 		final PositiveLiteral infinite_EDB_xy = makePositiveLiteral(infinite_EDB, x, y);
-		
+
 		final Rule import_rule = makeRule(infinite_IDB_xy, infinite_EDB_xy);
 		rules.add(import_rule);
-		
+
 		final Variable z = makeVariable("z");
-		
+
 		final PositiveLiteral infinite_IDB_yz = makePositiveLiteral(infinite_IDB, y, z);
 		final Rule infinite_rule = makeRule(infinite_IDB_yz, infinite_IDB_xy);
 		rules.add(infinite_rule);
-		
+
 		kb.addRules(rules);
 		kb.addFacts(facts);
 	}
