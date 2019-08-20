@@ -1,0 +1,35 @@
+@prefix wdqs: <https://query.wikidata.org/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+% From Wikidata, get all countries (items with P31 relation to Q6256, or subclasses thereof: P279*)
+% that have a diplomatic relation (P530) with each other:
+@source diplomaticRelation(2): sparql(wdqs:sparql, "country1,country2", 
+   '''?country1 wdt:P31/wdt:P279* wd:Q6256 .
+      ?country2 wdt:P31/wdt:P279* wd:Q6256 .
+      ?country1 wdt:P530 ?country2 .''') .
+
+% Compute the symmetric closure of diplomatic relation:
+symmetricDiplomaticRelation(?X, ?Y) :- diplomaticRelation(?X, ?Y) .
+symmetricDiplomaticRelation(?X, ?Y) :- diplomaticRelation(?Y, ?X) .
+
+country(?X) :- symmetricDiplomaticRelation(?X, ?Y) .
+
+% Compute the equivalence diplomatic relation (transitive symmetric and reflexive closure)
+equivalenceDiplomaticRelation(?X,?Y) :- symmetricDiplomaticRelation(?X, ?Y) .
+equivalenceDiplomaticRelation(?X,?Z) :- equivalenceDiplomaticRelation(?X,?Y),
+                                        symmetricDiplomaticRelation(?Y, ?Z) . 
+
+% Compute the complement of the equivalence diplomatic relation
+complementOfEquivalenceClosure(?X,?Y) :- country(?X), country(?Y), ~equivalenceDiplomaticRelation(?X,?Y) .
+
+% Compute the triangles
+triangle(?X,?Y,?Z) :- complementOfEquivalenceClosure(?X,?Y),
+    complementOfEquivalenceClosure(?Y,?Z),
+    complementOfEquivalenceClosure(?Z,?X).
+
+% Compute 4-clique
+clique4(?X,?Y,?Z,?W) :- triangle(?X,?Y,?Z),
+                        complementOfEquivalenceClosure(?X,?W),
+                        complementOfEquivalenceClosure(?Y,?W),
+                        complementOfEquivalenceClosure(?Z,?W).
+
