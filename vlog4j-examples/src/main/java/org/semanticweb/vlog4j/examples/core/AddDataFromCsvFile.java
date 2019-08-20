@@ -74,7 +74,7 @@ public class AddDataFromCsvFile {
 				// every bicycle has some part that is a wheel:
 				+ "hasPartIDB(?X, !Y), wheelIDB(!Y) :- bicycleIDB(?X) ."
 				// every wheel is part of some bicycle:
-				+ "isPartOfIDB(?X, !Y) :- wheelIDB(?X) ."
+				+ "isPartOfIDB(?X, !Y), bicycleIDB(!Y) :- wheelIDB(?X) ."
 				// hasPart and isPartOf are mutually inverse relations:
 				+ "hasPartIDB(?X, ?Y) :- isPartOfIDB(?Y, ?X) ." //
 				+ "isPartOfIDB(?X, ?Y) :- hasPartIDB(?Y, ?X) .";
