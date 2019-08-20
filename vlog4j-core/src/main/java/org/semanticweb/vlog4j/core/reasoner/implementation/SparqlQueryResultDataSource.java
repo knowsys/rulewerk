@@ -27,7 +27,6 @@ import java.util.LinkedHashSet;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.reasoner.DataSource;
 
 /**
  * A SparqlQueryResultDataSource provide the results of a SPARQL query on a
@@ -36,7 +35,7 @@ import org.semanticweb.vlog4j.core.reasoner.DataSource;
  * @author Irina Dragoste
  *
  */
-public class SparqlQueryResultDataSource implements DataSource {
+public class SparqlQueryResultDataSource extends VLogDataSource {
 
 	private static final String DATASOURCE_TYPE_CONFIG_VALUE = "SPARQL";
 
@@ -113,7 +112,7 @@ public class SparqlQueryResultDataSource implements DataSource {
 	public final String toConfigString() {
 		final String configStringPattern =
 
-				DataSource.PREDICATE_NAME_CONFIG_LINE +
+				PREDICATE_NAME_CONFIG_LINE +
 
 						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
 

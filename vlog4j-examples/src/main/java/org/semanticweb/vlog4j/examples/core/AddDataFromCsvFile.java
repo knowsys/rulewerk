@@ -22,13 +22,11 @@ package org.semanticweb.vlog4j.examples.core;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
@@ -61,8 +59,6 @@ public class AddDataFromCsvFile {
 
 		ExamplesUtils.configureLogging();
 
-		
-
 		final String rules = "" // first declare file inputs:
 				+ "@source bicycleEDB(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz\") ."
 				+ "@source hasPartEDB(2) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz\") ."
@@ -85,15 +81,13 @@ public class AddDataFromCsvFile {
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 
-
-			
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
 			/* 1. Add data to Knowledge Base. */
 			kb.addRules(ruleParser.getRules());
-			for (Pair<Predicate, DataSource> pair : ruleParser.getDataSources()) {
-				kb.addFactsFromDataSource(pair.getLeft(), pair.getRight());
+			for (DataSourceDeclaration dataSourceDeclaration : ruleParser.getDataSourceDeclartions()) {
+				kb.addFactsFromDataSource(dataSourceDeclaration.getPredicate(), dataSourceDeclaration.getDataSource());
 			}
-			
+
 			/*
 			 * 2. Loading, reasoning, and querying while using try-with-resources to close
 			 * the reasoner automatically.

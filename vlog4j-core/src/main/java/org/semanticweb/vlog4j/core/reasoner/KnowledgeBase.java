@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Observable;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -130,6 +131,6 @@ public abstract class KnowledgeBase extends Observable {
 	// TODO add example to javadoc with two datasources and with in-memory facts for
 	// the same predicate.
 	// TODO validate predicate arity corresponds to the dataSource facts arity
-	public abstract void addFactsFromDataSource(@NonNull Predicate predicate, @NonNull DataSource dataSource);
+	public abstract void addFactsFromDataSource(Predicate predicate, DataSource dataSource);
 
 }

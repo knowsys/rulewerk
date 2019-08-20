@@ -25,11 +25,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
@@ -67,8 +65,9 @@ public class DoidExample {
 				System.out.println("Failed to parse rules: " + e.getMessage());
 				return;
 			}
-			for (Pair<Predicate, DataSource> pair : ruleParser.getDataSources()) {
-				kb.addFactsFromDataSource(pair.getLeft(), pair.getRight());
+
+			for (DataSourceDeclaration dataSourceDeclaration : ruleParser.getDataSourceDeclartions()) {
+				kb.addFactsFromDataSource(dataSourceDeclaration.getPredicate(), dataSourceDeclaration.getDataSource());
 			}
 			kb.addRules(ruleParser.getRules());
 			System.out.println("Rules used in this example:");

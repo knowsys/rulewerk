@@ -22,13 +22,12 @@ package org.semanticweb.vlog4j.examples.core;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
@@ -87,17 +86,14 @@ public class AddDataFromRdfFile {
 		ruleParser.parse(rules);
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-
 			/*
 			 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
 			 * to close the reasoner automatically.
 			 */
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
 			kb.addRules(ruleParser.getRules());
-
-			/* Importing {@code .nt.gz} file as data source. */
-			for (Pair<Predicate, DataSource> pair : ruleParser.getDataSources()) {
-				kb.addFactsFromDataSource(pair.getLeft(), pair.getRight());
+			for (DataSourceDeclaration dataSourceDeclaration : ruleParser.getDataSourceDeclartions()) {
+				kb.addFactsFromDataSource(dataSourceDeclaration.getPredicate(), dataSourceDeclaration.getDataSource());
 			}
 
 			reasoner.load();
