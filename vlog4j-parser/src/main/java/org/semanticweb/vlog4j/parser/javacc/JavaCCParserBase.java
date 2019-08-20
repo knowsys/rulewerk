@@ -49,24 +49,24 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
  *
  */
 public class JavaCCParserBase {
-	final protected PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
+	final PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
 
-	final protected List<Rule> rules = new ArrayList<>();
-	final protected List<PositiveLiteral> facts = new ArrayList<>();
-	final protected List<Pair<Predicate, DataSource>> dataSources = new ArrayList<>();
+	final List<Rule> rules = new ArrayList<>();
+	final List<PositiveLiteral> facts = new ArrayList<>();
+	final List<Pair<Predicate, DataSource>> dataSources = new ArrayList<>();
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
 	 */
-	final protected HashSet<String> bodyVars = new HashSet<String>();
+	final HashSet<String> bodyVars = new HashSet<String>();
 	/**
 	 * "Local" variable to remember existential head variables during parsing.
 	 */
-	final protected HashSet<String> headExiVars = new HashSet<String>();;
+	final HashSet<String> headExiVars = new HashSet<String>();;
 	/**
 	 * "Local" variable to remember universal head variables during parsing.
 	 */
-	final protected HashSet<String> headUniVars = new HashSet<String>();;
+	final HashSet<String> headUniVars = new HashSet<String>();;
 
 	/**
 	 * Defines the context for parsing sub-formulas.
@@ -87,29 +87,28 @@ public class JavaCCParserBase {
 		BODY
 	}
 
-	protected Constant createIntegerLiteral(String lexicalForm) {
+	Constant createIntegerLiteral(String lexicalForm) {
 		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_INTEGER + ">");
 	}
 
-	protected Constant createDecimalLiteral(String lexicalForm) {
+	Constant createDecimalLiteral(String lexicalForm) {
 		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DECIMAL + ">");
 	}
 
-	protected Constant createDoubleLiteral(String lexicalForm) {
+	Constant createDoubleLiteral(String lexicalForm) {
 		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DOUBLE + ">");
 	}
-	
+
 	void addDataSource(String predicateName, int arity, DataSource dataSource) {
 		Predicate predicate = Expressions.makePredicate(predicateName, arity);
-	    dataSources.add(Pair.of(predicate,dataSource));
+		dataSources.add(Pair.of(predicate, dataSource));
 	}
 
-	protected static String unescapeStr(String s, int line, int column) throws ParseException {
+	static String unescapeStr(String s, int line, int column) throws ParseException {
 		return unescape(s, '\\', false, line, column);
 	}
 
-	protected static String unescape(String s, char escape, boolean pointCodeOnly, int line, int column)
-			throws ParseException {
+	static String unescape(String s, char escape, boolean pointCodeOnly, int line, int column) throws ParseException {
 		int i = s.indexOf(escape);
 
 		if (i == -1)
@@ -180,21 +179,21 @@ public class JavaCCParserBase {
 	}
 
 	/** Remove first and last characters (e.g. ' or "") from a string */
-	protected static String stripQuotes(String s) {
+	static String stripQuotes(String s) {
 		return s.substring(1, s.length() - 1);
 	}
 
 	/** Remove first 3 and last 3 characters (e.g. ''' or """) from a string */
-	protected static String stripQuotes3(String s) {
+	static String stripQuotes3(String s) {
 		return s.substring(3, s.length() - 3);
 	}
 
 	/** remove the first n charcacters from the string */
-	protected static String stripChars(String s, int n) {
+	static String stripChars(String s, int n) {
 		return s.substring(n, s.length());
 	}
 
-	protected String strRDFLiteral(String data, String lang, String dt) {
+	String strRDFLiteral(String data, String lang, String dt) {
 		// https://www.w3.org/TR/turtle/#grammar-production-String RDFLiteral
 		String ret = "\"" + data + "\"";
 		if (dt != null) {
@@ -212,7 +211,7 @@ public class JavaCCParserBase {
 	/**
 	 * Reset the local set variables used when parsing a rule.
 	 */
-	protected void resetVariableSets() {
+	void resetVariableSets() {
 		this.bodyVars.clear();
 		this.headExiVars.clear();
 		this.headUniVars.clear();
@@ -225,7 +224,7 @@ public class JavaCCParserBase {
 	public List<PositiveLiteral> getFacts() {
 		return facts;
 	}
-	
+
 	public List<Pair<Predicate, DataSource>> getDataSources() {
 		return dataSources;
 	}
