@@ -22,8 +22,8 @@ package org.semanticweb.vlog4j.core.exceptions;
 
 import java.text.MessageFormat;
 
+import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 
 /**

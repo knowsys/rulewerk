@@ -29,7 +29,6 @@ import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
-import org.semanticweb.vlog4j.core.reasoner.DataSource;
 
 /**
  * A {@code FileDataSource} is an abstract implementation of a storage for fact
@@ -40,7 +39,7 @@ import org.semanticweb.vlog4j.core.reasoner.DataSource;
  * @author Irina Dragoste
  *
  */
-public abstract class FileDataSource implements DataSource {
+public abstract class FileDataSource extends VLogDataSource {
 
 	private final static String DATASOURCE_TYPE_CONFIG_VALUE = "INMEMORY";
 
@@ -79,9 +78,8 @@ public abstract class FileDataSource implements DataSource {
 		final Optional<String> potentialExtension = extensionsStream.filter(ex -> fileName.endsWith(ex)).findFirst();
 
 		if (!potentialExtension.isPresent()) {
-			throw new IllegalArgumentException(
-					"Expected one of the following extensions for the data source file " + file + ": "
-							+ String.join(", ", possibleExtensions) + ".");
+			throw new IllegalArgumentException("Expected one of the following extensions for the data source file "
+					+ file + ": " + String.join(", ", possibleExtensions) + ".");
 		}
 
 		return potentialExtension.get();
@@ -93,7 +91,7 @@ public abstract class FileDataSource implements DataSource {
 
 				PREDICATE_NAME_CONFIG_LINE +
 
-				DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
+						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
 
 						"EDB%1$d_param0=" + this.dirCanonicalPath + "\n" +
 

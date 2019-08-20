@@ -391,9 +391,9 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 		CsvFileDataSource csvds = new CsvFileDataSource(new File("src/main/data/input/example.csv"));
 		Predicate p = Expressions.makePredicate("p", 2);
-		assertEquals(1, ruleParser.getDataSources().size());
-		assertEquals(p, ruleParser.getDataSources().get(0).getLeft());
-		assertEquals(csvds, ruleParser.getDataSources().get(0).getRight());
+		assertEquals(1, ruleParser.getDataSourceDeclartions().size());
+		assertEquals(p, ruleParser.getDataSourceDeclartions().get(0).getPredicate());
+		assertEquals(csvds, ruleParser.getDataSourceDeclartions().get(0).getDataSource());
 	}
 
 	@Test
@@ -403,9 +403,9 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 		RdfFileDataSource rdfds = new RdfFileDataSource(new File("src/main/data/input/example.nt.gz"));
 		Predicate p = Expressions.makePredicate("p", 3);
-		assertEquals(1, ruleParser.getDataSources().size());
-		assertEquals(p, ruleParser.getDataSources().get(0).getLeft());
-		assertEquals(rdfds, ruleParser.getDataSources().get(0).getRight());
+		assertEquals(1, ruleParser.getDataSourceDeclartions().size());
+		assertEquals(p, ruleParser.getDataSourceDeclartions().get(0).getPredicate());
+		assertEquals(rdfds, ruleParser.getDataSourceDeclartions().get(0).getDataSource());
 	}
 
 	@Test(expected = ParsingException.class)
@@ -423,11 +423,11 @@ public class RuleParserTest {
 		SparqlQueryResultDataSource sparqlds = new SparqlQueryResultDataSource(
 				new URL("https://query.wikidata.org/sparql"), "disease, doid", "?disease wdt:P699 ?doid .");
 		Predicate p = Expressions.makePredicate("p", 2);
-		assertEquals(1, ruleParser.getDataSources().size());
-		assertEquals(p, ruleParser.getDataSources().get(0).getLeft());
-		assertEquals(sparqlds, ruleParser.getDataSources().get(0).getRight());
+		assertEquals(1, ruleParser.getDataSourceDeclartions().size());
+		assertEquals(p, ruleParser.getDataSourceDeclartions().get(0).getPredicate());
+		assertEquals(sparqlds, ruleParser.getDataSourceDeclartions().get(0).getDataSource());
 	}
-	
+
 	@Test(expected = ParsingException.class)
 	public void testSparqlSourceMalformedUrl() throws ParsingException, MalformedURLException {
 		String input = "@source p(2) : sparql(<not a URL>,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
