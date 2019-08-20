@@ -27,6 +27,6 @@ package org.semanticweb.vlog4j.core.model.api;
  * @author Markus Kroetzsch
  *
  */
-public interface Fact extends PositiveLiteral {
+public interface Fact extends PositiveLiteral, Statement {
 
 }

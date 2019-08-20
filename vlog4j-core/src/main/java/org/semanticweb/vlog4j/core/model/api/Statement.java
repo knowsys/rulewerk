@@ -21,25 +21,12 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * A declaration for an external data source, which assigns a predicate to a
- * source.
+ * A statement is any element that a knowledge base can sonsist of, such as a
+ * {@link Rule}, {@link Fact}, or {@link DataSourceDeclaration}.
  * 
  * @author Markus Kroetzsch
  *
  */
-public interface DataSourceDeclaration extends Statement {
+public interface Statement {
 
-	/**
-	 * Returns the {@link Predicate} that this source applies to.
-	 * 
-	 * @return predicate into which data from the given source is loaded
-	 */
-	Predicate getPredicate();
-
-	/**
-	 * Returns the {@link DataSource} that the data is loaded from.
-	 * 
-	 * @return data source specification
-	 */
-	DataSource getDataSource();
 }
