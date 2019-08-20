@@ -1,8 +1,7 @@
 @prefix wdqs: <https://query.wikidata.org/> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
 
-% From Wikidata, get all countries (items with P31 relation to Q6256, or subclasses thereof: P279*)
-% that have a diplomatic relation (P530) with each other:
+% From Wikidata, get all countries (items of instance (wdt:P31), or subclass (wdt:P279*) of wd:Q6256)
+% that have a diplomatic relation (wdt:P530) with other country:
 @source diplomaticRelation(2): sparql(wdqs:sparql, "country1,country2", 
    '''?country1 wdt:P31/wdt:P279* wd:Q6256 .
       ?country2 wdt:P31/wdt:P279* wd:Q6256 .
@@ -29,7 +28,7 @@ triangle(?X,?Y,?Z) :- complementOfEquivalenceClosure(?X,?Y),
 
 % Compute 4-clique
 clique4(?X,?Y,?Z,?W) :- triangle(?X,?Y,?Z),
-                        complementOfEquivalenceClosure(?X,?W),
-                        complementOfEquivalenceClosure(?Y,?W),
-                        complementOfEquivalenceClosure(?Z,?W).
+    complementOfEquivalenceClosure(?X,?W),
+    complementOfEquivalenceClosure(?Y,?W),
+    complementOfEquivalenceClosure(?Z,?W).
 
