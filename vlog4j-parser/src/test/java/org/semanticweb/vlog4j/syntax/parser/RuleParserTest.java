@@ -435,4 +435,25 @@ public class RuleParserTest {
 		ruleParser.parse(input);
 	}
 
+	@Test(expected = ParsingException.class)
+	public void testBlankPrefixDeclaration() throws ParsingException {
+		String input = "@prefix _: <http://example.org/> . s(c) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testBlankNodeTerm() throws ParsingException {
+		String input = "<http://example.org/p>(_:blank) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testBlankPredicateName() throws ParsingException {
+		String input = "_:(a) .";
+		RuleParser ruleParser = new RuleParser();
+		ruleParser.parse(input);
+	}
+
 }
