@@ -12,10 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
-import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Fact;
-import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
@@ -282,59 +280,6 @@ public class KnowledgeBase implements Iterable<Statement> {
 		final Predicate predicate = fact.getPredicate();
 		this.factsByPredicate.putIfAbsent(predicate, new HashSet<>());
 		this.factsByPredicate.get(predicate).add(fact);
-	}
-
-	@Deprecated
-	public boolean hasFacts() {
-		// If needed, a more elegant implementation should be used
-		return !this.getFacts().isEmpty() || !this.getDataSourceDeclarations().isEmpty();
-	}
-
-	@Deprecated
-	public Map<Predicate, DataSource> getDataSourceForPredicate() {
-		// Only for temporary functionality; the one-source-per-predicate model will be
-		// retired and is no longer enforced in the knowledge base
-		final Map<Predicate, DataSource> result = new HashMap<>();
-		for (final DataSourceDeclaration dsd : getDataSourceDeclarations()) {
-			result.put(dsd.getPredicate(), dsd.getDataSource());
-		}
-		return result;
-	}
-
-	@Deprecated
-	public Map<Predicate, Set<PositiveLiteral>> getFactsForPredicate() {
-		// Check if this is really the best format to access this data
-		return this.factsByPredicate;
-	}
-
-	@Deprecated
-	public Set<Predicate> getEdbPredicates() {
-		// TODO use cache
-		return collectEdbPredicates();
-	}
-
-	@Deprecated
-	public Set<Predicate> getIdbPredicates() {
-		// TODO use cache
-		return collectIdbPredicates();
-	}
-
-	Set<Predicate> collectEdbPredicates() {
-		// not an efficient or elegant implementation
-		final Set<Predicate> edbPredicates = new HashSet<>();
-		edbPredicates.addAll(this.getDataSourceForPredicate().keySet());
-		edbPredicates.addAll(this.factsByPredicate.keySet());
-		return edbPredicates;
-	}
-
-	Set<Predicate> collectIdbPredicates() {
-		final Set<Predicate> idbPredicates = new HashSet<>();
-		for (final Rule rule : this.getRules()) {
-			for (final Literal headAtom : rule.getHead()) {
-				idbPredicates.add(headAtom.getPredicate());
-			}
-		}
-		return idbPredicates;
 	}
 
 	/**

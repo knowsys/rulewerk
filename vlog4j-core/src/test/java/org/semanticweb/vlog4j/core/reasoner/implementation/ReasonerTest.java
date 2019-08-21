@@ -2,7 +2,6 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /*
  * #%L
@@ -109,17 +108,6 @@ public class ReasonerTest {
 
 			assertEquals(expectedResults, actualResults);
 		}
-	}
-
-	// TODO move to a test class for KnowledgeBase
-	@Test
-	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
-			final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
-			assertTrue(dataSourcesConfig.isEmpty());
-
-		}
-
 	}
 
 }

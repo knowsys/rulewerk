@@ -20,12 +20,11 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * #L%
  */
 
-
-
 import java.util.Collection;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -33,7 +32,6 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
-
 
 /**
  * Utility class with static methods for converting from VLog API model objects
@@ -65,7 +63,7 @@ final class ModelToVLogConverter {
 		return vLogTerms;
 	}
 
-	static String[][] toVLogFactTuples(final Collection<PositiveLiteral> facts) {
+	static String[][] toVLogFactTuples(final Collection<Fact> facts) {
 		final String[][] tuples = new String[facts.size()][];
 		int i = 0;
 		for (final PositiveLiteral atom : facts) {
@@ -91,8 +89,7 @@ final class ModelToVLogConverter {
 	/**
 	 * Internal String representation that uniquely identifies a {@link Predicate}.
 	 * 
-	 * @param predicate
-	 *            a {@link Predicate}
+	 * @param predicate a {@link Predicate}
 	 * @return String representation corresponding to given predicate name and
 	 *         arity.
 	 */
@@ -104,7 +101,8 @@ final class ModelToVLogConverter {
 	static karmaresearch.vlog.Atom toVLogAtom(final Literal literal) {
 		final karmaresearch.vlog.Term[] vLogTerms = toVLogTermArray(literal.getTerms());
 		final String vLogPredicate = toVLogPredicate(literal.getPredicate());
-		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(vLogPredicate,literal.isNegated(), vLogTerms);
+		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(vLogPredicate, literal.isNegated(),
+				vLogTerms);
 		return vLogAtom;
 	}
 
@@ -124,7 +122,7 @@ final class ModelToVLogConverter {
 		return new karmaresearch.vlog.Rule(vLogHead, vLogBody);
 	}
 
-	static karmaresearch.vlog.Rule[] toVLogRuleArray(final List<Rule> rules) {
+	static karmaresearch.vlog.Rule[] toVLogRuleArray(final Collection<Rule> rules) {
 		final karmaresearch.vlog.Rule[] vLogRules = new karmaresearch.vlog.Rule[rules.size()];
 		int i = 0;
 		for (final Rule rule : rules) {
