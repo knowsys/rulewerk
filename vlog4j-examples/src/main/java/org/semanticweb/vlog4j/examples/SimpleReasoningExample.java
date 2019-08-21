@@ -58,7 +58,7 @@ public class SimpleReasoningExample {
 				+ "zipLocation(\"01069\", dresden) . \n" //
 				+ "% --- Standard recursion: locations are transitive --- \n" //
 				+ "locatedIn(?X,?Y) :- location(?X,?Y) . \n" //
-				+ "locatedIn(?X,?Z) :- location(?X,?Y), locatedIn(?Y,?Z) . \n" //
+				+ "locatedIn(?X,?Z) :- locatedIn(?X,?Y), locatedIn(?Y,?Z) . \n" //
 				+ "% --- Build address facts using the city constant --- \n" //
 				+ "address(?Uni, ?Street, ?ZIP, ?City) :- streetAddress(?Uni, ?Street, ?ZIP, ?CityName), zipLocation(?ZIP, ?City) . \n"
 				+ "% --- Value invention: universities have some address --- \n" //
@@ -78,8 +78,7 @@ public class SimpleReasoningExample {
 		}
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
-
-			System.out.print("Loading rules and facts ... ");
+			System.out.print("Loading knowledge base ... ");
 			reasoner.load();
 			System.out.println("done.");
 
