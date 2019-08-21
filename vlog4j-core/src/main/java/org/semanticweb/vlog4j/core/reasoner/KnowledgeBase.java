@@ -53,9 +53,9 @@ import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
  *
  */
 public class KnowledgeBase {
-	
+
 	private final Set<KnowledgeBaseListener> listeners = new HashSet<>();
-	
+
 	/**
 	 * Auxiliary class to process {@link Statement}s when added to the knowledge
 	 * base. Returns true if a statement was added successfully.
@@ -129,7 +129,7 @@ public class KnowledgeBase {
 	 * The primary storage for the contents of the knowledge base.
 	 */
 	final LinkedHashSet<Statement> statements = new LinkedHashSet<>();
-	
+
 	/**
 	 * Known prefixes that can be used to pretty-print the contents of the knowledge
 	 * base. We try to preserve user-provided prefixes found in files when loading
@@ -141,32 +141,35 @@ public class KnowledgeBase {
 	 * Index structure that organises all facts by their predicate.
 	 */
 	final Map<Predicate, Set<PositiveLiteral>> factsByPredicate = new HashMap<>();
-	
+
 	/**
 	 * Index structure that holds all data source declarations of this knowledge
 	 * base.
 	 */
 	final Set<DataSourceDeclaration> dataSourceDeclarations = new HashSet<>();
-	
+
 	/**
 	 * Registers a listener for changes on the knowledge base
+	 * 
 	 * @param listener
 	 */
 	public void addListener(KnowledgeBaseListener listener) {
 		this.listeners.add(listener);
 	}
-	
+
 	/**
 	 * Unregisters given listener from changes on the knowledge base
+	 * 
 	 * @param listener
 	 */
 	public void deleteListener(KnowledgeBaseListener listener) {
 		this.listeners.remove(listener);
-		
+
 	}
 
 	/**
 	 * Adds a single statement to the knowledge base.
+	 * 
 	 * @return true, if the knowledge base has changed.
 	 * @param statement
 	 */
@@ -174,9 +177,9 @@ public class KnowledgeBase {
 		Validate.notNull(statement, "Statement cannot be Null.");
 		if (!this.statements.contains(statement) && statement.accept(this.addStatementVisitor)) {
 			this.statements.add(statement);
-			
+
 			notifyListenersOnStatementAdded(statement);
-			
+
 			return true;
 		}
 		return false;
@@ -189,15 +192,15 @@ public class KnowledgeBase {
 	 */
 	public void addStatements(Collection<? extends Statement> statements) {
 		final Set<Statement> addedStatements = new HashSet<>();
-		
+
 		for (final Statement statement : statements) {
 			if (addStatement(statement)) {
 				addedStatements.add(statement);
 			}
 		}
-		
+
 		notifyListenersOnStatementsAdded(addedStatements);
-		
+
 	}
 
 	/**
@@ -207,13 +210,13 @@ public class KnowledgeBase {
 	 */
 	public void addStatements(Statement... statements) {
 		final Set<Statement> addedStatements = new HashSet<>();
-		
+
 		for (final Statement statement : statements) {
 			if (addStatement(statement)) {
 				addedStatements.add(statement);
 			}
 		}
-		
+
 		notifyListenersOnStatementsAdded(addedStatements);
 	}
 
@@ -222,7 +225,7 @@ public class KnowledgeBase {
 			listener.onStatementsAdded(addedStatements);
 		}
 	}
-	
+
 	private void notifyListenersOnStatementAdded(final Statement addedStatements) {
 		for (final KnowledgeBaseListener listener : this.listeners) {
 			listener.onStatementAdded(addedStatements);
@@ -344,5 +347,5 @@ public class KnowledgeBase {
 	public Collection<Statement> getStatements() {
 		return this.statements;
 	}
-	
+
 }
