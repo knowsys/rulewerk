@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
@@ -45,11 +44,22 @@ import karmaresearch.vlog.Atom;
  * #L%
  */
 
-public class KnowledgeBase extends Observable {
+public class KnowledgeBase {
+	
+	private final Set<KnowledgeBaseListener> listeners = new HashSet<>();
 
 	private final List<Rule> rules = new ArrayList<>();
 	private final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = new HashMap<>();
 	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
+	
+	public void addListener(KnowledgeBaseListener listener) {
+		this.listeners.add(listener);
+	}
+	
+	public void deleteListener(KnowledgeBaseListener listener) {
+		this.listeners.remove(listener);
+		
+	}
 
 	/**
 	 * Adds rules to the <b>knowledge base</b> in the given order. The reasoner may
@@ -83,7 +93,7 @@ public class KnowledgeBase extends Observable {
 		Validate.noNullElements(rules, "Null rules are not alowed! The list contains a null at position [%d].");
 		this.rules.addAll(new ArrayList<>(rules));
 
-		// TODO setChanged
+		//TODO compute diff
 		// TODO notify listeners with the diff
 	}
 
@@ -117,8 +127,7 @@ public class KnowledgeBase extends Observable {
 	 */
 	public void addFacts(final Fact... facts) {
 		addFacts(Arrays.asList(facts));
-
-		// TODO setChanged
+		//TODO compute diff
 		// TODO notify listeners with the diff
 	}
 
@@ -146,7 +155,7 @@ public class KnowledgeBase extends Observable {
 			validateFactTermsAreConstant(fact);
 
 			final Predicate predicate = fact.getPredicate();
-			validateNoDataSourceForPredicate(predicate);
+//			validateNoDataSourceForPredicate(predicate);
 
 			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
 			this.factsForPredicate.get(predicate).add(fact);
@@ -175,12 +184,15 @@ public class KnowledgeBase extends Observable {
 	public void addFactsFromDataSource(Predicate predicate, DataSource dataSource) {
 		Validate.notNull(predicate, "Null predicates are not allowed!");
 		Validate.notNull(dataSource, "Null dataSources are not allowed!");
-		validateNoDataSourceForPredicate(predicate);
-		Validate.isTrue(!this.factsForPredicate.containsKey(predicate),
-				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added in memory: %s",
-				predicate, this.factsForPredicate.get(predicate));
+//		validateNoDataSourceForPredicate(predicate);
+//		Validate.isTrue(!this.factsForPredicate.containsKey(predicate),
+//				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added in memory: %s",
+//				predicate, this.factsForPredicate.get(predicate));
 
 		this.dataSourceForPredicate.put(predicate, dataSource);
+		
+		//TODO compute diff
+		// TODO notify listeners with the diff
 	}
 
 	public boolean hasFacts() {
@@ -214,11 +226,11 @@ public class KnowledgeBase extends Observable {
 
 	}
 
-	private void validateNoDataSourceForPredicate(final Predicate predicate) {
-		Validate.isTrue(!this.dataSourceForPredicate.containsKey(predicate),
-				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added from data source: %s",
-				predicate, this.dataSourceForPredicate.get(predicate));
-	}
+//	private void validateNoDataSourceForPredicate(final Predicate predicate) {
+//		Validate.isTrue(!this.dataSourceForPredicate.containsKey(predicate),
+//				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added from data source: %s",
+//				predicate, this.dataSourceForPredicate.get(predicate));
+//	}
 
 	private Set<Predicate> collectEdbPredicates() {
 		final Set<Predicate> edbPredicates = new HashSet<>();

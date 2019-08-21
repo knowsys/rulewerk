@@ -1,9 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
-import java.util.Observer;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
@@ -90,7 +88,7 @@ import karmaresearch.vlog.NotStartedException;
  * @author Irina Dragoste
  *
  */
-public interface Reasoner  extends AutoCloseable, Observer  {
+public interface Reasoner  extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
@@ -115,7 +113,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *
 	 * @param algorithm the algorithm to be used for reasoning.
 	 */
-	void setAlgorithm(@NonNull Algorithm algorithm);
+	void setAlgorithm(Algorithm algorithm);
 
 	/**
 	 * Getter for the algorithm that will be used for reasoning over the knowledge
@@ -137,7 +135,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *                seconds. If {@code null}, reasoning will not be interrupted
 	 *                and will return only after (if) it has reached completion.
 	 */
-	void setReasoningTimeout(@Nullable Integer seconds);
+	void setReasoningTimeout(Integer seconds);
 
 	/**
 	 * This method returns the reasoning timeout, representing the interval (in
@@ -161,7 +159,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *                              rewritten before reasoning.
 	 * @throws ReasonerStateException if the reasoner has already been loaded.
 	 */
-	void setRuleRewriteStrategy(@NonNull RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
+	void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
 
 	/**
 	 * Getter for the strategy according to which rules will be rewritten before
@@ -170,7 +168,6 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *
 	 * @return the current rule re-writing strategy
 	 */
-	@NonNull
 	RuleRewriteStrategy getRuleRewriteStrategy();
 
 	/**
@@ -180,7 +177,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 * @param logLevel the logging level to be set for VLog C++ resource.
 	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
-	void setLogLevel(@NonNull LogLevel logLevel) throws ReasonerStateException;
+	void setLogLevel(LogLevel logLevel) throws ReasonerStateException;
 
 	/**
 	 * Returns the logging level of the internal VLog C++ resource. If no value has
@@ -188,7 +185,6 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *
 	 * @return the logging level of the VLog C++ resource.
 	 */
-	@Nullable
 	LogLevel getLogLevel();
 
 	/**
@@ -201,7 +197,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *                 to the default system output.
 	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
-	void setLogFile(@Nullable String filePath) throws ReasonerStateException;
+	void setLogFile(String filePath) throws ReasonerStateException;
 
 	
 	
@@ -408,7 +404,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *                                  not of type {@link TermType#CONSTANT} or
 	 *                                  {@link TermType#VARIABLE}.
 	 */
-	QueryResultIterator answerQuery(@NonNull PositiveLiteral query, boolean includeBlanks)
+	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks)
 			throws ReasonerStateException;
 
 	// TODO add examples to query javadoc
@@ -465,7 +461,7 @@ public interface Reasoner  extends AutoCloseable, Observer  {
 	 *                                  </ul>
 	 */
 	// TODO update javadoc with return type
-	MaterialisationState exportQueryAnswersToCsv(@NonNull PositiveLiteral query, @NonNull String csvFilePath,
+	MaterialisationState exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath,
 			boolean includeBlanks)
 			throws ReasonerStateException, IOException;
 

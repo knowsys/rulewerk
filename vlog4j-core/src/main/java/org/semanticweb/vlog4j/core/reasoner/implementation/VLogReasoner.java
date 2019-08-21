@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
@@ -12,8 +11,11 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
@@ -78,7 +80,7 @@ public class VLogReasoner implements Reasoner {
 	public VLogReasoner(KnowledgeBase knowledgeBase) {
 		super();
 		this.knowledgeBase = knowledgeBase;
-		this.knowledgeBase.addObserver(this);
+		this.knowledgeBase.addListener(this);
 	}
 
 	@Override
@@ -325,7 +327,8 @@ public class VLogReasoner implements Reasoner {
 	public void close() {
 		this.reasonerState = ReasonerState.AFTER_CLOSING;
 
-		this.knowledgeBase.deleteObserver(this);
+		// TODO delete listener
+		this.knowledgeBase.deleteListener(this);
 		this.vLog.stop();
 	}
 
@@ -442,10 +445,21 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void update(Observable o, Object arg) {
-		// TODO update materialisation state for query answering
-		// TODO compute KB diff
+	public void onFactsAdded(Set<Fact> factsAdded) {
+		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	public void onDataSourceDeclarationsAdded(Set<DataSourceDeclaration> dataSourceDeclarationsAdded) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRulesAdded(Set<Rule> rulesAdded) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

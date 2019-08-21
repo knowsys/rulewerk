@@ -130,6 +130,8 @@ public class AddDataSourceTest {
 		}
 	}
 
+	//FIXME decide how to handle datasources with multiple predicates
+	@Ignore
 	// TODO move to a test class for KnowledgeBase
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddDataSourceNoMultipleDataSourcesForPredicate() throws ReasonerStateException, IOException {
@@ -140,7 +142,9 @@ public class AddDataSourceTest {
 		kb.addFactsFromDataSource(predicate, dataSource);
 		kb.addFactsFromDataSource(predicate, dataSource);
 	}
-
+	
+	//FIXME decide how to handle datasources with multiple predicates
+	@Ignore
 	// TODO move to a test class for KnowledgeBase
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddDataSourceNoFactsForPredicate() throws ReasonerStateException, IOException {
