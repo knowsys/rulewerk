@@ -47,7 +47,7 @@ import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 import karmaresearch.vlog.EDBConfigurationException;
 
-public class LoadDataFromRdfFileTest {
+public class VLogReasonerRdfInput {
 
 	private static final Predicate ternaryPredicate = Expressions.makePredicate("triple", 3);
 	private static final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(ternaryPredicate,

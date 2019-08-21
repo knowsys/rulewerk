@@ -40,7 +40,7 @@ import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImp
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
-public class LoadDataFromSparqlQueryTest {
+public class VLogReasonerSparqlInput {
 
 	/**
 	 * Tests the query "SELECT ?b ?a WHERE {?a p:P22 ?b}"

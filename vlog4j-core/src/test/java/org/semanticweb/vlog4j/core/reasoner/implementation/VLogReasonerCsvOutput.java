@@ -38,7 +38,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
-public class ExportQueryAnswersToCsvFileTest {
+public class VLogReasonerCsvOutput {
 
 	@Test
 	public void testEDBQuerySameConstantSubstitutesSameVariableName()

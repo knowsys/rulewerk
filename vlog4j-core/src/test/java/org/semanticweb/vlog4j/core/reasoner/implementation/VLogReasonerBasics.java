@@ -44,7 +44,7 @@ import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 import karmaresearch.vlog.EDBConfigurationException;
 
-public class ReasonerTest {
+public class VLogReasonerBasics {
 
 	final String constantNameC = "c";
 	final String constantNameD = "d";

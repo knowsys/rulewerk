@@ -46,29 +46,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
-public class StratifiedNegationTest {
-
-	@Test(expected = EdbIdbSeparationException.class)
-	public void testNotStratifiableEdbIdbSeparation()
-			throws EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException, IOException {
-
-		final Variable x = makeVariable("x");
-		final Variable y = makeVariable("y");
-
-		final Literal pXY = makePositiveLiteral("P", x, y);
-		final Literal notQXY = makeNegativeLiteral("Q", x, y);
-		final PositiveLiteral qXY = makePositiveLiteral("Q", x, y);
-
-		final Rule rule = makeRule(qXY, pXY, notQXY);
-		final Fact fact = makeFact("Q", Arrays.asList(makeConstant("c"), makeConstant("d")));
-
-		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatements(rule, fact);
-
-		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
-		}
-	}
+public class VLogReasonerNegation {
 
 	@Test(expected = RuntimeException.class)
 	public void testNotStratifiable()
@@ -82,10 +60,9 @@ public class StratifiedNegationTest {
 		final PositiveLiteral qXY = makePositiveLiteral("Q", x, y);
 
 		final Rule rule = makeRule(qXY, pXY, notQXY);
-		final Fact fact = makeFact("P", Arrays.asList(makeConstant("c"), makeConstant("d")));
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatements(rule, fact);
+		kb.addStatement(rule);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

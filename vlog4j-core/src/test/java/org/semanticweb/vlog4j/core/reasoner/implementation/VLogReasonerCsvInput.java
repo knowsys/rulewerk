@@ -46,7 +46,7 @@ import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 import karmaresearch.vlog.EDBConfigurationException;
 
-public class LoadDataFromCsvFileTest {
+public class VLogReasonerCsvInput {
 
 	private static final Predicate unaryPredicate1 = Expressions.makePredicate("p", 1);
 	private static final Predicate unaryPredicate2 = Expressions.makePredicate("q", 1);

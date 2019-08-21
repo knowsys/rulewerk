@@ -199,9 +199,9 @@ public class VLogReasoner implements Reasoner {
 			final Predicate predicate = dataSourceDeclaration.getPredicate();
 			Predicate aliasPredicate;
 			if (dataSourceDeclaration instanceof LocalFactsDataSourceDeclaration) {
-				aliasPredicate = new PredicateImpl(predicate.getName() + "_FACT", predicate.getArity());
+				aliasPredicate = new PredicateImpl(predicate.getName() + "##FACT", predicate.getArity());
 			} else {
-				aliasPredicate = new PredicateImpl(predicate.getName() + "_" + predicate.hashCode(),
+				aliasPredicate = new PredicateImpl(predicate.getName() + "##" + dataSourceDeclaration.hashCode(),
 						predicate.getArity());
 			}
 			aliasesForEdbPredicates.put(dataSourceDeclaration, aliasPredicate);
@@ -302,8 +302,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void load()
-			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void load() throws IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		if (this.reasonerState == ReasonerState.AFTER_CLOSING) {
 			throw new ReasonerStateException(this.reasonerState, "Loading is not allowed after closing.");
 		}
@@ -360,30 +359,6 @@ public class VLogReasoner implements Reasoner {
 		return configStringBuilder.toString();
 	}
 
-//	String generateDataSourcesConfig() {
-//		final StringBuilder configStringBuilder = new StringBuilder();
-//		int dataSourceIndex = 0;
-//		for (final Predicate predicate : this.knowledgeBase.getDataSourceForPredicate().keySet()) {
-//			final DataSource dataSource = this.knowledgeBase.getDataSourceForPredicate().get(predicate);
-//			try (final Formatter formatter = new Formatter(configStringBuilder)) {
-//				formatter.format(dataSource.toConfigString(), dataSourceIndex,
-//						ModelToVLogConverter.toVLogPredicate(predicate));
-//			}
-//			dataSourceIndex++;
-//		}
-//		return configStringBuilder.toString();
-//	}
-
-//	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
-//		final Set<Predicate> edbPredicates = this.knowledgeBase.getEdbPredicates();
-//		final Set<Predicate> idbPredicates = this.knowledgeBase.getIdbPredicates();
-//		final Set<Predicate> intersection = new HashSet<>(edbPredicates);
-//		intersection.retainAll(idbPredicates);
-//		if (!intersection.isEmpty()) {
-//			throw new EdbIdbSeparationException(intersection);
-//		}
-//	}
-
 	void validateDataSourcePredicateArities() throws IncompatiblePredicateArityException {
 		for (final Predicate predicate : edbPredicates.keySet()) {
 			validateDataSourcePredicateArity(predicate, edbPredicates.get(predicate).getDataSource());
@@ -420,8 +395,15 @@ public class VLogReasoner implements Reasoner {
 				aliasPredicate = aliasesForEdbPredicates.get(new LocalFactsDataSourceDeclaration(predicate));
 			}
 			try {
-				this.vLog.addData(ModelToVLogConverter.toVLogPredicate(aliasPredicate),
-						ModelToVLogConverter.toVLogFactTuples(directEdbFacts.get(predicate)));
+				String vLogPredicateName = ModelToVLogConverter.toVLogPredicate(aliasPredicate);
+				String[][] vLogPredicateTuples = ModelToVLogConverter.toVLogFactTuples(directEdbFacts.get(predicate));
+				this.vLog.addData(vLogPredicateName, vLogPredicateTuples);
+				if (LOGGER.isDebugEnabled()) {
+					for (String[] tuple : vLogPredicateTuples) {
+						LOGGER.debug(
+								"Loaded direct fact " + vLogPredicateName + "(" + Arrays.deepToString(tuple) + ")");
+					}
+				}
 			} catch (final EDBConfigurationException e) {
 				throw new RuntimeException("Invalid data sources configuration.", e);
 			}
@@ -434,6 +416,11 @@ public class VLogReasoner implements Reasoner {
 				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
 		try {
 			this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
+			if (LOGGER.isDebugEnabled()) {
+				for (karmaresearch.vlog.Rule rule : vLogRuleArray) {
+					LOGGER.debug("Loaded rule " + rule.toString());
+				}
+			}
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
