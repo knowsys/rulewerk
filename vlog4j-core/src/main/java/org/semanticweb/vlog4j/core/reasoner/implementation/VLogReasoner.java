@@ -71,6 +71,19 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
  * #L%
  */
 
+/**
+ * Reasoner implementation using the VLog backend.
+ * 
+ * @TODO Due to automatic predicate renaming, it can happen that an EDB
+ *       predicate cannot be queried after loading unless reasoning has already
+ *       been invoked (since the auxiliary rule that imports the EDB facts to
+ *       the "real" predicate must be used). This issue could be weakened by
+ *       rewriting queries to (single-source) EDB predicates internally when in
+ *       such a state,
+ * 
+ * @author Markus Kroetzsch
+ *
+ */
 public class VLogReasoner implements Reasoner {
 	private static Logger LOGGER = LoggerFactory.getLogger(VLogReasoner.class);
 
