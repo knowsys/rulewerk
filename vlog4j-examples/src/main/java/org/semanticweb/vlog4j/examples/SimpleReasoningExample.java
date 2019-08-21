@@ -43,27 +43,29 @@ public class SimpleReasoningExample {
 
 		// Define some facts and rules in VLog's basic syntax:
 		String rules = "% --- Some facts --- \n" //
-				+ "location(germany,europe). " //
-				+ "location(uk,europe). " //
-				+ "location(saxony,germany). " //
-				+ "location(dresden,saxony). " //
-				+ "city(dresden). " //
-				+ "country(germany). " //
-				+ "country(uk). " //
-				+ "university(tudresden, germany). " //
-				+ "university(uoxford, uk) . " //
-				+ "streetAddress(tudresden, \"Mommsenstraße 9\", \"01069\", \"Dresden\") ." //
-				+ "zipLocation(\"01069\", dresden) ." //
+				+ "location(germany,europe). \n" //
+				+ "location(uk,europe). \n" //
+				+ "location(saxony,germany). \n" //
+				+ "location(dresden,saxony). \n" //
+				+ "city(dresden). \n" //
+				+ "country(germany). \n" //
+				+ "country(uk). \n" //
+				+ "university(tudresden, germany). \n" //
+				+ "university(uoxford, uk) . \n" //
+				+ "streetAddress(tudresden, \"Mommsenstraße 9\", \"01069\", \"Dresden\") . \n" //
+				+ "zipLocation(\"01069\", dresden) . \n" //
 				+ "% --- Standard recursion: locations are transitive --- \n" //
-				+ "locatedIn(?X,?Y) :- location(?X,?Y) . " //
-				+ "locatedIn(?X,?Z) :- locatedIn(?X,?Y), locatedIn(?Y,?Z) . " //
+				+ "locatedIn(?X,?Y) :- location(?X,?Y) . \n" //
+				+ "locatedIn(?X,?Z) :- locatedIn(?X,?Y), locatedIn(?Y,?Z) . \n" //
 				+ "% --- Build address facts using the city constant --- \n" //
-				+ "address(?Uni, ?Street, ?ZIP, ?City) :- streetAddress(?Uni, ?Street, ?ZIP, ?CityName), zipLocation(?ZIP,?City) ."
+				+ "address(?Uni, ?Street, ?ZIP, ?City) :- streetAddress(?Uni, ?Street, ?ZIP, ?CityName), zipLocation(?ZIP, ?City) . \n"
 				+ "% --- Value invention: universities have some address --- \n" //
-				+ "address(?Uni, !Street, !ZIP, !City), locatedIn(!City, ?Country) :- university(?Uni, ?Country) ."
+				+ "address(?Uni, !Street, !ZIP, !City), locatedIn(!City, ?Country) :- university(?Uni, ?Country) . \n"
 				+ "% --- Negation: organisations in Europe but not in Germany --- \n" //
-				+ "inEuropeOutsideGermany(?Org) :- address(?Org, ?S, ?Z, ?City), locatedIn(?City, europe), ~locatedIn(?City, germany) ."
-				+ "";
+				+ "inEuropeOutsideGermany(?Org) :- address(?Org, ?S, ?Z, ?City), locatedIn(?City, europe), ~locatedIn(?City, germany) . \n"
+				+ "% ---\n";
+
+		System.out.println("Knowledge base used in this example:\n\n" + rules);
 
 		RuleParser ruleParser = new RuleParser();
 		try {
@@ -74,22 +76,20 @@ public class SimpleReasoningExample {
 		}
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
-
 			reasoner.addFacts(ruleParser.getFacts());
 			reasoner.addRules(ruleParser.getRules());
 
-			System.out.println("Rules configured:\n--");
-			reasoner.getRules().forEach(System.out::println);
-			System.out.println("--");
-
+			System.out.print("Loading rules and facts ... ");
 			reasoner.load();
+			System.out.println("done.");
 
-			System.out.println("Loading completed.");
-			System.out.println("Starting reasoning ...");
+			System.out.print("Computing all inferences ... ");
 			reasoner.reason();
-			System.out.println("... reasoning completed.\n--");
+			System.out.println("done.\n");
 
 			/* Execute some queries */
+			ExamplesUtils.printOutQueryAnswers("address(?Org, ?Street, ?ZIP, ?City)", reasoner);
+			ExamplesUtils.printOutQueryAnswers("locatedIn(?place, europe)", reasoner);
 			ExamplesUtils.printOutQueryAnswers("inEuropeOutsideGermany(?Org)", reasoner);
 
 			System.out.println("Done.");

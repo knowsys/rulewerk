@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.core.reasoner;
+package org.semanticweb.vlog4j.core.model.api;
 
 /*-
  * #%L
@@ -27,10 +27,7 @@ package org.semanticweb.vlog4j.core.reasoner;
  *
  */
 public interface DataSource {
-
-	public static final String PREDICATE_NAME_CONFIG_LINE = "EDB%1$d_predname=%2$s\n";
-	public static final String DATASOURCE_TYPE_CONFIG_PARAM = "EDB%1$d_type";
-
+	
 	/**
 	 * Constructs a String representation of the data source.
 	 * 
