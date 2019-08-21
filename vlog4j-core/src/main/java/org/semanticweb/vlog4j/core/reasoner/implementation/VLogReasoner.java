@@ -11,11 +11,9 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
-import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
@@ -443,19 +441,13 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void onFactsAdded(Set<Fact> factsAdded) {
-		// TODO Auto-generated method stub
+	public void onStatementsAdded(Set<Statement> statementsAdded) {
+		// TODO change materialisation state
 		
 	}
 
 	@Override
-	public void onDataSourceDeclarationsAdded(Set<DataSourceDeclaration> dataSourceDeclarationsAdded) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onRulesAdded(Set<Rule> rulesAdded) {
+	public void onStatementAdded(Statement statementAdded) {
 		// TODO Auto-generated method stub
 		
 	}

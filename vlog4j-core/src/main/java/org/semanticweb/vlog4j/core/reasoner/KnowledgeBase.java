@@ -141,16 +141,25 @@ public class KnowledgeBase {
 	 * Index structure that organises all facts by their predicate.
 	 */
 	final Map<Predicate, Set<PositiveLiteral>> factsByPredicate = new HashMap<>();
+	
 	/**
 	 * Index structure that holds all data source declarations of this knowledge
 	 * base.
 	 */
 	final Set<DataSourceDeclaration> dataSourceDeclarations = new HashSet<>();
 	
+	/**
+	 * Registers a listener for changes on the knowledge base
+	 * @param listener
+	 */
 	public void addListener(KnowledgeBaseListener listener) {
 		this.listeners.add(listener);
 	}
 	
+	/**
+	 * Unregisters given listener from changes on the knowledge base
+	 * @param listener
+	 */
 	public void deleteListener(KnowledgeBaseListener listener) {
 		this.listeners.remove(listener);
 		
@@ -158,14 +167,19 @@ public class KnowledgeBase {
 
 	/**
 	 * Adds a single statement to the knowledge base.
-	 * 
+	 * @return true, if the knowledge base has changed.
 	 * @param statement
 	 */
-	public void addStatement(Statement statement) {
+	public boolean addStatement(Statement statement) {
 		Validate.notNull(statement, "Statement cannot be Null.");
 		if (!this.statements.contains(statement) && statement.accept(this.addStatementVisitor)) {
 			this.statements.add(statement);
+			
+			notifyListenersOnStatementAdded(statement);
+			
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -174,9 +188,16 @@ public class KnowledgeBase {
 	 * @param statements
 	 */
 	public void addStatements(Collection<? extends Statement> statements) {
+		final Set<Statement> addedStatements = new HashSet<>();
+		
 		for (final Statement statement : statements) {
-			addStatement(statement);
+			if (addStatement(statement)) {
+				addedStatements.add(statement);
+			}
 		}
+		
+		notifyListenersOnStatementsAdded(addedStatements);
+		
 	}
 
 	/**
@@ -185,8 +206,26 @@ public class KnowledgeBase {
 	 * @param statements
 	 */
 	public void addStatements(Statement... statements) {
+		final Set<Statement> addedStatements = new HashSet<>();
+		
 		for (final Statement statement : statements) {
-			addStatement(statement);
+			if (addStatement(statement)) {
+				addedStatements.add(statement);
+			}
+		}
+		
+		notifyListenersOnStatementsAdded(addedStatements);
+	}
+
+	private void notifyListenersOnStatementsAdded(final Set<Statement> addedStatements) {
+		for (final KnowledgeBaseListener listener : this.listeners) {
+			listener.onStatementsAdded(addedStatements);
+		}
+	}
+	
+	private void notifyListenersOnStatementAdded(final Statement addedStatements) {
+		for (final KnowledgeBaseListener listener : this.listeners) {
+			listener.onStatementAdded(addedStatements);
 		}
 	}
 

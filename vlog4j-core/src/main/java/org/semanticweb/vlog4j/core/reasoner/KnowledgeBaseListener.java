@@ -22,16 +22,12 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.util.Set;
 
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
-import org.semanticweb.vlog4j.core.model.api.Fact;
-import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Statement;
 
 public interface KnowledgeBaseListener {
 	
-	void onFactsAdded(Set<Fact> factsAdded);
+	void onStatementAdded(Statement statementAdded);
 	
-	void onDataSourceDeclarationsAdded(Set<DataSourceDeclaration> dataSourceDeclarationsAdded);
-	
-	void onRulesAdded(Set<Rule> rulesAdded);
+	void onStatementsAdded(Set<Statement> statementsAdded);
 
 }
