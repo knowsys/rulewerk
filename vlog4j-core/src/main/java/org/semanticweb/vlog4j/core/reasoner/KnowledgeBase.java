@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
  * @author Markus Kroetzsch
  *
  */
-public class KnowledgeBase {
+public class KnowledgeBase implements Iterable<Statement> {
 
 	private final Set<KnowledgeBaseListener> listeners = new HashSet<>();
 
@@ -346,6 +347,11 @@ public class KnowledgeBase {
 	 */
 	public Collection<Statement> getStatements() {
 		return this.statements;
+	}
+
+	@Override
+	public Iterator<Statement> iterator() {
+		return this.statements.iterator();
 	}
 
 }
