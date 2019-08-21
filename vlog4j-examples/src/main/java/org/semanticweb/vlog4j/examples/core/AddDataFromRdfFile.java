@@ -71,16 +71,14 @@ public class AddDataFromRdfFile {
 				+ "@prefix ex: <https://example.org/> ."
 				+ "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
 				// specify data sources:
-				+ "@source triplesEDB(3) : load-rdf(\"" + ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt.gz\") ."
-				// rule for loading all triples from file:
-				+ "triplesIDB(?S, ?P, ?O) :- triplesEDB(?S, ?P, ?O) ."
+				+ "@source triple(3) : load-rdf(\"" + ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt.gz\") ."
 				// every bicycle has some part that is a wheel:
-				+ "triplesIDB(?S, ex:hasPart, !X), triplesIDB(!X, rdf:type, ex:wheel) :- triplesIDB(?S, rdf:type, ex:bicycle) ."
+				+ "triple(?S, ex:hasPart, !X), triple(!X, rdf:type, ex:wheel) :- triple(?S, rdf:type, ex:bicycle) ."
 				// every wheel is part of some bicycle:
-				+ "triplesIDB(?S, ex:isPartOf, !X) :- triplesIDB(?S, rdf:type, ex:wheel) ."
+				+ "triple(?S, ex:isPartOf, !X) :- triple(?S, rdf:type, ex:wheel) ."
 				// hasPart and isPartOf are mutually inverse relations:
-				+ "triplesIDB(?S, ex:isPartOf, ?O) :- triplesIDB(?O, ex:hasPart, ?S) ."
-				+ "triplesIDB(?S, ex:hasPart, ?O) :- triplesIDB(?O, ex:isPartOf, ?S) .";
+				+ "triple(?S, ex:isPartOf, ?O) :- triple(?O, ex:hasPart, ?S) ."
+				+ "triple(?S, ex:hasPart, ?O) :- triple(?O, ex:isPartOf, ?S) .";
 
 		final KnowledgeBase kb = RuleParser.parse(rules);
 
@@ -93,25 +91,25 @@ public class AddDataFromRdfFile {
 
 			System.out.println("Before materialisation:");
 
-			ExamplesUtils.printOutQueryAnswers("triplesEDB(?X, <https://example.org/hasPart>, ?Y)", reasoner);
+			ExamplesUtils.printOutQueryAnswers("triple(?X, <https://example.org/hasPart>, ?Y)", reasoner);
 
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
 			final PositiveLiteral hasPartIDB = RuleParser
-					.parsePositiveLiteral("triplesIDB(?X, <https://example.org/hasPart>, ?Y)");
+					.parsePositiveLiteral("triple(?X, <https://example.org/hasPart>, ?Y)");
 			ExamplesUtils.printOutQueryAnswers(hasPartIDB, reasoner);
 
 			/* Exporting query answers to {@code .csv} files. */
+			reasoner.exportQueryAnswersToCsv(hasPartIDB, ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartWithBlanks.csv",
+					true);
 			reasoner.exportQueryAnswersToCsv(hasPartIDB,
-					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithBlanks.csv", true);
-			reasoner.exportQueryAnswersToCsv(hasPartIDB,
-					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
+					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartWithoutBlanks.csv", false);
 
-			final PositiveLiteral existsHasPartRedBike = RuleParser.parsePositiveLiteral(
-					"triplesIDB(<https://example.org/redBike>, <https://example.org/hasPart>, ?X)");
+			final PositiveLiteral existsHasPartRedBike = RuleParser
+					.parsePositiveLiteral("triple(<https://example.org/redBike>, <https://example.org/hasPart>, ?X)");
 			reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
-					ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);
+					ExamplesUtils.OUTPUT_FOLDER + "existsHasPartRedBikeWithBlanks.csv", true);
 		}
 	}
 

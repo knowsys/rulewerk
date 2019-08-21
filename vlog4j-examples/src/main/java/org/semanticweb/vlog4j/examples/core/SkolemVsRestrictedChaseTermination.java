@@ -53,22 +53,17 @@ public class SkolemVsRestrictedChaseTermination {
 		/* 1. Load data and prepare rules. */
 
 		final String rules = "" // define some facts:
-				+ "bicycleEDB(bicycle1) ." //
-				+ "hasPartEDB(bicycle1, wheel1) ." //
-				+ "wheelEDB(wheel1) ." //
-				+ "bicycleEDB(bicycle2) ." //
-				// rules to load all data from the file-based ("EDB") predicates:
-				+ "bicycleIDB(?X) :- bicycleEDB(?X) ." //
-				+ "wheelIDB(?X) :- wheelEDB(?X) ." //
-				+ "hasPartIDB(?X, ?Y) :- hasPartEDB(?X, ?Y) ." //
-				+ "isPartOfIDB(?X, ?Y) :- isPartOfEDB(?X, ?Y) ." //
+				+ "bicycle(bicycle1) ." //
+				+ "hasPart(bicycle1, wheel1) ." //
+				+ "wheel(wheel1) ." //
+				+ "bicycle(bicycle2) ." //
 				// every bicycle has some part that is a wheel:
-				+ "hasPartIDB(?X, !Y), wheelIDB(!Y) :- bicycleIDB(?X) ." //
+				+ "hasPart(?X, !Y), wheel(!Y) :- bicycle(?X) ." //
 				// every wheel is part of some bicycle:
-				+ "isPartOfIDB(?X, !Y), bicycleIDB(!Y) :- wheelIDB(?X) ." //
+				+ "isPartOf(?X, !Y), bicycle(!Y) :- wheel(?X) ." //
 				// hasPart and isPartOf are mutually inverse relations:
-				+ "hasPartIDB(?X, ?Y) :- isPartOfIDB(?Y, ?X) ." //
-				+ "isPartOfIDB(?X, ?Y) :- hasPartIDB(?Y, ?X) .";
+				+ "hasPart(?X, ?Y) :- isPartOf(?Y, ?X) ." //
+				+ "isPartOf(?X, ?Y) :- hasPart(?Y, ?X) .";
 
 		final KnowledgeBase kb = RuleParser.parse(rules);
 
@@ -79,7 +74,7 @@ public class SkolemVsRestrictedChaseTermination {
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
-			final PositiveLiteral queryHasPart = RuleParser.parsePositiveLiteral("hasPartIDB(?X, ?Y)");
+			final PositiveLiteral queryHasPart = RuleParser.parsePositiveLiteral("hasPart(?X, ?Y)");
 
 			/* See that there is no fact HasPartIDB before reasoning. */
 			System.out.println("Before reasoning is started, no inferrences have been computed yet.");
@@ -104,7 +99,7 @@ public class SkolemVsRestrictedChaseTermination {
 			 */
 			final QueryResultIterator answers = reasoner.answerQuery(queryHasPart, true);
 			System.out.println("Before the timeout, the Skolem chase had produced "
-					+ ExamplesUtils.iteratorSize(answers) + " results for hasPartIDB(?X, ?Y).");
+					+ ExamplesUtils.iteratorSize(answers) + " results for hasPart(?X, ?Y).");
 
 			/*
 			 * We reset the reasoner and apply the Restricted Chase on the same set of rules
@@ -118,7 +113,7 @@ public class SkolemVsRestrictedChaseTermination {
 			 * See that there is no fact HasPartIDB before reasoning. All inferred facts
 			 * have been discarded when the reasoner was reset.
 			 */
-			System.out.println("We can verify that there are no inferences for hasPartIDB(?X, ?Y) after reset.");
+			System.out.println("We can verify that there are no inferences for hasPart(?X, ?Y) after reset.");
 			ExamplesUtils.printOutQueryAnswers(queryHasPart, reasoner);
 
 			/*

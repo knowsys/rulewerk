@@ -60,21 +60,16 @@ public class AddDataFromCsvFile {
 		ExamplesUtils.configureLogging();
 
 		final String rules = "" // first declare file inputs:
-				+ "@source bicycleEDB(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz\") ."
-				+ "@source hasPartEDB(2) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz\") ."
-				+ "@source wheelEDB(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz\") ."
-				// rules to load all data from the file-based ("EDB") predicates:
-				+ "bicycleIDB(?X) :- bicycleEDB(?X) ." //
-				+ "wheelIDB(?X) :- wheelEDB(?X) ." //
-				+ "hasPartIDB(?X, ?Y) :- hasPartEDB(?X, ?Y) ." //
-				+ "isPartOfIDB(?X, ?Y) :- isPartOfEDB(?X, ?Y) ."
+				+ "@source bicycle(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz\") ."
+				+ "@source hasPart(2) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz\") ."
+				+ "@source wheel(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz\") ."
 				// every bicycle has some part that is a wheel:
-				+ "hasPartIDB(?X, !Y), wheelIDB(!Y) :- bicycleIDB(?X) ."
+				+ "hasPart(?X, !Y), wheel(!Y) :- bicycle(?X) ."
 				// every wheel is part of some bicycle:
-				+ "isPartOfIDB(?X, !Y), bicycleIDB(!Y) :- wheelIDB(?X) ."
+				+ "isPartOf(?X, !Y), bicycle(!Y) :- wheel(?X) ."
 				// hasPart and isPartOf are mutually inverse relations:
-				+ "hasPartIDB(?X, ?Y) :- isPartOfIDB(?Y, ?X) ." //
-				+ "isPartOfIDB(?X, ?Y) :- hasPartIDB(?Y, ?X) .";
+				+ "hasPart(?X, ?Y) :- isPartOf(?Y, ?X) ." //
+				+ "isPartOf(?X, ?Y) :- hasPart(?Y, ?X) .";
 
 		final KnowledgeBase kb = RuleParser.parse(rules);
 
@@ -86,23 +81,21 @@ public class AddDataFromCsvFile {
 			reasoner.load();
 
 			System.out.println("Before materialisation:");
-			ExamplesUtils.printOutQueryAnswers("hasPartEDB(?X, ?Y)", reasoner);
+			ExamplesUtils.printOutQueryAnswers("hasPart(?X, ?Y)", reasoner);
 
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
-			final PositiveLiteral hasPartIdbXY = RuleParser.parsePositiveLiteral("hasPartIDB(?X, ?Y)");
-			ExamplesUtils.printOutQueryAnswers(hasPartIdbXY, reasoner);
+			final PositiveLiteral hasPartXY = RuleParser.parsePositiveLiteral("hasPart(?X, ?Y)");
+			ExamplesUtils.printOutQueryAnswers(hasPartXY, reasoner);
 
 			/* Exporting query answers to {@code .csv} files. */
-			reasoner.exportQueryAnswersToCsv(hasPartIdbXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithBlanks.csv",
-					true);
-			reasoner.exportQueryAnswersToCsv(hasPartIdbXY,
-					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithoutBlanks.csv", false);
-
-			final PositiveLiteral hasPartIDBRedBikeY = RuleParser.parsePositiveLiteral("hasPartIDB(redBike, ?Y)");
-			reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
-					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBRedBikeYWithBlanks.csv", true);
+			reasoner.exportQueryAnswersToCsv(hasPartXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartWithBlanks.csv", true);
+			reasoner.exportQueryAnswersToCsv(hasPartXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartWithoutBlanks.csv",
+					false);
+			final PositiveLiteral hasPartRedBikeY = RuleParser.parsePositiveLiteral("hasPart(redBike, ?Y)");
+			reasoner.exportQueryAnswersToCsv(hasPartRedBikeY,
+					ExamplesUtils.OUTPUT_FOLDER + "hasPartRedBikeWithBlanks.csv", true);
 		}
 	}
 
