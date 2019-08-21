@@ -73,8 +73,7 @@ public class GeneratedAnonymousIndividualsTest {
 		// y,z existential variables that can introduce blanks (anonymous individuals)
 		assertEquals(Sets.newSet(vy, vz), existentialRule.getExistentiallyQuantifiedVariables());
 
-		kb.addRules(existentialRule);
-		kb.addFacts(fact);
+		kb.addStatements(existentialRule, fact);
 	}
 
 	@Test

@@ -36,6 +36,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -131,7 +132,7 @@ public class AddDataFromSparqlQueryResults {
 			 * facts associated to the predicate publicationParents.
 			 */
 
-			kb.addFactsFromDataSource(queryPredicate, sparqlQueryResultDataSource);
+			kb.addStatement(new DataSourceDeclarationImpl(queryPredicate, sparqlQueryResultDataSource));
 			reasoner.load();
 
 			/*
@@ -172,7 +173,7 @@ public class AddDataFromSparqlQueryResults {
 			 */
 			reasoner.resetReasoner();
 
-			kb.addRules(rule);
+			kb.addStatement(rule);
 			reasoner.load();
 			reasoner.reason();
 

@@ -39,6 +39,7 @@ import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
@@ -77,8 +78,8 @@ public class LoadDataFromCsvFileTest {
 			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException,
 			IncompatiblePredicateArityException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
-		kb.addFactsFromDataSource(unaryPredicate2, fileDataSource);
+		kb.addStatement(new DataSourceDeclarationImpl(unaryPredicate1, fileDataSource));
+		kb.addStatement(new DataSourceDeclarationImpl(unaryPredicate2, fileDataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -111,7 +112,7 @@ public class LoadDataFromCsvFileTest {
 		assertFalse(nonexistingFile.exists());
 		final FileDataSource fileDataSource = new CsvFileDataSource(nonexistingFile);
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
+		kb.addStatement(new DataSourceDeclarationImpl(unaryPredicate1, fileDataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -124,7 +125,7 @@ public class LoadDataFromCsvFileTest {
 		final FileDataSource fileDataSource = new CsvFileDataSource(new File(
 				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.binaryCsvFileNameRoot + ".csv"));
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(unaryPredicate1, fileDataSource);
+		kb.addStatement(new DataSourceDeclarationImpl(unaryPredicate1, fileDataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

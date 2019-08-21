@@ -29,4 +29,11 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 public interface Statement {
 
+	/**
+	 * Accept a {@link StatementVisitor} and return its output.
+	 *
+	 * @param statementVisitor the StatementVisitor
+	 * @return output of the visitor
+	 */
+	<T> T accept(StatementVisitor<T> statementVisitor);
 }

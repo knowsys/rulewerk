@@ -29,6 +29,7 @@ import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 
 /**
@@ -114,6 +115,11 @@ public class RuleImpl implements Rule {
 	@Override
 	public Set<Variable> getUniversallyQuantifiedVariables() {
 		return this.body.getVariables();
+	}
+	
+	@Override
+	public <T> T accept(StatementVisitor<T> statementVisitor) {
+		return statementVisitor.visit(this);
 	}
 
 }

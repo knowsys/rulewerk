@@ -88,6 +88,7 @@ import karmaresearch.vlog.NotStartedException;
  * @author Irina Dragoste
  *
  */
+
 public interface Reasoner  extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
@@ -96,12 +97,13 @@ public interface Reasoner  extends AutoCloseable, KnowledgeBaseListener {
 	 * @return a {@link VLogReasoner} instance.
 	 */
 	public static Reasoner getInstance() {
-		final KnowledgeBase knowledgeBase= new KnowledgeBase();
+		final KnowledgeBase knowledgeBase = new KnowledgeBase();
 		return new VLogReasoner(knowledgeBase);
 	}
-	
+
 	/**
 	 * Getter for the knowledge base to reason on.
+	 * 
 	 * @return the reasoner's knowledge base
 	 */
 	KnowledgeBase getKnowledgeBase();
@@ -198,9 +200,6 @@ public interface Reasoner  extends AutoCloseable, KnowledgeBaseListener {
 	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
 	void setLogFile(String filePath) throws ReasonerStateException;
-
-	
-	
 
 	/**
 	 * Loads the <b>knowledge base</b>, consisting of the current rules and facts,
@@ -351,11 +350,12 @@ public interface Reasoner  extends AutoCloseable, KnowledgeBaseListener {
 	 *         <li>{@code false}, if reasoning has been interrupted before
 	 *         completion.</li>
 	 *         </ul>
-	 * @throws IOException
-	 *             if I/O exceptions occur during reasoning.
-	 * @throws ReasonerStateException
-	 *             if this method is called before loading ({@link Reasoner#load()}
-	 *             or after closing ({@link Reasoner#close()}).
+	 * @throws IOException                         if I/O exceptions occur during
+	 *                                             reasoning.
+	 * @throws ReasonerStateException              if this method is called before
+	 *                                             loading ({@link Reasoner#load()}
+	 *                                             or after closing
+	 *                                             ({@link Reasoner#close()}).
 	 * @throws IncompatiblePredicateArityException
 	 * @throws EdbIdbSeparationException
 	 */
@@ -464,6 +464,7 @@ public interface Reasoner  extends AutoCloseable, KnowledgeBaseListener {
 	MaterialisationState exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath,
 			boolean includeBlanks)
 			throws ReasonerStateException, IOException;
+
 
 	/**
 	 * Resets the reasoner to a pre-loading state (before the call of

@@ -36,9 +36,9 @@ import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-
 
 public class LoadDataFromSparqlQueryTest {
 
@@ -62,12 +62,12 @@ public class LoadDataFromSparqlQueryTest {
 				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(fatherOfPredicate, dataSource);
+		kb.addStatement(new DataSourceDeclarationImpl(fatherOfPredicate, dataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
+					fatherOfPredicate, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 				final QueryResult firstAnswer = answerQuery.next();
@@ -88,12 +88,12 @@ public class LoadDataFromSparqlQueryTest {
 				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(fatherOfPredicate, dataSource);
+		kb.addStatement(new DataSourceDeclarationImpl(fatherOfPredicate, dataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
+					fatherOfPredicate, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 				final QueryResult firstAnswer = answerQuery.next();
@@ -122,12 +122,12 @@ public class LoadDataFromSparqlQueryTest {
 				"?a wdt:P22 ?b .");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(fatherOfPredicate, dataSource);
+		kb.addStatement(new DataSourceDeclarationImpl(fatherOfPredicate, dataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
+					fatherOfPredicate, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 			}
@@ -146,7 +146,7 @@ public class LoadDataFromSparqlQueryTest {
 				"?b wdt:P22 ?a .\n" + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(haveChildrenTogether, dataSource);
+		kb.addStatement(new DataSourceDeclarationImpl(haveChildrenTogether, dataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -167,12 +167,12 @@ public class LoadDataFromSparqlQueryTest {
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(haveChildrenTogether, dataSource);
+		kb.addStatement(new DataSourceDeclarationImpl(haveChildrenTogether, dataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
+					haveChildrenTogether, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 			}
@@ -190,7 +190,7 @@ public class LoadDataFromSparqlQueryTest {
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addFactsFromDataSource(Expressions.makePredicate("ternary", 3), dataSource);
+		kb.addStatement(new DataSourceDeclarationImpl(Expressions.makePredicate("ternary", 3), dataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

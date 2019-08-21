@@ -124,26 +124,15 @@ public class AddDataFromRdfModel {
 				+ "hasOrganizationName(?Person, ?OrgName) :- "
 				+ "  TRIPLE(?Person, cnf:hasAffiliation, ?Aff), TRIPLE(?Aff, cnf:withOrganisation, ?Org),"
 				+ "  TRIPLE(?Org, cnf:name, ?OrgName) .";
-		final RuleParser ruleParser = new RuleParser();
+		KnowledgeBase kb;
 		try {
-			ruleParser.parse(rules);
+			kb = RuleParser.parse(rules);
 		} catch (final ParsingException e) {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;
 		}
-
-		final KnowledgeBase kb = new KnowledgeBase();
-		/*
-		 * The rule that maps people to their organization name based on facts extracted
-		 * from RDF triples is added to the Reasoner's knowledge base.
-		 */
-		kb.addRules(ruleParser.getRules());
-		/*
-		 * Facts extracted from the RDF resources are added to the Reasoner's knowledge
-		 * base.
-		 */
-		kb.addFacts(tripleFactsISWC2016);
-		kb.addFacts(tripleFactsISWC2017);
+		kb.addStatements(tripleFactsISWC2016);
+		kb.addStatements(tripleFactsISWC2017);
 
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

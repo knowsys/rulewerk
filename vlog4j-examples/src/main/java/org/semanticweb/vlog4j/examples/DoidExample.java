@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
@@ -51,28 +50,21 @@ public class DoidExample {
 	public static void main(final String[] args) throws IOException {
 		ExamplesUtils.configureLogging();
 
-		final KnowledgeBase kb = new KnowledgeBase();
+		/* Configure rules */
+		KnowledgeBase kb;
+		try {
+			kb = RuleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/doid.rls"));
+		} catch (final ParsingException e) {
+			System.out.println("Failed to parse rules: " + e.getMessage());
+			return;
+		}
+		System.out.println("Rules used in this example:");
+		kb.getRules().forEach(System.out::println);
+		System.out.println("");
 
 		try (Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER + "vlog.log");
 			reasoner.setLogLevel(LogLevel.DEBUG);
-
-			/* Configure rules */
-			final RuleParser ruleParser = new RuleParser();
-			try {
-				ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/doid.rls"));
-			} catch (final ParsingException e) {
-				System.out.println("Failed to parse rules: " + e.getMessage());
-				return;
-			}
-
-			for (final DataSourceDeclaration dataSourceDeclaration : ruleParser.getDataSourceDeclartions()) {
-				kb.addFactsFromDataSource(dataSourceDeclaration.getPredicate(), dataSourceDeclaration.getDataSource());
-			}
-			kb.addRules(ruleParser.getRules());
-			System.out.println("Rules used in this example:");
-			kb.getRules().forEach(System.out::println);
-			System.out.println("");
 
 			/* Initialise reasoner and compute inferences */
 			System.out.print("Initialising rules and data sources ... ");
@@ -89,7 +81,7 @@ public class DoidExample {
 			System.out.println("\nNumber of inferred tuples for selected query atoms:");
 			for (final String queryString : queries) {
 				try {
-					final PositiveLiteral query = ruleParser.parsePositiveLiteral(queryString);
+					final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
 					answers = reasoner.answerQuery(query, true);
 					System.out.println("  " + query.toString() + ": " + ExamplesUtils.iteratorSize(answers));
 				} catch (final ParsingException e) {

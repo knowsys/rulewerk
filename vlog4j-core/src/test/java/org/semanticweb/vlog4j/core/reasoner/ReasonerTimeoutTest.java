@@ -113,8 +113,8 @@ public class ReasonerTimeoutTest {
 		final Rule infinite_rule = makeRule(infinite_IDB_yz, infinite_IDB_xy);
 		rules.add(infinite_rule);
 
-		kb.addRules(rules);
-		kb.addFacts(facts);
+		kb.addStatements(rules);
+		kb.addStatements(facts);
 	}
 
 	@Before

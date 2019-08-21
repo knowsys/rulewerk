@@ -72,7 +72,7 @@ public class AnswerQueryTest {
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
-			kb.addFacts(fact);
+			kb.addStatement(fact);
 			reasoner.load();
 
 			final PositiveLiteral queryAtomXYZ = Expressions.makePositiveLiteral(predicate, x, y, z);
@@ -112,11 +112,11 @@ public class AnswerQueryTest {
 		final Rule pX__pYY_pYZ = Expressions.makeRule(Expressions.makePositiveConjunction(pYY, pYZ),
 				Expressions.makeConjunction(Expressions.makePositiveLiteral(predicate, x)));
 		assertEquals(Sets.newSet(y, z), pX__pYY_pYZ.getExistentiallyQuantifiedVariables());
-		
+
 		final KnowledgeBase kb = new KnowledgeBase();
 
-		kb.addRules(pX__pYY_pYZ);
-		kb.addFacts(Expressions.makeFact(predicate, Arrays.asList(Expressions.makeConstant("c"))));
+		kb.addStatements(pX__pYY_pYZ);
+		kb.addStatement(Expressions.makeFact(predicate, Arrays.asList(Expressions.makeConstant("c"))));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
@@ -160,9 +160,8 @@ public class AnswerQueryTest {
 		final Fact factPcd = Expressions.makeFact(predicate, Arrays.asList(constantC, constantD));
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		
-		kb.addRules(pXY__pXYYZZT);
-		kb.addFacts(factPcd);
+
+		kb.addStatements(pXY__pXYYZZT, factPcd);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -230,8 +229,7 @@ public class AnswerQueryTest {
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("q", Expressions.makeVariable("?x"));
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(existentialRule);
-		kb.addFacts(fact);
+		kb.addStatements(existentialRule, fact);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -255,7 +253,7 @@ public class AnswerQueryTest {
 	@Test
 	public void queryEmptyKnowledgeBase()
 			throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
-	final KnowledgeBase kb = new KnowledgeBase();
+		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -278,7 +276,7 @@ public class AnswerQueryTest {
 			throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		final Fact fact = Expressions.makeFact("P", Arrays.asList(Expressions.makeConstant("c")));
-		kb.addFacts(fact);
+		kb.addStatement(fact);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -304,7 +302,7 @@ public class AnswerQueryTest {
 				Expressions.makePositiveLiteral("p", vx));
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(rule);
+		kb.addStatement(rule);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

@@ -79,11 +79,10 @@ public class ReasonerTest {
 	public void testLoadRules()
 			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(ruleBxAx, ruleCxBx);
-		kb.addRules(ruleBxAx);
+		kb.addStatements(ruleBxAx, ruleCxBx, ruleBxAx);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			assertEquals(kb.getRules(), Arrays.asList(ruleBxAx, ruleCxBx, ruleBxAx));
+			assertEquals(Arrays.asList(ruleBxAx, ruleCxBx), kb.getRules());
 		}
 	}
 
@@ -91,8 +90,7 @@ public class ReasonerTest {
 	public void testSimpleInference() throws EDBConfigurationException, IOException, ReasonerStateException,
 			EdbIdbSeparationException, IncompatiblePredicateArityException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(ruleBxAx, ruleCxBx);
-		kb.addFacts(factAc, factAd);
+		kb.addStatements(ruleBxAx, ruleCxBx, factAc, factAd);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

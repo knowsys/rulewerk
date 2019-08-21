@@ -63,8 +63,7 @@ public class StratifiedNegationTest {
 		final Fact fact = makeFact("Q", Arrays.asList(makeConstant("c"), makeConstant("d")));
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(rule);
-		kb.addFacts(fact);
+		kb.addStatements(rule, fact);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -86,8 +85,7 @@ public class StratifiedNegationTest {
 		final Fact fact = makeFact("P", Arrays.asList(makeConstant("c"), makeConstant("d")));
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(rule);
-		kb.addFacts(fact);
+		kb.addStatements(rule, fact);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -116,8 +114,7 @@ public class StratifiedNegationTest {
 		final Fact qCD = makeFact("Q", Arrays.asList(makeConstant("c"), makeConstant("d")));
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(rule);
-		kb.addFacts(pCD, pEF, qCD);
+		kb.addStatements(rule, pCD, pEF, qCD);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -152,8 +149,7 @@ public class StratifiedNegationTest {
 		final Fact qCD = makeFact("Q", Arrays.asList(makeConstant("c"), makeConstant("d")));
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addRules(rule);
-		kb.addFacts(pCD, pEF, qCD);
+		kb.addStatements(rule, pCD, pEF, qCD);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();

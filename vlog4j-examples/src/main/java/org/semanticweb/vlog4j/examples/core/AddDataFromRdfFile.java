@@ -25,12 +25,12 @@ import java.io.IOException;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
@@ -82,20 +82,13 @@ public class AddDataFromRdfFile {
 				+ "triplesIDB(?S, ex:isPartOf, ?O) :- triplesIDB(?O, ex:hasPart, ?S) ."
 				+ "triplesIDB(?S, ex:hasPart, ?O) :- triplesIDB(?O, ex:isPartOf, ?S) .";
 
-		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(rules);
+		final KnowledgeBase kb = RuleParser.parse(rules);
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			/*
-			 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
-			 * to close the reasoner automatically.
-			 */
-			final KnowledgeBase kb = reasoner.getKnowledgeBase();
-			kb.addRules(ruleParser.getRules());
-			for (DataSourceDeclaration dataSourceDeclaration : ruleParser.getDataSourceDeclartions()) {
-				kb.addFactsFromDataSource(dataSourceDeclaration.getPredicate(), dataSourceDeclaration.getDataSource());
-			}
-
+		/*
+		 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
+		 * to close the reasoner automatically.
+		 */
+		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			System.out.println("Before materialisation:");
@@ -105,7 +98,7 @@ public class AddDataFromRdfFile {
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
-			final PositiveLiteral hasPartIDB = ruleParser
+			final PositiveLiteral hasPartIDB = RuleParser
 					.parsePositiveLiteral("triplesIDB(?X, <https://example.org/hasPart>, ?Y)");
 			ExamplesUtils.printOutQueryAnswers(hasPartIDB, reasoner);
 
@@ -115,7 +108,7 @@ public class AddDataFromRdfFile {
 			reasoner.exportQueryAnswersToCsv(hasPartIDB,
 					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
 
-			final PositiveLiteral existsHasPartRedBike = ruleParser.parsePositiveLiteral(
+			final PositiveLiteral existsHasPartRedBike = RuleParser.parsePositiveLiteral(
 					"triplesIDB(<https://example.org/redBike>, <https://example.org/hasPart>, ?X)");
 			reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
 					ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);

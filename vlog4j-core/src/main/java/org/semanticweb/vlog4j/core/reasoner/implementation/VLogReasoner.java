@@ -326,8 +326,6 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void close() {
 		this.reasonerState = ReasonerState.AFTER_CLOSING;
-
-		// TODO delete listener
 		this.knowledgeBase.deleteListener(this);
 		this.vLog.stop();
 	}

@@ -59,8 +59,7 @@ public class LoggingTest {
 	private static final KnowledgeBase kb = new KnowledgeBase();
 
 	static {
-		kb.addRules(rule);
-		kb.addFacts(factPc);
+		kb.addStatements(rule, factPc);
 	}
 
 	// TODO remaining tests: change log file
