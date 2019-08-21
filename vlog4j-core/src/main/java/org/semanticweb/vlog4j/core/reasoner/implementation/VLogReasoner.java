@@ -411,6 +411,34 @@ public class VLogReasoner implements Reasoner {
 		}
 	}
 
+	void loadFacts() {
+		for (final Predicate predicate : directEdbFacts.keySet()) {
+			Predicate aliasPredicate;
+			if (edbPredicates.containsKey(predicate)) {
+				aliasPredicate = predicate;
+			} else {
+				aliasPredicate = aliasesForEdbPredicates.get(new LocalFactsDataSourceDeclaration(predicate));
+			}
+			try {
+				this.vLog.addData(ModelToVLogConverter.toVLogPredicate(aliasPredicate),
+						ModelToVLogConverter.toVLogFactTuples(directEdbFacts.get(predicate)));
+			} catch (final EDBConfigurationException e) {
+				throw new RuntimeException("Invalid data sources configuration.", e);
+			}
+		}
+	}
+
+	void loadRules() {
+		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(rules);
+		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
+				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
+		try {
+			this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		}
+	}
+
 	@Override
 	public boolean reason()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
@@ -516,8 +544,7 @@ public class VLogReasoner implements Reasoner {
 		}
 		this.reasonerState = ReasonerState.BEFORE_LOADING;
 		this.vLog.stop();
-		LOGGER.warn(
-				"Reasoner has been reset. All inferences computed during reasoning have been discarded. More data and rules can be added after resetting. The reasoner needs to be loaded again to perform querying and reasoning.");
+		LOGGER.info("Reasoner has been reset. All inferences computed during reasoning have been discarded.");
 	}
 
 	@Override
@@ -525,34 +552,6 @@ public class VLogReasoner implements Reasoner {
 		this.reasonerState = ReasonerState.AFTER_CLOSING;
 		this.knowledgeBase.deleteListener(this);
 		this.vLog.stop();
-	}
-
-	void loadFacts() {
-		for (final Predicate predicate : directEdbFacts.keySet()) {
-			Predicate aliasPredicate;
-			if (edbPredicates.containsKey(predicate)) {
-				aliasPredicate = predicate;
-			} else {
-				aliasPredicate = aliasesForEdbPredicates.get(new LocalFactsDataSourceDeclaration(predicate));
-			}
-			try {
-				this.vLog.addData(ModelToVLogConverter.toVLogPredicate(aliasPredicate),
-						ModelToVLogConverter.toVLogFactTuples(directEdbFacts.get(predicate)));
-			} catch (final EDBConfigurationException e) {
-				throw new RuntimeException("Invalid data sources configuration.", e);
-			}
-		}
-	}
-
-	void loadRules() {
-		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(rules);
-		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
-				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
-		try {
-			this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
-		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
-		}
 	}
 
 	@Override
