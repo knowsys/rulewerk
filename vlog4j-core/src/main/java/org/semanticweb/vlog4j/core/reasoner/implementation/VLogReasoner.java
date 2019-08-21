@@ -11,9 +11,11 @@ import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Statement;
+import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
@@ -55,6 +57,55 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
  */
 
 public class VLogReasoner implements Reasoner {
+
+	/**
+	 * Dummy data source declaration for predicates for which we have explicit local
+	 * facts in the input.
+	 * 
+	 * @author Markus Kroetzsch
+	 *
+	 */
+	class LocalFactsDataSourceDeclaration implements DataSourceDeclaration {
+
+		final Predicate predicate;
+
+		public LocalFactsDataSourceDeclaration(Predicate predicate) {
+			this.predicate = predicate;
+		}
+
+		@Override
+		public <T> T accept(StatementVisitor<T> statementVisitor) {
+			return statementVisitor.visit(this);
+		}
+
+		@Override
+		public Predicate getPredicate() {
+			return this.predicate;
+		}
+
+		@Override
+		public DataSource getDataSource() {
+			return null;
+		}
+
+		@Override
+		public int hashCode() {
+			return predicate.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			LocalFactsDataSourceDeclaration other = (LocalFactsDataSourceDeclaration) obj;
+			return predicate.equals(other.predicate);
+		}
+
+	}
 
 	private static Logger LOGGER = LoggerFactory.getLogger(VLogReasoner.class);
 
@@ -443,13 +494,13 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void onStatementsAdded(Set<Statement> statementsAdded) {
 		// TODO change materialisation state
-		
+
 	}
 
 	@Override
 	public void onStatementAdded(Statement statementAdded) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
