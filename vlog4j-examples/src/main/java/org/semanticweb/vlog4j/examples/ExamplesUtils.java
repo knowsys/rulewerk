@@ -105,9 +105,8 @@ public final class ExamplesUtils {
 	 */
 	public static void printOutQueryAnswers(final String queryString, final Reasoner reasoner)
 			throws ReasonerStateException {
-		RuleParser ruleParser = new RuleParser();
 		try {
-			PositiveLiteral query = ruleParser.parsePositiveLiteral(queryString);
+			PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
 			printOutQueryAnswers(query, reasoner);
 		} catch (ParsingException e) {
 			throw new RuntimeException(e.getMessage(), e);

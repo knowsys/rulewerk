@@ -69,10 +69,9 @@ public class SimpleReasoningExample {
 
 		System.out.println("Knowledge base used in this example:\n\n" + rules);
 
-		final RuleParser ruleParser = new RuleParser();
 		KnowledgeBase kb;
 		try {
-			kb = ruleParser.parse(rules);
+			kb = RuleParser.parse(rules);
 		} catch (final ParsingException e) {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;

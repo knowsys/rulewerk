@@ -82,8 +82,7 @@ public class AddDataFromRdfFile {
 				+ "triplesIDB(?S, ex:isPartOf, ?O) :- triplesIDB(?O, ex:hasPart, ?S) ."
 				+ "triplesIDB(?S, ex:hasPart, ?O) :- triplesIDB(?O, ex:isPartOf, ?S) .";
 
-		RuleParser ruleParser = new RuleParser();
-		final KnowledgeBase kb = ruleParser.parse(rules);
+		final KnowledgeBase kb = RuleParser.parse(rules);
 
 		/*
 		 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
@@ -99,7 +98,7 @@ public class AddDataFromRdfFile {
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
-			final PositiveLiteral hasPartIDB = ruleParser
+			final PositiveLiteral hasPartIDB = RuleParser
 					.parsePositiveLiteral("triplesIDB(?X, <https://example.org/hasPart>, ?Y)");
 			ExamplesUtils.printOutQueryAnswers(hasPartIDB, reasoner);
 
@@ -109,7 +108,7 @@ public class AddDataFromRdfFile {
 			reasoner.exportQueryAnswersToCsv(hasPartIDB,
 					ExamplesUtils.OUTPUT_FOLDER + "ternaryHasPartIDBWithoutBlanks.csv", false);
 
-			final PositiveLiteral existsHasPartRedBike = ruleParser.parsePositiveLiteral(
+			final PositiveLiteral existsHasPartRedBike = RuleParser.parsePositiveLiteral(
 					"triplesIDB(<https://example.org/redBike>, <https://example.org/hasPart>, ?X)");
 			reasoner.exportQueryAnswersToCsv(existsHasPartRedBike,
 					ExamplesUtils.OUTPUT_FOLDER + "existsHasPartIDBRedBikeWithBlanks.csv", true);

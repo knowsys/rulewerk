@@ -34,7 +34,7 @@ import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.FormulaContext;
 import org.semanticweb.vlog4j.parser.ParsingException;
 
 /**
- * Class to access VLog parsing functionality.
+ * Class to statically access VLog parsing functionality.
  * 
  * @FIXME Support parsing from multiple files (into one KB).
  * 
@@ -43,23 +43,20 @@ import org.semanticweb.vlog4j.parser.ParsingException;
  */
 public class RuleParser {
 
-	JavaCCParser parser;
-
-	public KnowledgeBase parse(InputStream stream, String encoding) throws ParsingException {
-		parser = new JavaCCParser(stream, encoding);
-		return doParse();
+	public static KnowledgeBase parse(InputStream stream, String encoding) throws ParsingException {
+		return doParse(new JavaCCParser(stream, encoding));
 	}
 
-	public KnowledgeBase parse(InputStream stream) throws ParsingException {
+	public static KnowledgeBase parse(InputStream stream) throws ParsingException {
 		return parse(stream, "UTF-8");
 	}
 
-	public KnowledgeBase parse(String input) throws ParsingException {
+	public static KnowledgeBase parse(String input) throws ParsingException {
 		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		return parse(inputStream, "UTF-8");
 	}
 
-	public Literal parseLiteral(String input) throws ParsingException {
+	public static Literal parseLiteral(String input) throws ParsingException {
 		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 		try {
@@ -69,7 +66,7 @@ public class RuleParser {
 		}
 	}
 
-	public PositiveLiteral parsePositiveLiteral(String input) throws ParsingException {
+	public static PositiveLiteral parsePositiveLiteral(String input) throws ParsingException {
 		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 		try {
@@ -79,7 +76,7 @@ public class RuleParser {
 		}
 	}
 
-	KnowledgeBase doParse() throws ParsingException {
+	static KnowledgeBase doParse(JavaCCParser parser) throws ParsingException {
 		try {
 			parser.parse();
 			return parser.getKnowledgeBase();

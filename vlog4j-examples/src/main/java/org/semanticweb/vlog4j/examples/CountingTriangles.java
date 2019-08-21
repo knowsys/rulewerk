@@ -46,9 +46,8 @@ public class CountingTriangles {
 
 		KnowledgeBase kb;
 		/* Configure rules */
-		final RuleParser ruleParser = new RuleParser();
 		try {
-			kb = ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "counting-triangles.rls"));
+			kb = RuleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "counting-triangles.rls"));
 		} catch (final ParsingException e) {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;
@@ -72,15 +71,15 @@ public class CountingTriangles {
 			try {
 				PositiveLiteral query;
 
-				query = ruleParser.parsePositiveLiteral("country(?X)");
+				query = RuleParser.parsePositiveLiteral("country(?X)");
 				System.out.print("Found " + ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true))
 						+ " countries in Wikidata");
 				// Due to symmetry, each joint border is found twice, hence we divide by 2:
-				query = ruleParser.parsePositiveLiteral("shareBorder(?X,?Y)");
+				query = RuleParser.parsePositiveLiteral("shareBorder(?X,?Y)");
 				System.out.println(", with " + (ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 2)
 						+ " pairs of them sharing a border.");
 				// Due to symmetry, each triangle is found six times, hence we divide by 6:
-				query = ruleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)");
+				query = RuleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)");
 				System.out.println("The number of triangles of countries that mutually border each other was "
 						+ (ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 6) + ".");
 			} catch (final ParsingException e) {

@@ -125,9 +125,8 @@ public class AddDataFromRdfModel {
 				+ "  TRIPLE(?Person, cnf:hasAffiliation, ?Aff), TRIPLE(?Aff, cnf:withOrganisation, ?Org),"
 				+ "  TRIPLE(?Org, cnf:name, ?OrgName) .";
 		KnowledgeBase kb;
-		final RuleParser ruleParser = new RuleParser();
 		try {
-			kb = ruleParser.parse(rules);
+			kb = RuleParser.parse(rules);
 		} catch (final ParsingException e) {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;

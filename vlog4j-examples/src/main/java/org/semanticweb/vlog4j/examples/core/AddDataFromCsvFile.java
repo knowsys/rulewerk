@@ -76,8 +76,7 @@ public class AddDataFromCsvFile {
 				+ "hasPartIDB(?X, ?Y) :- isPartOfIDB(?Y, ?X) ." //
 				+ "isPartOfIDB(?X, ?Y) :- hasPartIDB(?Y, ?X) .";
 
-		RuleParser ruleParser = new RuleParser();
-		final KnowledgeBase kb = ruleParser.parse(rules);
+		final KnowledgeBase kb = RuleParser.parse(rules);
 
 		/*
 		 * Loading, reasoning, and querying while using try-with-resources to close the
@@ -92,7 +91,7 @@ public class AddDataFromCsvFile {
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");
-			final PositiveLiteral hasPartIdbXY = ruleParser.parsePositiveLiteral("hasPartIDB(?X, ?Y)");
+			final PositiveLiteral hasPartIdbXY = RuleParser.parsePositiveLiteral("hasPartIDB(?X, ?Y)");
 			ExamplesUtils.printOutQueryAnswers(hasPartIdbXY, reasoner);
 
 			/* Exporting query answers to {@code .csv} files. */
@@ -101,7 +100,7 @@ public class AddDataFromCsvFile {
 			reasoner.exportQueryAnswersToCsv(hasPartIdbXY,
 					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithoutBlanks.csv", false);
 
-			final PositiveLiteral hasPartIDBRedBikeY = ruleParser.parsePositiveLiteral("hasPartIDB(redBike, ?Y)");
+			final PositiveLiteral hasPartIDBRedBikeY = RuleParser.parsePositiveLiteral("hasPartIDB(redBike, ?Y)");
 			reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
 					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBRedBikeYWithBlanks.csv", true);
 		}

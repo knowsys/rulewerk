@@ -52,9 +52,8 @@ public class DoidExample {
 
 		/* Configure rules */
 		KnowledgeBase kb;
-		final RuleParser ruleParser = new RuleParser();
 		try {
-			kb = ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/doid.rls"));
+			kb = RuleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/doid.rls"));
 		} catch (final ParsingException e) {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;
@@ -82,7 +81,7 @@ public class DoidExample {
 			System.out.println("\nNumber of inferred tuples for selected query atoms:");
 			for (final String queryString : queries) {
 				try {
-					final PositiveLiteral query = ruleParser.parsePositiveLiteral(queryString);
+					final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
 					answers = reasoner.answerQuery(query, true);
 					System.out.println("  " + query.toString() + ": " + ExamplesUtils.iteratorSize(answers));
 				} catch (final ParsingException e) {

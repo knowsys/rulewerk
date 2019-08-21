@@ -70,8 +70,7 @@ public class SkolemVsRestrictedChaseTermination {
 				+ "hasPartIDB(?X, ?Y) :- isPartOfIDB(?Y, ?X) ." //
 				+ "isPartOfIDB(?X, ?Y) :- hasPartIDB(?Y, ?X) .";
 
-		final RuleParser ruleParser = new RuleParser();
-		final KnowledgeBase kb = ruleParser.parse(rules);
+		final KnowledgeBase kb = RuleParser.parse(rules);
 
 		/*
 		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to
@@ -80,7 +79,7 @@ public class SkolemVsRestrictedChaseTermination {
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
-			final PositiveLiteral queryHasPart = ruleParser.parsePositiveLiteral("hasPartIDB(?X, ?Y)");
+			final PositiveLiteral queryHasPart = RuleParser.parsePositiveLiteral("hasPartIDB(?X, ?Y)");
 
 			/* See that there is no fact HasPartIDB before reasoning. */
 			System.out.println("Before reasoning is started, no inferrences have been computed yet.");
