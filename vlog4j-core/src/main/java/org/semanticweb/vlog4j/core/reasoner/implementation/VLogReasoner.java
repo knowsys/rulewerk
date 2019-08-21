@@ -313,10 +313,6 @@ public class VLogReasoner implements Reasoner {
 		for (final Statement statement : knowledgeBase) {
 			statement.accept(visitor);
 		}
-//		System.out.println("\nEDB: " + edbPredicates);
-//		System.out.println("\nIDB: " + idbPredicates);
-//		System.out.println("\nEDB with aliases: " + aliasedEdbPredicates);
-//		System.out.println("\nAliases for EDBs: " +  aliasesForEdbPredicates);
 
 		if (edbPredicates.isEmpty() && aliasedEdbPredicates.isEmpty()) {
 			LOGGER.warn("No facts have been provided.");
@@ -349,16 +345,16 @@ public class VLogReasoner implements Reasoner {
 			if (dataSourceDeclaration.getDataSource() != null) {
 				formatter.format(dataSourceDeclaration.getDataSource().toConfigString(), dataSourceIndex,
 						ModelToVLogConverter.toVLogPredicate(predicate));
+				dataSourceIndex++;
 			}
-			dataSourceIndex++;
 		}
 		for (final DataSourceDeclaration dataSourceDeclaration : this.aliasesForEdbPredicates.keySet()) {
 			final Predicate aliasPredicate = this.aliasesForEdbPredicates.get(dataSourceDeclaration);
 			if (dataSourceDeclaration.getDataSource() != null) {
 				formatter.format(dataSourceDeclaration.getDataSource().toConfigString(), dataSourceIndex,
 						ModelToVLogConverter.toVLogPredicate(aliasPredicate));
+				dataSourceIndex++;
 			}
-			dataSourceIndex++;
 		}
 		formatter.close();
 		return configStringBuilder.toString();
@@ -489,8 +485,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public MaterialisationState exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
-			final boolean includeBlanks)
-			throws ReasonerStateException, IOException {
+			final boolean includeBlanks) throws ReasonerStateException, IOException {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
