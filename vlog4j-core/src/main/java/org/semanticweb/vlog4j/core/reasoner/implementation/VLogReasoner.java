@@ -1,6 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.MaterializationException;
+import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
@@ -225,13 +227,11 @@ public class VLogReasoner implements Reasoner {
 			runChase();
 			break;
 		case AFTER_LOADING:
-			// TODO check if changes occurred in the KB. If yes, only runChase(); otherwise,
-			// reset and reload.
 			runChase();
 			break;
+
+		case KNOWLEDGE_BASE_CHANGED:
 		case AFTER_REASONING:
-			// TODO check if changes occurred in the KB. If yes, reset, reload, and run
-			// chase. If not, do nothing.
 			resetReasoner();
 			load();
 			runChase();
@@ -282,6 +282,9 @@ public class VLogReasoner implements Reasoner {
 			stringQueryResultIterator = this.vLog.query(vLogAtom, true, filterBlanks);
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
+		} catch (final NonExistingPredicateException e1) {
+			throw new IllegalArgumentException(MessageFormat.format(
+					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
 		}
 
 		return new QueryResultIterator(stringQueryResultIterator, this.materialisationState);
@@ -289,7 +292,8 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public MaterialisationState exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
-			final boolean includeBlanks) throws ReasonerStateException, IOException {
+			final boolean includeBlanks)
+			throws ReasonerStateException, IOException {
 		final boolean filterBlanks = !includeBlanks;
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
@@ -305,6 +309,9 @@ public class VLogReasoner implements Reasoner {
 			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath, filterBlanks);
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
+		} catch (final NonExistingPredicateException e1) {
+			throw new IllegalArgumentException(MessageFormat.format(
+					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
 		}
 		return this.materialisationState;
 	}
@@ -442,46 +449,53 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void onStatementsAdded(Set<Statement> statementsAdded) {
-		updateMaterialisationStateOnStatementsAdded(statementsAddedInvalidateMaterialisation(statementsAdded));
+		// TODO more elaborate materialisation state handling
+		// updateReasonerStateToKnowledgeBaseChanged();
+		// updateMaterialisationStateOnStatementsAdded(statementsAddedInvalidateMaterialisation(statementsAdded));
+
+		updateReasonerToKnowledgeBaseChanged();
 	}
 
 	@Override
 	public void onStatementAdded(Statement statementAdded) {
-		updateMaterialisationStateOnStatementsAdded(statementAddedInvalidatesMaterialisation(statementAdded));
+		// TODO more elaborate materialisation state handling
+		// updateReasonerStateToKnowledgeBaseChanged();
+		// updateMaterialisationStateOnStatementsAdded(statementAddedInvalidatesMaterialisation(statementAdded));
+
+		updateReasonerToKnowledgeBaseChanged();
 	}
 
-	private boolean statementsAddedInvalidateMaterialisation(Set<Statement> statementsAdded) {
-		// if statements contain Facts or DataSourceDeclarations for predicates that
-		// appear as negated in rules, return true
-		// TODO implement
-		return false;
+	private void updateReasonerToKnowledgeBaseChanged() {
+		if (this.reasonerState.equals(ReasonerState.AFTER_LOADING)
+				|| this.reasonerState.equals(ReasonerState.AFTER_REASONING)) {
 
-	}
-
-	private boolean statementAddedInvalidatesMaterialisation(Statement statementAdded) {
-		// if statement is a Facts or a DataSourceDeclarations for predicates that
-		// appear as negated in rules, return true
-		// TODO implement
-		return false;
-	}
-
-	private void updateMaterialisationStateOnStatementsAdded(boolean materialisationInvalidated) {
-		switch (materialisationState) {
-		case WRONG:
-			// added statements do not change the WRONG state
-			break;
-
-		case INCOMPLETE:
-		case COMPLETE:
-			if (materialisationInvalidated) {
-				this.materialisationState = materialisationInvalidated ? MaterialisationState.WRONG
-						: MaterialisationState.INCOMPLETE;
-			}
-			break;
-
-		default:
-			break;
+			this.reasonerState = ReasonerState.KNOWLEDGE_BASE_CHANGED;
+			this.materialisationState = MaterialisationState.WRONG;
 		}
 	}
+
+//	private void updateReasonerStateToKnowledgeBaseChanged() {
+//		if (this.reasonerState.equals(ReasonerState.AFTER_LOADING)
+//				|| this.reasonerState.equals(ReasonerState.AFTER_REASONING)) {
+//			this.reasonerState = ReasonerState.KNOWLEDGE_BASE_CHANGED;
+//		}
+//	}
+
+//	private boolean statementsAddedInvalidateMaterialisation(Set<Statement> statementsAdded) {
+//		// TODO implement and use to decide materialisation state
+//		return true;
+//
+//	}
+//
+//	private boolean statementAddedInvalidatesMaterialisation(Statement statementAdded) {
+//		// TODO implement and use to decide materialisation state
+//		return true;
+//	}
+
+//	private void updateMaterialisationStateOnStatementsAdded(boolean materialisationInvalidated) {
+//		if (this.reasonerState.equals(ReasonerState.KNOWLEDGE_BASE_CHANGED) && materialisationInvalidated) {
+//			this.materialisationState = MaterialisationState.WRONG;
+//		}
+//	}
 
 }

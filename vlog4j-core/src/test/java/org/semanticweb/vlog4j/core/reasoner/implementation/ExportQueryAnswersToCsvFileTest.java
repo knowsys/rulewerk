@@ -54,7 +54,7 @@ public class ExportQueryAnswersToCsvFileTest {
 		final boolean includeBlanks = false;
 		// final String csvFilePath = CSV_EXPORT_FOLDER + "output";
 		final List<List<String>> factCCD = Arrays.asList(Arrays.asList("c", "c", "d"));
-		
+
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		kb.addStatement(fact);
@@ -74,13 +74,13 @@ public class ExportQueryAnswersToCsvFileTest {
 			final List<List<String>> csvContentXXZ = FileDataSourceTestUtils.getCSVContent(csvFilePathXXZ);
 			assertEquals(factCCD, csvContentXXZ);
 
-			final PositiveLiteral queryAtomXXX = Expressions.makePositiveLiteral("q", x, x, x);
+			final PositiveLiteral queryAtomXXX = Expressions.makePositiveLiteral(predicate, x, x, x);
 			final String csvFilePathXXX = FileDataSourceTestUtils.OUTPUT_FOLDER + "outputXXX.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXXX, csvFilePathXXX, includeBlanks);
 			final List<List<String>> csvContentXXX = FileDataSourceTestUtils.getCSVContent(csvFilePathXXX);
 			assertTrue(csvContentXXX.isEmpty());
 
-			final PositiveLiteral queryAtomXYX = Expressions.makePositiveLiteral("q", x, y, x);
+			final PositiveLiteral queryAtomXYX = Expressions.makePositiveLiteral(predicate, x, y, x);
 			final String csvFilePathXYX = FileDataSourceTestUtils.OUTPUT_FOLDER + "outputXYX.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXYX, csvFilePathXYX, includeBlanks);
 			final List<List<String>> csvContentXYX = FileDataSourceTestUtils.getCSVContent(csvFilePathXYX);
@@ -89,22 +89,72 @@ public class ExportQueryAnswersToCsvFileTest {
 
 	}
 
-	@Test
-	public void testExportQueryEmptyKnowledgeBase()
+	@Test(expected = IllegalArgumentException.class)
+	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningIncludeBlanks()
 			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));
-		
+
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, true);
-			assertTrue(FileDataSourceTestUtils.getCSVContent(emptyFilePath).isEmpty());
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningExcludeBlanks()
+			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
+				Expressions.makeVariable("?y"));
+
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
 
 			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, false);
-			assertTrue(FileDataSourceTestUtils.getCSVContent(emptyFilePath).isEmpty());
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testExportQueryEmptyKnowledgeBaseAfterReasoningIncludeBlanks()
+			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
+				Expressions.makeVariable("?y"));
+
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			reasoner.reason();
+
+			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
+			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, true);
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testExportQueryEmptyKnowledgeBaseAfterReasoningExcludeBlanks()
+			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
+				Expressions.makeVariable("?y"));
+
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			reasoner.reason();
+
+			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
+			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, false);
 		}
 	}
 

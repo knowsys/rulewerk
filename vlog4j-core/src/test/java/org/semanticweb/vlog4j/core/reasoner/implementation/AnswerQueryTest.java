@@ -250,8 +250,8 @@ public class AnswerQueryTest {
 		}
 	}
 
-	@Test
-	public void queryEmptyKnowledgeBase()
+	@Test(expected = IllegalArgumentException.class)
+	public void queryEmptyKnowledgeBaseBeforeReasoning()
 			throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -259,15 +259,22 @@ public class AnswerQueryTest {
 			reasoner.load();
 
 			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
-			final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true);
-			Assert.assertFalse(queryResultIterator.hasNext());
-			queryResultIterator.close();
+			reasoner.answerQuery(queryAtom, true);
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void queryEmptyKnowledgeBaseAfterReasoning()
+			throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
 
 			reasoner.reason();
 
-			try (final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom, true)) {
-				assertFalse(queryResultIteratorAfterReason.hasNext());
-			}
+			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
+			reasoner.answerQuery(queryAtom, true);
 		}
 	}
 
@@ -307,15 +314,25 @@ public class AnswerQueryTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
-			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
-			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true)) {
+			final PositiveLiteral queryAtom1 = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"));
+			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom1, true)) {
+				Assert.assertFalse(queryResultIterator.hasNext());
+				queryResultIterator.close();
+			}
+			
+			final PositiveLiteral queryAtom2 = Expressions.makePositiveLiteral("q", Expressions.makeVariable("?x"));
+			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom2, true)) {
 				Assert.assertFalse(queryResultIterator.hasNext());
 				queryResultIterator.close();
 			}
 
 			reasoner.reason();
 
-			try (final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom, true)) {
+			try (final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom1, true)) {
+				assertFalse(queryResultIteratorAfterReason.hasNext());
+			}
+			
+			try (final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom2, true)) {
 				assertFalse(queryResultIteratorAfterReason.hasNext());
 			}
 		}

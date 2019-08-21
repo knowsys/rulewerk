@@ -49,6 +49,7 @@ public class LoadDataFromSparqlQueryTest {
 	 * @throws EdbIdbSeparationException
 	 * @throws IOException
 	 * @throws IncompatiblePredicateArityException
+	 * @throws QueryPredicateNonExistentException
 	 */
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
@@ -109,6 +110,7 @@ public class LoadDataFromSparqlQueryTest {
 	 * @throws EdbIdbSeparationException
 	 * @throws IOException
 	 * @throws IncompatiblePredicateArityException
+	 * @throws QueryPredicateNonExistentException
 	 */
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test

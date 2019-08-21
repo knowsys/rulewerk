@@ -263,31 +263,16 @@ public class ReasonerStateTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			// 1. load and reason
 			reasoner.load();
-			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(exampleQueryAtom, true)) {
-				assertFalse(queryResultIterator.hasNext());
-			}
 			reasoner.reason();
-			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(exampleQueryAtom, true)) {
-				assertFalse(queryResultIterator.hasNext());
-			}
 			reasoner.resetReasoner();
 
 			// 2. load again
 			reasoner.load();
-			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(exampleQueryAtom, true)) {
-				assertFalse(queryResultIterator.hasNext());
-			}
 			reasoner.resetReasoner();
 
 			// 3. load and reason again
 			reasoner.load();
-			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(exampleQueryAtom, true)) {
-				assertFalse(queryResultIterator.hasNext());
-			}
 			reasoner.reason();
-			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(exampleQueryAtom, true)) {
-				assertFalse(queryResultIterator.hasNext());
-			}
 			reasoner.close();
 		}
 	}

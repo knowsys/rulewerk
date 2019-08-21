@@ -37,26 +37,28 @@ public enum ReasonerState {
 	/**
 	 * State a Reasoner is in after method {@link Reasoner#load()} has been called,
 	 * and before method {@link Reasoner#reason()} has been called. The Reasoner can
-	 * only be loaded once. Loading in this state is ineffective. Adding rules, fact
-	 * and fact data sources and setting the rule re-writing strategy are not
-	 * allowed in this state.
 	 */
 	AFTER_LOADING("loaded"),
 
 	/**
 	 * State a Reasoner is in after method {@link Reasoner#reason()} has been
-	 * called. The Reasoner cannot reason again, once it reached this state. Loading
-	 * and setting the reasoning algorithm this state are ineffective. Reasoning,
-	 * adding rules, fact and fact data sources and setting the rule re-writing
-	 * strategy are not allowed in this state.
 	 */
-	AFTER_REASONING("completed reasoning"),
+	AFTER_REASONING("after reasoning"),
+
+	/**
+	 * State in which the knowledge base of an already loaded reasoner has been
+	 * changed. This can occur if the knowledge base has been modified after loading
+	 * (in {@link ReasonerState#AFTER_LOADING} state), or after reasoning (in
+	 * {@link ReasonerState#AFTER_REASONING} state).
+	 */
+
+	KNOWLEDGE_BASE_CHANGED("knowledge base changed"),
 	/**
 	 * State a Reasoner is in after method {@link Reasoner#close()} has been called.
-	 * The Reasoner cannot reason again, once it reached this state.
-	 * Loading and setting the reasoning algorithm in this state are ineffective.
-	 * Reasoning, adding rules, fact and fact data sources and setting the rule re-writing
-	 * strategy are not allowed in this state. 
+	 * The Reasoner cannot reason again, once it reached this state. Loading and
+	 * setting the reasoning algorithm in this state are ineffective. Reasoning,
+	 * adding rules, fact and fact data sources and setting the rule re-writing
+	 * strategy are not allowed in this state.
 	 */
 	AFTER_CLOSING("closed");
 

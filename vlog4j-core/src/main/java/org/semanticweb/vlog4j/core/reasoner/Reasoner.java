@@ -89,7 +89,7 @@ import karmaresearch.vlog.NotStartedException;
  *
  */
 
-public interface Reasoner  extends AutoCloseable, KnowledgeBaseListener {
+public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
@@ -399,13 +399,13 @@ public interface Reasoner  extends AutoCloseable, KnowledgeBaseListener {
 	 * @throws ReasonerStateException   if this method is called before loading
 	 *                                  ({@link Reasoner#load()} or after closing
 	 *                                  ({@link Reasoner#close()}).
-	 * @throws IllegalArgumentException if the given {@code queryAtom} contains
-	 *                                  terms ({@link Atom#getTerms()}) which are
-	 *                                  not of type {@link TermType#CONSTANT} or
+	 * 
+	 * @throws IllegalArgumentException if the given {@code query} contains terms
+	 *                                  ({@link Atom#getTerms()}) which are not of
+	 *                                  type {@link TermType#CONSTANT} or
 	 *                                  {@link TermType#VARIABLE}.
 	 */
-	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks)
-			throws ReasonerStateException;
+	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) throws ReasonerStateException;
 
 	// TODO add examples to query javadoc
 	/**
@@ -461,10 +461,8 @@ public interface Reasoner  extends AutoCloseable, KnowledgeBaseListener {
 	 *                                  </ul>
 	 */
 	// TODO update javadoc with return type
-	MaterialisationState exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath,
-			boolean includeBlanks)
+	MaterialisationState exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeBlanks)
 			throws ReasonerStateException, IOException;
-
 
 	/**
 	 * Resets the reasoner to a pre-loading state (before the call of

@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
@@ -54,6 +55,9 @@ public class LoadDataFromCsvFileTest {
 	private static final Set<List<Term>> expectedUnaryQueryResult = Sets.newSet(Arrays.asList(makeConstant("c1")),
 			Arrays.asList(makeConstant("c2")));
 
+	@Ignore
+	// FIXME: test ignored because of a bug in VLog. Remore the @Ignore annotation
+	// after bug is fixed.
 	@Test
 	public void testLoadEmptyCsvFile()
 			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
