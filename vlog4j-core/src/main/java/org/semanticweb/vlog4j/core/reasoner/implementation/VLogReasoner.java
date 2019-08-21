@@ -493,14 +493,46 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void onStatementsAdded(Set<Statement> statementsAdded) {
-		// TODO change materialisation state
-
+		updateMaterialisationStateOnStatementsAdded(statementsAddedInvalidateMaterialisation(statementsAdded));
 	}
 
 	@Override
 	public void onStatementAdded(Statement statementAdded) {
-		// TODO Auto-generated method stub
+		updateMaterialisationStateOnStatementsAdded(statementAddedInvalidatesMaterialisation(statementAdded));
+	}
 
+	private boolean statementsAddedInvalidateMaterialisation(Set<Statement> statementsAdded) {
+		// if statements contain Facts or DataSourceDeclarations for predicates that
+		// appear as negated in rules, return true
+		// TODO implement
+		return false;
+
+	}
+
+	private boolean statementAddedInvalidatesMaterialisation(Statement statementAdded) {
+		// if statement is a Facts or a DataSourceDeclarations for predicates that
+		// appear as negated in rules, return true
+		// TODO implement
+		return false;
+	}
+
+	private void updateMaterialisationStateOnStatementsAdded(boolean materialisationInvalidated) {
+		switch (materialisationState) {
+		case WRONG:
+			// added statements do not change the WRONG state
+			break;
+
+		case INCOMPLETE:
+		case COMPLETE:
+			if (materialisationInvalidated) {
+				this.materialisationState = materialisationInvalidated ? MaterialisationState.WRONG
+						: MaterialisationState.INCOMPLETE;
+			}
+			break;
+
+		default:
+			break;
+		}
 	}
 
 }
