@@ -2,7 +2,6 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
