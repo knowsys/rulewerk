@@ -260,6 +260,8 @@ public class VLogReasoner implements Reasoner {
 		super();
 		this.knowledgeBase = knowledgeBase;
 		this.knowledgeBase.addListener(this);
+		
+		setLogLevel(this.internalLogLevel);
 	}
 
 	@Override
@@ -308,7 +310,24 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void load() throws IOException {
 		validateNotClosed();
+		
+		switch (this.reasonerState) {
+		case KB_NOT_LOADED:
+			loadKnowledgeBase();
+			break;
+		case KB_LOADED:
+		case MATERIALISED:
+			// do nothing, all KB is already loaded
+			break;
+		case KB_CHANGED:
+			resetReasoner();
+			loadKnowledgeBase();
+		default:
+			break;
+		}
+	}
 
+	void loadKnowledgeBase() throws IOException {
 		final LoadKbVisitor visitor = new LoadKbVisitor();
 		visitor.clearIndexes();
 		for (final Statement statement : knowledgeBase) {
@@ -326,8 +345,6 @@ public class VLogReasoner implements Reasoner {
 		} catch (final EDBConfigurationException e) {
 			throw new RuntimeException("Invalid data sources configuration.", e);
 		}
-		// TODO: can't we set this earlier? Why here?
-		setLogLevel(this.internalLogLevel);
 
 		validateDataSourcePredicateArities();
 
@@ -335,6 +352,9 @@ public class VLogReasoner implements Reasoner {
 		loadRules();
 
 		this.reasonerState = ReasonerState.KB_LOADED;
+		
+		//TODO: if there are no rules, then materialisation state is complete
+		this.materialisationState = MaterialisationState.INCOMPLETE;
 	}
 
 	String getDataSourceConfigurationString() {
@@ -414,11 +434,11 @@ public class VLogReasoner implements Reasoner {
 				aliasPredicate = aliasesForEdbPredicates.get(new LocalFactsDataSourceDeclaration(predicate));
 			}
 			try {
-				String vLogPredicateName = ModelToVLogConverter.toVLogPredicate(aliasPredicate);
-				String[][] vLogPredicateTuples = ModelToVLogConverter.toVLogFactTuples(directEdbFacts.get(predicate));
+				final String vLogPredicateName = ModelToVLogConverter.toVLogPredicate(aliasPredicate);
+				final String[][] vLogPredicateTuples = ModelToVLogConverter.toVLogFactTuples(directEdbFacts.get(predicate));
 				this.vLog.addData(vLogPredicateName, vLogPredicateTuples);
 				if (LOGGER.isDebugEnabled()) {
-					for (String[] tuple : vLogPredicateTuples) {
+					for (final String[] tuple : vLogPredicateTuples) {
 						LOGGER.debug(
 								"Loaded direct fact " + vLogPredicateName + "(" + Arrays.deepToString(tuple) + ")");
 					}
@@ -436,7 +456,7 @@ public class VLogReasoner implements Reasoner {
 		try {
 			this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
 			if (LOGGER.isDebugEnabled()) {
-				for (karmaresearch.vlog.Rule rule : vLogRuleArray) {
+				for (final karmaresearch.vlog.Rule rule : vLogRuleArray) {
 					LOGGER.debug("Loaded rule " + rule.toString());
 				}
 			}
@@ -447,6 +467,8 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public boolean reason() throws IOException {
+		validateNotClosed();
+		
 		switch (this.reasonerState) {
 		case KB_NOT_LOADED:
 			load();
@@ -455,16 +477,18 @@ public class VLogReasoner implements Reasoner {
 		case KB_LOADED:
 			runChase();
 			break;
-
 		case KB_CHANGED:
-		case MATERIALISED:
 			resetReasoner();
 			load();
 			runChase();
 			break;
-		case CLOSED:
-			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed after closing.");
+		case MATERIALISED:
+			runChase();
+			break;
+		default:
+			break;
 		}
+		
 		return this.reasoningCompleted;
 	}
 
@@ -479,18 +503,19 @@ public class VLogReasoner implements Reasoner {
 			} else {
 				this.reasoningCompleted = this.vLog.materialize(skolemChase, this.timeoutAfterSeconds);
 			}
-			this.materialisationState = this.reasoningCompleted ? MaterialisationState.COMPLETE
-					: MaterialisationState.INCOMPLETE;
 
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		} catch (final MaterializationException e) {
-			// FIXME: the message generate here is not guaranteed to be the correct
+			// FIXME: the message generated here is not guaranteed to be the correct
 			// interpretation of the exception that is caught
 			throw new RuntimeException(
 					"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
 					e);
 		}
+		
+		this.materialisationState = this.reasoningCompleted ? MaterialisationState.COMPLETE
+				: MaterialisationState.INCOMPLETE;
 	}
 
 	@Override
@@ -544,7 +569,6 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void resetReasoner() {
 		validateNotClosed();
-		// TODO what should happen to the KB?
 		this.reasonerState = ReasonerState.KB_NOT_LOADED;
 		this.vLog.stop();
 		LOGGER.info("Reasoner has been reset. All inferences computed during reasoning have been discarded.");
@@ -607,7 +631,7 @@ public class VLogReasoner implements Reasoner {
 		CyclicCheckResult checkCyclic;
 		try {
 			checkCyclic = this.vLog.checkCyclic("MFC");
-		} catch (NotStartedException e) {
+		} catch (final NotStartedException e) {
 			throw new RuntimeException(e.getMessage(), e); // should be impossible
 		}
 		return checkCyclic.equals(CyclicCheckResult.CYCLIC);
@@ -623,7 +647,7 @@ public class VLogReasoner implements Reasoner {
 		CyclicCheckResult checkCyclic;
 		try {
 			checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
-		} catch (NotStartedException e) {
+		} catch (final NotStartedException e) {
 			throw new RuntimeException(e.getMessage(), e); // should be impossible
 		}
 		return checkCyclic.equals(CyclicCheckResult.NON_CYCLIC);

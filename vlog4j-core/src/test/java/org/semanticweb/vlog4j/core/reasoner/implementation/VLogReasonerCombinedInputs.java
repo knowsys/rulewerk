@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -56,10 +57,11 @@ public class VLogReasonerCombinedInputs {
 	final Fact factPd = Expressions.makeFact("p", Arrays.asList(Expressions.makeConstant("d")));
 	final PositiveLiteral queryQx = Expressions.makePositiveLiteral(q, Arrays.asList(Expressions.makeVariable("x")));
 
-	final Set<List<Term>> resultsCC1C2D = Set.of(Collections.singletonList(Expressions.makeConstant("c")),
-			Collections.singletonList(Expressions.makeConstant("c1")),
-			Collections.singletonList(Expressions.makeConstant("c2")),
-			Collections.singletonList(Expressions.makeConstant("d")));
+	final Set<List<Term>> resultsCC1C2D = new HashSet<>(
+			Arrays.asList(Collections.singletonList(Expressions.makeConstant("c")),
+					Collections.singletonList(Expressions.makeConstant("c1")),
+					Collections.singletonList(Expressions.makeConstant("c2")),
+					Collections.singletonList(Expressions.makeConstant("d"))));
 
 	final DataSourceDeclaration qFromCsv;
 	final DataSourceDeclaration qCDFromCsv;

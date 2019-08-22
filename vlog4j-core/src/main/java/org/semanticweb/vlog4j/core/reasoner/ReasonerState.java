@@ -56,10 +56,10 @@ public enum ReasonerState {
 	KB_CHANGED("knowledge base changed"),
 	/**
 	 * State a Reasoner is in after method {@link Reasoner#close()} has been called.
-	 * The Reasoner cannot reason again, once it reached this state. Loading and
-	 * setting the reasoning algorithm in this state are ineffective. Reasoning,
-	 * adding rules, fact and fact data sources and setting the rule re-writing
-	 * strategy are not allowed in this state.
+	 * The Reasoner cannot reason again, once it reached this state. Loading,
+	 * reasoning, adding rules, fact and fact data sources, setting the rule
+	 * re-writing strategy, the reasoning algorithm and the reasoning timeout. are
+	 * not allowed in this state.
 	 */
 	CLOSED("closed");
 
