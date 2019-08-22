@@ -3,9 +3,6 @@ package org.semanticweb.vlog4j.core.reasoner;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -16,7 +13,6 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 import karmaresearch.vlog.Atom;
-import karmaresearch.vlog.NotStartedException;
 
 /*
  * #%L
@@ -58,13 +54,8 @@ import karmaresearch.vlog.NotStartedException;
  * {@link RuleRewriteStrategy}. <br>
  * <br>
  * Once adding facts and rules to the knowledge base has been completed, the
- * <b>knowledge base</b> can be <b>loaded</b> into the reasoner. The following
- * <b>pre-condition</b> must be respected: the {@link Predicate}s appearing in
- * {@link Rule} heads (called IDBs) cannot also appear in knowledge base
- * <b>facts</b> (called EDBs). An {@link EdbIdbSeparationException} would be
- * thrown when loading the knowledge base.<br>
+ * <b>knowledge base</b> can be <b>loaded</b> into the reasoner.
  *
- * <br>
  * The loaded reasoner can perform <b>atomic queries</b> on explicit facts
  * before reasoning, and all implicit and explicit facts after calling
  * {@link Reasoner#reason()}. Queries can provide an iterator for the results
@@ -84,6 +75,8 @@ import karmaresearch.vlog.NotStartedException;
  * before loading. Then, more information can be added to the knowledge base,
  * the reasoner can be loaded again, and querying and reasoning can be
  * performed.
+ * 
+ * @FIXME Update the outdated JavaDoc
  *
  * @author Irina Dragoste
  *
@@ -159,9 +152,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *
 	 * @param ruleRewritingStrategy strategy according to which the rules will be
 	 *                              rewritten before reasoning.
-	 * @throws ReasonerStateException if the reasoner has already been loaded.
 	 */
-	void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException;
+	void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy);
 
 	/**
 	 * Getter for the strategy according to which rules will be rewritten before
@@ -177,9 +169,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * {@link LogLevel#WARNING}
 	 *
 	 * @param logLevel the logging level to be set for VLog C++ resource.
-	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
-	void setLogLevel(LogLevel logLevel) throws ReasonerStateException;
+	void setLogLevel(LogLevel logLevel);
 
 	/**
 	 * Returns the logging level of the internal VLog C++ resource. If no value has
@@ -197,50 +188,26 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @param filePath the file for the internal VLog C++ resource to log to. If
 	 *                 {@code null} or an invalid file path, the reasoner will log
 	 *                 to the default system output.
-	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
-	void setLogFile(String filePath) throws ReasonerStateException;
+	void setLogFile(String filePath);
 
 	/**
 	 * Loads the <b>knowledge base</b>, consisting of the current rules and facts,
-	 * into the reasoner (if it has not been loaded yet). If the reasoner has
-	 * already been loaded, this call does nothing. After loading, the reasoner is
-	 * ready for reasoning and querying.<br>
-	 * Loading <b>pre-condition</b>: the {@link Predicate}s appearing in
-	 * {@link Rule} heads ({@link Rule#getHead()}), called IDB predicates, cannot
-	 * also appear in knowledge base <b>facts</b>, called EDB predicates. An
-	 * {@link EdbIdbSeparationException} would be thrown in this case.
+	 * into the reasoner (if it has not been loaded yet). After loading, the
+	 * reasoner is ready for reasoning and querying.
 	 *
-	 * @throws IOException                         if an I/O error occurs related to
-	 *                                             the resources in the <b>knowledge
-	 *                                             base</b> to be loaded.
-	 * @throws EdbIdbSeparationException           if a {@link Predicate} appearing
-	 *                                             in a {@link Rule} <b>head</b>
-	 *                                             (IDB predicate) also appears in a
-	 *                                             knowledge base <b>fact</b> (EDB
-	 *                                             predicate).
-	 * @throws IncompatiblePredicateArityException if the arity of a
-	 *                                             {@link Predicate} of a fact
-	 *                                             loaded from a data source
-	 *                                             ({@link #addFactsFromDataSource(Predicate, DataSource)})
-	 *                                             does nor match the arity of the
-	 *                                             facts in the corresponding data
-	 *                                             source.
-	 * @throws ReasonerStateException              if the method is called on a
-	 *                                             closed reasoner.
+	 * @throws IOException if an I/O error occurs related to the resources in the
+	 *                     <b>knowledge base</b> to be loaded.
 	 */
-	void load()
-			throws IOException, EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException;
+	void load() throws IOException;
 
 	/**
 	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic,
 	 * Cyclic, or cyclicity cannot be determined.
 	 * 
 	 * @return
-	 * @throws ReasonerStateException
-	 * @throws NotStartedException
 	 */
-	CyclicityResult checkForCycles() throws ReasonerStateException, NotStartedException;
+	CyclicityResult checkForCycles();
 
 	/**
 	 * Check the <b>Joint Acyclicity (JA)</b> property of loaded rules and EDB
@@ -253,10 +220,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return {@code true}, if the loaded set of rules is Joint Acyclic with
 	 *         respect to the EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
-	 * @throws ReasonerStateException
-	 * @throws NotStartedException
 	 */
-	boolean isJA() throws ReasonerStateException, NotStartedException;
+	boolean isJA();
 
 	/**
 	 * Check the <b>Restricted Joint Acyclicity (RJA)</b> property of loaded rules
@@ -268,10 +233,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return {@code true}, if the loaded set of rules is Restricted Joint Acyclic
 	 *         with respect to the EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
-	 * @throws ReasonerStateException
-	 * @throws NotStartedException
 	 */
-	boolean isRJA() throws ReasonerStateException, NotStartedException;
+	boolean isRJA();
 
 	/**
 	 * Check the <b>Model-Faithful Acyclicity (MFA)</b> property of loaded rules and
@@ -284,10 +247,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return {@code true}, if the loaded set of rules is Model-Faithful Acyclic
 	 *         with respect to the EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
-	 * @throws ReasonerStateException
-	 * @throws NotStartedException
 	 */
-	boolean isMFA() throws ReasonerStateException, NotStartedException;
+	boolean isMFA();
 
 	/**
 	 * Check the <b>Restricted Model-Faithful Acyclicity (RMFA)</b> property of
@@ -300,10 +261,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return {@code true}, if the loaded set of rules is Restricted Model-Faithful
 	 *         Acyclic with respect to the EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
-	 * @throws ReasonerStateException
-	 * @throws NotStartedException
 	 */
-	boolean isRMFA() throws ReasonerStateException, NotStartedException;
+	boolean isRMFA();
 
 	/**
 	 * Check the <b>Model-Faithful Cyclicity (MFC)</b> property of loaded rules and
@@ -317,10 +276,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return {@code true}, if the loaded set of rules is Model-Faithful Cyclic
 	 *         with respect to the EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
-	 * @throws ReasonerStateException
-	 * @throws NotStartedException
 	 */
-	boolean isMFC() throws ReasonerStateException, NotStartedException;
+	boolean isMFC();
 
 	/**
 	 * Performs reasoning on the loaded <b>knowledge base</b>, depending on the set
@@ -350,17 +307,9 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         <li>{@code false}, if reasoning has been interrupted before
 	 *         completion.</li>
 	 *         </ul>
-	 * @throws IOException                         if I/O exceptions occur during
-	 *                                             reasoning.
-	 * @throws ReasonerStateException              if this method is called before
-	 *                                             loading ({@link Reasoner#load()}
-	 *                                             or after closing
-	 *                                             ({@link Reasoner#close()}).
-	 * @throws IncompatiblePredicateArityException
-	 * @throws EdbIdbSeparationException
+	 * @throws IOException if I/O exceptions occur during reasoning.
 	 */
-	boolean reason()
-			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException;
+	boolean reason() throws IOException;
 
 	// TODO add examples to query javadoc
 	/**
@@ -394,18 +343,9 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *                      results. Otherwise, the query results will only contain
 	 *                      the facts with terms of type {@link TermType#CONSTANT}
 	 *                      (representing named individuals).
-	 * @return an {@link AutoCloseable} iterator for {@link QueryResult}s,
-	 *         representing distinct answers to the query.
-	 * @throws ReasonerStateException   if this method is called before loading
-	 *                                  ({@link Reasoner#load()} or after closing
-	 *                                  ({@link Reasoner#close()}).
-	 * 
-	 * @throws IllegalArgumentException if the given {@code query} contains terms
-	 *                                  ({@link Atom#getTerms()}) which are not of
-	 *                                  type {@link TermType#CONSTANT} or
-	 *                                  {@link TermType#VARIABLE}.
+	 * @return QueryResultIterator that represents distinct answers to the query.
 	 */
-	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) throws ReasonerStateException;
+	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks);
 
 	// TODO add examples to query javadoc
 	/**
@@ -444,35 +384,20 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *                      the facts with terms of type {@link TermType#CONSTANT}
 	 *                      (representing named individuals).
 	 *
-	 * @throws ReasonerStateException   if this method is called before loading
-	 *                                  ({@link Reasoner#load()} or after closing
-	 *                                  ({@link Reasoner#close()}).
-	 * @throws IOException              if an I/O error occurs regarding given file
-	 *                                  ({@code csvFilePath)}.
-	 * @throws IllegalArgumentException
-	 *                                  <ul>
-	 *                                  <li>if the given {@code queryAtom} contains
-	 *                                  terms ({@link Atom#getTerms()}) which are
-	 *                                  not of type {@link TermType#CONSTANT} or
-	 *                                  {@link TermType#VARIABLE}.</li>
-	 *                                  <li>if the given {@code csvFilePath} does
-	 *                                  not end with <i><b>.csv</b></i>
-	 *                                  extension.</li>
-	 *                                  </ul>
+	 * @throws IOException if an I/O error occurs regarding given file
+	 *                     ({@code csvFilePath)}.
 	 */
 	// TODO update javadoc with return type
 	MaterialisationState exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeBlanks)
-			throws ReasonerStateException, IOException;
+			throws IOException;
 
 	/**
 	 * Resets the reasoner to a pre-loading state (before the call of
 	 * {@link #load()} method). All facts inferred by reasoning are discarded. Rules
 	 * and facts added to the reasoner need to be loaded again, to be able to
 	 * perform querying and reasoning.
-	 * 
-	 * @throws ReasonerStateException if the method is called on a closed reasoner.
 	 */
-	void resetReasoner() throws ReasonerStateException;
+	void resetReasoner();
 
 	// TODO Map<Predicate,DataSource> exportDBToDir(File location);
 

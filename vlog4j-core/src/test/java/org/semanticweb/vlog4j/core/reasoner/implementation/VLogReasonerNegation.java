@@ -34,9 +34,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.Fact;
@@ -49,8 +46,7 @@ import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 public class VLogReasonerNegation {
 
 	@Test(expected = RuntimeException.class)
-	public void testNotStratifiable()
-			throws EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException, IOException {
+	public void testNotStratifiable() throws IOException {
 
 		final Variable x = makeVariable("x");
 		final Variable y = makeVariable("y");
@@ -71,8 +67,7 @@ public class VLogReasonerNegation {
 	}
 
 	@Test
-	public void testStratifiable()
-			throws EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException, IOException {
+	public void testStratifiable() throws IOException {
 
 		final Variable x = makeVariable("x");
 		final Variable y = makeVariable("y");
@@ -107,8 +102,7 @@ public class VLogReasonerNegation {
 	}
 
 	@Test
-	public void testInputNegation()
-			throws EdbIdbSeparationException, IncompatiblePredicateArityException, ReasonerStateException, IOException {
+	public void testInputNegation() throws IOException {
 
 		final Variable x = makeVariable("x");
 		final Variable y = makeVariable("y");

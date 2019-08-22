@@ -27,9 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -62,8 +59,7 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  */
 public class DoidExampleGraal {
 
-	public static void main(final String[] args)
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public static void main(final String[] args) throws IOException {
 
 		ExamplesUtils.configureLogging();
 

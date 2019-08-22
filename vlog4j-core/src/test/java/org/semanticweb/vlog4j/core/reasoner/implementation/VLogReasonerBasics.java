@@ -30,9 +30,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -41,8 +38,6 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-
-import karmaresearch.vlog.EDBConfigurationException;
 
 public class VLogReasonerBasics {
 
@@ -61,8 +56,7 @@ public class VLogReasonerBasics {
 	final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
 
 	@Test
-	public void testCloseRepeatedly()
-			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void testCloseRepeatedly() throws IOException {
 		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.close();
 		}
@@ -75,8 +69,7 @@ public class VLogReasonerBasics {
 	}
 
 	@Test
-	public void testLoadRules()
-			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void testLoadRules() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(ruleBxAx, ruleCxBx, ruleBxAx);
 
@@ -86,8 +79,7 @@ public class VLogReasonerBasics {
 	}
 
 	@Test
-	public void testSimpleInference() throws EDBConfigurationException, IOException, ReasonerStateException,
-			EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testSimpleInference() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(ruleBxAx, ruleCxBx, factAc, factAd);
 

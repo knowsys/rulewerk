@@ -32,9 +32,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -67,8 +64,7 @@ public class LoggingTest {
 	// any time
 
 	@Test
-	public void testSetLogFileNull()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testSetLogFileNull() throws IOException {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setLogFile(null);
 			reasoner.setLogLevel(LogLevel.INFO);
@@ -80,8 +76,7 @@ public class LoggingTest {
 	}
 
 	@Test
-	public void testSetLogFileInexistent()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testSetLogFileInexistent() throws IOException {
 		final String inexistentFilePath = LOGS_FOLDER + "a/b";
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -97,15 +92,14 @@ public class LoggingTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testSetLogLevelNull() throws ReasonerStateException {
+	public void testSetLogLevelNull() {
 		try (final Reasoner instance = Reasoner.getInstance()) {
 			instance.setLogLevel(null);
 		}
 	}
 
 	@Test
-	public void testSetLogFileAppendsToFile()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void testSetLogFileAppendsToFile() throws IOException {
 		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testSetLogFileAppendsToFile.log";
 		assertFalse(new File(logFilePath).exists());
 		int countLinesBeforeReset = 0;
@@ -130,8 +124,7 @@ public class LoggingTest {
 	}
 
 	@Test
-	public void testLogLevelInfo()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testLogLevelInfo() throws IOException {
 		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelInfo.log";
 		assertFalse(new File(logFilePath).exists());
 
@@ -150,8 +143,7 @@ public class LoggingTest {
 	}
 
 	@Test
-	public void testLogLevelDebug()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testLogLevelDebug() throws IOException {
 		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelDebug.log";
 		assertFalse(new File(logFilePath).exists());
 

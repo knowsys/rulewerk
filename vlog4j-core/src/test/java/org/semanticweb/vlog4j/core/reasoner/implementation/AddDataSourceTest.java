@@ -30,8 +30,6 @@ import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
@@ -42,15 +40,12 @@ import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImp
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
-import karmaresearch.vlog.EDBConfigurationException;
-
 public class AddDataSourceTest {
 
 	private static final String CSV_FILE_PATH = FileDataSourceTestUtils.INPUT_FOLDER + "unaryFacts.csv";
 
 	@Test
-	public void testAddDataSourceExistentDataForDifferentPredicates() throws ReasonerStateException,
-			EdbIdbSeparationException, EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+	public void testAddDataSourceExistentDataForDifferentPredicates() throws IOException {
 		final Predicate predicateParity1 = Expressions.makePredicate("p", 1);
 		final Constant constantA = Expressions.makeConstant("a");
 		final Fact factPredicatePArity2 = Expressions.makeFact("p", Arrays.asList(constantA, constantA));
@@ -80,8 +75,7 @@ public class AddDataSourceTest {
 	}
 
 	@Test
-	public void testAddDataSourceBeforeLoading() throws ReasonerStateException, EdbIdbSeparationException,
-			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+	public void testAddDataSourceBeforeLoading() throws IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
@@ -98,8 +92,7 @@ public class AddDataSourceTest {
 	// TODO rewrite test
 	@Ignore
 	@Test(expected = ReasonerStateException.class)
-	public void testAddDataSourceAfterLoading() throws ReasonerStateException, EdbIdbSeparationException,
-			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+	public void testAddDataSourceAfterLoading() throws IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
@@ -116,8 +109,7 @@ public class AddDataSourceTest {
 	// TODO rewrite test
 	@Ignore
 	@Test(expected = ReasonerStateException.class)
-	public void testAddDataSourceAfterReasoning() throws ReasonerStateException, EdbIdbSeparationException,
-			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+	public void testAddDataSourceAfterReasoning() throws IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
@@ -132,11 +124,11 @@ public class AddDataSourceTest {
 		}
 	}
 
-	//FIXME decide how to handle datasources with multiple predicates
+	// FIXME decide how to handle datasources with multiple predicates
 	@Ignore
 	// TODO move to a test class for KnowledgeBase
 	@Test(expected = IllegalArgumentException.class)
-	public void testAddDataSourceNoMultipleDataSourcesForPredicate() throws ReasonerStateException, IOException {
+	public void testAddDataSourceNoMultipleDataSourcesForPredicate() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 
@@ -144,12 +136,12 @@ public class AddDataSourceTest {
 		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
 		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
 	}
-	
-	//FIXME decide how to handle datasources with multiple predicates
+
+	// FIXME decide how to handle datasources with multiple predicates
 	@Ignore
 	// TODO move to a test class for KnowledgeBase
 	@Test(expected = IllegalArgumentException.class)
-	public void testAddDataSourceNoFactsForPredicate() throws ReasonerStateException, IOException {
+	public void testAddDataSourceNoFactsForPredicate() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
 		final Fact fact = Expressions.makeFact(Expressions.makePredicate("p", 1),

@@ -22,9 +22,6 @@ package org.semanticweb.vlog4j.examples.core;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -45,8 +42,7 @@ import org.semanticweb.vlog4j.parser.RuleParser;
  */
 public class SkolemVsRestrictedChaseTermination {
 
-	public static void main(final String[] args) throws ReasonerStateException, EdbIdbSeparationException,
-			IncompatiblePredicateArityException, IOException, ParsingException {
+	public static void main(final String[] args) throws IOException, ParsingException {
 
 		ExamplesUtils.configureLogging();
 

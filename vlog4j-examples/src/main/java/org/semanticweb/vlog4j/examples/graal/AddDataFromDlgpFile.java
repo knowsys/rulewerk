@@ -28,9 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.graal.GraalConjunctiveQueryToRule;
@@ -61,8 +58,7 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  */
 public class AddDataFromDlgpFile {
 
-	public static void main(final String[] args)
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public static void main(final String[] args) throws IOException {
 
 		final List<fr.lirmm.graphik.graal.api.core.Atom> graalAtoms = new ArrayList<>();
 		final List<fr.lirmm.graphik.graal.api.core.Rule> graalRules = new ArrayList<>();

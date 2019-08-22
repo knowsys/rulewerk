@@ -22,7 +22,6 @@ package org.semanticweb.vlog4j.examples;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
@@ -92,8 +91,6 @@ public class SimpleReasoningExample {
 			ExamplesUtils.printOutQueryAnswers("inEuropeOutsideGermany(?Org)", reasoner);
 
 			System.out.println("Done.");
-		} catch (final VLog4jException e) {
-			System.out.println("Error: " + e.getMessage());
 		}
 	}
 }

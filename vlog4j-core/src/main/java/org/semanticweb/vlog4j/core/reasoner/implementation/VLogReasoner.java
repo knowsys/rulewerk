@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
@@ -271,7 +270,7 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm, "Algorithm cannot be null!");
-		warnClosed();
+		validateNotClosed();
 		this.algorithm = algorithm;
 	}
 
@@ -282,7 +281,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setReasoningTimeout(Integer seconds) {
-		warnClosed();
+		validateNotClosed();
 		if (seconds != null) {
 			Validate.isTrue(seconds > 0, "Only strictly positive timeout period alowed!", seconds);
 		}
@@ -296,7 +295,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) {
-		warnClosed();
+		validateNotClosed();
 		Validate.notNull(ruleRewritingStrategy, "Rewrite strategy cannot be null!");
 		this.ruleRewriteStrategy = ruleRewritingStrategy;
 	}
@@ -307,7 +306,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void load() throws IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void load() throws IOException {
 		validateNotClosed();
 
 		final LoadKbVisitor visitor = new LoadKbVisitor();
@@ -362,6 +361,13 @@ public class VLogReasoner implements Reasoner {
 		return configStringBuilder.toString();
 	}
 
+	/**
+	 * Checks if the loaded external data sources do in fact contain data of the
+	 * correct arity.
+	 * 
+	 * @throws IncompatiblePredicateArityException to indicate a problem
+	 *                                             (non-checked exception)
+	 */
 	void validateDataSourcePredicateArities() throws IncompatiblePredicateArityException {
 		for (final Predicate predicate : edbPredicates.keySet()) {
 			validateDataSourcePredicateArity(predicate, edbPredicates.get(predicate).getDataSource());
@@ -372,6 +378,16 @@ public class VLogReasoner implements Reasoner {
 		}
 	}
 
+	/**
+	 * Checks if the loaded external data for a given source does in fact contain
+	 * data of the correct arity for the given predidate.
+	 * 
+	 * @param predicate  the predicate for which data is loaded
+	 * @param dataSource the data source used
+	 * 
+	 * @throws IncompatiblePredicateArityException to indicate a problem
+	 *                                             (non-checked exception)
+	 */
 	void validateDataSourcePredicateArity(Predicate predicate, DataSource dataSource)
 			throws IncompatiblePredicateArityException {
 		if (dataSource == null)
@@ -430,8 +446,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public boolean reason()
-			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public boolean reason() throws IOException {
 		switch (this.reasonerState) {
 		case BEFORE_LOADING:
 			load();
@@ -470,6 +485,8 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		} catch (final MaterializationException e) {
+			// FIXME: the message generate here is not guaranteed to be the correct
+			// interpretation of the exception that is caught
 			throw new RuntimeException(
 					"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
 					e);
@@ -477,7 +494,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) throws ReasonerStateException {
+	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
@@ -502,7 +519,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public MaterialisationState exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
-			final boolean includeBlanks) throws ReasonerStateException, IOException {
+			final boolean includeBlanks) throws IOException {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
@@ -525,7 +542,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void resetReasoner() throws ReasonerStateException {
+	public void resetReasoner() {
 		validateNotClosed();
 		// TODO what should happen to the KB?
 		this.reasonerState = ReasonerState.BEFORE_LOADING;
@@ -541,7 +558,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setLogLevel(LogLevel logLevel) throws ReasonerStateException {
+	public void setLogLevel(LogLevel logLevel) {
 		validateNotClosed();
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
@@ -554,61 +571,66 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setLogFile(String filePath) throws ReasonerStateException {
+	public void setLogFile(String filePath) {
 		validateNotClosed();
 		this.vLog.setLogFile(filePath);
 	}
 
 	@Override
-	public boolean isJA() throws ReasonerStateException, NotStartedException {
+	public boolean isJA() {
 		return checkAcyclicity(AcyclicityNotion.JA);
 	}
 
 	@Override
-	public boolean isRJA() throws ReasonerStateException, NotStartedException {
+	public boolean isRJA() {
 		return checkAcyclicity(AcyclicityNotion.RJA);
 	}
 
 	@Override
-	public boolean isMFA() throws ReasonerStateException, NotStartedException {
+	public boolean isMFA() {
 		return checkAcyclicity(AcyclicityNotion.MFA);
 	}
 
 	@Override
-	public boolean isRMFA() throws ReasonerStateException, NotStartedException {
+	public boolean isRMFA() {
 		return checkAcyclicity(AcyclicityNotion.RMFA);
 	}
 
 	@Override
-	public boolean isMFC() throws ReasonerStateException, NotStartedException {
+	public boolean isMFC() {
+		validateNotClosed();
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
 					"checking rules acyclicity is not allowed before loading!");
 		}
 
-		final CyclicCheckResult checkCyclic = this.vLog.checkCyclic("MFC");
-		if (checkCyclic.equals(CyclicCheckResult.CYCLIC)) {
-			return true;
+		CyclicCheckResult checkCyclic;
+		try {
+			checkCyclic = this.vLog.checkCyclic("MFC");
+		} catch (NotStartedException e) {
+			throw new RuntimeException(e.getMessage(), e); // should be impossible
 		}
-		return false;
+		return checkCyclic.equals(CyclicCheckResult.CYCLIC);
 	}
 
-	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion)
-			throws ReasonerStateException, NotStartedException {
+	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
+		validateNotClosed();
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState,
 					"checking rules acyclicity is not allowed before loading!");
 		}
 
-		final CyclicCheckResult checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
-		if (checkCyclic.equals(CyclicCheckResult.NON_CYCLIC)) {
-			return true;
+		CyclicCheckResult checkCyclic;
+		try {
+			checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
+		} catch (NotStartedException e) {
+			throw new RuntimeException(e.getMessage(), e); // should be impossible
 		}
-		return false;
+		return checkCyclic.equals(CyclicCheckResult.NON_CYCLIC);
 	}
 
 	@Override
-	public CyclicityResult checkForCycles() throws ReasonerStateException, NotStartedException {
+	public CyclicityResult checkForCycles() {
 		final boolean acyclic = isJA() || isRJA() || isMFA() || isRMFA();
 		if (acyclic) {
 			return CyclicityResult.ACYCLIC;
@@ -681,15 +703,6 @@ public class VLogReasoner implements Reasoner {
 		if (this.reasonerState == ReasonerState.AFTER_CLOSING) {
 			LOGGER.error("Invalid operation requested on a closed reasoner object.");
 			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner.");
-		}
-	}
-
-	/**
-	 * Check if reasoner is closed and log a warning if it is.
-	 */
-	void warnClosed() {
-		if (this.reasonerState == ReasonerState.AFTER_CLOSING) {
-			LOGGER.warn("Meaningless operation performed on a closed reasoner object.");
 		}
 	}
 

@@ -34,9 +34,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -95,8 +92,7 @@ public class ConfigureReasonerLogging {
 	/* A(c,d) */
 	private static Fact fact = Expressions.makeFact("A_EDB", Arrays.asList(makeConstant("c"), makeConstant("d")));
 
-	public static void main(final String[] args)
-			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+	public static void main(final String[] args) throws IOException {
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();

@@ -34,8 +34,6 @@ import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
@@ -83,8 +81,7 @@ public class ReasonerStateTest {
 	// FIXME update test
 	@Ignore
 	@Test(expected = ReasonerStateException.class)
-	public void testAddRules1()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void testAddRules1() throws IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance();) {
 			reasoner.getKnowledgeBase().addStatement(ruleQxPx);
 			reasoner.load();
@@ -92,8 +89,7 @@ public class ReasonerStateTest {
 	}
 
 	@Test
-	public void testAddRules2()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void testAddRules2() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(ruleQxPx);
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -114,8 +110,7 @@ public class ReasonerStateTest {
 	// FIXME update test
 	@Ignore
 	@Test
-	public void testAddFacts1()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void testAddFacts1() throws IOException {
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(factPc);
@@ -125,8 +120,7 @@ public class ReasonerStateTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testAddFacts2()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void testAddFacts2() throws IOException {
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		final List<Fact> facts = new ArrayList<>();
@@ -140,30 +134,28 @@ public class ReasonerStateTest {
 	}
 
 	@Test
-	public void testResetBeforeLoad() throws ReasonerStateException {
+	public void testResetBeforeLoad() {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.resetReasoner();
 		}
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void setRuleRewriteStrategy1() throws ReasonerStateException {
+	public void setRuleRewriteStrategy1() {
 		try (final Reasoner reasoner = Reasoner.getInstance();) {
 			reasoner.setRuleRewriteStrategy(null);
 		}
 	}
 
 	@Test
-	public void setRuleRewriteStrategy3()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void setRuleRewriteStrategy3() {
 		try (final Reasoner reasoner = Reasoner.getInstance();) {
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.NONE);
 		}
 	}
 
 	@Test
-	public void testResetDiscardInferences()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testResetDiscardInferences() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(ruleQxPx, factPc);
 
@@ -198,8 +190,7 @@ public class ReasonerStateTest {
 	}
 
 	@Test
-	public void testResetKeepExplicitDatabase()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testResetKeepExplicitDatabase() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(ruleQxPx);
 		// assert p(c)
@@ -229,8 +220,7 @@ public class ReasonerStateTest {
 		}
 	}
 
-	private void checkExplicitFacts(final Reasoner reasoner, final Predicate predicateR1)
-			throws ReasonerStateException {
+	private void checkExplicitFacts(final Reasoner reasoner, final Predicate predicateR1) {
 		try (final QueryResultIterator queryResultIteratorPx = reasoner.answerQuery(ruleBodyPx, true)) {
 			assertTrue(queryResultIteratorPx.hasNext());
 			assertEquals(factPc.getTerms(), queryResultIteratorPx.next().getTerms());
@@ -245,8 +235,7 @@ public class ReasonerStateTest {
 	}
 
 	@Test
-	public void testResetEmptyKnowledgeBase()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void testResetEmptyKnowledgeBase() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -266,24 +255,15 @@ public class ReasonerStateTest {
 		}
 	}
 
-	@Test
-	public void testFailReasonBeforeLoad()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.reason();
-		}
-
-	}
-
 	@Test(expected = ReasonerStateException.class)
-	public void testFailAnswerQueryBeforeLoad() throws ReasonerStateException {
+	public void testFailAnswerQueryBeforeLoad() {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.answerQuery(exampleQueryAtom, true);
 		}
 	}
 
 	@Test(expected = ReasonerStateException.class)
-	public void testFailExportQueryAnswerToCsvBeforeLoad() throws ReasonerStateException, IOException {
+	public void testFailExportQueryAnswerToCsvBeforeLoad() throws IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, FileDataSourceTestUtils.OUTPUT_FOLDER + "output.csv",
 					true);
@@ -291,8 +271,7 @@ public class ReasonerStateTest {
 	}
 
 	@Test
-	public void testSuccessiveCloseAfterLoad()
-			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
+	public void testSuccessiveCloseAfterLoad() throws IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.load();
 			reasoner.close();

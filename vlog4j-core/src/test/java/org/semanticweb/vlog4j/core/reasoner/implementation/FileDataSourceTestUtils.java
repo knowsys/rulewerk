@@ -33,9 +33,6 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
@@ -102,8 +99,7 @@ public final class FileDataSourceTestUtils {
 	}
 
 	public static void testLoadEmptyFile(final Predicate predicate, final PositiveLiteral queryAtom,
-			final FileDataSource emptyFileDataSource)
-			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+			final FileDataSource emptyFileDataSource) throws IOException {
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(new DataSourceDeclarationImpl(predicate, emptyFileDataSource));
@@ -122,8 +118,7 @@ public final class FileDataSourceTestUtils {
 		}
 	}
 
-	public static void testNoFactsOverPredicate(final Reasoner reasoner, final PositiveLiteral queryAtom)
-			throws ReasonerStateException {
+	public static void testNoFactsOverPredicate(final Reasoner reasoner, final PositiveLiteral queryAtom) {
 		try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, true)) {
 			assertFalse(answerQuery.hasNext());
 		}

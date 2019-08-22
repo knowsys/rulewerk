@@ -40,9 +40,6 @@ import org.openrdf.model.Model;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -66,8 +63,7 @@ public class TestReasonOverRdfFacts {
 	private static final Variable object = makeVariable("o");
 
 	@Test
-	public void testCanLoadRdfFactsIntoReasoner() throws RDFParseException, RDFHandlerException, IOException,
-			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testCanLoadRdfFactsIntoReasoner() throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
 		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
@@ -86,8 +82,7 @@ public class TestReasonOverRdfFacts {
 	}
 
 	@Test
-	public void testQueryAnsweringOverRdfFacts() throws RDFParseException, RDFHandlerException, IOException,
-			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testQueryAnsweringOverRdfFacts() throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
 		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
@@ -107,8 +102,7 @@ public class TestReasonOverRdfFacts {
 		}
 	}
 
-	private Set<List<Term>> getQueryResults(final Reasoner reasoner, final PositiveLiteral query)
-			throws ReasonerStateException {
+	private Set<List<Term>> getQueryResults(final Reasoner reasoner, final PositiveLiteral query) {
 		final QueryResultIterator queryResultIterator = reasoner.answerQuery(query, true);
 
 		final Set<List<Term>> queryResults = new HashSet<>();

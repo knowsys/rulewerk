@@ -29,9 +29,6 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -55,8 +52,7 @@ import org.semanticweb.vlog4j.owlapi.OwlToRulesConverter;
  */
 public class OwlOntologyToRulesAndFacts {
 
-	public static void main(final String[] args) throws OWLOntologyCreationException, ReasonerStateException,
-			EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+	public static void main(final String[] args) throws OWLOntologyCreationException, IOException {
 
 		/* Bike ontology is loaded from a Bike file using OWL API */
 		final OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();

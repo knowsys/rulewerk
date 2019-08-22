@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
@@ -90,9 +89,6 @@ public class DoidExample {
 			}
 
 			System.out.println("\nDone.");
-		} catch (final VLog4jException e) {
-			System.out.println("The reasoner encountered a problem:" + e.getMessage());
-
 		}
 	}
 

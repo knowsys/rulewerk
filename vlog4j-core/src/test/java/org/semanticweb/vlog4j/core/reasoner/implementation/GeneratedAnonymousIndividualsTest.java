@@ -30,9 +30,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -77,8 +74,7 @@ public class GeneratedAnonymousIndividualsTest {
 	}
 
 	@Test
-	public void testBlanksSkolemChaseNoRuleRewrite()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testBlanksSkolemChaseNoRuleRewrite() throws IOException {
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
@@ -94,8 +90,7 @@ public class GeneratedAnonymousIndividualsTest {
 	}
 
 	@Test
-	public void testBlanksSkolemChaseSplitHeadPieces()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testBlanksSkolemChaseSplitHeadPieces() throws IOException {
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
@@ -114,8 +109,7 @@ public class GeneratedAnonymousIndividualsTest {
 	}
 
 	@Test
-	public void testBlanksRestrictedChaseNoRuleRewrite()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testBlanksRestrictedChaseNoRuleRewrite() throws IOException {
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
@@ -131,8 +125,7 @@ public class GeneratedAnonymousIndividualsTest {
 	}
 
 	@Test
-	public void testBlanksRestrictedChaseSplitHeadPieces()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testBlanksRestrictedChaseSplitHeadPieces() throws IOException {
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 
@@ -164,8 +157,7 @@ public class GeneratedAnonymousIndividualsTest {
 		}
 	}
 
-	private void checkTwoDistinctBlanksGenerated(final Reasoner reasoner)
-			throws ReasonerStateException, IOException, EdbIdbSeparationException {
+	private void checkTwoDistinctBlanksGenerated(final Reasoner reasoner) throws IOException {
 		// expected facts: P(c, _:b1), P(c, _:b2)
 		final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils.getCSVContent(includeBlanksFilePath);
 		assertTrue(csvContentIncludeBlanks.size() == 2);

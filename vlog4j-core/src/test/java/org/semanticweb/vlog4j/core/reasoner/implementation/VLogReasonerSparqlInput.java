@@ -30,9 +30,7 @@ import java.util.LinkedHashSet;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -53,8 +51,7 @@ public class VLogReasonerSparqlInput {
 	 */
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
-	public void testSimpleSparqlQuery()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testSimpleSparqlQuery() throws IOException {
 		final URL endpoint = new URL("http://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
@@ -79,8 +76,7 @@ public class VLogReasonerSparqlInput {
 
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
-	public void testSimpleSparqlQueryHttps()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testSimpleSparqlQueryHttps() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
@@ -114,8 +110,7 @@ public class VLogReasonerSparqlInput {
 	 */
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
-	public void testSimpleSparqlQuery2()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testSimpleSparqlQuery2() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
@@ -138,8 +133,7 @@ public class VLogReasonerSparqlInput {
 
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test(expected = RuntimeException.class)
-	public void testConjunctiveQueryNewLineCharacterInQueryBody()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testConjunctiveQueryNewLineCharacterInQueryBody() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
@@ -159,8 +153,7 @@ public class VLogReasonerSparqlInput {
 
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
-	public void testConjunctiveQuery()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testConjunctiveQuery() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
@@ -182,8 +175,7 @@ public class VLogReasonerSparqlInput {
 	}
 
 	@Test(expected = IncompatiblePredicateArityException.class)
-	public void testDataSourcePredicateDoesNotMatchSparqlQueryTerms()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testDataSourcePredicateDoesNotMatchSparqlQueryTerms() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));

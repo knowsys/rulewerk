@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -75,8 +72,7 @@ public class VLogReasonerCombinedInputs {
 	}
 
 	@Test
-	public void samePredicateSourceFactRule()
-			throws IOException, ReasonerStateException, IncompatiblePredicateArityException, EdbIdbSeparationException {
+	public void samePredicateSourceFactRule() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(qFromCsv, factQc, factPd, rulePimpliesQ);
 
@@ -90,8 +86,7 @@ public class VLogReasonerCombinedInputs {
 	}
 
 	@Test
-	public void samePredicateFactSourceRule()
-			throws IOException, ReasonerStateException, IncompatiblePredicateArityException, EdbIdbSeparationException {
+	public void samePredicateFactSourceRule() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(factQc, factPd, qFromCsv, rulePimpliesQ);
 
@@ -105,8 +100,7 @@ public class VLogReasonerCombinedInputs {
 	}
 
 	@Test
-	public void samePredicateRuleFactSource()
-			throws IOException, ReasonerStateException, IncompatiblePredicateArityException, EdbIdbSeparationException {
+	public void samePredicateRuleFactSource() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(rulePimpliesQ, factQc, factPd, qFromCsv);
 
@@ -120,8 +114,7 @@ public class VLogReasonerCombinedInputs {
 	}
 
 	@Test
-	public void samePredicateSourceSource()
-			throws IOException, ReasonerStateException, IncompatiblePredicateArityException, EdbIdbSeparationException {
+	public void samePredicateSourceSource() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(qFromCsv, qCDFromCsv);
 
@@ -135,8 +128,7 @@ public class VLogReasonerCombinedInputs {
 	}
 
 	@Test
-	public void samePredicateSourceFactFact()
-			throws IOException, ReasonerStateException, IncompatiblePredicateArityException, EdbIdbSeparationException {
+	public void samePredicateSourceFactFact() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(qFromCsv, factQc, factQd);
 
@@ -150,8 +142,7 @@ public class VLogReasonerCombinedInputs {
 	}
 
 	@Test
-	public void samePredicateFactsRule()
-			throws IOException, ReasonerStateException, IncompatiblePredicateArityException, EdbIdbSeparationException {
+	public void samePredicateFactsRule() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(factPd, factQc, factQc1, factQc2, rulePimpliesQ);
 

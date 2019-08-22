@@ -34,9 +34,6 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -51,13 +48,10 @@ import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 
-import karmaresearch.vlog.EDBConfigurationException;
-
 public class AnswerQueryTest {
 
 	@Test
-	public void testEDBQuerySameConstantSubstitutesSameVariableName()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testEDBQuerySameConstantSubstitutesSameVariableName() throws IOException {
 		final String predicate = "p";
 		final Constant constantC = Expressions.makeConstant("c");
 		final Constant constantD = Expressions.makeConstant("d");
@@ -101,8 +95,7 @@ public class AnswerQueryTest {
 	}
 
 	@Test
-	public void testIDBQuerySameBlankSubstitutesSameVariableName()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testIDBQuerySameBlankSubstitutesSameVariableName() throws IOException {
 		final String predicate = "p";
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
@@ -144,8 +137,7 @@ public class AnswerQueryTest {
 	}
 
 	@Test
-	public void testIDBQuerySameIndividualSubstitutesSameVariableName()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testIDBQuerySameIndividualSubstitutesSameVariableName() throws IOException {
 		final String predicate = "p";
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
@@ -216,8 +208,7 @@ public class AnswerQueryTest {
 	}
 
 	@Test
-	public void queryResultWithBlanks()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void queryResultWithBlanks() throws IOException {
 		final Variable vx = Expressions.makeVariable("x");
 		final Variable vy = Expressions.makeVariable("y");
 		// P(x) -> Q(y)
@@ -251,8 +242,7 @@ public class AnswerQueryTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void queryEmptyKnowledgeBaseBeforeReasoning()
-			throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void queryEmptyKnowledgeBaseBeforeReasoning() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -264,8 +254,7 @@ public class AnswerQueryTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void queryEmptyKnowledgeBaseAfterReasoning()
-			throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void queryEmptyKnowledgeBaseAfterReasoning() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -279,8 +268,7 @@ public class AnswerQueryTest {
 	}
 
 	@Test
-	public void queryEmptyRules()
-			throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void queryEmptyRules() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		final Fact fact = Expressions.makeFact("P", Arrays.asList(Expressions.makeConstant("c")));
 		kb.addStatement(fact);
@@ -302,8 +290,7 @@ public class AnswerQueryTest {
 	}
 
 	@Test
-	public void queryEmptyFacts() throws EDBConfigurationException, IOException, EdbIdbSeparationException,
-			ReasonerStateException, IncompatiblePredicateArityException {
+	public void queryEmptyFacts() throws IOException {
 		final Variable vx = Expressions.makeVariable("x");
 		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx),
 				Expressions.makePositiveLiteral("p", vx));
@@ -319,7 +306,7 @@ public class AnswerQueryTest {
 				Assert.assertFalse(queryResultIterator.hasNext());
 				queryResultIterator.close();
 			}
-			
+
 			final PositiveLiteral queryAtom2 = Expressions.makePositiveLiteral("q", Expressions.makeVariable("?x"));
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom2, true)) {
 				Assert.assertFalse(queryResultIterator.hasNext());
@@ -331,7 +318,7 @@ public class AnswerQueryTest {
 			try (final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom1, true)) {
 				assertFalse(queryResultIteratorAfterReason.hasNext());
 			}
-			
+
 			try (final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom2, true)) {
 				assertFalse(queryResultIteratorAfterReason.hasNext());
 			}

@@ -37,9 +37,6 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -64,8 +61,8 @@ import org.semanticweb.vlog4j.rdf.RdfModelConverter;
  */
 public class AddDataFromRdfModel {
 
-	public static void main(final String[] args) throws IOException, RDFParseException, RDFHandlerException,
-			URISyntaxException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public static void main(final String[] args)
+			throws IOException, RDFParseException, RDFHandlerException, URISyntaxException {
 
 		ExamplesUtils.configureLogging();
 

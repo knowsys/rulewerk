@@ -26,9 +26,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -77,8 +74,7 @@ public class AddDataFromSparqlQueryResults {
 	 */
 	private static final String WIKIDATA_FATHER_PROPERTY = "wdt:P22";
 
-	public static void main(final String[] args)
-			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+	public static void main(final String[] args) throws IOException {
 
 		ExamplesUtils.configureLogging();
 

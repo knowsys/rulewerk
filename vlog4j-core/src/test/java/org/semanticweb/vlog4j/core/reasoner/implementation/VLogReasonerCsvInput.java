@@ -34,17 +34,13 @@ import java.util.Set;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-
-import karmaresearch.vlog.EDBConfigurationException;
 
 public class VLogReasonerCsvInput {
 
@@ -59,8 +55,7 @@ public class VLogReasonerCsvInput {
 	// FIXME: test ignored because of a bug in VLog. Remore the @Ignore annotation
 	// after bug is fixed.
 	@Test
-	public void testLoadEmptyCsvFile()
-			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testLoadEmptyCsvFile() throws IOException {
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(unaryPredicate1, makeVariable("x"));
 
 		FileDataSourceTestUtils.testLoadEmptyFile(unaryPredicate1, queryAtom,
@@ -70,17 +65,14 @@ public class VLogReasonerCsvInput {
 	}
 
 	@Test
-	public void testLoadUnaryFactsFromCsvFile() throws ReasonerStateException, EdbIdbSeparationException,
-			EDBConfigurationException, IOException, IncompatiblePredicateArityException {
+	public void testLoadUnaryFactsFromCsvFile() throws IOException {
 		testLoadUnaryFactsFromSingleCsvDataSource(new CsvFileDataSource(new File(
 				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + ".csv")));
 		testLoadUnaryFactsFromSingleCsvDataSource(new CsvFileDataSource(new File(
 				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.zippedUnaryCsvFileRoot + ".csv.gz")));
 	}
 
-	private void testLoadUnaryFactsFromSingleCsvDataSource(final FileDataSource fileDataSource)
-			throws ReasonerStateException, EdbIdbSeparationException, EDBConfigurationException, IOException,
-			IncompatiblePredicateArityException {
+	private void testLoadUnaryFactsFromSingleCsvDataSource(final FileDataSource fileDataSource) throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(new DataSourceDeclarationImpl(unaryPredicate1, fileDataSource));
 		kb.addStatement(new DataSourceDeclarationImpl(unaryPredicate2, fileDataSource));
@@ -110,8 +102,7 @@ public class VLogReasonerCsvInput {
 	 * @throws IncompatiblePredicateArityException
 	 */
 	@Test(expected = IOException.class)
-	public void testLoadNonexistingCsvFile()
-			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testLoadNonexistingCsvFile() throws IOException {
 		final File nonexistingFile = new File("nonexistingFile.csv");
 		assertFalse(nonexistingFile.exists());
 		final FileDataSource fileDataSource = new CsvFileDataSource(nonexistingFile);
@@ -124,8 +115,7 @@ public class VLogReasonerCsvInput {
 	}
 
 	@Test(expected = IncompatiblePredicateArityException.class)
-	public void testLoadCsvFileWrongArity()
-			throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testLoadCsvFileWrongArity() throws IOException {
 		final FileDataSource fileDataSource = new CsvFileDataSource(new File(
 				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.binaryCsvFileNameRoot + ".csv"));
 		final KnowledgeBase kb = new KnowledgeBase();

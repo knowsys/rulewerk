@@ -38,9 +38,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -118,13 +115,12 @@ public class ReasonerTimeoutTest {
 	}
 
 	@Before
-	public void setUp() throws ReasonerStateException {
+	public void setUp() {
 		this.reasoner = new VLogReasoner(kb);
 	}
 
 	@Test
-	public void skolem()
-			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+	public void skolem() throws IOException {
 		this.reasoner.setReasoningTimeout(timeout);
 		this.reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 
@@ -134,8 +130,7 @@ public class ReasonerTimeoutTest {
 	}
 
 	@Test
-	public void restricted()
-			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+	public void restricted() throws IOException {
 		this.reasoner.setReasoningTimeout(timeout);
 		this.reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 
@@ -145,8 +140,7 @@ public class ReasonerTimeoutTest {
 	}
 
 	@Test
-	public void skolemAfterLoad()
-			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+	public void skolemAfterLoad() throws IOException {
 		this.reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 
 		this.reasoner.load();
@@ -157,8 +151,7 @@ public class ReasonerTimeoutTest {
 	}
 
 	@Test
-	public void restrictedAfterLoad()
-			throws EdbIdbSeparationException, IncompatiblePredicateArityException, IOException, ReasonerStateException {
+	public void restrictedAfterLoad() throws IOException {
 		this.reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 
 		this.reasoner.load();

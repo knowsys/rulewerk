@@ -28,9 +28,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -41,8 +38,7 @@ import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 public class VLogReasonerCsvOutput {
 
 	@Test
-	public void testEDBQuerySameConstantSubstitutesSameVariableName()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testEDBQuerySameConstantSubstitutesSameVariableName() throws IOException {
 		final String predicate = "p";
 		final Constant constantC = Expressions.makeConstant("c");
 		final Constant constantD = Expressions.makeConstant("d");
@@ -90,8 +86,7 @@ public class VLogReasonerCsvOutput {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningIncludeBlanks()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningIncludeBlanks() throws IOException {
 
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));
@@ -106,8 +101,7 @@ public class VLogReasonerCsvOutput {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningExcludeBlanks()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningExcludeBlanks() throws IOException {
 
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));
@@ -123,8 +117,7 @@ public class VLogReasonerCsvOutput {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testExportQueryEmptyKnowledgeBaseAfterReasoningIncludeBlanks()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void testExportQueryEmptyKnowledgeBaseAfterReasoningIncludeBlanks() throws IOException {
 
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));
@@ -141,8 +134,7 @@ public class VLogReasonerCsvOutput {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testExportQueryEmptyKnowledgeBaseAfterReasoningExcludeBlanks()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void testExportQueryEmptyKnowledgeBaseAfterReasoningExcludeBlanks() throws IOException {
 
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));

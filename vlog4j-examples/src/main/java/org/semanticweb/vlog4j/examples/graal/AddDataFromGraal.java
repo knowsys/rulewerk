@@ -24,9 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -62,8 +59,7 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  */
 public class AddDataFromGraal {
 
-	public static void main(final String[] args)
-			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+	public static void main(final String[] args) throws IOException {
 		/*
 		 * 1. Instantiating rules
 		 */
