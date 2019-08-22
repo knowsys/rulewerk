@@ -242,7 +242,7 @@ public class VLogReasoner implements Reasoner {
 	final Map<Predicate, List<Fact>> directEdbFacts = new HashMap<>();
 	final Set<Rule> rules = new HashSet<>();
 
-	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
+	private ReasonerState reasonerState = ReasonerState.KB_NOT_LOADED;
 	private MaterialisationState materialisationState = MaterialisationState.INCOMPLETE;
 
 	private LogLevel internalLogLevel = LogLevel.WARNING;
@@ -334,7 +334,7 @@ public class VLogReasoner implements Reasoner {
 		loadFacts();
 		loadRules();
 
-		this.reasonerState = ReasonerState.AFTER_LOADING;
+		this.reasonerState = ReasonerState.KB_LOADED;
 	}
 
 	String getDataSourceConfigurationString() {
@@ -448,28 +448,28 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public boolean reason() throws IOException {
 		switch (this.reasonerState) {
-		case BEFORE_LOADING:
+		case KB_NOT_LOADED:
 			load();
 			runChase();
 			break;
-		case AFTER_LOADING:
+		case KB_LOADED:
 			runChase();
 			break;
 
-		case KNOWLEDGE_BASE_CHANGED:
-		case AFTER_REASONING:
+		case KB_CHANGED:
+		case MATERIALISED:
 			resetReasoner();
 			load();
 			runChase();
 			break;
-		case AFTER_CLOSING:
+		case CLOSED:
 			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed after closing.");
 		}
 		return this.reasoningCompleted;
 	}
 
 	private void runChase() {
-		this.reasonerState = ReasonerState.AFTER_REASONING;
+		this.reasonerState = ReasonerState.MATERIALISED;
 
 		final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
 		try {
@@ -496,7 +496,7 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) {
 		validateNotClosed();
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
@@ -521,7 +521,7 @@ public class VLogReasoner implements Reasoner {
 	public MaterialisationState exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws IOException {
 		validateNotClosed();
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
@@ -545,14 +545,14 @@ public class VLogReasoner implements Reasoner {
 	public void resetReasoner() {
 		validateNotClosed();
 		// TODO what should happen to the KB?
-		this.reasonerState = ReasonerState.BEFORE_LOADING;
+		this.reasonerState = ReasonerState.KB_NOT_LOADED;
 		this.vLog.stop();
 		LOGGER.info("Reasoner has been reset. All inferences computed during reasoning have been discarded.");
 	}
 
 	@Override
 	public void close() {
-		this.reasonerState = ReasonerState.AFTER_CLOSING;
+		this.reasonerState = ReasonerState.CLOSED;
 		this.knowledgeBase.deleteListener(this);
 		this.vLog.stop();
 	}
@@ -599,7 +599,7 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public boolean isMFC() {
 		validateNotClosed();
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
 					"checking rules acyclicity is not allowed before loading!");
 		}
@@ -615,7 +615,7 @@ public class VLogReasoner implements Reasoner {
 
 	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
 		validateNotClosed();
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
 					"checking rules acyclicity is not allowed before loading!");
 		}
@@ -662,18 +662,18 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	private void updateReasonerToKnowledgeBaseChanged() {
-		if (this.reasonerState.equals(ReasonerState.AFTER_LOADING)
-				|| this.reasonerState.equals(ReasonerState.AFTER_REASONING)) {
+		if (this.reasonerState.equals(ReasonerState.KB_LOADED)
+				|| this.reasonerState.equals(ReasonerState.MATERIALISED)) {
 
-			this.reasonerState = ReasonerState.KNOWLEDGE_BASE_CHANGED;
+			this.reasonerState = ReasonerState.KB_CHANGED;
 			this.materialisationState = MaterialisationState.WRONG;
 		}
 	}
 
 //	private void updateReasonerStateToKnowledgeBaseChanged() {
-//		if (this.reasonerState.equals(ReasonerState.AFTER_LOADING)
-//				|| this.reasonerState.equals(ReasonerState.AFTER_REASONING)) {
-//			this.reasonerState = ReasonerState.KNOWLEDGE_BASE_CHANGED;
+//		if (this.reasonerState.equals(ReasonerState.KB_LOADED)
+//				|| this.reasonerState.equals(ReasonerState.MATERIALISED)) {
+//			this.reasonerState = ReasonerState.KB_CHANGED;
 //		}
 //	}
 
@@ -689,7 +689,7 @@ public class VLogReasoner implements Reasoner {
 //	}
 
 //	private void updateMaterialisationStateOnStatementsAdded(boolean materialisationInvalidated) {
-//		if (this.reasonerState.equals(ReasonerState.KNOWLEDGE_BASE_CHANGED) && materialisationInvalidated) {
+//		if (this.reasonerState.equals(ReasonerState.KB_CHANGED) && materialisationInvalidated) {
 //			this.materialisationState = MaterialisationState.WRONG;
 //		}
 //	}
@@ -700,7 +700,7 @@ public class VLogReasoner implements Reasoner {
 	 * @throws ReasonerStateException
 	 */
 	void validateNotClosed() throws ReasonerStateException {
-		if (this.reasonerState == ReasonerState.AFTER_CLOSING) {
+		if (this.reasonerState == ReasonerState.CLOSED) {
 			LOGGER.error("Invalid operation requested on a closed reasoner object.");
 			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner.");
 		}
