@@ -162,6 +162,35 @@ public class LoggingTest {
 
 	}
 
+	@Test
+	public void testLogLevelDefault() throws IOException {
+		final String defaultLogFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelDefault.log";
+		assertFalse(new File(defaultLogFilePath).exists());
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.setLogFile(defaultLogFilePath);
+
+			reasoner.load();
+			reasoner.reason();
+			reasoner.close();
+		}
+		final int countLinesReasonLogLevelDefault = readFile(defaultLogFilePath);
+
+		final String warningLogFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelDefault.log";
+		assertFalse(new File(warningLogFilePath).exists());
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.setLogFile(warningLogFilePath);
+			reasoner.setLogLevel(LogLevel.WARNING);
+			reasoner.load();
+			reasoner.reason();
+			reasoner.close();
+		}
+		final int countLinesReasonLogLevelWarning = readFile(warningLogFilePath);
+
+		assertTrue(countLinesReasonLogLevelDefault == countLinesReasonLogLevelWarning);
+	}
+
 	private int readFile(final String logFilePath) throws IOException, FileNotFoundException {
 		int countLines = 0;
 		assertTrue(new File(logFilePath).exists());
