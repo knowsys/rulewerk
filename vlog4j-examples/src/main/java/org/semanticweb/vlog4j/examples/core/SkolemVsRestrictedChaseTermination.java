@@ -82,9 +82,8 @@ public class SkolemVsRestrictedChaseTermination {
 			 */
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			reasoner.setReasoningTimeout(1);
-			System.out.print("Starting Skolem Chase (a.k.a. semi-oblivious chase) with 1 second timeout ... ");
+			System.out.println("Starting Skolem Chase (a.k.a. semi-oblivious chase) with 1 second timeout ...");
 			final boolean skolemChaseFinished = reasoner.reason();
-			System.out.println("done.");
 
 			/* Verify that the Skolem Chase did not terminate before timeout. */
 			System.out.println("Has Skolem Chase algorithm finished before 1 second timeout? " + skolemChaseFinished);
@@ -101,7 +100,7 @@ public class SkolemVsRestrictedChaseTermination {
 			 * We reset the reasoner and apply the Restricted Chase on the same set of rules
 			 * and facts
 			 */
-			System.out.println("\nReseting reasoner; discarding facts generated during reasoning.");
+			System.out.println();
 			reasoner.resetReasoner();
 			reasoner.load();
 
@@ -119,9 +118,8 @@ public class SkolemVsRestrictedChaseTermination {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			reasoner.setReasoningTimeout(null);
 			final long restrictedChaseStartTime = System.currentTimeMillis();
-			System.out.print("Starting Restricted Chase (a.k.a. Standard Chase) without any timeout ... ");
+			System.out.println("Starting Restricted Chase (a.k.a. Standard Chase) without any timeout ... ");
 			reasoner.reason();
-			System.out.println("done.");
 
 			/* The Restricted Chase terminates: */
 			final long restrictedChaseDuration = System.currentTimeMillis() - restrictedChaseStartTime;

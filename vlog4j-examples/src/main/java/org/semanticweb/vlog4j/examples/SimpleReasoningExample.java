@@ -77,20 +77,14 @@ public class SimpleReasoningExample {
 		}
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
-			System.out.print("Loading knowledge base ... ");
 			reasoner.load();
-			System.out.println("done.");
 
-			System.out.print("Computing all inferences ... ");
 			reasoner.reason();
-			System.out.println("done.\n");
 
 			/* Execute some queries */
 			ExamplesUtils.printOutQueryAnswers("address(?Org, ?Street, ?ZIP, ?City)", reasoner);
 			ExamplesUtils.printOutQueryAnswers("locatedIn(?place, europe)", reasoner);
 			ExamplesUtils.printOutQueryAnswers("inEuropeOutsideGermany(?Org)", reasoner);
-
-			System.out.println("Done.");
 		}
 	}
 }

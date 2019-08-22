@@ -66,13 +66,10 @@ public class DoidExample {
 			reasoner.setLogLevel(LogLevel.DEBUG);
 
 			/* Initialise reasoner and compute inferences */
-			System.out.print("Initialising rules and data sources ... ");
 			reasoner.load();
-			System.out.println("completed.");
 
-			System.out.print("Reasoning (including SPARQL query answering) ... ");
+			System.out.println("Note: Materialisation includes SPARQL query answering.");
 			reasoner.reason();
-			System.out.println("completed.");
 
 			/* Execute some queries */
 			final List<String> queries = Arrays.asList("humansWhoDiedOfCancer(?X)", "humansWhoDiedOfNoncancer(?X)");
@@ -87,8 +84,6 @@ public class DoidExample {
 					System.out.println("Failed to parse query: " + e.getMessage());
 				}
 			}
-
-			System.out.println("\nDone.");
 		}
 	}
 

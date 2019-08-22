@@ -328,6 +328,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	void loadKnowledgeBase() throws IOException {
+		LOGGER.info("Started loading knowledge base ...");
 		final LoadKbVisitor visitor = new LoadKbVisitor();
 		visitor.clearIndexes();
 		for (final Statement statement : knowledgeBase) {
@@ -355,6 +356,8 @@ public class VLogReasoner implements Reasoner {
 
 		// TODO: if there are no rules, then materialisation state is complete
 		this.materialisationState = MaterialisationState.INCOMPLETE;
+
+		LOGGER.info("Finished loading knowledge base.");
 	}
 
 	String getDataSourceConfigurationString() {
@@ -494,6 +497,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	private void runChase() {
+		LOGGER.info("Started materialisation of inferences ...");
 		this.reasonerState = ReasonerState.MATERIALISED;
 
 		final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
@@ -504,7 +508,6 @@ public class VLogReasoner implements Reasoner {
 			} else {
 				this.reasoningCompleted = this.vLog.materialize(skolemChase, this.timeoutAfterSeconds);
 			}
-
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		} catch (final MaterializationException e) {
@@ -515,8 +518,13 @@ public class VLogReasoner implements Reasoner {
 					e);
 		}
 
-		this.materialisationState = this.reasoningCompleted ? MaterialisationState.COMPLETE
-				: MaterialisationState.INCOMPLETE;
+		if (this.reasoningCompleted) {
+			this.materialisationState = MaterialisationState.COMPLETE;
+			LOGGER.info("Completed materialisation of inferences.");
+		} else {
+			this.materialisationState = MaterialisationState.INCOMPLETE;
+			LOGGER.info("Stopped materialisation of inferences (possibly incomplete).");
+		}
 	}
 
 	@Override
@@ -572,7 +580,8 @@ public class VLogReasoner implements Reasoner {
 
 	private void logWarningOnMaterialisationState() {
 		if (this.materialisationState != MaterialisationState.COMPLETE) {
-			LOGGER.warn("Query answers may be {} with respect to the current Knowledge Base!", this.materialisationState);
+			LOGGER.warn("Query answers may be {} with respect to the current Knowledge Base!",
+					this.materialisationState);
 		}
 	}
 
@@ -589,6 +598,7 @@ public class VLogReasoner implements Reasoner {
 		this.reasonerState = ReasonerState.CLOSED;
 		this.knowledgeBase.deleteListener(this);
 		this.vLog.stop();
+		LOGGER.info("Reasoner closed.");
 	}
 
 	@Override
