@@ -260,7 +260,7 @@ public class VLogReasoner implements Reasoner {
 		super();
 		this.knowledgeBase = knowledgeBase;
 		this.knowledgeBase.addListener(this);
-		
+
 		setLogLevel(this.internalLogLevel);
 	}
 
@@ -310,7 +310,7 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void load() throws IOException {
 		validateNotClosed();
-		
+
 		switch (this.reasonerState) {
 		case KB_NOT_LOADED:
 			loadKnowledgeBase();
@@ -352,8 +352,8 @@ public class VLogReasoner implements Reasoner {
 		loadRules();
 
 		this.reasonerState = ReasonerState.KB_LOADED;
-		
-		//TODO: if there are no rules, then materialisation state is complete
+
+		// TODO: if there are no rules, then materialisation state is complete
 		this.materialisationState = MaterialisationState.INCOMPLETE;
 	}
 
@@ -435,7 +435,8 @@ public class VLogReasoner implements Reasoner {
 			}
 			try {
 				final String vLogPredicateName = ModelToVLogConverter.toVLogPredicate(aliasPredicate);
-				final String[][] vLogPredicateTuples = ModelToVLogConverter.toVLogFactTuples(directEdbFacts.get(predicate));
+				final String[][] vLogPredicateTuples = ModelToVLogConverter
+						.toVLogFactTuples(directEdbFacts.get(predicate));
 				this.vLog.addData(vLogPredicateName, vLogPredicateTuples);
 				if (LOGGER.isDebugEnabled()) {
 					for (final String[] tuple : vLogPredicateTuples) {
@@ -468,7 +469,7 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public boolean reason() throws IOException {
 		validateNotClosed();
-		
+
 		switch (this.reasonerState) {
 		case KB_NOT_LOADED:
 			load();
@@ -488,7 +489,7 @@ public class VLogReasoner implements Reasoner {
 		default:
 			break;
 		}
-		
+
 		return this.reasoningCompleted;
 	}
 
@@ -513,7 +514,7 @@ public class VLogReasoner implements Reasoner {
 					"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
 					e);
 		}
-		
+
 		this.materialisationState = this.reasoningCompleted ? MaterialisationState.COMPLETE
 				: MaterialisationState.INCOMPLETE;
 	}
@@ -539,6 +540,7 @@ public class VLogReasoner implements Reasoner {
 					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
 		}
 
+		logWarningOnMaterialisationState();
 		return new QueryResultIterator(stringQueryResultIterator, this.materialisationState);
 	}
 
@@ -563,7 +565,15 @@ public class VLogReasoner implements Reasoner {
 			throw new IllegalArgumentException(MessageFormat.format(
 					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
 		}
+
+		logWarningOnMaterialisationState();
 		return this.materialisationState;
+	}
+
+	private void logWarningOnMaterialisationState() {
+		if (this.materialisationState != MaterialisationState.COMPLETE) {
+			LOGGER.warn("Query answers may be {} with respect to the current Knowledge Base!", this.materialisationState);
+		}
 	}
 
 	@Override

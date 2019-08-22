@@ -29,23 +29,33 @@ package org.semanticweb.vlog4j.core.reasoner;
  */
 public enum MaterialisationState {
 
-	//TODO should we have different states for incomplete due to halting, vs incomplete due to adding facts for non-negated rules?
 	/**
 	 * Reasoning has not completed. Query answering yields sound, but possibly
 	 * incomplete answers.
 	 */
-	INCOMPLETE,
+	INCOMPLETE("incomplete"),
 
 	/**
 	 * Query answering may give incorrect answers. Re-materialisation
 	 * ({@link Reasoner#reason()}) is required, in order to obtain correct results.
 	 */
-	WRONG,
+	WRONG("wrong"),
 
 	/**
 	 * Reasoning over current knowledge base is complete, and query answering yields
 	 * sound and complete results.
 	 */
-	COMPLETE
+	COMPLETE("complete");
+
+	private final String name;
+
+	private MaterialisationState(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 
 }

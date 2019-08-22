@@ -113,6 +113,21 @@ public final class Expressions {
 
 		return new FactImpl(predicate, terms);
 	}
+	
+	/**
+	 * Creates a {@code Fact}.
+	 * 
+	 * @param predicateName on-blank {@link Predicate} name
+	 * @param terms non-empty, non-null array of non-null terms
+	 * @return a {@link Fact} with given {@code terms} and {@link Predicate}
+	 *         constructed from name given {@code predicateName} and {@code arity}
+	 *         given {@code terms} size.
+	 */
+	public static Fact makeFact(final String predicateName, Term... terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.length);
+
+		return new FactImpl(predicate, Arrays.asList(terms));
+	}
 
 	/**
 	 * Creates a {@code Fact}.
@@ -124,6 +139,18 @@ public final class Expressions {
 	 */
 	public static Fact makeFact(final Predicate predicate, final List<Term> terms) {
 		return new FactImpl(predicate, terms);
+	}
+	
+	/**
+	 * Creates a {@code Fact}.
+	 *
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null array of non-null terms. Array size must
+	 *                  be the same as the given {@code predicate} arity.
+	 * @return a {@link Fact} corresponding to the input.
+	 */
+	public static Fact makeFact(final Predicate predicate, final  Term... terms) {
+		return new FactImpl(predicate,  Arrays.asList(terms));
 	}
 
 	/**

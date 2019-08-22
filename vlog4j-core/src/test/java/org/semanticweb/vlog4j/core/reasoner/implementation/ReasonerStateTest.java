@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +47,7 @@ import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImp
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 
@@ -55,14 +57,14 @@ public class ReasonerStateTest {
 	private static final Predicate q = Expressions.makePredicate("q", 1);
 	private static final Variable x = Expressions.makeVariable("x");
 	private static final Constant c = Expressions.makeConstant("c");
-	// private static final Constant d = Expressions.makeConstant("d");
+	private static final Constant d = Expressions.makeConstant("d");
 	private static final PositiveLiteral exampleQueryAtom = Expressions.makePositiveLiteral("q", x);
 
 	private static final PositiveLiteral ruleHeadQx = Expressions.makePositiveLiteral(q, x);
 	private static final PositiveLiteral ruleBodyPx = Expressions.makePositiveLiteral(p, x);
 	private static final Rule ruleQxPx = Expressions.makeRule(ruleHeadQx, ruleBodyPx);
-	private static final Fact factPc = Expressions.makeFact(p, Arrays.asList(c));
-	// private static final Atom factPd = Expressions.makeAtom(q, d);
+	private static final Fact factPc = Expressions.makeFact(p, c);
+	private static final Fact factPd = Expressions.makeFact(p, d);
 
 	@Test(expected = NullPointerException.class)
 	public void testSetAlgorithm() {
@@ -75,6 +77,46 @@ public class ReasonerStateTest {
 	public void testSetReasoningTimeout() {
 		try (final Reasoner reasoner = Reasoner.getInstance();) {
 			reasoner.setReasoningTimeout(-3);
+		}
+	}
+
+	@Test
+	public void testAddFactsAndQuery() throws IOException {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.getKnowledgeBase().addStatement(factPc);
+			reasoner.load();
+			
+			final PositiveLiteral query = Expressions.makePositiveLiteral(p, x);
+			final Set<List<Term>> expectedAnswersC = new HashSet<>(
+					Arrays.asList(Collections.singletonList(c)));
+			
+			try(final QueryResultIterator queryResult = reasoner.answerQuery(query, true)){
+				assertEquals(MaterialisationState.INCOMPLETE, queryResult.getMaterialisationState());
+				final Set<List<Term>> queryAnswersC = QueryResultsUtils.collectQueryResults(queryResult);
+				
+				assertEquals(expectedAnswersC, queryAnswersC);
+			}
+
+
+			reasoner.getKnowledgeBase().addStatement(factPd);
+			
+			try(final QueryResultIterator queryResult = reasoner.answerQuery(query, true)){
+				assertEquals(MaterialisationState.WRONG, queryResult.getMaterialisationState());
+				assertEquals(expectedAnswersC, QueryResultsUtils.collectQueryResults(queryResult));
+			}
+
+			reasoner.load();
+			
+			
+			try(final QueryResultIterator queryResult = reasoner.answerQuery(query, true)){
+				assertEquals(MaterialisationState.INCOMPLETE, queryResult.getMaterialisationState());
+				
+				final Set<List<Term>> queryAnswersD = QueryResultsUtils.collectQueryResults(queryResult);
+				
+				final Set<List<Term>> expectedAnswersCD = new HashSet<>(
+						Arrays.asList(Collections.singletonList(c), Collections.singletonList(d)));
+				assertEquals(expectedAnswersCD, queryAnswersD);
+			}
 		}
 	}
 
