@@ -141,7 +141,6 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return if not {@code null}, number of seconds after which the reasoning will
 	 *         be interrupted, if it has not reached completion.
 	 */
-	@Nullable
 	Integer getReasoningTimeout();
 
 	/**
