@@ -271,10 +271,8 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm, "Algorithm cannot be null!");
+		warnClosed();
 		this.algorithm = algorithm;
-		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			LOGGER.warn("Setting algorithm on a closed reasoner.");
-		}
 	}
 
 	@Override
@@ -284,13 +282,11 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setReasoningTimeout(Integer seconds) {
+		warnClosed();
 		if (seconds != null) {
 			Validate.isTrue(seconds > 0, "Only strictly positive timeout period alowed!", seconds);
 		}
 		this.timeoutAfterSeconds = seconds;
-		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			LOGGER.warn("Setting timeout on a closed reasoner.");
-		}
 	}
 
 	@Override
@@ -299,14 +295,10 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException {
+	public void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) {
+		warnClosed();
 		Validate.notNull(ruleRewritingStrategy, "Rewrite strategy cannot be null!");
-		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Rules cannot be re-writen after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
-		}
 		this.ruleRewriteStrategy = ruleRewritingStrategy;
-		LOGGER.warn("Setting rule rewrite strategy on a closed reasoner.");
 	}
 
 	@Override
@@ -316,9 +308,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void load() throws IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		if (this.reasonerState == ReasonerState.AFTER_CLOSING) {
-			throw new ReasonerStateException(this.reasonerState, "Loading is not allowed after closing.");
-		}
+		validateNotClosed();
 
 		final LoadKbVisitor visitor = new LoadKbVisitor();
 		visitor.clearIndexes();
@@ -488,14 +478,13 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) throws ReasonerStateException {
-		final boolean filterBlanks = !includeBlanks;
+		validateNotClosed();
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		} else if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not allowed after closing.");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
 
+		final boolean filterBlanks = !includeBlanks;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 
 		TermQueryResultIterator stringQueryResultIterator;
@@ -514,16 +503,15 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public MaterialisationState exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws ReasonerStateException, IOException {
-		final boolean filterBlanks = !includeBlanks;
+		validateNotClosed();
 		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		} else if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not allowed after closing.");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
 		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
 
+		final boolean filterBlanks = !includeBlanks;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 		try {
 			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath, filterBlanks);
@@ -538,10 +526,8 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void resetReasoner() throws ReasonerStateException {
+		validateNotClosed();
 		// TODO what should happen to the KB?
-		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(this.reasonerState, "Resetting is not allowed after closing.");
-		}
 		this.reasonerState = ReasonerState.BEFORE_LOADING;
 		this.vLog.stop();
 		LOGGER.info("Reasoner has been reset. All inferences computed during reasoning have been discarded.");
@@ -556,9 +542,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setLogLevel(LogLevel logLevel) throws ReasonerStateException {
-		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(this.reasonerState, "Setting log level is not allowed after closing.");
-		}
+		validateNotClosed();
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
 		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(this.internalLogLevel));
@@ -571,9 +555,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setLogFile(String filePath) throws ReasonerStateException {
-		if (this.reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(this.reasonerState, "Setting log file is not allowed after closing.");
-		}
+		validateNotClosed();
 		this.vLog.setLogFile(filePath);
 	}
 
@@ -689,5 +671,26 @@ public class VLogReasoner implements Reasoner {
 //			this.materialisationState = MaterialisationState.WRONG;
 //		}
 //	}
+
+	/**
+	 * Check if reasoner is closed and throw an exception if it is.
+	 * 
+	 * @throws ReasonerStateException
+	 */
+	void validateNotClosed() throws ReasonerStateException {
+		if (this.reasonerState == ReasonerState.AFTER_CLOSING) {
+			LOGGER.error("Invalid operation requested on a closed reasoner object.");
+			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner.");
+		}
+	}
+
+	/**
+	 * Check if reasoner is closed and log a warning if it is.
+	 */
+	void warnClosed() {
+		if (this.reasonerState == ReasonerState.AFTER_CLOSING) {
+			LOGGER.warn("Meaningless operation performed on a closed reasoner object.");
+		}
+	}
 
 }

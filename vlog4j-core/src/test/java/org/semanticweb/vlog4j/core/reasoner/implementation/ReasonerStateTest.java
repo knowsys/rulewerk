@@ -153,21 +153,10 @@ public class ReasonerStateTest {
 		}
 	}
 
-	@Test(expected = ReasonerStateException.class)
-	public void setRuleRewriteStrategy2()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		try (final Reasoner reasoner = Reasoner.getInstance();) {
-			reasoner.load();
-			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.NONE);
-		}
-	}
-
 	@Test
 	public void setRuleRewriteStrategy3()
 			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
 		try (final Reasoner reasoner = Reasoner.getInstance();) {
-			reasoner.load();
-			reasoner.resetReasoner();
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.NONE);
 		}
 	}
