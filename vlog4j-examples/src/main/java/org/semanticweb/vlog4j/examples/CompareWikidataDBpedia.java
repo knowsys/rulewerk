@@ -60,7 +60,7 @@ public class CompareWikidataDBpedia {
 				+ "result(?Wikipage) :- inWd(?Wikipage)." //
 				+ "result(?Wikipage) :- inDbp(?Wikipage)." //
 				+ "match(?WdId,?DbpId) :- dbpResult(?DbpId,?Wikipage), wdResult(?WdId,?Wikipage)."
-				+ "dbpOnly(?DbpId,?Wikipage) :- dbpResult(?DbpId,?Wikipage), ~inWd(?Wikipage)."
+				+ "dbpOnly(?Wikipage) :- inDbp(?Wikipage), ~inWd(?Wikipage)."
 				+ "wdpOnly(?WdId,?Wikipage) :- wdResult(?WdId,?Wikipage), ~inDbp(?Wikipage)." + ""; //
 
 		final KnowledgeBase kb = RuleParser.parse(rules);
@@ -77,7 +77,7 @@ public class CompareWikidataDBpedia {
 					+ " were in Wikidata and " + dbpCount + " were in DBPedia");
 
 			System.out.println("We focus on results found in DBpedia only (usually the smaller set).");
-			ExamplesUtils.printOutQueryAnswers("dbpOnly(?X,?Y)", reasoner);
+			ExamplesUtils.printOutQueryAnswers("dbpOnly(?X)", reasoner);
 		}
 	}
 
