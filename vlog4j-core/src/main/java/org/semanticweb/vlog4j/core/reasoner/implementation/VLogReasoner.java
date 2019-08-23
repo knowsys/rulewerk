@@ -340,12 +340,13 @@ public class VLogReasoner implements Reasoner {
 		}
 
 		try {
-			this.vLog.start(getDataSourceConfigurationString(), false);
+			this.vLog.start(getDataSourcesConfigurationString(), false);
 		} catch (final AlreadyStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		} catch (final EDBConfigurationException e) {
 			throw new RuntimeException("Invalid data sources configuration.", e);
 		}
+		loadInMemoryDataSources();
 
 		validateDataSourcePredicateArities();
 
@@ -360,28 +361,35 @@ public class VLogReasoner implements Reasoner {
 		LOGGER.info("Finished loading knowledge base.");
 	}
 
-	String getDataSourceConfigurationString() {
+	String getDataSourcesConfigurationString() {
 		final StringBuilder configStringBuilder = new StringBuilder();
 		final Formatter formatter = new Formatter(configStringBuilder);
 		int dataSourceIndex = 0;
 		for (final Predicate predicate : this.edbPredicates.keySet()) {
 			final DataSourceDeclaration dataSourceDeclaration = this.edbPredicates.get(predicate);
-			if (dataSourceDeclaration.getDataSource() != null) {
-				formatter.format(dataSourceDeclaration.getDataSource().toConfigString(), dataSourceIndex,
-						ModelToVLogConverter.toVLogPredicate(predicate));
-				dataSourceIndex++;
-			}
+			dataSourceIndex = addDataSourceConfigurationString(dataSourceDeclaration.getDataSource(), predicate,
+					dataSourceIndex, formatter);
 		}
 		for (final DataSourceDeclaration dataSourceDeclaration : this.aliasesForEdbPredicates.keySet()) {
 			final Predicate aliasPredicate = this.aliasesForEdbPredicates.get(dataSourceDeclaration);
-			if (dataSourceDeclaration.getDataSource() != null) {
-				formatter.format(dataSourceDeclaration.getDataSource().toConfigString(), dataSourceIndex,
-						ModelToVLogConverter.toVLogPredicate(aliasPredicate));
-				dataSourceIndex++;
-			}
+			dataSourceIndex = addDataSourceConfigurationString(dataSourceDeclaration.getDataSource(), aliasPredicate,
+					dataSourceIndex, formatter);
 		}
 		formatter.close();
 		return configStringBuilder.toString();
+	}
+
+	int addDataSourceConfigurationString(DataSource dataSource, Predicate predicate, int dataSourceIndex,
+			Formatter formatter) {
+		if (dataSource != null) {
+			String configString = dataSource.toConfigString();
+			if (configString != null) {
+				formatter.format(dataSource.toConfigString(), dataSourceIndex,
+						ModelToVLogConverter.toVLogPredicate(predicate));
+				return dataSourceIndex + 1;
+			}
+		}
+		return dataSourceIndex;
 	}
 
 	/**
@@ -398,6 +406,37 @@ public class VLogReasoner implements Reasoner {
 		for (final DataSourceDeclaration dataSourceDeclaration : aliasesForEdbPredicates.keySet()) {
 			validateDataSourcePredicateArity(aliasesForEdbPredicates.get(dataSourceDeclaration),
 					dataSourceDeclaration.getDataSource());
+		}
+	}
+
+	void loadInMemoryDataSources() {
+		for (final Predicate predicate : this.edbPredicates.keySet()) {
+			final DataSourceDeclaration dataSourceDeclaration = this.edbPredicates.get(predicate);
+			loadInMemoryDataSource(dataSourceDeclaration.getDataSource(), predicate);
+		}
+		for (final DataSourceDeclaration dataSourceDeclaration : this.aliasesForEdbPredicates.keySet()) {
+			final Predicate aliasPredicate = this.aliasesForEdbPredicates.get(dataSourceDeclaration);
+			loadInMemoryDataSource(dataSourceDeclaration.getDataSource(), aliasPredicate);
+		}
+	}
+
+	void loadInMemoryDataSource(DataSource dataSource, Predicate predicate) {
+		final InMemoryDataSource inMemoryDataSource;
+		if (dataSource instanceof InMemoryDataSource) {
+			inMemoryDataSource = (InMemoryDataSource) dataSource;
+		} else {
+			return;
+		}
+		try {
+			final String vLogPredicateName = ModelToVLogConverter.toVLogPredicate(predicate);
+			this.vLog.addData(vLogPredicateName, inMemoryDataSource.getData());
+			if (LOGGER.isDebugEnabled()) {
+				for (final String[] tuple : inMemoryDataSource.getData()) {
+					LOGGER.debug("Loaded direct fact " + vLogPredicateName + Arrays.toString(tuple));
+				}
+			}
+		} catch (final EDBConfigurationException e) {
+			throw new RuntimeException("Invalid data sources configuration.", e);
 		}
 	}
 
