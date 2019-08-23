@@ -443,8 +443,7 @@ public class VLogReasoner implements Reasoner {
 				this.vLog.addData(vLogPredicateName, vLogPredicateTuples);
 				if (LOGGER.isDebugEnabled()) {
 					for (final String[] tuple : vLogPredicateTuples) {
-						LOGGER.debug(
-								"Loaded direct fact " + vLogPredicateName + "(" + Arrays.deepToString(tuple) + ")");
+						LOGGER.debug("Loaded direct fact " + vLogPredicateName + Arrays.toString(tuple));
 					}
 				}
 			} catch (final EDBConfigurationException e) {

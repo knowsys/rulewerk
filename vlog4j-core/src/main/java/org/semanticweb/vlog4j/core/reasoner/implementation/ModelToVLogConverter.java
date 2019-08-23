@@ -26,7 +26,6 @@ import java.util.List;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -66,21 +65,21 @@ final class ModelToVLogConverter {
 	static String[][] toVLogFactTuples(final Collection<Fact> facts) {
 		final String[][] tuples = new String[facts.size()][];
 		int i = 0;
-		for (final PositiveLiteral atom : facts) {
-			final String[] vLogFactTuple = ModelToVLogConverter.toVLogFactTuple(atom);
+		for (final Fact fact : facts) {
+			final String[] vLogFactTuple = ModelToVLogConverter.toVLogFactTuple(fact);
 			tuples[i] = vLogFactTuple;
 			i++;
 		}
 		return tuples;
 	}
 
-	static String[] toVLogFactTuple(final PositiveLiteral fact) {
+	static String[] toVLogFactTuple(final Fact fact) {
 		final List<Term> terms = fact.getTerms();
 		final String[] vLogFactTuple = new String[terms.size()];
 		int i = 0;
 		for (final Term term : terms) {
-			final karmaresearch.vlog.Term vLogTupleTerm = toVLogTerm(term);
-			vLogFactTuple[i] = vLogTupleTerm.getName();
+			// No checks for type of term -- only constants allowed in facts!
+			vLogFactTuple[i] = TermToVLogConverter.getVLogNameForConstant(term.getName());
 			i++;
 		}
 		return vLogFactTuple;
