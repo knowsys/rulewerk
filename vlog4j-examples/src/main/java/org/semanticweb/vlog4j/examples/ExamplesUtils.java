@@ -84,10 +84,8 @@ public final class ExamplesUtils {
 	 *
 	 * @param queryAtom query to be answered
 	 * @param reasoner  reasoner to query on
-	 * @throws ReasonerStateException in case the reasoner has not yet been loaded.
 	 */
-	public static void printOutQueryAnswers(final PositiveLiteral queryAtom, final Reasoner reasoner)
-			throws ReasonerStateException {
+	public static void printOutQueryAnswers(final PositiveLiteral queryAtom, final Reasoner reasoner) {
 		System.out.println("Answers to query " + queryAtom + " :");
 		try (final QueryResultIterator answers = reasoner.answerQuery(queryAtom, true)) {
 			answers.forEachRemaining(answer -> System.out.println(" - " + answer));
@@ -101,13 +99,30 @@ public final class ExamplesUtils {
 	 *
 	 * @param queryAtom query to be answered
 	 * @param reasoner  reasoner to query on
-	 * @throws ReasonerStateException in case the reasoner has not yet been loaded.
 	 */
-	public static void printOutQueryAnswers(final String queryString, final Reasoner reasoner)
-			throws ReasonerStateException {
+	public static void printOutQueryAnswers(final String queryString, final Reasoner reasoner) {
 		try {
 			PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
 			printOutQueryAnswers(query, reasoner);
+		} catch (ParsingException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Returns the number of answers returned by {@code reasoner} to the query
+	 * ({@code queryAtom}).
+	 *
+	 * @param queryAtom query to be answered
+	 * @param reasoner  reasoner to query on
+	 * @throws ReasonerStateException in case the reasoner has not yet been loaded.
+	 */
+	public static int getQueryAnswerCount(final String queryString, final Reasoner reasoner) {
+		try {
+			PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
+			try (final QueryResultIterator answers = reasoner.answerQuery(query, true)) {
+				return iteratorSize(answers);
+			}
 		} catch (ParsingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
