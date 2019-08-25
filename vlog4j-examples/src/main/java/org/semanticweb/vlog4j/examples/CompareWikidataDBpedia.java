@@ -78,6 +78,10 @@ public class CompareWikidataDBpedia {
 
 			System.out.println("We focus on results found in DBpedia only (usually the smaller set).");
 			ExamplesUtils.printOutQueryAnswers("dbpOnly(?X)", reasoner);
+			
+			System.out.println("Note: some of these results might still be in Wikidata, due to:\n"
+					+ "* recent Wikipedia article renamings that are not updated in DBpedia\n"
+					+ "* failure to match Wikipedia URLs due to small differences in character encoding\n");
 		}
 	}
 
