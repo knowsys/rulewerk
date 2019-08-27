@@ -92,7 +92,7 @@ public class ReasonerStateTest {
 					Arrays.asList(Collections.singletonList(c)));
 			
 			try(final QueryResultIterator queryResult = reasoner.answerQuery(query, true)){
-				assertEquals(MaterialisationState.INCOMPLETE, queryResult.getMaterialisationState());
+				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
 				final Set<List<Term>> queryAnswersC = QueryResultsUtils.collectQueryResults(queryResult);
 				
 				assertEquals(expectedAnswersC, queryAnswersC);
@@ -108,9 +108,8 @@ public class ReasonerStateTest {
 
 			reasoner.load();
 			
-			
 			try(final QueryResultIterator queryResult = reasoner.answerQuery(query, true)){
-				assertEquals(MaterialisationState.INCOMPLETE, queryResult.getMaterialisationState());
+				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
 				
 				final Set<List<Term>> queryAnswersD = QueryResultsUtils.collectQueryResults(queryResult);
 				

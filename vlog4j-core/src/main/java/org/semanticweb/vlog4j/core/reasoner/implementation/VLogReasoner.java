@@ -356,8 +356,8 @@ public class VLogReasoner implements Reasoner {
 
 		this.reasonerState = ReasonerState.KB_LOADED;
 
-		// TODO: if there are no rules, then materialisation state is complete
-		this.materialisationState = MaterialisationState.INCOMPLETE;
+		// if there are no rules, then materialisation state is complete
+		this.materialisationState = rules.isEmpty()? MaterialisationState.COMPLETE: MaterialisationState.INCOMPLETE;
 
 		LOGGER.info("Finished loading knowledge base.");
 	}
@@ -383,7 +383,7 @@ public class VLogReasoner implements Reasoner {
 	int addDataSourceConfigurationString(DataSource dataSource, Predicate predicate, int dataSourceIndex,
 			Formatter formatter) {
 		if (dataSource != null) {
-			String configString = dataSource.toConfigString();
+			final String configString = dataSource.toConfigString();
 			if (configString != null) {
 				formatter.format(dataSource.toConfigString(), dataSourceIndex,
 						ModelToVLogConverter.toVLogPredicate(predicate));
