@@ -1,5 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -177,7 +178,7 @@ public class LoggingTest {
 		final int countLinesReasonLogLevelDefault = readFile(defaultLogFilePath);
 
 		final String warningLogFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelDefault.log";
-		assertFalse(new File(warningLogFilePath).exists());
+		//assertFalse(new File(warningLogFilePath).exists());
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setLogFile(warningLogFilePath);
@@ -188,7 +189,7 @@ public class LoggingTest {
 		}
 		final int countLinesReasonLogLevelWarning = readFile(warningLogFilePath);
 
-		assertTrue(countLinesReasonLogLevelDefault == countLinesReasonLogLevelWarning);
+		assertEquals(countLinesReasonLogLevelDefault, countLinesReasonLogLevelWarning);
 	}
 
 	private int readFile(final String logFilePath) throws IOException, FileNotFoundException {

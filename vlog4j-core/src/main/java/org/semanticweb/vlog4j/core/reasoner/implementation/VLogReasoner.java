@@ -35,6 +35,7 @@ import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
@@ -582,12 +583,13 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		} catch (final NonExistingPredicateException e1) {
-			throw new IllegalArgumentException(MessageFormat.format(
-					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
+			LOGGER.warn("Query uses predicate " + query.getPredicate()
+					+ " that does not occur in the knowledge base. Answer must be empty.");
+			return new EmptyQueryResultIterator(MaterialisationState.COMPLETE);
 		}
 
 		logWarningOnMaterialisationState();
-		return new QueryResultIterator(stringQueryResultIterator, this.materialisationState);
+		return new VLogQueryResultIterator(stringQueryResultIterator, this.materialisationState);
 	}
 
 	@Override

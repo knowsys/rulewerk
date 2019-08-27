@@ -28,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -45,6 +46,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 
@@ -241,7 +243,7 @@ public class AnswerQueryTest {
 		}
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void queryEmptyKnowledgeBaseBeforeReasoning() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -249,11 +251,14 @@ public class AnswerQueryTest {
 			reasoner.load();
 
 			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
-			reasoner.answerQuery(queryAtom, true);
+			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true) ) {
+				final Set<List<Term>> queryResults = QueryResultsUtils.collectQueryResults(queryResultIterator);
+				assertEquals(Collections.EMPTY_SET, queryResults);
+			}
 		}
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void queryEmptyKnowledgeBaseAfterReasoning() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -263,7 +268,10 @@ public class AnswerQueryTest {
 			reasoner.reason();
 
 			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
-			reasoner.answerQuery(queryAtom, true);
+			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true) ) {
+				final Set<List<Term>> queryResults = QueryResultsUtils.collectQueryResults(queryResultIterator);
+				assertEquals(Collections.EMPTY_SET, queryResults);
+			}
 		}
 	}
 
