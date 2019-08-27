@@ -33,6 +33,7 @@ import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -66,10 +67,10 @@ public final class ExamplesUtils {
 	 */
 	public static void configureLogging() {
 		// Create the appender that will write log messages to the console.
-		ConsoleAppender consoleAppender = new ConsoleAppender();
+		final ConsoleAppender consoleAppender = new ConsoleAppender();
 		// Define the pattern of log messages.
 		// Insert the string "%c{1}:%L" to also show class name and line.
-		String pattern = "%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n";
+		final String pattern = "%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n";
 		consoleAppender.setLayout(new PatternLayout(pattern));
 		// Change to Level.ERROR for fewer messages:
 		consoleAppender.setThreshold(Level.DEBUG);
@@ -89,8 +90,10 @@ public final class ExamplesUtils {
 		System.out.println("Answers to query " + queryAtom + " :");
 		try (final QueryResultIterator answers = reasoner.answerQuery(queryAtom, true)) {
 			answers.forEachRemaining(answer -> System.out.println(" - " + answer));
-			System.out.println();
+
+			System.out.println("Query answers are: " + answers.getMaterialisationState());
 		}
+		System.out.println();
 	}
 
 	/**
@@ -102,9 +105,9 @@ public final class ExamplesUtils {
 	 */
 	public static void printOutQueryAnswers(final String queryString, final Reasoner reasoner) {
 		try {
-			PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
+			final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
 			printOutQueryAnswers(query, reasoner);
-		} catch (ParsingException e) {
+		} catch (final ParsingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -119,11 +122,11 @@ public final class ExamplesUtils {
 	 */
 	public static int getQueryAnswerCount(final String queryString, final Reasoner reasoner) {
 		try {
-			PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
+			final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
 			try (final QueryResultIterator answers = reasoner.answerQuery(query, true)) {
 				return iteratorSize(answers);
 			}
-		} catch (ParsingException e) {
+		} catch (final ParsingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -136,10 +139,11 @@ public final class ExamplesUtils {
 	 * @param Iterator<T> to iterate over
 	 * @return number of elements in iterator
 	 */
-	public static <T> int iteratorSize(Iterator<T> iterator) {
+	public static <T> int iteratorSize(final Iterator<T> iterator) {
 		int size = 0;
-		for (; iterator.hasNext(); ++size)
+		for (; iterator.hasNext(); ++size) {
 			iterator.next();
+		}
 		return size;
 	}
 
@@ -149,10 +153,11 @@ public final class ExamplesUtils {
 	 * @param predicateName for the new predicate
 	 * @param arity         number of variables
 	 */
-	private static PositiveLiteral makeQueryAtom(String predicateName, int arity) {
+	private static PositiveLiteral makeQueryAtom(final String predicateName, final int arity) {
 		final List<Term> vars = new ArrayList<>();
-		for (int i = 0; i < arity; i++)
+		for (int i = 0; i < arity; i++) {
 			vars.add(Expressions.makeVariable("x" + i));
+		}
 		return Expressions.makePositiveLiteral(predicateName, vars);
 	}
 
@@ -163,11 +168,14 @@ public final class ExamplesUtils {
 	 * @param atomName atom's name
 	 * @param arity    atom's arity
 	 */
-	public static void exportQueryAnswersToCSV(Reasoner reasoner, String atomName, int arity)
+	public static void exportQueryAnswersToCSV(final Reasoner reasoner, final String atomName, final int arity)
 			throws ReasonerStateException, IOException {
 		final PositiveLiteral atom = makeQueryAtom(atomName, arity);
-		String path = ExamplesUtils.OUTPUT_FOLDER + atomName + ".csv";
-		reasoner.exportQueryAnswersToCsv(atom, path, true);
+		final String path = ExamplesUtils.OUTPUT_FOLDER + atomName + ".csv";
+
+		final MaterialisationState correctness = reasoner.exportQueryAnswersToCsv(atom, path, true);
+
+		System.out.println("Query answers are: " + correctness);
 	}
 
 }

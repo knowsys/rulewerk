@@ -129,7 +129,7 @@ public class AddDataFromSparqlQueryResults {
 			 */
 
 			kb.addStatement(new DataSourceDeclarationImpl(queryPredicate, sparqlQueryResultDataSource));
-			reasoner.load();
+			reasoner.reason();
 
 			/*
 			 * We construct a query PositiveLiteral for the predicated associated to the
@@ -164,13 +164,10 @@ public class AddDataFromSparqlQueryResults {
 			final Rule rule = Expressions.makeRule(ruleHeadConjunction, Expressions.makeConjunction(query));
 
 			/*
-			 * We reset the reasoner in order to add the created rule, and reason on the
-			 * data added from the Wikidata SPARQL query result.
+			 * We add the created rule, and reason on the data added from the Wikidata
+			 * SPARQL query result.
 			 */
-			reasoner.resetReasoner();
-
 			kb.addStatement(rule);
-			reasoner.load();
 			reasoner.reason();
 
 			/* We query the reasoner for facts of the haveChildrenTogether predicate. */

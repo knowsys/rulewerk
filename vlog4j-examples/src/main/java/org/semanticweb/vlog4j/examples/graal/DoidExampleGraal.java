@@ -129,8 +129,6 @@ public class DoidExampleGraal {
 			System.out.println("Rules configured:\n--");
 			kb.getRules().forEach(System.out::println);
 			System.out.println("--");
-			reasoner.load();
-			System.out.println("Loading completed.");
 			System.out.println("Starting reasoning (including SPARQL query answering) ...");
 			reasoner.reason();
 			System.out.println("... reasoning completed.");

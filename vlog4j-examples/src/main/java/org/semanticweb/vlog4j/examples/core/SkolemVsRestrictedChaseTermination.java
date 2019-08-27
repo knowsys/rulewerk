@@ -46,13 +46,13 @@ public class SkolemVsRestrictedChaseTermination {
 
 		ExamplesUtils.configureLogging();
 
-		/* 1. Load data and prepare rules. */
-
-		final String rules = "" // define some facts:
+		final String facts = ""// define some facts:
 				+ "bicycle(bicycle1) ." //
 				+ "hasPart(bicycle1, wheel1) ." //
 				+ "wheel(wheel1) ." //
-				+ "bicycle(bicycle2) ." //
+				+ "bicycle(bicycle2) .";
+
+		final String rules = ""
 				// every bicycle has some part that is a wheel:
 				+ "hasPart(?X, !Y), wheel(!Y) :- bicycle(?X) ." //
 				// every wheel is part of some bicycle:
@@ -61,15 +61,20 @@ public class SkolemVsRestrictedChaseTermination {
 				+ "hasPart(?X, ?Y) :- isPartOf(?Y, ?X) ." //
 				+ "isPartOf(?X, ?Y) :- hasPart(?Y, ?X) .";
 
-		final KnowledgeBase kb = RuleParser.parse(rules);
+		/*
+		 * 1. Load facts into a knowledge base
+		 */
+		final KnowledgeBase kb = RuleParser.parse(facts);
 
 		/*
-		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to
-		 * call close() to free the reasoner resources.
+		 * 2. Load the knowledge base into the reasoner
 		 */
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
+			reasoner.reason();
 
+			/*
+			 * 3. Query the reasoner before applying rules for fact materialisation
+			 */
 			final PositiveLiteral queryHasPart = RuleParser.parsePositiveLiteral("hasPart(?X, ?Y)");
 
 			/* See that there is no fact HasPartIDB before reasoning. */
@@ -77,8 +82,13 @@ public class SkolemVsRestrictedChaseTermination {
 			ExamplesUtils.printOutQueryAnswers(queryHasPart, reasoner);
 
 			/*
-			 * As the Skolem Chase is known not to terminate for this set of rules and
-			 * facts, it is interrupted after one second.
+			 * 4. Load rules into the knowledge base
+			 */
+			RuleParser.parseInto(kb, rules);
+			/*
+			 * 5. Materialise with the Skolem Chase. As the Skolem Chase is known not to
+			 * terminate for this set of rules and facts, it is interrupted after one
+			 * second.
 			 */
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			reasoner.setReasoningTimeout(1);
@@ -97,23 +107,15 @@ public class SkolemVsRestrictedChaseTermination {
 					+ ExamplesUtils.iteratorSize(answers) + " results for hasPart(?X, ?Y).");
 
 			/*
-			 * We reset the reasoner and apply the Restricted Chase on the same set of rules
-			 * and facts
+			 * 6. We reset the reasoner to discard all inferences, and apply the Restricted
+			 * Chase on the same set of rules and facts
 			 */
 			System.out.println();
 			reasoner.resetReasoner();
-			reasoner.load();
 
 			/*
-			 * See that there is no fact HasPartIDB before reasoning. All inferred facts
-			 * have been discarded when the reasoner was reset.
-			 */
-			System.out.println("We can verify that there are no inferences for hasPart(?X, ?Y) after reset.");
-			ExamplesUtils.printOutQueryAnswers(queryHasPart, reasoner);
-
-			/*
-			 * As the Restricted Chase is known to terminate for this set of rules and
-			 * facts, we will not interrupt it.
+			 * 7. Materialise with the Restricted Chase. As the Restricted Chase is known to
+			 * terminate for this set of rules and facts, we will not interrupt it.
 			 */
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			reasoner.setReasoningTimeout(null);

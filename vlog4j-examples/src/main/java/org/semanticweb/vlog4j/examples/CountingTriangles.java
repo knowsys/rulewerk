@@ -57,10 +57,9 @@ public class CountingTriangles {
 
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 
-			/* Initialise reasoner and compute inferences */
-			reasoner.load();
-
 			System.out.println("Note: Materialisation includes SPARQL query answering.");
+
+			/* Initialise reasoner and compute inferences */
 			reasoner.reason();
 
 			/* Execute queries */

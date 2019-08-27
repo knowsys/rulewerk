@@ -79,16 +79,11 @@ public class AddDataFromRdfFile {
 		final KnowledgeBase kb = RuleParser.parse(rules);
 
 		/*
-		 * 2. Loading, reasoning, querying and exporting, while using try-with-resources
-		 * to close the reasoner automatically.
+		 * 2. reasoning, querying and exporting, while using try-with-resources to close
+		 * the reasoner automatically.
 		 */
+
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
-
-			System.out.println("Before materialisation:");
-
-			ExamplesUtils.printOutQueryAnswers("triple(?X, <https://example.org/hasPart>, ?Y)", reasoner);
-
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
 			System.out.println("After materialisation:");

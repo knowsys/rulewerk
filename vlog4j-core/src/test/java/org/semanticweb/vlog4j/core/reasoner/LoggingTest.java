@@ -86,7 +86,6 @@ public class LoggingTest {
 			reasoner.setLogFile(null);
 			reasoner.setLogLevel(LogLevel.INFO);
 
-			reasoner.load();
 			reasoner.reason();
 		}
 		// TODO test that logging is redirected to system output
@@ -101,7 +100,6 @@ public class LoggingTest {
 			assertFalse(new File(inexistentFilePath).exists());
 			reasoner.setLogLevel(LogLevel.INFO);
 
-			reasoner.load();
 			reasoner.reason();
 		}
 		// TODO test that logging is redirected to system output
@@ -124,14 +122,12 @@ public class LoggingTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setLogLevel(LogLevel.INFO);
 			reasoner.setLogFile(logFilePath);
-			reasoner.load();
 			reasoner.reason();
 
 			countLinesBeforeReset = readFile(logFilePath);
 			assertTrue(countLinesBeforeReset > 0);
 
 			reasoner.resetReasoner();
-			reasoner.load();
 			reasoner.reason();
 		}
 		final int countLinesAfterReset = readFile(logFilePath);
@@ -149,8 +145,6 @@ public class LoggingTest {
 
 			reasoner.setLogLevel(LogLevel.INFO);
 			reasoner.setLogFile(logFilePath);
-			reasoner.load();
-			reasoner.setLogLevel(LogLevel.INFO);
 			reasoner.reason();
 			reasoner.setLogLevel(LogLevel.INFO);
 		}
@@ -168,8 +162,6 @@ public class LoggingTest {
 
 			reasoner.setLogLevel(LogLevel.DEBUG);
 			reasoner.setLogFile(logFilePath);
-			reasoner.load();
-			reasoner.setLogLevel(LogLevel.DEBUG);
 			reasoner.reason();
 			reasoner.setLogLevel(LogLevel.DEBUG);
 			reasoner.close();
@@ -187,7 +179,6 @@ public class LoggingTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setLogFile(defaultLogFilePath);
 
-			reasoner.load();
 			reasoner.reason();
 			reasoner.close();
 		}
@@ -199,7 +190,6 @@ public class LoggingTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setLogFile(warningLogFilePath);
 			reasoner.setLogLevel(LogLevel.WARNING);
-			reasoner.load();
 			reasoner.reason();
 			reasoner.close();
 		}

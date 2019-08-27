@@ -87,10 +87,10 @@ public class OwlOntologyToRulesAndFacts {
 		kb.addStatements(owlToRulesConverter.getFacts());
 
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
-			/* Load rules and facts obtained from the ontology */
-			reasoner.load();
-
-			/* Reason over loaded ontology with the default algorithm Restricted Chase */
+			/*
+			 * Load rules and facts obtained from the ontology, and reason over loaded
+			 * ontology with the default algorithm Restricted Chase
+			 */
 			System.out.println("Reasoning default algorithm: " + reasoner.getAlgorithm());
 			reasoner.reason();
 

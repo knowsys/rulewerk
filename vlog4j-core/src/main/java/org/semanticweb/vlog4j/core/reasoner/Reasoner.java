@@ -189,16 +189,6 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	void setLogFile(String filePath);
 
 	/**
-	 * Loads the <b>knowledge base</b>, consisting of the current rules and facts,
-	 * into the reasoner (if it has not been loaded yet). After loading, the
-	 * reasoner is ready for reasoning and querying.
-	 *
-	 * @throws IOException if an I/O error occurs related to the resources in the
-	 *                     <b>knowledge base</b> to be loaded.
-	 */
-	void load() throws IOException;
-
-	/**
 	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic,
 	 * Cyclic, or cyclicity cannot be determined.
 	 * 

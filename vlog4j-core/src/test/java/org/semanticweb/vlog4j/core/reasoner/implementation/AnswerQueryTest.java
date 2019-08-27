@@ -47,7 +47,6 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 
 public class AnswerQueryTest {
@@ -66,9 +65,10 @@ public class AnswerQueryTest {
 		@SuppressWarnings("unchecked")
 		final Set<List<Constant>> factCCD = Sets.newSet(Arrays.asList(constantC, constantC, constantD));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			final KnowledgeBase kb = reasoner.getKnowledgeBase();
-			kb.addStatement(fact);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(fact);
+		
+		try (final VLogReasoner reasoner =new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final PositiveLiteral queryAtomXYZ = Expressions.makePositiveLiteral(predicate, x, y, z);

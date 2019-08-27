@@ -55,9 +55,11 @@ public class AddDataFromCsvFile {
 
 		ExamplesUtils.configureLogging();
 
+		final String initialFactsHasPart = ""// a file input:
+				+ "@source hasPart(2) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz\") .";
+
 		final String rules = "" // first declare file inputs:
 				+ "@source bicycle(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz\") ."
-				+ "@source hasPart(2) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz\") ."
 				+ "@source wheel(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz\") ."
 				// every bicycle has some part that is a wheel:
 				+ "hasPart(?X, !Y), wheel(!Y) :- bicycle(?X) ."
@@ -67,20 +69,36 @@ public class AddDataFromCsvFile {
 				+ "hasPart(?X, ?Y) :- isPartOf(?Y, ?X) ." //
 				+ "isPartOf(?X, ?Y) :- hasPart(?Y, ?X) .";
 
-		final KnowledgeBase kb = RuleParser.parse(rules);
-
 		/*
 		 * Loading, reasoning, and querying while using try-with-resources to close the
 		 * reasoner automatically.
 		 */
+		final KnowledgeBase kb = new KnowledgeBase();
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
 
+			/*
+			 * 1. Loading the initial facts with hasPart predicate into reasoner.
+			 */
+			RuleParser.parseInto(kb, initialFactsHasPart);
+			reasoner.reason();
+
+			/*
+			 * Query initial facts with hasPart predicate.
+			 */
 			System.out.println("Before materialisation:");
 			ExamplesUtils.printOutQueryAnswers("hasPart(?X, ?Y)", reasoner);
 
+			/*
+			 * 2. Loading further facts and rules into the reasoner, and materialising the
+			 * loaded facts with the rules.
+			 */
+			RuleParser.parseInto(kb, rules);
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
+
+			/*
+			 * Querying facts with hasPart predicate after materialisation.
+			 */
 			System.out.println("After materialisation:");
 			final PositiveLiteral hasPartXY = RuleParser.parsePositiveLiteral("hasPart(?X, ?Y)");
 			ExamplesUtils.printOutQueryAnswers(hasPartXY, reasoner);

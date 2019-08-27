@@ -65,10 +65,9 @@ public class DoidExample {
 			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER + "vlog.log");
 			reasoner.setLogLevel(LogLevel.DEBUG);
 
-			/* Initialise reasoner and compute inferences */
-			reasoner.load();
-
 			System.out.println("Note: Materialisation includes SPARQL query answering.");
+
+			/* Initialise reasoner and compute inferences */
 			reasoner.reason();
 
 			/* Execute some queries */

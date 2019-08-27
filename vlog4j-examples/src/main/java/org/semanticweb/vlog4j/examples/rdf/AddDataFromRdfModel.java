@@ -132,7 +132,6 @@ public class AddDataFromRdfModel {
 		kb.addStatements(tripleFactsISWC2017);
 
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
 			reasoner.reason();
 
 			/* We query for persons whose organization name is "TU Dresden" . */

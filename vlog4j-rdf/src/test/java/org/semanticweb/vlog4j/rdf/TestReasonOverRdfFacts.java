@@ -72,7 +72,7 @@ public class TestReasonOverRdfFacts {
 		kb.addStatements(facts);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
+			reasoner.reason();
 
 			final PositiveLiteral universalQuery = makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME,
 					Arrays.asList(subject, predicate, object));
@@ -91,7 +91,7 @@ public class TestReasonOverRdfFacts {
 		kb.addStatements(facts);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
+			reasoner.reason();
 
 			final Constant inventionPredicate = makeConstant("https://example.org/invention");
 			final Constant carlBenzSubject = makeConstant("https://example.org/Carl-Benz");

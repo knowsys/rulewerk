@@ -308,8 +308,8 @@ public class VLogReasoner implements Reasoner {
 		return this.ruleRewriteStrategy;
 	}
 
-	@Override
-	public void load() throws IOException {
+	//@Override
+	 void load() throws IOException {
 		validateNotClosed();
 
 		switch (this.reasonerState) {

@@ -80,7 +80,6 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			assertEquals(RuleRewriteStrategy.NONE, reasoner.getRuleRewriteStrategy());
 
-			reasoner.load();
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(this.queryAtom, includeBlanksFilePath, true);
 
@@ -99,7 +98,6 @@ public class GeneratedAnonymousIndividualsTest {
 			// P(?x,?z)} }
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 
-			reasoner.load();
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(this.queryAtom, includeBlanksFilePath, true);
 
@@ -115,7 +113,6 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			assertEquals(RuleRewriteStrategy.NONE, reasoner.getRuleRewriteStrategy());
 
-			reasoner.load();
 			reasoner.reason();
 			reasoner.exportQueryAnswersToCsv(this.queryAtom, includeBlanksFilePath, true);
 
@@ -135,11 +132,9 @@ public class GeneratedAnonymousIndividualsTest {
 			// P(?x,?z)} }
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 
-			reasoner.load();
 			reasoner.reason();
 
 			// FIXME check this test
-			// <<<<<<< HEAD
 			// reasoner.exportQueryAnswersToCsv(this.queryAtom, includeBlanksFilePath,
 			// true);
 			// // expected fact: P(c, _:b)
@@ -151,7 +146,6 @@ public class GeneratedAnonymousIndividualsTest {
 			// assertEquals(queryResult.get(0), "c");
 			// }
 			// reasoner.exportQueryAnswersToCsv(this.queryAtom, excludeBlanksFilePath,
-			// =======
 
 			checkTwoDistinctBlanksGenerated(reasoner);
 		}
