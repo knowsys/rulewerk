@@ -24,9 +24,29 @@ import java.util.Iterator;
 
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 
+/**
+ * Iterator for {@link QueryResult}s.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public interface QueryResultIterator extends Iterator<QueryResult>, AutoCloseable {
 
-	public Correctness getMaterialisationState();
-	
+	/**
+	 * Returns the correctness of the query result.
+	 * <ul>
+	 * <li>If {@link Correctness#SOUND_AND_COMPLETE}, the query results are
+	 * guaranteed to be correct.</li>
+	 * <li>If {@link Correctness#SOUND_BUT_INCOMPLETE}, the results are guaranteed
+	 * to be sound, but may be incomplete.</li>
+	 * <li>If {@link Correctness#INCORRECT}, the results may be incomplete, and some
+	 * results may be unsound.
+	 * </ul>
+	 * 
+	 * @return query result correctness
+	 */
+	public Correctness getCorrectness();
+
+	@Override
 	public void close();
 }

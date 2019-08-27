@@ -74,12 +74,7 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
 /**
  * Reasoner implementation using the VLog backend.
  * 
- * @TODO Due to automatic predicate renaming, it can happen that an EDB
- *       predicate cannot be queried after loading unless reasoning has already
- *       been invoked (since the auxiliary rule that imports the EDB facts to
- *       the "real" predicate must be used). This issue could be weakened by
- *       rewriting queries to (single-source) EDB predicates internally when in
- *       such a state,
+ * 
  * 
  * @author Markus Kroetzsch
  *
@@ -308,8 +303,15 @@ public class VLogReasoner implements Reasoner {
 		return this.ruleRewriteStrategy;
 	}
 
-	//@Override
-	 void load() throws IOException {
+	/*
+	 * TODO Due to automatic predicate renaming, it can happen that an EDB predicate
+	 * cannot be queried after loading unless reasoning has already been invoked
+	 * (since the auxiliary rule that imports the EDB facts to the "real" predicate
+	 * must be used). This issue could be weakened by rewriting queries to
+	 * (single-source) EDB predicates internally when in such a state,
+	 */
+	// @Override
+	void load() throws IOException {
 		validateNotClosed();
 
 		switch (this.reasonerState) {
@@ -357,7 +359,7 @@ public class VLogReasoner implements Reasoner {
 		this.reasonerState = ReasonerState.KB_LOADED;
 
 		// if there are no rules, then materialisation state is complete
-		this.correctness = rules.isEmpty()? Correctness.SOUND_AND_COMPLETE: Correctness.SOUND_BUT_INCOMPLETE;
+		this.correctness = rules.isEmpty() ? Correctness.SOUND_AND_COMPLETE : Correctness.SOUND_BUT_INCOMPLETE;
 
 		LOGGER.info("Finished loading knowledge base.");
 	}
@@ -620,8 +622,7 @@ public class VLogReasoner implements Reasoner {
 
 	private void logWarningOnCorrectness() {
 		if (this.correctness != Correctness.SOUND_AND_COMPLETE) {
-			LOGGER.warn("Query answers may be {} with respect to the current Knowledge Base!",
-					this.correctness);
+			LOGGER.warn("Query answers may be {} with respect to the current Knowledge Base!", this.correctness);
 		}
 	}
 

@@ -91,7 +91,7 @@ public final class ExamplesUtils {
 		try (final QueryResultIterator answers = reasoner.answerQuery(queryAtom, true)) {
 			answers.forEachRemaining(answer -> System.out.println(" - " + answer));
 
-			System.out.println("Query answers are: " + answers.getMaterialisationState());
+			System.out.println("Query answers are: " + answers.getCorrectness());
 		}
 		System.out.println();
 	}

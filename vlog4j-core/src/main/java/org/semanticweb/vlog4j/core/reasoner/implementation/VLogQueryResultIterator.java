@@ -38,13 +38,12 @@ public class VLogQueryResultIterator implements QueryResultIterator {
 
 	private final TermQueryResultIterator vLogTermQueryResultIterator;
 
-	private final Correctness materialisationState;
+	private final Correctness correctness;
 
-	// TODO add reasoningState to constructor
 	public VLogQueryResultIterator(final TermQueryResultIterator termQueryResultIterator,
 			final Correctness materialisationState) {
 		this.vLogTermQueryResultIterator = termQueryResultIterator;
-		this.materialisationState = materialisationState;
+		this.correctness = materialisationState;
 	}
 
 	@Override
@@ -63,8 +62,9 @@ public class VLogQueryResultIterator implements QueryResultIterator {
 		this.vLogTermQueryResultIterator.close();
 	}
 
-	public Correctness getMaterialisationState() {
-		return this.materialisationState;
+	@Override
+	public Correctness getCorrectness() {
+		return this.correctness;
 	}
 
 }

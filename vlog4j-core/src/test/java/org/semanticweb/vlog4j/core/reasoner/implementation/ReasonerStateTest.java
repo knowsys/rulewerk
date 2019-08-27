@@ -92,7 +92,7 @@ public class ReasonerStateTest {
 			final Set<List<Term>> expectedAnswersC = new HashSet<>(Arrays.asList(Collections.singletonList(c)));
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(query, true)) {
-				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 				final Set<List<Term>> queryAnswersC = QueryResultsUtils.collectQueryResults(queryResult);
 
 				assertEquals(expectedAnswersC, queryAnswersC);
@@ -101,14 +101,14 @@ public class ReasonerStateTest {
 			reasoner.getKnowledgeBase().addStatement(factPd);
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(query, true)) {
-				assertEquals(Correctness.INCORRECT, queryResult.getMaterialisationState());
+				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
 				assertEquals(expectedAnswersC, QueryResultsUtils.collectQueryResults(queryResult));
 			}
 
 			reasoner.load();
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(query, true)) {
-				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 
 				final Set<List<Term>> queryAnswersD = QueryResultsUtils.collectQueryResults(queryResult);
 
