@@ -286,17 +286,18 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * Returns all {@link Statement}s of this knowledge base.
 	 * 
 	 * The result can be iterated over and will return statements in the original
-	 * order.
+	 * order.  The collection is read-only and cannot be modified to add or delete
+	 * statements.
 	 * 
 	 * @return a collection of statements
 	 */
 	public Collection<Statement> getStatements() {
-		return this.statements;
+		return Collections.unmodifiableCollection(this.statements);
 	}
 
 	@Override
 	public Iterator<Statement> iterator() {
-		return this.statements.iterator();
+		return Collections.unmodifiableCollection(this.statements).iterator();
 	}
 
 }
