@@ -117,7 +117,7 @@ public class LoggingTest {
 
 	@Test
 	public void testSetLogFileAppendsToFile() throws IOException {
-		final String logFilePath = LOGS_DIRECTORY + System.currentTimeMillis() + "-testSetLogFileAppendsToFile.log";
+		final String logFilePath = LOGS_DIRECTORY + "-testSetLogFileAppendsToFile.log";
 		assertFalse(new File(logFilePath).exists());
 		int countLinesBeforeReset = 0;
 
@@ -142,7 +142,7 @@ public class LoggingTest {
 
 	@Test
 	public void testLogLevelInfo() throws IOException {
-		final String logFilePath = LOGS_DIRECTORY + System.currentTimeMillis() + "-testLogLevelInfo.log";
+		final String logFilePath = LOGS_DIRECTORY + "-testLogLevelInfo.log";
 		assertFalse(new File(logFilePath).exists());
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -161,7 +161,7 @@ public class LoggingTest {
 
 	@Test
 	public void testLogLevelDebug() throws IOException {
-		final String logFilePath = LOGS_DIRECTORY + System.currentTimeMillis() + "-testLogLevelDebug.log";
+		final String logFilePath = LOGS_DIRECTORY + "-testLogLevelDebug.log";
 		assertFalse(new File(logFilePath).exists());
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -181,7 +181,7 @@ public class LoggingTest {
 
 	@Test
 	public void testLogLevelDefault() throws IOException {
-		final String defaultLogFilePath = LOGS_DIRECTORY + System.currentTimeMillis() + "-testLogLevelDefault.log";
+		final String defaultLogFilePath = LOGS_DIRECTORY + "-testLogLevelDefault.log";
 		assertFalse(new File(defaultLogFilePath).exists());
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -193,7 +193,7 @@ public class LoggingTest {
 		}
 		final int countLinesReasonLogLevelDefault = readFile(defaultLogFilePath);
 
-		final String warningLogFilePath = LOGS_DIRECTORY + System.currentTimeMillis() + "-testLogLevelDefault.log";
+		final String warningLogFilePath = LOGS_DIRECTORY + "-testLogLevelDefault2.log";
 		assertFalse(new File(warningLogFilePath).exists());
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
