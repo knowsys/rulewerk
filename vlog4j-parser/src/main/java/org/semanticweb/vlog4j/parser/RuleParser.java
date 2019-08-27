@@ -36,12 +36,26 @@ import org.semanticweb.vlog4j.parser.ParsingException;
 /**
  * Class to statically access VLog parsing functionality.
  * 
- * @FIXME Support parsing from multiple files (into one KB).
- * 
  * @author Markus Kroetzsch
  *
  */
 public class RuleParser {
+
+	public static void parseInto(KnowledgeBase knowledgeBase, InputStream stream, String encoding)
+			throws ParsingException {
+		JavaCCParser javaCcParser = new JavaCCParser(stream, encoding);
+		javaCcParser.setKnowledgeBase(knowledgeBase);
+		doParse(javaCcParser);
+	}
+
+	public static void parseInto(KnowledgeBase knowledgeBase, InputStream stream) throws ParsingException {
+		parseInto(knowledgeBase, stream, "UTF-8");
+	}
+
+	public static void parseInto(KnowledgeBase knowledgeBase, String input) throws ParsingException {
+		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+		parseInto(knowledgeBase, inputStream, "UTF-8");
+	}
 
 	public static KnowledgeBase parse(InputStream stream, String encoding) throws ParsingException {
 		return doParse(new JavaCCParser(stream, encoding));

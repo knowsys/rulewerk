@@ -48,7 +48,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 public class JavaCCParserBase {
 	final PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
 
-	final KnowledgeBase knowledgeBase = new KnowledgeBase();
+	KnowledgeBase knowledgeBase;
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -80,6 +80,10 @@ public class JavaCCParserBase {
 		 * occurrence).
 		 */
 		BODY
+	}
+	
+	public JavaCCParserBase() {
+		this.knowledgeBase = new KnowledgeBase();
 	}
 
 	Constant createIntegerLiteral(String lexicalForm) {
@@ -210,6 +214,10 @@ public class JavaCCParserBase {
 		this.bodyVars.clear();
 		this.headExiVars.clear();
 		this.headUniVars.clear();
+	}
+	
+	public void setKnowledgeBase(KnowledgeBase knowledgeBase) {
+		this.knowledgeBase = knowledgeBase;
 	}
 
 	public KnowledgeBase getKnowledgeBase() {
