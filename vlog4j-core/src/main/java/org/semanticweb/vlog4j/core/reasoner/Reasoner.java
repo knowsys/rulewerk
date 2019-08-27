@@ -184,11 +184,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Check the <b>Joint Acyclicity (JA)</b> property of loaded rules and EDB
-	 * predicates of loaded facts. If a set of rules and EDB predicates is <b>J</b>A, then,
-	 * for the given set of rules and any facts over the given EDB predicates,
-	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and, implicitly,
-	 * the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will always
-	 * terminate.
+	 * predicates of loaded facts. If a set of rules and EDB predicates is
+	 * <b>J</b>A, then, for the given set of rules and any facts over the given EDB
+	 * predicates, reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and,
+	 * implicitly, the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will
+	 * always terminate.
 	 * 
 	 * @return {@code true}, if the loaded set of rules is Joint Acyclic with
 	 *         respect to the EDB predicates of loaded facts.<br>
@@ -211,11 +211,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Check the <b>Model-Faithful Acyclicity (MFA)</b> property of loaded rules and
-	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is <b>MFA</b>,
-	 * then, for the given set of rules and any facts over the given EDB predicates,
-	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and, implicitly,
-	 * the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will always
-	 * terminate
+	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is
+	 * <b>MFA</b>, then, for the given set of rules and any facts over the given EDB
+	 * predicates, reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and,
+	 * implicitly, the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will
+	 * always terminate
 	 * 
 	 * @return {@code true}, if the loaded set of rules is Model-Faithful Acyclic
 	 *         with respect to the EDB predicates of loaded facts.<br>
@@ -226,8 +226,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Check the <b>Restricted Model-Faithful Acyclicity (RMFA)</b> property of
 	 * loaded rules and EDB predicates of loaded facts. If a set of rules and EDB
-	 * predicates is <b>RMFA</b>, then, for the given set of rules and any facts over the
-	 * given EDB predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE
+	 * predicates is <b>RMFA</b>, then, for the given set of rules and any facts
+	 * over the given EDB predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE
 	 * Restricted chase} will always terminate. If a set of rules and EDB predicates
 	 * is MFA, then it is also JA.
 	 * 
@@ -239,12 +239,12 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Check the <b>Model-Faithful Cyclicity (MFC)</b> property of loaded rules and
-	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is <b>MFC</b>,
-	 * then there exists a set of facts over the given EDB predicates for which
-	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} algorithm is
-	 * guaranteed not to terminate for the loaded rules. If a set of rules and EDB
-	 * predicates is RMFA, then it is also RJA. Therefore, if a set or rules and EDB
-	 * predicates is MFC, it is not MFA, nor JA.
+	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is
+	 * <b>MFC</b>, then there exists a set of facts over the given EDB predicates
+	 * for which reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} algorithm
+	 * is guaranteed not to terminate for the loaded rules. If a set of rules and
+	 * EDB predicates is RMFA, then it is also RJA. Therefore, if a set or rules and
+	 * EDB predicates is MFC, it is not MFA, nor JA.
 	 * 
 	 * @return {@code true}, if the loaded set of rules is Model-Faithful Cyclic
 	 *         with respect to the EDB predicates of loaded facts.<br>
@@ -253,9 +253,10 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	boolean isMFC();
 
 	/**
-	 * Performs materialisation on the reasoner {@link KnowledgeBase}, depending on the set
-	 * {@link Algorithm}. Materialisation implies extending the set of explicit facts in
-	 * the knowledge base with implicit facts inferred by knowledge base rules. <br>
+	 * Performs materialisation on the reasoner {@link KnowledgeBase}, depending on
+	 * the set {@link Algorithm}. Materialisation implies extending the set of
+	 * explicit facts in the knowledge base with implicit facts inferred by
+	 * knowledge base rules. <br>
 	 * <br>
 	 * In some cases, reasoning with rules with existentially quantified variables
 	 * {@link Rule#getExistentiallyQuantifiedVariables()} may not terminate. We
@@ -263,6 +264,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * leads to termination in more cases. <br>
 	 * To avoid non-termination, a reasoning timeout can be set
 	 * ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
+	 * 
 	 * @return
 	 *         <ul>
 	 *         <li>{@code true}, if materialisation reached completion.</li>
@@ -273,6 +275,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 */
 	boolean reason() throws IOException;
 
+	// FIXME update old javadoc
 	// TODO add examples to query javadoc
 	/**
 	 * Evaluates an atomic query ({@code queryAtom}) on the current state of the
@@ -309,6 +312,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 */
 	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks);
 
+	// FIXME update old javadoc
 	// TODO add examples to query javadoc
 	/**
 	 * Evaluates an atomic query ({@code queryAtom}) on the current state of the
@@ -354,16 +358,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 			throws IOException;
 
 	/**
-	 * Resets the reasoner to a pre-loading state (before the call of
-	 * {@link #load()} method). All facts inferred by reasoning are discarded. Rules
-	 * and facts added to the reasoner need to be loaded again, to be able to
-	 * perform querying and reasoning.
+	 * Resets the reasoner. All implicit facts inferred by reasoning are discarded.
 	 */
 	void resetReasoner();
 
 	// TODO Map<Predicate,DataSource> exportDBToDir(File location);
-
-	// TODO not allow any operation after closing, except close();
 
 	@Override
 	void close();

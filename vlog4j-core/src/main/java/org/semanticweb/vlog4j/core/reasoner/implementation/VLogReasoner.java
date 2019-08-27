@@ -636,10 +636,14 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void close() {
-		this.reasonerState = ReasonerState.CLOSED;
-		this.knowledgeBase.deleteListener(this);
-		this.vLog.stop();
-		LOGGER.info("Reasoner closed.");
+		if (this.reasonerState == ReasonerState.CLOSED) {
+			LOGGER.info("Reasoner is already closed.");
+		} else {
+			this.reasonerState = ReasonerState.CLOSED;
+			this.knowledgeBase.deleteListener(this);
+			this.vLog.stop();
+			LOGGER.info("Reasoner closed.");
+		}
 	}
 
 	@Override
