@@ -278,21 +278,13 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	// FIXME update old javadoc
 	// TODO add examples to query javadoc
 	/**
-	 * Evaluates an atomic query ({@code queryAtom}) on the current state of the
-	 * reasoner knowledge base:
-	 * <ul>
-	 * <li>If the reasoner is <b>loaded</b> (see {@link #load()}), but has not
-	 * reasoned yet, the query will be evaluated on the explicit set of facts.</li>
-	 * <li>Otherwise, if this method is called after <b>reasoning</b> (see
-	 * {@link #reason()}, the query will be evaluated on the explicit and implicit
-	 * facts inferred trough reasoning.</li>
-	 * </ul>
-	 * <br>
-	 * An answer to the query is the terms a fact that matches the {@code quryAtom}:
-	 * the fact predicate is the same as the {@code quryAtom} predicate, the
-	 * {@link TermType#CONSTANT} terms of the {@code quryAtom} appear in the answer
+	 * Evaluates an atomic query ({@code query}) on the implicit facts loaded into
+	 * the reasoner and the explicit facts materialised by the reasoner. <br>
+	 * An answer to the query is the terms a fact that matches the {@code query}:
+	 * the fact predicate is the same as the {@code query} predicate, the
+	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
 	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
-	 * the {@code quryAtom} are matched by terms in the fact, either named
+	 * the {@code query} are matched by terms in the fact, either named
 	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#BLANK}). The same
 	 * variable name identifies the same term in the answer fact. <br>
 	 * A query answer is represented by a {@link QueryResult}. A query can have
@@ -301,59 +293,51 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *
 	 * @param query         a {@link PositiveLiteral} representing the query to be
 	 *                      answered.
-	 * @param includeBlanks if {@code true}, facts containing terms of type
-	 *                      {@link TermType#BLANK} (representing anonymous
+	 * @param includeBlanks if {@code true}, {@link QueryResult}s containing terms
+	 *                      of type {@link TermType#BLANK} (representing anonymous
 	 *                      individuals introduced to satisfy rule existentially
-	 *                      quantified variables) will be included into the query
-	 *                      results. Otherwise, the query results will only contain
-	 *                      the facts with terms of type {@link TermType#CONSTANT}
-	 *                      (representing named individuals).
+	 *                      quantified variables) will be included. Otherwise, the
+	 *                      answers will only contain the {@link QueryResult}s with
+	 *                      terms of type {@link TermType#CONSTANT} (representing
+	 *                      named individuals).
 	 * @return QueryResultIterator that represents distinct answers to the query.
 	 */
 	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks);
 
-	// FIXME update old javadoc
+	// FIXME update javadoc with return type
 	// TODO add examples to query javadoc
 	/**
-	 * Evaluates an atomic query ({@code queryAtom}) on the current state of the
-	 * reasoner knowledge base, and writes its results the <i><b>.csv</b></i> file
-	 * at given path {@code csvFilePath}:
-	 * <ul>
-	 * <li>If the reasoner is <b>loaded</b> (see {@link #load()}), but has not
-	 * reasoned yet, the query will be evaluated on the explicit set of facts.</li>
-	 * <li>Otherwise, if this method is called after <b>reasoning</b> (see
-	 * {@link #reason()}, the query will be evaluated on the explicit and implicit
-	 * facts inferred trough reasoning.</li>
-	 * </ul>
+	 * Evaluates an atomic query ({@code query}) on the implicit facts loaded into
+	 * the reasoner and the explicit facts materialised by the reasoner, and writes
+	 * its answers the <i><b>.csv</b></i> file at given path {@code csvFilePath}:
 	 * <br>
-	 * An answer to the query is the terms a fact that matches the {@code quryAtom}:
-	 * the fact predicate is the same as the {@code quryAtom} predicate, the
-	 * {@link TermType#CONSTANT} terms of the {@code quryAtom} appear in the answer
+	 * An answer to the query is the terms a fact that matches the {@code query}:
+	 * the fact predicate is the same as the {@code query} predicate, the
+	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
 	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
-	 * the {@code quryAtom} are matched by terms in the fact, either named
+	 * the {@code query} are matched by terms in the fact, either named
 	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#BLANK}). The same
 	 * variable name identifies the same term in the answer fact. <br>
-	 * A query answer is represented by a {@link QueryResult}. A query can have
-	 * multiple, distinct query answers.
+	 * A query can have multiple, distinct query answers. Each answers is written on
+	 * a separate line in the given file.
 	 *
 	 * @param query         a {@link PositiveLiteral} representing the query to be
 	 *                      answered.
 	 * @param csvFilePath   path to a <i><b>.csv</b></i> file where the query
 	 *                      answers will be written. Each line of the
-	 *                      <i><b>.csv</b></i> file represents a query answer fact,
-	 *                      and it will contain the fact term names as columns.
-	 * @param includeBlanks if {@code true}, facts containing terms of type
+	 *                      <i><b>.csv</b></i> file represents a query answer, and
+	 *                      it will contain the fact term names as columns.
+	 * @param includeBlanks if {@code true}, answers containing terms of type
 	 *                      {@link TermType#BLANK} (representing anonymous
 	 *                      individuals introduced to satisfy rule existentially
-	 *                      quantified variables) will be included into the query
-	 *                      answers. Otherwise, the query answers will only contain
-	 *                      the facts with terms of type {@link TermType#CONSTANT}
-	 *                      (representing named individuals).
+	 *                      quantified variables) will be included. Otherwise, the
+	 *                      answers will only contain those with terms of type
+	 *                      {@link TermType#CONSTANT} (representing named
+	 *                      individuals).
 	 *
 	 * @throws IOException if an I/O error occurs regarding given file
 	 *                     ({@code csvFilePath)}.
 	 */
-	// TODO update javadoc with return type
 	Correctness exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeBlanks)
 			throws IOException;
 
