@@ -286,7 +286,7 @@ public class VLogReasoner implements Reasoner {
 	public void setReasoningTimeout(Integer seconds) {
 		validateNotClosed();
 		if (seconds != null) {
-			Validate.isTrue(seconds > 0, "Only strictly positive timeout period alowed!", seconds);
+			Validate.isTrue(seconds > 0, "Only strictly positive timeout period allowed!", seconds);
 		}
 		this.timeoutAfterSeconds = seconds;
 	}
@@ -433,11 +433,11 @@ public class VLogReasoner implements Reasoner {
 			this.vLog.addData(vLogPredicateName, inMemoryDataSource.getData());
 			if (LOGGER.isDebugEnabled()) {
 				for (final String[] tuple : inMemoryDataSource.getData()) {
-					LOGGER.debug("Loaded direct fact " + vLogPredicateName + Arrays.toString(tuple));
+					LOGGER.debug("Loaded direct fact {}{}.", vLogPredicateName, Arrays.toString(tuple));
 				}
 			}
 		} catch (final EDBConfigurationException e) {
-			throw new RuntimeException("Invalid data sources configuration.", e);
+			throw new RuntimeException("Invalid data sources configuration!", e);
 		}
 	}
 
@@ -459,12 +459,12 @@ public class VLogReasoner implements Reasoner {
 			final int dataSourcePredicateArity = this.vLog
 					.getPredicateArity(ModelToVLogConverter.toVLogPredicate(predicate));
 			if (dataSourcePredicateArity == -1) {
-				LOGGER.warn("Data source {} for predicate {} is empty: ", dataSource, predicate);
+				LOGGER.warn("Data source {} for predicate {} is empty! ", dataSource, predicate);
 			} else if (predicate.getArity() != dataSourcePredicateArity) {
 				throw new IncompatiblePredicateArityException(predicate, dataSourcePredicateArity, dataSource);
 			}
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RuntimeException("Inconsistent reasoner state!", e);
 		}
 	}
 
@@ -483,11 +483,11 @@ public class VLogReasoner implements Reasoner {
 				this.vLog.addData(vLogPredicateName, vLogPredicateTuples);
 				if (LOGGER.isDebugEnabled()) {
 					for (final String[] tuple : vLogPredicateTuples) {
-						LOGGER.debug("Loaded direct fact " + vLogPredicateName + Arrays.toString(tuple));
+						LOGGER.debug("Loaded direct fact {}{}.", vLogPredicateName, Arrays.toString(tuple));
 					}
 				}
 			} catch (final EDBConfigurationException e) {
-				throw new RuntimeException("Invalid data sources configuration.", e);
+				throw new RuntimeException("Invalid data sources configuration!", e);
 			}
 		}
 	}
@@ -500,11 +500,11 @@ public class VLogReasoner implements Reasoner {
 			this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
 			if (LOGGER.isDebugEnabled()) {
 				for (final karmaresearch.vlog.Rule rule : vLogRuleArray) {
-					LOGGER.debug("Loaded rule " + rule.toString());
+					LOGGER.debug("Loaded rule {}.", rule.toString());
 				}
 			}
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RuntimeException("Inconsistent reasoner state!", e);
 		}
 	}
 
@@ -584,7 +584,7 @@ public class VLogReasoner implements Reasoner {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		} catch (final NonExistingPredicateException e1) {
 			LOGGER.warn("Query uses predicate " + query.getPredicate()
-					+ " that does not occur in the knowledge base. Answer must be empty.");
+					+ " that does not occur in the knowledge base. Answer must be empty!");
 			return new EmptyQueryResultIterator(MaterialisationState.COMPLETE);
 		}
 
@@ -608,7 +608,7 @@ public class VLogReasoner implements Reasoner {
 		try {
 			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath, filterBlanks);
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RuntimeException("Inconsistent reasoner state!", e);
 		} catch (final NonExistingPredicateException e1) {
 			throw new IllegalArgumentException(MessageFormat.format(
 					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
@@ -685,7 +685,7 @@ public class VLogReasoner implements Reasoner {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
-					"checking rules acyclicity is not allowed before loading!");
+					"Checking rules acyclicity is not allowed before loading!");
 		}
 
 		CyclicCheckResult checkCyclic;
@@ -701,7 +701,7 @@ public class VLogReasoner implements Reasoner {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
-					"checking rules acyclicity is not allowed before loading!");
+					"Checking rules acyclicity is not allowed before loading!");
 		}
 
 		CyclicCheckResult checkCyclic;
@@ -785,8 +785,8 @@ public class VLogReasoner implements Reasoner {
 	 */
 	void validateNotClosed() throws ReasonerStateException {
 		if (this.reasonerState == ReasonerState.CLOSED) {
-			LOGGER.error("Invalid operation requested on a closed reasoner object.");
-			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner.");
+			LOGGER.error("Invalid operation requested on a closed reasoner object!");
+			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner!");
 		}
 	}
 
