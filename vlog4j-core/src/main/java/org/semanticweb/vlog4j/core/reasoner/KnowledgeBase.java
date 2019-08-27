@@ -62,7 +62,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @author Markus Kroetzsch
 	 *
 	 */
-	class AddStatementVisitor implements StatementVisitor<Boolean> {
+	private class AddStatementVisitor implements StatementVisitor<Boolean> {
 		@Override
 		public Boolean visit(Fact statement) {
 			addFact(statement);
@@ -81,9 +81,9 @@ public class KnowledgeBase implements Iterable<Statement> {
 		}
 	}
 
-	final AddStatementVisitor addStatementVisitor = new AddStatementVisitor();
+	private final AddStatementVisitor addStatementVisitor = new AddStatementVisitor();
 
-	class ExtractStatementsVisitor<T> implements StatementVisitor<Void> {
+	private class ExtractStatementsVisitor<T> implements StatementVisitor<Void> {
 
 		final ArrayList<T> extracted = new ArrayList<>();
 		final Class<T> ownType;
@@ -127,7 +127,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * The primary storage for the contents of the knowledge base.
 	 */
-	final LinkedHashSet<Statement> statements = new LinkedHashSet<>();
+	private final LinkedHashSet<Statement> statements = new LinkedHashSet<>();
 
 	/**
 	 * Known prefixes that can be used to pretty-print the contents of the knowledge
@@ -139,13 +139,13 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Index structure that organises all facts by their predicate.
 	 */
-	final Map<Predicate, Set<PositiveLiteral>> factsByPredicate = new HashMap<>();
+	private final Map<Predicate, Set<PositiveLiteral>> factsByPredicate = new HashMap<>();
 
 	/**
 	 * Index structure that holds all data source declarations of this knowledge
 	 * base.
 	 */
-	final Set<DataSourceDeclaration> dataSourceDeclarations = new HashSet<>();
+	private final Set<DataSourceDeclaration> dataSourceDeclarations = new HashSet<>();
 
 	/**
 	 * Registers a listener for changes on the knowledge base
