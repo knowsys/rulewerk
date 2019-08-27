@@ -728,7 +728,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void onStatementsAdded(Set<Statement> statementsAdded) {
+	public void onStatementsAdded(List<Statement> statementsAdded) {
 		// TODO more elaborate materialisation state handling
 		// updateReasonerStateToKnowledgeBaseChanged();
 		// updateMaterialisationStateOnStatementsAdded(statementsAddedInvalidateMaterialisation(statementsAdded));

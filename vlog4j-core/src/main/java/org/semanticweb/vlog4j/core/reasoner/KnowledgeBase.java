@@ -16,7 +16,6 @@ import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
@@ -42,7 +41,7 @@ import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
  */
 
 /**
- * A knowledge base with rules, facts, and declartions for loading data from
+ * A knowledge base with rules, facts, and declarations for loading data from
  * further sources. This is a "syntactic" object in that it represents some
  * information that is not relevant for the semantics of reasoning, but that is
  * needed to ensure faithful re-serialisation of knowledge bases loaded from
@@ -129,12 +128,12 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	private final LinkedHashSet<Statement> statements = new LinkedHashSet<>();
 
-	/**
-	 * Known prefixes that can be used to pretty-print the contents of the knowledge
-	 * base. We try to preserve user-provided prefixes found in files when loading
-	 * data.
-	 */
-	PrefixDeclarations prefixDeclarations;
+//	/**
+//	 * Known prefixes that can be used to pretty-print the contents of the knowledge
+//	 * base. We try to preserve user-provided prefixes found in files when loading
+//	 * data.
+//	 */
+//	PrefixDeclarations prefixDeclarations;
 
 	/**
 	 * Index structure that organises all facts by their predicate.
@@ -172,13 +171,17 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @return true, if the knowledge base has changed.
 	 * @param statement
 	 */
-	public boolean addStatement(Statement statement) {
-		Validate.notNull(statement, "Statement cannot be Null.");
+	public void addStatement(Statement statement) {
+		if (doAddStatement(statement)) {
+
+		}
+		notifyListenersOnStatementAdded(statement);
+	}
+
+	boolean doAddStatement(Statement statement) {
+		Validate.notNull(statement, "Statement cannot be Null!");
 		if (!this.statements.contains(statement) && statement.accept(this.addStatementVisitor)) {
 			this.statements.add(statement);
-
-			notifyListenersOnStatementAdded(statement);
-
 			return true;
 		}
 		return false;
@@ -190,16 +193,15 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @param statements
 	 */
 	public void addStatements(Collection<? extends Statement> statements) {
-		final Set<Statement> addedStatements = new HashSet<>();
+		final List<Statement> addedStatements = new ArrayList<>();
 
 		for (final Statement statement : statements) {
-			if (addStatement(statement)) {
+			if (doAddStatement(statement)) {
 				addedStatements.add(statement);
 			}
 		}
 
 		notifyListenersOnStatementsAdded(addedStatements);
-
 	}
 
 	/**
@@ -208,10 +210,10 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @param statements
 	 */
 	public void addStatements(Statement... statements) {
-		final Set<Statement> addedStatements = new HashSet<>();
-
+		final List<Statement> addedStatements = new ArrayList<>();
+		
 		for (final Statement statement : statements) {
-			if (addStatement(statement)) {
+			if (doAddStatement(statement)) {
 				addedStatements.add(statement);
 			}
 		}
@@ -219,9 +221,11 @@ public class KnowledgeBase implements Iterable<Statement> {
 		notifyListenersOnStatementsAdded(addedStatements);
 	}
 
-	private void notifyListenersOnStatementsAdded(final Set<Statement> addedStatements) {
-		for (final KnowledgeBaseListener listener : this.listeners) {
-			listener.onStatementsAdded(addedStatements);
+	private void notifyListenersOnStatementsAdded(final List<Statement> addedStatements) {
+		if (!addedStatements.isEmpty()) {
+			for (final KnowledgeBaseListener listener : this.listeners) {
+				listener.onStatementsAdded(addedStatements);
+			}
 		}
 	}
 
@@ -286,7 +290,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * Returns all {@link Statement}s of this knowledge base.
 	 * 
 	 * The result can be iterated over and will return statements in the original
-	 * order.  The collection is read-only and cannot be modified to add or delete
+	 * order. The collection is read-only and cannot be modified to add or delete
 	 * statements.
 	 * 
 	 * @return a collection of statements
