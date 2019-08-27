@@ -33,7 +33,7 @@ import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -173,7 +173,7 @@ public final class ExamplesUtils {
 		final PositiveLiteral atom = makeQueryAtom(atomName, arity);
 		final String path = ExamplesUtils.OUTPUT_FOLDER + atomName + ".csv";
 
-		final MaterialisationState correctness = reasoner.exportQueryAnswersToCsv(atom, path, true);
+		final Correctness correctness = reasoner.exportQueryAnswersToCsv(atom, path, true);
 
 		System.out.println("Query answers are: " + correctness);
 	}

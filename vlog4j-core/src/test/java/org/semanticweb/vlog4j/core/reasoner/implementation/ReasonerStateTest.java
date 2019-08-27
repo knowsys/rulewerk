@@ -46,8 +46,8 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
@@ -92,7 +92,7 @@ public class ReasonerStateTest {
 			final Set<List<Term>> expectedAnswersC = new HashSet<>(Arrays.asList(Collections.singletonList(c)));
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(query, true)) {
-				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
 				final Set<List<Term>> queryAnswersC = QueryResultsUtils.collectQueryResults(queryResult);
 
 				assertEquals(expectedAnswersC, queryAnswersC);
@@ -101,14 +101,14 @@ public class ReasonerStateTest {
 			reasoner.getKnowledgeBase().addStatement(factPd);
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(query, true)) {
-				assertEquals(MaterialisationState.WRONG, queryResult.getMaterialisationState());
+				assertEquals(Correctness.INCORRECT, queryResult.getMaterialisationState());
 				assertEquals(expectedAnswersC, QueryResultsUtils.collectQueryResults(queryResult));
 			}
 
 			reasoner.load();
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(query, true)) {
-				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
 
 				final Set<List<Term>> queryAnswersD = QueryResultsUtils.collectQueryResults(queryResult);
 

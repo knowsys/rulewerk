@@ -27,29 +27,30 @@ package org.semanticweb.vlog4j.core.reasoner;
  * @author Irina Dragoste
  *
  */
-public enum MaterialisationState {
+public enum Correctness {
 
 	/**
 	 * Reasoning has not completed. Query answering yields sound, but possibly
 	 * incomplete answers.
 	 */
-	INCOMPLETE("incomplete"),
+	SOUND_BUT_INCOMPLETE("sound but incomplete"),
 
 	/**
-	 * Query answering may give incorrect answers. Re-materialisation
-	 * ({@link Reasoner#reason()}) is required, in order to obtain correct results.
+	 * Query answering may give incorrect (unsound or incomplete) answers.
+	 * Re-materialisation ({@link Reasoner#reason()}) is required, in order to
+	 * obtain correct results.
 	 */
-	WRONG("wrong"),
+	INCORRECT("incorrect"),
 
 	/**
-	 * Reasoning over current knowledge base is complete, and query answering yields
-	 * sound and complete results.
+	 * Reasoning over current knowledge base has completed, and query answering
+	 * yields correct (sound and complete) results.
 	 */
-	COMPLETE("complete");
+	SOUND_AND_COMPLETE("sound and complete");
 
 	private final String name;
 
-	private MaterialisationState(String name) {
+	private Correctness(String name) {
 		this.name = name;
 	}
 

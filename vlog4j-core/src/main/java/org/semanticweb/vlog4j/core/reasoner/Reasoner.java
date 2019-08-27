@@ -375,7 +375,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *                     ({@code csvFilePath)}.
 	 */
 	// TODO update javadoc with return type
-	MaterialisationState exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeBlanks)
+	Correctness exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeBlanks)
 			throws IOException;
 
 	/**

@@ -39,8 +39,8 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 
 public class AddDataSourceTest {
@@ -76,12 +76,12 @@ public class AddDataSourceTest {
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicateLArity1, Expressions.makeVariable("x")), false)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
 			}
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicateParity1, Expressions.makeVariable("x")), false)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
 			}
 
 		}
@@ -102,12 +102,12 @@ public class AddDataSourceTest {
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
 			}
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
 			}
 
 		}
@@ -130,13 +130,13 @@ public class AddDataSourceTest {
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(MaterialisationState.WRONG, queryResult.getMaterialisationState());
+				assertEquals(Correctness.INCORRECT, queryResult.getMaterialisationState());
 			}
 
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
 				assertFalse(queryResult.hasNext());
-				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
 			}
 		}
 	}
@@ -158,13 +158,13 @@ public class AddDataSourceTest {
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(MaterialisationState.WRONG, queryResult.getMaterialisationState());
+				assertEquals(Correctness.INCORRECT, queryResult.getMaterialisationState());
 			}
 
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
 				assertFalse(queryResult.hasNext());
-				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
 			}
 		}
 	}
@@ -231,7 +231,7 @@ public class AddDataSourceTest {
 				expectedAnswers.addAll(csvFile_c_d_Content);
 
 				assertEquals(expectedAnswers, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
 
 			}
 		}
@@ -256,7 +256,7 @@ public class AddDataSourceTest {
 				expectedAnswers.add(Arrays.asList(Expressions.makeConstant("a")));
 
 				assertEquals(expectedAnswers, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(MaterialisationState.COMPLETE, queryResult.getMaterialisationState());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getMaterialisationState());
 			}
 		}
 	}

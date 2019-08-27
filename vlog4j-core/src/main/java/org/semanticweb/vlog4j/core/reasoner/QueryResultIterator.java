@@ -26,7 +26,7 @@ import org.semanticweb.vlog4j.core.model.api.QueryResult;
 
 public interface QueryResultIterator extends Iterator<QueryResult>, AutoCloseable {
 
-	public MaterialisationState getMaterialisationState();
+	public Correctness getMaterialisationState();
 	
 	public void close();
 }

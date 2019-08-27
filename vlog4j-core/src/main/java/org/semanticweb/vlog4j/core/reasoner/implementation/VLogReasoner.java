@@ -31,10 +31,10 @@ import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
 import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
-import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
@@ -244,7 +244,7 @@ public class VLogReasoner implements Reasoner {
 	final Set<Rule> rules = new HashSet<>();
 
 	private ReasonerState reasonerState = ReasonerState.KB_NOT_LOADED;
-	private MaterialisationState materialisationState = MaterialisationState.INCOMPLETE;
+	private Correctness correctness = Correctness.SOUND_BUT_INCOMPLETE;
 
 	private LogLevel internalLogLevel = LogLevel.WARNING;
 	private Algorithm algorithm = Algorithm.RESTRICTED_CHASE;
@@ -357,7 +357,7 @@ public class VLogReasoner implements Reasoner {
 		this.reasonerState = ReasonerState.KB_LOADED;
 
 		// if there are no rules, then materialisation state is complete
-		this.materialisationState = rules.isEmpty()? MaterialisationState.COMPLETE: MaterialisationState.INCOMPLETE;
+		this.correctness = rules.isEmpty()? Correctness.SOUND_AND_COMPLETE: Correctness.SOUND_BUT_INCOMPLETE;
 
 		LOGGER.info("Finished loading knowledge base.");
 	}
@@ -558,10 +558,10 @@ public class VLogReasoner implements Reasoner {
 		}
 
 		if (this.reasoningCompleted) {
-			this.materialisationState = MaterialisationState.COMPLETE;
+			this.correctness = Correctness.SOUND_AND_COMPLETE;
 			LOGGER.info("Completed materialisation of inferences.");
 		} else {
-			this.materialisationState = MaterialisationState.INCOMPLETE;
+			this.correctness = Correctness.SOUND_BUT_INCOMPLETE;
 			LOGGER.info("Stopped materialisation of inferences (possibly incomplete).");
 		}
 	}
@@ -585,15 +585,15 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NonExistingPredicateException e1) {
 			LOGGER.warn("Query uses predicate " + query.getPredicate()
 					+ " that does not occur in the knowledge base. Answer must be empty!");
-			return new EmptyQueryResultIterator(MaterialisationState.COMPLETE);
+			return new EmptyQueryResultIterator(Correctness.SOUND_AND_COMPLETE);
 		}
 
-		logWarningOnMaterialisationState();
-		return new VLogQueryResultIterator(stringQueryResultIterator, this.materialisationState);
+		logWarningOnCorrectness();
+		return new VLogQueryResultIterator(stringQueryResultIterator, this.correctness);
 	}
 
 	@Override
-	public MaterialisationState exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
+	public Correctness exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws IOException {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
@@ -614,14 +614,14 @@ public class VLogReasoner implements Reasoner {
 					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
 		}
 
-		logWarningOnMaterialisationState();
-		return this.materialisationState;
+		logWarningOnCorrectness();
+		return this.correctness;
 	}
 
-	private void logWarningOnMaterialisationState() {
-		if (this.materialisationState != MaterialisationState.COMPLETE) {
+	private void logWarningOnCorrectness() {
+		if (this.correctness != Correctness.SOUND_AND_COMPLETE) {
 			LOGGER.warn("Query answers may be {} with respect to the current Knowledge Base!",
-					this.materialisationState);
+					this.correctness);
 		}
 	}
 
@@ -750,7 +750,7 @@ public class VLogReasoner implements Reasoner {
 				|| this.reasonerState.equals(ReasonerState.MATERIALISED)) {
 
 			this.reasonerState = ReasonerState.KB_CHANGED;
-			this.materialisationState = MaterialisationState.WRONG;
+			this.correctness = Correctness.INCORRECT;
 		}
 	}
 
@@ -774,7 +774,7 @@ public class VLogReasoner implements Reasoner {
 
 //	private void updateMaterialisationStateOnStatementsAdded(boolean materialisationInvalidated) {
 //		if (this.reasonerState.equals(ReasonerState.KB_CHANGED) && materialisationInvalidated) {
-//			this.materialisationState = MaterialisationState.WRONG;
+//			this.materialisationState = Correctness.WRONG;
 //		}
 //	}
 
