@@ -32,6 +32,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
@@ -43,7 +44,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 public class LoggingTest {
 
-	public static final String LOGS_FOLDER = "src/test/data/logs/";
+	public static final String LOGS_DIRECTORY = "src/test/data/logs/";
 
 	private static final Variable vx = Expressions.makeVariable("x");
 	// p(?x) -> q(?x)
@@ -58,6 +59,21 @@ public class LoggingTest {
 
 	static {
 		kb.addStatements(rule, factPc);
+	}
+
+	@BeforeClass
+	public static void emptyLogDirectory() {
+
+		final File logsDir = new File(LOGS_DIRECTORY);
+
+		if (!logsDir.exists()) {
+			logsDir.mkdir();
+		}
+
+		final File[] listFiles = logsDir.listFiles();
+		for (final File file : listFiles) {
+			file.delete();
+		}
 	}
 
 	// TODO remaining tests: change log file
@@ -78,7 +94,7 @@ public class LoggingTest {
 
 	@Test
 	public void testSetLogFileInexistent() throws IOException {
-		final String inexistentFilePath = LOGS_FOLDER + "a/b";
+		final String inexistentFilePath = LOGS_DIRECTORY + "a/b";
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setLogFile(inexistentFilePath);
@@ -101,7 +117,7 @@ public class LoggingTest {
 
 	@Test
 	public void testSetLogFileAppendsToFile() throws IOException {
-		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testSetLogFileAppendsToFile.log";
+		final String logFilePath = LOGS_DIRECTORY + System.currentTimeMillis() + "-testSetLogFileAppendsToFile.log";
 		assertFalse(new File(logFilePath).exists());
 		int countLinesBeforeReset = 0;
 
@@ -126,7 +142,7 @@ public class LoggingTest {
 
 	@Test
 	public void testLogLevelInfo() throws IOException {
-		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelInfo.log";
+		final String logFilePath = LOGS_DIRECTORY + System.currentTimeMillis() + "-testLogLevelInfo.log";
 		assertFalse(new File(logFilePath).exists());
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -145,7 +161,7 @@ public class LoggingTest {
 
 	@Test
 	public void testLogLevelDebug() throws IOException {
-		final String logFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelDebug.log";
+		final String logFilePath = LOGS_DIRECTORY + System.currentTimeMillis() + "-testLogLevelDebug.log";
 		assertFalse(new File(logFilePath).exists());
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -165,7 +181,7 @@ public class LoggingTest {
 
 	@Test
 	public void testLogLevelDefault() throws IOException {
-		final String defaultLogFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelDefault.log";
+		final String defaultLogFilePath = LOGS_DIRECTORY + System.currentTimeMillis() + "-testLogLevelDefault.log";
 		assertFalse(new File(defaultLogFilePath).exists());
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
@@ -177,8 +193,8 @@ public class LoggingTest {
 		}
 		final int countLinesReasonLogLevelDefault = readFile(defaultLogFilePath);
 
-		final String warningLogFilePath = LOGS_FOLDER + System.currentTimeMillis() + "-testLogLevelDefault.log";
-		//assertFalse(new File(warningLogFilePath).exists());
+		final String warningLogFilePath = LOGS_DIRECTORY + System.currentTimeMillis() + "-testLogLevelDefault.log";
+		assertFalse(new File(warningLogFilePath).exists());
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setLogFile(warningLogFilePath);
