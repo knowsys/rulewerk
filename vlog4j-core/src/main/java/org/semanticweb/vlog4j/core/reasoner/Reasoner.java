@@ -2,9 +2,9 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.TermType;
@@ -40,25 +40,19 @@ import karmaresearch.vlog.Atom;
  * reasoning. <br>
  * <b>Facts</b> can be added to the knowledge base:
  * <ul>
- * <li>as in-memory Java objects ({@link #addFacts(Atom...)}</li>
- * <li>from a persistent data source
- * ({@link #addFactsFromDataSource(Predicate, DataSource)})</li>
+ * <li>as in-memory Java objects ({@link Fact})</li>
+ * <li>from a persistent data source ({@link DataSourceDeclaration})</li>
  * </ul>
- * Note that facts with the same predicate cannot come from multiple sources
- * (where a source can be a collection of in-memory {@link Atom} objects, or a
- * {@link DataSource} .<br>
- * <b>Rules</b> added to the knowledge base ({@link #addRules(Rule...)}) can be
- * re-written internally by VLog, using the corresponding set
- * {@link RuleRewriteStrategy}. <br>
  * <br>
- * Once adding facts and rules to the knowledge base has been completed, the
- * <b>knowledge base</b> can be <b>loaded</b> into the reasoner.
+ * <b>Rules</b> added to the knowledge base can be re-written internally by
+ * VLog, using the corresponding set {@link RuleRewriteStrategy}. <br>
+ * <br>
  *
- * The loaded reasoner can perform <b>atomic queries</b> on explicit facts
- * before reasoning, and all implicit and explicit facts after calling
- * {@link Reasoner#reason()}. Queries can provide an iterator for the results
- * ({@link #answerQuery(Atom, boolean)}, or the results can be exported to a
- * file ({@link #exportQueryAnswersToCsv(Atom, String, boolean)}). <br>
+ * The loaded reasoner can perform <b>atomic queries</b> on explicit and
+ * implicit facts after calling {@link Reasoner#reason()}. Queries can provide
+ * an iterator for the results ({@link #answerQuery(Atom, boolean)}, or the
+ * results can be exported to a file
+ * ({@link #exportQueryAnswersToCsv(Atom, String, boolean)}). <br>
  * <br>
  * <b>Reasoning</b> with various {@link Algorithm}s is supported, that can lead
  * to different sets of inferred facts and different termination behavior. In
@@ -67,14 +61,6 @@ import karmaresearch.vlog.Atom;
  * recommend reasoning with algorithm {@link Algorithm#RESTRICTED_CHASE}, as it
  * leads to termination in more cases. To avoid non-termination, a reasoning
  * timeout can be set ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
- * <b>Incremental reasoning</b> is not supported. To add more facts and rule to
- * the <b>knowledge base</b> and reason again, the reasoner needs to be
- * <b>reset</b> ({@link #resetReasoner()}) to the state of its knowledge base
- * before loading. Then, more information can be added to the knowledge base,
- * the reasoner can be loaded again, and querying and reasoning can be
- * performed.
- * 
- * @FIXME Update the outdated JavaDoc
  *
  * @author Irina Dragoste
  *
