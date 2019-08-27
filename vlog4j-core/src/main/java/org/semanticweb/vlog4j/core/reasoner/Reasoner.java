@@ -184,11 +184,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Check the <b>Joint Acyclicity (JA)</b> property of loaded rules and EDB
-	 * predicates of loaded facts. If a set of rules and EDB predicates is JA, then,
+	 * predicates of loaded facts. If a set of rules and EDB predicates is <b>J</b>A, then,
 	 * for the given set of rules and any facts over the given EDB predicates,
 	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and, implicitly,
 	 * the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will always
-	 * terminate
+	 * terminate.
 	 * 
 	 * @return {@code true}, if the loaded set of rules is Joint Acyclic with
 	 *         respect to the EDB predicates of loaded facts.<br>
@@ -199,7 +199,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Check the <b>Restricted Joint Acyclicity (RJA)</b> property of loaded rules
 	 * and EDB predicates of loaded facts. If a set of rules and EDB predicates is
-	 * RJA, then, for the given set of rules and any facts over the given EDB
+	 * <b>RJA</b>, then, for the given set of rules and any facts over the given EDB
 	 * predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE Restricted chase}
 	 * will always terminate
 	 * 
@@ -211,7 +211,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Check the <b>Model-Faithful Acyclicity (MFA)</b> property of loaded rules and
-	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is MFA,
+	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is <b>MFA</b>,
 	 * then, for the given set of rules and any facts over the given EDB predicates,
 	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and, implicitly,
 	 * the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will always
@@ -226,7 +226,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Check the <b>Restricted Model-Faithful Acyclicity (RMFA)</b> property of
 	 * loaded rules and EDB predicates of loaded facts. If a set of rules and EDB
-	 * predicates is RMFA, then, for the given set of rules and any facts over the
+	 * predicates is <b>RMFA</b>, then, for the given set of rules and any facts over the
 	 * given EDB predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE
 	 * Restricted chase} will always terminate. If a set of rules and EDB predicates
 	 * is MFA, then it is also JA.
@@ -239,7 +239,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Check the <b>Model-Faithful Cyclicity (MFC)</b> property of loaded rules and
-	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is MFC,
+	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is <b>MFC</b>,
 	 * then there exists a set of facts over the given EDB predicates for which
 	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} algorithm is
 	 * guaranteed not to terminate for the loaded rules. If a set of rules and EDB
@@ -253,8 +253,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	boolean isMFC();
 
 	/**
-	 * Performs reasoning on the loaded <b>knowledge base</b>, depending on the set
-	 * {@link Algorithm}. Reasoning implies extending the set of explicit facts in
+	 * Performs materialisation on the reasoner {@link KnowledgeBase}, depending on the set
+	 * {@link Algorithm}. Materialisation implies extending the set of explicit facts in
 	 * the knowledge base with implicit facts inferred by knowledge base rules. <br>
 	 * <br>
 	 * In some cases, reasoning with rules with existentially quantified variables
@@ -263,21 +263,10 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * leads to termination in more cases. <br>
 	 * To avoid non-termination, a reasoning timeout can be set
 	 * ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
-	 * <br>
-	 * <b>Incremental reasoning</b> is not supported. To add more facts and rule to
-	 * the <b>knowledge base</b> and reason again, the reasoner needs to be
-	 * <b>reset</b> ({@link #resetReasoner()}) to the state of its knowledge base
-	 * before loading. Then, more information can be added to the knowledge base,
-	 * the reasoner can be loaded again, and querying and reasoning can be
-	 * performed.
-	 *
 	 * @return
 	 *         <ul>
-	 *         <li>the value returned by the previous {@link Reasoner#reason()}
-	 *         call, if successive reasoning is attempted before a
-	 *         {@link Reasoner#resetReasoner()}.</li>
-	 *         <li>{@code true}, if reasoning reached completion.</li>
-	 *         <li>{@code false}, if reasoning has been interrupted before
+	 *         <li>{@code true}, if materialisation reached completion.</li>
+	 *         <li>{@code false}, if materialisation has been interrupted before
 	 *         completion.</li>
 	 *         </ul>
 	 * @throws IOException if I/O exceptions occur during reasoning.
