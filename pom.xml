@@ -234,6 +234,11 @@
 					<maxmem>256m</maxmem>
 					<!-- aggregated reports for multi-module projects -->
 					<aggregate>true</aggregate>
+					<instrumentation>
+                        <excludes>
+                            <exclude>org/semanticweb/vlog4j/parser/javacc*.class</exclude>
+                        </excludes>
+                    </instrumentation>
 				</configuration>
 			</plugin>
 			<plugin>
