@@ -39,6 +39,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 
 public class VLogReasonerBasics {
 
@@ -56,16 +57,17 @@ public class VLogReasonerBasics {
 	final Rule ruleBxAx = Expressions.makeRule(atomBx, atomAx);
 	final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
 
-	@Test
-	public void testCloseRepeatedly() throws IOException {
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
-			reasoner.close();
+	@Test(expected = NullPointerException.class)
+	public void testSetAlgorithmNull() {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.setAlgorithm(null);
 		}
+	}
 
-		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
-			reasoner.load();
-			reasoner.close();
-			reasoner.close();
+	@Test(expected = NullPointerException.class)
+	public void setRuleRewriteStrategy1() {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.setRuleRewriteStrategy(null);
 		}
 	}
 

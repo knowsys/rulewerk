@@ -49,7 +49,6 @@ import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 
 public class ReasonerStateTest {
 
@@ -66,25 +65,44 @@ public class ReasonerStateTest {
 	private static final Fact factPc = Expressions.makeFact(p, c);
 	private static final Fact factPd = Expressions.makeFact(p, d);
 
-	@Test(expected = NullPointerException.class)
-	public void testSetAlgorithm() {
-		try (final Reasoner reasoner = Reasoner.getInstance();) {
-			reasoner.setAlgorithm(null);
+	@Test(expected = ReasonerStateException.class)
+	public void testFailAnswerQueryBeforeLoad() {
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.answerQuery(exampleQueryAtom, true);
 		}
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testSetReasoningTimeout() {
-		try (final Reasoner reasoner = Reasoner.getInstance();) {
-			reasoner.setReasoningTimeout(-3);
+	@Test(expected = ReasonerStateException.class)
+	public void testFailExportQueryAnswersBeforeLoad() throws IOException {
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, "", true);
 		}
 	}
+	
+	@Test(expected = ReasonerStateException.class)
+	public void testFailAnswerQueryAfterReset() throws IOException {
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.reason();
+			reasoner.resetReasoner();
+			reasoner.answerQuery(exampleQueryAtom, true);
+		}
+	}
+
+	@Test(expected = ReasonerStateException.class)
+	public void testFailExportQueryAnswersAfterReset() throws IOException {
+		try (final Reasoner reasoner = Reasoner.getInstance()) {
+			reasoner.reason();
+			reasoner.resetReasoner();
+			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, "", true);
+		}
+	}
+
 
 	@Test
 	public void testAddFactsAndQuery() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			
+
 			kb.addStatement(factPc);
 			reasoner.load();
 
@@ -156,20 +174,6 @@ public class ReasonerStateTest {
 	public void testResetBeforeLoad() {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.resetReasoner();
-		}
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void setRuleRewriteStrategy1() {
-		try (final Reasoner reasoner = Reasoner.getInstance();) {
-			reasoner.setRuleRewriteStrategy(null);
-		}
-	}
-
-	@Test
-	public void setRuleRewriteStrategy3() {
-		try (final Reasoner reasoner = Reasoner.getInstance();) {
-			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.NONE);
 		}
 	}
 
@@ -275,13 +279,6 @@ public class ReasonerStateTest {
 	}
 
 	@Test(expected = ReasonerStateException.class)
-	public void testFailAnswerQueryBeforeLoad() {
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.answerQuery(exampleQueryAtom, true);
-		}
-	}
-
-	@Test(expected = ReasonerStateException.class)
 	public void testFailExportQueryAnswerToCsvBeforeLoad() throws IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, FileDataSourceTestUtils.OUTPUT_FOLDER + "output.csv",
@@ -299,13 +296,26 @@ public class ReasonerStateTest {
 		}
 	}
 
-	@Test(expected=ReasonerStateException.class)
+	@Test(expected = ReasonerStateException.class)
 	public void testSuccessiveCloseBeforeLoad() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.close();
 			reasoner.close();
 			reasoner.load();
+		}
+	}
+
+	@Test
+	public void testCloseRepeatedly() throws IOException {
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+			reasoner.close();
+		}
+
+		try (final VLogReasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
+			reasoner.load();
+			reasoner.close();
+			reasoner.close();
 		}
 	}
 

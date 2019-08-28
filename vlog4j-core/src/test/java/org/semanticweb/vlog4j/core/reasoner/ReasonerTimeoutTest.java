@@ -120,6 +120,13 @@ public class ReasonerTimeoutTest {
 	public void setUp() {
 		this.reasoner = new VLogReasoner(kb);
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testSetReasoningTimeout() {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.setReasoningTimeout(-3);
+		}
+	}
 
 	@Test
 	public void skolem() throws IOException {

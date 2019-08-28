@@ -173,9 +173,8 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	public void addStatement(Statement statement) {
 		if (doAddStatement(statement)) {
-
+			notifyListenersOnStatementAdded(statement);
 		}
-		notifyListenersOnStatementAdded(statement);
 	}
 
 	boolean doAddStatement(Statement statement) {
@@ -229,9 +228,9 @@ public class KnowledgeBase implements Iterable<Statement> {
 		}
 	}
 
-	private void notifyListenersOnStatementAdded(final Statement addedStatements) {
+	private void notifyListenersOnStatementAdded(final Statement addedStatement) {
 		for (final KnowledgeBaseListener listener : this.listeners) {
-			listener.onStatementAdded(addedStatements);
+			listener.onStatementAdded(addedStatement);
 		}
 	}
 
