@@ -133,19 +133,7 @@ public class GeneratedAnonymousIndividualsTest {
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 
 			reasoner.reason();
-
-			// FIXME check this test
-			// reasoner.exportQueryAnswersToCsv(this.queryAtom, includeBlanksFilePath,
-			// true);
-			// // expected fact: P(c, _:b)
-			// final List<List<String>> csvContentIncludeBlanks = FileDataSourceTestUtils
-			// .getCSVContent(includeBlanksFilePath);
-			// assertTrue(csvContentIncludeBlanks.size() == 1);
-			// for (final List<String> queryResult : csvContentIncludeBlanks) {
-			// assertTrue(queryResult.size() == 2);
-			// assertEquals(queryResult.get(0), "c");
-			// }
-			// reasoner.exportQueryAnswersToCsv(this.queryAtom, excludeBlanksFilePath,
+			reasoner.exportQueryAnswersToCsv(this.queryAtom, includeBlanksFilePath, true);
 
 			checkTwoDistinctBlanksGenerated(reasoner);
 		}
