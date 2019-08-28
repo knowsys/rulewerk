@@ -122,7 +122,9 @@ public class AddDataSourceTest {
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			
 			kb.addStatement(new DataSourceDeclarationImpl(predicateP, dataSource));
+			
 			reasoner.load();
 
 			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
@@ -130,9 +132,10 @@ public class AddDataSourceTest {
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
+				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, queryResult.getCorrectness());
 			}
-
+			
+			// there is no fact for predicate Q loaded in the reasoner
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
 				assertFalse(queryResult.hasNext());
@@ -150,7 +153,9 @@ public class AddDataSourceTest {
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			
 			kb.addStatement(new DataSourceDeclarationImpl(predicateP, dataSource));
+			
 			reasoner.reason();
 
 			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
@@ -158,9 +163,9 @@ public class AddDataSourceTest {
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
+				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, queryResult.getCorrectness());
 			}
-
+// there is no fact for predicate Q loaded in the reasoner
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
 				assertFalse(queryResult.hasNext());
@@ -213,7 +218,7 @@ public class AddDataSourceTest {
 	}
 
 	@Test
-	public void testAddMultipleDataSourcesForPredicate() throws IOException {
+	public void testAddMultipleDataSourcesForPredicateAfterReasoning() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource1 = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
 		final DataSource dataSource2 = new CsvFileDataSource(
@@ -238,7 +243,7 @@ public class AddDataSourceTest {
 	}
 
 	@Test
-	public void testAddDataSourceAndFactsForPredicate() throws IOException {
+	public void testAddDataSourceAndFactsForPredicateAfterReasoning() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
 		final Fact fact = Expressions.makeFact(Expressions.makePredicate("p", 1),

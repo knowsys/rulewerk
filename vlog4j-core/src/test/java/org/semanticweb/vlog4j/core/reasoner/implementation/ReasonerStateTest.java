@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
@@ -85,6 +84,7 @@ public class ReasonerStateTest {
 	public void testAddFactsAndQuery() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			
 			kb.addStatement(factPc);
 			reasoner.load();
 
@@ -101,7 +101,7 @@ public class ReasonerStateTest {
 			reasoner.getKnowledgeBase().addStatement(factPd);
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(query, true)) {
-				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
+				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, queryResult.getCorrectness());
 				assertEquals(expectedAnswersC, QueryResultsUtils.collectQueryResults(queryResult));
 			}
 
@@ -136,18 +136,6 @@ public class ReasonerStateTest {
 		rules.add(ruleQxPx);
 		rules.add(null);
 		kb.addStatements(rules);
-	}
-
-	// FIXME update test
-	@Ignore
-	@Test
-	public void testAddFacts1() throws IOException {
-
-		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatement(factPc);
-		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
-		}
 	}
 
 	@Test(expected = NullPointerException.class)

@@ -735,19 +735,22 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void onStatementsAdded(List<Statement> statementsAdded) {
 		// TODO more elaborate materialisation state handling
-		// updateReasonerStateToKnowledgeBaseChanged();
-		// updateMaterialisationStateOnStatementsAdded(statementsAddedInvalidateMaterialisation(statementsAdded));
 
 		updateReasonerToKnowledgeBaseChanged();
+		
+		//updateCorrectnessOnStatementsAdded(statementsAdded);
+		updateCorrectness();
 	}
+
 
 	@Override
 	public void onStatementAdded(Statement statementAdded) {
 		// TODO more elaborate materialisation state handling
-		// updateReasonerStateToKnowledgeBaseChanged();
-		// updateMaterialisationStateOnStatementsAdded(statementAddedInvalidatesMaterialisation(statementAdded));
 
 		updateReasonerToKnowledgeBaseChanged();
+		
+		//updateCorrectnessOnStatementAdded(statementAdded);
+		updateCorrectness();
 	}
 
 	private void updateReasonerToKnowledgeBaseChanged() {
@@ -755,33 +758,16 @@ public class VLogReasoner implements Reasoner {
 				|| this.reasonerState.equals(ReasonerState.MATERIALISED)) {
 
 			this.reasonerState = ReasonerState.KB_CHANGED;
-			this.correctness = Correctness.INCORRECT;
 		}
 	}
 
-//	private void updateReasonerStateToKnowledgeBaseChanged() {
-//		if (this.reasonerState.equals(ReasonerState.KB_LOADED)
-//				|| this.reasonerState.equals(ReasonerState.MATERIALISED)) {
-//			this.reasonerState = ReasonerState.KB_CHANGED;
-//		}
-//	}
-
-//	private boolean statementsAddedInvalidateMaterialisation(Set<Statement> statementsAdded) {
-//		// TODO implement and use to decide materialisation state
-//		return true;
-//
-//	}
-//
-//	private boolean statementAddedInvalidatesMaterialisation(Statement statementAdded) {
-//		// TODO implement and use to decide materialisation state
-//		return true;
-//	}
-
-//	private void updateMaterialisationStateOnStatementsAdded(boolean materialisationInvalidated) {
-//		if (this.reasonerState.equals(ReasonerState.KB_CHANGED) && materialisationInvalidated) {
-//			this.materialisationState = Correctness.WRONG;
-//		}
-//	}
+	private void updateCorrectness() {
+		if (this.reasonerState == ReasonerState.KB_CHANGED) {
+			
+			final boolean onlyFacts = this.knowledgeBase.getRules().isEmpty();
+			this.correctness = onlyFacts? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
+		}
+	}
 
 	/**
 	 * Check if reasoner is closed and throw an exception if it is.
