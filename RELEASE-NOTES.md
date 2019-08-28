@@ -3,13 +3,21 @@ VLog4j Release Notes
 
 VLog4j v0.4.0
 -------------
+API changes:
+* This version is no longer backwards compatible due to API changes in Reasoner interface (and VLogReasoner class)
 
 Breaking changes:
 * IRIs loaded from RDF inputs no longer include surrounding < > in their string identifier
+* New KnowledgeBase class separates collecting facts, data sources and rules from Reasoner behavior
+* Successive reasoning is now supported
+* Query answering results have an attached correntess result, based on the current state of the knowledge base and of the materialisation (for example, changes to the knowledge base after reasoning may lead to incomplete or even unsound query answers).
+* Predicates no longer require EDB/IDB separation
+* The same predicate can now be attached to several data sources and facts
 
 New features:
 * New own syntax for rules, facts, and data sources to create knowledge bases from files or strings in Java
 * New and updated example programs to illustrate use of syntax
+* New InMemoryDataSource for fast and memory-efficient in-memory fact loading
 
 Bugfixes:
 * ...
