@@ -25,12 +25,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -49,53 +49,40 @@ public class DoidExample {
 	public static void main(final String[] args) throws IOException {
 		ExamplesUtils.configureLogging();
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		/* Configure rules */
+		KnowledgeBase kb;
+		try {
+			kb = RuleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/doid.rls"));
+		} catch (final ParsingException e) {
+			System.out.println("Failed to parse rules: " + e.getMessage());
+			return;
+		}
+		System.out.println("Rules used in this example:");
+		kb.getRules().forEach(System.out::println);
+		System.out.println("");
+
+		try (Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER + "vlog.log");
 			reasoner.setLogLevel(LogLevel.DEBUG);
 
-			/* Configure rules */
-			RuleParser ruleParser = new RuleParser();
-			try {
-				ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/doid.rls"));
-			} catch (ParsingException e) {
-				System.out.println("Failed to parse rules: " + e.getMessage());
-				return;
-			}
-			for (DataSourceDeclaration dataSourceDeclaration : ruleParser.getDataSourceDeclartions()) {
-				reasoner.addFactsFromDataSource(dataSourceDeclaration.getPredicate(),
-						dataSourceDeclaration.getDataSource());
-			}
-			reasoner.addRules(ruleParser.getRules());
-			System.out.println("Rules used in this example:");
-			reasoner.getRules().forEach(System.out::println);
-			System.out.println("");
+			System.out.println("Note: Materialisation includes SPARQL query answering.");
 
 			/* Initialise reasoner and compute inferences */
-			System.out.print("Initialising rules and data sources ... ");
-			reasoner.load();
-			System.out.println("completed.");
-
-			System.out.print("Reasoning (including SPARQL query answering) ... ");
 			reasoner.reason();
-			System.out.println("completed.");
 
 			/* Execute some queries */
-			List<String> queries = Arrays.asList("humansWhoDiedOfCancer(?X)", "humansWhoDiedOfNoncancer(?X)");
+			final List<String> queries = Arrays.asList("humansWhoDiedOfCancer(?X)", "humansWhoDiedOfNoncancer(?X)");
 			QueryResultIterator answers;
 			System.out.println("\nNumber of inferred tuples for selected query atoms:");
-			for (String queryString : queries) {
+			for (final String queryString : queries) {
 				try {
-					PositiveLiteral query = ruleParser.parsePositiveLiteral(queryString);
+					final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
 					answers = reasoner.answerQuery(query, true);
 					System.out.println("  " + query.toString() + ": " + ExamplesUtils.iteratorSize(answers));
-				} catch (ParsingException e) {
+				} catch (final ParsingException e) {
 					System.out.println("Failed to parse query: " + e.getMessage());
 				}
 			}
-
-			System.out.println("\nDone.");
-		} catch (VLog4jException e) {
-			System.out.println("The reasoner encountered a problem:" + e.getMessage());
 		}
 	}
 

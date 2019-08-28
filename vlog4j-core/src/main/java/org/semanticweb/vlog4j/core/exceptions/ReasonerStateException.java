@@ -31,7 +31,7 @@ import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
  * @author Irina Dragoste
  *
  */
-public class ReasonerStateException extends VLog4jException {
+public class ReasonerStateException extends VLog4jRuntimeException {
 
 	/**
 	 * generated serial version UID

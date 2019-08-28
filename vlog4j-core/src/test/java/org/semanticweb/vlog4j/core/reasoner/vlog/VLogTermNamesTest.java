@@ -34,6 +34,7 @@ import org.junit.Test;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
+import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.Rule;
 import karmaresearch.vlog.Term;
@@ -44,7 +45,7 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 public class VLogTermNamesTest {
 
 	@Test
-	public void testTermCase() throws EDBConfigurationException, NotStartedException {
+	public void testTermCase() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
 		final String[][] argsAMatrix = { { "A" }, { "a" } };
 		final karmaresearch.vlog.Term varX = VLogExpressions.makeVariable("x");
 		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("b", varX);
@@ -70,11 +71,6 @@ public class VLogTermNamesTest {
 		assertFalse(queryResultIteratorBx1.hasNext());
 		queryResultIteratorBx1.close();
 
-		// Querying x(?X) before materialize
-		final TermQueryResultIterator queryResultIteratorXx = vLog.query(new karmaresearch.vlog.Atom("x", varX));
-		assertFalse(queryResultIteratorXx.hasNext());
-		queryResultIteratorBx1.close();
-
 		vLog.materialize(true);
 
 		// Querying b(?X) after materialize
@@ -91,7 +87,7 @@ public class VLogTermNamesTest {
 
 	@Test
 	public void testSupportedConstantNames()
-			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException, NonExistingPredicateException {
 		final String constantNameNumber = "1";
 		final String constantNameStartsWithNumber = "12_13_14";
 		final String[][] argsAMatrix = { { constantNameNumber }, { constantNameStartsWithNumber } };

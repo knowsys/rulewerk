@@ -21,7 +21,6 @@ package org.semanticweb.vlog4j.core.reasoner.vlog;
  */
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +33,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUti
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.Atom;
 import karmaresearch.vlog.EDBConfigurationException;
+import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.Term;
 import karmaresearch.vlog.TermQueryResultIterator;
@@ -51,7 +51,7 @@ public class VLogDataFromCsvFileTest {
 			Arrays.asList(VLogExpressions.makeConstant("c1")), Arrays.asList(VLogExpressions.makeConstant("c2")));
 
 	private static List<List<Term>> getUnaryQueryResults(final VLog vLog, final String predicateName)
-			throws NotStartedException {
+			throws NotStartedException, NonExistingPredicateException {
 		final TermQueryResultIterator queryResultsPIterator = vLog
 				.query(new Atom(predicateName, VLogExpressions.makeVariable("x")));
 		final List<List<Term>> queryResults = new ArrayList<>(
@@ -60,8 +60,8 @@ public class VLogDataFromCsvFileTest {
 	}
 
 	@Test
-	public void testLoadDataFomCsvString()
-			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testLoadDataFomCsvString() throws AlreadyStartedException, EDBConfigurationException, IOException,
+			NotStartedException, NonExistingPredicateException {
 		final String unaryPredicatesEDBConfig = "EDB0_predname=" + unzippedUnaryPredicateName1 + "\n"
 				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
 				+ "EDB0_param1=" + FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB1_predname="
@@ -71,7 +71,8 @@ public class VLogDataFromCsvFileTest {
 				+ "\n" + "EDB2_type=INMEMORY" + "\n" + "EDB2_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
 				+ "EDB2_param1=" + FileDataSourceTestUtils.zippedUnaryCsvFileRoot + "\n" + "EDB3_predname="
 				+ zippedUnaryPredicateName2 + "\n" + "EDB3_type=INMEMORY" + "\n" + "EDB3_param0="
-				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB3_param1=" + FileDataSourceTestUtils.zippedUnaryCsvFileRoot;
+				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB3_param1="
+				+ FileDataSourceTestUtils.zippedUnaryCsvFileRoot;
 
 		final VLog vLog = new VLog();
 		vLog.start(unaryPredicatesEDBConfig, false);
@@ -86,10 +87,30 @@ public class VLogDataFromCsvFileTest {
 		assertEquals(expectedUnaryQueryResult, queryResult2);
 		assertEquals(queryResult2, queryResultZipped2);
 
-		final List<List<Term>> queryResultsEmpty = getUnaryQueryResults(vLog, emptyUnaryPredicateName);
-		assertTrue(queryResultsEmpty.isEmpty());
-
 		vLog.stop();
+	}
+
+	@Test(expected = NonExistingPredicateException.class)
+	public void testLoadDataFomCsvStringNonExistingPredicate() throws AlreadyStartedException,
+			EDBConfigurationException, IOException, NotStartedException, NonExistingPredicateException {
+		final String unaryPredicatesEDBConfig = "EDB0_predname=" + unzippedUnaryPredicateName1 + "\n"
+				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
+				+ "EDB0_param1=" + FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB1_predname="
+				+ unzippedUnaryPredicateName2 + "\n" + "EDB1_type=INMEMORY" + "\n" + "EDB1_param0="
+				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB1_param1="
+				+ FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB2_predname=" + zippedUnaryPredicateName1
+				+ "\n" + "EDB2_type=INMEMORY" + "\n" + "EDB2_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
+				+ "EDB2_param1=" + FileDataSourceTestUtils.zippedUnaryCsvFileRoot + "\n" + "EDB3_predname="
+				+ zippedUnaryPredicateName2 + "\n" + "EDB3_type=INMEMORY" + "\n" + "EDB3_param0="
+				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB3_param1="
+				+ FileDataSourceTestUtils.zippedUnaryCsvFileRoot;
+		final VLog vLog = new VLog();
+		try {
+			vLog.start(unaryPredicatesEDBConfig, false);
+			getUnaryQueryResults(vLog, emptyUnaryPredicateName);
+		} finally {
+			vLog.stop();
+		}
 	}
 
 }

@@ -21,25 +21,36 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * A declaration for an external data source, which assigns a predicate to a
- * source.
+ * A visitor for the various types of {@link Statement}s in the data model.
+ * Should be used to avoid any type casting or {@code instanceof} checks when
+ * processing statements.
  * 
- * @author Markus Kroetzsch
- *
+ * @author Markus Krötzsch
  */
-public interface DataSourceDeclaration extends Statement {
+public interface StatementVisitor<T> {
 
 	/**
-	 * Returns the {@link Predicate} that this source applies to.
+	 * Visits a {@link Fact} and returns a result.
 	 * 
-	 * @return predicate into which data from the given source is loaded
+	 * @param statement the statement to visit
+	 * @return some result
 	 */
-	Predicate getPredicate();
+	T visit(Fact statement);
 
 	/**
-	 * Returns the {@link DataSource} that the data is loaded from.
+	 * Visits a {@link Rule} and returns a result.
 	 * 
-	 * @return data source specification
+	 * @param statement the statement to visit
+	 * @return some result
 	 */
-	DataSource getDataSource();
+	T visit(Rule statement);
+
+	/**
+	 * Visits a {@link DataSourceDeclaration} and returns a result.
+	 * 
+	 * @param statement the statement to visit
+	 * @return some result
+	 */
+	T visit(DataSourceDeclaration statement);
+
 }

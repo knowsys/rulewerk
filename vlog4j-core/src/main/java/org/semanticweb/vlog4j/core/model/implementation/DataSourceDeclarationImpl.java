@@ -24,6 +24,7 @@ import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
 
 /**
  * Basic implementation for {@link DataSourceDeclaration}.
@@ -75,6 +76,11 @@ public class DataSourceDeclarationImpl implements DataSourceDeclaration {
 		final DataSourceDeclaration other = (DataSourceDeclaration) obj;
 
 		return (this.predicate.equals(other.getPredicate())) && this.dataSource.equals(other.getDataSource());
+	}
+	
+	@Override
+	public <T> T accept(StatementVisitor<T> statementVisitor) {
+		return statementVisitor.visit(this);
 	}
 
 	@Override

@@ -33,6 +33,7 @@ import org.junit.Test;
 import karmaresearch.vlog.Atom;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.MaterializationException;
+import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.Rule;
 import karmaresearch.vlog.Term;
@@ -52,7 +53,7 @@ public class StratifiedNegationTest {
 	 * @throws NotStartedException
 	 */
 	@Test
-	public void testSimpleInputNegation() throws EDBConfigurationException, NotStartedException {
+	public void testSimpleInputNegation() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
 		final Term varX = makeVariable("x");
 
 		// P(x), Not(Q(x)) -> R(x) .
@@ -111,7 +112,7 @@ public class StratifiedNegationTest {
 	 * @throws NotStartedException
 	 */
 	@Test
-	public void testStratifiedNegationOnIDB() throws EDBConfigurationException, NotStartedException {
+	public void testStratifiedNegationOnIDB() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
 		final Term varX = VLogExpressions.makeVariable("x");
 
 		final Atom isP = VLogExpressions.makeAtom("P", varX);
@@ -159,7 +160,7 @@ public class StratifiedNegationTest {
 	 * @throws NotStartedException
 	 */
 	@Test(expected = MaterializationException.class)
-	public void testNegationOnIDBUnstratifiable() throws EDBConfigurationException, NotStartedException {
+	public void testNegationOnIDBUnstratifiable() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
 		final Term varX = VLogExpressions.makeVariable("x");
 		final String predP = "P";
 		final String predQ = "Q";

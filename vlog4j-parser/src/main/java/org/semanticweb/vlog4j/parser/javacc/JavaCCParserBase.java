@@ -20,18 +20,14 @@ package org.semanticweb.vlog4j.parser.javacc;
  * #L%
  */
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
-import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 
@@ -52,9 +48,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 public class JavaCCParserBase {
 	final PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
 
-	final List<Rule> rules = new ArrayList<>();
-	final List<PositiveLiteral> facts = new ArrayList<>();
-	final List<DataSourceDeclaration> dataSourceDaclarations = new ArrayList<>();
+	KnowledgeBase knowledgeBase;
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -87,6 +81,10 @@ public class JavaCCParserBase {
 		 */
 		BODY
 	}
+	
+	public JavaCCParserBase() {
+		this.knowledgeBase = new KnowledgeBase();
+	}
 
 	Constant createIntegerLiteral(String lexicalForm) {
 		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_INTEGER + ">");
@@ -102,7 +100,7 @@ public class JavaCCParserBase {
 
 	void addDataSource(String predicateName, int arity, DataSource dataSource) {
 		Predicate predicate = Expressions.makePredicate(predicateName, arity);
-		dataSourceDaclarations.add(new DataSourceDeclarationImpl(predicate, dataSource));
+		knowledgeBase.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
 	}
 
 	static String unescapeStr(String s, int line, int column) throws ParseException {
@@ -217,17 +215,13 @@ public class JavaCCParserBase {
 		this.headExiVars.clear();
 		this.headUniVars.clear();
 	}
-
-	public List<Rule> getRules() {
-		return rules;
+	
+	public void setKnowledgeBase(KnowledgeBase knowledgeBase) {
+		this.knowledgeBase = knowledgeBase;
 	}
 
-	public List<PositiveLiteral> getFacts() {
-		return facts;
-	}
-
-	public List<DataSourceDeclaration> getDataSourceDeclartions() {
-		return dataSourceDaclarations;
+	public KnowledgeBase getKnowledgeBase() {
+		return knowledgeBase;
 	}
 
 }

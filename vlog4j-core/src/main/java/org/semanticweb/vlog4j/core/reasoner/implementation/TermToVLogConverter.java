@@ -40,12 +40,17 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 */
 	@Override
 	public karmaresearch.vlog.Term visit(Constant term) {
-		if (term.getName().startsWith("\"")) { // keep datatype literal strings unchanged
-			return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
-		} else if (term.getName().contains(":")) { // enclose IRIs with < >
-			return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, "<" + term.getName() + ">");
+		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
+				getVLogNameForConstant(term.getName()));
+	}
+
+	public static String getVLogNameForConstant(String vLog4jConstantName) {
+		if (vLog4jConstantName.startsWith("\"")) { // keep datatype literal strings unchanged
+			return vLog4jConstantName;
+		} else if (vLog4jConstantName.contains(":")) { // enclose IRIs with < >
+			return "<" + vLog4jConstantName + ">";
 		} else { // keep relative IRIs unchanged
-			return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
+			return vLog4jConstantName;
 		}
 	}
 
