@@ -31,10 +31,10 @@ import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
 import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
-import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
@@ -74,12 +74,7 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
 /**
  * Reasoner implementation using the VLog backend.
  * 
- * @TODO Due to automatic predicate renaming, it can happen that an EDB
- *       predicate cannot be queried after loading unless reasoning has already
- *       been invoked (since the auxiliary rule that imports the EDB facts to
- *       the "real" predicate must be used). This issue could be weakened by
- *       rewriting queries to (single-source) EDB predicates internally when in
- *       such a state,
+ * 
  * 
  * @author Markus Kroetzsch
  *
@@ -244,7 +239,7 @@ public class VLogReasoner implements Reasoner {
 	final Set<Rule> rules = new HashSet<>();
 
 	private ReasonerState reasonerState = ReasonerState.KB_NOT_LOADED;
-	private MaterialisationState materialisationState = MaterialisationState.INCOMPLETE;
+	private Correctness correctness = Correctness.SOUND_BUT_INCOMPLETE;
 
 	private LogLevel internalLogLevel = LogLevel.WARNING;
 	private Algorithm algorithm = Algorithm.RESTRICTED_CHASE;
@@ -286,7 +281,7 @@ public class VLogReasoner implements Reasoner {
 	public void setReasoningTimeout(Integer seconds) {
 		validateNotClosed();
 		if (seconds != null) {
-			Validate.isTrue(seconds > 0, "Only strictly positive timeout period alowed!", seconds);
+			Validate.isTrue(seconds > 0, "Only strictly positive timeout period allowed!", seconds);
 		}
 		this.timeoutAfterSeconds = seconds;
 	}
@@ -308,8 +303,15 @@ public class VLogReasoner implements Reasoner {
 		return this.ruleRewriteStrategy;
 	}
 
-	@Override
-	public void load() throws IOException {
+	/*
+	 * TODO Due to automatic predicate renaming, it can happen that an EDB predicate
+	 * cannot be queried after loading unless reasoning has already been invoked
+	 * (since the auxiliary rule that imports the EDB facts to the "real" predicate
+	 * must be used). This issue could be weakened by rewriting queries to
+	 * (single-source) EDB predicates internally when in such a state,
+	 */
+	// @Override
+	void load() throws IOException {
 		validateNotClosed();
 
 		switch (this.reasonerState) {
@@ -357,7 +359,7 @@ public class VLogReasoner implements Reasoner {
 		this.reasonerState = ReasonerState.KB_LOADED;
 
 		// if there are no rules, then materialisation state is complete
-		this.materialisationState = rules.isEmpty()? MaterialisationState.COMPLETE: MaterialisationState.INCOMPLETE;
+		this.correctness = rules.isEmpty() ? Correctness.SOUND_AND_COMPLETE : Correctness.SOUND_BUT_INCOMPLETE;
 
 		LOGGER.info("Finished loading knowledge base.");
 	}
@@ -433,11 +435,11 @@ public class VLogReasoner implements Reasoner {
 			this.vLog.addData(vLogPredicateName, inMemoryDataSource.getData());
 			if (LOGGER.isDebugEnabled()) {
 				for (final String[] tuple : inMemoryDataSource.getData()) {
-					LOGGER.debug("Loaded direct fact " + vLogPredicateName + Arrays.toString(tuple));
+					LOGGER.debug("Loaded direct fact {}{}.", vLogPredicateName, Arrays.toString(tuple));
 				}
 			}
 		} catch (final EDBConfigurationException e) {
-			throw new RuntimeException("Invalid data sources configuration.", e);
+			throw new RuntimeException("Invalid data sources configuration!", e);
 		}
 	}
 
@@ -459,12 +461,12 @@ public class VLogReasoner implements Reasoner {
 			final int dataSourcePredicateArity = this.vLog
 					.getPredicateArity(ModelToVLogConverter.toVLogPredicate(predicate));
 			if (dataSourcePredicateArity == -1) {
-				LOGGER.warn("Data source {} for predicate {} is empty: ", dataSource, predicate);
+				LOGGER.warn("Data source {} for predicate {} is empty! ", dataSource, predicate);
 			} else if (predicate.getArity() != dataSourcePredicateArity) {
 				throw new IncompatiblePredicateArityException(predicate, dataSourcePredicateArity, dataSource);
 			}
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RuntimeException("Inconsistent reasoner state!", e);
 		}
 	}
 
@@ -483,11 +485,11 @@ public class VLogReasoner implements Reasoner {
 				this.vLog.addData(vLogPredicateName, vLogPredicateTuples);
 				if (LOGGER.isDebugEnabled()) {
 					for (final String[] tuple : vLogPredicateTuples) {
-						LOGGER.debug("Loaded direct fact " + vLogPredicateName + Arrays.toString(tuple));
+						LOGGER.debug("Loaded direct fact {}{}.", vLogPredicateName, Arrays.toString(tuple));
 					}
 				}
 			} catch (final EDBConfigurationException e) {
-				throw new RuntimeException("Invalid data sources configuration.", e);
+				throw new RuntimeException("Invalid data sources configuration!", e);
 			}
 		}
 	}
@@ -500,11 +502,11 @@ public class VLogReasoner implements Reasoner {
 			this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
 			if (LOGGER.isDebugEnabled()) {
 				for (final karmaresearch.vlog.Rule rule : vLogRuleArray) {
-					LOGGER.debug("Loaded rule " + rule.toString());
+					LOGGER.debug("Loaded rule {}.", rule.toString());
 				}
 			}
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RuntimeException("Inconsistent reasoner state!", e);
 		}
 	}
 
@@ -558,10 +560,10 @@ public class VLogReasoner implements Reasoner {
 		}
 
 		if (this.reasoningCompleted) {
-			this.materialisationState = MaterialisationState.COMPLETE;
+			this.correctness = Correctness.SOUND_AND_COMPLETE;
 			LOGGER.info("Completed materialisation of inferences.");
 		} else {
-			this.materialisationState = MaterialisationState.INCOMPLETE;
+			this.correctness = Correctness.SOUND_BUT_INCOMPLETE;
 			LOGGER.info("Stopped materialisation of inferences (possibly incomplete).");
 		}
 	}
@@ -584,16 +586,16 @@ public class VLogReasoner implements Reasoner {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
 		} catch (final NonExistingPredicateException e1) {
 			LOGGER.warn("Query uses predicate " + query.getPredicate()
-					+ " that does not occur in the knowledge base. Answer must be empty.");
-			return new EmptyQueryResultIterator(MaterialisationState.COMPLETE);
+					+ " that does not occur in the knowledge base. Answer must be empty!");
+			return new EmptyQueryResultIterator(Correctness.SOUND_AND_COMPLETE);
 		}
 
-		logWarningOnMaterialisationState();
-		return new VLogQueryResultIterator(stringQueryResultIterator, this.materialisationState);
+		logWarningOnCorrectness();
+		return new VLogQueryResultIterator(stringQueryResultIterator, this.correctness);
 	}
 
 	@Override
-	public MaterialisationState exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
+	public Correctness exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws IOException {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
@@ -608,20 +610,19 @@ public class VLogReasoner implements Reasoner {
 		try {
 			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath, filterBlanks);
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RuntimeException("Inconsistent reasoner state!", e);
 		} catch (final NonExistingPredicateException e1) {
 			throw new IllegalArgumentException(MessageFormat.format(
 					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
 		}
 
-		logWarningOnMaterialisationState();
-		return this.materialisationState;
+		logWarningOnCorrectness();
+		return this.correctness;
 	}
 
-	private void logWarningOnMaterialisationState() {
-		if (this.materialisationState != MaterialisationState.COMPLETE) {
-			LOGGER.warn("Query answers may be {} with respect to the current Knowledge Base!",
-					this.materialisationState);
+	private void logWarningOnCorrectness() {
+		if (this.correctness != Correctness.SOUND_AND_COMPLETE) {
+			LOGGER.warn("Query answers may be {} with respect to the current Knowledge Base!", this.correctness);
 		}
 	}
 
@@ -635,10 +636,14 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void close() {
-		this.reasonerState = ReasonerState.CLOSED;
-		this.knowledgeBase.deleteListener(this);
-		this.vLog.stop();
-		LOGGER.info("Reasoner closed.");
+		if (this.reasonerState == ReasonerState.CLOSED) {
+			LOGGER.info("Reasoner is already closed.");
+		} else {
+			this.reasonerState = ReasonerState.CLOSED;
+			this.knowledgeBase.deleteListener(this);
+			this.vLog.stop();
+			LOGGER.info("Reasoner closed.");
+		}
 	}
 
 	@Override
@@ -685,7 +690,7 @@ public class VLogReasoner implements Reasoner {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
-					"checking rules acyclicity is not allowed before loading!");
+					"Checking rules acyclicity is not allowed before loading!");
 		}
 
 		CyclicCheckResult checkCyclic;
@@ -701,7 +706,7 @@ public class VLogReasoner implements Reasoner {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
-					"checking rules acyclicity is not allowed before loading!");
+					"Checking rules acyclicity is not allowed before loading!");
 		}
 
 		CyclicCheckResult checkCyclic;
@@ -728,7 +733,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void onStatementsAdded(Set<Statement> statementsAdded) {
+	public void onStatementsAdded(List<Statement> statementsAdded) {
 		// TODO more elaborate materialisation state handling
 		// updateReasonerStateToKnowledgeBaseChanged();
 		// updateMaterialisationStateOnStatementsAdded(statementsAddedInvalidateMaterialisation(statementsAdded));
@@ -750,7 +755,7 @@ public class VLogReasoner implements Reasoner {
 				|| this.reasonerState.equals(ReasonerState.MATERIALISED)) {
 
 			this.reasonerState = ReasonerState.KB_CHANGED;
-			this.materialisationState = MaterialisationState.WRONG;
+			this.correctness = Correctness.INCORRECT;
 		}
 	}
 
@@ -774,7 +779,7 @@ public class VLogReasoner implements Reasoner {
 
 //	private void updateMaterialisationStateOnStatementsAdded(boolean materialisationInvalidated) {
 //		if (this.reasonerState.equals(ReasonerState.KB_CHANGED) && materialisationInvalidated) {
-//			this.materialisationState = MaterialisationState.WRONG;
+//			this.materialisationState = Correctness.WRONG;
 //		}
 //	}
 
@@ -785,8 +790,8 @@ public class VLogReasoner implements Reasoner {
 	 */
 	void validateNotClosed() throws ReasonerStateException {
 		if (this.reasonerState == ReasonerState.CLOSED) {
-			LOGGER.error("Invalid operation requested on a closed reasoner object.");
-			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner.");
+			LOGGER.error("Invalid operation requested on a closed reasoner object!");
+			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner!");
 		}
 	}
 

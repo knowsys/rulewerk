@@ -45,15 +45,15 @@ import org.semanticweb.vlog4j.parser.RuleParser;
  */
 public class InMemoryGraphAnalysisExample {
 
-	public static void main(String[] args) throws ParsingException, IOException {
+	public static void main(final String[] args) throws ParsingException, IOException {
 		ExamplesUtils.configureLogging();
 
 		/* 1. Create a simple random graph */
 		System.out.println("Generating random graph ...");
-		int vertexCount = 10000;
-		double density = 0.03;
+		final int vertexCount = 10000;
+		final double density = 0.03;
 		// initialise data source for storing edges (estimate how many we'll need)
-		InMemoryDataSource edges = new InMemoryDataSource(2, (int) (vertexCount * vertexCount * density) + 1000);
+		final InMemoryDataSource edges = new InMemoryDataSource(2, (int) (vertexCount * vertexCount * density) + 1000);
 		int edgeCount = 0;
 		for (int i = 1; i <= vertexCount; i++) {
 			for (int j = 1; j <= vertexCount; j++) {
@@ -64,7 +64,7 @@ public class InMemoryGraphAnalysisExample {
 			}
 		}
 		// also make a unary data source to mark vertices:
-		InMemoryDataSource vertices = new InMemoryDataSource(1, vertexCount);
+		final InMemoryDataSource vertices = new InMemoryDataSource(1, vertexCount);
 		for (int i = 1; i <= vertexCount; i++) {
 			vertices.addTuple("v" + i);
 		}
@@ -85,13 +85,12 @@ public class InMemoryGraphAnalysisExample {
 
 		/* 3. Use reasoner to compute some query results */
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
 			reasoner.reason();
 
 			System.out.println("Number of vertices not reachable from vertex 1 by a bi-directional path: "
 					+ ExamplesUtils.getQueryAnswerCount("unreachable(?X)", reasoner));
 			System.out.println("Number of bi-directional triangles: "
-					+ ExamplesUtils.getQueryAnswerCount("triangle(?X,?Y,?Z)", reasoner) / 6);
+					+ (ExamplesUtils.getQueryAnswerCount("triangle(?X,?Y,?Z)", reasoner) / 6));
 		}
 	}
 

@@ -2,9 +2,9 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.TermType;
@@ -40,25 +40,19 @@ import karmaresearch.vlog.Atom;
  * reasoning. <br>
  * <b>Facts</b> can be added to the knowledge base:
  * <ul>
- * <li>as in-memory Java objects ({@link #addFacts(Atom...)}</li>
- * <li>from a persistent data source
- * ({@link #addFactsFromDataSource(Predicate, DataSource)})</li>
+ * <li>as in-memory Java objects ({@link Fact})</li>
+ * <li>from a persistent data source ({@link DataSourceDeclaration})</li>
  * </ul>
- * Note that facts with the same predicate cannot come from multiple sources
- * (where a source can be a collection of in-memory {@link Atom} objects, or a
- * {@link DataSource} .<br>
- * <b>Rules</b> added to the knowledge base ({@link #addRules(Rule...)}) can be
- * re-written internally by VLog, using the corresponding set
- * {@link RuleRewriteStrategy}. <br>
  * <br>
- * Once adding facts and rules to the knowledge base has been completed, the
- * <b>knowledge base</b> can be <b>loaded</b> into the reasoner.
+ * <b>Rules</b> added to the knowledge base can be re-written internally by
+ * VLog, using the corresponding set {@link RuleRewriteStrategy}. <br>
+ * <br>
  *
- * The loaded reasoner can perform <b>atomic queries</b> on explicit facts
- * before reasoning, and all implicit and explicit facts after calling
- * {@link Reasoner#reason()}. Queries can provide an iterator for the results
- * ({@link #answerQuery(Atom, boolean)}, or the results can be exported to a
- * file ({@link #exportQueryAnswersToCsv(Atom, String, boolean)}). <br>
+ * The loaded reasoner can perform <b>atomic queries</b> on explicit and
+ * implicit facts after calling {@link Reasoner#reason()}. Queries can provide
+ * an iterator for the results ({@link #answerQuery(Atom, boolean)}, or the
+ * results can be exported to a file
+ * ({@link #exportQueryAnswersToCsv(Atom, String, boolean)}). <br>
  * <br>
  * <b>Reasoning</b> with various {@link Algorithm}s is supported, that can lead
  * to different sets of inferred facts and different termination behavior. In
@@ -67,14 +61,6 @@ import karmaresearch.vlog.Atom;
  * recommend reasoning with algorithm {@link Algorithm#RESTRICTED_CHASE}, as it
  * leads to termination in more cases. To avoid non-termination, a reasoning
  * timeout can be set ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
- * <b>Incremental reasoning</b> is not supported. To add more facts and rule to
- * the <b>knowledge base</b> and reason again, the reasoner needs to be
- * <b>reset</b> ({@link #resetReasoner()}) to the state of its knowledge base
- * before loading. Then, more information can be added to the knowledge base,
- * the reasoner can be loaded again, and querying and reasoning can be
- * performed.
- * 
- * @FIXME Update the outdated JavaDoc
  *
  * @author Irina Dragoste
  *
@@ -189,16 +175,6 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	void setLogFile(String filePath);
 
 	/**
-	 * Loads the <b>knowledge base</b>, consisting of the current rules and facts,
-	 * into the reasoner (if it has not been loaded yet). After loading, the
-	 * reasoner is ready for reasoning and querying.
-	 *
-	 * @throws IOException if an I/O error occurs related to the resources in the
-	 *                     <b>knowledge base</b> to be loaded.
-	 */
-	void load() throws IOException;
-
-	/**
 	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic,
 	 * Cyclic, or cyclicity cannot be determined.
 	 * 
@@ -208,11 +184,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Check the <b>Joint Acyclicity (JA)</b> property of loaded rules and EDB
-	 * predicates of loaded facts. If a set of rules and EDB predicates is JA, then,
-	 * for the given set of rules and any facts over the given EDB predicates,
-	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and, implicitly,
-	 * the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will always
-	 * terminate
+	 * predicates of loaded facts. If a set of rules and EDB predicates is
+	 * <b>J</b>A, then, for the given set of rules and any facts over the given EDB
+	 * predicates, reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and,
+	 * implicitly, the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will
+	 * always terminate.
 	 * 
 	 * @return {@code true}, if the loaded set of rules is Joint Acyclic with
 	 *         respect to the EDB predicates of loaded facts.<br>
@@ -223,7 +199,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Check the <b>Restricted Joint Acyclicity (RJA)</b> property of loaded rules
 	 * and EDB predicates of loaded facts. If a set of rules and EDB predicates is
-	 * RJA, then, for the given set of rules and any facts over the given EDB
+	 * <b>RJA</b>, then, for the given set of rules and any facts over the given EDB
 	 * predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE Restricted chase}
 	 * will always terminate
 	 * 
@@ -235,11 +211,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Check the <b>Model-Faithful Acyclicity (MFA)</b> property of loaded rules and
-	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is MFA,
-	 * then, for the given set of rules and any facts over the given EDB predicates,
-	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and, implicitly,
-	 * the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will always
-	 * terminate
+	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is
+	 * <b>MFA</b>, then, for the given set of rules and any facts over the given EDB
+	 * predicates, reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and,
+	 * implicitly, the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will
+	 * always terminate
 	 * 
 	 * @return {@code true}, if the loaded set of rules is Model-Faithful Acyclic
 	 *         with respect to the EDB predicates of loaded facts.<br>
@@ -250,8 +226,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Check the <b>Restricted Model-Faithful Acyclicity (RMFA)</b> property of
 	 * loaded rules and EDB predicates of loaded facts. If a set of rules and EDB
-	 * predicates is RMFA, then, for the given set of rules and any facts over the
-	 * given EDB predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE
+	 * predicates is <b>RMFA</b>, then, for the given set of rules and any facts
+	 * over the given EDB predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE
 	 * Restricted chase} will always terminate. If a set of rules and EDB predicates
 	 * is MFA, then it is also JA.
 	 * 
@@ -263,12 +239,12 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Check the <b>Model-Faithful Cyclicity (MFC)</b> property of loaded rules and
-	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is MFC,
-	 * then there exists a set of facts over the given EDB predicates for which
-	 * reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} algorithm is
-	 * guaranteed not to terminate for the loaded rules. If a set of rules and EDB
-	 * predicates is RMFA, then it is also RJA. Therefore, if a set or rules and EDB
-	 * predicates is MFC, it is not MFA, nor JA.
+	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is
+	 * <b>MFC</b>, then there exists a set of facts over the given EDB predicates
+	 * for which reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} algorithm
+	 * is guaranteed not to terminate for the loaded rules. If a set of rules and
+	 * EDB predicates is RMFA, then it is also RJA. Therefore, if a set or rules and
+	 * EDB predicates is MFC, it is not MFA, nor JA.
 	 * 
 	 * @return {@code true}, if the loaded set of rules is Model-Faithful Cyclic
 	 *         with respect to the EDB predicates of loaded facts.<br>
@@ -277,9 +253,10 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	boolean isMFC();
 
 	/**
-	 * Performs reasoning on the loaded <b>knowledge base</b>, depending on the set
-	 * {@link Algorithm}. Reasoning implies extending the set of explicit facts in
-	 * the knowledge base with implicit facts inferred by knowledge base rules. <br>
+	 * Performs materialisation on the reasoner {@link KnowledgeBase}, depending on
+	 * the set {@link Algorithm}. Materialisation implies extending the set of
+	 * explicit facts in the knowledge base with implicit facts inferred by
+	 * knowledge base rules. <br>
 	 * <br>
 	 * In some cases, reasoning with rules with existentially quantified variables
 	 * {@link Rule#getExistentiallyQuantifiedVariables()} may not terminate. We
@@ -287,44 +264,27 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * leads to termination in more cases. <br>
 	 * To avoid non-termination, a reasoning timeout can be set
 	 * ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
-	 * <br>
-	 * <b>Incremental reasoning</b> is not supported. To add more facts and rule to
-	 * the <b>knowledge base</b> and reason again, the reasoner needs to be
-	 * <b>reset</b> ({@link #resetReasoner()}) to the state of its knowledge base
-	 * before loading. Then, more information can be added to the knowledge base,
-	 * the reasoner can be loaded again, and querying and reasoning can be
-	 * performed.
-	 *
+	 * 
 	 * @return
 	 *         <ul>
-	 *         <li>the value returned by the previous {@link Reasoner#reason()}
-	 *         call, if successive reasoning is attempted before a
-	 *         {@link Reasoner#resetReasoner()}.</li>
-	 *         <li>{@code true}, if reasoning reached completion.</li>
-	 *         <li>{@code false}, if reasoning has been interrupted before
+	 *         <li>{@code true}, if materialisation reached completion.</li>
+	 *         <li>{@code false}, if materialisation has been interrupted before
 	 *         completion.</li>
 	 *         </ul>
 	 * @throws IOException if I/O exceptions occur during reasoning.
 	 */
 	boolean reason() throws IOException;
 
+	// FIXME update old javadoc
 	// TODO add examples to query javadoc
 	/**
-	 * Evaluates an atomic query ({@code queryAtom}) on the current state of the
-	 * reasoner knowledge base:
-	 * <ul>
-	 * <li>If the reasoner is <b>loaded</b> (see {@link #load()}), but has not
-	 * reasoned yet, the query will be evaluated on the explicit set of facts.</li>
-	 * <li>Otherwise, if this method is called after <b>reasoning</b> (see
-	 * {@link #reason()}, the query will be evaluated on the explicit and implicit
-	 * facts inferred trough reasoning.</li>
-	 * </ul>
-	 * <br>
-	 * An answer to the query is the terms a fact that matches the {@code quryAtom}:
-	 * the fact predicate is the same as the {@code quryAtom} predicate, the
-	 * {@link TermType#CONSTANT} terms of the {@code quryAtom} appear in the answer
+	 * Evaluates an atomic query ({@code query}) on the implicit facts loaded into
+	 * the reasoner and the explicit facts materialised by the reasoner. <br>
+	 * An answer to the query is the terms a fact that matches the {@code query}:
+	 * the fact predicate is the same as the {@code query} predicate, the
+	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
 	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
-	 * the {@code quryAtom} are matched by terms in the fact, either named
+	 * the {@code query} are matched by terms in the fact, either named
 	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#BLANK}). The same
 	 * variable name identifies the same term in the answer fact. <br>
 	 * A query answer is represented by a {@link QueryResult}. A query can have
@@ -333,72 +293,60 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *
 	 * @param query         a {@link PositiveLiteral} representing the query to be
 	 *                      answered.
-	 * @param includeBlanks if {@code true}, facts containing terms of type
-	 *                      {@link TermType#BLANK} (representing anonymous
+	 * @param includeBlanks if {@code true}, {@link QueryResult}s containing terms
+	 *                      of type {@link TermType#BLANK} (representing anonymous
 	 *                      individuals introduced to satisfy rule existentially
-	 *                      quantified variables) will be included into the query
-	 *                      results. Otherwise, the query results will only contain
-	 *                      the facts with terms of type {@link TermType#CONSTANT}
-	 *                      (representing named individuals).
+	 *                      quantified variables) will be included. Otherwise, the
+	 *                      answers will only contain the {@link QueryResult}s with
+	 *                      terms of type {@link TermType#CONSTANT} (representing
+	 *                      named individuals).
 	 * @return QueryResultIterator that represents distinct answers to the query.
 	 */
 	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks);
 
+	// FIXME update javadoc with return type
 	// TODO add examples to query javadoc
 	/**
-	 * Evaluates an atomic query ({@code queryAtom}) on the current state of the
-	 * reasoner knowledge base, and writes its results the <i><b>.csv</b></i> file
-	 * at given path {@code csvFilePath}:
-	 * <ul>
-	 * <li>If the reasoner is <b>loaded</b> (see {@link #load()}), but has not
-	 * reasoned yet, the query will be evaluated on the explicit set of facts.</li>
-	 * <li>Otherwise, if this method is called after <b>reasoning</b> (see
-	 * {@link #reason()}, the query will be evaluated on the explicit and implicit
-	 * facts inferred trough reasoning.</li>
-	 * </ul>
+	 * Evaluates an atomic query ({@code query}) on the implicit facts loaded into
+	 * the reasoner and the explicit facts materialised by the reasoner, and writes
+	 * its answers the <i><b>.csv</b></i> file at given path {@code csvFilePath}:
 	 * <br>
-	 * An answer to the query is the terms a fact that matches the {@code quryAtom}:
-	 * the fact predicate is the same as the {@code quryAtom} predicate, the
-	 * {@link TermType#CONSTANT} terms of the {@code quryAtom} appear in the answer
+	 * An answer to the query is the terms a fact that matches the {@code query}:
+	 * the fact predicate is the same as the {@code query} predicate, the
+	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
 	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
-	 * the {@code quryAtom} are matched by terms in the fact, either named
+	 * the {@code query} are matched by terms in the fact, either named
 	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#BLANK}). The same
 	 * variable name identifies the same term in the answer fact. <br>
-	 * A query answer is represented by a {@link QueryResult}. A query can have
-	 * multiple, distinct query answers.
+	 * A query can have multiple, distinct query answers. Each answers is written on
+	 * a separate line in the given file.
 	 *
 	 * @param query         a {@link PositiveLiteral} representing the query to be
 	 *                      answered.
 	 * @param csvFilePath   path to a <i><b>.csv</b></i> file where the query
 	 *                      answers will be written. Each line of the
-	 *                      <i><b>.csv</b></i> file represents a query answer fact,
-	 *                      and it will contain the fact term names as columns.
-	 * @param includeBlanks if {@code true}, facts containing terms of type
+	 *                      <i><b>.csv</b></i> file represents a query answer, and
+	 *                      it will contain the fact term names as columns.
+	 * @param includeBlanks if {@code true}, answers containing terms of type
 	 *                      {@link TermType#BLANK} (representing anonymous
 	 *                      individuals introduced to satisfy rule existentially
-	 *                      quantified variables) will be included into the query
-	 *                      answers. Otherwise, the query answers will only contain
-	 *                      the facts with terms of type {@link TermType#CONSTANT}
-	 *                      (representing named individuals).
+	 *                      quantified variables) will be included. Otherwise, the
+	 *                      answers will only contain those with terms of type
+	 *                      {@link TermType#CONSTANT} (representing named
+	 *                      individuals).
 	 *
 	 * @throws IOException if an I/O error occurs regarding given file
 	 *                     ({@code csvFilePath)}.
 	 */
-	// TODO update javadoc with return type
-	MaterialisationState exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeBlanks)
+	Correctness exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeBlanks)
 			throws IOException;
 
 	/**
-	 * Resets the reasoner to a pre-loading state (before the call of
-	 * {@link #load()} method). All facts inferred by reasoning are discarded. Rules
-	 * and facts added to the reasoner need to be loaded again, to be able to
-	 * perform querying and reasoning.
+	 * Resets the reasoner. All implicit facts inferred by reasoning are discarded.
 	 */
 	void resetReasoner();
 
 	// TODO Map<Predicate,DataSource> exportDBToDir(File location);
-
-	// TODO not allow any operation after closing, except close();
 
 	@Override
 	void close();

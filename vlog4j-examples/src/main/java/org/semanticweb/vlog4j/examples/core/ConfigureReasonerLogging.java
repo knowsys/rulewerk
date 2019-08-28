@@ -103,7 +103,6 @@ public class ConfigureReasonerLogging {
 			 * Default reasoner log level is WARNING.
 			 */
 			reasoner.setLogFile(reasonerWarningLogFilePath);
-			reasoner.load();
 			reasoner.reason();
 
 			/*
@@ -123,7 +122,6 @@ public class ConfigureReasonerLogging {
 			 */
 			reasoner.setLogFile(reasonerInfoLogFilePath);
 
-			reasoner.load();
 			reasoner.reason();
 
 			reasoner.resetReasoner();
@@ -138,7 +136,6 @@ public class ConfigureReasonerLogging {
 			 * redirected to System output by default.
 			 */
 			reasoner.setLogFile(reasonerDebugLogFilePath);
-			reasoner.load();
 			reasoner.reason();
 		}
 

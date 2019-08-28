@@ -122,17 +122,35 @@ public class AddDataFromGraal {
 		 * the reasoner automatically.
 		 */
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatements(GraalToVLog4JModelConverter.convertRules(graalRules));
-		kb.addStatements(convertedGraalConjunctiveQuery.getRule());
-		kb.addStatements(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
 
 		try (Reasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
+
+			/*
+			 * Add facts to the reasoner knowledge base
+			 */
+			kb.addStatements(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
+			/*
+			 * Load the knowledge base into the reasoner
+			 */
+			reasoner.reason();
+
+			/*
+			 * Query the loaded facts
+			 */
 			System.out.println("Before materialisation:");
 			ExamplesUtils.printOutQueryAnswers(convertedGraalConjunctiveQuery.getQuery(), reasoner);
 
-			/* The reasoner will use the Restricted Chase by default. */
+			/*
+			 * Add rules to the reasoner knowledge base
+			 */
+			kb.addStatements(GraalToVLog4JModelConverter.convertRules(graalRules));
+			kb.addStatements(convertedGraalConjunctiveQuery.getRule());
+
+			/*
+			 * Materialise facts using rules
+			 */
 			reasoner.reason();
+
 			System.out.println("After materialisation:");
 			ExamplesUtils.printOutQueryAnswers(convertedGraalConjunctiveQuery.getQuery(), reasoner);
 

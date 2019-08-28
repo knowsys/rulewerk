@@ -21,7 +21,7 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * A statement is any element that a knowledge base can sonsist of, such as a
+ * A statement is any element that a knowledge base can consist of, such as a
  * {@link Rule}, {@link Fact}, or {@link DataSourceDeclaration}.
  * 
  * @author Markus Kroetzsch

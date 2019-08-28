@@ -59,17 +59,17 @@ public class CompareWikidataDBpedia {
 	static String sparqlGetWikiIriDBpedia = "?result <http://xmlns.com/foaf/0.1/isPrimaryTopicOf> ?enwikipageHttp . "
 			+ "BIND( IRI(CONCAT(\"https\",SUBSTR(str(?enwikipageHttp), 5))) AS ?enwikipage)";
 
-	public static void main(String[] args) throws ParsingException, IOException {
+	public static void main(final String[] args) throws ParsingException, IOException {
 		ExamplesUtils.configureLogging();
 
 		// Wikidata pattern: P69 is "educated at"; Q154804 is "University of Leipzig"
-		String wikidataSparql = "?result wdt:P69 wd:Q154804 . " + sparqlGetWikiIriWikidata;
+		final String wikidataSparql = "?result wdt:P69 wd:Q154804 . " + sparqlGetWikiIriWikidata;
 		// DBpedia pattern:
-		String dbpediaSparql = "?result <http://dbpedia.org/ontology/almaMater> <http://dbpedia.org/resource/Leipzig_University> . "
+		final String dbpediaSparql = "?result <http://dbpedia.org/ontology/almaMater> <http://dbpedia.org/resource/Leipzig_University> . "
 				+ sparqlGetWikiIriDBpedia;
 
 		// Configure the SPARQL data sources and some rules to analyse results:
-		String rules = "" //
+		final String rules = "" //
 				+ "@prefix wdqs: <https://query.wikidata.org/> ." //
 				+ "@prefix dbp: <https://dbpedia.org/> ." //
 				+ "@source dbpResult(2) : sparql(dbp:sparql, \"result,enwikipage\", '''" + dbpediaSparql + "''') ." //
@@ -86,19 +86,18 @@ public class CompareWikidataDBpedia {
 		final KnowledgeBase kb = RuleParser.parse(rules);
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
 			reasoner.reason();
 
-			int resultCount = ExamplesUtils.getQueryAnswerCount("result(?X)", reasoner);
-			int wdCount = ExamplesUtils.getQueryAnswerCount("inWd(?X)", reasoner);
-			int dbpCount = ExamplesUtils.getQueryAnswerCount("inDbp(?X)", reasoner);
+			final int resultCount = ExamplesUtils.getQueryAnswerCount("result(?X)", reasoner);
+			final int wdCount = ExamplesUtils.getQueryAnswerCount("inWd(?X)", reasoner);
+			final int dbpCount = ExamplesUtils.getQueryAnswerCount("inDbp(?X)", reasoner);
 
 			System.out.println("Found " + resultCount + " matching entities overall, of which " + wdCount
 					+ " were in Wikidata and " + dbpCount + " were in DBPedia");
 
 			System.out.println("We focus on results found in DBpedia only (usually the smaller set).");
 			ExamplesUtils.printOutQueryAnswers("dbpOnly(?X)", reasoner);
-			
+
 			System.out.println("Note: some of these results might still be in Wikidata, due to:\n"
 					+ "* recent Wikipedia article renamings that are not updated in DBpedia\n"
 					+ "* failure to match Wikipedia URLs due to small differences in character encoding\n");

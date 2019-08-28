@@ -1,6 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /*-
  * #%L
@@ -25,12 +26,12 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.Fact;
@@ -38,12 +39,21 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 
 public class AddDataSourceTest {
 
-	private static final String CSV_FILE_PATH = FileDataSourceTestUtils.INPUT_FOLDER + "unaryFacts.csv";
+	private static final String CSV_FILE_c1_c2_PATH = FileDataSourceTestUtils.INPUT_FOLDER + "unaryFacts.csv";
+
+	private static final String CSV_FILE_c_d_PATH = FileDataSourceTestUtils.INPUT_FOLDER + "unaryFactsCD.csv";
+
+	private final Set<List<Term>> csvFile_c1_c2_Content = new HashSet<>(Arrays
+			.asList(Arrays.asList(Expressions.makeConstant("c1")), Arrays.asList(Expressions.makeConstant("c2"))));
+
+	private final Set<List<Term>> csvFile_c_d_Content = new HashSet<>(
+			Arrays.asList(Arrays.asList(Expressions.makeConstant("c")), Arrays.asList(Expressions.makeConstant("d"))));;
 
 	@Test
 	public void testAddDataSourceExistentDataForDifferentPredicates() throws IOException {
@@ -52,7 +62,7 @@ public class AddDataSourceTest {
 		final Fact factPredicatePArity2 = Expressions.makeFact("p", Arrays.asList(constantA, constantA));
 		final Fact factPredicateQArity1 = Expressions.makeFact("q", Arrays.asList(constantA));
 		final Predicate predicateLArity1 = Expressions.makePredicate("l", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
+		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(factPredicatePArity2);
@@ -63,14 +73,16 @@ public class AddDataSourceTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.reason();
-			final QueryResultIterator queryResultIteratorL1 = reasoner.answerQuery(
-					Expressions.makePositiveLiteral(predicateLArity1, Expressions.makeVariable("x")), false);
-			final Set<List<Term>> queryResultsL1 = QueryResultsUtils.collectQueryResults(queryResultIteratorL1);
-
-			final QueryResultIterator queryResultIteratorP1 = reasoner.answerQuery(
-					Expressions.makePositiveLiteral(predicateParity1, Expressions.makeVariable("x")), false);
-			final Set<List<Term>> queryResultsP1 = QueryResultsUtils.collectQueryResults(queryResultIteratorP1);
-			assertEquals(queryResultsL1, queryResultsP1);
+			try (final QueryResultIterator queryResult = reasoner.answerQuery(
+					Expressions.makePositiveLiteral(predicateLArity1, Expressions.makeVariable("x")), false)) {
+				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
+			}
+			try (final QueryResultIterator queryResult = reasoner.answerQuery(
+					Expressions.makePositiveLiteral(predicateParity1, Expressions.makeVariable("x")), false)) {
+				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
+			}
 
 		}
 	}
@@ -79,7 +91,7 @@ public class AddDataSourceTest {
 	public void testAddDataSourceBeforeLoading() throws IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
+		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -87,70 +99,166 @@ public class AddDataSourceTest {
 			kb.addStatement(new DataSourceDeclarationImpl(predicateP, dataSource));
 			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
 			reasoner.load();
+			try (final QueryResultIterator queryResult = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
+				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
+			}
+			try (final QueryResultIterator queryResult = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
+				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
+			}
+
 		}
 	}
 
-	// TODO rewrite test
-	@Ignore
-	@Test(expected = ReasonerStateException.class)
+	@Test
 	public void testAddDataSourceAfterLoading() throws IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
+		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			kb.addStatement(new DataSourceDeclarationImpl(predicateP, dataSource));
 			reasoner.load();
+
 			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
+
+			try (final QueryResultIterator queryResult = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
+				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
+			}
+
+			try (final QueryResultIterator queryResult = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
+				assertFalse(queryResult.hasNext());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
+			}
 		}
 	}
 
-	// TODO rewrite test
-	@Ignore
-	@Test(expected = ReasonerStateException.class)
+	@Test
 	public void testAddDataSourceAfterReasoning() throws IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
+		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			kb.addStatement(new DataSourceDeclarationImpl(predicateP, dataSource));
-			reasoner.load();
 			reasoner.reason();
+
 			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
+
+			try (final QueryResultIterator queryResult = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
+				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
+			}
+
+			try (final QueryResultIterator queryResult = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
+				assertFalse(queryResult.hasNext());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
+			}
 		}
 	}
 
 	// FIXME decide how to handle datasources with multiple predicates
 	@Ignore
-	// TODO move to a test class for KnowledgeBase
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAddDataSourceNoMultipleDataSourcesForPredicate() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
+		final DataSource dataSource1 = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
+		final DataSource dataSource2 = new CsvFileDataSource(new File(CSV_FILE_c_d_PATH));
 
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
-		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
+		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource1));
+		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource2));
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			try (QueryResultIterator queryResult = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeVariable("x")), true)) {
+				System.out.println(QueryResultsUtils.collectQueryResults(queryResult));
+			}
+		}
 	}
 
 	// FIXME decide how to handle datasources with multiple predicates
 	@Ignore
-	// TODO move to a test class for KnowledgeBase
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAddDataSourceNoFactsForPredicate() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_PATH));
+		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
 		final Fact fact = Expressions.makeFact(Expressions.makePredicate("p", 1),
 				Arrays.asList(Expressions.makeConstant("a")));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(fact);
 		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			try (QueryResultIterator queryResult = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeVariable("x")), true)) {
+				QueryResultsUtils.collectQueryResults(queryResult);
+			}
+		}
+	}
+
+	@Test
+	public void testAddMultipleDataSourcesForPredicate() throws IOException {
+		final Predicate predicate = Expressions.makePredicate("p", 1);
+		final DataSource dataSource1 = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
+		final DataSource dataSource2 = new CsvFileDataSource(
+				new File(FileDataSourceTestUtils.INPUT_FOLDER + "unaryFactsCD.csv"));
+
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource1));
+		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource2));
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			try (QueryResultIterator queryResult = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeVariable("x")), true)) {
+				final Set<List<Term>> expectedAnswers = new HashSet<>(csvFile_c1_c2_Content);
+				expectedAnswers.addAll(csvFile_c_d_Content);
+
+				assertEquals(expectedAnswers, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
+
+			}
+		}
+	}
+
+	@Test
+	public void testAddDataSourceAndFactsForPredicate() throws IOException {
+		final Predicate predicate = Expressions.makePredicate("p", 1);
+		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
+		final Fact fact = Expressions.makeFact(Expressions.makePredicate("p", 1),
+				Arrays.asList(Expressions.makeConstant("a")));
+
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(fact);
+		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			try (QueryResultIterator queryResult = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeVariable("x")), true)) {
+				final Set<List<Term>> expectedAnswers = new HashSet<>(csvFile_c1_c2_Content);
+				expectedAnswers.add(Arrays.asList(Expressions.makeConstant("a")));
+
+				assertEquals(expectedAnswers, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
+			}
+		}
 	}
 
 }

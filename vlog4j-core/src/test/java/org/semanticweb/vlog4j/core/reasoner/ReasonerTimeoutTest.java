@@ -126,8 +126,6 @@ public class ReasonerTimeoutTest {
 		this.reasoner.setReasoningTimeout(timeout);
 		this.reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 
-		this.reasoner.load();
-
 		assertFalse(this.reasoner.reason());
 	}
 
@@ -136,16 +134,12 @@ public class ReasonerTimeoutTest {
 		this.reasoner.setReasoningTimeout(timeout);
 		this.reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 
-		this.reasoner.load();
-
 		assertFalse(this.reasoner.reason());
 	}
 
 	@Test
 	public void skolemAfterLoad() throws IOException {
 		this.reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
-
-		this.reasoner.load();
 
 		this.reasoner.setReasoningTimeout(timeout);
 
@@ -155,8 +149,6 @@ public class ReasonerTimeoutTest {
 	@Test
 	public void restrictedAfterLoad() throws IOException {
 		this.reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
-
-		this.reasoner.load();
 
 		this.reasoner.setReasoningTimeout(timeout);
 
@@ -168,7 +160,6 @@ public class ReasonerTimeoutTest {
 		this.reasoner.setReasoningTimeout(timeout);
 
 		this.reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
-		this.reasoner.load();
 		assertFalse(this.reasoner.reason());
 
 		this.reasoner.resetReasoner();
@@ -179,7 +170,6 @@ public class ReasonerTimeoutTest {
 		
 		
 		this.reasoner.setReasoningTimeout(null);
-		this.reasoner.load();
 		assertTrue(this.reasoner.reason());
 	}
 

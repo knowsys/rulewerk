@@ -21,7 +21,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  */
 
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
-import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 
 import karmaresearch.vlog.Term;
@@ -38,13 +38,12 @@ public class VLogQueryResultIterator implements QueryResultIterator {
 
 	private final TermQueryResultIterator vLogTermQueryResultIterator;
 
-	private final MaterialisationState materialisationState;
+	private final Correctness correctness;
 
-	// TODO add reasoningState to constructor
 	public VLogQueryResultIterator(final TermQueryResultIterator termQueryResultIterator,
-			final MaterialisationState materialisationState) {
+			final Correctness materialisationState) {
 		this.vLogTermQueryResultIterator = termQueryResultIterator;
-		this.materialisationState = materialisationState;
+		this.correctness = materialisationState;
 	}
 
 	@Override
@@ -63,8 +62,9 @@ public class VLogQueryResultIterator implements QueryResultIterator {
 		this.vLogTermQueryResultIterator.close();
 	}
 
-	public MaterialisationState getMaterialisationState() {
-		return this.materialisationState;
+	@Override
+	public Correctness getCorrectness() {
+		return this.correctness;
 	}
 
 }

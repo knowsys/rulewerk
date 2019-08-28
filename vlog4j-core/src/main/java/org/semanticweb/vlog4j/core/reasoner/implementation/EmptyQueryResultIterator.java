@@ -21,7 +21,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  */
 
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
-import org.semanticweb.vlog4j.core.reasoner.MaterialisationState;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 
 /**
@@ -32,10 +32,10 @@ import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
  */
 public class EmptyQueryResultIterator implements QueryResultIterator {
 
-	final MaterialisationState materialisationState;
+	final Correctness correctness;
 
-	public EmptyQueryResultIterator(MaterialisationState materialisationState) {
-		this.materialisationState = materialisationState;
+	public EmptyQueryResultIterator(Correctness correctness) {
+		this.correctness = correctness;
 	}
 
 	@Override
@@ -53,8 +53,8 @@ public class EmptyQueryResultIterator implements QueryResultIterator {
 		return null;
 	}
 
-	public MaterialisationState getMaterialisationState() {
-		return this.materialisationState;
+	public Correctness getCorrectness() {
+		return this.correctness;
 	}
 
 }

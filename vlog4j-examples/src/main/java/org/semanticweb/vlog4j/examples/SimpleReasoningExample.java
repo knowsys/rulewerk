@@ -77,8 +77,6 @@ public class SimpleReasoningExample {
 		}
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
-
 			reasoner.reason();
 
 			/* Execute some queries */

@@ -103,19 +103,30 @@ public class AddDataFromDlgpFile {
 
 		try (Reasoner reasoner = Reasoner.getInstance()) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
-			kb.addStatements(GraalToVLog4JModelConverter.convertRules(graalRules));
-			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
-				kb.addStatement(graalConjunctiveQueryToRule.getRule());
-			}
-			kb.addStatements(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
 
-			reasoner.load();
+			/*
+			 * Add facts to the reasoner knowledge base
+			 */
+			kb.addStatements(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
+			/*
+			 * Load the knowledge base into the reasoner
+			 */
+			reasoner.reason();
 			System.out.println("Before materialisation:");
 			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
 				ExamplesUtils.printOutQueryAnswers(graalConjunctiveQueryToRule.getQuery(), reasoner);
 			}
 
-			/* The reasoner will use the Restricted Chase by default. */
+			/*
+			 * Add rules to the reasoner knowledge base
+			 */
+			kb.addStatements(GraalToVLog4JModelConverter.convertRules(graalRules));
+			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
+				kb.addStatement(graalConjunctiveQueryToRule.getRule());
+			}
+			/*
+			 * Materialise facts using rules
+			 */
 			reasoner.reason();
 			System.out.println("After materialisation:");
 			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
