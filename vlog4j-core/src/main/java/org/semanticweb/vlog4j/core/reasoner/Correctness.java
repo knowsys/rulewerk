@@ -21,8 +21,8 @@ package org.semanticweb.vlog4j.core.reasoner;
  */
 
 /**
- * Enum for different states the materialisation of a {@link Reasoner}'s
- * {@link KnowledgeBase} may be in.
+ * Enumeration of different correctness results (for example, the correctness of
+ * query answering for a reasoner).
  * 
  * @author Irina Dragoste
  *
@@ -30,21 +30,20 @@ package org.semanticweb.vlog4j.core.reasoner;
 public enum Correctness {
 
 	/**
-	 * Reasoning has not completed. Query answering yields sound, but possibly
-	 * incomplete answers.
+	 * Completeness is not guaranteed, but soundness is. For example, query
+	 * answering yields sound, but possibly incomplete answers.
 	 */
 	SOUND_BUT_INCOMPLETE("sound but incomplete"),
 
 	/**
-	 * Query answering may give incorrect (unsound or incomplete) answers.
-	 * Re-materialisation ({@link Reasoner#reason()}) is required, in order to
-	 * obtain correct results.
+	 * Soundness is not guaranteed. For example, query answering may give incorrect
+	 * (unsound and incomplete) answers.
 	 */
 	INCORRECT("incorrect"),
 
 	/**
-	 * Reasoning over current knowledge base has completed, and query answering
-	 * yields correct (sound and complete) results.
+	 * Correctness is guaranteed. For example, query answering yealds are correct
+	 * (sound and complete) answers.
 	 */
 	SOUND_AND_COMPLETE("sound and complete");
 

@@ -275,7 +275,6 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 */
 	boolean reason() throws IOException;
 
-	// FIXME update old javadoc
 	// TODO add examples to query javadoc
 	/**
 	 * Evaluates an atomic query ({@code query}) on the implicit facts loaded into
@@ -289,7 +288,33 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * variable name identifies the same term in the answer fact. <br>
 	 * A query answer is represented by a {@link QueryResult}. A query can have
 	 * multiple, distinct query answers. This method returns an Iterator over these
-	 * answers.
+	 * answers. <br>
+	 * 
+	 * Depending on the state of the reasoning (materialisation) and its
+	 * {@link KnowledgeBase}, the answers can have a different {@link Correctness}
+	 * ({@link QueryResultIterator#getCorrectness()}):
+	 * <ul>
+	 * <li>If {@link Correctness#SOUND_AND_COMPLETE}, materialisation over current
+	 * knowledge base has completed, and the query answers are guaranteed to be
+	 * correct.</li>
+	 * <li>If {@link Correctness#SOUND_BUT_INCOMPLETE}, the results are guaranteed
+	 * to be sound, but may be incomplete. This can happen
+	 * <ul>
+	 * <li>when materialisation has not completed ({@link Reasoner#reason()} returns
+	 * {@code false}),</li>
+	 * <li>or when the knowledge base was modified after reasoning, and the
+	 * materialisation does not reflect the current knowledge base.
+	 * Re-materialisation ({@link Reasoner#reason()}) is required in order to obtain
+	 * complete query answers with respect to the current knowledge base.</li>
+	 * </ul>
+	 * </li>
+	 * <li>If {@link Correctness#INCORRECT}, the results may be incomplete, and some
+	 * results may be unsound. This can happen when the knowledge base was modified
+	 * and the reasoner materialisation is no longer consistent with the current
+	 * knowledge base. Re-materialisation ({@link Reasoner#reason()}) is required,
+	 * in order to obtain correct query answers.
+	 * </ul>
+	 * 
 	 *
 	 * @param query         a {@link PositiveLiteral} representing the query to be
 	 *                      answered.
@@ -300,11 +325,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *                      answers will only contain the {@link QueryResult}s with
 	 *                      terms of type {@link TermType#CONSTANT} (representing
 	 *                      named individuals).
-	 * @return QueryResultIterator that represents distinct answers to the query.
+	 * @return QueryResultIterator that iterates over distinct answers to the query.
+	 *         It also contains the {@link Correctness} of the query answers.
 	 */
 	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks);
 
-	// FIXME update javadoc with return type
 	// TODO add examples to query javadoc
 	/**
 	 * Evaluates an atomic query ({@code query}) on the implicit facts loaded into
@@ -337,6 +362,32 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *
 	 * @throws IOException if an I/O error occurs regarding given file
 	 *                     ({@code csvFilePath)}.
+	 * @return the correctness of the query answers, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}:
+	 *         <ul>
+	 *         <li>If {@link Correctness#SOUND_AND_COMPLETE}, materialisation over
+	 *         current knowledge base has completed, and the query answers are
+	 *         guaranteed to be correct.</li>
+	 *         <li>If {@link Correctness#SOUND_BUT_INCOMPLETE}, the results are
+	 *         guaranteed to be sound, but may be incomplete. This can happen
+	 *         <ul>
+	 *         <li>when materialisation has not completed ({@link Reasoner#reason()}
+	 *         returns {@code false}),</li>
+	 *         <li>or when the knowledge base was modified after reasoning, and the
+	 *         materialisation does not reflect the current knowledge base.
+	 *         Re-materialisation ({@link Reasoner#reason()}) is required in order
+	 *         to obtain complete query answers with respect to the current
+	 *         knowledge base.</li>
+	 *         </ul>
+	 *         </li>
+	 *         <li>If {@link Correctness#INCORRECT}, the results may be incomplete,
+	 *         and some results may be unsound. This can happen when the knowledge
+	 *         base was modified and the reasoner materialisation is no longer
+	 *         consistent with the current knowledge base. Re-materialisation
+	 *         ({@link Reasoner#reason()}) is required, in order to obtain correct
+	 *         query answers.
+	 *         </ul>
+	 * 
 	 */
 	Correctness exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeBlanks)
 			throws IOException;

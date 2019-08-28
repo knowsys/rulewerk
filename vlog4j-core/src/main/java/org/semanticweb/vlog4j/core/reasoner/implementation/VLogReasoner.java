@@ -764,8 +764,8 @@ public class VLogReasoner implements Reasoner {
 	private void updateCorrectness() {
 		if (this.reasonerState == ReasonerState.KB_CHANGED) {
 			
-			final boolean onlyFacts = this.knowledgeBase.getRules().isEmpty();
-			this.correctness = onlyFacts? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
+			final boolean noRules = this.knowledgeBase.getRules().isEmpty();
+			this.correctness = noRules? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
 		}
 	}
 
