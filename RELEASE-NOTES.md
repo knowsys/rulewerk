@@ -5,7 +5,7 @@ VLog4j v0.4.0
 -------------
 
 Breaking changes:
-* The Reasoner interface (formerly a class) has changed (knowledge base and related methods moved to KnowledgeBase) 
+* The Reasoner interface has changed (knowledge base and related methods moved to KnowledgeBase) 
 * The EdbIdbSeparation is obsolete and does no longer exist
 * IRIs loaded from RDF inputs no longer include surrounding < > in their string identifier
 * A new interface Fact has replaced the overly general PositiveLiteral in many places
