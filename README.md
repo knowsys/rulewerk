@@ -9,13 +9,13 @@ A Java library based on the [VLog rule engine](https://github.com/karmaresearch/
 Installation
 ------------
 
-The current release of VLog4j is version 0.3.0. The easiest way of using the library is with Maven. Maven users must add the following dependency to the dependencies in their pom.xml file:
+The current release of VLog4j is version 0.4.0. The easiest way of using the library is with Maven. Maven users must add the following dependency to the dependencies in their pom.xml file:
 
 ```
 <dependency>
 	<groupId>org.semanticweb.vlog4j</groupId>
 	<artifactId>vlog4j-core</artifactId>
-	<version>0.3.0</version>
+	<version>0.4.0</version>
 </dependency>
 ```
 
