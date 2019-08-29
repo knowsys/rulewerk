@@ -234,6 +234,11 @@
 					<maxmem>256m</maxmem>
 					<!-- aggregated reports for multi-module projects -->
 					<aggregate>true</aggregate>
+					<instrumentation>
+                        <excludes>
+                            <exclude>org/semanticweb/vlog4j/parser/javacc*.class</exclude>
+                        </excludes>
+                    </instrumentation>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -326,9 +331,9 @@
 	</profiles>
 
 	<scm>
-		<url>https://github.com/mkroetzsch/vlog4j.git</url>
-		<connection>scm:git:https://github.com/mkroetzsch/vlog4j.git</connection>
-		<developerConnection>scm:git:https://github.com/mkroetzsch/vlog4j.git</developerConnection>
+		<url>https://github.com/knowsys/vlog4j.git</url>
+		<connection>scm:git:https://github.com/knowsys/vlog4j.git</connection>
+		<developerConnection>scm:git:https://github.com/knowsys/vlog4j.git</developerConnection>
 	</scm>
 
 </project>
