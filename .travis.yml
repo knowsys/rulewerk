@@ -8,9 +8,9 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
-    #packages:
-    #- gcc-5
-    #- g++-5
+    packages:
+    - gcc-5
+    - g++-5
 
 ## Uncomment section below and the packages above to build unreleased snapshots of karmaresearch/vlog into vlog4j-base jar
 #before_install:
