@@ -12,10 +12,10 @@ addons:
     #- gcc-5
     #- g++-5
 
-before_install:
-  - sudo apt-get install gcc-5 -y
+## Uncomment section below and the packages above to build unreleased snapshots of karmaresearch/vlog into vlog4j-base jar
+#before_install:
+ # - sudo apt-get install gcc-5 -y
  # - eval “CC=gcc-5 && CXX=g++-5”
- ## Uncomment line below and the packages above to build unreleased snapshots of karmaresearch/vlog into vlog4j-base jar
  # - sh ./build-vlog-library.sh
 
 install: mvn install $OPTIONS -DskipTests=true
