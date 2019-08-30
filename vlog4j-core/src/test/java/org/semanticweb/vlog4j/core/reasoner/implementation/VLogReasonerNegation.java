@@ -55,6 +55,10 @@ public class VLogReasonerNegation {
 	private final Literal notRXY = Expressions.makeNegativeLiteral("R", x, y);
 	private final PositiveLiteral sXY = Expressions.makePositiveLiteral("S", x, y);
 
+	private final Fact pCD = Expressions.makeFact("P", Arrays.asList(c, d));
+	private final Fact pEF = Expressions.makeFact("P", Arrays.asList(e, f));
+	private final Fact qCD = Expressions.makeFact("Q", Arrays.asList(c, d));
+
 	@Test(expected = RuntimeException.class)
 	public void testNotStratifiable() throws IOException {
 
@@ -75,9 +79,6 @@ public class VLogReasonerNegation {
 	public void testStratifiable() throws IOException {
 
 		final Rule rule = Expressions.makeRule(sXY, pXY, notQXY, notRXY);
-		final Fact pCD = Expressions.makeFact("P", Arrays.asList(c, d));
-		final Fact pEF = Expressions.makeFact("P", Arrays.asList(e, f));
-		final Fact qCD = Expressions.makeFact("Q", Arrays.asList(c, d));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(rule, pCD, pEF, qCD);
@@ -99,9 +100,6 @@ public class VLogReasonerNegation {
 	public void testInputNegation() throws IOException {
 
 		final Rule rule = Expressions.makeRule(sXY, pXY, notQXY);
-		final Fact pCD = Expressions.makeFact("P", Arrays.asList(c, d));
-		final Fact pEF = Expressions.makeFact("P", Arrays.asList(e, f));
-		final Fact qCD = Expressions.makeFact("Q", Arrays.asList(c, d));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(rule, pCD, pEF, qCD);
