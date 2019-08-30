@@ -22,9 +22,6 @@ package org.semanticweb.vlog4j.rdf;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeDatatypeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeFact;
 import static org.semanticweb.vlog4j.rdf.RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME;
 import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_FIRST;
 import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_NIL;
@@ -44,8 +41,10 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.semanticweb.vlog4j.core.model.api.Blank;
+import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public class TestConvertRdfFileToFacts {
 
@@ -53,68 +52,76 @@ public class TestConvertRdfFileToFacts {
 	// encodes such characters as "\u0008" and "\u000C", respectively (the
 	// corresponding Unicode hex code).
 
-	private static final Set<Fact> expectedNormalizedFacts = new HashSet<>(Arrays.asList(
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"),
-							makeDatatypeConstant("-1", "http://www.w3.org/2001/XMLSchema#integer"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/2"), makeConstant("file:/a"),
-							makeDatatypeConstant("1", "http://www.w3.org/2001/XMLSchema#integer"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/3"), makeConstant("file:/a"),
-							makeDatatypeConstant("-1.0", "http://www.w3.org/2001/XMLSchema#decimal"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/4"), makeConstant("file:/a"),
-							makeDatatypeConstant("1.0", "http://www.w3.org/2001/XMLSchema#decimal"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/5"), makeConstant("file:/a"),
-							makeDatatypeConstant("-1.1E1", "http://www.w3.org/2001/XMLSchema#double"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/6"), makeConstant("file:/a"),
-							makeDatatypeConstant("1.1E1", "http://www.w3.org/2001/XMLSchema#double"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(makeConstant("file:/7"), makeConstant("file:/a"),
-					makeDatatypeConstant("true", "http://www.w3.org/2001/XMLSchema#boolean")))));
+	private final static Constant file1 = Expressions.makeConstant("file:/1");
+	private final static Constant file2 = Expressions.makeConstant("file:/2");
+	private final static Constant file3 = Expressions.makeConstant("file:/3");
+	private final static Constant file4 = Expressions.makeConstant("file:/4");
+	private final static Constant file5 = Expressions.makeConstant("file:/5");
+	private final static Constant file6 = Expressions.makeConstant("file:/6");
+	private final static Constant file7 = Expressions.makeConstant("file:/7");
+	private final static Constant fileA = Expressions.makeConstant("file:/a");
+
+	private final static Constant booleanTrue = Expressions.makeDatatypeConstant("true",
+			"http://www.w3.org/2001/XMLSchema#boolean");
+	private final static Constant booleanFalse = Expressions.makeDatatypeConstant("false",
+			"http://www.w3.org/2001/XMLSchema#boolean");
+
+	private final static Constant decimalOne = Expressions.makeDatatypeConstant("1.0",
+			"http://www.w3.org/2001/XMLSchema#decimal");
+	private final static Constant decimalMinusOne = Expressions.makeDatatypeConstant("-1.0",
+			"http://www.w3.org/2001/XMLSchema#decimal");
+
+	private final static Constant integerOne = Expressions.makeDatatypeConstant("1",
+			"http://www.w3.org/2001/XMLSchema#integer");
+	private final static Constant integerMinusOne = Expressions.makeDatatypeConstant("-1",
+			"http://www.w3.org/2001/XMLSchema#integer");
+
+	private final static Constant doubleOnePoitZero = Expressions.makeDatatypeConstant("1.0E1",
+			"http://www.w3.org/2001/XMLSchema#double");
+	private final static Constant doubleOnePoitOne = Expressions.makeDatatypeConstant("1.1E1",
+			"http://www.w3.org/2001/XMLSchema#double");
+	private final static Constant doubleMinusOnePoitOne = Expressions.makeDatatypeConstant("-1.1E1",
+			"http://www.w3.org/2001/XMLSchema#double");
+
+	private static final Set<Fact> expectedNormalizedFacts = new HashSet<>(
+			Arrays.asList(Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file1, fileA, integerMinusOne)),
+					Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file2, fileA, integerOne)),
+					Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file3, fileA, decimalMinusOne)),
+					Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file4, fileA, decimalOne)),
+					Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file5, fileA, doubleMinusOnePoitOne)),
+					Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file6, fileA, doubleOnePoitOne)),
+					Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file7, fileA, booleanTrue))));
 
 	private static final Set<Fact> expectedLiteralFacts = new HashSet<>(Arrays.asList(
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"),
-							makeDatatypeConstant("1", "http://www.w3.org/2001/XMLSchema#integer"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/2"), makeConstant("file:/a"),
-							makeDatatypeConstant("1.0", "http://www.w3.org/2001/XMLSchema#decimal"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/3"), makeConstant("file:/a"),
-							makeDatatypeConstant("1.0E1", "http://www.w3.org/2001/XMLSchema#double"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/4"), makeConstant("file:/a"),
-							makeDatatypeConstant("true", "http://www.w3.org/2001/XMLSchema#boolean"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/5"), makeConstant("file:/a"),
-							makeDatatypeConstant("false", "http://www.w3.org/2001/XMLSchema#boolean"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(makeConstant("file:/6"), makeConstant("file:/a"),
-					makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string")))));
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file1, fileA, integerOne)),
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file2, fileA, decimalOne)),
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file3, fileA, doubleOnePoitZero)),
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file4, fileA, booleanTrue)),
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file5, fileA, booleanFalse)),
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file6, fileA,
+					Expressions.makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string")))));
+
+	private final static Constant exampleA = Expressions.makeConstant("http://example.org/a");
+	private final static Constant example1 = Expressions.makeConstant("http://example.org/1");
+	private final static Constant example2 = Expressions.makeConstant("http://example.org/2");
+	private final static Constant example3 = Expressions.makeConstant("http://example.org/3");
+	private final static Constant exampleHash1 = Expressions.makeConstant("http://example.org/#1");
 
 	private static final Set<Fact> expectedRelativeUriFacts = new HashSet<>(Arrays.asList(
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("http://example.org/1"), makeConstant("http://example.org/a"),
-							makeConstant("http://example.org/#1"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("http://example.org/2"), makeConstant("http://example.org/a"),
-							makeConstant("http://example.org/#1"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(makeConstant("http://example.org/3"),
-					makeConstant("http://example.org/a"), makeConstant("http://example.org/#1")))));
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(example1, exampleA, exampleHash1)),
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(example2, exampleA, exampleHash1)),
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(example3, exampleA, exampleHash1))));
 
 	private static final Set<Fact> expectedEscapedCharacterFacts = new HashSet<>(
-			Arrays.asList(makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"), makeDatatypeConstant(
-							"\\t\\u0008\\n\\r\\u000C\\\"'\\\\", "http://www.w3.org/2001/XMLSchema#string")))));
+			Arrays.asList(Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(file1, fileA, Expressions.makeDatatypeConstant("\\t\\u0008\\n\\r\\u000C\\\"'\\\\",
+							"http://www.w3.org/2001/XMLSchema#string")))));
 
 	private static final Set<Fact> expectedLanguageTagFacts = new HashSet<>(Arrays.asList(
-			makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"),
-							makeConstant("\"This is a test.\"@en"))),
-			makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"),
-					makeConstant("\"Das ist ein Test.\"@de")))));
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(file1, fileA, Expressions.makeConstant("\"This is a test.\"@en"))),
+			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(file1, fileA, Expressions.makeConstant("\"Das ist ein Test.\"@de")))));
 
 	@Test
 	public void testDataTypesNormalized() throws RDFHandlerException, RDFParseException, IOException {
@@ -162,26 +169,21 @@ public class TestConvertRdfFileToFacts {
 				RDFFormat.TURTLE);
 		final Set<Fact> factsFromModel = RdfModelConverter.rdfModelToFacts(model);
 
-		final Term blank1 = RdfTestUtils.getObjectOfFirstMatchedTriple(makeConstant("file:/2"), makeConstant("file:/a"),
-				factsFromModel);
-		final Term blank2 = RdfTestUtils.getObjectOfFirstMatchedTriple(makeConstant("file:/3"), makeConstant("file:/a"),
-				factsFromModel);
+		final Term blank1 = RdfTestUtils.getObjectOfFirstMatchedTriple(file2, fileA, factsFromModel);
+		final Term blank2 = RdfTestUtils.getObjectOfFirstMatchedTriple(file3, fileA, factsFromModel);
 		final Term blank3 = RdfTestUtils.getObjectOfFirstMatchedTriple(blank2, RDF_REST, factsFromModel);
 
-		final Set<Fact> expectedSetFacts = new HashSet<>(Arrays.asList(
-				makeFact(RDF_TRIPLE_PREDICATE_NAME,
-						Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"), RDF_NIL)),
-				makeFact(RDF_TRIPLE_PREDICATE_NAME,
-						Arrays.asList(makeConstant("file:/2"), makeConstant("file:/a"), blank1)),
-				makeFact(RDF_TRIPLE_PREDICATE_NAME,
-						Arrays.asList(blank1, RDF_FIRST, makeConstant(intoLexical("1", "integer")))),
-				makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank1, RDF_REST, RDF_NIL)),
-				makeFact(RDF_TRIPLE_PREDICATE_NAME,
-						Arrays.asList(makeConstant("file:/3"), makeConstant("file:/a"), blank2)),
-				makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_FIRST, makeConstant("file:/#1"))),
-				makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_REST, blank3)),
-				makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_FIRST, makeConstant("file:/#2"))),
-				makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_REST, RDF_NIL))));
+		final Set<Fact> expectedSetFacts = new HashSet<>(
+				Arrays.asList(Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file1, fileA, RDF_NIL)),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file2, fileA, blank1)),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
+								Arrays.asList(blank1, RDF_FIRST, Expressions.makeConstant(intoLexical("1", "integer")))),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank1, RDF_REST, RDF_NIL)),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file3, fileA, blank2)),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_FIRST, Expressions.makeConstant("file:/#1"))),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_REST, blank3)),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_FIRST, Expressions.makeConstant("file:/#2"))),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_REST, RDF_NIL))));
 
 		assertEquals(expectedSetFacts, factsFromModel);
 	}
