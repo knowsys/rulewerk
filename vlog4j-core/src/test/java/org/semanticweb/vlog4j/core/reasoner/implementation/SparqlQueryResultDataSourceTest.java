@@ -30,18 +30,16 @@ import java.util.LinkedHashSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public class SparqlQueryResultDataSourceTest {
-	
+
 	final URL endpoint = new URL("http://query.wikidata.org/sparql");
-	
-	public SparqlQueryResultDataSourceTest() throws MalformedURLException {}
-	
+
+	public SparqlQueryResultDataSourceTest() throws MalformedURLException {
+	}
+
 	@Test
 	public void testToStringSimpleConstructor() throws MalformedURLException {
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, "b,a",
@@ -65,17 +63,15 @@ public class SparqlQueryResultDataSourceTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testEmptyQueryBodyList()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
-		
+	public void testEmptyQueryBodyList() throws IOException {
+
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("a")));
 		new SparqlQueryResultDataSource(endpoint, queryVariables, StringUtils.SPACE);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testEmptyQueryBody()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testEmptyQueryBody() throws IOException {
 		new SparqlQueryResultDataSource(endpoint, "a", StringUtils.SPACE);
 	}
 

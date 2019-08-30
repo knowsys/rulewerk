@@ -24,11 +24,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.graal.GraalConjunctiveQueryToRule;
 import org.semanticweb.vlog4j.graal.GraalToVLog4JModelConverter;
@@ -60,8 +59,7 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  */
 public class AddDataFromGraal {
 
-	public static void main(final String[] args)
-			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+	public static void main(final String[] args) throws IOException {
 		/*
 		 * 1. Instantiating rules
 		 */
@@ -123,17 +121,36 @@ public class AddDataFromGraal {
 		 * 4. Loading, reasoning, and querying while using try-with-resources to close
 		 * the reasoner automatically.
 		 */
-		try (Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
-			reasoner.addRules(convertedGraalConjunctiveQuery.getRule());
-			reasoner.addFacts(GraalToVLog4JModelConverter.convertAtoms(graalAtoms));
+		final KnowledgeBase kb = new KnowledgeBase();
 
-			reasoner.load();
+		try (Reasoner reasoner = new VLogReasoner(kb)) {
+
+			/*
+			 * Add facts to the reasoner knowledge base
+			 */
+			kb.addStatements(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
+			/*
+			 * Load the knowledge base into the reasoner
+			 */
+			reasoner.reason();
+
+			/*
+			 * Query the loaded facts
+			 */
 			System.out.println("Before materialisation:");
 			ExamplesUtils.printOutQueryAnswers(convertedGraalConjunctiveQuery.getQuery(), reasoner);
 
-			/* The reasoner will use the Restricted Chase by default. */
+			/*
+			 * Add rules to the reasoner knowledge base
+			 */
+			kb.addStatements(GraalToVLog4JModelConverter.convertRules(graalRules));
+			kb.addStatements(convertedGraalConjunctiveQuery.getRule());
+
+			/*
+			 * Materialise facts using rules
+			 */
 			reasoner.reason();
+
 			System.out.println("After materialisation:");
 			ExamplesUtils.printOutQueryAnswers(convertedGraalConjunctiveQuery.getQuery(), reasoner);
 

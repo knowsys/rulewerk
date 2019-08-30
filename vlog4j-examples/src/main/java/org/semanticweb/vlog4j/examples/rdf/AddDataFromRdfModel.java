@@ -37,20 +37,19 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
-import org.semanticweb.vlog4j.rdf.RdfModelConverter;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
+import org.semanticweb.vlog4j.rdf.RdfModelConverter;
 
 /**
  * This example shows how <b>vlog4j-rdf</b> library's utility class
@@ -62,8 +61,8 @@ import org.semanticweb.vlog4j.parser.RuleParser;
  */
 public class AddDataFromRdfModel {
 
-	public static void main(final String[] args) throws IOException, RDFParseException, RDFHandlerException,
-			URISyntaxException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public static void main(final String[] args)
+			throws IOException, RDFParseException, RDFHandlerException, URISyntaxException {
 
 		ExamplesUtils.configureLogging();
 
@@ -76,12 +75,12 @@ public class AddDataFromRdfModel {
 		/* An RDF Model is obtained from parsing the RDF/XML resource. */
 		final Model rdfModelISWC2016 = parseRdfResource(inputStreamISWC2016, rdfXMLResourceFile.toURI(),
 				RDFFormat.RDFXML);
-		
+
 		/*
 		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
-		final Set<PositiveLiteral> tripleFactsISWC2016 = RdfModelConverter.rdfModelToPositiveLiterals(rdfModelISWC2016);
+		final Set<Fact> tripleFactsISWC2016 = RdfModelConverter.rdfModelToFacts(rdfModelISWC2016);
 		System.out.println("Example triple fact from iswc-2016 dataset:");
 		System.out.println(" - " + tripleFactsISWC2016.iterator().next());
 
@@ -100,7 +99,7 @@ public class AddDataFromRdfModel {
 		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
-		final Set<PositiveLiteral> tripleFactsISWC2017 = RdfModelConverter.rdfModelToPositiveLiterals(rdfModelISWC2017);
+		final Set<Fact> tripleFactsISWC2017 = RdfModelConverter.rdfModelToFacts(rdfModelISWC2017);
 		System.out.println("Example triple fact from iswc-2017 dataset:");
 		System.out.println(" - " + tripleFactsISWC2017.iterator().next());
 
@@ -122,28 +121,17 @@ public class AddDataFromRdfModel {
 				+ "hasOrganizationName(?Person, ?OrgName) :- "
 				+ "  TRIPLE(?Person, cnf:hasAffiliation, ?Aff), TRIPLE(?Aff, cnf:withOrganisation, ?Org),"
 				+ "  TRIPLE(?Org, cnf:name, ?OrgName) .";
-		RuleParser ruleParser = new RuleParser();
+		KnowledgeBase kb;
 		try {
-			ruleParser.parse(rules);
-		} catch (ParsingException e) {
+			kb = RuleParser.parse(rules);
+		} catch (final ParsingException e) {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;
 		}
+		kb.addStatements(tripleFactsISWC2016);
+		kb.addStatements(tripleFactsISWC2017);
 
-		try (final Reasoner reasoner = Reasoner.getInstance();) {
-			/*
-			 * Facts extracted from the RDF resources are added to the Reasoner's knowledge
-			 * base.
-			 */
-			reasoner.addFacts(tripleFactsISWC2016);
-			reasoner.addFacts(tripleFactsISWC2017);
-			/*
-			 * The rule that maps people to their organization name based on facts extracted
-			 * from RDF triples is added to the Reasoner's knowledge base.
-			 */
-			reasoner.addRules(ruleParser.getRules());
-
-			reasoner.load();
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 
 			/* We query for persons whose organization name is "TU Dresden" . */

@@ -22,8 +22,9 @@ package org.semanticweb.vlog4j.examples;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -42,7 +43,7 @@ public class SimpleReasoningExample {
 		ExamplesUtils.configureLogging(); // use simple logger for the example
 
 		// Define some facts and rules in VLog's basic syntax:
-		String rules = "% --- Some facts --- \n" //
+		final String rules = "% --- Some facts --- \n" //
 				+ "location(germany,europe). \n" //
 				+ "location(uk,europe). \n" //
 				+ "location(saxony,germany). \n" //
@@ -67,34 +68,21 @@ public class SimpleReasoningExample {
 
 		System.out.println("Knowledge base used in this example:\n\n" + rules);
 
-		RuleParser ruleParser = new RuleParser();
+		KnowledgeBase kb;
 		try {
-			ruleParser.parse(rules);
-		} catch (ParsingException e) {
+			kb = RuleParser.parse(rules);
+		} catch (final ParsingException e) {
 			System.out.println("Failed to parse rules: " + e.getMessage());
 			return;
 		}
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFacts(ruleParser.getFacts());
-			reasoner.addRules(ruleParser.getRules());
-
-			System.out.print("Loading rules and facts ... ");
-			reasoner.load();
-			System.out.println("done.");
-
-			System.out.print("Computing all inferences ... ");
+		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			System.out.println("done.\n");
 
 			/* Execute some queries */
 			ExamplesUtils.printOutQueryAnswers("address(?Org, ?Street, ?ZIP, ?City)", reasoner);
 			ExamplesUtils.printOutQueryAnswers("locatedIn(?place, europe)", reasoner);
 			ExamplesUtils.printOutQueryAnswers("inEuropeOutsideGermany(?Org)", reasoner);
-
-			System.out.println("Done.");
-		} catch (VLog4jException e) {
-			System.out.println("Error: " + e.getMessage());
 		}
 	}
 }

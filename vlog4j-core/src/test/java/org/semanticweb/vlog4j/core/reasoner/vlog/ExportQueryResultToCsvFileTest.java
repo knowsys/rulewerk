@@ -31,13 +31,14 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUti
 
 import karmaresearch.vlog.Atom;
 import karmaresearch.vlog.EDBConfigurationException;
+import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.VLog;
 
 public class ExportQueryResultToCsvFileTest {
 
 	@Test
-	public void testExportUnaryPredicateFacts() throws EDBConfigurationException, NotStartedException, IOException {
+	public void testExportUnaryPredicateFacts() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException, IOException {
 		final String[][] argsAMatrix = { { "c1" }, { "c2" } };
 		final List<List<String>> expectedQueryResult = Arrays.asList(Arrays.asList("c1"), Arrays.asList("c2"));
 		final VLog vLog = new VLog();
@@ -50,7 +51,7 @@ public class ExportQueryResultToCsvFileTest {
 	}
 
 	@Test
-	public void testExportBinaryPredicateFacts() throws EDBConfigurationException, NotStartedException, IOException {
+	public void testExportBinaryPredicateFacts() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException, IOException {
 		final String[][] argsAMatrix = { { "c1", "c2" }, { "c3", "c4" } };
 		final List<List<String>> expectedQueryResult = Arrays.asList(Arrays.asList("c1", "c2"),
 				Arrays.asList("c3", "c4"));

@@ -28,34 +28,34 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
-public class ExportQueryAnswersToCsvFileTest {
+public class VLogReasonerCsvOutput {
 
 	@Test
-	public void testEDBQuerySameConstantSubstitutesSameVariableName()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testEDBQuerySameConstantSubstitutesSameVariableName() throws IOException {
 		final String predicate = "p";
 		final Constant constantC = Expressions.makeConstant("c");
 		final Constant constantD = Expressions.makeConstant("d");
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
 		final Variable z = Expressions.makeVariable("Z");
-		final PositiveLiteral fact = Expressions.makePositiveLiteral(predicate, constantC, constantC, constantD);
+		final Fact fact = Expressions.makeFact(predicate, Arrays.asList(constantC, constantC, constantD));
 
 		final boolean includeBlanks = false;
 		// final String csvFilePath = CSV_EXPORT_FOLDER + "output";
 		final List<List<String>> factCCD = Arrays.asList(Arrays.asList("c", "c", "d"));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFacts(fact);
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		kb.addStatement(fact);
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final PositiveLiteral queryAtomXYZ = Expressions.makePositiveLiteral(predicate, x, y, z);
@@ -70,13 +70,13 @@ public class ExportQueryAnswersToCsvFileTest {
 			final List<List<String>> csvContentXXZ = FileDataSourceTestUtils.getCSVContent(csvFilePathXXZ);
 			assertEquals(factCCD, csvContentXXZ);
 
-			final PositiveLiteral queryAtomXXX = Expressions.makePositiveLiteral("q", x, x, x);
+			final PositiveLiteral queryAtomXXX = Expressions.makePositiveLiteral(predicate, x, x, x);
 			final String csvFilePathXXX = FileDataSourceTestUtils.OUTPUT_FOLDER + "outputXXX.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXXX, csvFilePathXXX, includeBlanks);
 			final List<List<String>> csvContentXXX = FileDataSourceTestUtils.getCSVContent(csvFilePathXXX);
 			assertTrue(csvContentXXX.isEmpty());
 
-			final PositiveLiteral queryAtomXYX = Expressions.makePositiveLiteral("q", x, y, x);
+			final PositiveLiteral queryAtomXYX = Expressions.makePositiveLiteral(predicate, x, y, x);
 			final String csvFilePathXYX = FileDataSourceTestUtils.OUTPUT_FOLDER + "outputXYX.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtomXYX, csvFilePathXYX, includeBlanks);
 			final List<List<String>> csvContentXYX = FileDataSourceTestUtils.getCSVContent(csvFilePathXYX);
@@ -85,19 +85,68 @@ public class ExportQueryAnswersToCsvFileTest {
 
 	}
 
-	@Test
-	public void testExportQueryEmptyKnowledgeBase()
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	@Test(expected = IllegalArgumentException.class)
+	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningIncludeBlanks() throws IOException {
+
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
 				Expressions.makeVariable("?y"));
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
 			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, true);
-			assertTrue(FileDataSourceTestUtils.getCSVContent(emptyFilePath).isEmpty());
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningExcludeBlanks() throws IOException {
+
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
+				Expressions.makeVariable("?y"));
+
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
 
 			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, false);
-			assertTrue(FileDataSourceTestUtils.getCSVContent(emptyFilePath).isEmpty());
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testExportQueryEmptyKnowledgeBaseAfterReasoningIncludeBlanks() throws IOException {
+
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
+				Expressions.makeVariable("?y"));
+
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			reasoner.reason();
+
+			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
+			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, true);
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testExportQueryEmptyKnowledgeBaseAfterReasoningExcludeBlanks() throws IOException {
+
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
+				Expressions.makeVariable("?y"));
+
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			reasoner.reason();
+
+			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
+			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, false);
 		}
 	}
 

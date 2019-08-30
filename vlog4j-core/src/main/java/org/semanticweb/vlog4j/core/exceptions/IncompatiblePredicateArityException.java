@@ -24,19 +24,15 @@ import java.text.MessageFormat;
 
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 
 /**
- * Expression thrown when attempting to load the reasoner with a knowledge base
- * that contains facts from a {@link DataSource} (added with
- * {@link Reasoner#addFactsFromDataSource(Predicate, DataSource)}), whose arity
- * does not correspond to the arity of the {@link Predicate} the data source was
- * added for.
+ * Expression thrown when attempting to load facts for a {@link Predicate} from
+ * a {@link DataSource} that does not contain data of the specified arity.
  * 
  * @author Irina Dragoste
  *
  */
-public class IncompatiblePredicateArityException extends VLog4jException {
+public class IncompatiblePredicateArityException extends VLog4jRuntimeException {
 	private static final long serialVersionUID = -5081219042292721026L;
 
 	private static final String messagePattern = "Predicate arity [{0}] of predicate [{1}] incompatible with arity [{2}] of the data source [{3}]!";

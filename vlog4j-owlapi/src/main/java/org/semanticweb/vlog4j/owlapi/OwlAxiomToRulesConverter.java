@@ -67,6 +67,7 @@ import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.SWRLRule;
 import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -74,6 +75,7 @@ import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.FactImpl;
 import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 
 /**
@@ -87,7 +89,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 	static OWLDataFactory owlDataFactory = OWLManager.getOWLDataFactory();
 
 	final Set<Rule> rules = new HashSet<>();
-	final Set<PositiveLiteral> facts = new HashSet<>();
+	final Set<Fact> facts = new HashSet<>();
 	final Variable frontierVariable = new VariableImpl("X");
 	int freshVariableCounter = 0;
 
@@ -120,7 +122,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 					Arrays.asList(OwlToRulesConversionHelper.getTop(converter.mainTerm)));
 			if (headConjunction.getVariables().isEmpty()) {
 				for (final PositiveLiteral conjunct : headConjunction.getLiterals()) {
-					this.facts.add(conjunct);
+					this.facts.add(new FactImpl(conjunct.getPredicate(), conjunct.getTerms()));
 				}
 				return;
 			}
@@ -260,7 +262,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 	public void visit(final OWLObjectPropertyAssertionAxiom axiom) {
 		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject());
 		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject());
-		this.facts.add(OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), subject, object));
+		this.facts.add(OwlToRulesConversionHelper.getObjectPropertyFact(axiom.getProperty(), subject, object));
 	}
 
 	@Override

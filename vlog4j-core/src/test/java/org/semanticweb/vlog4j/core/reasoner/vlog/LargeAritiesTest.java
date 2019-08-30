@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import karmaresearch.vlog.Atom;
 import karmaresearch.vlog.EDBConfigurationException;
+import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.Rule;
 import karmaresearch.vlog.Term;
@@ -40,7 +41,8 @@ import karmaresearch.vlog.VLog;
 import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 /**
- * Tests that reasoning and querying with predicates of large arities is allowed.
+ * Tests that reasoning and querying with predicates of large arities is
+ * allowed.
  * 
  * @author Irina Dragoste
  *
@@ -51,26 +53,27 @@ public class LargeAritiesTest {
 	final static int VARIABLES_PER_RULE_LIMIT = 255;
 
 	@Test
-	public void testLargeNumberOfVariablesPerRule() throws NotStartedException, EDBConfigurationException {
+	public void testLargeNumberOfVariablesPerRule() throws NotStartedException, EDBConfigurationException, NonExistingPredicateException {
 		testNumberOfVariablesPerRule(VARIABLES_PER_RULE_LIMIT);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testNumberOfVariablesPerRuleExceedsLimit() throws NotStartedException, EDBConfigurationException {
+	public void testNumberOfVariablesPerRuleExceedsLimit() throws NotStartedException, EDBConfigurationException, NonExistingPredicateException {
 		testNumberOfVariablesPerRule(VARIABLES_PER_RULE_LIMIT + 1);
 	}
 
 	@Test
-	public void testLargePredicateArities() throws NotStartedException, EDBConfigurationException {
+	public void testLargePredicateArities() throws NotStartedException, EDBConfigurationException, NonExistingPredicateException {
 		testPredicateArity(PREDICATE_ARITY_LIMIT);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testPredicateAritiesExceedLimit() throws NotStartedException, EDBConfigurationException {
+	public void testPredicateAritiesExceedLimit() throws NotStartedException, EDBConfigurationException, NonExistingPredicateException {
 		testPredicateArity(PREDICATE_ARITY_LIMIT + 1);
 	}
 
-	private void testNumberOfVariablesPerRule(int variablesPerRuleLimit) throws EDBConfigurationException, NotStartedException {
+	private void testNumberOfVariablesPerRule(int variablesPerRuleLimit)
+			throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
 		final VLog vLog = new VLog();
 
 		final String[][] pFactArguments = { { "c" } };
@@ -100,7 +103,8 @@ public class LargeAritiesTest {
 		vLog.stop();
 	}
 
-	private void testPredicateArity(final int predicateArityLimit) throws EDBConfigurationException, NotStartedException {
+	private void testPredicateArity(final int predicateArityLimit)
+			throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
 		final List<String> constants = new ArrayList<>();
 		for (int i = 0; i < predicateArityLimit; i++) {
 			constants.add("c" + i);
@@ -113,7 +117,8 @@ public class LargeAritiesTest {
 		}
 
 		final Term[] terms = variables.toArray(new Term[variables.size()]);
-		final Rule rule = VLogExpressions.makeRule(VLogExpressions.makeAtom("q", terms), VLogExpressions.makeAtom("p", terms));
+		final Rule rule = VLogExpressions.makeRule(VLogExpressions.makeAtom("q", terms),
+				VLogExpressions.makeAtom("p", terms));
 		final Atom queryAtomQPredicate = VLogExpressions.makeAtom("q", terms);
 
 		final VLog vLog = new VLog();

@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeDatatypeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeFact;
 import static org.semanticweb.vlog4j.rdf.RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME;
 import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_FIRST;
 import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_NIL;
@@ -44,7 +44,7 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.semanticweb.vlog4j.core.model.api.Blank;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Term;
 
 public class TestConvertRdfFileToFacts {
@@ -53,123 +53,137 @@ public class TestConvertRdfFileToFacts {
 	// encodes such characters as "\u0008" and "\u000C", respectively (the
 	// corresponding Unicode hex code).
 
-	private static final Set<PositiveLiteral> expectedNormalizedPositiveLiterals = new HashSet<>(Arrays.asList(
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"), makeConstant("file:/a"),
-					makeDatatypeConstant("-1", "http://www.w3.org/2001/XMLSchema#integer")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/2"), makeConstant("file:/a"),
-					makeDatatypeConstant("1", "http://www.w3.org/2001/XMLSchema#integer")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/3"), makeConstant("file:/a"),
-					makeDatatypeConstant("-1.0", "http://www.w3.org/2001/XMLSchema#decimal")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/4"), makeConstant("file:/a"),
-					makeDatatypeConstant("1.0", "http://www.w3.org/2001/XMLSchema#decimal")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/5"), makeConstant("file:/a"),
-					makeDatatypeConstant("-1.1E1", "http://www.w3.org/2001/XMLSchema#double")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/6"), makeConstant("file:/a"),
-					makeDatatypeConstant("1.1E1", "http://www.w3.org/2001/XMLSchema#double")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/7"), makeConstant("file:/a"),
-					makeDatatypeConstant("true", "http://www.w3.org/2001/XMLSchema#boolean"))));
+	private static final Set<Fact> expectedNormalizedFacts = new HashSet<>(Arrays.asList(
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"),
+							makeDatatypeConstant("-1", "http://www.w3.org/2001/XMLSchema#integer"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/2"), makeConstant("file:/a"),
+							makeDatatypeConstant("1", "http://www.w3.org/2001/XMLSchema#integer"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/3"), makeConstant("file:/a"),
+							makeDatatypeConstant("-1.0", "http://www.w3.org/2001/XMLSchema#decimal"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/4"), makeConstant("file:/a"),
+							makeDatatypeConstant("1.0", "http://www.w3.org/2001/XMLSchema#decimal"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/5"), makeConstant("file:/a"),
+							makeDatatypeConstant("-1.1E1", "http://www.w3.org/2001/XMLSchema#double"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/6"), makeConstant("file:/a"),
+							makeDatatypeConstant("1.1E1", "http://www.w3.org/2001/XMLSchema#double"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(makeConstant("file:/7"), makeConstant("file:/a"),
+					makeDatatypeConstant("true", "http://www.w3.org/2001/XMLSchema#boolean")))));
 
-	private static final Set<PositiveLiteral> expectedLiteralPositiveLiterals = new HashSet<>(Arrays.asList(
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"), makeConstant("file:/a"),
-					makeDatatypeConstant("1", "http://www.w3.org/2001/XMLSchema#integer")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/2"), makeConstant("file:/a"),
-					makeDatatypeConstant("1.0", "http://www.w3.org/2001/XMLSchema#decimal")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/3"), makeConstant("file:/a"),
-					makeDatatypeConstant("1.0E1", "http://www.w3.org/2001/XMLSchema#double")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/4"), makeConstant("file:/a"),
-					makeDatatypeConstant("true", "http://www.w3.org/2001/XMLSchema#boolean")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/5"), makeConstant("file:/a"),
-					makeDatatypeConstant("false", "http://www.w3.org/2001/XMLSchema#boolean")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/6"), makeConstant("file:/a"),
-					makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string"))));
+	private static final Set<Fact> expectedLiteralFacts = new HashSet<>(Arrays.asList(
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"),
+							makeDatatypeConstant("1", "http://www.w3.org/2001/XMLSchema#integer"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/2"), makeConstant("file:/a"),
+							makeDatatypeConstant("1.0", "http://www.w3.org/2001/XMLSchema#decimal"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/3"), makeConstant("file:/a"),
+							makeDatatypeConstant("1.0E1", "http://www.w3.org/2001/XMLSchema#double"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/4"), makeConstant("file:/a"),
+							makeDatatypeConstant("true", "http://www.w3.org/2001/XMLSchema#boolean"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/5"), makeConstant("file:/a"),
+							makeDatatypeConstant("false", "http://www.w3.org/2001/XMLSchema#boolean"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(makeConstant("file:/6"), makeConstant("file:/a"),
+					makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string")))));
 
-	private static final Set<PositiveLiteral> expectedRelativeUriPositiveLiterals = new HashSet<>(Arrays.asList(
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("http://example.org/1"),
-					makeConstant("http://example.org/a"), makeConstant("http://example.org/#1")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("http://example.org/2"),
-					makeConstant("http://example.org/a"), makeConstant("http://example.org/#1")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("http://example.org/3"),
-					makeConstant("http://example.org/a"), makeConstant("http://example.org/#1"))));
+	private static final Set<Fact> expectedRelativeUriFacts = new HashSet<>(Arrays.asList(
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("http://example.org/1"), makeConstant("http://example.org/a"),
+							makeConstant("http://example.org/#1"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("http://example.org/2"), makeConstant("http://example.org/a"),
+							makeConstant("http://example.org/#1"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(makeConstant("http://example.org/3"),
+					makeConstant("http://example.org/a"), makeConstant("http://example.org/#1")))));
 
-	private static final Set<PositiveLiteral> expectedEscapedCharacterPositiveLiterals = new HashSet<>(
-			Arrays.asList(makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"),
-					makeConstant("file:/a"), makeDatatypeConstant("\\t\\u0008\\n\\r\\u000C\\\"'\\\\",
-							"http://www.w3.org/2001/XMLSchema#string"))));
+	private static final Set<Fact> expectedEscapedCharacterFacts = new HashSet<>(
+			Arrays.asList(makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"), makeDatatypeConstant(
+							"\\t\\u0008\\n\\r\\u000C\\\"'\\\\", "http://www.w3.org/2001/XMLSchema#string")))));
 
-	private static final Set<PositiveLiteral> expectedLanguageTagPositiveLiterals = new HashSet<>(Arrays.asList(
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"), makeConstant("file:/a"),
-					makeConstant("\"This is a test.\"@en")),
-			makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"), makeConstant("file:/a"),
-					makeConstant("\"Das ist ein Test.\"@de"))));
+	private static final Set<Fact> expectedLanguageTagFacts = new HashSet<>(Arrays.asList(
+			makeFact(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"),
+							makeConstant("\"This is a test.\"@en"))),
+			makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"),
+					makeConstant("\"Das ist ein Test.\"@de")))));
 
 	@Test
 	public void testDataTypesNormalized() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils
 				.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "unnormalizedLiteralValues.ttl"), RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter.rdfModelToPositiveLiterals(model);
-		assertEquals(expectedNormalizedPositiveLiterals, PositiveLiteralsFromModel);
+		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		assertEquals(expectedNormalizedFacts, facts);
 	}
 
 	@Test
 	public void testLiteralValuesPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "literalValues.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter.rdfModelToPositiveLiterals(model);
-		assertEquals(expectedLiteralPositiveLiterals, PositiveLiteralsFromModel);
+		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		assertEquals(expectedLiteralFacts, facts);
 	}
 
 	@Test
 	public void testRelativeURIsMadeAbsolute() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "relativeURIs.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter.rdfModelToPositiveLiterals(model);
-		assertEquals(expectedRelativeUriPositiveLiterals, PositiveLiteralsFromModel);
+		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		assertEquals(expectedRelativeUriFacts, facts);
 	}
 
 	@Test
 	public void testEscapedCharactersPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "escapedCharacters.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter.rdfModelToPositiveLiterals(model);
-		assertEquals(expectedEscapedCharacterPositiveLiterals, PositiveLiteralsFromModel);
+		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		assertEquals(expectedEscapedCharacterFacts, facts);
 	}
 
 	@Test
 	public void testLanguageTagsPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "languageTags.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter.rdfModelToPositiveLiterals(model);
-		assertEquals(expectedLanguageTagPositiveLiterals, PositiveLiteralsFromModel);
+		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		assertEquals(expectedLanguageTagFacts, facts);
 	}
 
 	@Test
 	public void testCollectionsPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "collections.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiteralsFromModel = RdfModelConverter.rdfModelToPositiveLiterals(model);
+		final Set<Fact> factsFromModel = RdfModelConverter.rdfModelToFacts(model);
 
 		final Term blank1 = RdfTestUtils.getObjectOfFirstMatchedTriple(makeConstant("file:/2"), makeConstant("file:/a"),
-				PositiveLiteralsFromModel);
+				factsFromModel);
 		final Term blank2 = RdfTestUtils.getObjectOfFirstMatchedTriple(makeConstant("file:/3"), makeConstant("file:/a"),
-				PositiveLiteralsFromModel);
-		final Term blank3 = RdfTestUtils.getObjectOfFirstMatchedTriple(blank2, RDF_REST, PositiveLiteralsFromModel);
+				factsFromModel);
+		final Term blank3 = RdfTestUtils.getObjectOfFirstMatchedTriple(blank2, RDF_REST, factsFromModel);
 
-		final Set<PositiveLiteral> expectedSetPositiveLiterals = new HashSet<>(Arrays.asList(
-				makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/1"), makeConstant("file:/a"),
-						RDF_NIL),
-				makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/2"), makeConstant("file:/a"),
-						blank1),
-				makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, blank1, RDF_FIRST,
-						makeConstant(intoLexical("1", "integer"))),
-				makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, blank1, RDF_REST, RDF_NIL),
-				makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, makeConstant("file:/3"), makeConstant("file:/a"),
-						blank2),
-				makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, blank2, RDF_FIRST, makeConstant("file:/#1")),
-				makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, blank2, RDF_REST, blank3),
-				makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, blank3, RDF_FIRST, makeConstant("file:/#2")),
-				makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, blank3, RDF_REST, RDF_NIL)));
+		final Set<Fact> expectedSetFacts = new HashSet<>(Arrays.asList(
+				makeFact(RDF_TRIPLE_PREDICATE_NAME,
+						Arrays.asList(makeConstant("file:/1"), makeConstant("file:/a"), RDF_NIL)),
+				makeFact(RDF_TRIPLE_PREDICATE_NAME,
+						Arrays.asList(makeConstant("file:/2"), makeConstant("file:/a"), blank1)),
+				makeFact(RDF_TRIPLE_PREDICATE_NAME,
+						Arrays.asList(blank1, RDF_FIRST, makeConstant(intoLexical("1", "integer")))),
+				makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank1, RDF_REST, RDF_NIL)),
+				makeFact(RDF_TRIPLE_PREDICATE_NAME,
+						Arrays.asList(makeConstant("file:/3"), makeConstant("file:/a"), blank2)),
+				makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_FIRST, makeConstant("file:/#1"))),
+				makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_REST, blank3)),
+				makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_FIRST, makeConstant("file:/#2"))),
+				makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_REST, RDF_NIL))));
 
-		assertEquals(expectedSetPositiveLiterals, PositiveLiteralsFromModel);
+		assertEquals(expectedSetFacts, factsFromModel);
 	}
 
 	@Test
@@ -196,10 +210,10 @@ public class TestConvertRdfFileToFacts {
 	private Set<Blank> getBlanksFromTurtleFile(final File file)
 			throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = RdfTestUtils.parseFile(file, RDFFormat.TURTLE);
-		final Set<PositiveLiteral> PositiveLiterals = RdfModelConverter.rdfModelToPositiveLiterals(model);
+		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
 
 		final Set<Blank> blanks = new HashSet<>();
-		PositiveLiterals.forEach(positiveLiteral -> blanks.addAll(positiveLiteral.getBlanks()));
+		facts.forEach(fact -> blanks.addAll(fact.getBlanks()));
 		return blanks;
 	}
 

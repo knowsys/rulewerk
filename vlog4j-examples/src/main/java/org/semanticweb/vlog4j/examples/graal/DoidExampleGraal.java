@@ -27,19 +27,19 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.DoidExample;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.graal.GraalToVLog4JModelConverter;
@@ -59,20 +59,21 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  */
 public class DoidExampleGraal {
 
-	public static void main(final String[] args)
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public static void main(final String[] args) throws IOException {
 
 		ExamplesUtils.configureLogging();
 
 		final URL wikidataSparqlEndpoint = new URL("https://query.wikidata.org/sparql");
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 
 			/* Configure RDF data source */
 			final Predicate doidTriplePredicate = makePredicate("doidTriple", 3);
 			final DataSource doidDataSource = new RdfFileDataSource(
 					new File(ExamplesUtils.INPUT_FOLDER + "doid.nt.gz"));
-			reasoner.addFactsFromDataSource(doidTriplePredicate, doidDataSource);
+			kb.addStatement(new DataSourceDeclarationImpl(doidTriplePredicate, doidDataSource));
 
 			/* Configure SPARQL data sources */
 			final String sparqlHumansWithDisease = "?disease wdt:P699 ?doid .";
@@ -80,21 +81,21 @@ public class DoidExampleGraal {
 			final DataSource diseasesDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
 					"disease,doid", sparqlHumansWithDisease);
 			final Predicate diseaseIdPredicate = Expressions.makePredicate("diseaseId", 2);
-			reasoner.addFactsFromDataSource(diseaseIdPredicate, diseasesDataSource);
+			kb.addStatement(new DataSourceDeclarationImpl(diseaseIdPredicate, diseasesDataSource));
 
 			final String sparqlRecentDeaths = "?human wdt:P31 wd:Q5; wdt:P570 ?deathDate . FILTER (YEAR(?deathDate) = 2018)";
 			// (wdt:P31 = "instance of"; wd:Q5 = "human", wdt:570 = "date of death")
 			final DataSource recentDeathsDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint, "human",
 					sparqlRecentDeaths);
 			final Predicate recentDeathsPredicate = Expressions.makePredicate("recentDeaths", 1);
-			reasoner.addFactsFromDataSource(recentDeathsPredicate, recentDeathsDataSource);
+			kb.addStatement(new DataSourceDeclarationImpl(recentDeathsPredicate, recentDeathsDataSource));
 
 			final String sparqlRecentDeathsCause = sparqlRecentDeaths + "?human wdt:P509 ?causeOfDeath . ";
 			// (wdt:P509 = "cause of death")
 			final DataSource recentDeathsCauseDataSource = new SparqlQueryResultDataSource(wikidataSparqlEndpoint,
 					"human,causeOfDeath", sparqlRecentDeathsCause);
 			final Predicate recentDeathsCausePredicate = Expressions.makePredicate("recentDeathsCause", 2);
-			reasoner.addFactsFromDataSource(recentDeathsCausePredicate, recentDeathsCauseDataSource);
+			kb.addStatement(new DataSourceDeclarationImpl(recentDeathsCausePredicate, recentDeathsCauseDataSource));
 
 			/* Load rules from DLGP file */
 			try (final DlgpParser parser = new DlgpParser(
@@ -102,7 +103,7 @@ public class DoidExampleGraal {
 				while (parser.hasNext()) {
 					final Object object = parser.next();
 					if (object instanceof fr.lirmm.graphik.graal.api.core.Rule) {
-						reasoner.addRules(
+						kb.addStatement(
 								GraalToVLog4JModelConverter.convertRule((fr.lirmm.graphik.graal.api.core.Rule) object));
 					}
 				}
@@ -118,18 +119,16 @@ public class DoidExampleGraal {
 			final PositiveLiteral deathCause = Expressions.makePositiveLiteral("deathCause", x, y);
 			final PositiveLiteral humansWhoDiedOfNoncancer = Expressions.makePositiveLiteral("humansWhoDiedOfNoncancer",
 					x);
-			reasoner.addRules(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
+			kb.addStatement(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
 					Expressions.makeConjunction(deathCause, diseaseId, notCancerDisease)));
 			// humansWhoDiedOfNoncancer(X) :- deathCause(X,Y), ~hasDoid(Y)
 			final NegativeLiteral hasNotDoid = Expressions.makeNegativeLiteral("hasDoid", y);
-			reasoner.addRules(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
+			kb.addStatement(Expressions.makeRule(Expressions.makePositiveConjunction(humansWhoDiedOfNoncancer),
 					Expressions.makeConjunction(deathCause, hasNotDoid)));
 
 			System.out.println("Rules configured:\n--");
-			reasoner.getRules().forEach(System.out::println);
+			kb.getRules().forEach(System.out::println);
 			System.out.println("--");
-			reasoner.load();
-			System.out.println("Loading completed.");
 			System.out.println("Starting reasoning (including SPARQL query answering) ...");
 			reasoner.reason();
 			System.out.println("... reasoning completed.");
