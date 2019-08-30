@@ -139,7 +139,7 @@ public final class ExamplesUtils {
 	 * @param Iterator<T> to iterate over
 	 * @return number of elements in iterator
 	 */
-	public static <T> int iteratorSize(final Iterator<T> iterator) {
+	private static <T> int iteratorSize(final Iterator<T> iterator) {
 		int size = 0;
 		for (; iterator.hasNext(); ++size) {
 			iterator.next();
