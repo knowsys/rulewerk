@@ -23,10 +23,10 @@ import java.io.IOException;
  * #L%
  */
 
-import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -41,64 +41,44 @@ public class DiplomaticallyUnconnectedClustersOfCountries {
 	public static void main(final String[] args) throws IOException {
 		ExamplesUtils.configureLogging();
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			RuleParser ruleParser = new RuleParser();
-			try {
-				ruleParser.parse(new FileInputStream(
-						ExamplesUtils.INPUT_FOLDER + "diplomatically-unconnected-clusters-of-countries.rls"));
-			} catch (ParsingException e) {
-				System.out.println("Failed to parse rules: " + e.getMessage());
-				return;
-			}
+		/* Configure rules */
+		KnowledgeBase kb;
+		try {
+			kb = RuleParser.parse(new FileInputStream(
+					ExamplesUtils.INPUT_FOLDER + "diplomatically-unconnected-clusters-of-countries.rls"));
+		} catch (final ParsingException e) {
+			System.out.println("Failed to parse rules: " + e.getMessage());
+			return;
+		}
 
-			for (DataSourceDeclaration dataSourceDeclaration : ruleParser.getDataSourceDeclartions()) {
-				reasoner.addFactsFromDataSource(dataSourceDeclaration.getPredicate(),
-						dataSourceDeclaration.getDataSource());
-			}
+		System.out.println("Rules used in this example:");
+		kb.getRules().forEach(System.out::println);
+		System.out.println("");
 
-			reasoner.addRules(ruleParser.getRules());
-			System.out.println("Rules used in this example:");
-			reasoner.getRules().forEach(System.out::println);
-			System.out.println("");
-
-			/* Initialise reasoner and compute inferences */
-			System.out.print("Initialising rules and data sources ... ");
-			reasoner.load();
-			System.out.println("completed.");
+		try (Reasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER + "vlog.log");
+			reasoner.setLogLevel(LogLevel.DEBUG);
 
 			System.out.print("Reasoning (including SPARQL query answering) ... ");
+			/* Initialise reasoner and compute inferences */
 			reasoner.reason();
 			System.out.println("completed.");
 
-			/* Execute queries */
-			try {
-				PositiveLiteral query;
-
-				query = ruleParser.parsePositiveLiteral("country(?X)");
-				System.out.println("Found " + ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true))
-						+ " countries in Wikidata having at least one diplomatic relationship with another country.");
-				// Due to symmetry, each pair is found twice, hence we divide by 2:
-				query = ruleParser.parsePositiveLiteral("complementOfEquivalenceClosure(?X,?Y)");
-				System.out.println("There are " + ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 2
-						+ " pairs of countries that are not reachable through a transitive diplomatic relation.");
-				// Due to symmetry, each triangle is found three, hence we divide by 6:
-				query = ruleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)");
-				System.out.println("There are " + ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 6
-						+ " triangles of countries without a diplomatic relation.");
-				query = ruleParser.parsePositiveLiteral("clique4(?X,?Y,?Z,?W)");
-				System.out.println("There are " + ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 24
-						+ " 4-cliques of countries without a diplomatic relation.");
-				System.out.println("Therefore, there are three diplomatically unconnected clusters of countries.");
-
-			} catch (ParsingException e) {
-				System.out.println("Failed to parse query: " + e.getMessage());
-			}
+			System.out.println("Found " + ExamplesUtils.getQueryAnswerCount("country(?X)", reasoner)
+					+ " countries in Wikidata having at least one diplomatic relationship with another country.");
+			// Due to symmetry, each pair is found twice, hence we divide by 2:
+			System.out.println("There are "
+					+ ExamplesUtils.getQueryAnswerCount("complementOfEquivalenceClosure(?X,?Y)", reasoner) / 2
+					+ " pairs of countries that are not reachable through a transitive diplomatic relation.");
+			// Due to symmetry, each triangle is found three, hence we divide by 6:
+			System.out.println("There are " + ExamplesUtils.getQueryAnswerCount("triangle(?X,?Y,?Z)", reasoner) / 6
+					+ " triangles of countries without a diplomatic relation.");
+			System.out.println("There are " + ExamplesUtils.getQueryAnswerCount("clique4(?X,?Y,?Z,?W)", reasoner) / 24
+					+ " 4-cliques of countries without a diplomatic relation.");
+			System.out.println(
+					"Therefore, there are three diplomatically unconnected clusters of countries. Seen on 2019-08-30. It might have changed.");
 
 			System.out.println("Done.");
-		} catch (VLog4jException e) {
-			System.out.println("The reasoner encountered a problem: " + e.getMessage());
 		}
-
 	}
-
 }
