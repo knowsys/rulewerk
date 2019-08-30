@@ -25,7 +25,6 @@ import java.io.IOException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -102,7 +101,6 @@ public class SkolemVsRestrictedChaseTermination {
 			 * extensively introducing new unnamed individuals to satisfy existential
 			 * restrictions.
 			 */
-			final QueryResultIterator answers = reasoner.answerQuery(queryHasPart, true);
 			System.out.println("Before the timeout, the Skolem chase had produced "
 					+ ExamplesUtils.getQueryAnswerCount(queryHasPart, reasoner) + " results for hasPart(?X, ?Y).");
 
