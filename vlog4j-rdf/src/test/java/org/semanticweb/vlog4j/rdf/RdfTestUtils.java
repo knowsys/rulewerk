@@ -38,6 +38,7 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 
@@ -100,9 +101,8 @@ public final class RdfTestUtils {
 		return "\"" + abbreviatedValue + "\"^^<http://www.w3.org/2001/XMLSchema#" + type + ">";
 	}
 
-	static Term getObjectOfFirstMatchedTriple(final Term subject, final Term predicate,
-			final Set<PositiveLiteral> PositiveLiterals) {
-		return PositiveLiterals.stream()
+	static Term getObjectOfFirstMatchedTriple(final Term subject, final Term predicate, final Set<Fact> facts) {
+		return facts.stream()
 				.filter(triple -> getSubjectFromTriple(triple).equals(subject)
 						&& getPredicateFromTriple(triple).equals(predicate))
 				.findFirst().map(triple -> getObjectFromTriple(triple)).get();

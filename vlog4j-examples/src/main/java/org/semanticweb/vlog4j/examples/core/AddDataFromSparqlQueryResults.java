@@ -26,9 +26,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -36,9 +33,11 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 
@@ -75,8 +74,7 @@ public class AddDataFromSparqlQueryResults {
 	 */
 	private static final String WIKIDATA_FATHER_PROPERTY = "wdt:P22";
 
-	public static void main(final String[] args)
-			throws ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException, IOException {
+	public static void main(final String[] args) throws IOException {
 
 		ExamplesUtils.configureLogging();
 
@@ -124,12 +122,14 @@ public class AddDataFromSparqlQueryResults {
 
 		try (Reasoner reasoner = Reasoner.getInstance()) {
 
+			final KnowledgeBase kb = reasoner.getKnowledgeBase();
 			/*
 			 * The SPARQL query results will be added to the reasoner knowledge base, as
 			 * facts associated to the predicate publicationParents.
 			 */
-			reasoner.addFactsFromDataSource(queryPredicate, sparqlQueryResultDataSource);
-			reasoner.load();
+
+			kb.addStatement(new DataSourceDeclarationImpl(queryPredicate, sparqlQueryResultDataSource));
+			reasoner.reason();
 
 			/*
 			 * We construct a query PositiveLiteral for the predicated associated to the
@@ -164,12 +164,10 @@ public class AddDataFromSparqlQueryResults {
 			final Rule rule = Expressions.makeRule(ruleHeadConjunction, Expressions.makeConjunction(query));
 
 			/*
-			 * We reset the reasoner in order to add the created rule, and reason on the
-			 * data added from the Wikidata SPARQL query result.
+			 * We add the created rule, and reason on the data added from the Wikidata
+			 * SPARQL query result.
 			 */
-			reasoner.resetReasoner();
-			reasoner.addRules(rule);
-			reasoner.load();
+			kb.addStatement(rule);
 			reasoner.reason();
 
 			/* We query the reasoner for facts of the haveChildrenTogether predicate. */

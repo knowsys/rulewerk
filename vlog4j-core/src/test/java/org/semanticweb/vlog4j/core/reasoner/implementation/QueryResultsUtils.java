@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 
 /**
  * Utility class with static methods for collecting the results of a query for

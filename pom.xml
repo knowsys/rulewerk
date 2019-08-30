@@ -7,7 +7,7 @@
 
 	<groupId>org.semanticweb.vlog4j</groupId>
 	<artifactId>vlog4j-parent</artifactId>
-	<version>0.4.0-SNAPSHOT</version>
+	<version>0.5.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>VLog4j</name>
@@ -61,9 +61,9 @@
 		<junit.version>4.12</junit.version>
 		<mockito.version>1.10.19</mockito.version>
 		<slf4j.version>1.7.10</slf4j.version>
-		<apache.commons.lang.version>3.7</apache.commons.lang.version>
+		<apache.commons.lang.version>3.9</apache.commons.lang.version>
 		<apache.commons.csv.version>1.5</apache.commons.csv.version>
-		<maven.javadoc.version>3.0.0</maven.javadoc.version>
+		<maven.javadoc.version>3.1.1</maven.javadoc.version>
 		<owlapi.version>4.5.1</owlapi.version>
 		<openrdf.sesame.version>2.7.16</openrdf.sesame.version>
 		<graal.version>1.3.1</graal.version>
@@ -234,6 +234,17 @@
 					<maxmem>256m</maxmem>
 					<!-- aggregated reports for multi-module projects -->
 					<aggregate>true</aggregate>
+					<instrumentation>
+                        <excludes>
+                            <!-- Do not consider generated source code. Plugin fails for these files. -->
+                            <exclude>**/javacc/JavaCC*.class</exclude>
+                            <exclude>**/javacc/JavaCharStream.class</exclude>
+                            <exclude>**/javacc/ParseException.class</exclude>
+                            <exclude>**/javacc/SimpleCharStream.class</exclude>
+                            <exclude>**/javacc/Token.class</exclude>
+                            <exclude>**/javacc/TokenMgrError.class</exclude>
+                        </excludes>
+                    </instrumentation>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -256,7 +267,7 @@
 					<checkinComment>Publishing javadoc for
 						${project.artifactId}:${project.version}</checkinComment>
 					<content>${project.reporting.outputDirectory}/apidocs</content>
-					<pubScmUrl>scm:git:https://github.com/mkroetzsch/vlog4j.git</pubScmUrl>
+					<pubScmUrl>scm:git:https://github.com/knowsys/vlog4j.git</pubScmUrl>
 					<scmBranch>gh-pages</scmBranch>
 				</configuration>
 			</plugin>
@@ -326,9 +337,9 @@
 	</profiles>
 
 	<scm>
-		<url>https://github.com/mkroetzsch/vlog4j.git</url>
-		<connection>scm:git:https://github.com/mkroetzsch/vlog4j.git</connection>
-		<developerConnection>scm:git:https://github.com/mkroetzsch/vlog4j.git</developerConnection>
+		<url>https://github.com/knowsys/vlog4j.git</url>
+		<connection>scm:git:https://github.com/knowsys/vlog4j.git</connection>
+		<developerConnection>scm:git:https://github.com/knowsys/vlog4j.git</developerConnection>
 	</scm>
 
 </project>

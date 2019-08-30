@@ -2,7 +2,6 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /*
  * #%L
@@ -31,19 +30,18 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 
-import karmaresearch.vlog.EDBConfigurationException;
-
-public class ReasonerTest {
+public class VLogReasonerBasics {
 
 	final String constantNameC = "c";
 	final String constantNameD = "d";
@@ -51,45 +49,44 @@ public class ReasonerTest {
 	final Constant constantC = Expressions.makeConstant(constantNameC);
 	final Constant constantD = Expressions.makeConstant(constantNameD);
 	final Variable x = Expressions.makeVariable("x");
-	final PositiveLiteral factAc = Expressions.makePositiveLiteral("A", constantC);
-	final PositiveLiteral factAd = Expressions.makePositiveLiteral("A", constantD);
+	final Fact factAc = Expressions.makeFact("A", Arrays.asList(constantC));
+	final Fact factAd = Expressions.makeFact("A", Arrays.asList(constantD));
 	final PositiveLiteral atomAx = Expressions.makePositiveLiteral("A", x);
 	final PositiveLiteral atomBx = Expressions.makePositiveLiteral("B", x);
 	final PositiveLiteral atomCx = Expressions.makePositiveLiteral("C", x);
 	final Rule ruleBxAx = Expressions.makeRule(atomBx, atomAx);
 	final Rule ruleCxBx = Expressions.makeRule(atomCx, atomBx);
 
-	@Test
-	public void testCloseRepeatedly()
-			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.close();
+	@Test(expected = NullPointerException.class)
+	public void testSetAlgorithmNull() {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.setAlgorithm(null);
 		}
+	}
 
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.load();
-			reasoner.close();
-			reasoner.close();
+	@Test(expected = NullPointerException.class)
+	public void setRuleRewriteStrategy1() {
+		try (final Reasoner reasoner = Reasoner.getInstance();) {
+			reasoner.setRuleRewriteStrategy(null);
 		}
 	}
 
 	@Test
-	public void testLoadRules()
-			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addRules(ruleBxAx, ruleCxBx);
-			reasoner.addRules(ruleBxAx);
-			assertEquals(reasoner.getRules(), Arrays.asList(ruleBxAx, ruleCxBx, ruleBxAx));
+	public void testLoadRules() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleBxAx, ruleCxBx, ruleBxAx);
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			assertEquals(Arrays.asList(ruleBxAx, ruleCxBx), kb.getRules());
 		}
 	}
 
 	@Test
-	public void testSimpleInference() throws EDBConfigurationException, IOException, ReasonerStateException,
-			EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testSimpleInference() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleBxAx, ruleCxBx, factAc, factAd);
 
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addFacts(factAc, factAd);
-			reasoner.addRules(ruleBxAx, ruleCxBx);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final QueryResultIterator cxQueryResultEnumBeforeReasoning = reasoner.answerQuery(atomCx, true);
@@ -105,14 +102,6 @@ public class ReasonerTest {
 					Arrays.asList(Arrays.asList(constantC), Arrays.asList(constantD)));
 
 			assertEquals(expectedResults, actualResults);
-		}
-	}
-
-	@Test
-	public void testGenerateDataSourcesConfigEmpty() throws ReasonerStateException, IOException {
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			final String dataSourcesConfig = reasoner.generateDataSourcesConfig();
-			assertTrue(dataSourcesConfig.isEmpty());
 		}
 	}
 

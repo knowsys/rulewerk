@@ -30,16 +30,16 @@ import java.util.LinkedHashSet;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 
-public class LoadDataFromSparqlQueryTest {
+public class VLogReasonerSparqlInput {
 
 	/**
 	 * Tests the query "SELECT ?b ?a WHERE {?a p:P22 ?b}"
@@ -48,11 +48,11 @@ public class LoadDataFromSparqlQueryTest {
 	 * @throws EdbIdbSeparationException
 	 * @throws IOException
 	 * @throws IncompatiblePredicateArityException
+	 * @throws QueryPredicateNonExistentException
 	 */
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
-	public void testSimpleSparqlQuery()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testSimpleSparqlQuery() throws IOException {
 		final URL endpoint = new URL("http://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
@@ -60,12 +60,13 @@ public class LoadDataFromSparqlQueryTest {
 				// a has father b
 				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(new DataSourceDeclarationImpl(fatherOfPredicate, dataSource));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
+					fatherOfPredicate, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 				final QueryResult firstAnswer = answerQuery.next();
@@ -76,8 +77,7 @@ public class LoadDataFromSparqlQueryTest {
 
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
-	public void testSimpleSparqlQueryHttps()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testSimpleSparqlQueryHttps() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
@@ -85,12 +85,13 @@ public class LoadDataFromSparqlQueryTest {
 				// a has father b
 				"?a wdt:P22 ?b");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(new DataSourceDeclarationImpl(fatherOfPredicate, dataSource));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
+					fatherOfPredicate, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 				final QueryResult firstAnswer = answerQuery.next();
@@ -106,11 +107,11 @@ public class LoadDataFromSparqlQueryTest {
 	 * @throws EdbIdbSeparationException
 	 * @throws IOException
 	 * @throws IncompatiblePredicateArityException
+	 * @throws QueryPredicateNonExistentException
 	 */
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
-	public void testSimpleSparqlQuery2()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testSimpleSparqlQuery2() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
@@ -118,12 +119,13 @@ public class LoadDataFromSparqlQueryTest {
 				// a has father b
 				"?a wdt:P22 ?b .");
 		final Predicate fatherOfPredicate = Expressions.makePredicate("FatherOf", 2);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(new DataSourceDeclarationImpl(fatherOfPredicate, dataSource));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFactsFromDataSource(fatherOfPredicate, dataSource);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
+					fatherOfPredicate, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 			}
@@ -132,8 +134,7 @@ public class LoadDataFromSparqlQueryTest {
 
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test(expected = RuntimeException.class)
-	public void testConjunctiveQueryNewLineCharacterInQueryBody()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testConjunctiveQueryNewLineCharacterInQueryBody() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
@@ -141,9 +142,10 @@ public class LoadDataFromSparqlQueryTest {
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a .\n" + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(new DataSourceDeclarationImpl(haveChildrenTogether, dataSource));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether, Expressions.makeVariable("x"),
 					Expressions.makeVariable("y")), false);
@@ -152,8 +154,7 @@ public class LoadDataFromSparqlQueryTest {
 
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
 	@Test
-	public void testConjunctiveQuery()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testConjunctiveQuery() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
@@ -161,12 +162,13 @@ public class LoadDataFromSparqlQueryTest {
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
 		final Predicate haveChildrenTogether = Expressions.makePredicate("haveChildrenTogether", 2);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(new DataSourceDeclarationImpl(haveChildrenTogether, dataSource));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFactsFromDataSource(haveChildrenTogether, dataSource);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether,
-					Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
+					haveChildrenTogether, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 			}
@@ -174,8 +176,7 @@ public class LoadDataFromSparqlQueryTest {
 	}
 
 	@Test(expected = IncompatiblePredicateArityException.class)
-	public void testDataSourcePredicateDoesNotMatchSparqlQueryTerms()
-			throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void testDataSourcePredicateDoesNotMatchSparqlQueryTerms() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
 				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
@@ -183,10 +184,10 @@ public class LoadDataFromSparqlQueryTest {
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(new DataSourceDeclarationImpl(Expressions.makePredicate("ternary", 3), dataSource));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			// TODO must validate predicate arity sonner
-			reasoner.addFactsFromDataSource(Expressions.makePredicate("ternary", 3), dataSource);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 		}
 	}

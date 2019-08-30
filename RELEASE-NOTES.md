@@ -5,14 +5,28 @@ VLog4j v0.4.0
 -------------
 
 Breaking changes:
+* The Reasoner interface has changed (knowledge base and related methods moved to KnowledgeBase) 
+* The EdbIdbSeparation is obsolete and does no longer exist
 * IRIs loaded from RDF inputs no longer include surrounding < > in their string identifier
+* A new interface Fact has replaced the overly general PositiveLiteral in many places
 
 New features:
 * New own syntax for rules, facts, and data sources to create knowledge bases from files or strings in Java
+* Input predicates can now be used with multiple sources and in rule heads (no more EDB-IDB distinction) 
+* New InMemoryDataSource for efficient in-memory fact loading
+* New KnowledgeBase class separates facts, data sources, and rules from the actual Reasoner
+* Modifications to the knowledge base are taken into account by the reasoner 
 * New and updated example programs to illustrate use of syntax
 
+Other improvements:
+* Query results now indicate their guaranteed correctness (example: answers can be incomplete when setting a timeout)
+* Faster and more memory-efficient loading of facts
+* Better error reporting; improved use of exceptions
+* Better logging, especially on the INFO level
+* Better code structure and testing
+
 Bugfixes:
-* ...
+* Several reasoning errors in VLog (backend) have been discovered and fixed in the version used now 
 
 
 VLog4j v0.3.0

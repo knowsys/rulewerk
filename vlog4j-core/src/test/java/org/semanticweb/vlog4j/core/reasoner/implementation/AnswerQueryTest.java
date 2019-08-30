@@ -28,16 +28,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -46,30 +45,30 @@ import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
-
-import karmaresearch.vlog.EDBConfigurationException;
 
 public class AnswerQueryTest {
 
 	@Test
-	public void testEDBQuerySameConstantSubstitutesSameVariableName()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testEDBQuerySameConstantSubstitutesSameVariableName() throws IOException {
 		final String predicate = "p";
 		final Constant constantC = Expressions.makeConstant("c");
 		final Constant constantD = Expressions.makeConstant("d");
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
 		final Variable z = Expressions.makeVariable("Z");
-		final PositiveLiteral fact = Expressions.makePositiveLiteral(predicate, constantC, constantC, constantD);
+		final Fact fact = Expressions.makeFact(predicate, Arrays.asList(constantC, constantC, constantD));
 
 		final boolean includeBlanks = false;
 		@SuppressWarnings("unchecked")
 		final Set<List<Constant>> factCCD = Sets.newSet(Arrays.asList(constantC, constantC, constantD));
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFacts(fact);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(fact);
+		
+		try (final VLogReasoner reasoner =new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final PositiveLiteral queryAtomXYZ = Expressions.makePositiveLiteral(predicate, x, y, z);
@@ -98,8 +97,7 @@ public class AnswerQueryTest {
 	}
 
 	@Test
-	public void testIDBQuerySameBlankSubstitutesSameVariableName()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testIDBQuerySameBlankSubstitutesSameVariableName() throws IOException {
 		final String predicate = "p";
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
@@ -110,11 +108,14 @@ public class AnswerQueryTest {
 				Expressions.makeConjunction(Expressions.makePositiveLiteral(predicate, x)));
 		assertEquals(Sets.newSet(y, z), pX__pYY_pYZ.getExistentiallyQuantifiedVariables());
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		kb.addStatements(pX__pYY_pYZ);
+		kb.addStatement(Expressions.makeFact(predicate, Arrays.asList(Expressions.makeConstant("c"))));
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			reasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
-			reasoner.addFacts(Expressions.makePositiveLiteral(predicate, Expressions.makeConstant("c")));
-			reasoner.addRules(pX__pYY_pYZ);
 			reasoner.load();
 			reasoner.reason();
 
@@ -138,8 +139,7 @@ public class AnswerQueryTest {
 	}
 
 	@Test
-	public void testIDBQuerySameIndividualSubstitutesSameVariableName()
-			throws ReasonerStateException, IOException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testIDBQuerySameIndividualSubstitutesSameVariableName() throws IOException {
 		final String predicate = "p";
 		final Variable x = Expressions.makeVariable("X");
 		final Variable y = Expressions.makeVariable("Y");
@@ -150,11 +150,14 @@ public class AnswerQueryTest {
 		assertEquals(Sets.newSet(z, t), pXY__pXYYZZT.getExistentiallyQuantifiedVariables());
 		final Constant constantC = Expressions.makeConstant("c");
 		final Constant constantD = Expressions.makeConstant("d");
-		final PositiveLiteral factPcd = Expressions.makePositiveLiteral(predicate, constantC, constantD);
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addFacts(factPcd);
-			reasoner.addRules(pXY__pXYYZZT);
+		final Fact factPcd = Expressions.makeFact(predicate, Arrays.asList(constantC, constantD));
+
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		kb.addStatements(pXY__pXYYZZT, factPcd);
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.reason();
 
@@ -207,19 +210,21 @@ public class AnswerQueryTest {
 	}
 
 	@Test
-	public void queryResultWithBlanks() throws ReasonerStateException, EdbIdbSeparationException, IOException, IncompatiblePredicateArityException {
+	public void queryResultWithBlanks() throws IOException {
 		final Variable vx = Expressions.makeVariable("x");
 		final Variable vy = Expressions.makeVariable("y");
 		// P(x) -> Q(y)
-		final Rule existentialRule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vy), Expressions.makePositiveLiteral("p", vx));
+		final Rule existentialRule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vy),
+				Expressions.makePositiveLiteral("p", vx));
 		assertEquals(Sets.newSet(vy), existentialRule.getExistentiallyQuantifiedVariables());
 		final Constant constantC = Expressions.makeConstant("c");
-		final PositiveLiteral fact = Expressions.makePositiveLiteral("p", constantC);
+		final Fact fact = Expressions.makeFact("p", Arrays.asList(constantC));
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("q", Expressions.makeVariable("?x"));
 
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addFacts(fact);
-			reasoner.addRules(existentialRule);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(existentialRule, fact);
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.reason();
 
@@ -239,28 +244,44 @@ public class AnswerQueryTest {
 	}
 
 	@Test
-	public void queryEmptyKnowledgeBase() throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
+	public void queryEmptyKnowledgeBaseBeforeReasoning() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
-			final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true);
-			Assert.assertFalse(queryResultIterator.hasNext());
-			queryResultIterator.close();
-
-			reasoner.reason();
-
-			try (final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom, true)) {
-				assertFalse(queryResultIteratorAfterReason.hasNext());
+			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true) ) {
+				final Set<List<Term>> queryResults = QueryResultsUtils.collectQueryResults(queryResultIterator);
+				assertEquals(Collections.EMPTY_SET, queryResults);
 			}
 		}
 	}
 
 	@Test
-	public void queryEmptyRules() throws IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			final PositiveLiteral fact = Expressions.makePositiveLiteral("P", Expressions.makeConstant("c"));
-			reasoner.addFacts(fact);
+	public void queryEmptyKnowledgeBaseAfterReasoning() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+
+			reasoner.reason();
+
+			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
+			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true) ) {
+				final Set<List<Term>> queryResults = QueryResultsUtils.collectQueryResults(queryResultIterator);
+				assertEquals(Collections.EMPTY_SET, queryResults);
+			}
+		}
+	}
+
+	@Test
+	public void queryEmptyRules() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		final Fact fact = Expressions.makeFact("P", Arrays.asList(Expressions.makeConstant("c")));
+		kb.addStatement(fact);
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
@@ -277,24 +298,36 @@ public class AnswerQueryTest {
 	}
 
 	@Test
-	public void queryEmptyFacts()
-			throws EDBConfigurationException, IOException, EdbIdbSeparationException, ReasonerStateException, IncompatiblePredicateArityException {
+	public void queryEmptyFacts() throws IOException {
 		final Variable vx = Expressions.makeVariable("x");
-		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx), Expressions.makePositiveLiteral("p", vx));
+		final Rule rule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx),
+				Expressions.makePositiveLiteral("p", vx));
 
-		try (final VLogReasoner reasoner = new VLogReasoner()) {
-			reasoner.addRules(rule);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(rule);
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
-			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeVariable("?x"));
-			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true)) {
+			final PositiveLiteral queryAtom1 = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"));
+			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom1, true)) {
+				Assert.assertFalse(queryResultIterator.hasNext());
+				queryResultIterator.close();
+			}
+
+			final PositiveLiteral queryAtom2 = Expressions.makePositiveLiteral("q", Expressions.makeVariable("?x"));
+			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom2, true)) {
 				Assert.assertFalse(queryResultIterator.hasNext());
 				queryResultIterator.close();
 			}
 
 			reasoner.reason();
 
-			try (final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom, true)) {
+			try (final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom1, true)) {
+				assertFalse(queryResultIteratorAfterReason.hasNext());
+			}
+
+			try (final QueryResultIterator queryResultIteratorAfterReason = reasoner.answerQuery(queryAtom2, true)) {
 				assertFalse(queryResultIteratorAfterReason.hasNext());
 			}
 		}

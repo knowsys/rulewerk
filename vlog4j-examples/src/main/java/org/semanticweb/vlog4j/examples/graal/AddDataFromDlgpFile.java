@@ -27,9 +27,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.graal.GraalConjunctiveQueryToRule;
@@ -60,8 +58,7 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  */
 public class AddDataFromDlgpFile {
 
-	public static void main(final String[] args)
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public static void main(final String[] args) throws IOException {
 
 		final List<fr.lirmm.graphik.graal.api.core.Atom> graalAtoms = new ArrayList<>();
 		final List<fr.lirmm.graphik.graal.api.core.Rule> graalRules = new ArrayList<>();
@@ -103,20 +100,33 @@ public class AddDataFromDlgpFile {
 		 * 3. Loading, reasoning, and querying while using try-with-resources to close
 		 * the reasoner automatically.
 		 */
-		try (Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addRules(GraalToVLog4JModelConverter.convertRules(graalRules));
-			reasoner.addFacts(GraalToVLog4JModelConverter.convertAtoms(graalAtoms));
-			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
-				reasoner.addRules(graalConjunctiveQueryToRule.getRule());
-			}
 
-			reasoner.load();
+		try (Reasoner reasoner = Reasoner.getInstance()) {
+			final KnowledgeBase kb = reasoner.getKnowledgeBase();
+
+			/*
+			 * Add facts to the reasoner knowledge base
+			 */
+			kb.addStatements(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
+			/*
+			 * Load the knowledge base into the reasoner
+			 */
+			reasoner.reason();
 			System.out.println("Before materialisation:");
 			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
 				ExamplesUtils.printOutQueryAnswers(graalConjunctiveQueryToRule.getQuery(), reasoner);
 			}
 
-			/* The reasoner will use the Restricted Chase by default. */
+			/*
+			 * Add rules to the reasoner knowledge base
+			 */
+			kb.addStatements(GraalToVLog4JModelConverter.convertRules(graalRules));
+			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
+				kb.addStatement(graalConjunctiveQueryToRule.getRule());
+			}
+			/*
+			 * Materialise facts using rules
+			 */
 			reasoner.reason();
 			System.out.println("After materialisation:");
 			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {

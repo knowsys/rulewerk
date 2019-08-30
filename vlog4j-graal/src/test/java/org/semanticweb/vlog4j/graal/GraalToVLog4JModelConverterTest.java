@@ -25,6 +25,7 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeC
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeFact;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
@@ -34,6 +35,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -110,6 +112,13 @@ public class GraalToVLog4JModelConverterTest {
 		final fr.lirmm.graphik.graal.api.core.Atom graal_atom_2 = new DefaultAtom(this.graal_hasPart, this.graal_x,
 				this.graal_socrate);
 		assertEquals(vlog4j_atom_2, GraalToVLog4JModelConverter.convertAtom(graal_atom_2));
+	}
+
+	@Test
+	public void testConvertFact() throws ParseException {
+		final Fact vlog4j_atom = makeFact(this.vlog4j_human, Arrays.asList(this.vlog4j_socrate));
+		final fr.lirmm.graphik.graal.api.core.Atom graal_atom = new DefaultAtom(this.graal_human, this.graal_socrate);
+		assertEquals(vlog4j_atom, GraalToVLog4JModelConverter.convertAtomToFact(graal_atom));
 	}
 
 	@Test

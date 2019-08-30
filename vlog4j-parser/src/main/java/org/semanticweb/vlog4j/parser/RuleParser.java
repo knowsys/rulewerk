@@ -22,13 +22,11 @@ package org.semanticweb.vlog4j.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.List;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParser;
 import org.semanticweb.vlog4j.parser.javacc.ParseException;
 import org.semanticweb.vlog4j.parser.javacc.TokenMgrError;
@@ -36,32 +34,43 @@ import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.FormulaContext;
 import org.semanticweb.vlog4j.parser.ParsingException;
 
 /**
- * Class to access VLog parsing functionality.
- * 
- * @FIXME Support parsing from multiple files (into one KB).
+ * Class to statically access VLog parsing functionality.
  * 
  * @author Markus Kroetzsch
  *
  */
 public class RuleParser {
 
-	JavaCCParser parser;
-
-	public void parse(InputStream stream, String encoding) throws ParsingException {
-		parser = new JavaCCParser(stream, encoding);
-		doParse();
+	public static void parseInto(KnowledgeBase knowledgeBase, InputStream stream, String encoding)
+			throws ParsingException {
+		JavaCCParser javaCcParser = new JavaCCParser(stream, encoding);
+		javaCcParser.setKnowledgeBase(knowledgeBase);
+		doParse(javaCcParser);
 	}
 
-	public void parse(InputStream stream) throws ParsingException {
-		parse(stream, "UTF-8");
+	public static void parseInto(KnowledgeBase knowledgeBase, InputStream stream) throws ParsingException {
+		parseInto(knowledgeBase, stream, "UTF-8");
 	}
 
-	public void parse(String input) throws ParsingException {
+	public static void parseInto(KnowledgeBase knowledgeBase, String input) throws ParsingException {
 		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		parse(inputStream, "UTF-8");
+		parseInto(knowledgeBase, inputStream, "UTF-8");
 	}
 
-	public Literal parseLiteral(String input) throws ParsingException {
+	public static KnowledgeBase parse(InputStream stream, String encoding) throws ParsingException {
+		return doParse(new JavaCCParser(stream, encoding));
+	}
+
+	public static KnowledgeBase parse(InputStream stream) throws ParsingException {
+		return parse(stream, "UTF-8");
+	}
+
+	public static KnowledgeBase parse(String input) throws ParsingException {
+		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+		return parse(inputStream, "UTF-8");
+	}
+
+	public static Literal parseLiteral(String input) throws ParsingException {
 		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 		try {
@@ -71,7 +80,7 @@ public class RuleParser {
 		}
 	}
 
-	public PositiveLiteral parsePositiveLiteral(String input) throws ParsingException {
+	public static PositiveLiteral parsePositiveLiteral(String input) throws ParsingException {
 		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 		try {
@@ -81,24 +90,13 @@ public class RuleParser {
 		}
 	}
 
-	void doParse() throws ParsingException {
+	static KnowledgeBase doParse(JavaCCParser parser) throws ParsingException {
 		try {
 			parser.parse();
+			return parser.getKnowledgeBase();
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
 			throw new ParsingException(e.getMessage(), e);
 		}
-	}
-
-	public List<Rule> getRules() {
-		return parser.getRules();
-	}
-
-	public List<PositiveLiteral> getFacts() {
-		return parser.getFacts();
-	}
-
-	public List<DataSourceDeclaration> getDataSourceDeclartions() {
-		return parser.getDataSourceDeclartions();
 	}
 
 }

@@ -22,13 +22,11 @@ package org.semanticweb.vlog4j.examples.core;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
@@ -44,58 +42,58 @@ import org.semanticweb.vlog4j.parser.RuleParser;
  */
 public class SkolemVsRestrictedChaseTermination {
 
-	public static void main(final String[] args) throws ReasonerStateException, EdbIdbSeparationException,
-			IncompatiblePredicateArityException, IOException, ParsingException {
+	public static void main(final String[] args) throws IOException, ParsingException {
 
 		ExamplesUtils.configureLogging();
 
-		/* 1. Load data and prepare rules. */
+		final String facts = ""// define some facts:
+				+ "bicycle(bicycle1) ." //
+				+ "hasPart(bicycle1, wheel1) ." //
+				+ "wheel(wheel1) ." //
+				+ "bicycle(bicycle2) .";
 
-		final String rules = "" // define some facts:
-				+ "bicycleEDB(bicycle1) ." //
-				+ "hasPartEDB(bicycle1, wheel1) ." //
-				+ "wheelEDB(wheel1) ." //
-				+ "bicycleEDB(bicycle2) ." //
-				// rules to load all data from the file-based ("EDB") predicates:
-				+ "bicycleIDB(?X) :- bicycleEDB(?X) ." //
-				+ "wheelIDB(?X) :- wheelEDB(?X) ." //
-				+ "hasPartIDB(?X, ?Y) :- hasPartEDB(?X, ?Y) ." //
-				+ "isPartOfIDB(?X, ?Y) :- isPartOfEDB(?X, ?Y) ." //
+		final String rules = ""
 				// every bicycle has some part that is a wheel:
-				+ "hasPartIDB(?X, !Y), wheelIDB(!Y) :- bicycleIDB(?X) ." //
+				+ "hasPart(?X, !Y), wheel(!Y) :- bicycle(?X) ." //
 				// every wheel is part of some bicycle:
-				+ "isPartOfIDB(?X, !Y), bicycleIDB(!Y) :- wheelIDB(?X) ." //
+				+ "isPartOf(?X, !Y), bicycle(!Y) :- wheel(?X) ." //
 				// hasPart and isPartOf are mutually inverse relations:
-				+ "hasPartIDB(?X, ?Y) :- isPartOfIDB(?Y, ?X) ." //
-				+ "isPartOfIDB(?X, ?Y) :- hasPartIDB(?Y, ?X) .";
-
-		RuleParser ruleParser = new RuleParser();
-		ruleParser.parse(rules);
+				+ "hasPart(?X, ?Y) :- isPartOf(?Y, ?X) ." //
+				+ "isPartOf(?X, ?Y) :- hasPart(?Y, ?X) .";
 
 		/*
-		 * 2. Loading, reasoning, and querying. Use try-with resources, or remember to
-		 * call close() to free the reasoner resources.
+		 * 1. Load facts into a knowledge base
 		 */
-		try (Reasoner reasoner = Reasoner.getInstance()) {
-			reasoner.addRules(ruleParser.getRules());
-			reasoner.addFacts(ruleParser.getFacts());
-			reasoner.load();
+		final KnowledgeBase kb = RuleParser.parse(facts);
 
-			PositiveLiteral queryHasPart = ruleParser.parsePositiveLiteral("hasPartIDB(?X, ?Y)");
+		/*
+		 * 2. Load the knowledge base into the reasoner
+		 */
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+
+			/*
+			 * 3. Query the reasoner before applying rules for fact materialisation
+			 */
+			final PositiveLiteral queryHasPart = RuleParser.parsePositiveLiteral("hasPart(?X, ?Y)");
 
 			/* See that there is no fact HasPartIDB before reasoning. */
 			System.out.println("Before reasoning is started, no inferrences have been computed yet.");
 			ExamplesUtils.printOutQueryAnswers(queryHasPart, reasoner);
 
 			/*
-			 * As the Skolem Chase is known not to terminate for this set of rules and
-			 * facts, it is interrupted after one second.
+			 * 4. Load rules into the knowledge base
+			 */
+			RuleParser.parseInto(kb, rules);
+			/*
+			 * 5. Materialise with the Skolem Chase. As the Skolem Chase is known not to
+			 * terminate for this set of rules and facts, it is interrupted after one
+			 * second.
 			 */
 			reasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
 			reasoner.setReasoningTimeout(1);
-			System.out.print("Starting Skolem Chase (a.k.a. semi-oblivious chase) with 1 second timeout ... ");
+			System.out.println("Starting Skolem Chase (a.k.a. semi-oblivious chase) with 1 second timeout ...");
 			final boolean skolemChaseFinished = reasoner.reason();
-			System.out.println("done.");
 
 			/* Verify that the Skolem Chase did not terminate before timeout. */
 			System.out.println("Has Skolem Chase algorithm finished before 1 second timeout? " + skolemChaseFinished);
@@ -104,35 +102,26 @@ public class SkolemVsRestrictedChaseTermination {
 			 * extensively introducing new unnamed individuals to satisfy existential
 			 * restrictions.
 			 */
-			QueryResultIterator answers = reasoner.answerQuery(queryHasPart, true);
+			final QueryResultIterator answers = reasoner.answerQuery(queryHasPart, true);
 			System.out.println("Before the timeout, the Skolem chase had produced "
-					+ ExamplesUtils.iteratorSize(answers) + " results for hasPartIDB(?X, ?Y).");
+					+ ExamplesUtils.iteratorSize(answers) + " results for hasPart(?X, ?Y).");
 
 			/*
-			 * We reset the reasoner and apply the Restricted Chase on the same set of rules
-			 * and facts
+			 * 6. We reset the reasoner to discard all inferences, and apply the Restricted
+			 * Chase on the same set of rules and facts
 			 */
-			System.out.println("\nReseting reasoner; discarding facts generated during reasoning.");
+			System.out.println();
 			reasoner.resetReasoner();
-			reasoner.load();
 
 			/*
-			 * See that there is no fact HasPartIDB before reasoning. All inferred facts
-			 * have been discarded when the reasoner was reset.
-			 */
-			System.out.println("We can verify that there are no inferences for hasPartIDB(?X, ?Y) after reset.");
-			ExamplesUtils.printOutQueryAnswers(queryHasPart, reasoner);
-
-			/*
-			 * As the Restricted Chase is known to terminate for this set of rules and
-			 * facts, we will not interrupt it.
+			 * 7. Materialise with the Restricted Chase. As the Restricted Chase is known to
+			 * terminate for this set of rules and facts, we will not interrupt it.
 			 */
 			reasoner.setAlgorithm(Algorithm.RESTRICTED_CHASE);
 			reasoner.setReasoningTimeout(null);
 			final long restrictedChaseStartTime = System.currentTimeMillis();
-			System.out.print("Starting Restricted Chase (a.k.a. Standard Chase) without any timeout ... ");
+			System.out.println("Starting Restricted Chase (a.k.a. Standard Chase) without any timeout ... ");
 			reasoner.reason();
-			System.out.println("done.");
 
 			/* The Restricted Chase terminates: */
 			final long restrictedChaseDuration = System.currentTimeMillis() - restrictedChaseStartTime;

@@ -1,10 +1,9 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,19 +12,30 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
-import org.semanticweb.vlog4j.core.exceptions.EdbIdbSeparationException;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Statement;
+import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
+import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
+import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
+import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
+import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
@@ -35,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
 import karmaresearch.vlog.MaterializationException;
+import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
@@ -60,20 +71,180 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
  * #L%
  */
 
+/**
+ * Reasoner implementation using the VLog backend.
+ * 
+ * 
+ * 
+ * @author Markus Kroetzsch
+ *
+ */
 public class VLogReasoner implements Reasoner {
 	private static Logger LOGGER = LoggerFactory.getLogger(VLogReasoner.class);
 
-	private final VLog vLog = new VLog();
-	private ReasonerState reasonerState = ReasonerState.BEFORE_LOADING;
+	/**
+	 * Dummy data source declaration for predicates for which we have explicit local
+	 * facts in the input.
+	 * 
+	 * @author Markus Kroetzsch
+	 *
+	 */
+	class LocalFactsDataSourceDeclaration implements DataSourceDeclaration {
+
+		final Predicate predicate;
+
+		public LocalFactsDataSourceDeclaration(Predicate predicate) {
+			this.predicate = predicate;
+		}
+
+		@Override
+		public <T> T accept(StatementVisitor<T> statementVisitor) {
+			return statementVisitor.visit(this);
+		}
+
+		@Override
+		public Predicate getPredicate() {
+			return this.predicate;
+		}
+
+		@Override
+		public DataSource getDataSource() {
+			return null;
+		}
+
+		@Override
+		public int hashCode() {
+			return predicate.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			final LocalFactsDataSourceDeclaration other = (LocalFactsDataSourceDeclaration) obj;
+			return predicate.equals(other.predicate);
+		}
+
+	}
+
+	/**
+	 * Local visitor implementation for processing statements upon loading. Internal
+	 * index structures are updated based on the statements that are detected.
+	 * 
+	 * @author Markus Kroetzsch
+	 *
+	 */
+	class LoadKbVisitor implements StatementVisitor<Void> {
+
+		public void clearIndexes() {
+			edbPredicates.clear();
+			idbPredicates.clear();
+			aliasedEdbPredicates.clear();
+			aliasesForEdbPredicates.clear();
+			directEdbFacts.clear();
+			rules.clear();
+		}
+
+		@Override
+		public Void visit(Fact statement) {
+			final Predicate predicate = statement.getPredicate();
+			registerEdbDeclaration(new LocalFactsDataSourceDeclaration(predicate));
+			if (!directEdbFacts.containsKey(predicate)) {
+				final List<Fact> facts = new ArrayList<Fact>();
+				facts.add(statement);
+				directEdbFacts.put(predicate, facts);
+			} else {
+				directEdbFacts.get(predicate).add(statement);
+			}
+			return null;
+		}
+
+		@Override
+		public Void visit(Rule statement) {
+			rules.add(statement);
+			for (final PositiveLiteral positiveLiteral : statement.getHead()) {
+				final Predicate predicate = positiveLiteral.getPredicate();
+				if (!idbPredicates.contains(predicate)) {
+					if (edbPredicates.containsKey(predicate)) {
+						addEdbAlias(edbPredicates.get(predicate));
+						edbPredicates.remove(predicate);
+					}
+					idbPredicates.add(predicate);
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public Void visit(DataSourceDeclaration statement) {
+			registerEdbDeclaration(statement);
+			return null;
+		}
+
+		void registerEdbDeclaration(DataSourceDeclaration dataSourceDeclaration) {
+			final Predicate predicate = dataSourceDeclaration.getPredicate();
+			if (idbPredicates.contains(predicate) || aliasedEdbPredicates.contains(predicate)) {
+				if (!aliasesForEdbPredicates.containsKey(dataSourceDeclaration)) {
+					addEdbAlias(dataSourceDeclaration);
+				}
+			} else {
+				final DataSourceDeclaration currentMainDeclaration = edbPredicates.get(predicate);
+				if (currentMainDeclaration == null) {
+					edbPredicates.put(predicate, dataSourceDeclaration);
+				} else if (!(currentMainDeclaration.equals(dataSourceDeclaration))) {
+					addEdbAlias(currentMainDeclaration);
+					addEdbAlias(dataSourceDeclaration);
+					edbPredicates.remove(predicate);
+				} // else: predicate already known to have local facts (only)
+			}
+		}
+
+		void addEdbAlias(DataSourceDeclaration dataSourceDeclaration) {
+			final Predicate predicate = dataSourceDeclaration.getPredicate();
+			Predicate aliasPredicate;
+			if (dataSourceDeclaration instanceof LocalFactsDataSourceDeclaration) {
+				aliasPredicate = new PredicateImpl(predicate.getName() + "##FACT", predicate.getArity());
+			} else {
+				aliasPredicate = new PredicateImpl(predicate.getName() + "##" + dataSourceDeclaration.hashCode(),
+						predicate.getArity());
+			}
+			aliasesForEdbPredicates.put(dataSourceDeclaration, aliasPredicate);
+			aliasedEdbPredicates.add(predicate);
+
+			final List<Term> terms = new ArrayList<>();
+			for (int i = 1; i <= predicate.getArity(); i++) {
+				terms.add(new VariableImpl("X" + i));
+			}
+			final Literal body = new PositiveLiteralImpl(aliasPredicate, terms);
+			final PositiveLiteral head = new PositiveLiteralImpl(predicate, terms);
+			final Rule rule = new RuleImpl(new ConjunctionImpl<PositiveLiteral>(Arrays.asList(head)),
+					new ConjunctionImpl<Literal>(Arrays.asList(body)));
+			rules.add(rule);
+		}
+
+	}
+
+	final KnowledgeBase knowledgeBase;
+	final VLog vLog = new VLog();
+
+	final Map<DataSourceDeclaration, Predicate> aliasesForEdbPredicates = new HashMap<>();
+	final Set<Predicate> idbPredicates = new HashSet<>();
+	final Map<Predicate, DataSourceDeclaration> edbPredicates = new HashMap<>();
+	final Set<Predicate> aliasedEdbPredicates = new HashSet<>();
+	final Map<Predicate, List<Fact>> directEdbFacts = new HashMap<>();
+	final Set<Rule> rules = new HashSet<>();
+
+	private ReasonerState reasonerState = ReasonerState.KB_NOT_LOADED;
+	private Correctness correctness = Correctness.SOUND_BUT_INCOMPLETE;
 
 	private LogLevel internalLogLevel = LogLevel.WARNING;
 	private Algorithm algorithm = Algorithm.RESTRICTED_CHASE;
 	private Integer timeoutAfterSeconds;
 	private RuleRewriteStrategy ruleRewriteStrategy = RuleRewriteStrategy.NONE;
-
-	private final List<Rule> rules = new ArrayList<>();
-	private final Map<Predicate, Set<PositiveLiteral>> factsForPredicate = new HashMap<>();
-	private final Map<Predicate, DataSource> dataSourceForPredicate = new HashMap<>();
 
 	/**
 	 * Holds the state of the reasoning result. Has value {@code true} if reasoning
@@ -81,12 +252,24 @@ public class VLogReasoner implements Reasoner {
 	 */
 	private boolean reasoningCompleted;
 
+	public VLogReasoner(KnowledgeBase knowledgeBase) {
+		super();
+		this.knowledgeBase = knowledgeBase;
+		this.knowledgeBase.addListener(this);
+
+		setLogLevel(this.internalLogLevel);
+	}
+
+	@Override
+	public KnowledgeBase getKnowledgeBase() {
+		return this.knowledgeBase;
+	}
+
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm, "Algorithm cannot be null!");
+		validateNotClosed();
 		this.algorithm = algorithm;
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			LOGGER.warn("Setting algorithm on a closed reasoner.");
 	}
 
 	@Override
@@ -96,12 +279,11 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void setReasoningTimeout(Integer seconds) {
+		validateNotClosed();
 		if (seconds != null) {
-			Validate.isTrue(seconds > 0, "Only strictly positive timeout period alowed!", seconds);
+			Validate.isTrue(seconds > 0, "Only strictly positive timeout period allowed!", seconds);
 		}
 		this.timeoutAfterSeconds = seconds;
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			LOGGER.warn("Setting timeout on a closed reasoner.");
 	}
 
 	@Override
@@ -110,35 +292,10 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void addRules(final Rule... rules) throws ReasonerStateException {
-		addRules(Arrays.asList(rules));
-	}
-
-	@Override
-	public void addRules(final List<Rule> rules) throws ReasonerStateException {
-		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Rules cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
-		}
-		Validate.noNullElements(rules, "Null rules are not alowed! The list contains a null at position [%d].");
-		this.rules.addAll(new ArrayList<>(rules));
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			LOGGER.warn("Adding rules to a closed reasoner.");
-	}
-
-	public List<Rule> getRules() {
-		return Collections.unmodifiableList(this.rules);
-	}
-
-	@Override
-	public void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) throws ReasonerStateException {
+	public void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) {
+		validateNotClosed();
 		Validate.notNull(ruleRewritingStrategy, "Rewrite strategy cannot be null!");
-		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Rules cannot be re-writen after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
-		}
 		this.ruleRewriteStrategy = ruleRewritingStrategy;
-		LOGGER.warn("Setting rule rewrite strategy on a closed reasoner.");
 	}
 
 	@Override
@@ -146,163 +303,280 @@ public class VLogReasoner implements Reasoner {
 		return this.ruleRewriteStrategy;
 	}
 
-	@Override
-	public void addFacts(final PositiveLiteral... facts) throws ReasonerStateException {
-		addFacts(Arrays.asList(facts));
-	}
+	/*
+	 * TODO Due to automatic predicate renaming, it can happen that an EDB predicate
+	 * cannot be queried after loading unless reasoning has already been invoked
+	 * (since the auxiliary rule that imports the EDB facts to the "real" predicate
+	 * must be used). This issue could be weakened by rewriting queries to
+	 * (single-source) EDB predicates internally when in such a state,
+	 */
+	// @Override
+	void load() throws IOException {
+		validateNotClosed();
 
-	@Override
-	public void addFacts(final Collection<PositiveLiteral> facts) throws ReasonerStateException {
-		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Facts cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
+		switch (this.reasonerState) {
+		case KB_NOT_LOADED:
+			loadKnowledgeBase();
+			break;
+		case KB_LOADED:
+		case MATERIALISED:
+			// do nothing, all KB is already loaded
+			break;
+		case KB_CHANGED:
+			resetReasoner();
+			loadKnowledgeBase();
+		default:
+			break;
 		}
-		Validate.noNullElements(facts, "Null facts are not alowed! The list contains a fact at position [%d].");
-		for (final PositiveLiteral fact : facts) {
-			validateFactTermsAreConstant(fact);
+	}
 
-			final Predicate predicate = fact.getPredicate();
-			validateNoDataSourceForPredicate(predicate);
-
-			this.factsForPredicate.putIfAbsent(predicate, new HashSet<>());
-			this.factsForPredicate.get(predicate).add(fact);
+	void loadKnowledgeBase() throws IOException {
+		LOGGER.info("Started loading knowledge base ...");
+		final LoadKbVisitor visitor = new LoadKbVisitor();
+		visitor.clearIndexes();
+		for (final Statement statement : knowledgeBase) {
+			statement.accept(visitor);
 		}
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			LOGGER.warn("Adding facts to a closed reasoner.");
-	}
 
-	@Override
-	public void addFactsFromDataSource(final Predicate predicate, final DataSource dataSource)
-			throws ReasonerStateException {
-		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Data sources cannot be added after the reasoner has been loaded! Call reset() to undo loading and reasoning.");
+		if (edbPredicates.isEmpty() && aliasedEdbPredicates.isEmpty()) {
+			LOGGER.warn("No facts have been provided.");
 		}
-		Validate.notNull(predicate, "Null predicates are not allowed!");
-		Validate.notNull(dataSource, "Null dataSources are not allowed!");
-		validateNoDataSourceForPredicate(predicate);
-		Validate.isTrue(!this.factsForPredicate.containsKey(predicate),
-				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added in memory: %s",
-				predicate, this.factsForPredicate.get(predicate));
 
-		this.dataSourceForPredicate.put(predicate, dataSource);
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			LOGGER.warn("Adding facts to a closed reasoner.");
+		try {
+			this.vLog.start(getDataSourcesConfigurationString(), false);
+		} catch (final AlreadyStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		} catch (final EDBConfigurationException e) {
+			throw new RuntimeException("Invalid data sources configuration.", e);
+		}
+		loadInMemoryDataSources();
+
+		validateDataSourcePredicateArities();
+
+		loadFacts();
+		loadRules();
+
+		this.reasonerState = ReasonerState.KB_LOADED;
+
+		// if there are no rules, then materialisation state is complete
+		this.correctness = rules.isEmpty() ? Correctness.SOUND_AND_COMPLETE : Correctness.SOUND_BUT_INCOMPLETE;
+
+		LOGGER.info("Finished loading knowledge base.");
 	}
 
-	private void validateFactTermsAreConstant(PositiveLiteral fact) {
-		final Set<Term> nonConstantTerms = new HashSet<>(fact.getTerms());
-		nonConstantTerms.removeAll(fact.getConstants());
-		Validate.isTrue(nonConstantTerms.isEmpty(),
-				"Only Constant terms alowed in Fact literals! The following non-constant terms [%s] appear for fact [%s]!",
-				nonConstantTerms, fact);
-
+	String getDataSourcesConfigurationString() {
+		final StringBuilder configStringBuilder = new StringBuilder();
+		final Formatter formatter = new Formatter(configStringBuilder);
+		int dataSourceIndex = 0;
+		for (final Predicate predicate : this.edbPredicates.keySet()) {
+			final DataSourceDeclaration dataSourceDeclaration = this.edbPredicates.get(predicate);
+			dataSourceIndex = addDataSourceConfigurationString(dataSourceDeclaration.getDataSource(), predicate,
+					dataSourceIndex, formatter);
+		}
+		for (final DataSourceDeclaration dataSourceDeclaration : this.aliasesForEdbPredicates.keySet()) {
+			final Predicate aliasPredicate = this.aliasesForEdbPredicates.get(dataSourceDeclaration);
+			dataSourceIndex = addDataSourceConfigurationString(dataSourceDeclaration.getDataSource(), aliasPredicate,
+					dataSourceIndex, formatter);
+		}
+		formatter.close();
+		return configStringBuilder.toString();
 	}
 
-	private void validateNoDataSourceForPredicate(final Predicate predicate) {
-		Validate.isTrue(!this.dataSourceForPredicate.containsKey(predicate),
-				"Multiple data sources for the same predicate are not allowed! Facts for predicate [%s] alredy added from data source: %s",
-				predicate, this.dataSourceForPredicate.get(predicate));
+	int addDataSourceConfigurationString(DataSource dataSource, Predicate predicate, int dataSourceIndex,
+			Formatter formatter) {
+		if (dataSource != null) {
+			final String configString = dataSource.toConfigString();
+			if (configString != null) {
+				formatter.format(dataSource.toConfigString(), dataSourceIndex,
+						ModelToVLogConverter.toVLogPredicate(predicate));
+				return dataSourceIndex + 1;
+			}
+		}
+		return dataSourceIndex;
 	}
 
-	@Override
-	public void load()
-			throws EdbIdbSeparationException, IOException, IncompatiblePredicateArityException, ReasonerStateException {
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			throw new ReasonerStateException(reasonerState, "Loading is not allowed after closing.");
-		if (this.reasonerState != ReasonerState.BEFORE_LOADING) {
-			LOGGER.warn("This method call is ineffective: the Reasoner has already been loaded.");
+	/**
+	 * Checks if the loaded external data sources do in fact contain data of the
+	 * correct arity.
+	 * 
+	 * @throws IncompatiblePredicateArityException to indicate a problem
+	 *                                             (non-checked exception)
+	 */
+	void validateDataSourcePredicateArities() throws IncompatiblePredicateArityException {
+		for (final Predicate predicate : edbPredicates.keySet()) {
+			validateDataSourcePredicateArity(predicate, edbPredicates.get(predicate).getDataSource());
+		}
+		for (final DataSourceDeclaration dataSourceDeclaration : aliasesForEdbPredicates.keySet()) {
+			validateDataSourcePredicateArity(aliasesForEdbPredicates.get(dataSourceDeclaration),
+					dataSourceDeclaration.getDataSource());
+		}
+	}
+
+	void loadInMemoryDataSources() {
+		for (final Predicate predicate : this.edbPredicates.keySet()) {
+			final DataSourceDeclaration dataSourceDeclaration = this.edbPredicates.get(predicate);
+			loadInMemoryDataSource(dataSourceDeclaration.getDataSource(), predicate);
+		}
+		for (final DataSourceDeclaration dataSourceDeclaration : this.aliasesForEdbPredicates.keySet()) {
+			final Predicate aliasPredicate = this.aliasesForEdbPredicates.get(dataSourceDeclaration);
+			loadInMemoryDataSource(dataSourceDeclaration.getDataSource(), aliasPredicate);
+		}
+	}
+
+	void loadInMemoryDataSource(DataSource dataSource, Predicate predicate) {
+		final InMemoryDataSource inMemoryDataSource;
+		if (dataSource instanceof InMemoryDataSource) {
+			inMemoryDataSource = (InMemoryDataSource) dataSource;
 		} else {
-			validateEdbIdbSeparation();
-
-			this.reasonerState = ReasonerState.AFTER_LOADING;
-
-			if (this.dataSourceForPredicate.isEmpty() && this.factsForPredicate.isEmpty()) {
-				LOGGER.warn("No facts have been provided.");
-			}
-
-			try {
-				this.vLog.start(generateDataSourcesConfig(), false);
-			} catch (final AlreadyStartedException e) {
-				throw new RuntimeException("Inconsistent reasoner state.", e);
-			} catch (final EDBConfigurationException e) {
-				throw new RuntimeException("Invalid data sources configuration.", e);
-			}
-
-			validateDataSourcePredicateArities();
-
-			loadInMemoryFacts();
-
-			if (this.rules.isEmpty()) {
-				LOGGER.warn("No rules have been provided for reasoning.");
-			} else {
-				loadRules();
-			}
-
-			setLogLevel(this.internalLogLevel);
+			return;
 		}
-	}
-
-	private void validateDataSourcePredicateArities() throws IncompatiblePredicateArityException {
-		for (final Predicate predicate : this.dataSourceForPredicate.keySet()) {
-			final int dataSourcePredicateArity;
-			try {
-				dataSourcePredicateArity = this.vLog.getPredicateArity(ModelToVLogConverter.toVLogPredicate(predicate));
-			} catch (final NotStartedException e) {
-				throw new RuntimeException("Inconsistent reasoner state.", e);
-			}
-			if (dataSourcePredicateArity == -1) {
-				LOGGER.warn("Data source {} for predicate {} is empty: ", this.dataSourceForPredicate.get(predicate),
-						predicate);
-			} else if (predicate.getArity() != dataSourcePredicateArity) {
-				throw new IncompatiblePredicateArityException(predicate, dataSourcePredicateArity,
-						this.dataSourceForPredicate.get(predicate));
-			}
-		}
-
-	}
-
-	@Override
-	public boolean reason() throws IOException, ReasonerStateException {
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
-			throw new ReasonerStateException(this.reasonerState, "Reasoning is not allowed before loading!");
-		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(reasonerState, "Reasoning is not allowed after closing.");
-		} else if (this.reasonerState == ReasonerState.AFTER_REASONING) {
-			LOGGER.warn(
-					"This method call is ineffective: this Reasoner has already reasoned. Successive reason() calls are not supported. Call reset() to undo loading and reasoning and reload to be able to reason again");
-		} else {
-			this.reasonerState = ReasonerState.AFTER_REASONING;
-
-			final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
-			try {
-				if (this.timeoutAfterSeconds == null) {
-					this.vLog.materialize(skolemChase);
-					this.reasoningCompleted = true;
-				} else {
-					this.reasoningCompleted = this.vLog.materialize(skolemChase, this.timeoutAfterSeconds);
+		try {
+			final String vLogPredicateName = ModelToVLogConverter.toVLogPredicate(predicate);
+			this.vLog.addData(vLogPredicateName, inMemoryDataSource.getData());
+			if (LOGGER.isDebugEnabled()) {
+				for (final String[] tuple : inMemoryDataSource.getData()) {
+					LOGGER.debug("Loaded direct fact {}{}.", vLogPredicateName, Arrays.toString(tuple));
 				}
-			} catch (final NotStartedException e) {
-				throw new RuntimeException("Inconsistent reasoner state.", e);
-			} catch (final MaterializationException e) {
-				throw new RuntimeException(
-						"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
-						e);
+			}
+		} catch (final EDBConfigurationException e) {
+			throw new RuntimeException("Invalid data sources configuration!", e);
+		}
+	}
+
+	/**
+	 * Checks if the loaded external data for a given source does in fact contain
+	 * data of the correct arity for the given predidate.
+	 * 
+	 * @param predicate  the predicate for which data is loaded
+	 * @param dataSource the data source used
+	 * 
+	 * @throws IncompatiblePredicateArityException to indicate a problem
+	 *                                             (non-checked exception)
+	 */
+	void validateDataSourcePredicateArity(Predicate predicate, DataSource dataSource)
+			throws IncompatiblePredicateArityException {
+		if (dataSource == null)
+			return;
+		try {
+			final int dataSourcePredicateArity = this.vLog
+					.getPredicateArity(ModelToVLogConverter.toVLogPredicate(predicate));
+			if (dataSourcePredicateArity == -1) {
+				LOGGER.warn("Data source {} for predicate {} is empty! ", dataSource, predicate);
+			} else if (predicate.getArity() != dataSourcePredicateArity) {
+				throw new IncompatiblePredicateArityException(predicate, dataSourcePredicateArity, dataSource);
+			}
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state!", e);
+		}
+	}
+
+	void loadFacts() {
+		for (final Predicate predicate : directEdbFacts.keySet()) {
+			Predicate aliasPredicate;
+			if (edbPredicates.containsKey(predicate)) {
+				aliasPredicate = predicate;
+			} else {
+				aliasPredicate = aliasesForEdbPredicates.get(new LocalFactsDataSourceDeclaration(predicate));
+			}
+			try {
+				final String vLogPredicateName = ModelToVLogConverter.toVLogPredicate(aliasPredicate);
+				final String[][] vLogPredicateTuples = ModelToVLogConverter
+						.toVLogFactTuples(directEdbFacts.get(predicate));
+				this.vLog.addData(vLogPredicateName, vLogPredicateTuples);
+				if (LOGGER.isDebugEnabled()) {
+					for (final String[] tuple : vLogPredicateTuples) {
+						LOGGER.debug("Loaded direct fact {}{}.", vLogPredicateName, Arrays.toString(tuple));
+					}
+				}
+			} catch (final EDBConfigurationException e) {
+				throw new RuntimeException("Invalid data sources configuration!", e);
 			}
 		}
+	}
+
+	void loadRules() {
+		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(rules);
+		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
+				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
+		try {
+			this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
+			if (LOGGER.isDebugEnabled()) {
+				for (final karmaresearch.vlog.Rule rule : vLogRuleArray) {
+					LOGGER.debug("Loaded rule {}.", rule.toString());
+				}
+			}
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state!", e);
+		}
+	}
+
+	@Override
+	public boolean reason() throws IOException {
+		validateNotClosed();
+
+		switch (this.reasonerState) {
+		case KB_NOT_LOADED:
+			load();
+			runChase();
+			break;
+		case KB_LOADED:
+			runChase();
+			break;
+		case KB_CHANGED:
+			resetReasoner();
+			load();
+			runChase();
+			break;
+		case MATERIALISED:
+			runChase();
+			break;
+		default:
+			break;
+		}
+
 		return this.reasoningCompleted;
 	}
 
+	private void runChase() {
+		LOGGER.info("Started materialisation of inferences ...");
+		this.reasonerState = ReasonerState.MATERIALISED;
+
+		final boolean skolemChase = this.algorithm == Algorithm.SKOLEM_CHASE;
+		try {
+			if (this.timeoutAfterSeconds == null) {
+				this.vLog.materialize(skolemChase);
+				this.reasoningCompleted = true;
+			} else {
+				this.reasoningCompleted = this.vLog.materialize(skolemChase, this.timeoutAfterSeconds);
+			}
+		} catch (final NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		} catch (final MaterializationException e) {
+			// FIXME: the message generated here is not guaranteed to be the correct
+			// interpretation of the exception that is caught
+			throw new RuntimeException(
+					"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
+					e);
+		}
+
+		if (this.reasoningCompleted) {
+			this.correctness = Correctness.SOUND_AND_COMPLETE;
+			LOGGER.info("Completed materialisation of inferences.");
+		} else {
+			this.correctness = Correctness.SOUND_BUT_INCOMPLETE;
+			LOGGER.info("Stopped materialisation of inferences (possibly incomplete).");
+		}
+	}
+
 	@Override
-	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) throws ReasonerStateException {
-		final boolean filterBlanks = !includeBlanks;
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) {
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(reasonerState, "Querying is not allowed after closing.");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
 
+		final boolean filterBlanks = !includeBlanks;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 
 		TermQueryResultIterator stringQueryResultIterator;
@@ -310,119 +584,71 @@ public class VLogReasoner implements Reasoner {
 			stringQueryResultIterator = this.vLog.query(vLogAtom, true, filterBlanks);
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state.", e);
+		} catch (final NonExistingPredicateException e1) {
+			LOGGER.warn("Query uses predicate " + query.getPredicate()
+					+ " that does not occur in the knowledge base. Answer must be empty!");
+			return new EmptyQueryResultIterator(Correctness.SOUND_AND_COMPLETE);
 		}
 
-		return new QueryResultIterator(stringQueryResultIterator);
+		logWarningOnCorrectness();
+		return new VLogQueryResultIterator(stringQueryResultIterator, this.correctness);
 	}
 
 	@Override
-	public void exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
-			final boolean includeBlanks) throws ReasonerStateException, IOException {
-		final boolean filterBlanks = !includeBlanks;
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+	public Correctness exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
+			final boolean includeBlanks) throws IOException {
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		} else if (reasonerState.equals(ReasonerState.AFTER_CLOSING)) {
-			throw new ReasonerStateException(reasonerState, "Querying is not allowed after closing.");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
 		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
 
+		final boolean filterBlanks = !includeBlanks;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 		try {
 			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath, filterBlanks);
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RuntimeException("Inconsistent reasoner state!", e);
+		} catch (final NonExistingPredicateException e1) {
+			throw new IllegalArgumentException(MessageFormat.format(
+					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
+		}
+
+		logWarningOnCorrectness();
+		return this.correctness;
+	}
+
+	private void logWarningOnCorrectness() {
+		if (this.correctness != Correctness.SOUND_AND_COMPLETE) {
+			LOGGER.warn("Query answers may be {} with respect to the current Knowledge Base!", this.correctness);
 		}
 	}
 
 	@Override
-	public void resetReasoner() throws ReasonerStateException {
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			throw new ReasonerStateException(reasonerState, "Resetting is not allowed after closing.");
-		this.reasonerState = ReasonerState.BEFORE_LOADING;
+	public void resetReasoner() {
+		validateNotClosed();
+		this.reasonerState = ReasonerState.KB_NOT_LOADED;
 		this.vLog.stop();
-		LOGGER.warn(
-				"Reasoner has been reset. All inferences computed during reasoning have been discarded. More data and rules can be added after resetting. The reasoner needs to be loaded again to perform querying and reasoning.");
+		LOGGER.info("Reasoner has been reset. All inferences computed during reasoning have been discarded.");
 	}
 
 	@Override
 	public void close() {
-		reasonerState = ReasonerState.AFTER_CLOSING;
-		this.vLog.stop();
-	}
-
-	private void validateEdbIdbSeparation() throws EdbIdbSeparationException {
-		final Set<Predicate> edbPredicates = collectEdbPredicates();
-		final Set<Predicate> idbPredicates = collectIdbPredicates();
-		final Set<Predicate> intersection = new HashSet<>(edbPredicates);
-		intersection.retainAll(idbPredicates);
-
-		if (!intersection.isEmpty()) {
-			throw new EdbIdbSeparationException(intersection);
-		}
-	}
-
-	private Set<Predicate> collectEdbPredicates() {
-		final Set<Predicate> edbPredicates = new HashSet<>();
-		edbPredicates.addAll(this.dataSourceForPredicate.keySet());
-		edbPredicates.addAll(this.factsForPredicate.keySet());
-		return edbPredicates;
-	}
-
-	private Set<Predicate> collectIdbPredicates() {
-		final Set<Predicate> idbPredicates = new HashSet<>();
-		for (final Rule rule : this.rules) {
-			for (final Literal headAtom : rule.getHead()) {
-				idbPredicates.add(headAtom.getPredicate());
-			}
-		}
-		return idbPredicates;
-	}
-
-	String generateDataSourcesConfig() {
-		final StringBuilder configStringBuilder = new StringBuilder();
-		int dataSourceIndex = 0;
-		for (final Predicate predicate : this.dataSourceForPredicate.keySet()) {
-			final DataSource dataSource = this.dataSourceForPredicate.get(predicate);
-			try (final Formatter formatter = new Formatter(configStringBuilder);) {
-				formatter.format(dataSource.toConfigString(), dataSourceIndex,
-						ModelToVLogConverter.toVLogPredicate(predicate));
-			}
-			dataSourceIndex++;
-		}
-		return configStringBuilder.toString();
-	}
-
-	private void loadInMemoryFacts() {
-		for (final Predicate predicate : this.factsForPredicate.keySet()) {
-			final Set<PositiveLiteral> factsForPredicate = this.factsForPredicate.get(predicate);
-
-			final String vLogPredicate = ModelToVLogConverter.toVLogPredicate(predicate);
-			final String[][] tuplesForPredicate = ModelToVLogConverter.toVLogFactTuples(factsForPredicate);
-			try {
-				this.vLog.addData(vLogPredicate, tuplesForPredicate);
-			} catch (final EDBConfigurationException e) {
-				throw new RuntimeException("Invalid data sources configuration.", e);
-			}
-		}
-	}
-
-	private void loadRules() {
-		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(this.rules);
-		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
-				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
-		try {
-			this.vLog.setRules(vLogRuleArray, vLogRuleRewriteStrategy);
-		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+		if (this.reasonerState == ReasonerState.CLOSED) {
+			LOGGER.info("Reasoner is already closed.");
+		} else {
+			this.reasonerState = ReasonerState.CLOSED;
+			this.knowledgeBase.deleteListener(this);
+			this.vLog.stop();
+			LOGGER.info("Reasoner closed.");
 		}
 	}
 
 	@Override
-	public void setLogLevel(LogLevel logLevel) throws ReasonerStateException {
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			throw new ReasonerStateException(reasonerState, "Setting log level is not allowed after closing.");
+	public void setLogLevel(LogLevel logLevel) {
+		validateNotClosed();
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
 		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(this.internalLogLevel));
@@ -434,62 +660,66 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setLogFile(String filePath) throws ReasonerStateException {
-		if (reasonerState.equals(ReasonerState.AFTER_CLOSING))
-			throw new ReasonerStateException(reasonerState, "Setting log file is not allowed after closing.");
+	public void setLogFile(String filePath) {
+		validateNotClosed();
 		this.vLog.setLogFile(filePath);
 	}
 
 	@Override
-	public boolean isJA() throws ReasonerStateException, NotStartedException {
+	public boolean isJA() {
 		return checkAcyclicity(AcyclicityNotion.JA);
 	}
 
 	@Override
-	public boolean isRJA() throws ReasonerStateException, NotStartedException {
+	public boolean isRJA() {
 		return checkAcyclicity(AcyclicityNotion.RJA);
 	}
 
 	@Override
-	public boolean isMFA() throws ReasonerStateException, NotStartedException {
+	public boolean isMFA() {
 		return checkAcyclicity(AcyclicityNotion.MFA);
 	}
 
 	@Override
-	public boolean isRMFA() throws ReasonerStateException, NotStartedException {
+	public boolean isRMFA() {
 		return checkAcyclicity(AcyclicityNotion.RMFA);
 	}
 
 	@Override
-	public boolean isMFC() throws ReasonerStateException, NotStartedException {
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+	public boolean isMFC() {
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
-					"checking rules acyclicity is not allowed before loading!");
+					"Checking rules acyclicity is not allowed before loading!");
 		}
 
-		final CyclicCheckResult checkCyclic = this.vLog.checkCyclic("MFC");
-		if (checkCyclic.equals(CyclicCheckResult.CYCLIC)) {
-			return true;
+		CyclicCheckResult checkCyclic;
+		try {
+			checkCyclic = this.vLog.checkCyclic("MFC");
+		} catch (final NotStartedException e) {
+			throw new RuntimeException(e.getMessage(), e); // should be impossible
 		}
-		return false;
+		return checkCyclic.equals(CyclicCheckResult.CYCLIC);
 	}
 
-	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion)
-			throws ReasonerStateException, NotStartedException {
-		if (this.reasonerState == ReasonerState.BEFORE_LOADING) {
+	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
-					"checking rules acyclicity is not allowed before loading!");
+					"Checking rules acyclicity is not allowed before loading!");
 		}
 
-		final CyclicCheckResult checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
-		if (checkCyclic.equals(CyclicCheckResult.NON_CYCLIC)) {
-			return true;
+		CyclicCheckResult checkCyclic;
+		try {
+			checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
+		} catch (final NotStartedException e) {
+			throw new RuntimeException(e.getMessage(), e); // should be impossible
 		}
-		return false;
+		return checkCyclic.equals(CyclicCheckResult.NON_CYCLIC);
 	}
 
 	@Override
-	public CyclicityResult checkForCycles() throws ReasonerStateException, NotStartedException {
+	public CyclicityResult checkForCycles() {
 		final boolean acyclic = isJA() || isRJA() || isMFA() || isRMFA();
 		if (acyclic) {
 			return CyclicityResult.ACYCLIC;
@@ -499,6 +729,55 @@ public class VLogReasoner implements Reasoner {
 				return CyclicityResult.CYCLIC;
 			}
 			return CyclicityResult.UNDETERMINED;
+		}
+	}
+
+	@Override
+	public void onStatementsAdded(List<Statement> statementsAdded) {
+		// TODO more elaborate materialisation state handling
+
+		updateReasonerToKnowledgeBaseChanged();
+		
+		//updateCorrectnessOnStatementsAdded(statementsAdded);
+		updateCorrectness();
+	}
+
+
+	@Override
+	public void onStatementAdded(Statement statementAdded) {
+		// TODO more elaborate materialisation state handling
+
+		updateReasonerToKnowledgeBaseChanged();
+		
+		//updateCorrectnessOnStatementAdded(statementAdded);
+		updateCorrectness();
+	}
+
+	private void updateReasonerToKnowledgeBaseChanged() {
+		if (this.reasonerState.equals(ReasonerState.KB_LOADED)
+				|| this.reasonerState.equals(ReasonerState.MATERIALISED)) {
+
+			this.reasonerState = ReasonerState.KB_CHANGED;
+		}
+	}
+
+	private void updateCorrectness() {
+		if (this.reasonerState == ReasonerState.KB_CHANGED) {
+			
+			final boolean noRules = this.knowledgeBase.getRules().isEmpty();
+			this.correctness = noRules? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
+		}
+	}
+
+	/**
+	 * Check if reasoner is closed and throw an exception if it is.
+	 * 
+	 * @throws ReasonerStateException
+	 */
+	void validateNotClosed() throws ReasonerStateException {
+		if (this.reasonerState == ReasonerState.CLOSED) {
+			LOGGER.error("Invalid operation requested on a closed reasoner object!");
+			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner!");
 		}
 	}
 

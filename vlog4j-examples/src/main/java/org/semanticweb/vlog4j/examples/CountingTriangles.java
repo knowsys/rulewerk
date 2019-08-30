@@ -24,10 +24,9 @@ import java.io.FileInputStream;
 
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -44,55 +43,43 @@ public class CountingTriangles {
 	public static void main(final String[] args) throws IOException {
 		ExamplesUtils.configureLogging();
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
-			/* Configure rules */
-			RuleParser ruleParser = new RuleParser();
-			try {
-				ruleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "counting-triangles.rls"));
-			} catch (ParsingException e) {
-				System.out.println("Failed to parse rules: " + e.getMessage());
-				return;
-			}
-			for (DataSourceDeclaration dataSourceDeclaration : ruleParser.getDataSourceDeclartions()) {
-				reasoner.addFactsFromDataSource(dataSourceDeclaration.getPredicate(),
-						dataSourceDeclaration.getDataSource());
-			}
-			reasoner.addRules(ruleParser.getRules());
-			System.out.println("Rules used in this example:");
-			reasoner.getRules().forEach(System.out::println);
-			System.out.println("");
+		KnowledgeBase kb;
+		/* Configure rules */
+		try {
+			kb = RuleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "counting-triangles.rls"));
+		} catch (final ParsingException e) {
+			System.out.println("Failed to parse rules: " + e.getMessage());
+			return;
+		}
+		System.out.println("Rules used in this example:");
+		kb.getRules().forEach(System.out::println);
+		System.out.println("");
+
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
+
+			System.out.println("Note: Materialisation includes SPARQL query answering.");
 
 			/* Initialise reasoner and compute inferences */
-			System.out.print("Initialising rules and data sources ... ");
-			reasoner.load();
-			System.out.println("completed.");
-
-			System.out.print("Reasoning (including SPARQL query answering) ... ");
 			reasoner.reason();
-			System.out.println("completed.");
 
 			/* Execute queries */
 			try {
 				PositiveLiteral query;
 
-				query = ruleParser.parsePositiveLiteral("country(?X)");
+				query = RuleParser.parsePositiveLiteral("country(?X)");
 				System.out.print("Found " + ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true))
 						+ " countries in Wikidata");
 				// Due to symmetry, each joint border is found twice, hence we divide by 2:
-				query = ruleParser.parsePositiveLiteral("shareBorder(?X,?Y)");
-				System.out.println(", with " + ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 2
+				query = RuleParser.parsePositiveLiteral("shareBorder(?X,?Y)");
+				System.out.println(", with " + (ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 2)
 						+ " pairs of them sharing a border.");
 				// Due to symmetry, each triangle is found six times, hence we divide by 6:
-				query = ruleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)");
+				query = RuleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)");
 				System.out.println("The number of triangles of countries that mutually border each other was "
-						+ ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 6 + ".");
-			} catch (ParsingException e) {
+						+ (ExamplesUtils.iteratorSize(reasoner.answerQuery(query, true)) / 6) + ".");
+			} catch (final ParsingException e) {
 				System.out.println("Failed to parse query: " + e.getMessage());
 			}
-
-			System.out.println("Done.");
-		} catch (VLog4jException e) {
-			System.out.println("The reasoner encountered a problem: " + e.getMessage());
 		}
 
 	}

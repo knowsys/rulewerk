@@ -20,9 +20,9 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * #L%
  */
 
-import java.util.Iterator;
-
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 
 import karmaresearch.vlog.Term;
 import karmaresearch.vlog.TermQueryResultIterator;
@@ -34,12 +34,16 @@ import karmaresearch.vlog.TermQueryResultIterator;
  * @author Irina Dragoste
  *
  */
-public class QueryResultIterator implements Iterator<QueryResult>, AutoCloseable {
+public class VLogQueryResultIterator implements QueryResultIterator {
 
 	private final TermQueryResultIterator vLogTermQueryResultIterator;
 
-	public QueryResultIterator(TermQueryResultIterator termQueryResultIterator) {
+	private final Correctness correctness;
+
+	public VLogQueryResultIterator(final TermQueryResultIterator termQueryResultIterator,
+			final Correctness materialisationState) {
 		this.vLogTermQueryResultIterator = termQueryResultIterator;
+		this.correctness = materialisationState;
 	}
 
 	@Override
@@ -56,6 +60,11 @@ public class QueryResultIterator implements Iterator<QueryResult>, AutoCloseable
 	@Override
 	public void close() {
 		this.vLogTermQueryResultIterator.close();
+	}
+
+	@Override
+	public Correctness getCorrectness() {
+		return this.correctness;
 	}
 
 }
