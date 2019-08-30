@@ -41,14 +41,23 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public class VLogReasonerNegation {
 
+	private final Variable x = Expressions.makeVariable("x");
+	private final Variable y = Expressions.makeVariable("y");
+
+	private final Constant c = Expressions.makeConstant("c");
+	private final Constant d = Expressions.makeConstant("d");
+	private final Constant e = Expressions.makeConstant("e");
+	private final Constant f = Expressions.makeConstant("f");
+
+	private final Literal pXY = Expressions.makePositiveLiteral("P", x, y);
+	private final Literal notQXY = Expressions.makeNegativeLiteral("Q", x, y);
+
+	private final Literal notRXY = Expressions.makeNegativeLiteral("R", x, y);
+	private final PositiveLiteral sXY = Expressions.makePositiveLiteral("S", x, y);
+
 	@Test(expected = RuntimeException.class)
 	public void testNotStratifiable() throws IOException {
 
-		final Variable x = Expressions.makeVariable("x");
-		final Variable y = Expressions.makeVariable("y");
-
-		final Literal pXY = Expressions.makePositiveLiteral("P", x, y);
-		final Literal notQXY = Expressions.makeNegativeLiteral("Q", x, y);
 		final PositiveLiteral qXY = Expressions.makePositiveLiteral("Q", x, y);
 
 		final Rule rule = Expressions.makeRule(qXY, pXY, notQXY);
@@ -65,21 +74,10 @@ public class VLogReasonerNegation {
 	@Test
 	public void testStratifiable() throws IOException {
 
-		final Variable x = Expressions.makeVariable("x");
-		final Variable y = Expressions.makeVariable("y");
-
-		final Literal pXY = Expressions.makePositiveLiteral("P", x, y);
-		final Literal notQXY = Expressions.makeNegativeLiteral("Q", x, y);
-		final Literal notRXY = Expressions.makeNegativeLiteral("R", x, y);
-		final PositiveLiteral sXY = Expressions.makePositiveLiteral("S", x, y);
-
 		final Rule rule = Expressions.makeRule(sXY, pXY, notQXY, notRXY);
-		final Fact pCD = Expressions.makeFact("P", Arrays.asList(Expressions.makeConstant("c"), Expressions.makeConstant("d")));
-		final Constant e = Expressions.makeConstant("e");
-		final Constant f = Expressions.makeConstant("f");
+		final Fact pCD = Expressions.makeFact("P", Arrays.asList(c, d));
 		final Fact pEF = Expressions.makeFact("P", Arrays.asList(e, f));
-
-		final Fact qCD = Expressions.makeFact("Q", Arrays.asList(Expressions.makeConstant("c"), Expressions.makeConstant("d")));
+		final Fact qCD = Expressions.makeFact("Q", Arrays.asList(c, d));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(rule, pCD, pEF, qCD);
@@ -100,20 +98,10 @@ public class VLogReasonerNegation {
 	@Test
 	public void testInputNegation() throws IOException {
 
-		final Variable x = Expressions.makeVariable("x");
-		final Variable y = Expressions.makeVariable("y");
-
-		final Literal pXY = Expressions.makePositiveLiteral("P", x, y);
-		final Literal notQXY = Expressions.makeNegativeLiteral("Q", x, y);
-		final PositiveLiteral sXY = Expressions.makePositiveLiteral("S", x, y);
-
 		final Rule rule = Expressions.makeRule(sXY, pXY, notQXY);
-		final Fact pCD = Expressions.makeFact("P", Arrays.asList(Expressions.makeConstant("c"), Expressions.makeConstant("d")));
-		final Constant e = Expressions.makeConstant("e");
-		final Constant f = Expressions.makeConstant("f");
+		final Fact pCD = Expressions.makeFact("P", Arrays.asList(c, d));
 		final Fact pEF = Expressions.makeFact("P", Arrays.asList(e, f));
-
-		final Fact qCD = Expressions.makeFact("Q", Arrays.asList(Expressions.makeConstant("c"), Expressions.makeConstant("d")));
+		final Fact qCD = Expressions.makeFact("Q", Arrays.asList(c, d));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(rule, pCD, pEF, qCD);
