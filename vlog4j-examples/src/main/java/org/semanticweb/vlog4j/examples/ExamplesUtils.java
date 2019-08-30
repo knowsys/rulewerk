@@ -118,14 +118,24 @@ public final class ExamplesUtils {
 	 *
 	 * @param queryAtom query to be answered
 	 * @param reasoner  reasoner to query on
-	 * @throws ReasonerStateException in case the reasoner has not yet been loaded.
+	 */
+	public static int getQueryAnswerCount(final PositiveLiteral queryAtom, final Reasoner reasoner) {
+		try (final QueryResultIterator answers = reasoner.answerQuery(queryAtom, true)) {
+			return iteratorSize(answers);
+		}
+	}
+
+	/**
+	 * Returns the number of answers returned by {@code reasoner} to the query
+	 * ({@code queryAtom}).
+	 *
+	 * @param queryAtom query to be answered
+	 * @param reasoner  reasoner to query on
 	 */
 	public static int getQueryAnswerCount(final String queryString, final Reasoner reasoner) {
 		try {
 			final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
-			try (final QueryResultIterator answers = reasoner.answerQuery(query, true)) {
-				return iteratorSize(answers);
-			}
+			return getQueryAnswerCount(query, reasoner);
 		} catch (final ParsingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
