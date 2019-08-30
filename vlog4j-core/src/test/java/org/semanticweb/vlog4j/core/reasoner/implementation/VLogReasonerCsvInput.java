@@ -33,9 +33,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -46,16 +48,20 @@ public class VLogReasonerCsvInput {
 	private static final Predicate unaryPredicate1 = Expressions.makePredicate("p", 1);
 	private static final Predicate unaryPredicate2 = Expressions.makePredicate("q", 1);
 
+	private final Variable x = Expressions.makeVariable("x");
+	private final Constant c1 = Expressions.makeConstant("c1");
+	private final Constant c2 = Expressions.makeConstant("c2");
+
 	@SuppressWarnings("unchecked")
-	private static final Set<List<Term>> expectedUnaryQueryResult = Sets.newSet(Arrays.asList(Expressions.makeConstant("c1")),
-			Arrays.asList(Expressions.makeConstant("c2")));
+	private final Set<List<Term>> expectedUnaryQueryResult = Sets.newSet(Arrays.asList(c1), Arrays.asList(c2));
 
 	@Ignore
 	// FIXME: test ignored because of a bug in VLog. Remore the @Ignore annotation
 	// after bug is fixed.
 	@Test
 	public void testLoadEmptyCsvFile() throws IOException {
-		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(unaryPredicate1, Expressions.makeVariable("x"));
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(unaryPredicate1,
+				Expressions.makeVariable("x"));
 
 		FileDataSourceTestUtils.testLoadEmptyFile(unaryPredicate1, queryAtom,
 				new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.csv")));
@@ -80,10 +86,10 @@ public class VLogReasonerCsvInput {
 			reasoner.load();
 
 			final QueryResultIterator queryResultIterator1 = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(unaryPredicate1, Expressions.makeVariable("x")), true);
+					.answerQuery(Expressions.makePositiveLiteral(unaryPredicate1, x), true);
 			final Set<List<Term>> queryResult1 = QueryResultsUtils.collectQueryResults(queryResultIterator1);
 			final QueryResultIterator queryResultIterator2 = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(unaryPredicate2, Expressions.makeVariable("x")), true);
+					.answerQuery(Expressions.makePositiveLiteral(unaryPredicate2, x), true);
 			final Set<List<Term>> queryResult2 = QueryResultsUtils.collectQueryResults(queryResultIterator2);
 
 			assertEquals(expectedUnaryQueryResult, queryResult1);
