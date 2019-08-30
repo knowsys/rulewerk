@@ -30,6 +30,9 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUti
 
 public class RdfFileDataSourceTest {
 
+	private final File unzippedRdfFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt");
+	private final File zippedRdfFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt.gz");
+
 	@Test(expected = NullPointerException.class)
 	public void testConstructorNullFile() throws IOException {
 		new RdfFileDataSource(null);
@@ -42,8 +45,7 @@ public class RdfFileDataSourceTest {
 
 	@Test
 	public void testConstructor() throws IOException {
-		final File unzippedRdfFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt");
-		final File zippedRdfFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt.gz");
+
 		final String dirCanonicalPath = new File(FileDataSourceTestUtils.INPUT_FOLDER).getCanonicalPath();
 		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
 		final RdfFileDataSource zippedRdfFileDataSource = new RdfFileDataSource(zippedRdfFile);
@@ -54,10 +56,8 @@ public class RdfFileDataSourceTest {
 
 	@Test
 	public void testToConfigString() throws IOException {
-		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(
-				new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt"));
-		final RdfFileDataSource zippedRdfFileDataSource = new RdfFileDataSource(
-				new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt.gz"));
+		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
+		final RdfFileDataSource zippedRdfFileDataSource = new RdfFileDataSource(zippedRdfFile);
 
 		final String expectedDirCanonicalPath = new File(FileDataSourceTestUtils.INPUT_FOLDER).getCanonicalPath();
 		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
