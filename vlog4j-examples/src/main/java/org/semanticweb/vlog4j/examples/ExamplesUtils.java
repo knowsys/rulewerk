@@ -20,8 +20,6 @@ package org.semanticweb.vlog4j.examples;
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,12 +29,15 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.Correctness;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
+import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 public final class ExamplesUtils {
 
@@ -66,13 +67,13 @@ public final class ExamplesUtils {
 	 */
 	public static void configureLogging() {
 		// Create the appender that will write log messages to the console.
-		ConsoleAppender consoleAppender = new ConsoleAppender();
+		final ConsoleAppender consoleAppender = new ConsoleAppender();
 		// Define the pattern of log messages.
 		// Insert the string "%c{1}:%L" to also show class name and line.
-		String pattern = "%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n";
+		final String pattern = "%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n";
 		consoleAppender.setLayout(new PatternLayout(pattern));
 		// Change to Level.ERROR for fewer messages:
-		consoleAppender.setThreshold(Level.INFO);
+		consoleAppender.setThreshold(Level.DEBUG);
 
 		consoleAppender.activateOptions();
 		Logger.getRootLogger().addAppender(consoleAppender);
@@ -82,19 +83,51 @@ public final class ExamplesUtils {
 	 * Prints out the answers given by {@code reasoner} to the query
 	 * ({@code queryAtom}).
 	 *
-	 * @param queryAtom
-	 *            query to be answered
-	 * @param reasoner
-	 *            reasoner to query on
-	 * @throws ReasonerStateException
-	 *             in case the reasoner has not yet been loaded.
+	 * @param queryAtom query to be answered
+	 * @param reasoner  reasoner to query on
 	 */
-	public static void printOutQueryAnswers(final PositiveLiteral queryAtom, final Reasoner reasoner)
-			throws ReasonerStateException {
+	public static void printOutQueryAnswers(final PositiveLiteral queryAtom, final Reasoner reasoner) {
 		System.out.println("Answers to query " + queryAtom + " :");
 		try (final QueryResultIterator answers = reasoner.answerQuery(queryAtom, true)) {
 			answers.forEachRemaining(answer -> System.out.println(" - " + answer));
-			System.out.println();
+
+			System.out.println("Query answers are: " + answers.getCorrectness());
+		}
+		System.out.println();
+	}
+
+	/**
+	 * Prints out the answers given by {@code reasoner} to the query
+	 * ({@code queryAtom}).
+	 *
+	 * @param queryAtom query to be answered
+	 * @param reasoner  reasoner to query on
+	 */
+	public static void printOutQueryAnswers(final String queryString, final Reasoner reasoner) {
+		try {
+			final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
+			printOutQueryAnswers(query, reasoner);
+		} catch (final ParsingException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Returns the number of answers returned by {@code reasoner} to the query
+	 * ({@code queryAtom}).
+	 *
+	 * @param queryAtom query to be answered
+	 * @param reasoner  reasoner to query on
+	 * @throws ReasonerStateException in case the reasoner has not yet been loaded.
+	 */
+	public static int getQueryAnswerCount(final String queryString, final Reasoner reasoner) {
+		try {
+			final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
+			try (final QueryResultIterator answers = reasoner.answerQuery(query, true)) {
+				return iteratorSize(answers);
+			}
+		} catch (final ParsingException e) {
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -103,47 +136,46 @@ public final class ExamplesUtils {
 	 *
 	 * @FIXME This is an inefficient way of counting results. It should be done at a
 	 *        lower level instead
-	 * @param Iterator<T>
-	 *            to iterate over
+	 * @param Iterator<T> to iterate over
 	 * @return number of elements in iterator
 	 */
-	public static <T> int iteratorSize(Iterator<T> iterator) {
+	public static <T> int iteratorSize(final Iterator<T> iterator) {
 		int size = 0;
-		for (; iterator.hasNext(); ++size)
+		for (; iterator.hasNext(); ++size) {
 			iterator.next();
+		}
 		return size;
 	}
 
 	/**
 	 * Creates an Atom with @numberOfVariables distinct variables
 	 *
-	 * @param predicateName
-	 *            for the new predicate
-	 * @param arity
-	 *            number of variables
+	 * @param predicateName for the new predicate
+	 * @param arity         number of variables
 	 */
-	private static PositiveLiteral makeQueryAtom(String predicateName, int arity) {
+	private static PositiveLiteral makeQueryAtom(final String predicateName, final int arity) {
 		final List<Term> vars = new ArrayList<>();
-		for (int i = 0; i < arity; i++)
-			vars.add(makeVariable("x" + i));
+		for (int i = 0; i < arity; i++) {
+			vars.add(Expressions.makeVariable("x" + i));
+		}
 		return Expressions.makePositiveLiteral(predicateName, vars);
 	}
 
 	/**
 	 * Exports the extension of the Atom with name @predicateName
 	 *
-	 * @param reasoner
-	 *            reasoner to query on
-	 * @param atomName
-	 *            atom's name
-	 * @param arity
-	 *            atom's arity
+	 * @param reasoner reasoner to query on
+	 * @param atomName atom's name
+	 * @param arity    atom's arity
 	 */
-	public static void exportQueryAnswersToCSV(Reasoner reasoner, String atomName, int arity)
+	public static void exportQueryAnswersToCSV(final Reasoner reasoner, final String atomName, final int arity)
 			throws ReasonerStateException, IOException {
 		final PositiveLiteral atom = makeQueryAtom(atomName, arity);
-		String path = ExamplesUtils.OUTPUT_FOLDER + atomName + ".csv";
-		reasoner.exportQueryAnswersToCsv(atom, path, true);
+		final String path = ExamplesUtils.OUTPUT_FOLDER + atomName + ".csv";
+
+		final Correctness correctness = reasoner.exportQueryAnswersToCsv(atom, path, true);
+
+		System.out.println("Query answers are: " + correctness);
 	}
 
 }

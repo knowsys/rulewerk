@@ -25,6 +25,7 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeC
 
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteralsRule;
+import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeFact;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
 import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
@@ -35,6 +36,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -75,6 +77,21 @@ public final class GraalToVLog4JModelConverter {
 	}
 
 	/**
+	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom} into a
+	 * {@link Fact VLog4J fact}.
+	 *
+	 * @param atom A {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom}
+	 * @return A {@link Fact VLog4J fact}
+	 * @throws IllegalArgumentException if the converted atom contains terms that
+	 *                                  cannot occur in facts
+	 */
+	public static Fact convertAtomToFact(final fr.lirmm.graphik.graal.api.core.Atom atom) {
+		final Predicate predicate = convertPredicate(atom.getPredicate());
+		final List<Term> terms = convertTerms(atom.getTerms());
+		return makeFact(predicate, terms);
+	}
+
+	/**
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
 	 * Atoms} into a {@link List} of {@link PositiveLiteral VLog4J
 	 * PositiveLiterals}.
@@ -87,6 +104,22 @@ public final class GraalToVLog4JModelConverter {
 		final List<PositiveLiteral> result = new ArrayList<>();
 		for (final fr.lirmm.graphik.graal.api.core.Atom atom : atoms) {
 			result.add(convertAtom(atom));
+		}
+		return result;
+	}
+
+	/**
+	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
+	 * Atoms} into a {@link List} of {@link Fact VLog4j facts}.
+	 *
+	 * @param literals A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom
+	 *                 Graal Atoms}.
+	 * @return A {@link List} of {@link Fact VLog4j facts}.
+	 */
+	public static List<Fact> convertAtomsToFacts(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
+		final List<Fact> result = new ArrayList<>();
+		for (final fr.lirmm.graphik.graal.api.core.Atom atom : atoms) {
+			result.add(convertAtomToFact(atom));
 		}
 		return result;
 	}

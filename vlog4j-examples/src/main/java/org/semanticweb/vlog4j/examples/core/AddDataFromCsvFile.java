@@ -1,9 +1,5 @@
 package org.semanticweb.vlog4j.examples.core;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
-
 /*-
  * #%L
  * VLog4j Examples
@@ -24,27 +20,16 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeP
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-
-import java.io.File;
 import java.io.IOException;
 
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.reasoner.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.examples.ExamplesUtils;
+import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
  * This example shows how facts can be imported from files in the CSV format.
@@ -61,111 +46,70 @@ import org.semanticweb.vlog4j.examples.ExamplesUtils;
  *
  * @author Christian Lewe
  * @author Irina Dragoste
+ * @author Markus Kroetzsch
  *
  */
 public class AddDataFromCsvFile {
 
-	public static void main(final String[] args)
-			throws EdbIdbSeparationException, IOException, ReasonerStateException, IncompatiblePredicateArityException {
+	public static void main(final String[] args) throws IOException, ParsingException {
 
-		/* 1. Instantiating entities and rules. */
-		final Predicate bicycleIDB = makePredicate("BicycleIDB", 1);
-		final Predicate bicycleEDB = makePredicate("BicycleEDB", 1);
-		final Predicate wheelIDB = makePredicate("WheelIDB", 1);
-		final Predicate wheelEDB = makePredicate("WheelEDB", 1);
-		final Predicate hasPartIDB = makePredicate("HasPartIDB", 2);
-		final Predicate hasPartEDB = makePredicate("HasPartEDB", 2);
-		final Predicate isPartOfIDB = makePredicate("IsPartOfIDB", 2);
-		final Predicate isPartOfEDB = makePredicate("IsPartOfEDB", 2);
-		final Variable x = makeVariable("x");
-		final Variable y = makeVariable("y");
+		ExamplesUtils.configureLogging();
 
-		/*
-		 * BicycleIDB(?x) :- BicycleEDB(?x) .
-		 */
-		final PositiveLiteral bicycleIDBX = makePositiveLiteral(bicycleIDB, x);
-		final PositiveLiteral bicycleEDBX = makePositiveLiteral(bicycleEDB, x);
-		final Rule rule1 = makeRule(bicycleIDBX, bicycleEDBX);
+		final String initialFactsHasPart = ""// a file input:
+				+ "@source hasPart(2) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz\") .";
+
+		final String rules = "" // first declare file inputs:
+				+ "@source bicycle(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz\") ."
+				+ "@source wheel(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz\") ."
+				// every bicycle has some part that is a wheel:
+				+ "hasPart(?X, !Y), wheel(!Y) :- bicycle(?X) ."
+				// every wheel is part of some bicycle:
+				+ "isPartOf(?X, !Y), bicycle(!Y) :- wheel(?X) ."
+				// hasPart and isPartOf are mutually inverse relations:
+				+ "hasPart(?X, ?Y) :- isPartOf(?Y, ?X) ." //
+				+ "isPartOf(?X, ?Y) :- hasPart(?Y, ?X) .";
 
 		/*
-		 * WheelIDB(?x) :- WheelEDB(?x) .
+		 * Loading, reasoning, and querying while using try-with-resources to close the
+		 * reasoner automatically.
 		 */
-		final PositiveLiteral wheelIDBX = makePositiveLiteral(wheelIDB, x);
-		final PositiveLiteral wheelEDBX = makePositiveLiteral(wheelEDB, x);
-		final Rule rule2 = makeRule(wheelIDBX, wheelEDBX);
+		final KnowledgeBase kb = new KnowledgeBase();
+		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 
-		/*
-		 * hasPartIDB(?x, ?y) :- hasPartEDB(?x, ?y) .
-		 */
-		final PositiveLiteral hasPartIDBXY = makePositiveLiteral(hasPartIDB, x, y);
-		final PositiveLiteral hasPartEDBXY = makePositiveLiteral(hasPartEDB, x, y);
-		final Rule rule3 = makeRule(hasPartIDBXY, hasPartEDBXY);
-
-		/*
-		 * isPartOfIDB(?x, ?y) :- isPartOfEDB(?x, ?y) .
-		 */
-		final PositiveLiteral isPartOfIDBXY = makePositiveLiteral(isPartOfIDB, x, y);
-		final PositiveLiteral isPartOfEDBXY = makePositiveLiteral(isPartOfEDB, x, y);
-		final Rule rule4 = makeRule(isPartOfIDBXY, isPartOfEDBXY);
-
-		/*
-		 * exists y. HasPartIDB(?x, !y), WheelIDB(!y) :- BicycleIDB(?x) .
-		 */
-		final PositiveLiteral wheelIDBY = makePositiveLiteral(wheelIDB, y);
-		final Rule rule5 = makeRule(makePositiveConjunction(hasPartIDBXY, wheelIDBY), makeConjunction(bicycleIDBX));
-
-		/*
-		 * exists y. IsPartOfIDB(?x, !y) :- WheelIDB(?x) .
-		 */
-		final Rule rule6 = makeRule(makePositiveConjunction(isPartOfIDBXY), makeConjunction(wheelIDBX));
-
-		/* IsPartOfIDB(?x, ?y) :- HasPartIDB(?y, ?x) . */
-		final PositiveLiteral hasPartIDBYX = makePositiveLiteral(hasPartIDB, y, x);
-		final Rule rule7 = makeRule(isPartOfIDBXY, hasPartIDBYX);
-
-		/*
-		 * HasPartIDB(?x, ?y) :- IsPartOfIDB(?y, ?x) .
-		 */
-		final PositiveLiteral isPartOfIDBYX = makePositiveLiteral(isPartOfIDB, y, x);
-		final Rule rule8 = makeRule(hasPartIDBXY, isPartOfIDBYX);
-
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			/*
-			 * 2. Loading, reasoning, and querying while using try-with-resources to close
-			 * the reasoner automatically.
+			 * 1. Loading the initial facts with hasPart predicate into reasoner.
 			 */
-			final KnowledgeBase kb = reasoner.getKnowledgeBase();
-			kb.addRules(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8);
-			/* Importing {@code .csv} files as data sources. */
-			final DataSource bicycleEDBDataSource = new CsvFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz"));
-			final DataSource hasPartDataSource = new CsvFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz"));
-			final DataSource wheelDataSource = new CsvFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz"));
-			kb.addFactsFromDataSource(bicycleEDB, bicycleEDBDataSource);
-			kb.addFactsFromDataSource(hasPartEDB, hasPartDataSource);
-			kb.addFactsFromDataSource(wheelEDB, wheelDataSource);
+			RuleParser.parseInto(kb, initialFactsHasPart);
+			reasoner.reason();
 
-			reasoner.load();
+			/*
+			 * Query initial facts with hasPart predicate.
+			 */
 			System.out.println("Before materialisation:");
-			ExamplesUtils.printOutQueryAnswers(hasPartEDBXY, reasoner);
+			ExamplesUtils.printOutQueryAnswers("hasPart(?X, ?Y)", reasoner);
 
+			/*
+			 * 2. Loading further facts and rules into the reasoner, and materialising the
+			 * loaded facts with the rules.
+			 */
+			RuleParser.parseInto(kb, rules);
 			/* The reasoner will use the Restricted Chase by default. */
 			reasoner.reason();
+
+			/*
+			 * Querying facts with hasPart predicate after materialisation.
+			 */
 			System.out.println("After materialisation:");
-			ExamplesUtils.printOutQueryAnswers(hasPartIDBXY, reasoner);
+			final PositiveLiteral hasPartXY = RuleParser.parsePositiveLiteral("hasPart(?X, ?Y)");
+			ExamplesUtils.printOutQueryAnswers(hasPartXY, reasoner);
 
-			/* 3. Exporting query answers to {@code .csv} files. */
-			reasoner.exportQueryAnswersToCsv(hasPartIDBXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithBlanks.csv",
-					true);
-			reasoner.exportQueryAnswersToCsv(hasPartIDBXY,
-					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBXYWithoutBlanks.csv", false);
-
-			final Constant redBike = makeConstant("redBike");
-			final PositiveLiteral hasPartIDBRedBikeY = makePositiveLiteral(hasPartIDB, redBike, y);
-			reasoner.exportQueryAnswersToCsv(hasPartIDBRedBikeY,
-					ExamplesUtils.OUTPUT_FOLDER + "hasPartIDBRedBikeYWithBlanks.csv", true);
+			/* Exporting query answers to {@code .csv} files. */
+			reasoner.exportQueryAnswersToCsv(hasPartXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartWithBlanks.csv", true);
+			reasoner.exportQueryAnswersToCsv(hasPartXY, ExamplesUtils.OUTPUT_FOLDER + "hasPartWithoutBlanks.csv",
+					false);
+			final PositiveLiteral hasPartRedBikeY = RuleParser.parsePositiveLiteral("hasPart(redBike, ?Y)");
+			reasoner.exportQueryAnswersToCsv(hasPartRedBikeY,
+					ExamplesUtils.OUTPUT_FOLDER + "hasPartRedBikeWithBlanks.csv", true);
 		}
 	}
 

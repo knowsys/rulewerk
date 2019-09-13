@@ -35,11 +35,11 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
 
 /**
  * Utility class for reading from and writing to data source files.
@@ -93,19 +93,17 @@ public final class FileDataSourceTestUtils {
 	}
 
 	public static void testConstructor(final FileDataSource fileDataSource, final File expectedFile,
-			final String expectedDirCanonicalPath, final String expectedFileNameWithoutExtension)
-					throws IOException {
+			final String expectedDirCanonicalPath, final String expectedFileNameWithoutExtension) throws IOException {
 		assertEquals(expectedFile, fileDataSource.getFile());
 		assertEquals(expectedDirCanonicalPath, fileDataSource.getDirCanonicalPath());
 		assertEquals(expectedFileNameWithoutExtension, fileDataSource.getFileNameWithoutExtension());
 	}
 
 	public static void testLoadEmptyFile(final Predicate predicate, final PositiveLiteral queryAtom,
-			final FileDataSource emptyFileDataSource)
-					throws IOException, ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
-		
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
-		kb.addFactsFromDataSource(predicate, emptyFileDataSource);
+			final FileDataSource emptyFileDataSource) throws IOException {
+
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(new DataSourceDeclarationImpl(predicate, emptyFileDataSource));
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
@@ -121,8 +119,7 @@ public final class FileDataSourceTestUtils {
 		}
 	}
 
-	public static void testNoFactsOverPredicate(final Reasoner reasoner, final PositiveLiteral queryAtom)
-			throws ReasonerStateException {
+	public static void testNoFactsOverPredicate(final Reasoner reasoner, final PositiveLiteral queryAtom) {
 		try (final QueryResultIterator answerQuery = reasoner.answerQuery(queryAtom, true)) {
 			assertFalse(answerQuery.hasNext());
 		}

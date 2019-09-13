@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import karmaresearch.vlog.Atom;
 import karmaresearch.vlog.EDBConfigurationException;
+import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.Rule;
 import karmaresearch.vlog.Term;
@@ -48,7 +49,7 @@ public class VLogQueryTest {
 	private final Atom queryAtomQPredicate = VLogExpressions.makeAtom("q", variableZ);
 
 	@Test
-	public void queryResultWithBlanksExcludeBlanks() throws EDBConfigurationException, NotStartedException {
+	public void queryResultWithBlanksExcludeBlanks() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
 		final VLog vLog = new VLog();
 
 		vLog.addData("p", pFactArguments);
@@ -61,7 +62,7 @@ public class VLogQueryTest {
 	}
 
 	@Test
-	public void queryResultWithBlanksInludeBlanks() throws EDBConfigurationException, NotStartedException {
+	public void queryResultWithBlanksInludeBlanks() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
 		final VLog vLog = new VLog();
 		vLog.addData("p", pFactArguments);
 		vLog.setRules(new Rule[] { ruleWithExistentials }, RuleRewriteStrategy.NONE);

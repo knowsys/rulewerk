@@ -41,15 +41,13 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.EdbIdbSeparationException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.IncompatiblePredicateArityException;
-import org.semanticweb.vlog4j.core.reasoner.exceptions.ReasonerStateException;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryResultIterator;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogKnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 public class TestReasonOverRdfFacts {
@@ -65,37 +63,35 @@ public class TestReasonOverRdfFacts {
 	private static final Variable object = makeVariable("o");
 
 	@Test
-	public void testCanLoadRdfFactsIntoReasoner() throws RDFParseException, RDFHandlerException, IOException,
-			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testCanLoadRdfFactsIntoReasoner() throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> facts = RdfModelConverter.rdfModelToPositiveLiterals(model);
+		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
-		kb.addFacts(facts);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(facts);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
+			reasoner.reason();
 
-			final PositiveLiteral universalQuery = makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, subject, predicate,
-					object);
+			final PositiveLiteral universalQuery = makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME,
+					Arrays.asList(subject, predicate, object));
 			final Set<List<Term>> queryResults = this.getQueryResults(reasoner, universalQuery);
 			assertTrue(!queryResults.isEmpty());
 		}
 	}
 
 	@Test
-	public void testQueryAnsweringOverRdfFacts() throws RDFParseException, RDFHandlerException, IOException,
-			ReasonerStateException, EdbIdbSeparationException, IncompatiblePredicateArityException {
+	public void testQueryAnsweringOverRdfFacts() throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
-		final Set<PositiveLiteral> facts = RdfModelConverter.rdfModelToPositiveLiterals(model);
+		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
 
-		final VLogKnowledgeBase kb = new VLogKnowledgeBase();
-		kb.addFacts(facts);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(facts);
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.load();
+			reasoner.reason();
 
 			final Constant inventionPredicate = makeConstant("https://example.org/invention");
 			final Constant carlBenzSubject = makeConstant("https://example.org/Carl-Benz");
@@ -106,8 +102,7 @@ public class TestReasonOverRdfFacts {
 		}
 	}
 
-	private Set<List<Term>> getQueryResults(final Reasoner reasoner, final PositiveLiteral query)
-			throws ReasonerStateException {
+	private Set<List<Term>> getQueryResults(final Reasoner reasoner, final PositiveLiteral query) {
 		final QueryResultIterator queryResultIterator = reasoner.answerQuery(query, true);
 
 		final Set<List<Term>> queryResults = new HashSet<>();

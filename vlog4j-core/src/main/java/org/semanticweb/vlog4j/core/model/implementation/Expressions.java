@@ -28,6 +28,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -71,6 +72,22 @@ public final class Expressions {
 	}
 
 	/**
+	 * Creates a {@link Constant} that represents a datatype literal.
+	 * 
+	 * Note that datatype literal is the common name of the representation of
+	 * specific values for a datatype. We mostly avoid this meaning of
+	 * <i>literal</i> since a literal in logic is typically a negated or non-negated
+	 * atom.
+	 * 
+	 * @param lexicalValue the lexical representation of the data value
+	 * @param datatypeIri  the full absolute IRI of the datatype of this literal
+	 * @return a {@link Constant} corresponding to the input.
+	 */
+	public static Constant makeDatatypeConstant(String lexicalValue, String datatypeIri) {
+		return new ConstantImpl("\"" + lexicalValue + "\"^^<" + datatypeIri + ">");
+	}
+
+	/**
 	 * Creates a {@link Predicate}.
 	 * 
 	 * @param name  non-blank predicate name
@@ -79,6 +96,61 @@ public final class Expressions {
 	 */
 	public static Predicate makePredicate(String name, int arity) {
 		return new PredicateImpl(name, arity);
+	}
+
+	/**
+	 * Creates a {@code Fact}.
+	 *
+	 * @param predicateName non-blank {@link Predicate} name
+	 * @param terms         non-empty, non-null list of non-null terms that are
+	 *                      constants
+	 * @return a {@link Fact} with given {@code terms} and {@link Predicate}
+	 *         constructed from name given {@code predicateName} and {@code arity}
+	 *         given {@code terms} size.
+	 */
+	public static Fact makeFact(final String predicateName, final List<Term> terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.size());
+
+		return new FactImpl(predicate, terms);
+	}
+	
+	/**
+	 * Creates a {@code Fact}.
+	 * 
+	 * @param predicateName on-blank {@link Predicate} name
+	 * @param terms non-empty, non-null array of non-null terms
+	 * @return a {@link Fact} with given {@code terms} and {@link Predicate}
+	 *         constructed from name given {@code predicateName} and {@code arity}
+	 *         given {@code terms} size.
+	 */
+	public static Fact makeFact(final String predicateName, Term... terms) {
+		final Predicate predicate = makePredicate(predicateName, terms.length);
+
+		return new FactImpl(predicate, Arrays.asList(terms));
+	}
+
+	/**
+	 * Creates a {@code Fact}.
+	 *
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null list of non-null terms. List size must
+	 *                  be the same as the given {@code predicate} arity.
+	 * @return a {@link Fact} corresponding to the input.
+	 */
+	public static Fact makeFact(final Predicate predicate, final List<Term> terms) {
+		return new FactImpl(predicate, terms);
+	}
+	
+	/**
+	 * Creates a {@code Fact}.
+	 *
+	 * @param predicate a non-null {@link Predicate}
+	 * @param terms     non-empty, non-null array of non-null terms. Array size must
+	 *                  be the same as the given {@code predicate} arity.
+	 * @return a {@link Fact} corresponding to the input.
+	 */
+	public static Fact makeFact(final Predicate predicate, final  Term... terms) {
+		return new FactImpl(predicate,  Arrays.asList(terms));
 	}
 
 	/**
@@ -210,6 +282,17 @@ public final class Expressions {
 	}
 
 	/**
+	 * Creates a {@code Conjunction} of {@link T} ({@link PositiveLiteral} type)
+	 * objects.
+	 *
+	 * @param literals list of non-null positive literals
+	 * @return a {@link Conjunction} corresponding to the input
+	 */
+	public static <T extends PositiveLiteral> Conjunction<T> makePositiveConjunction(final List<T> literals) {
+		return new ConjunctionImpl<>(literals);
+	}
+
+	/**
 	 * Creates a {@code Conjunction} of {@link PositiveLiteral} objects.
 	 *
 	 * @param literals array of non-null positive literals
@@ -230,7 +313,7 @@ public final class Expressions {
 		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
 				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
 	}
-	
+
 	/**
 	 * Creates a {@code Rule}.
 	 *
@@ -249,12 +332,13 @@ public final class Expressions {
 	 * @param body conjunction of positive (non-negated) literals
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head, final Conjunction<PositiveLiteral> body) {
+	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head,
+			final Conjunction<PositiveLiteral> body) {
 		final List<Literal> bodyLiteralList = new ArrayList<>(body.getLiterals());
 		@NonNull
 		final Conjunction<Literal> literalsBody = makeConjunction(bodyLiteralList);
 		return new RuleImpl(head, literalsBody);
-	
+
 	}
 
 }

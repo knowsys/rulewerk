@@ -32,7 +32,7 @@ import java.util.Set;
  * @author Markus Krötzsch
  *
  */
-public interface Rule {
+public interface Rule extends Statement {
 	
 	/**
 	 * Returns the conjunction of head literals (the consequence of the rule).

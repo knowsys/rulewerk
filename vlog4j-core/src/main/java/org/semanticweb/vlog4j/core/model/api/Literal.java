@@ -24,18 +24,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 
- * @author Irina Dragoste
- *
- */
-/**
  * Interface for literals. A literal is predicate applied to a tuple of terms,
- * with a positive or negative polarity. An atomic formula is a formula
- * of the form P(t1,...,tn) for P a {@link Predicate} name, and t1,...,tn some
+ * with a positive or negative polarity. An atomic formula is a formula of the
+ * form P(t1,...,tn) for P a {@link Predicate} name, and t1,...,tn some
  * {@link Term}s. A Literal is a positive or negated atomic formula. The number
  * of terms in the tuple corresponds to the {@link Predicate} arity.
  *
  * @author david.carral@tu-dresden.de
+ * @author Irina Dragoste
  */
 public interface Literal {
 

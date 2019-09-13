@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.EDBConfigurationException;
+import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.Rule;
 import karmaresearch.vlog.Term;
@@ -51,8 +52,8 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 public class VLogDataFromMemoryTest {
 
 	@Test
-	public void testVLogSimpleInference()
-			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testVLogSimpleInference() throws AlreadyStartedException, EDBConfigurationException, IOException,
+			NotStartedException, NonExistingPredicateException {
 
 		final String[][] argsAMatrix = { { "a" }, { "b" } };
 		final karmaresearch.vlog.Term varX = VLogExpressions.makeVariable("x");
@@ -92,10 +93,10 @@ public class VLogDataFromMemoryTest {
 
 		vLog.stop();
 	}
-	
+
 	@Test
-	public void testBooleanQueryTrueIncludeConstantsFalse()
-			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testBooleanQueryTrueIncludeConstantsFalse() throws AlreadyStartedException, EDBConfigurationException,
+			IOException, NotStartedException, NonExistingPredicateException {
 		// Creating rules and facts
 		final String[][] argsAMatrix = { { "a", "a" } };
 		final karmaresearch.vlog.Term varX = VLogExpressions.makeVariable("X");
@@ -137,8 +138,8 @@ public class VLogDataFromMemoryTest {
 	}
 
 	@Test
-	public void testBooleanQueryTrueIncludeConstantsTrue()
-			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testBooleanQueryTrueIncludeConstantsTrue() throws AlreadyStartedException, EDBConfigurationException,
+			IOException, NotStartedException, NonExistingPredicateException {
 		// Creating rules and facts
 		final String[][] argsAMatrix = { { "a", "a" } };
 		final karmaresearch.vlog.Term varX = VLogExpressions.makeVariable("X");
@@ -184,8 +185,8 @@ public class VLogDataFromMemoryTest {
 	}
 
 	@Test
-	public void testBooleanQueryFalse()
-			throws AlreadyStartedException, EDBConfigurationException, IOException, NotStartedException {
+	public void testBooleanQueryFalse() throws AlreadyStartedException, EDBConfigurationException, IOException,
+			NotStartedException, NonExistingPredicateException {
 		final String[][] argsAMatrix = { { "a" } };
 		final karmaresearch.vlog.Term varX = VLogExpressions.makeVariable("X");
 		final karmaresearch.vlog.Atom atomBx = new karmaresearch.vlog.Atom("B", varX);
@@ -209,50 +210,39 @@ public class VLogDataFromMemoryTest {
 		vLog.stop();
 	}
 
-	@Test
-	public void queryEmptyKnowledgeBase()
-			throws NotStartedException, AlreadyStartedException, EDBConfigurationException, IOException {
+	@Test(expected = NonExistingPredicateException.class)
+	public void queryEmptyKnowledgeBaseBeforeReasoning() throws NotStartedException, AlreadyStartedException,
+			EDBConfigurationException, IOException, NonExistingPredicateException {
 		// Start VLog
 		final VLog vLog = new VLog();
-		vLog.start(StringUtils.EMPTY, false);
+		try {
+			vLog.start(StringUtils.EMPTY, false);
 
-		final karmaresearch.vlog.Atom queryAtom = new karmaresearch.vlog.Atom("P", VLogExpressions.makeVariable("?x"));
+			final karmaresearch.vlog.Atom queryAtom = new karmaresearch.vlog.Atom("P",
+					VLogExpressions.makeVariable("?x"));
 
-		final TermQueryResultIterator stringQueryResultIterator = vLog.query(queryAtom);
-		Assert.assertFalse(stringQueryResultIterator.hasNext());
-		stringQueryResultIterator.close();
-
-		vLog.materialize(true);
-
-		final TermQueryResultIterator queryResultIteratorAfterReason = vLog.query(queryAtom);
-		Assert.assertFalse(queryResultIteratorAfterReason.hasNext());
-		queryResultIteratorAfterReason.close();
-
-		vLog.stop();
+			vLog.query(queryAtom);
+		} finally {
+			vLog.stop();
+		}
 	}
 
-	@Test
-	public void queryEmptyKnowledgeBaseSetRules()
-			throws NotStartedException, AlreadyStartedException, EDBConfigurationException, IOException {
+	@Test(expected = NonExistingPredicateException.class)
+	public void queryEmptyKnowledgeBaseAfterReasoning() throws NotStartedException, AlreadyStartedException,
+			EDBConfigurationException, IOException, NonExistingPredicateException {
 		// Start VLog
 		final VLog vLog = new VLog();
-		vLog.start(StringUtils.EMPTY, false);
+		try {
+			vLog.start(StringUtils.EMPTY, false);
+			vLog.materialize(true);
 
-		vLog.setRules(new Rule[] {}, VLog.RuleRewriteStrategy.NONE);
+			final karmaresearch.vlog.Atom queryAtom = new karmaresearch.vlog.Atom("P",
+					VLogExpressions.makeVariable("?x"));
 
-		final karmaresearch.vlog.Atom queryAtom = new karmaresearch.vlog.Atom("P", VLogExpressions.makeVariable("?x"));
-
-		final TermQueryResultIterator stringQueryResultIterator = vLog.query(queryAtom);
-		Assert.assertFalse(stringQueryResultIterator.hasNext());
-		stringQueryResultIterator.close();
-
-		vLog.materialize(true);
-
-		final TermQueryResultIterator queryResultIteratorAfterReason = vLog.query(queryAtom);
-		Assert.assertFalse(queryResultIteratorAfterReason.hasNext());
-		queryResultIteratorAfterReason.close();
-
-		vLog.stop();
+			vLog.query(queryAtom);
+		} finally {
+			vLog.stop();
+		}
 	}
 
 }
