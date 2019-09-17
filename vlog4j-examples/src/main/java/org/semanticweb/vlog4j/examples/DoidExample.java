@@ -25,10 +25,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
-import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -72,16 +70,9 @@ public class DoidExample {
 
 			/* Execute some queries */
 			final List<String> queries = Arrays.asList("humansWhoDiedOfCancer(?X)", "humansWhoDiedOfNoncancer(?X)");
-			QueryResultIterator answers;
 			System.out.println("\nNumber of inferred tuples for selected query atoms:");
 			for (final String queryString : queries) {
-				try {
-					final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
-					answers = reasoner.answerQuery(query, true);
-					System.out.println("  " + query.toString() + ": " + ExamplesUtils.iteratorSize(answers));
-				} catch (final ParsingException e) {
-					System.out.println("Failed to parse query: " + e.getMessage());
-				}
+				System.out.println("  " + queryString + ": " + ExamplesUtils.getQueryAnswerCount(queryString, reasoner));
 			}
 		}
 	}
