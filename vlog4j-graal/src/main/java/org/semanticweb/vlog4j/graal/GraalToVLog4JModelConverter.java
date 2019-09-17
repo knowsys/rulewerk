@@ -257,12 +257,7 @@ public final class GraalToVLog4JModelConverter {
 	private static Term convertTerm(final fr.lirmm.graphik.graal.api.core.Term term) {
 		final String id = term.getIdentifier().toString();
 		if (term.isConstant()) {
-			if (term.isLiteral()) {
-				return makeConstant(id);
-			} else {
-				// Add < > manually to match VLog's IRIs
-				return makeConstant("<" + id + ">");
-			}
+			return makeConstant(id);
 		} else if (term.isVariable()) {
 			return makeVariable(id);
 		} else {
