@@ -60,7 +60,7 @@ public class GraalToVLog4JModelConverterTest {
 	private final String y = "Y";
 	private final String z = "Z";
 
-	private final Constant vlog4j_socrate = Expressions.makeConstant("<" + this.socrate + ">");
+	private final Constant vlog4j_socrate = Expressions.makeConstant(this.socrate);
 
 	private final Predicate vlog4j_bicycle = Expressions.makePredicate(this.bicycle, 1);
 	private final Predicate vlog4j_hasPart = Expressions.makePredicate(this.hasPart, 2);
@@ -208,7 +208,7 @@ public class GraalToVLog4JModelConverterTest {
 		final PositiveLiteral vlog4j_predicate2_atom = Expressions.makePositiveLiteral(Expressions.makePredicate(predicate2, 2), this.vlog4j_y,
 				this.vlog4j_x);
 		final PositiveLiteral vlog4j_predicate3_atom = Expressions.makePositiveLiteral(Expressions.makePredicate(predicate3, 2), this.vlog4j_y,
-				Expressions.makeConstant("<" + stockholm + ">"));
+				Expressions.makeConstant(stockholm));
 		final PositiveLiteral vlog4j_predicate4_atom = Expressions.makePositiveLiteral(Expressions.makePredicate(predicate4, 3), this.vlog4j_x,
 				this.vlog4j_y, this.vlog4j_z);
 		final Rule expectedComplexQueryRule = Expressions.makeRule(expectedComplexQueryAtom, vlog4j_predicate1_atom,
