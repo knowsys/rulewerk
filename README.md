@@ -35,7 +35,8 @@ The released packages use vlog4j-base, which packages system-dependent binaries 
 Documentation
 -------------
 
-* The module **vlog4j-examples** includes short example programs that demonstrate some common use cases
+* The module **vlog4j-examples** includes short example programs that demonstrate various features and use cases
+* The GitHub project **[VLog4j Example](https://github.com/knowsys/vlog4j-example)** shows how to use VLog4j in own Maven projects and can be used as a skeleton for own projects
 * [JavaDoc](https://knowsys.github.io/vlog4j/) is available online and through the Maven packages.
 
 Development
