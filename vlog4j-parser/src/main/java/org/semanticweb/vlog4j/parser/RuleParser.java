@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -96,6 +97,16 @@ public class RuleParser {
 		JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 		try {
 			return localParser.positiveLiteral(FormulaContext.HEAD);
+		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
+			throw new ParsingException(e.getMessage(), e);
+		}
+	}
+
+	public static Fact parseFact(String input) throws ParsingException {
+		InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+		JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
+		try {
+			return localParser.fact(FormulaContext.HEAD);
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
 			throw new ParsingException(e.getMessage(), e);
 		}
