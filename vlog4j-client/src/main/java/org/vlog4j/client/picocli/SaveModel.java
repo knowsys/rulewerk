@@ -22,8 +22,9 @@ class SaveModel {
 	}
 
 	public void prepare() {
-		if (saveModel)
+		if (saveModel) {
 			new File(outputModelFolder).mkdirs();
+		}
 	}
 
 	public void print() {
