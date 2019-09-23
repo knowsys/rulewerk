@@ -60,11 +60,11 @@
 		<eclipse.jdt.annotation.version>2.1.100</eclipse.jdt.annotation.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>1.10.19</mockito.version>
-		<slf4j.version>1.7.10</slf4j.version>
+		<slf4j.version>1.7.28</slf4j.version>
 		<apache.commons.lang.version>3.9</apache.commons.lang.version>
 		<apache.commons.csv.version>1.5</apache.commons.csv.version>
 		<maven.javadoc.version>3.1.1</maven.javadoc.version>
-		<owlapi.version>4.5.1</owlapi.version>
+		<owlapi.version>5.1.11</owlapi.version>
 		<openrdf.sesame.version>2.7.16</openrdf.sesame.version>
 		<graal.version>1.3.1</graal.version>
 	</properties>

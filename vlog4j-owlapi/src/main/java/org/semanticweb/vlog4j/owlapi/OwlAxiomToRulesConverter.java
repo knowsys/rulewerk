@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 
@@ -17,9 +18,9 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -65,7 +66,6 @@ import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.SWRLRule;
-import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
@@ -80,11 +80,11 @@ import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
 
 /**
  * Class for converting OWL axioms to rules.
- * 
+ *
  * @author Markus Kroetzsch
  *
  */
-public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements OWLAxiomVisitor {
+public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	static OWLDataFactory owlDataFactory = OWLManager.getOWLDataFactory();
 
@@ -96,7 +96,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 	/**
 	 * Returns a fresh variable, which can be used as auxiliary variable in the
 	 * current axiom's translation.
-	 * 
+	 *
 	 * @return a variable
 	 */
 	Variable getFreshVariable() {
@@ -209,7 +209,9 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 		PositiveLiteral firstAtom = null;
 		Literal previousAtom = null;
 		PositiveLiteral currentAtom = null;
-		for (final OWLObjectPropertyExpression owlObjectPropertyExpression : axiom.getProperties()) {
+
+		for (final OWLObjectPropertyExpression owlObjectPropertyExpression : axiom.properties()
+				.collect(Collectors.toList())) {
 			currentAtom = OwlToRulesConversionHelper.getObjectPropertyAtom(owlObjectPropertyExpression,
 					this.frontierVariable, secondVariable);
 			if (previousAtom == null) {
@@ -330,7 +332,7 @@ public class OwlAxiomToRulesConverter extends OWLAxiomVisitorAdapter implements 
 		OWLClassExpression firstClass = null;
 		OWLClassExpression previousClass = null;
 		OWLClassExpression currentClass = null;
-		for (final OWLClassExpression owlClassExpression : axiom.getClassExpressions()) {
+		for (final OWLClassExpression owlClassExpression : axiom.classExpressions().collect(Collectors.toList())) {
 			currentClass = owlClassExpression;
 			if (previousClass == null) {
 				firstClass = currentClass;

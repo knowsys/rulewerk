@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.owlapi;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
 /**
  * Abstract base class for converters that create rules from OWL class
  * expressions.
- * 
+ *
  * @author Markus Krötzsch
  */
 public abstract class AbstractClassToRuleConverter implements OWLClassExpressionVisitor {
@@ -99,7 +99,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 		 * Returns true if this conjunction is true, i.e., if it is an empty conjunction
 		 * (assuming that tautological literals are never added). A true conjunction can
 		 * become refutable when more literals are added.
-		 * 
+		 *
 		 * @return
 		 */
 		public boolean isTrue() {
@@ -110,7 +110,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 		 * Returns true if this conjunction is strongly false, i.e., if it contains an
 		 * unsatisfiable atom. In this case, the actual literals stored are not
 		 * relevant. A false conjunction can not become true again.
-		 * 
+		 *
 		 * @return
 		 */
 		public boolean isFalse() {
@@ -120,7 +120,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 		/**
 		 * Returns true if this object represents a conjunction at all (even an empty
 		 * one).
-		 * 
+		 *
 		 * @return
 		 */
 		public boolean exists() {
@@ -130,7 +130,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 		/**
 		 * Returns true if this object represents a conjunction that contains at least
 		 * one atom. For this it should be neither empty, nor false, nor true.
-		 * 
+		 *
 		 * @return
 		 */
 		public boolean hasPositiveAtoms() {
@@ -143,7 +143,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 
 		/**
 		 * Returns true if the conjunction is false or empty.
-		 * 
+		 *
 		 * @return
 		 */
 		public boolean isFalseOrEmpty() {
@@ -152,7 +152,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 
 		/**
 		 * Returns true if the conjunction is true or empty.
-		 * 
+		 *
 		 * @return
 		 */
 		public boolean isTrueOrEmpty() {
@@ -185,7 +185,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	/**
 	 * Returns true if the current rule is a tautology, i.e., has an unsatisfiable
 	 * body or a tautological head.
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isTautology() {
@@ -196,7 +196,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	 * Returns true if the current rule represents a falsity, i.e., has a
 	 * tautological (or non-existent) body and an unsatisfiable (or no-existent)
 	 * head.
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isFalsity() {
@@ -245,6 +245,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 			throw owlFeatureNotSupportedException;
 		}
 	}
+
 
 	void handleConjunction(final Collection<OWLClassExpression> conjuncts, final Term term) {
 		final List<AbstractClassToRuleConverter> converters = new ArrayList<>();
@@ -327,9 +328,11 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 
 	/**
 	 * Handles a OWLObjectAllValues expression.
-	 * 
-	 * @param property the OWL property of the expression
-	 * @param filler   the filler class of the expression
+	 *
+	 * @param property
+	 *            the OWL property of the expression
+	 * @param filler
+	 *            the filler class of the expression
 	 */
 	void handleObjectAllValues(final OWLObjectPropertyExpression property, final OWLClassExpression filler) {
 		final Variable variable = this.parent.getFreshVariable();
@@ -341,9 +344,11 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 
 	/**
 	 * Handles a OWLObjectSomeValues expression.
-	 * 
-	 * @param property the OWL property of the expression
-	 * @param filler   the filler class of the expression
+	 *
+	 * @param property
+	 *            the OWL property of the expression
+	 * @param filler
+	 *            the filler class of the expression
 	 */
 	void handleObjectSomeValues(final OWLObjectPropertyExpression property, final OWLClassExpression filler) {
 		final Variable variable = this.parent.getFreshVariable();
@@ -356,8 +361,9 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	/**
 	 * Creates a new converter object of the same polarity, using the given frontier
 	 * variable.
-	 * 
-	 * @param mainTerm a variable to use
+	 *
+	 * @param mainTerm
+	 *            a variable to use
 	 */
 	public abstract AbstractClassToRuleConverter makeChildConverter(Term mainTerm);
 
