@@ -70,21 +70,14 @@ public class ConfigureReasonerLogging {
 
 	public static void main(final String[] args) throws IOException, ParsingException {
 
-		List<Rule> rules = Arrays.asList(
-				/* A(?x, ?y) :- A_EDB(?x, ?y) . */
-				RuleParser.parseRule("A(?X, ?Y) :- A_EDB(?X, ?Y) ."),
-				/* exists z. B(?y, !z) :- A(?x, ?y) . */
-				RuleParser.parseRule("B(?Y, !Z) :- A(?X, ?Y) ."),
-				/* B(?y, ?x), A(?y, ?x) :- B(?x, ?y) . */
-				RuleParser.parseRule("B(?Y, ?X), A(?Y, ?X) :- B(?X, ?Y) ."));
-
-		/* A(c,d) */
-		Fact fact = (Fact) RuleParser.parsePositiveLiteral("A_EDB(\"c\",\"d\")");
-
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
-			kb.addStatements(rules);
-			kb.addStatement(fact);
+			/* exists z. B(?y, !z) :- A(?x, ?y) . */
+			kb.addStatements(RuleParser.parseRule("B(?Y, !Z) :- A(?X, ?Y) ."));
+			/* B(?y, ?x), A(?y, ?x) :- B(?x, ?y) . */
+			kb.addStatements(RuleParser.parseRule("B(?Y, ?X), A(?Y, ?X) :- B(?X, ?Y) ."));
+			/* A(c,d) */
+			kb.addStatement(RuleParser.parseFact("A(\"c\",\"d\")"));
 
 			/*
 			 * Default reasoner log level is WARNING.
