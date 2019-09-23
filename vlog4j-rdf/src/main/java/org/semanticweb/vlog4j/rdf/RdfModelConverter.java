@@ -20,8 +20,6 @@ package org.semanticweb.vlog4j.rdf;
  * #L%
  */
 
-import static org.semanticweb.vlog4j.rdf.RdfValueToTermConverter.rdfValueToTerm;
-
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -102,8 +100,8 @@ public final class RdfModelConverter {
 		final URI predicate = statement.getPredicate();
 		final Value object = statement.getObject();
 
-		return Expressions.makeFact(RDF_TRIPLE_PREDICATE,
-				Arrays.asList(rdfValueToTerm(subject), rdfValueToTerm(predicate), rdfValueToTerm(object)));
+		return Expressions.makeFact(RDF_TRIPLE_PREDICATE, Arrays.asList(RdfValueToTermConverter.rdfValueToTerm(subject),
+				RdfValueToTermConverter.rdfValueToTerm(predicate), RdfValueToTermConverter.rdfValueToTerm(object)));
 	}
 
 }

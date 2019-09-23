@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.rdf;
 
-import static org.junit.Assert.assertEquals;
-
 /*-
  * #%L
  * VLog4j RDF Support
@@ -23,10 +21,7 @@ import static org.junit.Assert.assertEquals;
  */
 
 import static org.junit.Assert.assertTrue;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-import static org.semanticweb.vlog4j.rdf.RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +40,7 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -52,15 +48,17 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 public class TestReasonOverRdfFacts {
 
-	private static final Set<List<Term>> expectedQueryResultsInvention = new HashSet<>(Arrays.asList(
-			Arrays.asList(makeConstant("https://example.org/Carl-Benz"), makeConstant("https://example.org/invention"),
-					makeConstant("\"car\"@en")),
-			Arrays.asList(makeConstant("https://example.org/Carl-Benz"), makeConstant("https://example.org/invention"),
-					makeConstant("\"\\u81EA\\u52A8\\u8F66\"@zh-hans"))));
+	private final Constant carlBenz = Expressions.makeConstant("https://example.org/Carl-Benz");
+	private final Constant invention = Expressions.makeConstant("https://example.org/invention");
+	private final Constant labelEn = Expressions.makeConstant("\"car\"@en");
+	private final Constant labelZh = Expressions.makeConstant("\"\\u81EA\\u52A8\\u8F66\"@zh-hans");
 
-	private static final Variable subject = makeVariable("s");
-	private static final Variable predicate = makeVariable("p");
-	private static final Variable object = makeVariable("o");
+	private final Set<List<Term>> expectedQueryResultsInvention = new HashSet<>(
+			Arrays.asList(Arrays.asList(carlBenz, invention, labelEn), Arrays.asList(carlBenz, invention, labelZh)));
+
+	private static final Variable subject = Expressions.makeVariable("s");
+	private static final Variable predicate = Expressions.makeVariable("p");
+	private static final Variable object = Expressions.makeVariable("o");
 
 	@Test
 	public void testCanLoadRdfFactsIntoReasoner() throws RDFParseException, RDFHandlerException, IOException {
@@ -74,8 +72,8 @@ public class TestReasonOverRdfFacts {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 
-			final PositiveLiteral universalQuery = makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(subject, predicate, object));
+			final PositiveLiteral universalQuery = Expressions.makePositiveLiteral(
+					RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(subject, predicate, object));
 			final Set<List<Term>> queryResults = this.getQueryResults(reasoner, universalQuery);
 			assertTrue(!queryResults.isEmpty());
 		}
@@ -93,11 +91,8 @@ public class TestReasonOverRdfFacts {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 
-			final Constant inventionPredicate = makeConstant("https://example.org/invention");
-			final Constant carlBenzSubject = makeConstant("https://example.org/Carl-Benz");
-
-			final PositiveLiteral inventionQuery = makePositiveLiteral(RDF_TRIPLE_PREDICATE_NAME, carlBenzSubject,
-					inventionPredicate, object);
+			final PositiveLiteral inventionQuery = Expressions
+					.makePositiveLiteral(RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME, carlBenz, invention, object);
 			assertEquals(expectedQueryResultsInvention, this.getQueryResults(reasoner, inventionQuery));
 		}
 	}
