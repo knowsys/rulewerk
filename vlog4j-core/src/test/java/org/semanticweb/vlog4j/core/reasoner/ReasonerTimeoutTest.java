@@ -2,7 +2,6 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
 
 /*-
  * #%L
@@ -24,12 +23,6 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeC
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeFact;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +39,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 /**
  * Test case ensuring {@link Reasoner#setReasoningTimeout(Integer)} works as
@@ -82,18 +76,18 @@ public class ReasonerTimeoutTest {
 	@org.junit.Rule
 	public Timeout globalTimeout = Timeout.seconds(timeout * 5);
 
-	private final static Predicate infinite_EDB = makePredicate("infinite_EDB", 2);
-	private final static Predicate infinite_IDB = makePredicate("infinite_IDB", 2);
-	private final static Variable x = makeVariable("x");
-	private final static Variable y = makeVariable("y");
-	
-	private final static PositiveLiteral infinite_IDB_xy = makePositiveLiteral(infinite_IDB, x, y);
-	private final static PositiveLiteral infinite_EDB_xy = makePositiveLiteral(infinite_EDB, x, y);
-	private final static Variable z = makeVariable("z");
-	
-	private final static PositiveLiteral infinite_IDB_yz = makePositiveLiteral(infinite_IDB, y, z);
-	private final static Rule infinite_rule = makeRule(infinite_IDB_yz, infinite_IDB_xy);
-	
+	private final static Predicate infinite_EDB = Expressions.makePredicate("infinite_EDB", 2);
+	private final static Predicate infinite_IDB = Expressions.makePredicate("infinite_IDB", 2);
+	private final static Variable x = Expressions.makeVariable("x");
+	private final static Variable y = Expressions.makeVariable("y");
+
+	private final static PositiveLiteral infinite_IDB_xy = Expressions.makePositiveLiteral(infinite_IDB, x, y);
+	private final static PositiveLiteral infinite_EDB_xy = Expressions.makePositiveLiteral(infinite_EDB, x, y);
+	private final static Variable z = Expressions.makeVariable("z");
+
+	private final static PositiveLiteral infinite_IDB_yz = Expressions.makePositiveLiteral(infinite_IDB, y, z);
+	private final static Rule infinite_rule = Expressions.makeRule(infinite_IDB_yz, infinite_IDB_xy);
+
 	/**
 	 * This method provides the {@link #facts} and {@link #rules} to be used in all
 	 * test runs. To test if the timeout works as expected, a small set of facts and
@@ -104,10 +98,9 @@ public class ReasonerTimeoutTest {
 	@BeforeClass
 	public static void setUpBeforeClass() {
 
-		facts.add(makeFact(infinite_EDB, Arrays.asList(makeConstant("A"), makeConstant("B"))));
+		facts.add(Expressions.makeFact(infinite_EDB, Arrays.asList(Expressions.makeConstant("A"), Expressions.makeConstant("B"))));
 
-
-		final Rule import_rule = makeRule(infinite_IDB_xy, infinite_EDB_xy);
+		final Rule import_rule = Expressions.makeRule(infinite_IDB_xy, infinite_EDB_xy);
 		rules.add(import_rule);
 
 		rules.add(infinite_rule);
@@ -120,7 +113,7 @@ public class ReasonerTimeoutTest {
 	public void setUp() {
 		this.reasoner = new VLogReasoner(kb);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testSetReasoningTimeout() {
 		try (final Reasoner reasoner = Reasoner.getInstance();) {
@@ -170,12 +163,11 @@ public class ReasonerTimeoutTest {
 		assertFalse(this.reasoner.reason());
 
 		this.reasoner.resetReasoner();
-		
-		final PositiveLiteral blocking_IDB_yx = makePositiveLiteral(infinite_IDB, y, x);
-		final Rule blockingRule = makeRule(blocking_IDB_yx, infinite_IDB_xy);
+
+		final PositiveLiteral blocking_IDB_yx = Expressions.makePositiveLiteral(infinite_IDB, y, x);
+		final Rule blockingRule = Expressions.makeRule(blocking_IDB_yx, infinite_IDB_xy);
 		kb.addStatement(blockingRule);
-		
-		
+
 		this.reasoner.setReasoningTimeout(null);
 		assertTrue(this.reasoner.reason());
 	}

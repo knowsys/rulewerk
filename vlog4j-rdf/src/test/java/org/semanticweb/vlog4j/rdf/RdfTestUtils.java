@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.rdf;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-
 /*-
  * #%L
  * VLog4j RDF Support
@@ -41,15 +39,16 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public final class RdfTestUtils {
 
 	static final String INPUT_FOLDER = "src/test/data/input/";
 	static final String OUTPUT_FOLDER = "src/test/data/output/";
 
-	static final Constant RDF_FIRST = makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
-	static final Constant RDF_REST = makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
-	static final Constant RDF_NIL = makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+	static final Constant RDF_FIRST = Expressions.makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
+	static final Constant RDF_REST = Expressions.makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+	static final Constant RDF_NIL = Expressions.makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
 
 	/*
 	 * This is a utility class. Therefore, it is best practice to do the following:
