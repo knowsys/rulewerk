@@ -114,6 +114,7 @@ public class RuleParser {
 		try {
 			return localParser.fact(FormulaContext.HEAD);
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
+			LOGGER.error("Exception while parsing fact: {}!", input);
 			throw new ParsingException(e.getMessage(), e);
 		}
 	}
