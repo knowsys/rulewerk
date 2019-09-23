@@ -12,6 +12,7 @@
 
 	<artifactId>vlog4j-client</artifactId>
 	<name>VLog4j Client</name>
+	<description>Module to create a standalone vlog4j instance</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,7 +21,7 @@
 		<dependency>
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli</artifactId>
-			<version>4.0.2</version>
+			<version>${picoli.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>fr.lirmm.graphik</groupId>
