@@ -22,9 +22,6 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeDatatypeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,14 +44,14 @@ public class VLogReasonerRdfInput {
 
 	private static final Predicate ternaryPredicate = Expressions.makePredicate("triple", 3);
 	private static final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(ternaryPredicate,
-			makeVariable("s"), makeVariable("p"), makeVariable("o"));
+			Expressions.makeVariable("s"), Expressions.makeVariable("p"), Expressions.makeVariable("o"));
 
 	@SuppressWarnings("unchecked")
 	private static final Set<List<Term>> expectedTernaryQueryResult = Sets.newSet(
-			Arrays.asList(makeConstant("http://example.org/c1"), makeConstant("http://example.org/p"),
-					makeConstant("http://example.org/c2")),
-			Arrays.asList(makeConstant("http://example.org/c1"), makeConstant("http://example.org/q"),
-					makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string")));
+			Arrays.asList(Expressions.makeConstant("http://example.org/c1"), Expressions.makeConstant("http://example.org/p"),
+					Expressions.makeConstant("http://example.org/c2")),
+			Arrays.asList(Expressions.makeConstant("http://example.org/c1"), Expressions.makeConstant("http://example.org/q"),
+					Expressions.makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string")));
 
 	@Ignore
 	// TODO test fails for now, because of a VLog bug. Remove the @Ignore annotation

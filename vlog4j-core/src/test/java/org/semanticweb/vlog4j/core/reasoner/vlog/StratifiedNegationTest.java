@@ -23,12 +23,9 @@ package org.semanticweb.vlog4j.core.reasoner.vlog;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.semanticweb.vlog4j.core.reasoner.vlog.VLogExpressions.makeAtom;
-import static org.semanticweb.vlog4j.core.reasoner.vlog.VLogExpressions.makeNegatedAtom;
-import static org.semanticweb.vlog4j.core.reasoner.vlog.VLogExpressions.makeRule;
-import static org.semanticweb.vlog4j.core.reasoner.vlog.VLogExpressions.makeVariable;
 
 import org.junit.Test;
+import org.semanticweb.vlog4j.core.reasoner.vlog.VLogExpressions;
 
 import karmaresearch.vlog.Atom;
 import karmaresearch.vlog.EDBConfigurationException;
@@ -44,8 +41,6 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 public class StratifiedNegationTest {
 
-
-
 	/**
 	 * P(x), Not(Q(x)) -> R(x) Q - EDB.
 	 * 
@@ -53,15 +48,16 @@ public class StratifiedNegationTest {
 	 * @throws NotStartedException
 	 */
 	@Test
-	public void testSimpleInputNegation() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
-		final Term varX = makeVariable("x");
+	public void testSimpleInputNegation()
+			throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
+		final Term varX = VLogExpressions.makeVariable("x");
 
 		// P(x), Not(Q(x)) -> R(x) .
-		final Atom isR = makeAtom("R", varX);
+		final Atom isR = VLogExpressions.makeAtom("R", varX);
 
-		final Atom isP = makeAtom("P", varX);
-		final Atom isNotQ = makeNegatedAtom("Q", varX);
-		final Rule rule = makeRule(isR, isP, isNotQ);
+		final Atom isP = VLogExpressions.makeAtom("P", varX);
+		final Atom isNotQ = VLogExpressions.makeNegatedAtom("Q", varX);
+		final Rule rule = VLogExpressions.makeRule(isR, isP, isNotQ);
 
 		final VLog vLog = new VLog();
 		vLog.setLogLevel(LogLevel.DEBUG);
@@ -112,7 +108,8 @@ public class StratifiedNegationTest {
 	 * @throws NotStartedException
 	 */
 	@Test
-	public void testStratifiedNegationOnIDB() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
+	public void testStratifiedNegationOnIDB()
+			throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
 		final Term varX = VLogExpressions.makeVariable("x");
 
 		final Atom isP = VLogExpressions.makeAtom("P", varX);
@@ -160,7 +157,8 @@ public class StratifiedNegationTest {
 	 * @throws NotStartedException
 	 */
 	@Test(expected = MaterializationException.class)
-	public void testNegationOnIDBUnstratifiable() throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
+	public void testNegationOnIDBUnstratifiable()
+			throws EDBConfigurationException, NotStartedException, NonExistingPredicateException {
 		final Term varX = VLogExpressions.makeVariable("x");
 		final String predP = "P";
 		final String predQ = "Q";
