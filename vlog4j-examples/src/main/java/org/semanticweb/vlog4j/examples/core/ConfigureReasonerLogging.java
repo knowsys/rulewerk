@@ -1,9 +1,5 @@
 package org.semanticweb.vlog4j.examples.core;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConjunction;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
-
 /*-
  * #%L
  * VLog4j Examples
@@ -24,22 +20,18 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeP
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
  * This class exemplifies setting a log file and log level for VLog reasoner
@@ -76,28 +68,16 @@ public class ConfigureReasonerLogging {
 	 */
 	private static @Nullable String reasonerDebugLogFilePath = logsFolder + "ReasonerDebugLogFile.log";
 
-	private static @NonNull List<Rule> rules = Arrays.asList(
-			/* A(?x, ?y) :- A_EDB(?x, ?y) . */
-			makeRule(makePositiveLiteral("A", makeVariable("x"), makeVariable("y")),
-					makePositiveLiteral("A_EDB", makeVariable("x"), makeVariable("y"))),
-			/* exists z. B(?y, !z) :- A(?x, ?y) . */
-			makeRule(makePositiveLiteral("B", makeVariable("y"), makeVariable("z")),
-					makePositiveLiteral("A", makeVariable("x"), makeVariable("y"))),
-			/* B(?y, ?x), A(?y, ?x) :- B(?x, ?y) . */
-			makeRule(
-					makePositiveConjunction(makePositiveLiteral("B", makeVariable("y"), makeVariable("x")),
-							makePositiveLiteral("A", makeVariable("y"), makeVariable("x"))),
-					makeConjunction(makePositiveLiteral("B", makeVariable("x"), makeVariable("y")))));
-
-	/* A(c,d) */
-	private static Fact fact = Expressions.makeFact("A_EDB", Arrays.asList(makeConstant("c"), makeConstant("d")));
-
-	public static void main(final String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException, ParsingException {
 
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
-			kb.addStatements(rules);
-			kb.addStatement(fact);
+			/* exists z. B(?y, !z) :- A(?x, ?y) . */
+			kb.addStatements(RuleParser.parseRule("B(?Y, !Z) :- A(?X, ?Y) ."));
+			/* B(?y, ?x), A(?y, ?x) :- B(?x, ?y) . */
+			kb.addStatements(RuleParser.parseRule("B(?Y, ?X), A(?Y, ?X) :- B(?X, ?Y) ."));
+			/* A(c,d) */
+			kb.addStatement(RuleParser.parseFact("A(\"c\",\"d\")"));
 
 			/*
 			 * Default reasoner log level is WARNING.

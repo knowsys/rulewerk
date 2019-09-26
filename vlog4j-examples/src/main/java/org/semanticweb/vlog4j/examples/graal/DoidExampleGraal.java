@@ -20,9 +20,6 @@ package org.semanticweb.vlog4j.examples.graal;
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePredicate;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -69,7 +66,7 @@ public class DoidExampleGraal {
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 
 			/* Configure RDF data source */
-			final Predicate doidTriplePredicate = makePredicate("doidTriple", 3);
+			final Predicate doidTriplePredicate = Expressions.makePredicate("doidTriple", 3);
 			final DataSource doidDataSource = new RdfFileDataSource(
 					new File(ExamplesUtils.INPUT_FOLDER + "doid.nt.gz"));
 			kb.addStatement(new DataSourceDeclarationImpl(doidTriplePredicate, doidDataSource));
@@ -109,9 +106,9 @@ public class DoidExampleGraal {
 			}
 
 			/* Create additional rules with negated literals */
-			final Variable x = makeVariable("X");
-			final Variable y = makeVariable("Y");
-			final Variable z = makeVariable("Z");
+			final Variable x = Expressions.makeVariable("X");
+			final Variable y = Expressions.makeVariable("Y");
+			final Variable z = Expressions.makeVariable("Z");
 			// humansWhoDiedOfNoncancer(X):-deathCause(X,Y),diseaseId(Y,Z),~cancerDisease(Z)
 			final NegativeLiteral notCancerDisease = Expressions.makeNegativeLiteral("cancerDisease", z);
 			final PositiveLiteral diseaseId = Expressions.makePositiveLiteral("diseaseId", y, z);

@@ -1,6 +1,5 @@
 package org.semanticweb.vlog4j.graal;
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveConjunction;
 
 /*-
  * #%L
@@ -22,8 +21,6 @@ import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeP
  * #L%
  */
 
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteralsRule;
 
 import java.util.List;
 
@@ -32,6 +29,8 @@ import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+
 
 import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 
@@ -67,8 +66,8 @@ public class GraalConjunctiveQueryToRule {
 	 */
 	protected GraalConjunctiveQueryToRule(final String ruleHeadPredicateName, final List<Term> answerVariables,
 			final Conjunction<PositiveLiteral> conjunction) {
-		this.query = makePositiveLiteral(ruleHeadPredicateName, answerVariables);
-		this.rule = makePositiveLiteralsRule(makePositiveConjunction(this.query), conjunction);
+		this.query = Expressions.makePositiveLiteral(ruleHeadPredicateName, answerVariables);
+		this.rule = Expressions.makePositiveLiteralsRule(Expressions.makePositiveConjunction(this.query), conjunction);
 	}
 
 	/**
