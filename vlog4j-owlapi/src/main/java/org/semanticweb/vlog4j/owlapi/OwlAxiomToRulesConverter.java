@@ -48,11 +48,13 @@ import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLHasKeyAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
@@ -153,7 +155,12 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLSubClassOfAxiom axiom) {
-		this.addSubClassAxiom(axiom.getSubClass(), axiom.getSuperClass());
+		if (axiom.getSubClass() instanceof OWLObjectOneOf) {
+			final OWLObjectOneOf subClass = (OWLObjectOneOf) axiom.getSubClass();
+			subClass.individuals().forEach(individual -> visitClassAssertionAxiom(individual, axiom.getSuperClass()));
+		} else {
+			this.addSubClassAxiom(axiom.getSubClass(), axiom.getSuperClass());
+		}
 	}
 
 	@Override
@@ -320,10 +327,14 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLClassAssertionAxiom axiom) {
+		visitClassAssertionAxiom(axiom.getIndividual(), axiom.getClassExpression());
+	}
+
+	void visitClassAssertionAxiom(final OWLIndividual individual, final OWLClassExpression classExpression) {
 		this.startAxiomConversion();
-		final Term term = OwlToRulesConversionHelper.getIndividualTerm(axiom.getIndividual());
+		final Term term = OwlToRulesConversionHelper.getIndividualTerm(individual);
 		final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(term, this);
-		axiom.getClassExpression().accept(headConverter);
+		classExpression.accept(headConverter);
 		this.addRule(headConverter);
 	}
 

@@ -153,7 +153,13 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectOneOf ce) {
-		// TODO Auto-generated method stub
+		// ce.individuals().forEach(individual -> {
+		// final Term individualTerm =
+		// OwlToRulesConversionHelper.getIndividualTerm(individual);
+		// replaceTerm(this.body);
+		// replaceTerm(this.head);
+		// });
+		// TODO Auto-generated method parenstub
 
 	}
 
