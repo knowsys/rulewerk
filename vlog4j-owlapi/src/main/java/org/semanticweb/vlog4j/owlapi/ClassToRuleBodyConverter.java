@@ -156,8 +156,8 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 		// ce.individuals().forEach(individual -> {
 		// final Term individualTerm =
 		// OwlToRulesConversionHelper.getIndividualTerm(individual);
-		// replaceTerm(this.body);
-		// replaceTerm(this.head);
+		// replaceTerm(this.body, individualTerm);
+		// replaceTerm(this.head, individualTerm);
 		// });
 		// TODO Auto-generated method parenstub
 
