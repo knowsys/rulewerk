@@ -235,16 +235,17 @@
 					<!-- aggregated reports for multi-module projects -->
 					<aggregate>true</aggregate>
 					<instrumentation>
-                        <excludes>
-                            <!-- Do not consider generated source code. Plugin fails for these files. -->
-                            <exclude>**/javacc/JavaCC*.class</exclude>
-                            <exclude>**/javacc/JavaCharStream.class</exclude>
-                            <exclude>**/javacc/ParseException.class</exclude>
-                            <exclude>**/javacc/SimpleCharStream.class</exclude>
-                            <exclude>**/javacc/Token.class</exclude>
-                            <exclude>**/javacc/TokenMgrError.class</exclude>
-                        </excludes>
-                    </instrumentation>
+						<excludes>
+							<!-- Do not consider generated source code. Plugin fails for these 
+								files. -->
+							<exclude>**/javacc/JavaCC*.class</exclude>
+							<exclude>**/javacc/JavaCharStream.class</exclude>
+							<exclude>**/javacc/ParseException.class</exclude>
+							<exclude>**/javacc/SimpleCharStream.class</exclude>
+							<exclude>**/javacc/Token.class</exclude>
+							<exclude>**/javacc/TokenMgrError.class</exclude>
+						</excludes>
+					</instrumentation>
 				</configuration>
 			</plugin>
 			<plugin>
