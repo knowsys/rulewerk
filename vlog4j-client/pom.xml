@@ -12,6 +12,7 @@
 
 	<artifactId>vlog4j-client</artifactId>
 	<name>VLog4j Client</name>
+	<description>Stand-alone VLog4j application</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
