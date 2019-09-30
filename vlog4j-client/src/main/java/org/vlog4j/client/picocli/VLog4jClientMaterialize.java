@@ -34,7 +34,7 @@ public class VLog4jClientMaterialize implements Runnable {
 	// constant expression
 
 	@Option(names = "--log-level", description = "Log level of VLog (c++ library). One of: DEBUG, INFO, WARNING (default), ERROR.", required = false)
-	LogLevel logLevel = LogLevel.WARNING;
+	private LogLevel logLevel = LogLevel.WARNING;
 
 	@Option(names = "--log-file", description = "Log file of VLog (c++ library). VLog will log to the default system output by default", required = false)
 	private String logFile;
@@ -91,22 +91,22 @@ public class VLog4jClientMaterialize implements Runnable {
 			}
 		}
 
-		/* Configure queries (We throws parsing query errors before materialization) */
+		/* Configure queries (We throw parsing query errors before materialization) */
 		List<PositiveLiteral> queries = new ArrayList<>();
 		for (String queryString : queryStrings) {
 			try {
 				queries.add(RuleParser.parsePositiveLiteral(queryString));
-				System.out.println("  --query: " + queries.get(queries.size() - 1).toString());
+				System.out.println("  --query: " + queries.get(queries.size() - 1));
 			} catch (ParsingException e) {
-				System.out.println("Failed to parse query: " + queryString.toString() + ". " + e.getMessage());
+				System.out.println("Failed to parse query: " + queryString + ". " + e.getMessage());
 				System.exit(1);
 			}
 		}
 
 		/* Print configuration */
 		System.out.println("  --log-file: " + logFile);
-		System.out.println("  --log-level: " + logLevel.toString());
-		System.out.println("  --chase-algorithm: " + chaseAlgorithm.toString());
+		System.out.println("  --log-level: " + logLevel);
+		System.out.println("  --chase-algorithm: " + chaseAlgorithm);
 		System.out.println("  --timeout: " + ((timeout > 0) ? Integer.toString(timeout) : "none"));
 		/* Print what to do with the result */
 //		saveModel.print();
@@ -139,22 +139,23 @@ public class VLog4jClientMaterialize implements Runnable {
 //				System.out.println("Saving model ...");
 //			}
 
+			String outputPath;
 			if (queries.size() > 0) {
 				System.out.println("Answering queries ...");
 				for (PositiveLiteral query : queries) {
 					if (SaveQueryResult.saveQueryResults) {
 						try {
-							reasoner.exportQueryAnswersToCsv(query,
-									SaveQueryResult.outputQueryResultFolder + "/" + query.toString() + ".csv", true);
+							outputPath = SaveQueryResult.outputQueryResultDirectory + "/" + query.toString() + ".csv";
+							reasoner.exportQueryAnswersToCsv(query, outputPath, true);
 						} catch (IOException e) {
-							System.out.println("Can't save query " + query.toString());
+							System.out.println("Can't save query " + query);
 							e.printStackTrace();
 							System.exit(1);
 						}
 					}
 					if (printQueryResult.sizeOnly) {
-						System.out.println("Elements in " + query.toString() + ": "
-								+ ExamplesUtils.getQueryAnswerCount(query, reasoner));
+						System.out.println(
+								"Elements in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
 					} else if (printQueryResult.complete) {
 						ExamplesUtils.printOutQueryAnswers(query, reasoner);
 					}
