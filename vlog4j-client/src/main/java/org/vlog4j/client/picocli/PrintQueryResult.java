@@ -5,16 +5,19 @@ import picocli.CommandLine.Option;
 class PrintQueryResults {
 
 	/**
-	 * Boolean. If it is set to true, Vlog4jClient will print the size of the query
-	 * result. True by default. Mutually exclusive with
-	 * {@code --print-complete-query-result}
+	 * If true, Vlog4jClient will print the size of the query result. Mutually
+	 * exclusive with {@code --print-complete-query-result}
+	 * 
+	 * @default true
 	 */
 	@Option(names = "--print-query-result-size", description = "Boolean. If true, Vlog4jClient will print the size of the query result. True by default.")
 	public boolean sizeOnly = true;
 
 	/**
-	 * Boolean. If true, Vlog4jClient will print the query result in stdout. False
-	 * by default. Mutually exclusive with {@code --print-query-result-size}
+	 * If true, Vlog4jClient will print the query result in stdout. Mutually
+	 * exclusive with {@code --print-query-result-size}
+	 * 
+	 * @default false
 	 */
 	@Option(names = "--print-complete-query-result", description = "Boolean. If true, Vlog4jClient will print the query result in stdout. False by default.")
 	public boolean complete = false;

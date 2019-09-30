@@ -6,10 +6,20 @@ import picocli.CommandLine.Option;
 
 class SaveModel {
 
+	/**
+	 * If true, Vlog4jClient will save the model in {@code --output-model-directory}
+	 *
+	 * @default false
+	 */
 	@Option(names = "--save-model", description = "Boolean. If true, Vlog4jClient will save the model into --output-model-directory. False by default.")
 	public boolean saveModel = false;
 
-	@Option(names = "--output-model-directory", description = "Directory to store the model. Used only if --store-model is set true. \"model\" by default.")
+	/**
+	 * Directory to store the model. Used only if {@code --store-model} is true.
+	 *
+	 * @default "model"
+	 */
+	@Option(names = "--output-model-directory", description = "Directory to store the model. Used only if --store-model is true. \"model\" by default.")
 	public String outputModelDirectory = "model";
 
 	public boolean check() {
