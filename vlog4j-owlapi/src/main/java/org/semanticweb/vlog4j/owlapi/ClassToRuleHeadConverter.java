@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.owlapi;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package org.semanticweb.vlog4j.owlapi;
  */
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
@@ -48,7 +49,7 @@ import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 /**
  * Helper class for transforming OWL class expressions that occur as
  * superclasses into suitable head literals for rules.
- * 
+ *
  * @author Markus Krötzsch
  *
  */
@@ -84,12 +85,12 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectIntersectionOf ce) {
-		this.handleConjunction(ce.getOperands(), this.mainTerm);
+		this.handleConjunction(ce.operands().collect(Collectors.toList()), this.mainTerm);
 	}
 
 	@Override
 	public void visit(final OWLObjectUnionOf ce) {
-		this.handleDisjunction(ce.getOperands());
+		this.handleDisjunction(ce.operands().collect(Collectors.toList()));
 	}
 
 	@Override
@@ -135,8 +136,8 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectMaxCardinality ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"Max cardinality restrictions in superclass positions are not supported in rules.");
 	}
 
 	@Override
@@ -147,8 +148,8 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectOneOf ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"Nominal restrictions in superclass positions are not supported in rules, due to lack of equality support.");
 	}
 
 	@Override

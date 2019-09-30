@@ -23,12 +23,6 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeConstant;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeNegativeLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makePositiveLiteral;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeFact;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeRule;
-import static org.semanticweb.vlog4j.core.model.implementation.Expressions.makeVariable;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -43,20 +37,34 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public class VLogReasonerNegation {
+
+	private final Variable x = Expressions.makeVariable("x");
+	private final Variable y = Expressions.makeVariable("y");
+
+	private final Constant c = Expressions.makeConstant("c");
+	private final Constant d = Expressions.makeConstant("d");
+	private final Constant e = Expressions.makeConstant("e");
+	private final Constant f = Expressions.makeConstant("f");
+
+	private final Literal pXY = Expressions.makePositiveLiteral("P", x, y);
+	private final Literal notQXY = Expressions.makeNegativeLiteral("Q", x, y);
+
+	private final Literal notRXY = Expressions.makeNegativeLiteral("R", x, y);
+	private final PositiveLiteral sXY = Expressions.makePositiveLiteral("S", x, y);
+
+	private final Fact pCD = Expressions.makeFact("P", Arrays.asList(c, d));
+	private final Fact pEF = Expressions.makeFact("P", Arrays.asList(e, f));
+	private final Fact qCD = Expressions.makeFact("Q", Arrays.asList(c, d));
 
 	@Test(expected = RuntimeException.class)
 	public void testNotStratifiable() throws IOException {
 
-		final Variable x = makeVariable("x");
-		final Variable y = makeVariable("y");
+		final PositiveLiteral qXY = Expressions.makePositiveLiteral("Q", x, y);
 
-		final Literal pXY = makePositiveLiteral("P", x, y);
-		final Literal notQXY = makeNegativeLiteral("Q", x, y);
-		final PositiveLiteral qXY = makePositiveLiteral("Q", x, y);
-
-		final Rule rule = makeRule(qXY, pXY, notQXY);
+		final Rule rule = Expressions.makeRule(qXY, pXY, notQXY);
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(rule);
@@ -70,21 +78,7 @@ public class VLogReasonerNegation {
 	@Test
 	public void testStratifiable() throws IOException {
 
-		final Variable x = makeVariable("x");
-		final Variable y = makeVariable("y");
-
-		final Literal pXY = makePositiveLiteral("P", x, y);
-		final Literal notQXY = makeNegativeLiteral("Q", x, y);
-		final Literal notRXY = makeNegativeLiteral("R", x, y);
-		final PositiveLiteral sXY = makePositiveLiteral("S", x, y);
-
-		final Rule rule = makeRule(sXY, pXY, notQXY, notRXY);
-		final Fact pCD = makeFact("P", Arrays.asList(makeConstant("c"), makeConstant("d")));
-		final Constant e = makeConstant("e");
-		final Constant f = makeConstant("f");
-		final Fact pEF = makeFact("P", Arrays.asList(e, f));
-
-		final Fact qCD = makeFact("Q", Arrays.asList(makeConstant("c"), makeConstant("d")));
+		final Rule rule = Expressions.makeRule(sXY, pXY, notQXY, notRXY);
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(rule, pCD, pEF, qCD);
@@ -105,20 +99,7 @@ public class VLogReasonerNegation {
 	@Test
 	public void testInputNegation() throws IOException {
 
-		final Variable x = makeVariable("x");
-		final Variable y = makeVariable("y");
-
-		final Literal pXY = makePositiveLiteral("P", x, y);
-		final Literal notQXY = makeNegativeLiteral("Q", x, y);
-		final PositiveLiteral sXY = makePositiveLiteral("S", x, y);
-
-		final Rule rule = makeRule(sXY, pXY, notQXY);
-		final Fact pCD = makeFact("P", Arrays.asList(makeConstant("c"), makeConstant("d")));
-		final Constant e = makeConstant("e");
-		final Constant f = makeConstant("f");
-		final Fact pEF = makeFact("P", Arrays.asList(e, f));
-
-		final Fact qCD = makeFact("Q", Arrays.asList(makeConstant("c"), makeConstant("d")));
+		final Rule rule = Expressions.makeRule(sXY, pXY, notQXY);
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(rule, pCD, pEF, qCD);
