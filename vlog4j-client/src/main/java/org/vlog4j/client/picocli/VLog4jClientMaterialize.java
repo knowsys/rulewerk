@@ -63,7 +63,7 @@ public class VLog4jClientMaterialize implements Runnable {
 	@Override
 	public void run() {
 		ExamplesUtils.configureLogging();
-		
+
 		System.out.println(queryStrings);
 
 //		if (saveModel.check() & saveQueryResult.check() & printQueryResult.check()) {
@@ -84,8 +84,10 @@ public class VLog4jClientMaterialize implements Runnable {
 				System.out.println("  --rule-file: " + ruleFile);
 			} catch (FileNotFoundException e) {
 				System.out.println("File not found: " + ruleFile + ". " + e.getMessage());
+				System.exit(1);
 			} catch (ParsingException e) {
 				System.out.println("Failed to parse rule file: " + ruleFile + ". " + e.getMessage());
+				System.exit(1);
 			}
 		}
 
@@ -94,7 +96,7 @@ public class VLog4jClientMaterialize implements Runnable {
 		for (String queryString : queryStrings) {
 			try {
 				queries.add(RuleParser.parsePositiveLiteral(queryString));
-				System.out.println("  --query: " + queries.get(queries.size()-1).toString());
+				System.out.println("  --query: " + queries.get(queries.size() - 1).toString());
 			} catch (ParsingException e) {
 				System.out.println("Failed to parse query: " + queryString.toString() + ". " + e.getMessage());
 				System.exit(1);
@@ -129,6 +131,7 @@ public class VLog4jClientMaterialize implements Runnable {
 			} catch (IOException e) {
 				System.out.println("Something went wrong. Please check the file paths inside the rule files.");
 				e.printStackTrace();
+				System.exit(1);
 			}
 
 //			// TODO save the model
@@ -142,10 +145,11 @@ public class VLog4jClientMaterialize implements Runnable {
 					if (SaveQueryResult.saveQueryResults) {
 						try {
 							reasoner.exportQueryAnswersToCsv(query,
-									SaveQueryResult.outputQueryResultFolder +"/"+ query.toString()+".csv", true);
+									SaveQueryResult.outputQueryResultFolder + "/" + query.toString() + ".csv", true);
 						} catch (IOException e) {
-							System.out.println("Cant save query " + query.toString());
+							System.out.println("Can't save query " + query.toString());
 							e.printStackTrace();
+							System.exit(1);
 						}
 					}
 					if (printQueryResult.sizeOnly) {
