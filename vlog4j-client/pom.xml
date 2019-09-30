@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli</artifactId>
-			<version>4.0.2</version>
+			<version>${picoli.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>fr.lirmm.graphik</groupId>
