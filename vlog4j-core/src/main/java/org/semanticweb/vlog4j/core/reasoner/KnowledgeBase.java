@@ -82,6 +82,35 @@ public class KnowledgeBase implements Iterable<Statement> {
 
 	private final AddStatementVisitor addStatementVisitor = new AddStatementVisitor();
 
+	/**
+	 * Auxiliary class to process {@link Statement}s when removed from the knowledge
+	 * base. Returns true if a statement was removed successfully.
+	 * 
+	 * @author Irina Dragoste
+	 *
+	 */
+	private class RemoveStatementVisitor implements StatementVisitor<Boolean> {
+
+		@Override
+		public Boolean visit(Fact statement) {
+			removeFact(statement);
+			return true;
+		}
+
+		@Override
+		public Boolean visit(Rule statement) {
+			return true;
+		}
+
+		@Override
+		public Boolean visit(DataSourceDeclaration statement) {
+			dataSourceDeclarations.remove(statement);
+			return true;
+		}
+	}
+
+	private final RemoveStatementVisitor removeStatementVisitor = new RemoveStatementVisitor();
+
 	private class ExtractStatementsVisitor<T> implements StatementVisitor<Void> {
 
 		final ArrayList<T> extracted = new ArrayList<>();
@@ -128,6 +157,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	private final LinkedHashSet<Statement> statements = new LinkedHashSet<>();
 
+// TODO support prefixes
 //	/**
 //	 * Known prefixes that can be used to pretty-print the contents of the knowledge
 //	 * base. We try to preserve user-provided prefixes found in files when loading
@@ -168,15 +198,21 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Adds a single statement to the knowledge base.
 	 * 
-	 * @return true, if the knowledge base has changed.
 	 * @param statement
+	 * @return true, if the knowledge base has changed.
 	 */
 	public void addStatement(Statement statement) {
 		if (doAddStatement(statement)) {
-			notifyListenersOnStatementRemoved(statement);
+			notifyListenersOnStatementAdded(statement);
 		}
 	}
 
+	/**
+	 * Adds a single statement to the knowledge base.
+	 * 
+	 * @param statement the statement to be added
+	 * @return true, if the knowledge base has changed.
+	 */
 	boolean doAddStatement(Statement statement) {
 		Validate.notNull(statement, "Statement cannot be Null!");
 		if (!this.statements.contains(statement) && statement.accept(this.addStatementVisitor)) {
@@ -228,14 +264,23 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	public void removeStatement(Statement statement) {
 		if (doRemoveStatement(statement)) {
-			notifyListenersOnStatementAdded(statement);
+			notifyListenersOnStatementRemoved(statement);
 		}
 	}
 
-	private boolean doRemoveStatement(Statement statement) {
+	/**
+	 * Adds a single statement to the knowledge base.
+	 * 
+	 * @param statement the statement to be added
+	 * @return true, if the knowledge base has changed.
+	 */
+	boolean doRemoveStatement(Statement statement) {
 		Validate.notNull(statement, "Statement cannot be Null!");
 
-		// TODO Auto-generated method stub
+		if (this.statements.contains(statement) && statement.accept(this.removeStatementVisitor)) {
+			this.statements.remove(statement);
+			return true;
+		}
 		return false;
 	}
 
@@ -255,7 +300,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 
 		notifyListenersOnStatementsRemoved(removedStatements);
 	}
-	
+
 	/**
 	 * Removes a list of statements from the knowledge base.
 	 * 
@@ -349,6 +394,21 @@ public class KnowledgeBase implements Iterable<Statement> {
 	}
 
 	/**
+	 * Removes a single fact from the internal data structure. It is assumed that it
+	 * has already been checked that this fact is already present.
+	 * 
+	 * @param fact the fact to remove
+	 */
+	void removeFact(Fact fact) {
+		final Predicate predicate = fact.getPredicate();
+		final Set<PositiveLiteral> facts = this.factsByPredicate.get(predicate);
+		facts.remove(fact);
+		if (facts.isEmpty()) {
+			factsByPredicate.remove(predicate);
+		}
+	}
+
+	/**
 	 * Returns all {@link Statement}s of this knowledge base.
 	 * 
 	 * The result can be iterated over and will return statements in the original
@@ -365,5 +425,11 @@ public class KnowledgeBase implements Iterable<Statement> {
 	public Iterator<Statement> iterator() {
 		return Collections.unmodifiableCollection(this.statements).iterator();
 	}
+
+	Map<Predicate, Set<PositiveLiteral>> getFactsByPredicate() {
+		return this.factsByPredicate;
+	}
+	
+	
 
 }
