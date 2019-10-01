@@ -173,7 +173,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	public void addStatement(Statement statement) {
 		if (doAddStatement(statement)) {
-			notifyListenersOnStatementAdded(statement);
+			notifyListenersOnStatementRemoved(statement);
 		}
 	}
 
@@ -210,7 +210,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	public void addStatements(Statement... statements) {
 		final List<Statement> addedStatements = new ArrayList<>();
-		
+
 		for (final Statement statement : statements) {
 			if (doAddStatement(statement)) {
 				addedStatements.add(statement);
@@ -218,6 +218,59 @@ public class KnowledgeBase implements Iterable<Statement> {
 		}
 
 		notifyListenersOnStatementsAdded(addedStatements);
+	}
+
+	/**
+	 * Removes a single statement from the knowledge base.
+	 * 
+	 * @return true, if the knowledge base has changed.
+	 * @param statement
+	 */
+	public void removeStatement(Statement statement) {
+		if (doRemoveStatement(statement)) {
+			notifyListenersOnStatementAdded(statement);
+		}
+	}
+
+	private boolean doRemoveStatement(Statement statement) {
+		Validate.notNull(statement, "Statement cannot be Null!");
+
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * Removes a collection of statements to the knowledge base.
+	 * 
+	 * @param statements
+	 */
+	public void removeStatements(Collection<? extends Statement> statements) {
+		final List<Statement> removedStatements = new ArrayList<>();
+
+		for (final Statement statement : statements) {
+			if (doRemoveStatement(statement)) {
+				removedStatements.add(statement);
+			}
+		}
+
+		notifyListenersOnStatementsRemoved(removedStatements);
+	}
+	
+	/**
+	 * Removes a list of statements from the knowledge base.
+	 * 
+	 * @param statements
+	 */
+	public void removeStatements(Statement... statements) {
+		final List<Statement> removedStatements = new ArrayList<>();
+
+		for (final Statement statement : statements) {
+			if (doRemoveStatement(statement)) {
+				removedStatements.add(statement);
+			}
+		}
+
+		notifyListenersOnStatementsRemoved(removedStatements);
 	}
 
 	private void notifyListenersOnStatementsAdded(final List<Statement> addedStatements) {
@@ -232,6 +285,16 @@ public class KnowledgeBase implements Iterable<Statement> {
 		for (final KnowledgeBaseListener listener : this.listeners) {
 			listener.onStatementAdded(addedStatement);
 		}
+	}
+
+	private void notifyListenersOnStatementRemoved(Statement statement) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void notifyListenersOnStatementsRemoved(List<Statement> removedStatements) {
+		// TODO Auto-generated method stub
+
 	}
 
 	/**
