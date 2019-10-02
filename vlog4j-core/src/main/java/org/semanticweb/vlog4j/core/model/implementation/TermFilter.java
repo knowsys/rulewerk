@@ -29,6 +29,7 @@ import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
+import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.TermVisitor;
@@ -150,6 +151,14 @@ public class TermFilter implements TermVisitor<Void> {
 	@Override
 	public Void visit(NamedNull term) {
 		if (this.termType == null || this.termType.equals(TermType.NAMED_NULL)) {
+			this.terms.add(term);
+		}
+		return null;
+	}
+
+	@Override
+	public Void visit(LanguageStringConstant term) {
+		if (this.termType == null || this.termType.equals(TermType.LANGSTRING_CONSTANT)) {
 			this.terms.add(term);
 		}
 		return null;

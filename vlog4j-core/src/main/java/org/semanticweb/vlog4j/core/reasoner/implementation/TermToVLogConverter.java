@@ -26,6 +26,7 @@ import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
+import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
 import org.semanticweb.vlog4j.core.model.api.TermVisitor;
 import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
 
@@ -48,11 +49,21 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	}
 
 	/**
-	 * Transforms a datatype literal to a {@link karmaresearch.vlog.Term} with the
+	 * Transforms a datatype constant to a {@link karmaresearch.vlog.Term} with the
 	 * same name and type {@link karmaresearch.vlog.Term.TermType#CONSTANT}.
 	 */
 	@Override
 	public karmaresearch.vlog.Term visit(DatatypeConstant term) {
+		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
+	}
+
+	/**
+	 * Transforms a language-tagged string constant to a
+	 * {@link karmaresearch.vlog.Term} with the same name and type
+	 * {@link karmaresearch.vlog.Term.TermType#CONSTANT}.
+	 */
+	@Override
+	public karmaresearch.vlog.Term visit(LanguageStringConstant term) {
 		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
 	}
 

@@ -30,8 +30,8 @@ public class Terms {
 	 * @return stream of results
 	 */
 	public static Stream<Constant> getConstants(Stream<? extends Term> terms) {
-		return terms.filter(
-				term -> term.getType() == TermType.ABSTRACT_CONSTANT || term.getType() == TermType.DATATYPE_CONSTANT)
+		return terms.filter(term -> term.getType() == TermType.ABSTRACT_CONSTANT
+				|| term.getType() == TermType.DATATYPE_CONSTANT || term.getType() == TermType.LANGSTRING_CONSTANT)
 				.map(Constant.class::cast);
 	}
 

@@ -31,6 +31,7 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
 import org.semanticweb.vlog4j.core.model.api.Fact;
+import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -92,6 +93,18 @@ public final class Expressions {
 	 */
 	public static DatatypeConstant makeDatatypeConstant(String lexicalValue, String datatypeIri) {
 		return new DatatypeConstantImpl(lexicalValue, datatypeIri);
+	}
+
+	/**
+	 * Creates a {@link LanguageStringConstant} from the given input.
+	 * 
+	 * @param string      the string value of the constant
+	 * @param languageTag the BCP 47 language tag of the constant; should be in
+	 *                    lower case
+	 * @return a {@link Constant} corresponding to the input.
+	 */
+	public static LanguageStringConstant makeLanguageStringConstant(String string, String languageTag) {
+		return new LanguageStringConstantImpl(string, languageTag);
 	}
 
 	/**

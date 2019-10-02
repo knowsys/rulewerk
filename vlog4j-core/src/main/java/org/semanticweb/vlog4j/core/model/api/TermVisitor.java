@@ -46,6 +46,14 @@ public interface TermVisitor<T> {
 	T visit(DatatypeConstant term);
 
 	/**
+	 * Visits a {@link LanguageStringConstant} and returns a result.
+	 * 
+	 * @param term the term to visit
+	 * @return some result
+	 */
+	T visit(LanguageStringConstant term);
+
+	/**
 	 * Visits a {@link UniversalVariable} and returns a result
 	 * 
 	 * @param term the term to visit

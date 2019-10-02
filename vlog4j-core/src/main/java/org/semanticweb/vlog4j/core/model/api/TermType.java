@@ -45,6 +45,12 @@ public enum TermType {
 	 */
 	DATATYPE_CONSTANT,
 	/**
+	 * A string constant with a language tag, used to represent values of type
+	 * http://www.w3.org/1999/02/22-rdf-syntax-ns#langString in RDF, OWL, and
+	 * related languages used with knowledge graphs.
+	 */
+	LANGSTRING_CONSTANT,
+	/**
 	 * A named null is an entity used to represent anonymous domain elements
 	 * introduced during the reasoning process to satisfy existential restrictions.
 	 */
