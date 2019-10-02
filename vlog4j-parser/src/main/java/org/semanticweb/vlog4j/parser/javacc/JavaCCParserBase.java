@@ -26,7 +26,9 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
+import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -81,21 +83,21 @@ public class JavaCCParserBase {
 		 */
 		BODY
 	}
-	
+
 	public JavaCCParserBase() {
 		this.knowledgeBase = new KnowledgeBase();
 	}
 
-	Constant createIntegerLiteral(String lexicalForm) {
-		return Expressions.makeAbstractConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_INTEGER + ">");
+	Constant createIntegerConstant(String lexicalForm) {
+		return Expressions.makeDatatypeConstant(lexicalForm, PrefixDeclarations.XSD_INTEGER);
 	}
 
-	Constant createDecimalLiteral(String lexicalForm) {
-		return Expressions.makeAbstractConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DECIMAL + ">");
+	Constant createDecimalConstant(String lexicalForm) {
+		return Expressions.makeDatatypeConstant(lexicalForm, PrefixDeclarations.XSD_DECIMAL);
 	}
 
-	Constant createDoubleLiteral(String lexicalForm) {
-		return Expressions.makeAbstractConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DOUBLE + ">");
+	Constant createDoubleConstant(String lexicalForm) {
+		return Expressions.makeDatatypeConstant(lexicalForm, PrefixDeclarations.XSD_DOUBLE);
 	}
 
 	void addDataSource(String predicateName, int arity, DataSource dataSource) {
@@ -192,19 +194,23 @@ public class JavaCCParserBase {
 		return s.substring(n, s.length());
 	}
 
-	String strRDFLiteral(String data, String lang, String dt) {
+	/**
+	 * Creates a suitable {@link Constant} from the parsed data.
+	 * 
+	 * @param string      the string data (unescaped)
+	 * @param languageTag the language tag, or null if not present
+	 * @param datatype    the datatype, or null if not provided
+	 * @return suitable constant
+	 */
+	Constant createDataConstant(String string, String languageTag, String datatype) {
 		// https://www.w3.org/TR/turtle/#grammar-production-String RDFLiteral
-		String ret = "\"" + data + "\"";
-		if (dt != null) {
-			return ret += "^^" + dt;
-			// return ret += "^^<" + dt+">";
+		if (datatype != null) {
+			return new DatatypeConstantImpl(string, datatype);
+		} else if (languageTag != null) {
+			return new LanguageStringConstantImpl(string, languageTag);
+		} else {
+			return new DatatypeConstantImpl(string, "http://www.w3.org/2001/XMLSchema#string");
 		}
-		if (lang != null) {
-			// dt = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
-			return ret += "@" + lang;
-		}
-		// return ret + "^^http://www.w3.org/2001/XMLSchema#string";
-		return ret + "^^<http://www.w3.org/2001/XMLSchema#string>";
 	}
 
 	/**
@@ -215,7 +221,7 @@ public class JavaCCParserBase {
 		this.headExiVars.clear();
 		this.headUniVars.clear();
 	}
-	
+
 	public void setKnowledgeBase(KnowledgeBase knowledgeBase) {
 		this.knowledgeBase = knowledgeBase;
 	}

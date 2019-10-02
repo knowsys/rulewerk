@@ -42,7 +42,7 @@ public interface LanguageStringConstant extends Constant {
 	 * @return a IRI of RDF langString datatype
 	 */
 	default String getDatatype() {
-		return "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
+		return PrefixDeclarations.RDF_LANGSTRING;
 	}
 
 	/**

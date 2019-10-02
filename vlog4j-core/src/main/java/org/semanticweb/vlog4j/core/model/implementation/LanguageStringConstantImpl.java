@@ -62,4 +62,29 @@ public class LanguageStringConstantImpl implements LanguageStringConstant {
 		return this.lang;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = lang.hashCode();
+		result = prime * result + string.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LanguageStringConstantImpl other = (LanguageStringConstantImpl) obj;
+		return this.string.equals(other.getString()) && this.lang.equals(other.getLanguageTag());
+	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
+
 }
