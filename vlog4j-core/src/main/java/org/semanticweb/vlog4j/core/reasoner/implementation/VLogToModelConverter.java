@@ -91,8 +91,8 @@ class VLogToModelConverter {
 					return new DatatypeConstantImpl(lexicalValue, datatype);
 				} else {
 					int startTypeIdx = name.lastIndexOf('@', name.length() - 2);
-					String languageTag = name.substring(startTypeIdx + 1, name.length() - 1);
-					String string = name.substring(1, startTypeIdx - 2);
+					String languageTag = name.substring(startTypeIdx + 1, name.length());
+					String string = name.substring(1, startTypeIdx - 1);
 					return new LanguageStringConstantImpl(string, languageTag);
 				}
 			} else {
