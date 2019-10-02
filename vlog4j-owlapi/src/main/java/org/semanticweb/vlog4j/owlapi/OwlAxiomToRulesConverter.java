@@ -76,7 +76,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.model.implementation.FactImpl;
-import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
 
 /**
  * Class for converting OWL axioms to rules.
@@ -90,7 +90,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	final Set<Rule> rules = new HashSet<>();
 	final Set<Fact> facts = new HashSet<>();
-	final Variable frontierVariable = new VariableImpl("X");
+	final Variable frontierVariable = new UniversalVariableImpl("X");
 	int freshVariableCounter = 0;
 
 	/**
@@ -101,7 +101,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 */
 	Variable getFreshVariable() {
 		this.freshVariableCounter++;
-		return new VariableImpl("Y" + this.freshVariableCounter);
+		return new UniversalVariableImpl("Y" + this.freshVariableCounter);
 	}
 
 	void addRule(final AbstractClassToRuleConverter converter) {
@@ -122,7 +122,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 					Arrays.asList(OwlToRulesConversionHelper.getTop(converter.mainTerm)));
 			if (headConjunction.getVariables().isEmpty()) {
 				for (final PositiveLiteral conjunct : headConjunction.getLiterals()) {
-					this.facts.add(new FactImpl(conjunct.getPredicate(), conjunct.getTerms()));
+					this.facts.add(new FactImpl(conjunct.getPredicate(), conjunct.getArguments()));
 				}
 				return;
 			}

@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.semanticweb.vlog4j.core.model.api.Blank;
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -38,7 +38,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.RuleRewriteStrategy;
 
@@ -46,7 +46,7 @@ public class ModelToVLogConverterTest {
 
 	@Test
 	public void testToVLogTermVariable() {
-		final Variable variable = Expressions.makeVariable("var");
+		final Variable variable = Expressions.makeUniversalVariable("var");
 		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
 				karmaresearch.vlog.Term.TermType.VARIABLE, "var");
 
@@ -60,7 +60,7 @@ public class ModelToVLogConverterTest {
 
 	@Test
 	public void testToVLogTermConstant() {
-		final Constant constant = Expressions.makeConstant("const");
+		final Constant constant = Expressions.makeAbstractConstant("const");
 		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
 				karmaresearch.vlog.Term.TermType.CONSTANT, "const");
 
@@ -75,7 +75,7 @@ public class ModelToVLogConverterTest {
 
 	@Test
 	public void testToVLogTermBlank() {
-		final Blank blank = new BlankImpl("blank");
+		final NamedNull blank = new NamedNullImpl("blank");
 		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
 				karmaresearch.vlog.Term.TermType.BLANK, "blank");
 
@@ -89,11 +89,11 @@ public class ModelToVLogConverterTest {
 
 	@Test
 	public void testToVLogTermArray() {
-		final Variable vx = Expressions.makeVariable("x");
-		final Variable vxToo = Expressions.makeVariable("x");
-		final Variable vy = Expressions.makeVariable("y");
-		final Constant cx = Expressions.makeConstant("x");
-		final Blank bx = new BlankImpl("x");
+		final Variable vx = Expressions.makeUniversalVariable("x");
+		final Variable vxToo = Expressions.makeUniversalVariable("x");
+		final Variable vy = Expressions.makeUniversalVariable("y");
+		final Constant cx = Expressions.makeAbstractConstant("x");
+		final NamedNull bx = new NamedNullImpl("x");
 		final List<Term> terms = Arrays.asList(vx, cx, vxToo, bx, vy);
 
 		final karmaresearch.vlog.Term expectedVx = new karmaresearch.vlog.Term(
@@ -122,9 +122,9 @@ public class ModelToVLogConverterTest {
 
 	@Test
 	public void testToVLogFactTuples() {
-		final Constant c1 = Expressions.makeConstant("1");
-		final Constant c2 = Expressions.makeConstant("2");
-		final Constant c3 = Expressions.makeConstant("3");
+		final Constant c1 = Expressions.makeAbstractConstant("1");
+		final Constant c2 = Expressions.makeAbstractConstant("2");
+		final Constant c3 = Expressions.makeAbstractConstant("3");
 		final Fact atom1 = Expressions.makeFact("p1", Arrays.asList(c1));
 		final Fact atom2 = Expressions.makeFact("p2", Arrays.asList(c2, c3));
 
@@ -143,9 +143,9 @@ public class ModelToVLogConverterTest {
 
 	@Test
 	public void testToVLogAtom() {
-		final Constant c = Expressions.makeConstant("c");
-		final Variable x = Expressions.makeVariable("x");
-		final Blank b = new BlankImpl("_:b");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Variable x = Expressions.makeUniversalVariable("x");
+		final NamedNull b = new NamedNullImpl("_:b");
 		final PositiveLiteral atom = Expressions.makePositiveLiteral("pred", c, x, b);
 
 		final karmaresearch.vlog.Term expectedC = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
@@ -165,11 +165,11 @@ public class ModelToVLogConverterTest {
 
 	@Test
 	public void testToVLogRuleArray() {
-		final Variable x = Expressions.makeVariable("x");
-		final Variable y = Expressions.makeVariable("y");
-		final Variable z = Expressions.makeVariable("z");
-		final Variable w = Expressions.makeVariable("w");
-		final Variable v = Expressions.makeVariable("v");
+		final Variable x = Expressions.makeUniversalVariable("x");
+		final Variable y = Expressions.makeUniversalVariable("y");
+		final Variable z = Expressions.makeUniversalVariable("z");
+		final Variable w = Expressions.makeUniversalVariable("w");
+		final Variable v = Expressions.makeUniversalVariable("v");
 		final PositiveLiteral atomP1X = Expressions.makePositiveLiteral("p1", x);
 		final PositiveLiteral atomP2XY = Expressions.makePositiveLiteral("p2", x, y);
 		final PositiveLiteral atomP3YZ = Expressions.makePositiveLiteral("p3", y, z);

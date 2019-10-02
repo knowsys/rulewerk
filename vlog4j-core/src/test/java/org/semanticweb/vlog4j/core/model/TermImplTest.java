@@ -25,17 +25,17 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
-import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
 
 public class TermImplTest {
 
 	@Test
 	public void constantImplEqualityTest() {
-		Term c = new ConstantImpl("c");
-		Term ctoo = new ConstantImpl("c");
-		Term a = new ConstantImpl("a");
-		Term v = new VariableImpl("c");
+		Term c = new AbstractConstantImpl("c");
+		Term ctoo = new AbstractConstantImpl("c");
+		Term a = new AbstractConstantImpl("a");
+		Term v = new UniversalVariableImpl("c");
 
 		assertEquals(c, c);
 		assertEquals(ctoo, c);
@@ -49,28 +49,28 @@ public class TermImplTest {
 
 	@Test
 	public void termGetterTest() {
-		Term c = new ConstantImpl("c");
+		Term c = new AbstractConstantImpl("c");
 		assertEquals("c", c.getName());
 		assertEquals(TermType.CONSTANT, c.getType());
 
-		Term v = new VariableImpl("v");
+		Term v = new UniversalVariableImpl("v");
 		assertEquals("v", v.getName());
 		assertEquals(TermType.VARIABLE, v.getType());
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void constantNameNonNullTest() {
-		new ConstantImpl((String)null);
+		new AbstractConstantImpl((String)null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void constantNameNonEmptyTest() {
-		new ConstantImpl("");
+		new AbstractConstantImpl("");
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void constantNameNonWhitespaceTest() {
-		new ConstantImpl(" ");
+		new AbstractConstantImpl(" ");
 	}
 
 	

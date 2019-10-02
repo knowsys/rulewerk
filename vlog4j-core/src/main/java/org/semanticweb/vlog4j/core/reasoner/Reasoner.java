@@ -284,7 +284,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
 	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
 	 * the {@code query} are matched by terms in the fact, either named
-	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#BLANK}). The same
+	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The same
 	 * variable name identifies the same term in the answer fact. <br>
 	 * A query answer is represented by a {@link QueryResult}. A query can have
 	 * multiple, distinct query answers. This method returns an Iterator over these
@@ -319,7 +319,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @param query         a {@link PositiveLiteral} representing the query to be
 	 *                      answered.
 	 * @param includeBlanks if {@code true}, {@link QueryResult}s containing terms
-	 *                      of type {@link TermType#BLANK} (representing anonymous
+	 *                      of type {@link TermType#NAMED_NULL} (representing anonymous
 	 *                      individuals introduced to satisfy rule existentially
 	 *                      quantified variables) will be included. Otherwise, the
 	 *                      answers will only contain the {@link QueryResult}s with
@@ -341,7 +341,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
 	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
 	 * the {@code query} are matched by terms in the fact, either named
-	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#BLANK}). The same
+	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The same
 	 * variable name identifies the same term in the answer fact. <br>
 	 * A query can have multiple, distinct query answers. Each answers is written on
 	 * a separate line in the given file.
@@ -353,7 +353,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *                      <i><b>.csv</b></i> file represents a query answer, and
 	 *                      it will contain the fact term names as columns.
 	 * @param includeBlanks if {@code true}, answers containing terms of type
-	 *                      {@link TermType#BLANK} (representing anonymous
+	 *                      {@link TermType#NAMED_NULL} (representing anonymous
 	 *                      individuals introduced to satisfy rule existentially
 	 *                      quantified variables) will be included. Otherwise, the
 	 *                      answers will only contain those with terms of type

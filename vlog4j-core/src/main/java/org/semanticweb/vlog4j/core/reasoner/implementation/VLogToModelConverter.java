@@ -25,9 +25,8 @@ import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
-import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
-import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 
 /**
  * Utility class with static methods for converting from VLog internal model
@@ -81,16 +80,17 @@ class VLogToModelConverter {
 		switch (vLogTerm.getTermType()) {
 		case CONSTANT:
 			if (name.charAt(0) == '<' && name.charAt(name.length() - 1) == '>') { // strip <> off IRIs
-				return new ConstantImpl(name.substring(1, name.length() - 1));
+				return new AbstractConstantImpl(name.substring(1, name.length() - 1));
 			} else {
-				return new ConstantImpl(name);
+				return new AbstractConstantImpl(name);
 			}
 		case BLANK:
-			return new BlankImpl(name);
+			return new NamedNullImpl(name);
 		case VARIABLE:
-			return new VariableImpl(name);
+			throw new IllegalArgumentException(
+					"VLog variables cannot be converted without knowing if they are universally or existentially quantified.");
 		default:
-			throw new IllegalArgumentException("Unexpected vlog term type: " + vLogTerm.getTermType());
+			throw new IllegalArgumentException("Unexpected VLog term type: " + vLogTerm.getTermType());
 		}
 	}
 

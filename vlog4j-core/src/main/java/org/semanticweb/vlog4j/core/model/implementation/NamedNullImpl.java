@@ -1,9 +1,5 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
-import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.api.TermVisitor;
-import org.semanticweb.vlog4j.core.model.api.Variable;
-
 /*
  * #%L
  * VLog4j Core Components
@@ -24,28 +20,26 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
  * #L%
  */
 
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
+import org.semanticweb.vlog4j.core.model.api.TermVisitor;
+
 /**
- * Implements {@link Variable} terms. A variable is a parameter that stands for
- * an arbitrary domain element.
+ * Implements {@link NamedNull} terms. A blank is an entity used to represent
+ * anonymous domain elements introduced during the reasoning process to satisfy
+ * existential restrictions.
  *
  * @author david.carral@tu-dresden.de
  */
-public class VariableImpl extends AbstractTermImpl implements Variable {
+public class NamedNullImpl extends AbstractTermImpl implements NamedNull {
 
 	/**
-	 * Instantiates a <b>{@code VariableImpl}</b> object with the name
+	 * Instantiates a <b>{@code BlankImpl}</b> object with the name
 	 * <b>{@code name}</b>.
 	 *
-	 * @param name
-	 *            cannot be a blank String (null, empty or whitespace).
+	 * @param name cannot be a blank String (null, empty or whitespace).
 	 */
-	public VariableImpl(final String name) {
+	public NamedNullImpl(final String name) {
 		super(name);
-	}
-
-	@Override
-	public TermType getType() {
-		return TermType.VARIABLE;
 	}
 
 	@Override
@@ -55,6 +49,6 @@ public class VariableImpl extends AbstractTermImpl implements Variable {
 
 	@Override
 	public String toString() {
-		return "?" + this.getName();
+		return "_" + this.getName();
 	}
 }

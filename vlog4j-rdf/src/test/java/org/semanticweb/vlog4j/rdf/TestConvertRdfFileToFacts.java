@@ -40,7 +40,7 @@ import org.openrdf.model.Model;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.semanticweb.vlog4j.core.model.api.Blank;
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -52,14 +52,14 @@ public class TestConvertRdfFileToFacts {
 	// encodes such characters as "\u0008" and "\u000C", respectively (the
 	// corresponding Unicode hex code).
 
-	private final static Constant file1 = Expressions.makeConstant("file:/1");
-	private final static Constant file2 = Expressions.makeConstant("file:/2");
-	private final static Constant file3 = Expressions.makeConstant("file:/3");
-	private final static Constant file4 = Expressions.makeConstant("file:/4");
-	private final static Constant file5 = Expressions.makeConstant("file:/5");
-	private final static Constant file6 = Expressions.makeConstant("file:/6");
-	private final static Constant file7 = Expressions.makeConstant("file:/7");
-	private final static Constant fileA = Expressions.makeConstant("file:/a");
+	private final static Constant file1 = Expressions.makeAbstractConstant("file:/1");
+	private final static Constant file2 = Expressions.makeAbstractConstant("file:/2");
+	private final static Constant file3 = Expressions.makeAbstractConstant("file:/3");
+	private final static Constant file4 = Expressions.makeAbstractConstant("file:/4");
+	private final static Constant file5 = Expressions.makeAbstractConstant("file:/5");
+	private final static Constant file6 = Expressions.makeAbstractConstant("file:/6");
+	private final static Constant file7 = Expressions.makeAbstractConstant("file:/7");
+	private final static Constant fileA = Expressions.makeAbstractConstant("file:/a");
 
 	private final static Constant booleanTrue = Expressions.makeDatatypeConstant("true",
 			"http://www.w3.org/2001/XMLSchema#boolean");
@@ -101,11 +101,11 @@ public class TestConvertRdfFileToFacts {
 			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file6, fileA,
 					Expressions.makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string")))));
 
-	private final static Constant exampleA = Expressions.makeConstant("http://example.org/a");
-	private final static Constant example1 = Expressions.makeConstant("http://example.org/1");
-	private final static Constant example2 = Expressions.makeConstant("http://example.org/2");
-	private final static Constant example3 = Expressions.makeConstant("http://example.org/3");
-	private final static Constant exampleHash1 = Expressions.makeConstant("http://example.org/#1");
+	private final static Constant exampleA = Expressions.makeAbstractConstant("http://example.org/a");
+	private final static Constant example1 = Expressions.makeAbstractConstant("http://example.org/1");
+	private final static Constant example2 = Expressions.makeAbstractConstant("http://example.org/2");
+	private final static Constant example3 = Expressions.makeAbstractConstant("http://example.org/3");
+	private final static Constant exampleHash1 = Expressions.makeAbstractConstant("http://example.org/#1");
 
 	private static final Set<Fact> expectedRelativeUriFacts = new HashSet<>(Arrays.asList(
 			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(example1, exampleA, exampleHash1)),
@@ -119,9 +119,9 @@ public class TestConvertRdfFileToFacts {
 
 	private static final Set<Fact> expectedLanguageTagFacts = new HashSet<>(Arrays.asList(
 			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(file1, fileA, Expressions.makeConstant("\"This is a test.\"@en"))),
+					Arrays.asList(file1, fileA, Expressions.makeAbstractConstant("\"This is a test.\"@en"))),
 			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(file1, fileA, Expressions.makeConstant("\"Das ist ein Test.\"@de")))));
+					Arrays.asList(file1, fileA, Expressions.makeAbstractConstant("\"Das ist ein Test.\"@de")))));
 
 	@Test
 	public void testDataTypesNormalized() throws RDFHandlerException, RDFParseException, IOException {
@@ -177,12 +177,12 @@ public class TestConvertRdfFileToFacts {
 				Arrays.asList(Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file1, fileA, RDF_NIL)),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file2, fileA, blank1)),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
-								Arrays.asList(blank1, RDF_FIRST, Expressions.makeConstant(intoLexical("1", "integer")))),
+								Arrays.asList(blank1, RDF_FIRST, Expressions.makeAbstractConstant(intoLexical("1", "integer")))),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank1, RDF_REST, RDF_NIL)),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file3, fileA, blank2)),
-						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_FIRST, Expressions.makeConstant("file:/#1"))),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_FIRST, Expressions.makeAbstractConstant("file:/#1"))),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_REST, blank3)),
-						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_FIRST, Expressions.makeConstant("file:/#2"))),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_FIRST, Expressions.makeAbstractConstant("file:/#2"))),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_REST, RDF_NIL))));
 
 		assertEquals(expectedSetFacts, factsFromModel);
@@ -192,8 +192,8 @@ public class TestConvertRdfFileToFacts {
 	public void testNumberOfBlankNodesCorrect() throws RDFParseException, RDFHandlerException, IOException {
 		final File labelledFile = new File(RdfTestUtils.INPUT_FOLDER + "labelledBNodes.ttl");
 		final File unlabelledFile = new File(RdfTestUtils.INPUT_FOLDER + "unlabelledBNodes.ttl");
-		final Set<Blank> labelledBlanks = this.getBlanksFromTurtleFile(labelledFile);
-		final Set<Blank> unlabelledBlanks = this.getBlanksFromTurtleFile(unlabelledFile);
+		final Set<NamedNull> labelledBlanks = this.getBlanksFromTurtleFile(labelledFile);
+		final Set<NamedNull> unlabelledBlanks = this.getBlanksFromTurtleFile(unlabelledFile);
 
 		assertEquals(2, labelledBlanks.size());
 		assertEquals(2, unlabelledBlanks.size());
@@ -203,18 +203,18 @@ public class TestConvertRdfFileToFacts {
 	public void testBlankNodesWithSameLabelAreDifferentInDifferentModels()
 			throws RDFParseException, RDFHandlerException, IOException {
 		final File file = new File(RdfTestUtils.INPUT_FOLDER + "labelledBNodes.ttl");
-		final Set<Blank> blanks1 = this.getBlanksFromTurtleFile(file);
-		final Set<Blank> blanks2 = this.getBlanksFromTurtleFile(file);
+		final Set<NamedNull> blanks1 = this.getBlanksFromTurtleFile(file);
+		final Set<NamedNull> blanks2 = this.getBlanksFromTurtleFile(file);
 
 		assertTrue(CollectionUtils.intersection(blanks1, blanks2).isEmpty());
 	}
 
-	private Set<Blank> getBlanksFromTurtleFile(final File file)
+	private Set<NamedNull> getBlanksFromTurtleFile(final File file)
 			throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = RdfTestUtils.parseFile(file, RDFFormat.TURTLE);
 		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
 
-		final Set<Blank> blanks = new HashSet<>();
+		final Set<NamedNull> blanks = new HashSet<>();
 		facts.forEach(fact -> blanks.addAll(fact.getBlanks()));
 		return blanks;
 	}

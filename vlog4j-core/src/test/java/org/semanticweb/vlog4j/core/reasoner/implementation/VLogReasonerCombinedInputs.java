@@ -46,23 +46,23 @@ import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 
 public class VLogReasonerCombinedInputs {
 
-	final Variable vx = Expressions.makeVariable("x");
+	final Variable vx = Expressions.makeUniversalVariable("x");
 	final Predicate q = Expressions.makePredicate("q", 1);
 	final Rule rulePimpliesQ = Expressions.makeRule(Expressions.makePositiveLiteral("q", vx),
 			Expressions.makePositiveLiteral("p", vx));
 
-	final Fact factQc = Expressions.makeFact(q, Arrays.asList(Expressions.makeConstant("c")));
-	final Fact factQc1 = Expressions.makeFact(q, Arrays.asList(Expressions.makeConstant("c1")));
-	final Fact factQc2 = Expressions.makeFact(q, Arrays.asList(Expressions.makeConstant("c2")));
-	final Fact factQd = Expressions.makeFact(q, Arrays.asList(Expressions.makeConstant("d")));
-	final Fact factPd = Expressions.makeFact("p", Arrays.asList(Expressions.makeConstant("d")));
-	final PositiveLiteral queryQx = Expressions.makePositiveLiteral(q, Arrays.asList(Expressions.makeVariable("x")));
+	final Fact factQc = Expressions.makeFact(q, Arrays.asList(Expressions.makeAbstractConstant("c")));
+	final Fact factQc1 = Expressions.makeFact(q, Arrays.asList(Expressions.makeAbstractConstant("c1")));
+	final Fact factQc2 = Expressions.makeFact(q, Arrays.asList(Expressions.makeAbstractConstant("c2")));
+	final Fact factQd = Expressions.makeFact(q, Arrays.asList(Expressions.makeAbstractConstant("d")));
+	final Fact factPd = Expressions.makeFact("p", Arrays.asList(Expressions.makeAbstractConstant("d")));
+	final PositiveLiteral queryQx = Expressions.makePositiveLiteral(q, Arrays.asList(Expressions.makeUniversalVariable("x")));
 
 	final Set<List<Term>> resultsCC1C2D = new HashSet<>(
-			Arrays.asList(Collections.singletonList(Expressions.makeConstant("c")),
-					Collections.singletonList(Expressions.makeConstant("c1")),
-					Collections.singletonList(Expressions.makeConstant("c2")),
-					Collections.singletonList(Expressions.makeConstant("d"))));
+			Arrays.asList(Collections.singletonList(Expressions.makeAbstractConstant("c")),
+					Collections.singletonList(Expressions.makeAbstractConstant("c1")),
+					Collections.singletonList(Expressions.makeAbstractConstant("c2")),
+					Collections.singletonList(Expressions.makeAbstractConstant("d"))));
 
 	final DataSourceDeclaration qFromCsv;
 	final DataSourceDeclaration qCDFromCsv;

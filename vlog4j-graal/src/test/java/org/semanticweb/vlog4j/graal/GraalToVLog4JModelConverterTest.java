@@ -60,7 +60,7 @@ public class GraalToVLog4JModelConverterTest {
 	private final String y = "Y";
 	private final String z = "Z";
 
-	private final Constant vlog4j_socrate = Expressions.makeConstant(this.socrate);
+	private final Constant vlog4j_socrate = Expressions.makeAbstractConstant(this.socrate);
 
 	private final Predicate vlog4j_bicycle = Expressions.makePredicate(this.bicycle, 1);
 	private final Predicate vlog4j_hasPart = Expressions.makePredicate(this.hasPart, 2);
@@ -68,9 +68,9 @@ public class GraalToVLog4JModelConverterTest {
 	private final Predicate vlog4j_mortal = Expressions.makePredicate(this.mortal, 1);
 	private final Predicate vlog4j_wheel = Expressions.makePredicate(this.wheel, 1);
 
-	private final Variable vlog4j_x = Expressions.makeVariable(this.x);
-	private final Variable vlog4j_y = Expressions.makeVariable(this.y);
-	private final Variable vlog4j_z = Expressions.makeVariable(this.z);
+	private final Variable vlog4j_x = Expressions.makeUniversalVariable(this.x);
+	private final Variable vlog4j_y = Expressions.makeUniversalVariable(this.y);
+	private final Variable vlog4j_z = Expressions.makeUniversalVariable(this.z);
 
 	private final DefaultTermFactory termFactory = new DefaultTermFactory();
 
@@ -208,7 +208,7 @@ public class GraalToVLog4JModelConverterTest {
 		final PositiveLiteral vlog4j_predicate2_atom = Expressions.makePositiveLiteral(Expressions.makePredicate(predicate2, 2), this.vlog4j_y,
 				this.vlog4j_x);
 		final PositiveLiteral vlog4j_predicate3_atom = Expressions.makePositiveLiteral(Expressions.makePredicate(predicate3, 2), this.vlog4j_y,
-				Expressions.makeConstant(stockholm));
+				Expressions.makeAbstractConstant(stockholm));
 		final PositiveLiteral vlog4j_predicate4_atom = Expressions.makePositiveLiteral(Expressions.makePredicate(predicate4, 3), this.vlog4j_x,
 				this.vlog4j_y, this.vlog4j_z);
 		final Rule expectedComplexQueryRule = Expressions.makeRule(expectedComplexQueryAtom, vlog4j_predicate1_atom,

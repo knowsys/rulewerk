@@ -46,9 +46,9 @@ public class GeneratedAnonymousIndividualsTest {
 	private static final String includeBlanksFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "include_blanks.csv";
 	private static final String excludeBlanksFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "exclude_blanks.csv";
 
-	private static final Variable vx = Expressions.makeVariable("x");
-	private static final Variable vy = Expressions.makeVariable("y");
-	private static final Variable vz = Expressions.makeVariable("z");
+	private static final Variable vx = Expressions.makeUniversalVariable("x");
+	private static final Variable vy = Expressions.makeUniversalVariable("y");
+	private static final Variable vz = Expressions.makeUniversalVariable("z");
 	private static final String p = "p";
 
 	// rule: P(?x) -> P(?x,!y), P(?x,!z)
@@ -59,12 +59,12 @@ public class GeneratedAnonymousIndividualsTest {
 
 	private static KnowledgeBase kb = new KnowledgeBase();
 	// fact: P(c)
-	private static final Constant constantC = Expressions.makeConstant("c");
+	private static final Constant constantC = Expressions.makeAbstractConstant("c");
 	private static final Fact fact = Expressions.makeFact(p, Arrays.asList(constantC));
 
 	// query: P(?x,?y) ?
-	final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(p, Expressions.makeVariable("?x"),
-			Expressions.makeVariable("?y"));
+	final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(p, Expressions.makeUniversalVariable("?x"),
+			Expressions.makeUniversalVariable("?y"));
 
 	static {
 		// y,z existential variables that can introduce blanks (anonymous individuals)

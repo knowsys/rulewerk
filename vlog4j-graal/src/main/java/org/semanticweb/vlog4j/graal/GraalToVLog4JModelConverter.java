@@ -249,9 +249,9 @@ public final class GraalToVLog4JModelConverter {
 	private static Term convertTerm(final fr.lirmm.graphik.graal.api.core.Term term) {
 		final String id = term.getIdentifier().toString();
 		if (term.isConstant()) {
-			return Expressions.makeConstant(id);
+			return Expressions.makeAbstractConstant(id);
 		} else if (term.isVariable()) {
-			return Expressions.makeVariable(id);
+			return Expressions.makeUniversalVariable(id);
 		} else {
 			throw new GraalConvertException(MessageFormat.format(
 					"Term {0} with identifier {1} and label {2} could not be converted because it is neither constant nor variable.",

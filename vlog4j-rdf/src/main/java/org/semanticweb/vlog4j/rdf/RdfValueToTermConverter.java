@@ -27,8 +27,8 @@ import org.openrdf.model.Value;
 import org.openrdf.model.datatypes.XMLDatatypeUtil;
 import org.openrdf.rio.ntriples.NTriplesUtil;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
-import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 
 final class RdfValueToTermConverter {
 
@@ -49,17 +49,17 @@ final class RdfValueToTermConverter {
 
 	static Term rdfBlankNodeToBlank(final BNode bNode) {
 		// IDs are generated to be unique in every Model.
-		return new BlankImpl(bNode.getID());
+		return new NamedNullImpl(bNode.getID());
 	}
 
 	static Term rdfURItoConstant(final URI uri) {
 		final String escapedURIString = NTriplesUtil.escapeString(uri.toString());
-		return new ConstantImpl(escapedURIString);
+		return new AbstractConstantImpl(escapedURIString);
 	}
 
 	static Term rdfLiteralToConstant(final Literal literal) {
 		final String normalizedStringValueLiteral = buildNormalizedStringValue(literal);
-		return new ConstantImpl(normalizedStringValueLiteral);
+		return new AbstractConstantImpl(normalizedStringValueLiteral);
 	}
 
 	/**

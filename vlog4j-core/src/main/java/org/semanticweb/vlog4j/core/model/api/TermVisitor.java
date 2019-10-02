@@ -22,36 +22,50 @@ package org.semanticweb.vlog4j.core.model.api;
 
 /**
  * A visitor for the various types of {@link Term}s in the data model. Should be
- * used to avoid any type casting or {@code instanceof} checks when processing terms.
+ * used to avoid any type casting or {@code instanceof} checks when processing
+ * terms.
  * 
  * @author Markus Krötzsch
  */
 public interface TermVisitor<T> {
 
 	/**
-	 * Visits a {@link Constant} and returns a result
+	 * Visits a {@link AbstractConstant} and returns a result.
 	 * 
-	 * @param term
-	 *            the term to visit
+	 * @param term the term to visit
 	 * @return some result
 	 */
-	T visit(Constant term);
+	T visit(AbstractConstant term);
 
 	/**
-	 * Visits a {@link Variable} and returns a result
+	 * Visits a {@link DatatypeConstant} and returns a result.
 	 * 
-	 * @param term
-	 *            the term to visit
+	 * @param term the term to visit
 	 * @return some result
 	 */
-	T visit(Variable term);
+	T visit(DatatypeConstant term);
 
 	/**
-	 * Visits a {@link Blank} and returns a result
+	 * Visits a {@link UniversalVariable} and returns a result
 	 * 
-	 * @param term
-	 *            the term to visit
+	 * @param term the term to visit
 	 * @return some result
 	 */
-	T visit(Blank term);
+	T visit(UniversalVariable term);
+
+	/**
+	 * Visits a {@link ExistentialVariable} and returns a result
+	 * 
+	 * @param term the term to visit
+	 * @return some result
+	 */
+	T visit(ExistentialVariable term);
+
+	/**
+	 * Visits a {@link NamedNull} and returns a result
+	 * 
+	 * @param term the term to visit
+	 * @return some result
+	 */
+	T visit(NamedNull term);
 }

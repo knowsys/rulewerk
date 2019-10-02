@@ -87,15 +87,15 @@ public class JavaCCParserBase {
 	}
 
 	Constant createIntegerLiteral(String lexicalForm) {
-		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_INTEGER + ">");
+		return Expressions.makeAbstractConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_INTEGER + ">");
 	}
 
 	Constant createDecimalLiteral(String lexicalForm) {
-		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DECIMAL + ">");
+		return Expressions.makeAbstractConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DECIMAL + ">");
 	}
 
 	Constant createDoubleLiteral(String lexicalForm) {
-		return Expressions.makeConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DOUBLE + ">");
+		return Expressions.makeAbstractConstant(lexicalForm + "^^<" + PrefixDeclarations.XSD_DOUBLE + ">");
 	}
 
 	void addDataSource(String predicateName, int arity, DataSource dataSource) {

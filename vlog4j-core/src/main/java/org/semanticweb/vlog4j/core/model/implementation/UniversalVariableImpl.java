@@ -1,5 +1,8 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+import org.semanticweb.vlog4j.core.model.api.TermVisitor;
+import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -20,42 +23,29 @@ package org.semanticweb.vlog4j.core.model.implementation;
  * #L%
  */
 
-import org.semanticweb.vlog4j.core.model.api.Blank;
-import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.api.TermVisitor;
-
 /**
- * Implements {@link Blank} terms. A blank is an entity used to represent
- * anonymous domain elements introduced during the reasoning process to satisfy
- * existential restrictions.
+ * Simple implementation of {@link UniversalVariable}.
  *
  * @author david.carral@tu-dresden.de
  */
-public class BlankImpl extends AbstractTermImpl implements Blank {
+public class UniversalVariableImpl extends AbstractTermImpl implements UniversalVariable {
 
 	/**
-	 * Instantiates a <b>{@code BlankImpl}</b> object with the name
-	 * <b>{@code name}</b>.
+	 * Constructor.
 	 *
-	 * @param name
-	 *            cannot be a blank String (null, empty or whitespace).
+	 * @param name cannot be a blank String (null, empty or whitespace).
 	 */
-	public BlankImpl(final String name) {
+	public UniversalVariableImpl(final String name) {
 		super(name);
-	}
-
-	@Override
-	public TermType getType() {
-		return TermType.BLANK;
 	}
 
 	@Override
 	public <T> T accept(TermVisitor<T> termVisitor) {
 		return termVisitor.visit(this);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "_" + this.getName();
+		return "?" + this.getName();
 	}
 }

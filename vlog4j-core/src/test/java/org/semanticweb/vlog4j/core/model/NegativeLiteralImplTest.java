@@ -44,10 +44,10 @@ public class NegativeLiteralImplTest {
 	
 	@Test
 	public void testGetters() {
-		final Variable x = Expressions.makeVariable("X");
-		final Variable y = Expressions.makeVariable("Y");
-		final Constant c = Expressions.makeConstant("c");
-		final Constant d = Expressions.makeConstant("d");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
 		final NegativeLiteral atomP = Expressions.makeNegativeLiteral("p", x, c, d, y);
 		final NegativeLiteral atomQ = Expressions.makeNegativeLiteral("q", c, d);
 
@@ -55,18 +55,18 @@ public class NegativeLiteralImplTest {
 		final Set<Constant> constants = Sets.newSet(c, d);
 
 		assertEquals("p", atomP.getPredicate().getName());
-		assertEquals(atomP.getTerms().size(), atomP.getPredicate().getArity());
+		assertEquals(atomP.getArguments().size(), atomP.getPredicate().getArity());
 
 		assertEquals(variables, atomP.getVariables());
 		assertEquals(constants, atomP.getConstants());
-		assertEquals(Arrays.asList(x, c, d, y), atomP.getTerms());
+		assertEquals(Arrays.asList(x, c, d, y), atomP.getArguments());
 
 		assertEquals("q", atomQ.getPredicate().getName());
-		assertEquals(atomQ.getTerms().size(), atomQ.getPredicate().getArity());
+		assertEquals(atomQ.getArguments().size(), atomQ.getPredicate().getArity());
 
 		assertTrue(atomQ.getVariables().isEmpty());
 		assertEquals(constants, atomQ.getConstants());
-		assertEquals(Arrays.asList(c, d), atomQ.getTerms());
+		assertEquals(Arrays.asList(c, d), atomQ.getArguments());
 		
 		
 		assertTrue(atomP.isNegated());
@@ -75,8 +75,8 @@ public class NegativeLiteralImplTest {
 
 	@Test
 	public void testEquals() {
-		final Variable x = Expressions.makeVariable("X");
-		final Constant c = Expressions.makeConstant("c");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Constant c = Expressions.makeAbstractConstant("c");
 
 		final Predicate predicateP = new PredicateImpl("p", 2);
 		final Predicate predicateQ = new PredicateImpl("q", 2);
@@ -99,11 +99,11 @@ public class NegativeLiteralImplTest {
 		assertFalse(atom1.equals(c));
 		
 		
-		assertNotEquals(atom1, new PositiveLiteralImpl(atom1.getPredicate(), atom1.getTerms()));
-		assertNotEquals(atom2, new PositiveLiteralImpl(atom2.getPredicate(), atom2.getTerms()));
-		assertNotEquals(atom3, new PositiveLiteralImpl(atom3.getPredicate(), atom3.getTerms()));
-		assertNotEquals(atom4, new PositiveLiteralImpl(atom4.getPredicate(), atom4.getTerms()));
-		assertNotEquals(atom5, new PositiveLiteralImpl(atom5.getPredicate(), atom5.getTerms()));
+		assertNotEquals(atom1, new PositiveLiteralImpl(atom1.getPredicate(), atom1.getArguments()));
+		assertNotEquals(atom2, new PositiveLiteralImpl(atom2.getPredicate(), atom2.getArguments()));
+		assertNotEquals(atom3, new PositiveLiteralImpl(atom3.getPredicate(), atom3.getArguments()));
+		assertNotEquals(atom4, new PositiveLiteralImpl(atom4.getPredicate(), atom4.getArguments()));
+		assertNotEquals(atom5, new PositiveLiteralImpl(atom5.getPredicate(), atom5.getArguments()));
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -115,7 +115,7 @@ public class NegativeLiteralImplTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void termsNoNullElements() {
 		final Predicate predicate1 = Expressions.makePredicate("p", 1);
-		final Variable x = Expressions.makeVariable("X");
+		final Variable x = Expressions.makeUniversalVariable("X");
 		new NegativeLiteralImpl(predicate1, Arrays.asList(x, null));
 	}
 
@@ -127,29 +127,29 @@ public class NegativeLiteralImplTest {
 	@Test(expected = NullPointerException.class)
 	public void predicateNotNull() {
 		final Predicate nullPredicate = null;
-		Expressions.makeNegativeLiteral(nullPredicate, Expressions.makeConstant("c"));
+		Expressions.makeNegativeLiteral(nullPredicate, Expressions.makeAbstractConstant("c"));
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void predicateNameNotNull() {
 		final String nullPredicateName = null;
-		Expressions.makeNegativeLiteral(nullPredicateName, Expressions.makeConstant("c"));
+		Expressions.makeNegativeLiteral(nullPredicateName, Expressions.makeAbstractConstant("c"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void predicateNameNotEmpty() {
-		Expressions.makeNegativeLiteral("", Expressions.makeConstant("c"));
+		Expressions.makeNegativeLiteral("", Expressions.makeAbstractConstant("c"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void predicateNameNotWhitespace() {
-		Expressions.makeNegativeLiteral("  ", Expressions.makeConstant("c"));
+		Expressions.makeNegativeLiteral("  ", Expressions.makeAbstractConstant("c"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void termSizeMatchesPredicateArity() {
 		final Predicate predicateArity1 = Expressions.makePredicate("p", 1);
-		Expressions.makeNegativeLiteral(predicateArity1, Expressions.makeConstant("c"), Expressions.makeVariable("X"));
+		Expressions.makeNegativeLiteral(predicateArity1, Expressions.makeAbstractConstant("c"), Expressions.makeUniversalVariable("X"));
 	}
 
 }

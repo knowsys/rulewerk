@@ -39,11 +39,11 @@ public class FactImpl extends PositiveLiteralImpl implements Fact {
 	public FactImpl(Predicate predicate, List<Term> terms) {
 		super(predicate, terms);
 		for (Term t : terms) {
-			if (t.getType() == TermType.VARIABLE)
+			if (t.getType() == TermType.UNIVERSAL_VARIABLE || t.getType() == TermType.EXISTENTIAL_VARIABLE)
 				throw new IllegalArgumentException("Facts cannot contain variables.");
 		}
 	}
-	
+
 	@Override
 	public <T> T accept(StatementVisitor<T> statementVisitor) {
 		return statementVisitor.visit(this);

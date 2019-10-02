@@ -42,10 +42,10 @@ public class ConjunctionImplTest {
 
 	@Test
 	public void testGettersPositiveLiterals() {
-		final Variable x = Expressions.makeVariable("X");
-		final Variable y = Expressions.makeVariable("Y");
-		final Constant c = Expressions.makeConstant("c");
-		final Constant d = Expressions.makeConstant("d");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
 		final PositiveLiteral positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
 		final PositiveLiteral positiveLiteral2 = Expressions.makePositiveLiteral("p", y, x);
 		final PositiveLiteral positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
@@ -64,16 +64,16 @@ public class ConjunctionImplTest {
 		assertEquals(positiveLiteralList, conjunctionPositiveLiterals.getLiterals());
 		assertEquals(Sets.newSet(x, y), conjunctionPositiveLiterals.getVariables());
 		assertEquals(Sets.newSet(x, y), conjunctionPositiveLiterals.getTerms(TermType.VARIABLE));
-		assertEquals(Sets.newSet(), conjunctionPositiveLiterals.getTerms(TermType.BLANK));
+		assertEquals(Sets.newSet(), conjunctionPositiveLiterals.getTerms(TermType.NAMED_NULL));
 		assertEquals(Sets.newSet(c, d), conjunctionPositiveLiterals.getTerms(TermType.CONSTANT));
 	}
 
 	@Test
 	public void testGettersLiterals() {
-		final Variable x = Expressions.makeVariable("X");
-		final Variable y = Expressions.makeVariable("Y");
-		final Constant c = Expressions.makeConstant("c");
-		final Constant d = Expressions.makeConstant("d");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
 		final Literal positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
 		final NegativeLiteral negativeLiteral2 = Expressions.makeNegativeLiteral("p", y, x);
 		final Literal positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
@@ -86,16 +86,16 @@ public class ConjunctionImplTest {
 		assertEquals(literalList, conjunction.getLiterals());
 		assertEquals(Sets.newSet(x, y), conjunction.getVariables());
 		assertEquals(Sets.newSet(x, y), conjunction.getTerms(TermType.VARIABLE));
-		assertEquals(Sets.newSet(), conjunction.getTerms(TermType.BLANK));
+		assertEquals(Sets.newSet(), conjunction.getTerms(TermType.NAMED_NULL));
 		assertEquals(Sets.newSet(c, d), conjunction.getTerms(TermType.CONSTANT));
 	}
 
 	@Test
 	public void testGettersNegativeLiterals() {
-		final Variable x = Expressions.makeVariable("X");
-		final Variable y = Expressions.makeVariable("Y");
-		final Constant c = Expressions.makeConstant("c");
-		final Constant d = Expressions.makeConstant("d");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
 		final NegativeLiteral negativeLiteral1 = Expressions.makeNegativeLiteral("p", x, c);
 		final NegativeLiteral negativeLiteral2 = Expressions.makeNegativeLiteral("p", y, x);
 		final NegativeLiteral negativeLiteral3 = Expressions.makeNegativeLiteral("q", x, d);
@@ -113,16 +113,16 @@ public class ConjunctionImplTest {
 
 		assertEquals(Sets.newSet(x, y), conjunctionNegativeLiterals.getVariables());
 		assertEquals(Sets.newSet(x, y), conjunctionNegativeLiterals.getTerms(TermType.VARIABLE));
-		assertEquals(Sets.newSet(), conjunctionNegativeLiterals.getTerms(TermType.BLANK));
+		assertEquals(Sets.newSet(), conjunctionNegativeLiterals.getTerms(TermType.NAMED_NULL));
 		assertEquals(Sets.newSet(c, d), conjunctionNegativeLiterals.getTerms(TermType.CONSTANT));
 	}
 
 	@Test
 	public void testEqualsPositiveLiterals() {
-		final Variable x = Expressions.makeVariable("X");
-		final Variable y = Expressions.makeVariable("Y");
-		final Constant c = Expressions.makeConstant("c");
-		final Constant d = Expressions.makeConstant("d");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
 		final PositiveLiteral positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
 		final PositiveLiteral positiveLiteral2 = Expressions.makePositiveLiteral("p", y, x);
 		final PositiveLiteral positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
@@ -149,10 +149,10 @@ public class ConjunctionImplTest {
 
 	@Test
 	public void testEqualsNegativeLiterals() {
-		final Variable x = Expressions.makeVariable("X");
-		final Variable y = Expressions.makeVariable("Y");
-		final Constant c = Expressions.makeConstant("c");
-		final Constant d = Expressions.makeConstant("d");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
 		final NegativeLiteral negativeLiteral1 = Expressions.makeNegativeLiteral("p", x, c);
 		final NegativeLiteral negativeLiteral2 = Expressions.makeNegativeLiteral("p", y, x);
 		final NegativeLiteral negativeLiteral3 = Expressions.makeNegativeLiteral("q", x, d);
@@ -175,8 +175,8 @@ public class ConjunctionImplTest {
 
 	@Test
 	public void testEqualsLiterals() {
-		final Variable x = Expressions.makeVariable("X");
-		final Constant c = Expressions.makeConstant("c");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Constant c = Expressions.makeAbstractConstant("c");
 
 		final PositiveLiteral positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
 		final NegativeLiteral negativeLiteral1 = Expressions.makeNegativeLiteral("p", x, c);
@@ -206,7 +206,7 @@ public class ConjunctionImplTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void positiveLiteralsNoNullElements() {
-		final Variable x = Expressions.makeVariable("X");
+		final Variable x = Expressions.makeUniversalVariable("X");
 		final PositiveLiteral positiveLiteral = Expressions.makePositiveLiteral("p", x);
 		final List<PositiveLiteral> positiveLiteralList = Arrays.asList(positiveLiteral, null);
 		Expressions.makeConjunction(positiveLiteralList);
@@ -214,7 +214,7 @@ public class ConjunctionImplTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void literalsNoNullElements() {
-		final Variable x = Expressions.makeVariable("X");
+		final Variable x = Expressions.makeUniversalVariable("X");
 		final NegativeLiteral negativeLiteral = Expressions.makeNegativeLiteral("p", x);
 		final PositiveLiteral positiveLiteral = Expressions.makePositiveLiteral("p", x);
 		final List<Literal> literalList = Arrays.asList(negativeLiteral, positiveLiteral, null);
@@ -228,7 +228,7 @@ public class ConjunctionImplTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void negativeLiteralsNoNullElements() {
-		final Variable x = Expressions.makeVariable("X");
+		final Variable x = Expressions.makeUniversalVariable("X");
 		final NegativeLiteral negativeLiteral = Expressions.makeNegativeLiteral("p", x);
 		final List<NegativeLiteral> negativeLiteralList = Arrays.asList(negativeLiteral, null);
 		Expressions.makeConjunction(negativeLiteralList);

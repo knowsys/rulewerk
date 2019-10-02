@@ -28,7 +28,7 @@ import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
-import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.Correctness;
@@ -217,7 +217,7 @@ public class VLogReasoner implements Reasoner {
 
 			final List<Term> terms = new ArrayList<>();
 			for (int i = 1; i <= predicate.getArity(); i++) {
-				terms.add(new VariableImpl("X" + i));
+				terms.add(new UniversalVariableImpl("X" + i));
 			}
 			final Literal body = new PositiveLiteralImpl(aliasPredicate, terms);
 			final PositiveLiteral head = new PositiveLiteralImpl(predicate, terms);

@@ -46,9 +46,9 @@ public final class RdfTestUtils {
 	static final String INPUT_FOLDER = "src/test/data/input/";
 	static final String OUTPUT_FOLDER = "src/test/data/output/";
 
-	static final Constant RDF_FIRST = Expressions.makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
-	static final Constant RDF_REST = Expressions.makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
-	static final Constant RDF_NIL = Expressions.makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+	static final Constant RDF_FIRST = Expressions.makeAbstractConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
+	static final Constant RDF_REST = Expressions.makeAbstractConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+	static final Constant RDF_NIL = Expressions.makeAbstractConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
 
 	/*
 	 * This is a utility class. Therefore, it is best practice to do the following:
@@ -74,15 +74,15 @@ public final class RdfTestUtils {
 	}
 
 	static Term getSubjectFromTriple(final PositiveLiteral triple) {
-		return triple.getTerms().get(0);
+		return triple.getArguments().get(0);
 	}
 
 	static Term getPredicateFromTriple(final PositiveLiteral triple) {
-		return triple.getTerms().get(1);
+		return triple.getArguments().get(1);
 	}
 
 	static Term getObjectFromTriple(final PositiveLiteral triple) {
-		return triple.getTerms().get(2);
+		return triple.getArguments().get(2);
 	}
 
 	/*

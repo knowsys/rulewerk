@@ -48,17 +48,17 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 public class TestReasonOverRdfFacts {
 
-	private final Constant carlBenz = Expressions.makeConstant("https://example.org/Carl-Benz");
-	private final Constant invention = Expressions.makeConstant("https://example.org/invention");
-	private final Constant labelEn = Expressions.makeConstant("\"car\"@en");
-	private final Constant labelZh = Expressions.makeConstant("\"\\u81EA\\u52A8\\u8F66\"@zh-hans");
+	private final Constant carlBenz = Expressions.makeAbstractConstant("https://example.org/Carl-Benz");
+	private final Constant invention = Expressions.makeAbstractConstant("https://example.org/invention");
+	private final Constant labelEn = Expressions.makeAbstractConstant("\"car\"@en");
+	private final Constant labelZh = Expressions.makeAbstractConstant("\"\\u81EA\\u52A8\\u8F66\"@zh-hans");
 
 	private final Set<List<Term>> expectedQueryResultsInvention = new HashSet<>(
 			Arrays.asList(Arrays.asList(carlBenz, invention, labelEn), Arrays.asList(carlBenz, invention, labelZh)));
 
-	private static final Variable subject = Expressions.makeVariable("s");
-	private static final Variable predicate = Expressions.makeVariable("p");
-	private static final Variable object = Expressions.makeVariable("o");
+	private static final Variable subject = Expressions.makeUniversalVariable("s");
+	private static final Variable predicate = Expressions.makeUniversalVariable("p");
+	private static final Variable object = Expressions.makeUniversalVariable("o");
 
 	@Test
 	public void testCanLoadRdfFactsIntoReasoner() throws RDFParseException, RDFHandlerException, IOException {

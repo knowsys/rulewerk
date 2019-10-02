@@ -32,8 +32,8 @@ import org.semanticweb.vlog4j.parser.RuleParser;
 
 public class RuleParserParseFactTest {
 
-	private final Constant a = Expressions.makeConstant("\"a\"^^<" + PrefixDeclarations.XSD_STRING + ">");
-	private final Constant b = Expressions.makeConstant("\"b\"^^<" + PrefixDeclarations.XSD_STRING + ">");
+	private final Constant a = Expressions.makeAbstractConstant("\"a\"^^<" + PrefixDeclarations.XSD_STRING + ">");
+	private final Constant b = Expressions.makeAbstractConstant("\"b\"^^<" + PrefixDeclarations.XSD_STRING + ">");
 
 	private final Fact factA = Expressions.makeFact("p", a);
 	private final Fact factAB = Expressions.makeFact("p", a, b);

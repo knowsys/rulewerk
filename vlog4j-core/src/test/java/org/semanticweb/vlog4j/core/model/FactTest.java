@@ -37,8 +37,8 @@ public class FactTest {
 	@Test
 	public void factsConstructor() {
 		Predicate p = Expressions.makePredicate("p", 2);
-		Constant c = Expressions.makeConstant("c");
-		Constant d = Expressions.makeConstant("d");
+		Constant c = Expressions.makeAbstractConstant("c");
+		Constant d = Expressions.makeAbstractConstant("d");
 		Fact f1 = Expressions.makeFact(p, Arrays.asList(c, d));
 		Fact f2 = Expressions.makeFact("p", Arrays.asList(c, d));
 		Fact f3 = new FactImpl(p, Arrays.asList(c, d));
@@ -50,7 +50,7 @@ public class FactTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void factsOnlyContainConstants() {
 		Predicate p = Expressions.makePredicate("p", 1);
-		Variable x = Expressions.makeVariable("X");
+		Variable x = Expressions.makeUniversalVariable("X");
 		new FactImpl(p, Arrays.asList(x));
 	}
 

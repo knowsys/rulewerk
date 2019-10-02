@@ -78,12 +78,12 @@ public class ReasonerTimeoutTest {
 
 	private final static Predicate infinite_EDB = Expressions.makePredicate("infinite_EDB", 2);
 	private final static Predicate infinite_IDB = Expressions.makePredicate("infinite_IDB", 2);
-	private final static Variable x = Expressions.makeVariable("x");
-	private final static Variable y = Expressions.makeVariable("y");
+	private final static Variable x = Expressions.makeUniversalVariable("x");
+	private final static Variable y = Expressions.makeUniversalVariable("y");
 
 	private final static PositiveLiteral infinite_IDB_xy = Expressions.makePositiveLiteral(infinite_IDB, x, y);
 	private final static PositiveLiteral infinite_EDB_xy = Expressions.makePositiveLiteral(infinite_EDB, x, y);
-	private final static Variable z = Expressions.makeVariable("z");
+	private final static Variable z = Expressions.makeUniversalVariable("z");
 
 	private final static PositiveLiteral infinite_IDB_yz = Expressions.makePositiveLiteral(infinite_IDB, y, z);
 	private final static Rule infinite_rule = Expressions.makeRule(infinite_IDB_yz, infinite_IDB_xy);
@@ -98,7 +98,7 @@ public class ReasonerTimeoutTest {
 	@BeforeClass
 	public static void setUpBeforeClass() {
 
-		facts.add(Expressions.makeFact(infinite_EDB, Arrays.asList(Expressions.makeConstant("A"), Expressions.makeConstant("B"))));
+		facts.add(Expressions.makeFact(infinite_EDB, Arrays.asList(Expressions.makeAbstractConstant("A"), Expressions.makeAbstractConstant("B"))));
 
 		final Rule import_rule = Expressions.makeRule(infinite_IDB_xy, infinite_EDB_xy);
 		rules.add(import_rule);

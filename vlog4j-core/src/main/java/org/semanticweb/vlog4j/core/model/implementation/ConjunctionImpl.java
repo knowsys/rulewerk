@@ -23,15 +23,12 @@ package org.semanticweb.vlog4j.core.model.implementation;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Validate;
-import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 
 /**
  * Simple implementation of {@link Conjunction}.
@@ -39,58 +36,37 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
  * @author Markus Krötzsch
  */
 public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
-	
+
 	final List<T> literals;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param literals
-	 *            a non-null list of literals, that cannot contain null elements.
+	 * @param literals a non-null list of literals, that cannot contain null
+	 *                 elements.
 	 */
-	public ConjunctionImpl(@NonNull List<T> literals) {
+	public ConjunctionImpl(List<T> literals) {
 		Validate.noNullElements(literals);
 		this.literals = literals;
 	}
-
-
 
 	@Override
 	public List<T> getLiterals() {
 		return Collections.unmodifiableList(this.literals);
 	}
 
-	/**
-	 * Returns a term filter object that has visited all terms in this conjunction
-	 * for the given type.
-	 * 
-	 * @param termType
-	 *            specifies the type of term to look for
-	 * @return term filter
-	 */
-	TermFilter getTermFilter(TermType termType) {
-		final TermFilter termFilter = new TermFilter(termType);
+	@SuppressWarnings("resource")
+	@Override
+	public Stream<Term> getTerms() {
+		Stream<Term> result = null;
 		for (final T literal : this.literals) {
-			for (final Term term : literal.getTerms()) {
-				term.accept(termFilter);
+			if (result == null) {
+				result = literal.getTerms();
+			} else {
+				result = Stream.concat(result, literal.getTerms());
 			}
 		}
-		return termFilter;
-	}
-
-	@Override
-	public Set<Term> getTerms() {
-		return getTermFilter(null).getTerms();
-	}
-
-	@Override
-	public Set<Term> getTerms(TermType termType) {
-		return getTermFilter(termType).getTerms();
-	}
-
-	@Override
-	public Set<Variable> getVariables() {
-		return getTermFilter(TermType.VARIABLE).getVariables();
+		return result.distinct();
 	}
 
 	@Override
@@ -132,6 +108,5 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 		}
 		return stringBuilder.toString();
 	}
-
 
 }

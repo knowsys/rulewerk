@@ -50,12 +50,12 @@ import org.semanticweb.vlog4j.parser.RuleParser;
 
 public class RuleParserTest {
 
-	private final Variable x = Expressions.makeVariable("X");
-	private final Variable y = Expressions.makeVariable("Y");
-	private final Variable z = Expressions.makeVariable("Z");
-	private final Constant c = Expressions.makeConstant("http://example.org/c");
-	private final Constant d = Expressions.makeConstant("http://example.org/d");
-	private final Constant abc = Expressions.makeConstant("\"abc\"^^<" + PrefixDeclarations.XSD_STRING + ">");
+	private final Variable x = Expressions.makeUniversalVariable("X");
+	private final Variable y = Expressions.makeUniversalVariable("Y");
+	private final Variable z = Expressions.makeUniversalVariable("Z");
+	private final Constant c = Expressions.makeAbstractConstant("http://example.org/c");
+	private final Constant d = Expressions.makeAbstractConstant("http://example.org/d");
+	private final Constant abc = Expressions.makeAbstractConstant("\"abc\"^^<" + PrefixDeclarations.XSD_STRING + ">");
 	private final Literal atom1 = Expressions.makePositiveLiteral("http://example.org/p", x, c);
 	private final Literal negAtom1 = Expressions.makeNegativeLiteral("http://example.org/p", x, c);
 	private final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
@@ -101,7 +101,7 @@ public class RuleParserTest {
 	public void testNoBaseRelativeIri() throws ParsingException {
 		String input = "s(c) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		PositiveLiteral atom = Expressions.makePositiveLiteral("s", Expressions.makeConstant("c"));
+		PositiveLiteral atom = Expressions.makePositiveLiteral("s", Expressions.makeAbstractConstant("c"));
 		assertEquals(Arrays.asList(atom), statements);
 	}
 
@@ -192,7 +192,7 @@ public class RuleParserTest {
 		String input = "p(42) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("42^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
+				Expressions.makeAbstractConstant("42^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
 		assertEquals(Arrays.asList(integerLiteral), statements);
 	}
 
@@ -201,7 +201,7 @@ public class RuleParserTest {
 		String input = "@prefix xsd: <" + PrefixDeclarations.XSD + "> . " + "p(\"42\"^^xsd:integer) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
+				Expressions.makeAbstractConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
 		assertEquals(Arrays.asList(integerLiteral), statements);
 	}
 
@@ -210,7 +210,7 @@ public class RuleParserTest {
 		String input = "p(\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + "> ) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
+				Expressions.makeAbstractConstant("\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + ">"));
 		assertEquals(Arrays.asList(integerLiteral), statements);
 	}
 
@@ -219,7 +219,7 @@ public class RuleParserTest {
 		String input = "p(-5.0) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		PositiveLiteral decimalLiteral = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("-5.0^^<" + PrefixDeclarations.XSD_DECIMAL + ">"));
+				Expressions.makeAbstractConstant("-5.0^^<" + PrefixDeclarations.XSD_DECIMAL + ">"));
 		assertEquals(Arrays.asList(decimalLiteral), statements);
 	}
 
@@ -228,7 +228,7 @@ public class RuleParserTest {
 		String input = "p(4.2E9) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		PositiveLiteral doubleLiteral = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("4.2E9^^<" + PrefixDeclarations.XSD_DOUBLE + ">"));
+				Expressions.makeAbstractConstant("4.2E9^^<" + PrefixDeclarations.XSD_DOUBLE + ">"));
 		assertEquals(Arrays.asList(doubleLiteral), statements);
 	}
 
@@ -250,7 +250,7 @@ public class RuleParserTest {
 		String input = "p(\"_\\\"_\\\\_\\n_\\t_\") ."; // User input: p("_\"_\\_\n_\t_")
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("\"_\"_\\_\n_\t_\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
+				Expressions.makeAbstractConstant("\"_\"_\\_\n_\t_\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
 		assertEquals(Arrays.asList(fact), statements);
 	}
 
@@ -260,7 +260,7 @@ public class RuleParserTest {
 		String input = "p(\"_\\n_\\t_\\r_\\b_\\f_\\'_\\\"_\\\\_\") .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("\"_\n_\t_\r_\b_\f_\'_\"_\\_\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
+				Expressions.makeAbstractConstant("\"_\n_\t_\r_\b_\f_\'_\"_\\_\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
 		assertEquals(Arrays.asList(fact), statements);
 	}
 
@@ -269,7 +269,7 @@ public class RuleParserTest {
 		String input = "p('''line 1\n\n" + "line 2\n" + "line 3''') ."; // User input: p("a\"b\\c")
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeConstant("\"line 1\n\nline 2\nline 3\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
+				Expressions.makeAbstractConstant("\"line 1\n\nline 2\nline 3\"^^<" + PrefixDeclarations.XSD_STRING + ">"));
 		assertEquals(Arrays.asList(fact), statements);
 	}
 
@@ -311,7 +311,7 @@ public class RuleParserTest {
 	public void testLangStringLiteral() throws ParsingException {
 		String input = "p(\"abc\"@en-gb) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		PositiveLiteral fact = Expressions.makePositiveLiteral("p", Expressions.makeConstant("\"abc\"@en-gb"));
+		PositiveLiteral fact = Expressions.makePositiveLiteral("p", Expressions.makeAbstractConstant("\"abc\"@en-gb"));
 		assertEquals(Arrays.asList(fact), statements);
 	}
 

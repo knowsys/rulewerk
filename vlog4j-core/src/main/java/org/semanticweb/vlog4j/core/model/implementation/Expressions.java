@@ -25,9 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
+import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
@@ -35,7 +37,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
 
 /**
  * This utilities class provides static methods for creating terms and formulas
@@ -52,39 +54,44 @@ public final class Expressions {
 	}
 
 	/**
-	 * Creates a {@link Variable}.
+	 * Creates a {@link UniversalVariable}.
 	 * 
 	 * @param name name of the variable
-	 * @return a {@link Variable} corresponding to the input.
+	 * @return a {@link UniversalVariable} corresponding to the input.
 	 */
-	public static Variable makeVariable(String name) {
-		return new VariableImpl(name);
+	public static UniversalVariable makeUniversalVariable(String name) {
+		return new UniversalVariableImpl(name);
 	}
 
 	/**
-	 * Creates a {@link Constant}.
+	 * Creates an {@link ExistentialVariable}.
+	 * 
+	 * @param name name of the variable
+	 * @return a {@link ExistentialVariable} corresponding to the input.
+	 */
+	public static ExistentialVariable makeExistentialVariable(String name) {
+		return new ExistentialVariableImpl(name);
+	}
+
+	/**
+	 * Creates an {@link AbstractConstant}.
 	 * 
 	 * @param name name of the constant
 	 * @return a {@link Constant} corresponding to the input.
 	 */
-	public static Constant makeConstant(String name) {
-		return new ConstantImpl(name);
+	public static AbstractConstant makeAbstractConstant(String name) {
+		return new AbstractConstantImpl(name);
 	}
 
 	/**
-	 * Creates a {@link Constant} that represents a datatype literal.
-	 * 
-	 * Note that datatype literal is the common name of the representation of
-	 * specific values for a datatype. We mostly avoid this meaning of
-	 * <i>literal</i> since a literal in logic is typically a negated or non-negated
-	 * atom.
+	 * Creates a {@link DatatypeConstant} from the given input.
 	 * 
 	 * @param lexicalValue the lexical representation of the data value
 	 * @param datatypeIri  the full absolute IRI of the datatype of this literal
 	 * @return a {@link Constant} corresponding to the input.
 	 */
-	public static Constant makeDatatypeConstant(String lexicalValue, String datatypeIri) {
-		return new ConstantImpl("\"" + lexicalValue + "\"^^<" + datatypeIri + ">");
+	public static DatatypeConstant makeDatatypeConstant(String lexicalValue, String datatypeIri) {
+		return new DatatypeConstantImpl(lexicalValue, datatypeIri);
 	}
 
 	/**
@@ -113,12 +120,12 @@ public final class Expressions {
 
 		return new FactImpl(predicate, terms);
 	}
-	
+
 	/**
 	 * Creates a {@code Fact}.
 	 * 
 	 * @param predicateName on-blank {@link Predicate} name
-	 * @param terms non-empty, non-null array of non-null terms
+	 * @param terms         non-empty, non-null array of non-null terms
 	 * @return a {@link Fact} with given {@code terms} and {@link Predicate}
 	 *         constructed from name given {@code predicateName} and {@code arity}
 	 *         given {@code terms} size.
@@ -140,7 +147,7 @@ public final class Expressions {
 	public static Fact makeFact(final Predicate predicate, final List<Term> terms) {
 		return new FactImpl(predicate, terms);
 	}
-	
+
 	/**
 	 * Creates a {@code Fact}.
 	 *
@@ -149,8 +156,8 @@ public final class Expressions {
 	 *                  be the same as the given {@code predicate} arity.
 	 * @return a {@link Fact} corresponding to the input.
 	 */
-	public static Fact makeFact(final Predicate predicate, final  Term... terms) {
-		return new FactImpl(predicate,  Arrays.asList(terms));
+	public static Fact makeFact(final Predicate predicate, final Term... terms) {
+		return new FactImpl(predicate, Arrays.asList(terms));
 	}
 
 	/**
@@ -335,7 +342,6 @@ public final class Expressions {
 	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head,
 			final Conjunction<PositiveLiteral> body) {
 		final List<Literal> bodyLiteralList = new ArrayList<>(body.getLiterals());
-		@NonNull
 		final Conjunction<Literal> literalsBody = makeConjunction(bodyLiteralList);
 		return new RuleImpl(head, literalsBody);
 

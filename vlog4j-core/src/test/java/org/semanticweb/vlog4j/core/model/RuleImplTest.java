@@ -40,11 +40,11 @@ public class RuleImplTest {
 
 	@Test
 	public void testGetters() {
-		final Variable x = Expressions.makeVariable("X");
-		final Variable y = Expressions.makeVariable("Y");
-		final Variable z = Expressions.makeVariable("Z");
-		final Constant c = Expressions.makeConstant("c");
-		final Constant d = Expressions.makeConstant("d");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Variable z = Expressions.makeUniversalVariable("Z");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
 		final Literal atom1 = Expressions.makePositiveLiteral("p", x, c);
 		final Literal atom2 = Expressions.makePositiveLiteral("p", x, z);
 		final PositiveLiteral atom3 = Expressions.makePositiveLiteral("q", x, y);
@@ -62,10 +62,10 @@ public class RuleImplTest {
 
 	@Test
 	public void testEquals() {
-		final Variable x = Expressions.makeVariable("X");
-		final Variable y = Expressions.makeVariable("Y");
-		final Variable z = Expressions.makeVariable("Z");
-		final Constant c = Expressions.makeConstant("c");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Variable z = Expressions.makeUniversalVariable("Z");
+		final Constant c = Expressions.makeAbstractConstant("c");
 		
 		final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
 		final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
@@ -111,25 +111,25 @@ public class RuleImplTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void bodyNonEmpty() {
-		Expressions.makeRule(Expressions.makePositiveLiteral("p", Expressions.makeVariable("X")));
+		Expressions.makeRule(Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X")));
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void bodyNotNull() {
-		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(Expressions.makePositiveLiteral("p", Expressions.makeVariable("X")));
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X")));
 		Expressions.makeRule(head, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void headNonEmpty() {
-		final Literal literal = Expressions.makePositiveLiteral("p", Expressions.makeVariable("X"));
+		final Literal literal = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X"));
 		final Conjunction<Literal> body = Expressions.makeConjunction(literal);
 		Expressions.makeRule(Expressions.makePositiveConjunction(), body);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void headNotNull() {
-		final Literal literal = Expressions.makePositiveLiteral("p", Expressions.makeVariable("X"));
+		final Literal literal = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X"));
 		final Conjunction<Literal> body = Expressions.makeConjunction(literal);
 		Expressions.makeRule(null, body);
 	}

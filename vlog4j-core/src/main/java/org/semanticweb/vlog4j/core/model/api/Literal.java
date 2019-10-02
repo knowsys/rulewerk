@@ -21,7 +21,6 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Interface for literals. A literal is predicate applied to a tuple of terms,
@@ -33,7 +32,7 @@ import java.util.Set;
  * @author david.carral@tu-dresden.de
  * @author Irina Dragoste
  */
-public interface Literal {
+public interface Literal extends SyntaxObject {
 
 	boolean isNegated();
 
@@ -50,27 +49,6 @@ public interface Literal {
 	 * @return an unmodifiable list of terms with the same size as the
 	 *         {@link Predicate} arity.
 	 */
-	List<Term> getTerms();
-
-	/**
-	 * Returns the {@link Variable}s that occur among the literal terms.
-	 *
-	 * @return the set of literal variables
-	 */
-	Set<Variable> getVariables();
-
-	/**
-	 * Returns the {@link Constant}s that occur among the literal terms.
-	 * 
-	 * @return the set of literal constants
-	 */
-	Set<Constant> getConstants();
-
-	/**
-	 * Returns the {@link Blank}s that occur among the literal terms.
-	 * 
-	 * @return the set of literal blanks
-	 */
-	Set<Blank> getBlanks();
+	List<Term> getArguments();
 
 }
