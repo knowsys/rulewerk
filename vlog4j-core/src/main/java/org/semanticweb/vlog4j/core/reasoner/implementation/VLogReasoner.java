@@ -739,7 +739,7 @@ public class VLogReasoner implements Reasoner {
 		updateReasonerToKnowledgeBaseChanged();
 		
 		//updateCorrectnessOnStatementsAdded(statementsAdded);
-		updateCorrectness();
+		updateCorrectnessOnStatementsAdded();
 	}
 
 
@@ -750,7 +750,19 @@ public class VLogReasoner implements Reasoner {
 		updateReasonerToKnowledgeBaseChanged();
 		
 		//updateCorrectnessOnStatementAdded(statementAdded);
-		updateCorrectness();
+		updateCorrectnessOnStatementsAdded();
+	}
+	
+	@Override
+	public void onStatementRemoved(Statement statementRemoved) {
+		updateReasonerToKnowledgeBaseChanged();
+		updateCorrectnessOnStatementsRemoved();
+	}
+
+	@Override
+	public void onStatementsRemoved(List<Statement> statementsRemoved) {
+		updateReasonerToKnowledgeBaseChanged();
+		updateCorrectnessOnStatementsRemoved();
 	}
 
 	private void updateReasonerToKnowledgeBaseChanged() {
@@ -761,11 +773,17 @@ public class VLogReasoner implements Reasoner {
 		}
 	}
 
-	private void updateCorrectness() {
+	private void updateCorrectnessOnStatementsAdded() {
 		if (this.reasonerState == ReasonerState.KB_CHANGED) {
 			
 			final boolean noRules = this.knowledgeBase.getRules().isEmpty();
 			this.correctness = noRules? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
+		}
+	}
+	
+	private void updateCorrectnessOnStatementsRemoved() {
+		if (this.reasonerState == ReasonerState.KB_CHANGED) {
+			this.correctness = Correctness.INCORRECT;
 		}
 	}
 
@@ -781,4 +799,12 @@ public class VLogReasoner implements Reasoner {
 		}
 	}
 
+	ReasonerState getReasonerState() {
+		return this.reasonerState;
+	}
+
+	void setReasonerState(ReasonerState reasonerState) {
+		this.reasonerState = reasonerState;
+	}
+	
 }

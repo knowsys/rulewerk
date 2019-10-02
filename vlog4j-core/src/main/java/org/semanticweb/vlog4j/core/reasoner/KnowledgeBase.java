@@ -318,6 +318,12 @@ public class KnowledgeBase implements Iterable<Statement> {
 		notifyListenersOnStatementsRemoved(removedStatements);
 	}
 
+	private void notifyListenersOnStatementAdded(final Statement addedStatement) {
+		for (final KnowledgeBaseListener listener : this.listeners) {
+			listener.onStatementAdded(addedStatement);
+		}
+	}
+
 	private void notifyListenersOnStatementsAdded(final List<Statement> addedStatements) {
 		if (!addedStatements.isEmpty()) {
 			for (final KnowledgeBaseListener listener : this.listeners) {
@@ -326,20 +332,18 @@ public class KnowledgeBase implements Iterable<Statement> {
 		}
 	}
 
-	private void notifyListenersOnStatementAdded(final Statement addedStatement) {
+	private void notifyListenersOnStatementRemoved(Statement removedStatement) {
 		for (final KnowledgeBaseListener listener : this.listeners) {
-			listener.onStatementAdded(addedStatement);
+			listener.onStatementRemoved(removedStatement);
 		}
 	}
 
-	private void notifyListenersOnStatementRemoved(Statement statement) {
-		// TODO Auto-generated method stub
-
-	}
-
 	private void notifyListenersOnStatementsRemoved(List<Statement> removedStatements) {
-		// TODO Auto-generated method stub
-
+		if (!removedStatements.isEmpty()) {
+			for (final KnowledgeBaseListener listener : this.listeners) {
+				listener.onStatementsRemoved(removedStatements);
+			}
+		}
 	}
 
 	/**
@@ -429,7 +433,5 @@ public class KnowledgeBase implements Iterable<Statement> {
 	Map<Predicate, Set<PositiveLiteral>> getFactsByPredicate() {
 		return this.factsByPredicate;
 	}
-	
-	
 
 }

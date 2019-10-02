@@ -48,5 +48,23 @@ public interface KnowledgeBaseListener {
 	 *                        knowledge base.
 	 */
 	void onStatementsAdded(List<Statement> statementsAdded);
-
+	
+	
+	/**
+	 * Event triggered whenever a new statement is removed from the associated knowledge
+	 * base.
+	 * 
+	 * @param statementRemoved statement removed from the knowledge base.
+	 */
+	void onStatementRemoved(Statement statementRemoved);
+	
+	/**
+	 * Event triggered whenever new statements are removed from the associated knowledge
+	 * base.
+	 * 
+	 * @param statementsRemoved a list of new statements that have been removed from the
+	 *                        knowledge base.
+	 */
+	void onStatementsRemoved(List<Statement> statementsRemoved);
+	
 }
