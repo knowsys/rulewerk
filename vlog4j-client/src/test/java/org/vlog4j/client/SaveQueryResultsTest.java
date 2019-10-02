@@ -1,38 +1,57 @@
 package org.vlog4j.client;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.Assert;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
+import org.junit.Test;
+import org.vlog4j.client.picocli.SaveQueryResults;
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
+public class SaveQueryResultsTest {
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
-    }
+	@Test
+	public void defaulfConfig() {
+		SaveQueryResults sqr = new SaveQueryResults();
+		sqr.saveResults = false;
+		sqr.outputQueryResultDirectory = "query-results";
+		Assert.assertTrue(sqr.isConfigOk());
+	}
+
+	@Test
+	public void dontSaveEmptyOutput() {
+		SaveQueryResults sqr = new SaveQueryResults();
+		sqr.saveResults = false;
+		sqr.outputQueryResultDirectory = "";
+		Assert.assertTrue(sqr.isConfigOk());
+	}
+
+	@Test
+	public void dontSaveNullOutput() {
+		SaveQueryResults sqr = new SaveQueryResults();
+		sqr.saveResults = false;
+		sqr.outputQueryResultDirectory = null;
+		Assert.assertTrue(sqr.isConfigOk());
+	}
+
+	@Test
+	public void saveDefaulfDir() {
+		SaveQueryResults sqr = new SaveQueryResults();
+		sqr.saveResults = true;
+		sqr.outputQueryResultDirectory = "query-results";
+		Assert.assertTrue(sqr.isConfigOk());
+	}
+
+	@Test
+	public void saveEmptyOutputDir() {
+		SaveQueryResults sqr = new SaveQueryResults();
+		sqr.saveResults = true;
+		sqr.outputQueryResultDirectory = "";
+		Assert.assertFalse(sqr.isConfigOk());
+	}
+
+	@Test
+	public void saveNullDir() {
+		SaveQueryResults sqr = new SaveQueryResults();
+		sqr.saveResults = true;
+		sqr.outputQueryResultDirectory = null;
+		Assert.assertFalse(sqr.isConfigOk());
+	}
 }

@@ -4,7 +4,7 @@ import java.io.File;
 
 import picocli.CommandLine.Option;
 
-class SaveModel {
+public class SaveModel {
 
 	/**
 	 * If true, Vlog4jClient will save the model in {@code --output-model-directory}
@@ -22,22 +22,32 @@ class SaveModel {
 	@Option(names = "--output-model-directory", description = "Directory to store the model. Used only if --store-model is true. \"model\" by default.")
 	public String outputModelDirectory = "model";
 
-	public boolean check() {
-		if (saveModel & outputModelDirectory == null) {
-			System.out.println("--save-model requires an --output-model-directory.");
+	public boolean isConfigOk() {
+		if (saveModel & (outputModelDirectory == null || outputModelDirectory.isEmpty())) {
 			return false;
 		} else {
 			return true;
 		}
 	}
 
+	/**
+	 * Print configuration error and exit the program
+	 */
+	public void printErrorAndExit() {
+		System.out.println("Configuration error: --save-model requires a non-null --output-model-directory.");
+		System.exit(1);
+	}
+
+	/**
+	 * Create directory to store the model
+	 */
 	public void prepare() {
 		if (saveModel) {
 			new File(outputModelDirectory).mkdirs();
 		}
 	}
 
-	public void print() {
+	public void printConfiguration() {
 		if (saveModel) {
 			System.out.println("  --save-model: " + saveModel);
 			System.out.println("  --output-model-directory: " + outputModelDirectory);

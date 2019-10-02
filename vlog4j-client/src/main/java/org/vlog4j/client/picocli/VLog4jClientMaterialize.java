@@ -23,15 +23,14 @@ import picocli.CommandLine.Option;
 @Command(name = "materialize", description = "Execute the chase and store the literal's extensions")
 public class VLog4jClientMaterialize implements Runnable {
 
+	// TODO add link to rls syntax
 	@Option(names = "--rule-file", description = "Rule file(s) in rls syntax", required = true)
 	private List<String> ruleFiles = new ArrayList<>();
 
-//	we need support to parseInto from gral files
+//  TODO
+//	Support graal rule files
 //	@Option(names = "--graal-rule-file", description = "Rule file(s) in graal syntax", required = true)
 //	private List<String> graalRuleFiles = new ArrayList<>();
-
-	// The value for annotation attribute CommandLine.Option.description must be a
-	// constant expression
 
 	@Option(names = "--log-level", description = "Log level of VLog (c++ library). One of: DEBUG, INFO, WARNING (default), ERROR.", required = false)
 	private LogLevel logLevel = LogLevel.WARNING;
@@ -48,31 +47,32 @@ public class VLog4jClientMaterialize implements Runnable {
 	@Option(names = "--query", description = "Positive not-ground Literals to query after materialization in rls syntax. Vlog4jClient will print the size of its extension", required = true)
 	private List<String> queryStrings = new ArrayList<>();
 
-// TODO SaveModel
-//	/* group to save results */
-//	@ArgGroup(exclusive = false)
-//	private SaveModel saveModel;
+	@ArgGroup(exclusive = false)
+	private PrintQueryResults printQueryResults = new PrintQueryResults();
 
 	@ArgGroup(exclusive = false)
-	private SaveQueryResult saveQueryResult = new SaveQueryResult();
+	private SaveQueryResults saveQueryResults = new SaveQueryResults();
 
-	/* group to print results */
-	@ArgGroup(exclusive = false)
-	private PrintQueryResults printQueryResult = new PrintQueryResults();
+	// TODO save model
+	// @ArgGroup(exclusive = false)
+	// private SaveModel saveModel = new SaveModel();
 
 	@Override
 	public void run() {
 		ExamplesUtils.configureLogging();
 
-		System.out.println(queryStrings);
-
-//		if (saveModel.check() & saveQueryResult.check() & printQueryResult.check()) {
-//			saveModel.prepare();
-		if (saveQueryResult.checkConfiguration() & printQueryResult.checkConfiguration()) {
-			saveQueryResult.prepare();
-		} else {
-			System.exit(1);
+		if (!printQueryResults.isConfigOk()) {
+			printQueryResults.printErrorAndExit();
 		}
+
+		if (!saveQueryResults.isConfigOk()) {
+			saveQueryResults.printErrorAndExit();
+		}
+
+		// TODO
+		// if (!saveModel.isConfigOk()) {
+		// saveModel.printErrorAndExit();
+		// }
 
 		System.out.println("Configuration:");
 
@@ -108,10 +108,12 @@ public class VLog4jClientMaterialize implements Runnable {
 		System.out.println("  --log-level: " + logLevel);
 		System.out.println("  --chase-algorithm: " + chaseAlgorithm);
 		System.out.println("  --timeout: " + ((timeout > 0) ? Integer.toString(timeout) : "none"));
+
 		/* Print what to do with the result */
-//		saveModel.print();
-		saveQueryResult.print();
-		printQueryResult.print();
+
+		printQueryResults.printConfiguration();
+		saveQueryResults.printConfiguration();
+		// saveModel.printConfiguration();
 
 		try (Reasoner reasoner = new VLogReasoner(kb)) {
 			// logFile
@@ -129,38 +131,37 @@ public class VLog4jClientMaterialize implements Runnable {
 				System.out.println("Executing the chase ...");
 				reasoner.reason();
 			} catch (IOException e) {
-				System.out.println("Something went wrong. Please check the file paths inside the rule files.");
-				e.printStackTrace();
+				System.out.println("Something went wrong. Please check the log file.");
 				System.exit(1);
 			}
 
-//			// TODO save the model
-//			if (saveModel.saveModel) {
-//				System.out.println("Saving model ...");
-//			}
+			// TODO save the model
+			// if (saveModel.saveModel) {
+			// System.out.println("Saving model ...");
+			// }
 
 			String outputPath;
 			if (queries.size() > 0) {
 				System.out.println("Answering queries ...");
 				for (PositiveLiteral query : queries) {
-					if (SaveQueryResult.saveQueryResults) {
+					if (saveQueryResults.saveResults) {
 						try {
-							outputPath = SaveQueryResult.outputQueryResultDirectory + "/" + query.toString() + ".csv";
+							outputPath = saveQueryResults.outputQueryResultDirectory + "/" + query + ".csv";
 							reasoner.exportQueryAnswersToCsv(query, outputPath, true);
 						} catch (IOException e) {
 							System.out.println("Can't save query " + query);
-							e.printStackTrace();
 							System.exit(1);
 						}
 					}
-					if (printQueryResult.sizeOnly) {
+					if (printQueryResults.sizeOnly) {
 						System.out.println(
 								"Elements in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
-					} else if (printQueryResult.complete) {
+					} else if (printQueryResults.complete) {
 						ExamplesUtils.printOutQueryAnswers(query, reasoner);
 					}
 				}
 			}
 		}
+		System.out.println("Process completed.");
 	}
 }
