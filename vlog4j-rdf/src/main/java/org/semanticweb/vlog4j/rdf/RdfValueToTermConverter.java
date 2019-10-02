@@ -26,9 +26,12 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.datatypes.XMLDatatypeUtil;
 import org.openrdf.rio.ntriples.NTriplesUtil;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 
 final class RdfValueToTermConverter {
 
@@ -41,7 +44,7 @@ final class RdfValueToTermConverter {
 		} else if (value instanceof Literal) {
 			return rdfLiteralToConstant((Literal) value);
 		} else if (value instanceof URI) {
-			return rdfURItoConstant((URI) value);
+			return rdfUriToConstant((URI) value);
 		} else {
 			throw new RuntimeException("Unknown value type: " + value.getClass());
 		}
@@ -52,14 +55,21 @@ final class RdfValueToTermConverter {
 		return new NamedNullImpl(bNode.getID());
 	}
 
-	static Term rdfURItoConstant(final URI uri) {
+	static Term rdfUriToConstant(final URI uri) {
 		final String escapedURIString = NTriplesUtil.escapeString(uri.toString());
 		return new AbstractConstantImpl(escapedURIString);
 	}
 
 	static Term rdfLiteralToConstant(final Literal literal) {
-		final String normalizedStringValueLiteral = buildNormalizedStringValue(literal);
-		return new AbstractConstantImpl(normalizedStringValueLiteral);
+		final URI datatype = literal.getDatatype();
+		if (datatype != null) {
+			return new DatatypeConstantImpl(XMLDatatypeUtil.normalize(literal.getLabel(), datatype),
+					datatype.toString());
+		} else if (literal.getLanguage() != null) {
+			return new LanguageStringConstantImpl(literal.getLabel(), literal.getLanguage());
+		} else {
+			return new DatatypeConstantImpl(literal.getLabel(), PrefixDeclarations.XSD_STRING);
+		}
 	}
 
 	/**

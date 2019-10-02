@@ -26,13 +26,13 @@ import static org.semanticweb.vlog4j.rdf.RdfModelConverter.RDF_TRIPLE_PREDICATE_
 import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_FIRST;
 import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_NIL;
 import static org.semanticweb.vlog4j.rdf.RdfTestUtils.RDF_REST;
-import static org.semanticweb.vlog4j.rdf.RdfTestUtils.intoLexical;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
@@ -41,6 +41,7 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.semanticweb.vlog4j.core.model.api.NamedNull;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -113,15 +114,14 @@ public class TestConvertRdfFileToFacts {
 			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(example3, exampleA, exampleHash1))));
 
 	private static final Set<Fact> expectedEscapedCharacterFacts = new HashSet<>(
-			Arrays.asList(Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(file1, fileA, Expressions.makeDatatypeConstant("\\t\\u0008\\n\\r\\u000C\\\"'\\\\",
-							"http://www.w3.org/2001/XMLSchema#string")))));
+			Arrays.asList(Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file1, fileA, Expressions
+					.makeDatatypeConstant("\t\u0008\n\r\u000C\"'\\", "http://www.w3.org/2001/XMLSchema#string")))));
 
 	private static final Set<Fact> expectedLanguageTagFacts = new HashSet<>(Arrays.asList(
 			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(file1, fileA, Expressions.makeAbstractConstant("\"This is a test.\"@en"))),
+					Arrays.asList(file1, fileA, Expressions.makeLanguageStringConstant("This is a test.", "en"))),
 			Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
-					Arrays.asList(file1, fileA, Expressions.makeAbstractConstant("\"Das ist ein Test.\"@de")))));
+					Arrays.asList(file1, fileA, Expressions.makeLanguageStringConstant("Das ist ein Test.", "de")))));
 
 	@Test
 	public void testDataTypesNormalized() throws RDFHandlerException, RDFParseException, IOException {
@@ -148,7 +148,7 @@ public class TestConvertRdfFileToFacts {
 	}
 
 	@Test
-	public void testEscapedCharactersPreserved() throws RDFHandlerException, RDFParseException, IOException {
+	public void testEscapedCharactersExpanded() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "escapedCharacters.ttl"),
 				RDFFormat.TURTLE);
 		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
@@ -177,12 +177,15 @@ public class TestConvertRdfFileToFacts {
 				Arrays.asList(Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file1, fileA, RDF_NIL)),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file2, fileA, blank1)),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
-								Arrays.asList(blank1, RDF_FIRST, Expressions.makeAbstractConstant(intoLexical("1", "integer")))),
+								Arrays.asList(blank1, RDF_FIRST,
+										Expressions.makeDatatypeConstant("1", PrefixDeclarations.XSD_INTEGER))),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank1, RDF_REST, RDF_NIL)),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file3, fileA, blank2)),
-						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_FIRST, Expressions.makeAbstractConstant("file:/#1"))),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
+								Arrays.asList(blank2, RDF_FIRST, Expressions.makeAbstractConstant("file:/#1"))),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank2, RDF_REST, blank3)),
-						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_FIRST, Expressions.makeAbstractConstant("file:/#2"))),
+						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
+								Arrays.asList(blank3, RDF_FIRST, Expressions.makeAbstractConstant("file:/#2"))),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank3, RDF_REST, RDF_NIL))));
 
 		assertEquals(expectedSetFacts, factsFromModel);
@@ -215,7 +218,7 @@ public class TestConvertRdfFileToFacts {
 		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
 
 		final Set<NamedNull> blanks = new HashSet<>();
-		facts.forEach(fact -> blanks.addAll(fact.getBlanks()));
+		facts.forEach(fact -> blanks.addAll(fact.getNamedNulls().collect(Collectors.toSet())));
 		return blanks;
 	}
 

@@ -96,6 +96,7 @@ public final class RdfTestUtils {
 	 * 
 	 * @return {@code abbreviatedValue} in lexical form
 	 */
+	@Deprecated
 	static String intoLexical(final String abbreviatedValue, final String type) {
 		return "\"" + abbreviatedValue + "\"^^<http://www.w3.org/2001/XMLSchema#" + type + ">";
 	}

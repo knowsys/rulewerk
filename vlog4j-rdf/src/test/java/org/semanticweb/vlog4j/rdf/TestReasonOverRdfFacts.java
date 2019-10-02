@@ -50,8 +50,8 @@ public class TestReasonOverRdfFacts {
 
 	private final Constant carlBenz = Expressions.makeAbstractConstant("https://example.org/Carl-Benz");
 	private final Constant invention = Expressions.makeAbstractConstant("https://example.org/invention");
-	private final Constant labelEn = Expressions.makeAbstractConstant("\"car\"@en");
-	private final Constant labelZh = Expressions.makeAbstractConstant("\"\\u81EA\\u52A8\\u8F66\"@zh-hans");
+	private final Constant labelEn = Expressions.makeLanguageStringConstant("car", "en");
+	private final Constant labelZh = Expressions.makeLanguageStringConstant("\u81EA\u52A8\u8F66", "zh-hans");
 
 	private final Set<List<Term>> expectedQueryResultsInvention = new HashSet<>(
 			Arrays.asList(Arrays.asList(carlBenz, invention, labelEn), Arrays.asList(carlBenz, invention, labelZh)));
