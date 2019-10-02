@@ -27,6 +27,7 @@ import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
 
 /**
  * Utility class with static methods for converting from VLog internal model
@@ -81,6 +82,11 @@ class VLogToModelConverter {
 		case CONSTANT:
 			if (name.charAt(0) == '<' && name.charAt(name.length() - 1) == '>') { // strip <> off IRIs
 				return new AbstractConstantImpl(name.substring(1, name.length() - 1));
+			} else if (name.charAt(0) == '"') {
+				int startTypeIdx = name.lastIndexOf('<', name.length() - 2);
+				String datatype = name.substring(startTypeIdx + 1, name.length() - 1);
+				String lexicalValue = name.substring(1, startTypeIdx-3);
+				return new DatatypeConstantImpl(lexicalValue, datatype);
 			} else {
 				return new AbstractConstantImpl(name);
 			}

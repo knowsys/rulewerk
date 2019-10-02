@@ -169,7 +169,7 @@ public class ModelToVLogConverterTest {
 		final Variable y = Expressions.makeUniversalVariable("y");
 		final Variable z = Expressions.makeUniversalVariable("z");
 		final Variable w = Expressions.makeUniversalVariable("w");
-		final Variable v = Expressions.makeUniversalVariable("v");
+		final Variable v = Expressions.makeExistentialVariable("v");
 		final PositiveLiteral atomP1X = Expressions.makePositiveLiteral("p1", x);
 		final PositiveLiteral atomP2XY = Expressions.makePositiveLiteral("p2", x, y);
 		final PositiveLiteral atomP3YZ = Expressions.makePositiveLiteral("p3", y, z);
@@ -189,7 +189,7 @@ public class ModelToVLogConverterTest {
 		final karmaresearch.vlog.Term expW = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
 				"w");
 		final karmaresearch.vlog.Term expV = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
-				"v");
+				"!v");
 		final karmaresearch.vlog.Atom expAtomP1X = new karmaresearch.vlog.Atom("p1-1", expX);
 		final karmaresearch.vlog.Atom expAtomP2XY = new karmaresearch.vlog.Atom("p2-2", expX, expY);
 		final karmaresearch.vlog.Atom expAtomP3YZ = new karmaresearch.vlog.Atom("p3-2", expY, expZ);

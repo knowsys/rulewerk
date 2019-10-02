@@ -27,9 +27,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -47,8 +48,8 @@ public class GeneratedAnonymousIndividualsTest {
 	private static final String excludeBlanksFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "exclude_blanks.csv";
 
 	private static final Variable vx = Expressions.makeUniversalVariable("x");
-	private static final Variable vy = Expressions.makeUniversalVariable("y");
-	private static final Variable vz = Expressions.makeUniversalVariable("z");
+	private static final Variable vy = Expressions.makeExistentialVariable("y");
+	private static final Variable vz = Expressions.makeExistentialVariable("z");
 	private static final String p = "p";
 
 	// rule: P(?x) -> P(?x,!y), P(?x,!z)
@@ -68,7 +69,7 @@ public class GeneratedAnonymousIndividualsTest {
 
 	static {
 		// y,z existential variables that can introduce blanks (anonymous individuals)
-		assertEquals(Sets.newSet(vy, vz), existentialRule.getExistentiallyQuantifiedVariables());
+		assertEquals(Set.of(vy, vz), existentialRule.getExistentialVariables().collect(Collectors.toSet()));
 
 		kb.addStatements(existentialRule, fact);
 	}

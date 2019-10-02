@@ -23,9 +23,13 @@ package org.semanticweb.vlog4j.core.model;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ExistentialVariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
 import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
 
 public class TermImplTest {
@@ -48,31 +52,55 @@ public class TermImplTest {
 	}
 
 	@Test
-	public void termGetterTest() {
+	public void abstractConstantGetterTest() {
 		Term c = new AbstractConstantImpl("c");
 		assertEquals("c", c.getName());
-		assertEquals(TermType.CONSTANT, c.getType());
+		assertEquals(TermType.ABSTRACT_CONSTANT, c.getType());
+	}
 
+	@Test
+	public void datatypeConstantGetterTest() {
+		DatatypeConstant c = new DatatypeConstantImpl("c", "http://example.org/mystring");
+		assertEquals("c", c.getLexicalValue());
+		assertEquals("http://example.org/mystring", c.getDatatype());
+		assertEquals("\"c\"^^<http://example.org/mystring>", c.getName());
+		assertEquals(TermType.DATATYPE_CONSTANT, c.getType());
+	}
+
+	@Test
+	public void universalVariableGetterTest() {
 		Term v = new UniversalVariableImpl("v");
 		assertEquals("v", v.getName());
-		assertEquals(TermType.VARIABLE, v.getType());
+		assertEquals(TermType.UNIVERSAL_VARIABLE, v.getType());
 	}
-	
+
+	@Test
+	public void existentialVariableGetterTest() {
+		Term v = new ExistentialVariableImpl("v");
+		assertEquals("v", v.getName());
+		assertEquals(TermType.EXISTENTIAL_VARIABLE, v.getType());
+	}
+
+	@Test
+	public void namedNullGetterTest() {
+		Term n = new NamedNullImpl("123");
+		assertEquals("123", n.getName());
+		assertEquals(TermType.NAMED_NULL, n.getType());
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void constantNameNonNullTest() {
-		new AbstractConstantImpl((String)null);
+		new AbstractConstantImpl((String) null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void constantNameNonEmptyTest() {
 		new AbstractConstantImpl("");
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void constantNameNonWhitespaceTest() {
 		new AbstractConstantImpl(" ");
 	}
-
-	
 
 }

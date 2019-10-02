@@ -412,7 +412,7 @@ public class QueryAnsweringCorrectnessTest {
 	@Test
 	public void testMaterialisationIncomplete() throws IOException {
 		final Variable y = Expressions.makeUniversalVariable("y");
-		final Variable z = Expressions.makeUniversalVariable("z");
+		final Variable z = Expressions.makeExistentialVariable("z");
 
 		final Predicate predR = Expressions.makePredicate("predR", 2);
 

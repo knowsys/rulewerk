@@ -1,5 +1,8 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -29,6 +32,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
 
 /**
  * Implementation for {@link Rule}. Represents rules with non-empty heads and
@@ -55,11 +59,22 @@ public class RuleImpl implements Rule {
 	public RuleImpl(final Conjunction<PositiveLiteral> head, final Conjunction<Literal> body) {
 		Validate.notNull(head);
 		Validate.notNull(body);
-		Validate.notEmpty(body.getLiterals());
-		Validate.notEmpty(head.getLiterals());
+		Validate.notEmpty(body.getLiterals(),
+				"Empty rule body not supported. Use Fact objects to assert unconditionally true atoms.");
+		Validate.notEmpty(head.getLiterals(),
+				"Empty rule head not supported. To capture integrityr constraints, use a dedicated predicate that represents a conradiction.");
+		if (body.getExistentialVariables().count() > 0) {
+			throw new IllegalArgumentException("Rule body cannot contain existential variables. Body was: " + body);
+		}
+		Set<UniversalVariable> bodyVariables = body.getUniversalVariables().collect(Collectors.toSet());
+		if (head.getUniversalVariables().filter(x -> !bodyVariables.contains(x)).count() > 0) {
+			throw new IllegalArgumentException(
+					"Universally quantified variables in rule head must also occur in rule body.");
+		}
 
 		this.head = head;
 		this.body = body;
+
 	}
 
 	@Override

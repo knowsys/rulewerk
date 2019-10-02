@@ -26,10 +26,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.Set;
 
 import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
@@ -41,7 +39,7 @@ import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 
 public class NegativeLiteralImplTest {
-	
+
 	@Test
 	public void testGetters() {
 		final Variable x = Expressions.makeUniversalVariable("X");
@@ -51,24 +49,16 @@ public class NegativeLiteralImplTest {
 		final NegativeLiteral atomP = Expressions.makeNegativeLiteral("p", x, c, d, y);
 		final NegativeLiteral atomQ = Expressions.makeNegativeLiteral("q", c, d);
 
-		final Set<Variable> variables = Sets.newSet(x, y);
-		final Set<Constant> constants = Sets.newSet(c, d);
-
 		assertEquals("p", atomP.getPredicate().getName());
 		assertEquals(atomP.getArguments().size(), atomP.getPredicate().getArity());
 
-		assertEquals(variables, atomP.getVariables());
-		assertEquals(constants, atomP.getConstants());
 		assertEquals(Arrays.asList(x, c, d, y), atomP.getArguments());
 
 		assertEquals("q", atomQ.getPredicate().getName());
 		assertEquals(atomQ.getArguments().size(), atomQ.getPredicate().getArity());
 
-		assertTrue(atomQ.getVariables().isEmpty());
-		assertEquals(constants, atomQ.getConstants());
 		assertEquals(Arrays.asList(c, d), atomQ.getArguments());
-		
-		
+
 		assertTrue(atomP.isNegated());
 		assertTrue(atomQ.isNegated());
 	}
@@ -97,8 +87,7 @@ public class NegativeLiteralImplTest {
 		assertNotEquals(atom5.hashCode(), atom1.hashCode());
 		assertFalse(atom1.equals(null));
 		assertFalse(atom1.equals(c));
-		
-		
+
 		assertNotEquals(atom1, new PositiveLiteralImpl(atom1.getPredicate(), atom1.getArguments()));
 		assertNotEquals(atom2, new PositiveLiteralImpl(atom2.getPredicate(), atom2.getArguments()));
 		assertNotEquals(atom3, new PositiveLiteralImpl(atom3.getPredicate(), atom3.getArguments()));
@@ -149,7 +138,8 @@ public class NegativeLiteralImplTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void termSizeMatchesPredicateArity() {
 		final Predicate predicateArity1 = Expressions.makePredicate("p", 1);
-		Expressions.makeNegativeLiteral(predicateArity1, Expressions.makeAbstractConstant("c"), Expressions.makeUniversalVariable("X"));
+		Expressions.makeNegativeLiteral(predicateArity1, Expressions.makeAbstractConstant("c"),
+				Expressions.makeUniversalVariable("X"));
 	}
 
 }

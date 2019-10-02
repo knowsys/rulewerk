@@ -31,10 +31,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -62,13 +62,12 @@ public class AnswerQueryTest {
 		final Fact fact = Expressions.makeFact(predicate, Arrays.asList(constantC, constantC, constantD));
 
 		final boolean includeBlanks = false;
-		@SuppressWarnings("unchecked")
-		final Set<List<Constant>> factCCD = Sets.newSet(Arrays.asList(constantC, constantC, constantD));
+		final Set<List<Constant>> factCCD = Set.of(Arrays.asList(constantC, constantC, constantD));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(fact);
-		
-		try (final VLogReasoner reasoner =new VLogReasoner(kb)) {
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
 			final PositiveLiteral queryAtomXYZ = Expressions.makePositiveLiteral(predicate, x, y, z);
@@ -100,13 +99,13 @@ public class AnswerQueryTest {
 	public void testIDBQuerySameBlankSubstitutesSameVariableName() throws IOException {
 		final String predicate = "p";
 		final Variable x = Expressions.makeUniversalVariable("X");
-		final Variable y = Expressions.makeUniversalVariable("Y");
-		final Variable z = Expressions.makeUniversalVariable("Z");
+		final Variable y = Expressions.makeExistentialVariable("Y");
+		final Variable z = Expressions.makeExistentialVariable("Z");
 		final PositiveLiteral pYY = Expressions.makePositiveLiteral(predicate, y, y);
 		final PositiveLiteral pYZ = Expressions.makePositiveLiteral(predicate, y, z);
 		final Rule pX__pYY_pYZ = Expressions.makeRule(Expressions.makePositiveConjunction(pYY, pYZ),
 				Expressions.makeConjunction(Expressions.makePositiveLiteral(predicate, x)));
-		assertEquals(Sets.newSet(y, z), pX__pYY_pYZ.getExistentiallyQuantifiedVariables());
+		assertEquals(Set.of(y, z), pX__pYY_pYZ.getExistentialVariables().collect(Collectors.toSet()));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -143,11 +142,11 @@ public class AnswerQueryTest {
 		final String predicate = "p";
 		final Variable x = Expressions.makeUniversalVariable("X");
 		final Variable y = Expressions.makeUniversalVariable("Y");
-		final Variable z = Expressions.makeUniversalVariable("Z");
-		final Variable t = Expressions.makeUniversalVariable("T");
+		final Variable z = Expressions.makeExistentialVariable("Z");
+		final Variable t = Expressions.makeExistentialVariable("T");
 		final PositiveLiteral pXYYZZT = Expressions.makePositiveLiteral(predicate, x, y, y, z, z, t);
 		final Rule pXY__pXYYZZT = Expressions.makeRule(pXYYZZT, Expressions.makePositiveLiteral(predicate, x, y));
-		assertEquals(Sets.newSet(z, t), pXY__pXYYZZT.getExistentiallyQuantifiedVariables());
+		assertEquals(Set.of(z, t), pXY__pXYYZZT.getExistentialVariables().collect(Collectors.toSet()));
 		final Constant constantC = Expressions.makeAbstractConstant("c");
 		final Constant constantD = Expressions.makeAbstractConstant("d");
 
@@ -212,11 +211,11 @@ public class AnswerQueryTest {
 	@Test
 	public void queryResultWithBlanks() throws IOException {
 		final Variable vx = Expressions.makeUniversalVariable("x");
-		final Variable vy = Expressions.makeUniversalVariable("y");
+		final Variable vy = Expressions.makeExistentialVariable("y");
 		// P(x) -> Q(y)
 		final Rule existentialRule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vy),
 				Expressions.makePositiveLiteral("p", vx));
-		assertEquals(Sets.newSet(vy), existentialRule.getExistentiallyQuantifiedVariables());
+		assertEquals(Set.of(vy), existentialRule.getExistentialVariables().collect(Collectors.toSet()));
 		final Constant constantC = Expressions.makeAbstractConstant("c");
 		final Fact fact = Expressions.makeFact("p", Arrays.asList(constantC));
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("q", Expressions.makeUniversalVariable("?x"));
@@ -250,8 +249,9 @@ public class AnswerQueryTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
-			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeUniversalVariable("?x"));
-			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true) ) {
+			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P",
+					Expressions.makeUniversalVariable("?x"));
+			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true)) {
 				final Set<List<Term>> queryResults = QueryResultsUtils.collectQueryResults(queryResultIterator);
 				assertEquals(Collections.EMPTY_SET, queryResults);
 			}
@@ -267,8 +267,9 @@ public class AnswerQueryTest {
 
 			reasoner.reason();
 
-			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeUniversalVariable("?x"));
-			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true) ) {
+			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P",
+					Expressions.makeUniversalVariable("?x"));
+			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true)) {
 				final Set<List<Term>> queryResults = QueryResultsUtils.collectQueryResults(queryResultIterator);
 				assertEquals(Collections.EMPTY_SET, queryResults);
 			}
@@ -284,14 +285,15 @@ public class AnswerQueryTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
-			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P", Expressions.makeUniversalVariable("?x"));
+			final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("P",
+					Expressions.makeUniversalVariable("?x"));
 
 			reasoner.reason();
 
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true)) {
 				final Set<List<Term>> queryResults = QueryResultsUtils.collectQueryResults(queryResultIterator);
-				@SuppressWarnings("unchecked")
-				final Set<List<Term>> expectedQueryResults = Sets.newSet(Arrays.asList(Expressions.makeAbstractConstant("c")));
+				final Set<List<Term>> expectedQueryResults = Set
+						.of(Arrays.asList(Expressions.makeAbstractConstant("c")));
 				assertEquals(expectedQueryResults, queryResults);
 			}
 		}
@@ -309,13 +311,15 @@ public class AnswerQueryTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 
-			final PositiveLiteral queryAtom1 = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("?x"));
+			final PositiveLiteral queryAtom1 = Expressions.makePositiveLiteral("p",
+					Expressions.makeUniversalVariable("?x"));
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom1, true)) {
 				Assert.assertFalse(queryResultIterator.hasNext());
 				queryResultIterator.close();
 			}
 
-			final PositiveLiteral queryAtom2 = Expressions.makePositiveLiteral("q", Expressions.makeUniversalVariable("?x"));
+			final PositiveLiteral queryAtom2 = Expressions.makePositiveLiteral("q",
+					Expressions.makeUniversalVariable("?x"));
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom2, true)) {
 				Assert.assertFalse(queryResultIterator.hasNext());
 				queryResultIterator.close();

@@ -25,15 +25,15 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
@@ -41,80 +41,27 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 public class ConjunctionImplTest {
 
 	@Test
-	public void testGettersPositiveLiterals() {
-		final Variable x = Expressions.makeUniversalVariable("X");
-		final Variable y = Expressions.makeUniversalVariable("Y");
-		final Constant c = Expressions.makeAbstractConstant("c");
-		final Constant d = Expressions.makeAbstractConstant("d");
-		final PositiveLiteral positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
-		final PositiveLiteral positiveLiteral2 = Expressions.makePositiveLiteral("p", y, x);
-		final PositiveLiteral positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
-		final List<PositiveLiteral> positiveLiteralList = Arrays.asList(positiveLiteral1, positiveLiteral2,
-				positiveLiteral3);
-
-		final List<Literal> literalList = Arrays.asList(positiveLiteral1, positiveLiteral2, positiveLiteral3);
-
-		final Conjunction<PositiveLiteral> conjunctionPositiveLiterals = new ConjunctionImpl<>(positiveLiteralList);
-		final Conjunction<Literal> conjunctionLiterals = new ConjunctionImpl<>(literalList);
-
-		assertEquals(positiveLiteralList, conjunctionPositiveLiterals.getLiterals());
-		assertEquals(literalList, conjunctionPositiveLiterals.getLiterals());
-		assertEquals(conjunctionLiterals, conjunctionPositiveLiterals);
-
-		assertEquals(positiveLiteralList, conjunctionPositiveLiterals.getLiterals());
-		assertEquals(Sets.newSet(x, y), conjunctionPositiveLiterals.getVariables());
-		assertEquals(Sets.newSet(x, y), conjunctionPositiveLiterals.getTerms(TermType.VARIABLE));
-		assertEquals(Sets.newSet(), conjunctionPositiveLiterals.getTerms(TermType.NAMED_NULL));
-		assertEquals(Sets.newSet(c, d), conjunctionPositiveLiterals.getTerms(TermType.CONSTANT));
-	}
-
-	@Test
 	public void testGettersLiterals() {
 		final Variable x = Expressions.makeUniversalVariable("X");
 		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Variable z = Expressions.makeExistentialVariable("Z");
 		final Constant c = Expressions.makeAbstractConstant("c");
 		final Constant d = Expressions.makeAbstractConstant("d");
 		final Literal positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
 		final NegativeLiteral negativeLiteral2 = Expressions.makeNegativeLiteral("p", y, x);
 		final Literal positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
-		final Literal negativeLiteral4 = Expressions.makePositiveLiteral("q", y, d);
+		final Literal negativeLiteral4 = Expressions.makePositiveLiteral("q", y, d, z);
 		final List<Literal> literalList = Arrays.asList(positiveLiteral1, negativeLiteral2, positiveLiteral3,
 				negativeLiteral4);
 
 		final Conjunction<Literal> conjunction = new ConjunctionImpl<>(literalList);
 
 		assertEquals(literalList, conjunction.getLiterals());
-		assertEquals(Sets.newSet(x, y), conjunction.getVariables());
-		assertEquals(Sets.newSet(x, y), conjunction.getTerms(TermType.VARIABLE));
-		assertEquals(Sets.newSet(), conjunction.getTerms(TermType.NAMED_NULL));
-		assertEquals(Sets.newSet(c, d), conjunction.getTerms(TermType.CONSTANT));
-	}
-
-	@Test
-	public void testGettersNegativeLiterals() {
-		final Variable x = Expressions.makeUniversalVariable("X");
-		final Variable y = Expressions.makeUniversalVariable("Y");
-		final Constant c = Expressions.makeAbstractConstant("c");
-		final Constant d = Expressions.makeAbstractConstant("d");
-		final NegativeLiteral negativeLiteral1 = Expressions.makeNegativeLiteral("p", x, c);
-		final NegativeLiteral negativeLiteral2 = Expressions.makeNegativeLiteral("p", y, x);
-		final NegativeLiteral negativeLiteral3 = Expressions.makeNegativeLiteral("q", x, d);
-		final List<NegativeLiteral> negativeLiteralList = Arrays.asList(negativeLiteral1, negativeLiteral2,
-				negativeLiteral3);
-
-		final List<Literal> literalList = Arrays.asList(negativeLiteral1, negativeLiteral2, negativeLiteral3);
-
-		final Conjunction<NegativeLiteral> conjunctionNegativeLiterals = new ConjunctionImpl<>(negativeLiteralList);
-		final Conjunction<Literal> conjunctionLiterals = new ConjunctionImpl<>(literalList);
-
-		assertEquals(negativeLiteralList, conjunctionNegativeLiterals.getLiterals());
-		assertEquals(literalList, conjunctionNegativeLiterals.getLiterals());
-		assertEquals(conjunctionLiterals, conjunctionNegativeLiterals);
-
-		assertEquals(Sets.newSet(x, y), conjunctionNegativeLiterals.getVariables());
-		assertEquals(Sets.newSet(x, y), conjunctionNegativeLiterals.getTerms(TermType.VARIABLE));
-		assertEquals(Sets.newSet(), conjunctionNegativeLiterals.getTerms(TermType.NAMED_NULL));
-		assertEquals(Sets.newSet(c, d), conjunctionNegativeLiterals.getTerms(TermType.CONSTANT));
+		assertEquals(Set.of(x, y, z), conjunction.getVariables().collect(Collectors.toSet()));
+		assertEquals(Set.of(x, y), conjunction.getUniversalVariables().collect(Collectors.toSet()));
+		assertEquals(Set.of(z), conjunction.getExistentialVariables().collect(Collectors.toSet()));
+		assertEquals(Set.of(), conjunction.getNamedNulls().collect(Collectors.toSet()));
+		assertEquals(Set.of(c, d), conjunction.getAbstractConstants().collect(Collectors.toSet()));
 	}
 
 	@Test
