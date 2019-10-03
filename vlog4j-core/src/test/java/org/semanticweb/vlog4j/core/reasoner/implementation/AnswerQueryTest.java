@@ -293,8 +293,8 @@ public class AnswerQueryTest {
 
 			try (final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtom, true)) {
 				final Set<List<Term>> queryResults = QueryResultsUtils.collectQueryResults(queryResultIterator);
-				final Set<List<Term>> expectedQueryResults = Set
-						.of(Arrays.asList(Expressions.makeAbstractConstant("c")));
+				final Set<List<Term>> expectedQueryResults = Collections
+						.singleton(Arrays.asList(Expressions.makeAbstractConstant("c")));
 				assertEquals(expectedQueryResults, queryResults);
 			}
 		}
