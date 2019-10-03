@@ -22,10 +22,11 @@ package org.semanticweb.vlog4j.graal;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -62,9 +63,10 @@ public final class GraalToVLog4JModelConverter {
 	 * @param atom A {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom}
 	 * @return A {@link PositiveLiteral VLog4J PositiveLiteral}
 	 */
-	public static PositiveLiteral convertAtom(final fr.lirmm.graphik.graal.api.core.Atom atom) {
+	public static PositiveLiteral convertAtom(final fr.lirmm.graphik.graal.api.core.Atom atom,
+			final Set<fr.lirmm.graphik.graal.api.core.Variable> existentialVariables) {
 		final Predicate predicate = convertPredicate(atom.getPredicate());
-		final List<Term> terms = convertTerms(atom.getTerms());
+		final List<Term> terms = convertTerms(atom.getTerms(), existentialVariables);
 		return Expressions.makePositiveLiteral(predicate, terms);
 	}
 
@@ -79,7 +81,7 @@ public final class GraalToVLog4JModelConverter {
 	 */
 	public static Fact convertAtomToFact(final fr.lirmm.graphik.graal.api.core.Atom atom) {
 		final Predicate predicate = convertPredicate(atom.getPredicate());
-		final List<Term> terms = convertTerms(atom.getTerms());
+		final List<Term> terms = convertTerms(atom.getTerms(), Collections.emptySet());
 		return Expressions.makeFact(predicate, terms);
 	}
 
@@ -95,7 +97,7 @@ public final class GraalToVLog4JModelConverter {
 	public static List<PositiveLiteral> convertAtoms(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
 		final List<PositiveLiteral> result = new ArrayList<>();
 		for (final fr.lirmm.graphik.graal.api.core.Atom atom : atoms) {
-			result.add(convertAtom(atom));
+			result.add(convertAtom(atom, Collections.emptySet()));
 		}
 		return result;
 	}
@@ -123,11 +125,12 @@ public final class GraalToVLog4JModelConverter {
 	 * @param atomSet A {@link AtomSet Graal AtomSet}
 	 * @return A {@link Conjunction VLog4J Conjunction}
 	 */
-	private static Conjunction<PositiveLiteral> convertAtomSet(final AtomSet atomSet) {
+	private static Conjunction<PositiveLiteral> convertAtomSet(final AtomSet atomSet,
+			final Set<fr.lirmm.graphik.graal.api.core.Variable> existentialVariables) {
 		final List<PositiveLiteral> result = new ArrayList<>();
 		try (CloseableIterator<fr.lirmm.graphik.graal.api.core.Atom> iterator = atomSet.iterator()) {
 			while (iterator.hasNext()) {
-				result.add(convertAtom(iterator.next()));
+				result.add(convertAtom(iterator.next(), existentialVariables));
 			}
 		} catch (final IteratorException e) {
 			throw new GraalConvertException(MessageFormat
@@ -173,7 +176,7 @@ public final class GraalToVLog4JModelConverter {
 	 * @return A {@link GraalConjunctiveQueryToRule} equivalent to the
 	 *         {@code conjunctiveQuery} input.
 	 */
-	public static GraalConjunctiveQueryToRule convertQuery(final @NonNull String ruleHeadPredicateName,
+	public static GraalConjunctiveQueryToRule convertQuery(final String ruleHeadPredicateName,
 			final ConjunctiveQuery conjunctiveQuery) {
 		if (StringUtils.isBlank(ruleHeadPredicateName)) {
 			throw new GraalConvertException(MessageFormat.format(
@@ -191,8 +194,9 @@ public final class GraalToVLog4JModelConverter {
 					conjunctiveQuery));
 		}
 
-		final Conjunction<PositiveLiteral> conjunction = convertAtomSet(conjunctiveQuery.getAtomSet());
-		final List<Term> answerVariables = convertTerms(conjunctiveQuery.getAnswerVariables());
+		final Conjunction<PositiveLiteral> conjunction = convertAtomSet(conjunctiveQuery.getAtomSet(),
+				Collections.emptySet());
+		final List<Term> answerVariables = convertTerms(conjunctiveQuery.getAnswerVariables(), Collections.emptySet());
 
 		return new GraalConjunctiveQueryToRule(ruleHeadPredicateName, answerVariables, conjunction);
 	}
@@ -205,8 +209,8 @@ public final class GraalToVLog4JModelConverter {
 	 * @return A {@link Rule Vlog4J Rule}.
 	 */
 	public static Rule convertRule(final fr.lirmm.graphik.graal.api.core.Rule rule) {
-		final Conjunction<PositiveLiteral> head = convertAtomSet(rule.getHead());
-		final Conjunction<PositiveLiteral> body = convertAtomSet(rule.getBody());
+		final Conjunction<PositiveLiteral> head = convertAtomSet(rule.getHead(), rule.getExistentials());
+		final Conjunction<PositiveLiteral> body = convertAtomSet(rule.getBody(), Collections.emptySet());
 		return Expressions.makePositiveLiteralsRule(head, body);
 	}
 
@@ -246,12 +250,17 @@ public final class GraalToVLog4JModelConverter {
 	 * 
 	 * @throws GraalConvertException If the term is neither variable nor constant.
 	 */
-	private static Term convertTerm(final fr.lirmm.graphik.graal.api.core.Term term) {
+	private static Term convertTerm(final fr.lirmm.graphik.graal.api.core.Term term,
+			final Set<fr.lirmm.graphik.graal.api.core.Variable> existentialVariables) {
 		final String id = term.getIdentifier().toString();
 		if (term.isConstant()) {
 			return Expressions.makeAbstractConstant(id);
 		} else if (term.isVariable()) {
-			return Expressions.makeUniversalVariable(id);
+			if (existentialVariables.contains(term)) {
+				return Expressions.makeExistentialVariable(id);
+			} else {
+				return Expressions.makeUniversalVariable(id);
+			}
 		} else {
 			throw new GraalConvertException(MessageFormat.format(
 					"Term {0} with identifier {1} and label {2} could not be converted because it is neither constant nor variable.",
@@ -267,10 +276,11 @@ public final class GraalToVLog4JModelConverter {
 	 *              Graal Terms}
 	 * @return A {@link List} of {@link Term VLog4J Terms}
 	 */
-	private static List<Term> convertTerms(final List<fr.lirmm.graphik.graal.api.core.Term> terms) {
+	private static List<Term> convertTerms(final List<fr.lirmm.graphik.graal.api.core.Term> terms,
+			final Set<fr.lirmm.graphik.graal.api.core.Variable> existentialVariables) {
 		final List<Term> result = new ArrayList<>();
 		for (final fr.lirmm.graphik.graal.api.core.Term term : terms) {
-			result.add(convertTerm(term));
+			result.add(convertTerm(term, existentialVariables));
 		}
 		return result;
 	}
