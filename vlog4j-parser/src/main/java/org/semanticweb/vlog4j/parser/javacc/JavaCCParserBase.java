@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.parser.javacc;
 
+import java.util.ArrayList;
+
 /*-
  * #%L
  * vlog4j-parser
@@ -9,9 +11,9 @@ package org.semanticweb.vlog4j.parser.javacc;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +23,7 @@ package org.semanticweb.vlog4j.parser.javacc;
  */
 
 import java.util.HashSet;
+import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
@@ -31,17 +34,18 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
+import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 
 /**
  * Basic methods used in the JavaCC-generated parser.
- * 
+ *
  * Implementation of some string escaping methods adapted from Apache Jena,
  * released under Apache 2.0 license terms.
- * 
+ *
  * @see <a href=
  *      "https://github.com/apache/jena/blob/master/jena-core/src/main/java/org/apache/jena/n3/turtle/ParserBase.java">https://github.com/apache/jena/blob/master/jena-core/src/main/java/org/apache/jena/n3/turtle/ParserBase.java</a>
- * 
+ *
  * @author Markus Kroetzsch
  * @author Larry Gonzalez
  * @author Jena developers, Apache Software Foundation (ASF)
@@ -51,6 +55,7 @@ public class JavaCCParserBase {
 	final PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
 
 	KnowledgeBase knowledgeBase;
+    ParserConfiguration parserConfiguration;
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -67,7 +72,7 @@ public class JavaCCParserBase {
 
 	/**
 	 * Defines the context for parsing sub-formulas.
-	 * 
+	 *
 	 * @author Markus Kroetzsch
 	 *
 	 */
@@ -86,6 +91,7 @@ public class JavaCCParserBase {
 
 	public JavaCCParserBase() {
 		this.knowledgeBase = new KnowledgeBase();
+        this.parserConfiguration = new ParserConfiguration();
 	}
 
 	Constant createIntegerConstant(String lexicalForm) {
@@ -104,6 +110,17 @@ public class JavaCCParserBase {
 		Predicate predicate = Expressions.makePredicate(predicateName, arity);
 		knowledgeBase.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
 	}
+
+    static String[] collectStrings(String str, String[] rest) {
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add(str);
+
+        for (String next : rest) {
+            strings.add(next);
+        }
+
+        return strings.toArray(rest);
+    }
 
 	static String unescapeStr(String s, int line, int column) throws ParseException {
 		return unescape(s, '\\', false, line, column);
@@ -229,5 +246,14 @@ public class JavaCCParserBase {
 	public KnowledgeBase getKnowledgeBase() {
 		return knowledgeBase;
 	}
+
+    public void setParserConfiguration(ParserConfiguration parserConfiguration) {
+        this.parserConfiguration = parserConfiguration;
+    }
+
+    public ParserConfiguration getParserConfiguration() {
+        return parserConfiguration;
+    }
+
 
 }

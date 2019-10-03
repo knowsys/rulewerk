@@ -21,6 +21,7 @@ package org.semanticweb.vlog4j.syntax.parser;
  */
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.sql.DataSource;
+
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Statement;
@@ -38,6 +42,8 @@ import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImp
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
+import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
+import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -84,4 +90,25 @@ public class RuleParserDataSourceTest {
 		String input = "@source p(2) : sparql(<not a URL>,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
 		RuleParser.parse(input);
 	}
+
+    @Test(expected = ParsingException.class)
+    public void testUnknownDataSource() throws ParsingException {
+        String input = "@source p(2) : unknown-data-source(\"hello, world\") .";
+        RuleParser.parse(input);
+    }
+
+    @Test
+    public void testCustomDataSource() throws ParsingException {
+        CsvFileDataSource source = mock(CsvFileDataSource.class);
+        DataSourceDeclarationHandler handler = mock(DataSourceDeclarationHandler.class);
+        ParserConfiguration parserConfiguration = new ParserConfiguration();
+        parserConfiguration.registerDataSource("mock-source", handler);
+        doReturn(source).when(handler).handleDeclaration(Matchers.<String[]>any());
+
+        String input = "@source p(2) : mock-source(\"hello\", \"world\") .";
+        String[] expectedArguments = {"hello", "world"};
+        RuleParser.parse(input, parserConfiguration);
+
+        verify(handler).handleDeclaration(eq(expectedArguments));
+    }
 }

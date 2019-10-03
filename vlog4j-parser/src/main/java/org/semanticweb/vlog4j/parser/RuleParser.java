@@ -46,6 +46,22 @@ public class RuleParser {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(RuleParser.class);
 
+    public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final String encoding, final ParserConfiguration parserConfiguration) throws ParsingException {
+        final JavaCCParser parser = new JavaCCParser(stream, encoding);
+        parser.setKnowledgeBase(knowledgeBase);
+        parser.setParserConfiguration(parserConfiguration);
+        doParse(parser);
+    }
+
+	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final ParserConfiguration parserConfiguration) throws ParsingException {
+		parseInto(knowledgeBase, stream, "UTF-8", parserConfiguration);
+	}
+
+	public static void parseInto(final KnowledgeBase knowledgeBase, final String input, final ParserConfiguration parserConfiguration) throws ParsingException {
+		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+		parseInto(knowledgeBase, inputStream, "UTF-8", parserConfiguration);
+	}
+
 	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final String encoding)
 			throws ParsingException {
 		final JavaCCParser javaCcParser = new JavaCCParser(stream, encoding);
@@ -61,6 +77,21 @@ public class RuleParser {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		parseInto(knowledgeBase, inputStream, "UTF-8");
 	}
+
+    public static KnowledgeBase parse(final InputStream stream, final String encoding, final ParserConfiguration parserConfiguration) throws ParsingException {
+        JavaCCParser parser = new JavaCCParser(stream, encoding);
+        parser.setParserConfiguration(parserConfiguration);
+        return doParse(parser);
+    }
+
+    public static KnowledgeBase parse(final InputStream stream, final ParserConfiguration parserConfiguration) throws ParsingException {
+        return parse(stream, "UTF-8", parserConfiguration);
+    }
+
+    public static KnowledgeBase parse(final String input, final ParserConfiguration parserConfiguration) throws ParsingException {
+        final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        return parse(inputStream, "UTF-8", parserConfiguration);
+    }
 
 	public static KnowledgeBase parse(final InputStream stream, final String encoding) throws ParsingException {
 		return doParse(new JavaCCParser(stream, encoding));

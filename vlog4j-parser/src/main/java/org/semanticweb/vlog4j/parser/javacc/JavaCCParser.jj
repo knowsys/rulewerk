@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 
@@ -109,11 +110,13 @@ DataSource dataSource() throws PrefixDeclarationException:
   String endpoint;
   String variables;
   String query;
+  Token sourceName;
+  String[] arguments;
 }
 {
     < LOADCSV > < LPAREN > fileName = String() < RPAREN >
     {
-     try { 
+     try {
        return new CsvFileDataSource(new File(fileName)) ;
      } catch (IOException e) {
        throw new ParseException("Could not use source file \"" + fileName +"\": " + e.getMessage());
@@ -134,7 +137,15 @@ DataSource dataSource() throws PrefixDeclarationException:
      } catch (MalformedURLException e) {
        throw new ParseException("SPARQL endoint \"" + endpoint +"\" is not a valid URL: " + e.getMessage());
      }
-    }    
+    }
+|   sourceName = < DIRECTIVENAME > < LPAREN > arguments = Strings() < RPAREN >
+    {
+        try {
+            return parserConfiguration.parseDataSourceDeclaration(sourceName.image, arguments);
+        } catch (ParsingException e) {
+            throw new ParseException(e.getMessage());
+        }
+    }
 }
 
 
@@ -161,13 +172,13 @@ Rule rule() throws PrefixDeclarationException:
     {
         // check that the intersection between headExiVars and BodyVars is empty
         for (String variable : headExiVars) {
-          if (bodyVars.contains(variable)) 
+          if (bodyVars.contains(variable))
             throw new ParseException("Malformed rule " + head + " :- " + body + "\nExistential variable " + variable + " also used in rule body.");
         }
 
         // check that bodyVars contains headUniVars
         for (String variable : headUniVars) {
-          if (!bodyVars.contains(variable)) 
+          if (!bodyVars.contains(variable))
             throw new ParseException("Unsafe rule " + head + " :- " + body  + "\nUniversal variable " + variable + " occurs in head but not in body.");
         }
 
@@ -226,7 +237,7 @@ Fact fact(FormulaContext context) throws PrefixDeclarationException:
 {
     predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN >
     {
-      try { 
+      try {
       	return Expressions.makeFact(predicateName, terms);
       } catch (IllegalArgumentException e) {
        throw new ParseException("Error parsing fact: " + e.toString());
@@ -352,6 +363,18 @@ String String():
     }
 }
 
+String[] Strings():
+{
+    String str;
+    String[] rest = {};
+}
+{
+    str = String() [< COMMA > rest = Strings()]
+    {
+        return collectStrings(str, rest);
+    }
+}
+
 String IRI(boolean includeAngleBrackets) throws PrefixDeclarationException:
 {
     String iri;
@@ -428,7 +451,7 @@ TOKEN:
     (
       (< DIGITS >)+ "." (< DIGITS >)*
     | "." (< DIGITS >)+
-    ) 
+    )
   >
 | < DOUBLE :
     ([ "+", "-" ])?
@@ -436,7 +459,7 @@ TOKEN:
       ([ "0"-"9" ])+ "." ([ "0"-"9" ])* < EXPONENT >
     | "." ([ "0"-"9" ])+ (< EXPONENT >)
     | ([ "0"-"9" ])+ < EXPONENT >
-    ) 
+    )
   >
 | < #DIGITS : ([ "0"-"9" ])+ >
 | < #EXPONENT : [ "e", "E" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >
@@ -508,6 +531,8 @@ TOKEN :
 | < VARORPREDNAME : < A2Z> (< A2ZN >)* >
 | < #A2Z : [ "a"-"z", "A"-"Z" ] >
 | < #A2ZN : [ "a"-"z", "A"-"Z", "0"-"9" ] >
+| < DIRECTIVENAME : < A2Z > (< A2ZNX >)* >
+| < #A2ZNX : [ "a"-"z", "A"-"Z", "0"-"9", "-", "_" ] >
 }
 
 TOKEN :
@@ -539,10 +564,10 @@ TOKEN :
   | [ "\u2070"-"\u218f" ]
   | [ "\u2c00"-"\u2fef" ]
   | [ "\u3001"-"\ud7ff" ]
-  | [ "\uf900"-"\ufffd" ] 
+  | [ "\uf900"-"\ufffd" ]
   >
   //  | [ ""#x10000-#xEFFFF]
-| 
+|
   < #PN_CHARS_U :
     < PN_CHARS_BASE >
   | "_" >
@@ -579,4 +604,3 @@ TOKEN :
       < PN_CHARS >
     )? >
 }
-
