@@ -170,6 +170,21 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 		}
 	}
 
+	/**
+	 * Creates and adds an auxiliary rule for the given body and head. All auxiliary
+	 * rules are renamings of class expressions, based on auxiliary class names
+	 * (unary predicates). The given term is the term used in this auxiliary
+	 * predicate.
+	 * 
+	 * Variables used in auxiliary atoms can be existentially quantified, but the
+	 * corresponding variable in auxiliary rules must always be universally
+	 * quantified. Therefore, if the given term is an existential variable, the
+	 * method will replace it by a universal one of the same name.
+	 * 
+	 * @param head
+	 * @param body
+	 * @param auxTerm
+	 */
 	void addAuxiliaryRule(List<PositiveLiteral> head, List<? extends Literal> body, Term auxTerm) {
 		if (auxTerm.getType() == TermType.EXISTENTIAL_VARIABLE) {
 			Term newVariable = new UniversalVariableImpl(auxTerm.getName());
