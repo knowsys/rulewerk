@@ -282,7 +282,7 @@ public final class Expressions {
 	}
 
 	/**
-	 * Creates a {@code Conjunction} of {@link T} ({@link Literal} type) objects.
+	 * Creates a {@link Conjunction} of {@code T} ({@link Literal} type) objects.
 	 *
 	 * @param literals list of non-null literals
 	 * @return a {@link Conjunction} corresponding to the input
@@ -346,7 +346,7 @@ public final class Expressions {
 	}
 
 	/**
-	 * Creates a {@code Rule}.
+	 * Creates a {@link Rule}.
 	 *
 	 * @param head conjunction of positive (non-negated) literals
 	 * @param body conjunction of positive (non-negated) literals

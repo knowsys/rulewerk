@@ -262,7 +262,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
+		final Variable secondVariable = Expressions.makeExistentialVariable("Y1");
 		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, Arrays.asList(secondVariable));
 		final PositiveLiteral atB = Expressions.makePositiveLiteral(nB, Arrays.asList(converter.frontierVariable));
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR,
@@ -284,19 +284,22 @@ public class OwlAxiomToRulesConverterTest {
 		axiom.accept(converter);
 
 		final Predicate auxPredicate = OwlToRulesConversionHelper.getAuxiliaryClassPredicate(Arrays.asList(cA));
-		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
+		final Variable secondVariable = Expressions.makeExistentialVariable("Y1");
+		final Variable secondVariableUniversal = Expressions.makeUniversalVariable("Y1");
 
 		final PositiveLiteral atB = Expressions.makePositiveLiteral(nB, Arrays.asList(converter.frontierVariable));
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR,
 				Arrays.asList(converter.frontierVariable, secondVariable));
 		final PositiveLiteral atAux = Expressions.makePositiveLiteral(auxPredicate, Arrays.asList(secondVariable));
-		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, Arrays.asList(secondVariable));
-		final PositiveLiteral bot = OwlToRulesConversionHelper.getBottom(secondVariable);
-
 		final Rule rule1 = Expressions.makeRule(Expressions.makePositiveConjunction(atR, atAux),
 				Expressions.makeConjunction(atB));
+
+		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, Arrays.asList(secondVariableUniversal));
+		final PositiveLiteral bot = OwlToRulesConversionHelper.getBottom(secondVariableUniversal);
+		final PositiveLiteral atAuxUniversal = Expressions.makePositiveLiteral(auxPredicate,
+				Arrays.asList(secondVariableUniversal));
 		final Rule rule2 = Expressions.makeRule(Expressions.makePositiveConjunction(bot),
-				Expressions.makeConjunction(atAux, atA));
+				Expressions.makeConjunction(atAuxUniversal, atA));
 
 		assertEquals(Sets.newSet(rule1, rule2), converter.rules);
 	}

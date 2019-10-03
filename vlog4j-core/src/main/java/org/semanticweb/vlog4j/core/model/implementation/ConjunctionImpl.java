@@ -37,7 +37,7 @@ import org.semanticweb.vlog4j.core.model.api.Term;
  */
 public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 
-	final List<T> literals;
+	final List<? extends T> literals;
 
 	/**
 	 * Constructor.
@@ -45,7 +45,7 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 	 * @param literals a non-null list of literals, that cannot contain null
 	 *                 elements.
 	 */
-	public ConjunctionImpl(List<T> literals) {
+	public ConjunctionImpl(List<? extends T> literals) {
 		Validate.noNullElements(literals);
 		this.literals = literals;
 	}
@@ -91,7 +91,7 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return this.literals.iterator();
+		return getLiterals().iterator();
 	}
 
 	@Override

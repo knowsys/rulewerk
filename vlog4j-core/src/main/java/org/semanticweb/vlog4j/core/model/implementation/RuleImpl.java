@@ -64,12 +64,13 @@ public class RuleImpl implements Rule {
 		Validate.notEmpty(head.getLiterals(),
 				"Empty rule head not supported. To capture integrityr constraints, use a dedicated predicate that represents a conradiction.");
 		if (body.getExistentialVariables().count() > 0) {
-			throw new IllegalArgumentException("Rule body cannot contain existential variables. Body was: " + body);
+			throw new IllegalArgumentException("Rule body cannot contain existential variables. Rule was: " + head + " :- " + body);
 		}
 		Set<UniversalVariable> bodyVariables = body.getUniversalVariables().collect(Collectors.toSet());
 		if (head.getUniversalVariables().filter(x -> !bodyVariables.contains(x)).count() > 0) {
 			throw new IllegalArgumentException(
-					"Universally quantified variables in rule head must also occur in rule body.");
+					"Universally quantified variables in rule head must also occur in rule body. Rule was: " + head
+							+ " :- " + body);
 		}
 
 		this.head = head;
