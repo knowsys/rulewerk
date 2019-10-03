@@ -30,11 +30,6 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 public enum TermType {
 	/**
-	 * A constant is a term used to represent named domain elements.
-	 */
-	@Deprecated
-	CONSTANT,
-	/**
 	 * An abstract constant is a term used to represent named domain elements that
 	 * are not a value of any specific datatype.
 	 */
@@ -55,11 +50,6 @@ public enum TermType {
 	 * introduced during the reasoning process to satisfy existential restrictions.
 	 */
 	NAMED_NULL,
-	/**
-	 * A variable is a parameter that stands for an arbitrary domain element.
-	 */
-	@Deprecated
-	VARIABLE,
 	/**
 	 * A universal variable is a variable that can only be used in positions where
 	 * it is universally quantified, or implicitly assumed to be.
