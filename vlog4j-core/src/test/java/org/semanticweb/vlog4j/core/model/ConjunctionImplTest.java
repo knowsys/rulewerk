@@ -25,10 +25,10 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
@@ -57,11 +57,11 @@ public class ConjunctionImplTest {
 		final Conjunction<Literal> conjunction = new ConjunctionImpl<>(literalList);
 
 		assertEquals(literalList, conjunction.getLiterals());
-		assertEquals(Set.of(x, y, z), conjunction.getVariables().collect(Collectors.toSet()));
-		assertEquals(Set.of(x, y), conjunction.getUniversalVariables().collect(Collectors.toSet()));
-		assertEquals(Set.of(z), conjunction.getExistentialVariables().collect(Collectors.toSet()));
-		assertEquals(Set.of(), conjunction.getNamedNulls().collect(Collectors.toSet()));
-		assertEquals(Set.of(c, d), conjunction.getAbstractConstants().collect(Collectors.toSet()));
+		assertEquals(Sets.newSet(x, y, z), conjunction.getVariables().collect(Collectors.toSet()));
+		assertEquals(Sets.newSet(x, y), conjunction.getUniversalVariables().collect(Collectors.toSet()));
+		assertEquals(Sets.newSet(z), conjunction.getExistentialVariables().collect(Collectors.toSet()));
+		assertEquals(Sets.newSet(), conjunction.getNamedNulls().collect(Collectors.toSet()));
+		assertEquals(Sets.newSet(c, d), conjunction.getAbstractConstants().collect(Collectors.toSet()));
 	}
 
 	@Test

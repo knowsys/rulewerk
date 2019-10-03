@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -62,7 +63,7 @@ public class AnswerQueryTest {
 		final Fact fact = Expressions.makeFact(predicate, Arrays.asList(constantC, constantC, constantD));
 
 		final boolean includeBlanks = false;
-		final Set<List<Constant>> factCCD = Set.of(Arrays.asList(constantC, constantC, constantD));
+		final Set<List<Constant>> factCCD = Collections.singleton(Arrays.asList(constantC, constantC, constantD));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(fact);
@@ -105,7 +106,7 @@ public class AnswerQueryTest {
 		final PositiveLiteral pYZ = Expressions.makePositiveLiteral(predicate, y, z);
 		final Rule pX__pYY_pYZ = Expressions.makeRule(Expressions.makePositiveConjunction(pYY, pYZ),
 				Expressions.makeConjunction(Expressions.makePositiveLiteral(predicate, x)));
-		assertEquals(Set.of(y, z), pX__pYY_pYZ.getExistentialVariables().collect(Collectors.toSet()));
+		assertEquals(Sets.newSet(y, z), pX__pYY_pYZ.getExistentialVariables().collect(Collectors.toSet()));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -146,7 +147,7 @@ public class AnswerQueryTest {
 		final Variable t = Expressions.makeExistentialVariable("T");
 		final PositiveLiteral pXYYZZT = Expressions.makePositiveLiteral(predicate, x, y, y, z, z, t);
 		final Rule pXY__pXYYZZT = Expressions.makeRule(pXYYZZT, Expressions.makePositiveLiteral(predicate, x, y));
-		assertEquals(Set.of(z, t), pXY__pXYYZZT.getExistentialVariables().collect(Collectors.toSet()));
+		assertEquals(Sets.newSet(z, t), pXY__pXYYZZT.getExistentialVariables().collect(Collectors.toSet()));
 		final Constant constantC = Expressions.makeAbstractConstant("c");
 		final Constant constantD = Expressions.makeAbstractConstant("d");
 
@@ -215,7 +216,7 @@ public class AnswerQueryTest {
 		// P(x) -> Q(y)
 		final Rule existentialRule = Expressions.makeRule(Expressions.makePositiveLiteral("q", vy),
 				Expressions.makePositiveLiteral("p", vx));
-		assertEquals(Set.of(vy), existentialRule.getExistentialVariables().collect(Collectors.toSet()));
+		assertEquals(Sets.newSet(vy), existentialRule.getExistentialVariables().collect(Collectors.toSet()));
 		final Constant constantC = Expressions.makeAbstractConstant("c");
 		final Fact fact = Expressions.makeFact("p", Arrays.asList(constantC));
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("q", Expressions.makeUniversalVariable("?x"));
