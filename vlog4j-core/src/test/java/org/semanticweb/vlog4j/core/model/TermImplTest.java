@@ -24,18 +24,20 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
+import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.ExistentialVariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
 import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
 
 public class TermImplTest {
 
 	@Test
-	public void constantImplEqualityTest() {
+	public void abstractConstantImplEqualityTest() {
 		Term c = new AbstractConstantImpl("c");
 		Term ctoo = new AbstractConstantImpl("c");
 		Term a = new AbstractConstantImpl("a");
@@ -45,8 +47,41 @@ public class TermImplTest {
 		assertEquals(ctoo, c);
 		assertNotEquals(a, c);
 		assertNotEquals(v, c);
-		assertNotEquals(a.hashCode(), c.hashCode());
-		assertNotEquals(v.hashCode(), c.hashCode());
+		assertEquals(c.hashCode(), ctoo.hashCode());
+		assertFalse(c.equals(null)); // written like this for recording coverage properly
+	}
+
+	@Test
+	public void datatypeConstantImplEqualityTest() {
+		Term c = new DatatypeConstantImpl("c", "http://example.org/mystring");
+		Term ctoo = new DatatypeConstantImpl("c", "http://example.org/mystring");
+		Term a = new DatatypeConstantImpl("a", "http://example.org/mystring");
+		Term b = new DatatypeConstantImpl("c", "http://example.org/mystring2");
+		Term v = new UniversalVariableImpl("c");
+
+		assertEquals(c, c);
+		assertEquals(ctoo, c);
+		assertNotEquals(a, c);
+		assertNotEquals(b, c);
+		assertNotEquals(v, c);
+		assertEquals(c.hashCode(), ctoo.hashCode());
+		assertFalse(c.equals(null)); // written like this for recording coverage properly
+	}
+
+	@Test
+	public void languageStringConstantImplEqualityTest() {
+		Term c = new LanguageStringConstantImpl("Test", "en");
+		Term ctoo = new LanguageStringConstantImpl("Test", "en");
+		Term a = new LanguageStringConstantImpl("Test2", "en");
+		Term b = new LanguageStringConstantImpl("Test", "de");
+		Term v = new UniversalVariableImpl("c");
+
+		assertEquals(c, c);
+		assertEquals(ctoo, c);
+		assertNotEquals(a, c);
+		assertNotEquals(b, c);
+		assertNotEquals(v, c);
+		assertEquals(c.hashCode(), ctoo.hashCode());
 		assertFalse(c.equals(null)); // written like this for recording coverage properly
 		assertFalse(c.equals("c")); // written like this for recording coverage properly
 	}
@@ -65,6 +100,15 @@ public class TermImplTest {
 		assertEquals("http://example.org/mystring", c.getDatatype());
 		assertEquals("\"c\"^^<http://example.org/mystring>", c.getName());
 		assertEquals(TermType.DATATYPE_CONSTANT, c.getType());
+	}
+
+	@Test
+	public void languageStringConstantGetterTest() {
+		LanguageStringConstant c = new LanguageStringConstantImpl("Test", "en");
+		assertEquals("Test", c.getString());
+		assertEquals("en", c.getLanguageTag());
+		assertEquals("\"Test\"@en", c.getName());
+		assertEquals(TermType.LANGSTRING_CONSTANT, c.getType());
 	}
 
 	@Test
@@ -101,6 +145,26 @@ public class TermImplTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void constantNameNonWhitespaceTest() {
 		new AbstractConstantImpl(" ");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void languageTagNonEmptyTest() {
+		new LanguageStringConstantImpl("test", "");
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void languageStringNameNonNull() {
+		new LanguageStringConstantImpl(null, "");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void datatypeNonEmptyTest() {
+		new DatatypeConstantImpl("test", "");
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void lexicalValueNonNull() {
+		new DatatypeConstantImpl(null, "");
 	}
 
 }

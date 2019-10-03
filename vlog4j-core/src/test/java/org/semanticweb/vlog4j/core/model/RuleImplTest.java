@@ -124,4 +124,18 @@ public class RuleImplTest {
 		Expressions.makeRule(null, body);
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void noExistentialInBody() {
+		final Literal literal1 = Expressions.makePositiveLiteral("p", Expressions.makeExistentialVariable("X"));
+		final PositiveLiteral literal2 = Expressions.makePositiveLiteral("q", Expressions.makeUniversalVariable("Y"));
+		Expressions.makeRule(literal2, literal1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void noUnsafeVariables() {
+		final PositiveLiteral literal1 = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X"));
+		final Literal literal2 = Expressions.makePositiveLiteral("q", Expressions.makeUniversalVariable("Y"));
+		Expressions.makeRule(literal1, literal2);
+	}
+
 }

@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+import org.apache.commons.lang3.Validate;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -35,6 +37,8 @@ public class DatatypeConstantImpl implements DatatypeConstant {
 	final String lexicalValue;
 
 	public DatatypeConstantImpl(String lexicalValue, String datatype) {
+		Validate.notNull(lexicalValue);
+		Validate.notBlank(datatype, "Datatype IRIs cannot be blank strings.");
 		this.lexicalValue = lexicalValue;
 		this.datatype = datatype;
 	}
