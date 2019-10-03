@@ -52,25 +52,58 @@ public class ModelToVLogConverterTest {
 
 		final karmaresearch.vlog.Term vLogTerm = ModelToVLogConverter.toVLogTerm(variable);
 
-		assertNotNull(vLogTerm);
-		assertEquals(karmaresearch.vlog.Term.TermType.VARIABLE, vLogTerm.getTermType());
-		assertEquals("var", vLogTerm.getName());
 		assertEquals(expectedVLogTerm, vLogTerm);
 	}
 
 	@Test
-	public void testToVLogTermConstant() {
+	public void testToVLogTermAbstractConstant() {
 		final Constant constant = Expressions.makeAbstractConstant("const");
 		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
 				karmaresearch.vlog.Term.TermType.CONSTANT, "const");
 
 		final karmaresearch.vlog.Term vLogTerm = ModelToVLogConverter.toVLogTerm(constant);
 
-		assertNotNull(vLogTerm);
-		assertEquals(karmaresearch.vlog.Term.TermType.CONSTANT, vLogTerm.getTermType());
-		assertEquals("const", vLogTerm.getName());
 		assertEquals(expectedVLogTerm, vLogTerm);
+		assertEquals(expectedVLogTerm.getName(), TermToVLogConverter.getVLogNameForConstantName(constant.getName()));
+		assertEquals(expectedVLogTerm.getName(), TermToVLogConverter.getVLogNameForConstant(constant));
+	}
 
+	@Test
+	public void testToVLogTermAbstractConstantIri() {
+		final Constant constant = Expressions.makeAbstractConstant("http://example.org");
+		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
+				karmaresearch.vlog.Term.TermType.CONSTANT, "<http://example.org>");
+
+		final karmaresearch.vlog.Term vLogTerm = ModelToVLogConverter.toVLogTerm(constant);
+
+		assertEquals(expectedVLogTerm, vLogTerm);
+		assertEquals(expectedVLogTerm.getName(), TermToVLogConverter.getVLogNameForConstantName(constant.getName()));
+		assertEquals(expectedVLogTerm.getName(), TermToVLogConverter.getVLogNameForConstant(constant));
+	}
+
+	@Test
+	public void testToVLogTermDatatypeConstant() {
+		final Constant constant = Expressions.makeDatatypeConstant("c", "http://example.org");
+		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
+				karmaresearch.vlog.Term.TermType.CONSTANT, "\"c\"^^<http://example.org>");
+
+		final karmaresearch.vlog.Term vLogTerm = ModelToVLogConverter.toVLogTerm(constant);
+
+		assertEquals(expectedVLogTerm, vLogTerm);
+		assertEquals(expectedVLogTerm.getName(), TermToVLogConverter.getVLogNameForConstantName(constant.getName()));
+		assertEquals(expectedVLogTerm.getName(), TermToVLogConverter.getVLogNameForConstant(constant));
+	}
+
+	@Test
+	public void testToVLogTermLanguageStringConstant() {
+		final Constant constant = Expressions.makeLanguageStringConstant("c", "en");
+		final karmaresearch.vlog.Term expectedVLogTerm = new karmaresearch.vlog.Term(
+				karmaresearch.vlog.Term.TermType.CONSTANT, "\"c\"@en");
+
+		final karmaresearch.vlog.Term vLogTerm = ModelToVLogConverter.toVLogTerm(constant);
+
+		assertEquals(expectedVLogTerm, vLogTerm);
+		assertEquals(expectedVLogTerm.getName(), TermToVLogConverter.getVLogNameForConstantName(constant.getName()));
 	}
 
 	@Test
@@ -81,9 +114,6 @@ public class ModelToVLogConverterTest {
 
 		final karmaresearch.vlog.Term vLogTerm = ModelToVLogConverter.toVLogTerm(blank);
 
-		assertNotNull(vLogTerm);
-		assertEquals(karmaresearch.vlog.Term.TermType.BLANK, vLogTerm.getTermType());
-		assertEquals("blank", vLogTerm.getName());
 		assertEquals(expectedVLogTerm, vLogTerm);
 	}
 
