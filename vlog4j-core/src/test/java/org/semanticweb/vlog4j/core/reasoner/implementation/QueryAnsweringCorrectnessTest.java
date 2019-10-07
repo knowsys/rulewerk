@@ -259,7 +259,7 @@ public class QueryAnsweringCorrectnessTest {
 			try (final QueryResultIterator resultIterator = reasoner.answerQuery(ruleBodyPx, true)) {
 				final Set<List<Term>> queryAnswers = QueryResultsUtils.collectQueryResults(resultIterator);
 				assertEquals(expectedAnswers_c, queryAnswers);
-				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, resultIterator.getCorrectness());
+				assertEquals(Correctness.INCORRECT, resultIterator.getCorrectness());
 			}
 
 			reasoner.reason();
@@ -289,7 +289,7 @@ public class QueryAnsweringCorrectnessTest {
 			try (final QueryResultIterator resultIterator = reasoner.answerQuery(ruleBodyPx, true)) {
 				final Set<List<Term>> queryAnswers = QueryResultsUtils.collectQueryResults(resultIterator);
 				assertEquals(expectedAnswers_c_d, queryAnswers);
-				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, resultIterator.getCorrectness());
+				assertEquals(Correctness.INCORRECT, resultIterator.getCorrectness());
 			}
 
 			reasoner.reason();
@@ -646,6 +646,48 @@ public class QueryAnsweringCorrectnessTest {
 			kb.removeStatements(newFact, newFact);
 			try (final QueryResultIterator resultIterator = reasoner.answerQuery(ruleHeadQx, true)) {
 				assertEquals(Correctness.SOUND_AND_COMPLETE, resultIterator.getCorrectness());
+			}
+		}
+	}
+	
+	@Test
+	public void testRemoveAndAddStatements() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.removeStatements(ruleQxPx);
+			kb.addStatement(factPd);
+			try (final QueryResultIterator resultIterator = reasoner.answerQuery(ruleBodyPx, true)) {
+				assertEquals(Correctness.INCORRECT, resultIterator.getCorrectness());
+			}
+		}
+	}
+	
+	@Test
+	public void testRemoveAndAddSameStatementOnlyFacts() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(factPc,factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.removeStatements(factPc);
+			kb.addStatement(factPc);
+			try (final QueryResultIterator resultIterator = reasoner.answerQuery(ruleBodyPx, true)) {
+				assertEquals(Correctness.INCORRECT, resultIterator.getCorrectness());
+			}
+		}
+	}
+	
+	@Test
+	public void testRemoveAndAddStatementsOnlyFacts() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(factPc,factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.removeStatements(factPc, factPd);
+			kb.addStatement(factPc);
+			try (final QueryResultIterator resultIterator = reasoner.answerQuery(ruleBodyPx, true)) {
+				assertEquals(Correctness.INCORRECT, resultIterator.getCorrectness());
 			}
 		}
 	}

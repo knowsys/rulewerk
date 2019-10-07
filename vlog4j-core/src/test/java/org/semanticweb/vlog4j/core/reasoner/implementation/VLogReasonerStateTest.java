@@ -119,7 +119,7 @@ public class VLogReasonerStateTest {
 			reasoner.getKnowledgeBase().addStatement(factPd);
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(query, true)) {
-				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, queryResult.getCorrectness());
+				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
 				assertEquals(expectedAnswersC, QueryResultsUtils.collectQueryResults(queryResult));
 			}
 

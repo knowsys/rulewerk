@@ -132,7 +132,7 @@ public class AddDataSourceTest {
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, queryResult.getCorrectness());
+				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
 			}
 			
 			// there is no fact for predicate Q loaded in the reasoner
@@ -163,7 +163,7 @@ public class AddDataSourceTest {
 			try (final QueryResultIterator queryResult = reasoner
 					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
-				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, queryResult.getCorrectness());
+				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
 			}
 // there is no fact for predicate Q loaded in the reasoner
 			try (final QueryResultIterator queryResult = reasoner
