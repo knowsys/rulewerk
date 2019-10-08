@@ -21,12 +21,8 @@ package org.semanticweb.vlog4j.examples.core;
  */
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.semanticweb.vlog4j.core.model.api.Fact;
-import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
@@ -73,11 +69,11 @@ public class ConfigureReasonerLogging {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
 			/* exists z. B(?y, !z) :- A(?x, ?y) . */
-			kb.addStatements(RuleParser.parseRule("B(?Y, !Z) :- A(?X, ?Y) ."));
+			RuleParser.parseInto(kb, "B(?Y, !Z) :- A(?X, ?Y) .");
 			/* B(?y, ?x), A(?y, ?x) :- B(?x, ?y) . */
-			kb.addStatements(RuleParser.parseRule("B(?Y, ?X), A(?Y, ?X) :- B(?X, ?Y) ."));
+			RuleParser.parseInto(kb, "B(?Y, ?X), A(?Y, ?X) :- B(?X, ?Y) .");
 			/* A(c,d) */
-			kb.addStatement(RuleParser.parseFact("A(\"c\",\"d\")"));
+			RuleParser.parseInto(kb, "A(\"c\",\"d\") .");
 
 			/*
 			 * Default reasoner log level is WARNING.
