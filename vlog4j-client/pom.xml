@@ -11,13 +11,39 @@
 	</parent>
 
 	<artifactId>vlog4j-client</artifactId>
+	<packaging>jar</packaging>
 	<name>VLog4j Client</name>
-	<description>Module to create a standalone vlog4j instance</description>
+	<description>Stand-alone VLog4j application</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-owlapi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-rdf</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-parser</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>vlog4j-examples</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli</artifactId>

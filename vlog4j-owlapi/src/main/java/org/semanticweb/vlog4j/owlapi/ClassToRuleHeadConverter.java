@@ -136,8 +136,8 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectMaxCardinality ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"Max cardinality restrictions in superclass positions are not supported in rules.");
 	}
 
 	@Override
@@ -148,8 +148,8 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectOneOf ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"Nominal restrictions in superclass positions are not supported in rules, due to lack of equality support.");
 	}
 
 	@Override
