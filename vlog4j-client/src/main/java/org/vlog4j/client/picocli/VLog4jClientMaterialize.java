@@ -81,16 +81,16 @@ public class VLog4jClientMaterialize implements Runnable {
 	public void run() {
 		ExamplesUtils.configureLogging();
 
-		if (!printQueryResults.isConfigOk()) {
+		if (!printQueryResults.isConfigValid()) {
 			printQueryResults.printErrorAndExit();
 		}
 
-		if (!saveQueryResults.isConfigOk()) {
+		if (!saveQueryResults.isConfigValid()) {
 			saveQueryResults.printErrorAndExit();
 		}
 
 		// TODO
-		// if (!saveModel.isConfigOk()) {
+		// if (!saveModel.isConfigValid()) {
 		// saveModel.printErrorAndExit();
 		// }
 
@@ -127,7 +127,7 @@ public class VLog4jClientMaterialize implements Runnable {
 		System.out.println("  --log-file: " + logFile);
 		System.out.println("  --log-level: " + logLevel);
 		System.out.println("  --chase-algorithm: " + chaseAlgorithm);
-		System.out.println("  --timeout: " + ((timeout > 0) ? Integer.toString(timeout) : "none"));
+		System.out.println("  --timeout: " + ((timeout > 0) ? timeout : "none"));
 
 		/* Print what to do with the result */
 
@@ -164,19 +164,19 @@ public class VLog4jClientMaterialize implements Runnable {
 			if (queries.size() > 0) {
 				System.out.println("Answering queries ...");
 				for (PositiveLiteral query : queries) {
-					if (saveQueryResults.saveResults) {
+					if (saveQueryResults.isSaveResults()) {
 						try {
-							outputPath = saveQueryResults.outputQueryResultDirectory + "/" + query + ".csv";
+							outputPath = saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
 							reasoner.exportQueryAnswersToCsv(query, outputPath, true);
 						} catch (IOException e) {
 							System.out.println("Can't save query " + query);
 							System.exit(1);
 						}
 					}
-					if (printQueryResults.sizeOnly) {
+					if (printQueryResults.isSizeOnly()) {
 						System.out.println(
 								"Elements in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
-					} else if (printQueryResults.complete) {
+					} else if (printQueryResults.isComplete()) {
 						ExamplesUtils.printOutQueryAnswers(query, reasoner);
 					}
 				}

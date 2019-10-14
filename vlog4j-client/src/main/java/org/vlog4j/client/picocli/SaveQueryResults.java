@@ -33,7 +33,7 @@ public class SaveQueryResults {
 	 * @default false
 	 */
 	@Option(names = "--save-query-results", description = "Boolean. If true, Vlog4jClient will save the query result into --output-query-result-directory. False by default.")
-	public boolean saveResults = false;
+	private boolean saveResults = false;
 
 	/**
 	 * Directory to store the model. Used only if {@code --save-query-results} is
@@ -42,14 +42,10 @@ public class SaveQueryResults {
 	 * @default query-results
 	 */
 	@Option(names = "--output-query-result-directory", description = "Directory to store the model. Used only if --save-query-results is true. \"query-results\" by default.")
-	public String outputQueryResultDirectory = "query-results";
+	private String outputQueryResultDirectory = "query-results";
 
-	public boolean isConfigOk() {
-		if (saveResults & (outputQueryResultDirectory == null || outputQueryResultDirectory.isEmpty())) {
-			return false;
-		} else {
-			return true;
-		}
+	public boolean isConfigValid() {
+		return !saveResults || (outputQueryResultDirectory != null && !outputQueryResultDirectory.isEmpty());
 	}
 
 	/**
@@ -75,6 +71,22 @@ public class SaveQueryResults {
 			System.out.println("  --save-query-results: " + saveResults);
 			System.out.println("  --output-query-result-directory: " + outputQueryResultDirectory);
 		}
+	}
+
+	public boolean isSaveResults() {
+		return saveResults;
+	}
+
+	public void setSaveResults(boolean saveResults) {
+		this.saveResults = saveResults;
+	}
+
+	public String getOutputQueryResultDirectory() {
+		return outputQueryResultDirectory;
+	}
+
+	public void setOutputQueryResultDirectory(String outputQueryResultDirectory) {
+		this.outputQueryResultDirectory = outputQueryResultDirectory;
 	}
 
 }

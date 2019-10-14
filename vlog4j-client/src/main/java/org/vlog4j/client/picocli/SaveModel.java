@@ -32,7 +32,7 @@ public class SaveModel {
 	 * @default false
 	 */
 	@Option(names = "--save-model", description = "Boolean. If true, Vlog4jClient will save the model into --output-model-directory. False by default.")
-	public boolean saveModel = false;
+	private boolean saveModel = false;
 
 	/**
 	 * Directory to store the model. Used only if {@code --store-model} is true.
@@ -40,14 +40,10 @@ public class SaveModel {
 	 * @default "model"
 	 */
 	@Option(names = "--output-model-directory", description = "Directory to store the model. Used only if --store-model is true. \"model\" by default.")
-	public String outputModelDirectory = "model";
+	private String outputModelDirectory = "model";
 
-	public boolean isConfigOk() {
-		if (saveModel & (outputModelDirectory == null || outputModelDirectory.isEmpty())) {
-			return false;
-		} else {
-			return true;
-		}
+	public boolean isConfigValid() {
+		return !saveModel || (outputModelDirectory != null && !outputModelDirectory.isEmpty());
 	}
 
 	/**
@@ -72,6 +68,22 @@ public class SaveModel {
 			System.out.println("  --save-model: " + saveModel);
 			System.out.println("  --output-model-directory: " + outputModelDirectory);
 		}
+	}
+
+	public boolean isSaveModel() {
+		return saveModel;
+	}
+
+	public void setSaveModel(boolean saveModel) {
+		this.saveModel = saveModel;
+	}
+
+	public String getOutputModelDirectory() {
+		return outputModelDirectory;
+	}
+
+	public void setOutputModelDirectory(String outputModelDirectory) {
+		this.outputModelDirectory = outputModelDirectory;
 	}
 
 }

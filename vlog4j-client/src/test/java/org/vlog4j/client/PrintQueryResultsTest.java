@@ -31,33 +31,33 @@ public class PrintQueryResultsTest {
 	public void sizeOnly() {
 		//default configuration
 		PrintQueryResults prq = new PrintQueryResults();
-		prq.sizeOnly = true;
-		prq.complete = false;
-		Assert.assertTrue(prq.isConfigOk());
+		prq.setSizeOnly(true);
+		prq.setComplete(false);
+		Assert.assertTrue(prq.isConfigValid());
 	}
 
 	@Test
 	public void completeOnly() {
 		PrintQueryResults prq = new PrintQueryResults();
-		prq.sizeOnly = false;
-		prq.complete = true;
-		Assert.assertTrue(prq.isConfigOk());
+		prq.setSizeOnly(false);
+		prq.setComplete(true);
+		Assert.assertTrue(prq.isConfigValid());
 	}
 
 	@Test
 	public void sizeAndComplete() {
 		PrintQueryResults prq = new PrintQueryResults();
-		prq.sizeOnly = true;
-		prq.complete = true;
-		Assert.assertFalse(prq.isConfigOk());
+		prq.setSizeOnly(true);
+		prq.setComplete(true);
+		Assert.assertFalse(prq.isConfigValid());
 	}
 
 	@Test
 	public void none() {
 		PrintQueryResults prq = new PrintQueryResults();
-		prq.sizeOnly = false;
-		prq.complete = false;
-		Assert.assertTrue(prq.isConfigOk());
+		prq.setSizeOnly(false);
+		prq.setComplete(false);
+		Assert.assertTrue(prq.isConfigValid());
 	}
 
 }
