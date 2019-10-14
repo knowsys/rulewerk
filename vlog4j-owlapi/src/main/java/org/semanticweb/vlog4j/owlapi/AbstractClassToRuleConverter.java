@@ -28,10 +28,14 @@ import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 
@@ -324,8 +328,10 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	/**
 	 * Handles a OWLObjectAllValues expression.
 	 *
-	 * @param property the OWL property of the expression
-	 * @param filler   the filler class of the expression
+	 * @param property
+	 *            the OWL property of the expression
+	 * @param filler
+	 *            the filler class of the expression
 	 */
 	void handleObjectAllValues(final OWLObjectPropertyExpression property, final OWLClassExpression filler) {
 		final Variable variable = this.parent.getFreshUniversalVariable();
@@ -338,8 +344,10 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	/**
 	 * Handles a OWLObjectSomeValues expression.
 	 *
-	 * @param property the OWL property of the expression
-	 * @param filler   the filler class of the expression
+	 * @param property
+	 *            the OWL object property of the expression
+	 * @param filler
+	 *            the filler class of the expression
 	 */
 	void handleObjectSomeValues(final OWLObjectPropertyExpression property, final OWLClassExpression filler) {
 		final Variable variable = this.parent.getFreshExistentialVariable();
@@ -350,10 +358,41 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	}
 
 	/**
+	 * Handles a OWLDataSomeValues expression.
+	 *
+	 * @param property
+	 *            the OWL data property of the expression
+	 * @param filler
+	 *            the filler class of the expression
+	 */
+	void handleDataSomeValues(final OWLDataPropertyExpression property, final OWLDataRange filler) {
+		final ExistentialVariable existentialVariable = this.parent.getFreshExistentialVariable();
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(property, this.mainTerm, existentialVariable,
+				this.head);
+		OwlToRulesConversionHelper.addConjunctForOWLDataRange(filler, existentialVariable, this.head);
+	}
+
+	/**
+	 * Handles a OWLDataAllValues expression.
+	 *
+	 * @param property
+	 *            the OWL data property of the expression
+	 * @param filler
+	 *            the filler class of the expression
+	 */
+	void handleDataAllValues(final OWLDataPropertyExpression property, final OWLDataRange filler) {
+		final UniversalVariable universalVariable = this.parent.getFreshUniversalVariable();
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(property, this.mainTerm, universalVariable,
+				this.body);
+		OwlToRulesConversionHelper.addConjunctForOWLDataRange(filler, universalVariable, this.body);
+	}
+
+	/**
 	 * Creates a new converter object of the same polarity, using the given frontier
 	 * variable.
 	 *
-	 * @param mainTerm a variable to use
+	 * @param mainTerm
+	 *            a variable to use
 	 */
 	public abstract AbstractClassToRuleConverter makeChildConverter(Term mainTerm);
 

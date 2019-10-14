@@ -108,7 +108,7 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 	@Override
 	public void visit(final OWLObjectAllValuesFrom ce) {
 		final Variable variable = this.parent.getFreshExistentialVariable();
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, variable,
+		OwlToRulesConversionHelper.addConjunctForObjectPropertyExpression(ce.getProperty(), this.mainTerm, variable,
 				this.head);
 		if (!this.head.isFalse()) {
 			this.handleConjunction(Arrays.asList(ce.getFiller()), variable);
@@ -118,7 +118,7 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 	@Override
 	public void visit(final OWLObjectHasValue ce) {
 		final Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller());
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, term, this.body);
+		OwlToRulesConversionHelper.addConjunctForObjectPropertyExpression(ce.getProperty(), this.mainTerm, term, this.body);
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectHasSelf ce) {
-		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, this.mainTerm,
+		OwlToRulesConversionHelper.addConjunctForObjectPropertyExpression(ce.getProperty(), this.mainTerm, this.mainTerm,
 				this.body);
 	}
 

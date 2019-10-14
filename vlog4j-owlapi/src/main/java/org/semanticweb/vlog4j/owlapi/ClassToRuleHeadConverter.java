@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLDataExactCardinality;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
 import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
@@ -131,13 +132,13 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 	@Override
 	public void visit(final OWLObjectExactCardinality ce) {
 		throw new OwlFeatureNotSupportedException(
-				"Exact cardinality restrictions in superclass positions are not supported in rules.");
+				"Exact object cardinality restrictions in superclass positions are not supported in rules, due to lack of equality support.");
 	}
 
 	@Override
 	public void visit(final OWLObjectMaxCardinality ce) {
 		throw new OwlFeatureNotSupportedException(
-				"Max cardinality restrictions in superclass positions are not supported in rules.");
+				"Max object cardinality restrictions in superclass positions are not supported in rules, due to lack of equality support.");
 	}
 
 	@Override
@@ -154,32 +155,42 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLDataSomeValuesFrom ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		this.handleDataSomeValues(ce.getProperty(), ce.getFiller());
 	}
 
 	@Override
 	public void visit(final OWLDataAllValuesFrom ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		this.handleDataAllValues(ce.getProperty(), ce.getFiller());
 	}
 
 	@Override
 	public void visit(final OWLDataHasValue ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm,
+				OwlToRulesConversionHelper.getLiteralTerm(ce.getFiller()), this.head);
 	}
 
 	@Override
 	public void visit(final OWLDataMinCardinality ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		if (ce.getCardinality() == 0) {
+			this.head.init(); // tautological
+		} else if (ce.getCardinality() == 1) {
+			this.handleDataSomeValues(ce.getProperty(), ce.getFiller());
+		} else {
+			throw new OwlFeatureNotSupportedException(
+					"Min cardinality restrictions with values greater than 1 in superclass positions are not supported in rules.");
+		}
 	}
 
 	@Override
 	public void visit(final OWLDataExactCardinality ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException(
+				"Exact data cardinality restrictions in superclass positions are not supported in rules, due to lack of equality support.");
 	}
 
 	@Override
 	public void visit(final OWLDataMaxCardinality ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException(
+				"Max data cardinality restrictions in superclass positions are not supported in rules, due to lack of equality support.");
 	}
 
 }
