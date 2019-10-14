@@ -104,8 +104,8 @@ public class OwlToRulesConversionHelper {
 	/**
 	 * Returns a {@link Predicate} to represent an {@link OWLDatatype} in rules.
 	 * 
-	 * @param owlClass
-	 *            the atomic class to get a predicate for
+	 * @param owlDatatype
+	 *            the atomic datatype to get a predicate for
 	 * @return a suitable unary predicate
 	 */
 	public static Predicate getDatatypePredicate(final OWLDatatype owlDatatype) {
@@ -116,7 +116,7 @@ public class OwlToRulesConversionHelper {
 	 * Returns a {@link Predicate} to represent an {@link OWLProperty} in rules.
 	 * 
 	 * @param owlProperty
-	 *            the atomic object property to get a predicate for
+	 *            the atomic property to get a predicate for
 	 * @return a suitable binary predicate
 	 */
 	public static Predicate getPropertyPredicate(final OWLProperty owlProperty) {
@@ -151,7 +151,7 @@ public class OwlToRulesConversionHelper {
 	 *            the term that should be in the second parameter position of the
 	 *            original expression
 	 * @param conjuncts
-	 *            the conjunction to which we add unary atom
+	 *            the conjunction to which we add the resulting unary atom
 	 */
 	static void addConjunctForPropertyExpression(final OWLPropertyExpression owlPropertyExpression,
 			final Term sourceTerm, final Term targetTerm, final SimpleConjunction conjuncts) {
@@ -169,13 +169,11 @@ public class OwlToRulesConversionHelper {
 	 * conjunction.
 	 * 
 	 * @param owlDataRange
-	 *            the property expression
-	 * @param sourceTerm
-	 *            the term that should be in the first parameter position of the
-	 *            original expression
-	 * @param targetTerm
-	 *            the term that should be in the second parameter position of the
-	 *            original expression
+	 *            the owl data range
+	 * @param term
+	 *            the input term
+	 * @param conjuncts
+	 *            the conjunction to which we add the resulting unary atom
 	 */
 	public static void addConjunctForOWLDataRange(final OWLDataRange owlDataRange, final Term term,
 			final SimpleConjunction conjuncts) {
@@ -190,6 +188,20 @@ public class OwlToRulesConversionHelper {
 		}
 	}
 
+	/**
+	 * Creates a binary positive literal for given a property expression, and a
+	 * source and a target terms.
+	 * 
+	 * @param owlPropertyExpression
+	 *            the property expression
+	 * @param sourceTerm
+	 *            the term that should be in the first parameter position of the
+	 *            returned literal if owlPropertyExpression is NOT an inverse role
+	 * @param targetTerm
+	 *            the term that should be in the second parameter position of the
+	 *            returned literal if owlPropertyExpression is NOT an inverse role
+	 * @return a suitable binary positive literal
+	 */
 	public static PositiveLiteral getPropertyAtom(final OWLPropertyExpression owlPropertyExpression,
 			final Term sourceTerm, final Term targetTerm) {
 		if (owlPropertyExpression.isObjectPropertyExpression()) {
@@ -202,8 +214,9 @@ public class OwlToRulesConversionHelper {
 		}
 	}
 
-	public static PositiveLiteral getObjectPropertyAtom(final OWLObjectPropertyExpression owlObjectPropertyExpression,
-			final Term sourceTerm, final Term targetTerm) {
+	private static PositiveLiteral getObjectPropertyAtom(
+			final OWLObjectPropertyExpression owlObjectPropertyExpression, final Term sourceTerm,
+			final Term targetTerm) {
 		if (owlObjectPropertyExpression.isAnonymous()) {
 			final Predicate predicate = OwlToRulesConversionHelper
 					.getPropertyPredicate(owlObjectPropertyExpression.getInverseProperty().asOWLObjectProperty());
@@ -215,14 +228,40 @@ public class OwlToRulesConversionHelper {
 		}
 	}
 
-	public static PositiveLiteral getDataPropertyAtom(final OWLDataPropertyExpression owlDataPropertyExpression,
+	private static PositiveLiteral getDataPropertyAtom(final OWLDataPropertyExpression owlDataPropertyExpression,
 			final Term sourceTerm, final Term targetTerm) {
-		final Predicate predicate = OwlToRulesConversionHelper
-				.getPropertyPredicate(owlDataPropertyExpression.asOWLDataProperty());
-		return new PositiveLiteralImpl(predicate, Arrays.asList(sourceTerm, targetTerm));
+		return new PositiveLiteralImpl(
+				OwlToRulesConversionHelper.getPropertyPredicate(owlDataPropertyExpression.asOWLDataProperty()),
+				Arrays.asList(sourceTerm, targetTerm));
 	}
 
-	public static Fact getObjectPropertyFact(final OWLObjectPropertyExpression owlObjectPropertyExpression,
+	/**
+	 * Creates a binary positive fact given an property expression, and a source and
+	 * a target terms.
+	 * 
+	 * @param owlPropertyExpression
+	 *            the property expression
+	 * @param sourceTerm
+	 *            the term that should be in the first parameter position of the
+	 *            returned literal if owlPropertyExpression is NOT an inverse role
+	 * @param targetTerm
+	 *            the term that should be in the second parameter position of the
+	 *            returned literal if owlPropertyExpression is NOT an inverse role
+	 * @return a suitable binary fact
+	 */
+	public static Fact getPropertyFact(final OWLPropertyExpression owlPropertyExpression, final Term sourceTerm,
+			final Term targetTerm) {
+		if (owlPropertyExpression.isObjectPropertyExpression()) {
+			return getObjectPropertyFact((OWLObjectPropertyExpression) owlPropertyExpression, sourceTerm, targetTerm);
+		} else if (owlPropertyExpression.isDataPropertyExpression()) {
+			return getDataPropertyFact((OWLDataPropertyExpression) owlPropertyExpression, sourceTerm, targetTerm);
+		} else {
+			throw new OwlFeatureNotSupportedException(
+					"We only support binary atoms defined over properties of type OWLObjectPropertyExpression and OWLDataPropertyExpression.");
+		}
+	}
+
+	private static Fact getObjectPropertyFact(final OWLObjectPropertyExpression owlObjectPropertyExpression,
 			final Term sourceTerm, final Term targetTerm) {
 		if (owlObjectPropertyExpression.isAnonymous()) {
 			final Predicate predicate = OwlToRulesConversionHelper
@@ -235,12 +274,35 @@ public class OwlToRulesConversionHelper {
 		}
 	}
 
-	public static PositiveLiteral getBottom(final Term term) {
+	private static Fact getDataPropertyFact(final OWLDataPropertyExpression owlDataPropertyExpression,
+			final Term sourceTerm, final Term targetTerm) {
+		return new FactImpl(
+				OwlToRulesConversionHelper.getPropertyPredicate(owlDataPropertyExpression.asOWLDataProperty()),
+				Arrays.asList(sourceTerm, targetTerm));
+	}
+
+	/**
+	 * Creates a unary atom defined over the bottom predicate for an input term
+	 * 
+	 * @param term
+	 *            the input term expression
+	 * 
+	 * @return a suitable positive literal over bottom
+	 */
+	public static PositiveLiteral getBottomAtom(final Term term) {
 		final Predicate predicate = new PredicateImpl("http://www.w3.org/2002/07/owl#Nothing", 1);
 		return new PositiveLiteralImpl(predicate, Arrays.asList(term));
 	}
 
-	public static PositiveLiteral getTop(final Term term) {
+	/**
+	 * Creates a unary atom defined over the top predicate for an input term
+	 * 
+	 * @param term
+	 *            the input term expression
+	 * 
+	 * @return a suitable positive literal over top
+	 */
+	public static PositiveLiteral getTopAtom(final Term term) {
 		final Predicate predicate = new PredicateImpl("http://www.w3.org/2002/07/owl#Thing", 1);
 		return new PositiveLiteralImpl(predicate, Arrays.asList(term));
 	}

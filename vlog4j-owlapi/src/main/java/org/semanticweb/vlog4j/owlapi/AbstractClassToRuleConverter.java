@@ -318,7 +318,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 			if (converter.head.hasPositiveAtoms()) {
 				newHead = converter.head.getConjuncts();
 			} else {
-				newHead = Arrays.asList(OwlToRulesConversionHelper.getBottom(term));
+				newHead = Arrays.asList(OwlToRulesConversionHelper.getBottomAtom(term));
 			}
 			this.parent.addAuxiliaryRule(newHead, newBody, term);
 		}

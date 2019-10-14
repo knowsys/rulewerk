@@ -41,10 +41,10 @@ public class OwlToRulesConverter {
 	 * the internal buffer of rules and facts for later retrieval.
 	 *
 	 * @param owlOntology
-	 *            the ontology
+	 *            the input ontology
 	 */
 	public void addOntology(final OWLOntology owlOntology) {
-		owlOntology.axioms().forEach(owlAxiom -> owlAxiom.accept(this.owlAxiomToRulesConverter));
+		owlOntology.axioms().sequential().forEach(owlAxiom -> owlAxiom.accept(this.owlAxiomToRulesConverter));
 	}
 
 	/**
