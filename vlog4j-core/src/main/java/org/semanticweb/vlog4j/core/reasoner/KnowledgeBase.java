@@ -273,7 +273,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	}
 
 	/**
-	 * Adds a single statement to the knowledge base.
+	 * Removes a single statement from the knowledge base.
 	 * 
 	 * @param statement
 	 *            the statement to remove
