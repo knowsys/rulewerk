@@ -24,6 +24,12 @@ import java.io.File;
 
 import picocli.CommandLine.Option;
 
+/**
+ * Helper class to save query results.
+ * 
+ * @author Larry Gonzalez
+ *
+ */
 public class SaveQueryResults {
 
 	/**

@@ -22,6 +22,12 @@ package org.vlog4j.client.picocli;
 
 import picocli.CommandLine.Option;
 
+/**
+ * Helper class to print query results.
+ * 
+ * @author Larry Gonzalez
+ *
+ */
 public class PrintQueryResults {
 
 	/**

@@ -40,6 +40,12 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+/**
+ * Class to implement a command to execute full materialization.
+ * 
+ * @author Larry Gonzalez
+ *
+ */
 @Command(name = "materialize", description = "Execute the chase and store the literal's extensions")
 public class VLog4jClientMaterialize implements Runnable {
 

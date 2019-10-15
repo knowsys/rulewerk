@@ -24,6 +24,12 @@ import java.io.File;
 
 import picocli.CommandLine.Option;
 
+/**
+ * Helper class to save the resulting model of the materialization process.
+ * 
+ * @author Larry Gonzalez
+ *
+ */
 public class SaveModel {
 
 	/**
