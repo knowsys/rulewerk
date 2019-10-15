@@ -1,4 +1,4 @@
-package org.vlog4j.client;
+package org.vlog4j.client.picocli;
 
 /*-
  * #%L
