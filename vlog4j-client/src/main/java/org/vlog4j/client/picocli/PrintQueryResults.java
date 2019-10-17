@@ -22,6 +22,12 @@ package org.vlog4j.client.picocli;
 
 import picocli.CommandLine.Option;
 
+/**
+ * Helper class to print query results.
+ * 
+ * @author Larry Gonzalez
+ *
+ */
 public class PrintQueryResults {
 
 	/**
@@ -31,7 +37,7 @@ public class PrintQueryResults {
 	 * @default true
 	 */
 	@Option(names = "--print-query-result-size", description = "Boolean. If true, Vlog4jClient will print the size of the query result. True by default.")
-	public boolean sizeOnly = true;
+	private boolean sizeOnly = true;
 
 	/**
 	 * If true, Vlog4jClient will print the query result in stdout. Mutually
@@ -40,14 +46,10 @@ public class PrintQueryResults {
 	 * @default false
 	 */
 	@Option(names = "--print-complete-query-result", description = "Boolean. If true, Vlog4jClient will print the query result in stdout. False by default.")
-	public boolean complete = false;
+	private boolean complete = false;
 
-	public boolean isConfigOk() {
-		if (sizeOnly & complete) {
-			return false;
-		} else {
-			return true;
-		}
+	public boolean isConfigValid() {
+		return !sizeOnly || !complete;
 	}
 
 	/**
@@ -62,5 +64,21 @@ public class PrintQueryResults {
 	public void printConfiguration() {
 		System.out.println("  --print-query-result-size: " + sizeOnly);
 		System.out.println("  --print-complete-query-result: " + complete);
+	}
+
+	public boolean isSizeOnly() {
+		return sizeOnly;
+	}
+
+	public void setSizeOnly(boolean sizeOnly) {
+		this.sizeOnly = sizeOnly;
+	}
+
+	public boolean isComplete() {
+		return complete;
+	}
+
+	public void setComplete(boolean complete) {
+		this.complete = complete;
 	}
 }

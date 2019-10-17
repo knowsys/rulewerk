@@ -24,6 +24,12 @@ import picocli.CommandLine;
 
 import picocli.CommandLine.Command;
 
+/**
+ * Stand alone client for VLog4j.
+ * 
+ * @author Larry Gonzalez
+ *
+ */
 @Command(name = "java -jar VLog4jClient.jar", description = "VLog4jClient: A command line client of VLog4j.", subcommands = {
 		VLog4jClientMaterialize.class, VLog4jClientTestAcyclicity.class })
 public class VLog4jClient implements Runnable {

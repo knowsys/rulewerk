@@ -31,48 +31,48 @@ public class SaveModelTest {
 	@Test
 	public void defaulfConfig() {
 		SaveModel sm = new SaveModel();
-		sm.saveModel = false;
-		sm.outputModelDirectory = "query-results";
-		Assert.assertTrue(sm.isConfigOk());
+		sm.setSaveModel(false);
+		sm.setOutputModelDirectory("query-results");
+		Assert.assertTrue(sm.isConfigValid());
 	}
 
 	@Test
 	public void dontSaveEmptyOutput() {
 		SaveModel sm = new SaveModel();
-		sm.saveModel = false;
-		sm.outputModelDirectory = "";
-		Assert.assertTrue(sm.isConfigOk());
+		sm.setSaveModel(false);
+		sm.setOutputModelDirectory("");
+		Assert.assertTrue(sm.isConfigValid());
 	}
 
 	@Test
 	public void dontSaveNullOutput() {
 		SaveModel sm = new SaveModel();
-		sm.saveModel = false;
-		sm.outputModelDirectory = null;
-		Assert.assertTrue(sm.isConfigOk());
+		sm.setSaveModel(false);
+		sm.setOutputModelDirectory(null);
+		Assert.assertTrue(sm.isConfigValid());
 	}
 
 	@Test
 	public void saveDefaulfDir() {
 		SaveModel sm = new SaveModel();
-		sm.saveModel = true;
-		sm.outputModelDirectory = "query-results";
-		Assert.assertTrue(sm.isConfigOk());
+		sm.setSaveModel(true);
+		sm.setOutputModelDirectory("query-results");
+		Assert.assertTrue(sm.isConfigValid());
 	}
 
 	@Test
 	public void saveEmptyOutputDir() {
 		SaveModel sm = new SaveModel();
-		sm.saveModel = true;
-		sm.outputModelDirectory = "";
-		Assert.assertFalse(sm.isConfigOk());
+		sm.setSaveModel(true);
+		sm.setOutputModelDirectory("");
+		Assert.assertFalse(sm.isConfigValid());
 	}
 
 	@Test
 	public void saveNullDir() {
 		SaveModel sm = new SaveModel();
-		sm.saveModel = true;
-		sm.outputModelDirectory = null;
-		Assert.assertFalse(sm.isConfigOk());
+		sm.setSaveModel(true);
+		sm.setOutputModelDirectory(null);
+		Assert.assertFalse(sm.isConfigValid());
 	}
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0"
@@ -12,26 +12,18 @@
 
 	<artifactId>vlog4j-client</artifactId>
 	<packaging>jar</packaging>
+
 	<name>VLog4j Client</name>
 	<description>Stand-alone VLog4j application</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>vlog4j-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>vlog4j-owlapi</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>vlog4j-rdf</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -48,11 +40,6 @@
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli</artifactId>
 			<version>${picoli.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>fr.lirmm.graphik</groupId>
-			<artifactId>graal-api</artifactId>
-			<version>${graal.version}</version>
 		</dependency>
 	</dependencies>
 </project>
