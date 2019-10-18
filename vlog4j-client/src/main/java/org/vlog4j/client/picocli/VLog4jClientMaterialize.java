@@ -120,10 +120,10 @@ public class VLog4jClientMaterialize implements Runnable {
 				RuleParser.parseInto(kb, new FileInputStream(ruleFile));
 				System.out.println("  --rule-file: " + ruleFile);
 			} catch (FileNotFoundException e) {
-				System.out.println("File not found: " + ruleFile + ". " + e.getMessage());
+				System.err.println("File not found: " + ruleFile + ". " + e.getMessage());
 				System.exit(1);
 			} catch (ParsingException e) {
-				System.out.println("Failed to parse rule file: " + ruleFile + ". " + e.getMessage());
+				System.err.println("Failed to parse rule file: " + ruleFile + ". " + e.getMessage());
 				System.exit(1);
 			}
 		}
