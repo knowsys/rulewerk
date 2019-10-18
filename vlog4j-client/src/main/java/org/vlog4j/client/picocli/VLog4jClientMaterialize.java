@@ -80,12 +80,11 @@ public class VLog4jClientMaterialize implements Runnable {
 	private SaveQueryResults saveQueryResults = new SaveQueryResults();
 
 	private void doSaveQueryResults(Reasoner reasoner, PositiveLiteral query) {
-		String outputPath;
+		String outputPath = saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
 		try {
-			outputPath = saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
 			reasoner.exportQueryAnswersToCsv(query, outputPath, true);
 		} catch (IOException e) {
-			System.out.println("Can't save query " + query);
+			System.out.println("Can't save query: \"\"\"" + query + "\"\"\".");
 			System.out.println(e.getMessage());
 		}
 	}
@@ -136,11 +135,12 @@ public class VLog4jClientMaterialize implements Runnable {
 		List<PositiveLiteral> queries = new ArrayList<>();
 		for (String queryString : queryStrings) {
 			try {
-				queries.add(RuleParser.parsePositiveLiteral(queryString));
-				System.out.println("  --query: " + queries.get(queries.size() - 1));
+				final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
+				queries.add(query);
+				System.out.println("  --query: " + query);
 			} catch (ParsingException e) {
-				System.out.println("Failed to parse query: " + queryString + ". " + e.getMessage());
-				System.exit(1);
+				System.out.println("Failed to parse query: \"\"\"" + queryString + "\"\"\".");
+				System.out.println(e.getMessage());
 			}
 		}
 
