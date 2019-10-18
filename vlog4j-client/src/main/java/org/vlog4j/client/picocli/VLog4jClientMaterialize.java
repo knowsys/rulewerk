@@ -79,6 +79,21 @@ public class VLog4jClientMaterialize implements Runnable {
 	@ArgGroup(exclusive = false)
 	private SaveQueryResults saveQueryResults = new SaveQueryResults();
 
+	private void doSaveQueryResults(Reasoner reasoner, PositiveLiteral query) {
+		String outputPath;
+		try {
+			outputPath = saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
+			reasoner.exportQueryAnswersToCsv(query, outputPath, true);
+		} catch (IOException e) {
+			System.out.println("Can't save query " + query);
+			System.out.println(e.getMessage());
+		}
+	}
+
+	private void doPrintResults(Reasoner reasoner, PositiveLiteral query) {
+		System.out.println("Elements in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
+	}
+
 	// TODO save model
 	// @ArgGroup(exclusive = false)
 	// private SaveModel saveModel = new SaveModel();
@@ -166,23 +181,19 @@ public class VLog4jClientMaterialize implements Runnable {
 			// System.out.println("Saving model ...");
 			// }
 
-			String outputPath;
 			if (queries.size() > 0) {
 				System.out.println("Answering queries ...");
 				for (PositiveLiteral query : queries) {
 					if (saveQueryResults.isSaveResults()) {
-						try {
-							outputPath = saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
-							reasoner.exportQueryAnswersToCsv(query, outputPath, true);
-						} catch (IOException e) {
-							System.out.println("Can't save query " + query);
-							System.exit(1);
-						}
+						// Save the query results
+						doSaveQueryResults(reasoner, query);
 					}
+
 					if (printQueryResults.isSizeOnly()) {
-						System.out.println(
-								"Elements in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
+						// print number of facts in results
+						doPrintResults(reasoner, query);
 					} else if (printQueryResults.isComplete()) {
+						// print facts
 						ExamplesUtils.printOutQueryAnswers(query, reasoner);
 					}
 				}
