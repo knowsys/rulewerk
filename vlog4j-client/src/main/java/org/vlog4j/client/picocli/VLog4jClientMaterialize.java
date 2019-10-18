@@ -172,7 +172,7 @@ public class VLog4jClientMaterialize implements Runnable {
 				System.out.println("Executing the chase ...");
 				reasoner.reason();
 			} catch (IOException e) {
-				System.out.println("Something went wrong. Please check the log file.");
+				System.out.println("Something went wrong. Please check the log file." + e.getMessage());
 				System.exit(1);
 			}
 
