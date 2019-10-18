@@ -95,7 +95,7 @@ public class VLog4jClientMaterialize implements Runnable {
 	}
 
 	private void doPrintResults(Reasoner reasoner, PositiveLiteral query) {
-		System.out.println("Elements in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
+		System.out.println("Number of query answers in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
 	}
 
 	@Override
@@ -138,6 +138,7 @@ public class VLog4jClientMaterialize implements Runnable {
 			} catch (ParsingException e) {
 				System.err.println("Failed to parse query: \"\"\"" + queryString + "\"\"\".");
 				System.err.println(e.getMessage());
+				System.err.println("The query was skipped. Continuing ...");
 			}
 		}
 
@@ -165,8 +166,8 @@ public class VLog4jClientMaterialize implements Runnable {
 				reasoner.setReasoningTimeout(timeout);
 			}
 
+			System.out.println("Executing the chase ...");
 			try {
-				System.out.println("Executing the chase ...");
 				reasoner.reason();
 			} catch (IOException e) {
 				System.err.println("Something went wrong. Please check the log file." + e.getMessage());
@@ -178,7 +179,7 @@ public class VLog4jClientMaterialize implements Runnable {
 			// System.out.println("Saving model ...");
 			// }
 
-			if (queries.size() > 0) {
+			if (!queries.isEmpty()) {
 				System.out.println("Answering queries ...");
 				for (PositiveLiteral query : queries) {
 					if (saveQueryResults.isSaveResults()) {
