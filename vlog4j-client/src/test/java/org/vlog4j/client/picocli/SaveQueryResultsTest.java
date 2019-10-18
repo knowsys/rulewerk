@@ -1,5 +1,7 @@
 package org.vlog4j.client.picocli;
 
+import javax.naming.ConfigurationException;
+
 /*-
  * #%L
  * VLog4j Client
@@ -28,50 +30,50 @@ import org.vlog4j.client.picocli.SaveQueryResults;
 public class SaveQueryResultsTest {
 
 	@Test
-	public void defaulfConfig() {
+	public void defaulfConfig() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(false);
 		sqr.setOutputQueryResultDirectory("query-results");
-		Assert.assertTrue(sqr.isConfigValid());
+		sqr.validate();
 	}
 
 	@Test
-	public void dontSaveEmptyOutput() {
+	public void dontSaveEmptyOutput() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(false);
 		sqr.setOutputQueryResultDirectory("");
-		Assert.assertTrue(sqr.isConfigValid());
+		sqr.validate();
 	}
 
 	@Test
-	public void dontSaveNullOutput() {
+	public void dontSaveNullOutput() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(false);
 		sqr.setOutputQueryResultDirectory(null);
-		Assert.assertTrue(sqr.isConfigValid());
+		sqr.validate();
 	}
 
 	@Test
-	public void saveDefaulfDir() {
+	public void saveDefaulfDir() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(true);
 		sqr.setOutputQueryResultDirectory("query-results");
-		Assert.assertTrue(sqr.isConfigValid());
+		sqr.validate();
 	}
 
-	@Test
-	public void saveEmptyOutputDir() {
+	@Test(expected = ConfigurationException.class)
+	public void saveEmptyOutputDir() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(true);
 		sqr.setOutputQueryResultDirectory("");
-		Assert.assertFalse(sqr.isConfigValid());
+		sqr.validate();
 	}
 
-	@Test
-	public void saveNullDir() {
+	@Test(expected = ConfigurationException.class)
+	public void saveNullDir() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(true);
 		sqr.setOutputQueryResultDirectory(null);
-		Assert.assertFalse(sqr.isConfigValid());
+		sqr.validate();
 	}
 }

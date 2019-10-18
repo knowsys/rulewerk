@@ -20,44 +20,43 @@ package org.vlog4j.client.picocli;
  * #L%
  */
 
-import org.junit.Assert;
-
 import org.junit.Test;
 import org.vlog4j.client.picocli.PrintQueryResults;
+import javax.naming.ConfigurationException;
 
 public class PrintQueryResultsTest {
 
 	@Test
-	public void sizeOnly() {
-		//default configuration
+	public void sizeOnly() throws ConfigurationException {
+		// default configuration
 		PrintQueryResults prq = new PrintQueryResults();
 		prq.setSizeOnly(true);
 		prq.setComplete(false);
-		Assert.assertTrue(prq.isConfigValid());
+		prq.validate();
 	}
 
 	@Test
-	public void completeOnly() {
+	public void completeOnly() throws ConfigurationException {
 		PrintQueryResults prq = new PrintQueryResults();
 		prq.setSizeOnly(false);
 		prq.setComplete(true);
-		Assert.assertTrue(prq.isConfigValid());
+		prq.validate();
 	}
 
-	@Test
-	public void sizeAndComplete() {
+	@Test(expected = ConfigurationException.class)
+	public void sizeAndComplete() throws ConfigurationException {
 		PrintQueryResults prq = new PrintQueryResults();
 		prq.setSizeOnly(true);
 		prq.setComplete(true);
-		Assert.assertFalse(prq.isConfigValid());
+		prq.validate();
 	}
 
 	@Test
-	public void none() {
+	public void none() throws ConfigurationException {
 		PrintQueryResults prq = new PrintQueryResults();
 		prq.setSizeOnly(false);
 		prq.setComplete(false);
-		Assert.assertTrue(prq.isConfigValid());
+		prq.validate();
 	}
 
 }

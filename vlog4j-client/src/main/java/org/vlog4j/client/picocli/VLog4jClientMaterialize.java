@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.ConfigurationException;
+
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -79,6 +81,9 @@ public class VLog4jClientMaterialize implements Runnable {
 	@ArgGroup(exclusive = false)
 	private SaveQueryResults saveQueryResults = new SaveQueryResults();
 
+	// TODO @ArgGroup(exclusive = false)
+	// TODO private SaveModel saveModel = new SaveModel();
+
 	private void doSaveQueryResults(Reasoner reasoner, PositiveLiteral query) {
 		String outputPath = saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
 		try {
@@ -93,26 +98,18 @@ public class VLog4jClientMaterialize implements Runnable {
 		System.out.println("Elements in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
 	}
 
-	// TODO save model
-	// @ArgGroup(exclusive = false)
-	// private SaveModel saveModel = new SaveModel();
-
 	@Override
 	public void run() {
 		ExamplesUtils.configureLogging();
 
-		if (!printQueryResults.isConfigValid()) {
-			printQueryResults.printErrorAndExit();
+		try {
+			printQueryResults.validate();
+			saveQueryResults.validate();
+			// TODO saveModel.validate();
+		} catch (ConfigurationException e) {
+			System.err.println("Configuration Error: " + e.getMessage());
+			System.exit(1);
 		}
-
-		if (!saveQueryResults.isConfigValid()) {
-			saveQueryResults.printErrorAndExit();
-		}
-
-		// TODO
-		// if (!saveModel.isConfigValid()) {
-		// saveModel.printErrorAndExit();
-		// }
 
 		System.out.println("Configuration:");
 

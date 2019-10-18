@@ -22,6 +22,8 @@ package org.vlog4j.client.picocli;
 
 import java.io.File;
 
+import javax.naming.ConfigurationException;
+
 import picocli.CommandLine.Option;
 
 /**
@@ -48,18 +50,19 @@ public class SaveModel {
 	@Option(names = "--output-model-directory", description = "Directory to store the model. Used only if --store-model is true. \"model\" by default.")
 	private String outputModelDirectory = "model";
 
-	public boolean isConfigValid() {
-		return !saveModel || (outputModelDirectory != null && !outputModelDirectory.isEmpty());
-	}
-
 	/**
-	 * Print configuration error and exit the program
+	 * Check correct configuration of the class. If @code{--save-model} is
+	 * true, then a non-empty @code{--output-model-directory} is required.
+	 * 
+	 * @throws ConfigurationException
 	 */
-	public void printErrorAndExit() {
-		System.err.println("Configuration error: --save-model requires a non-null --output-model-directory.");
-		System.exit(1);
+	public void validate() throws ConfigurationException {
+		String error_message = "If @code{--save-model} is true, then a non empty @code{--output-model-directory} is required.";
+		if (saveModel && (outputModelDirectory == null || outputModelDirectory.isEmpty())) {
+			throw new ConfigurationException(error_message);
+		}
 	}
-
+	
 	/**
 	 * Create directory to store the model
 	 */

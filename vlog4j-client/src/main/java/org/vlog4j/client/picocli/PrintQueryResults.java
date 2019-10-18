@@ -1,5 +1,7 @@
 package org.vlog4j.client.picocli;
 
+import javax.naming.ConfigurationException;
+
 /*-
  * #%L
  * VLog4j Client
@@ -48,17 +50,17 @@ public class PrintQueryResults {
 	@Option(names = "--print-complete-query-result", description = "Boolean. If true, Vlog4jClient will print the query result in stdout. False by default.")
 	private boolean complete = false;
 
-	public boolean isConfigValid() {
-		return !sizeOnly || !complete;
-	}
-
 	/**
-	 * Print configuration error and exit the program
+	 * Check correct configuration of the class. @code{--print-query-result-size}
+	 * and @code{--print-query-result} are mutually exclusive.
+	 * 
+	 * @throws ConfigurationException
 	 */
-	public void printErrorAndExit() {
-		System.err.println("Configuration error: --print-query-result-size and "
-				+ "--print-query-result are mutually exclusive. Set only one to true.");
-		System.exit(1);
+	public void validate() throws ConfigurationException {
+		String error = "@code{--print-query-result-size} and @code{--print-query-result} are mutually exclusive. Set only one to true.";
+		if (sizeOnly && complete) {
+			throw new ConfigurationException(error);
+		}
 	}
 
 	public void printConfiguration() {

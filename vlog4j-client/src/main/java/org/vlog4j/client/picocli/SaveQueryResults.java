@@ -22,6 +22,8 @@ package org.vlog4j.client.picocli;
 
 import java.io.File;
 
+import javax.naming.ConfigurationException;
+
 import picocli.CommandLine.Option;
 
 /**
@@ -50,17 +52,17 @@ public class SaveQueryResults {
 	@Option(names = "--output-query-result-directory", description = "Directory to store the model. Used only if --save-query-results is true. \"query-results\" by default.")
 	private String outputQueryResultDirectory = "query-results";
 
-	public boolean isConfigValid() {
-		return !saveResults || (outputQueryResultDirectory != null && !outputQueryResultDirectory.isEmpty());
-	}
-
 	/**
-	 * Print configuration error and exit the program
+	 * Check correct configuration of the class. If @code{--save-query-results} is
+	 * true, then a non-empty @code{--output-query-result-directory} is required.
+	 * 
+	 * @throws ConfigurationException
 	 */
-	public void printErrorAndExit() {
-		System.err.println(
-				"Configuration error: --save-query-results requires a non-null --output-query-result-directory.");
-		System.exit(1);
+	public void validate() throws ConfigurationException {
+		String error_message = "If @code{--save-query-results} is true, then a non empty @code{--output-query-result-directory} is required.";
+		if (saveResults && (outputQueryResultDirectory == null || outputQueryResultDirectory.isEmpty())) {
+			throw new ConfigurationException(error_message);
+		}
 	}
 
 	/**
