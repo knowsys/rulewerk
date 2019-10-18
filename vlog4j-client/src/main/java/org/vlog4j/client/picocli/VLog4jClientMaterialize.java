@@ -84,8 +84,8 @@ public class VLog4jClientMaterialize implements Runnable {
 		try {
 			reasoner.exportQueryAnswersToCsv(query, outputPath, true);
 		} catch (IOException e) {
-			System.out.println("Can't save query: \"\"\"" + query + "\"\"\".");
-			System.out.println(e.getMessage());
+			System.err.println("Can't save query: \"\"\"" + query + "\"\"\".");
+			System.err.println(e.getMessage());
 		}
 	}
 
@@ -139,8 +139,8 @@ public class VLog4jClientMaterialize implements Runnable {
 				queries.add(query);
 				System.out.println("  --query: " + query);
 			} catch (ParsingException e) {
-				System.out.println("Failed to parse query: \"\"\"" + queryString + "\"\"\".");
-				System.out.println(e.getMessage());
+				System.err.println("Failed to parse query: \"\"\"" + queryString + "\"\"\".");
+				System.err.println(e.getMessage());
 			}
 		}
 
@@ -172,7 +172,7 @@ public class VLog4jClientMaterialize implements Runnable {
 				System.out.println("Executing the chase ...");
 				reasoner.reason();
 			} catch (IOException e) {
-				System.out.println("Something went wrong. Please check the log file." + e.getMessage());
+				System.err.println("Something went wrong. Please check the log file." + e.getMessage());
 				System.exit(1);
 			}
 

@@ -58,7 +58,7 @@ public class SaveQueryResults {
 	 * Print configuration error and exit the program
 	 */
 	public void printErrorAndExit() {
-		System.out.println(
+		System.err.println(
 				"Configuration error: --save-query-results requires a non-null --output-query-result-directory.");
 		System.exit(1);
 	}

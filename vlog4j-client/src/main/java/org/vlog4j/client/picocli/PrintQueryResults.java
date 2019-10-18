@@ -56,7 +56,7 @@ public class PrintQueryResults {
 	 * Print configuration error and exit the program
 	 */
 	public void printErrorAndExit() {
-		System.out.println("Configuration error: --print-query-result-size and "
+		System.err.println("Configuration error: --print-query-result-size and "
 				+ "--print-query-result are mutually exclusive. Set only one to true.");
 		System.exit(1);
 	}

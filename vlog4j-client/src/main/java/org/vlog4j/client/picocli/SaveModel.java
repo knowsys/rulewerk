@@ -56,7 +56,7 @@ public class SaveModel {
 	 * Print configuration error and exit the program
 	 */
 	public void printErrorAndExit() {
-		System.out.println("Configuration error: --save-model requires a non-null --output-model-directory.");
+		System.err.println("Configuration error: --save-model requires a non-null --output-model-directory.");
 		System.exit(1);
 	}
 

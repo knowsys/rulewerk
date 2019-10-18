@@ -35,7 +35,7 @@ public class VLog4jClientTestAcyclicity implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Not implemented yet.");
+		System.err.println("Not implemented yet.");
 	}
 
 }
