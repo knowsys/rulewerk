@@ -69,11 +69,11 @@ public class ConfigureReasonerLogging {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
 			/* exists z. B(?y, !z) :- A(?x, ?y) . */
-			kb.addStatements(RuleParser.parseRule("B(?Y, !Z) :- A(?X, ?Y) ."));
+			RuleParser.parseInto(kb, "B(?Y, !Z) :- A(?X, ?Y) .");
 			/* B(?y, ?x), A(?y, ?x) :- B(?x, ?y) . */
-			kb.addStatements(RuleParser.parseRule("B(?Y, ?X), A(?Y, ?X) :- B(?X, ?Y) ."));
+			RuleParser.parseInto(kb, "B(?Y, ?X), A(?Y, ?X) :- B(?X, ?Y) .");
 			/* A(c,d) */
-			kb.addStatement(RuleParser.parseFact("A(\"c\",\"d\")"));
+			RuleParser.parseInto(kb, "A(\"c\",\"d\") .");
 
 			/*
 			 * Default reasoner log level is WARNING.
