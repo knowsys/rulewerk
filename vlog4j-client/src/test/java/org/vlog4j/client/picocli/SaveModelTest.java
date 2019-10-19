@@ -22,16 +22,14 @@ import javax.naming.ConfigurationException;
  * #L%
  */
 
-import org.junit.Assert;
-
 import org.junit.Test;
 import org.vlog4j.client.picocli.SaveModel;
-import org.vlog4j.client.picocli.SaveQueryResults;
 
 public class SaveModelTest {
 
 	@Test
-	public void defaulfConfig() throws ConfigurationException {
+	public void validate_saveModelTrueValidDir_valid() throws ConfigurationException {
+		//default configuration
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(false);
 		sm.setOutputModelDirectory("query-results");
@@ -39,7 +37,7 @@ public class SaveModelTest {
 	}
 
 	@Test
-	public void dontSaveEmptyOutput() throws ConfigurationException {
+	public void validate_saveModelFalseEmptyDir_valid() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(false);
 		sm.setOutputModelDirectory("");
@@ -47,7 +45,7 @@ public class SaveModelTest {
 	}
 
 	@Test
-	public void dontSaveNullOutput() throws ConfigurationException {
+	public void validate_saveModelFalseNullDir_valid() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(false);
 		sm.setOutputModelDirectory(null);
@@ -55,7 +53,7 @@ public class SaveModelTest {
 	}
 
 	@Test
-	public void saveDefaulfDir() throws ConfigurationException {
+	public void validate_saveModelTrueDefaultDir_valid() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(true);
 		sm.setOutputModelDirectory("query-results");
@@ -63,7 +61,7 @@ public class SaveModelTest {
 	}
 
 	@Test(expected = ConfigurationException.class)
-	public void saveEmptyOutputDir() throws ConfigurationException {
+	public void validate_saveModelTrueEmptyDir_notValid() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(true);
 		sm.setOutputModelDirectory("");
@@ -71,7 +69,7 @@ public class SaveModelTest {
 	}
 
 	@Test(expected = ConfigurationException.class)
-	public void saveNullDir() throws ConfigurationException {
+	public void validate_saveModelTrueNullDir_notValid() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(true);
 		sm.setOutputModelDirectory(null);

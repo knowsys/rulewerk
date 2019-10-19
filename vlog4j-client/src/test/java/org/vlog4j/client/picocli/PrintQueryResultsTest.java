@@ -27,7 +27,7 @@ import javax.naming.ConfigurationException;
 public class PrintQueryResultsTest {
 
 	@Test
-	public void sizeOnly() throws ConfigurationException {
+	public void validate_completeFalseSizeTrue_valid() throws ConfigurationException {
 		// default configuration
 		PrintQueryResults prq = new PrintQueryResults();
 		prq.setSizeOnly(true);
@@ -36,7 +36,7 @@ public class PrintQueryResultsTest {
 	}
 
 	@Test
-	public void completeOnly() throws ConfigurationException {
+	public void validate_completeTrue_valid() throws ConfigurationException {
 		PrintQueryResults prq = new PrintQueryResults();
 		prq.setSizeOnly(false);
 		prq.setComplete(true);
@@ -44,7 +44,7 @@ public class PrintQueryResultsTest {
 	}
 
 	@Test(expected = ConfigurationException.class)
-	public void sizeAndComplete() throws ConfigurationException {
+	public void validate_completeTrueSizeTrue_notValid() throws ConfigurationException {
 		PrintQueryResults prq = new PrintQueryResults();
 		prq.setSizeOnly(true);
 		prq.setComplete(true);
@@ -52,7 +52,7 @@ public class PrintQueryResultsTest {
 	}
 
 	@Test
-	public void none() throws ConfigurationException {
+	public void validate_completeFalseSizeFalse_valid() throws ConfigurationException {
 		PrintQueryResults prq = new PrintQueryResults();
 		prq.setSizeOnly(false);
 		prq.setComplete(false);

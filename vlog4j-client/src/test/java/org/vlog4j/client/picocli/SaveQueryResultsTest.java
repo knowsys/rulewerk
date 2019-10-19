@@ -22,15 +22,14 @@ import javax.naming.ConfigurationException;
  * #L%
  */
 
-import org.junit.Assert;
-
 import org.junit.Test;
 import org.vlog4j.client.picocli.SaveQueryResults;
 
 public class SaveQueryResultsTest {
 
 	@Test
-	public void defaulfConfig() throws ConfigurationException {
+	public void validate_saveQueriesTrueValidDir_valid() throws ConfigurationException {
+		//default configuration
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(false);
 		sqr.setOutputQueryResultDirectory("query-results");
@@ -38,7 +37,7 @@ public class SaveQueryResultsTest {
 	}
 
 	@Test
-	public void dontSaveEmptyOutput() throws ConfigurationException {
+	public void validate_saveQueriesFalseEmptyDir_valid() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(false);
 		sqr.setOutputQueryResultDirectory("");
@@ -46,7 +45,7 @@ public class SaveQueryResultsTest {
 	}
 
 	@Test
-	public void dontSaveNullOutput() throws ConfigurationException {
+	public void validate_saveQueriesFalseNullDir_valid() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(false);
 		sqr.setOutputQueryResultDirectory(null);
@@ -54,7 +53,7 @@ public class SaveQueryResultsTest {
 	}
 
 	@Test
-	public void saveDefaulfDir() throws ConfigurationException {
+	public void validate_saveQueriesTrueDefaultDir_valid() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(true);
 		sqr.setOutputQueryResultDirectory("query-results");
@@ -62,7 +61,7 @@ public class SaveQueryResultsTest {
 	}
 
 	@Test(expected = ConfigurationException.class)
-	public void saveEmptyOutputDir() throws ConfigurationException {
+	public void validate_saveQueriesTrueEmptyDir_notValid() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(true);
 		sqr.setOutputQueryResultDirectory("");
@@ -70,7 +69,7 @@ public class SaveQueryResultsTest {
 	}
 
 	@Test(expected = ConfigurationException.class)
-	public void saveNullDir() throws ConfigurationException {
+	public void validate_saveQueriesTrueNullDir_notValid() throws ConfigurationException {
 		SaveQueryResults sqr = new SaveQueryResults();
 		sqr.setSaveResults(true);
 		sqr.setOutputQueryResultDirectory(null);
