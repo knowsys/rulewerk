@@ -1,4 +1,6 @@
-package org.vlog4j.client;
+package org.vlog4j.client.picocli;
+
+import javax.naming.ConfigurationException;
 
 /*-
  * #%L
@@ -29,50 +31,50 @@ import org.vlog4j.client.picocli.SaveQueryResults;
 public class SaveModelTest {
 
 	@Test
-	public void defaulfConfig() {
+	public void defaulfConfig() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(false);
 		sm.setOutputModelDirectory("query-results");
-		Assert.assertTrue(sm.isConfigValid());
+		sm.validate();
 	}
 
 	@Test
-	public void dontSaveEmptyOutput() {
+	public void dontSaveEmptyOutput() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(false);
 		sm.setOutputModelDirectory("");
-		Assert.assertTrue(sm.isConfigValid());
+		sm.validate();
 	}
 
 	@Test
-	public void dontSaveNullOutput() {
+	public void dontSaveNullOutput() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(false);
 		sm.setOutputModelDirectory(null);
-		Assert.assertTrue(sm.isConfigValid());
+		sm.validate();
 	}
 
 	@Test
-	public void saveDefaulfDir() {
+	public void saveDefaulfDir() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(true);
 		sm.setOutputModelDirectory("query-results");
-		Assert.assertTrue(sm.isConfigValid());
+		sm.validate();
 	}
 
-	@Test
-	public void saveEmptyOutputDir() {
+	@Test(expected = ConfigurationException.class)
+	public void saveEmptyOutputDir() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(true);
 		sm.setOutputModelDirectory("");
-		Assert.assertFalse(sm.isConfigValid());
+		sm.validate();
 	}
 
-	@Test
-	public void saveNullDir() {
+	@Test(expected = ConfigurationException.class)
+	public void saveNullDir() throws ConfigurationException {
 		SaveModel sm = new SaveModel();
 		sm.setSaveModel(true);
 		sm.setOutputModelDirectory(null);
-		Assert.assertFalse(sm.isConfigValid());
+		sm.validate();
 	}
 }

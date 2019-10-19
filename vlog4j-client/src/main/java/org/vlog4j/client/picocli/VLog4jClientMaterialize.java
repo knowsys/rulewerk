@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.ConfigurationException;
+
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -79,26 +81,35 @@ public class VLog4jClientMaterialize implements Runnable {
 	@ArgGroup(exclusive = false)
 	private SaveQueryResults saveQueryResults = new SaveQueryResults();
 
-	// TODO save model
-	// @ArgGroup(exclusive = false)
-	// private SaveModel saveModel = new SaveModel();
+	// TODO @ArgGroup(exclusive = false)
+	// TODO private SaveModel saveModel = new SaveModel();
+
+	private void doSaveQueryResults(Reasoner reasoner, PositiveLiteral query) {
+		String outputPath = saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
+		try {
+			reasoner.exportQueryAnswersToCsv(query, outputPath, true);
+		} catch (IOException e) {
+			System.err.println("Can't save query: \"\"\"" + query + "\"\"\".");
+			System.err.println(e.getMessage());
+		}
+	}
+
+	private void doPrintResults(Reasoner reasoner, PositiveLiteral query) {
+		System.out.println("Number of query answers in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
+	}
 
 	@Override
 	public void run() {
 		ExamplesUtils.configureLogging();
 
-		if (!printQueryResults.isConfigValid()) {
-			printQueryResults.printErrorAndExit();
+		try {
+			printQueryResults.validate();
+			saveQueryResults.validate();
+			// TODO saveModel.validate();
+		} catch (ConfigurationException e) {
+			System.err.println("Configuration Error: " + e.getMessage());
+			System.exit(1);
 		}
-
-		if (!saveQueryResults.isConfigValid()) {
-			saveQueryResults.printErrorAndExit();
-		}
-
-		// TODO
-		// if (!saveModel.isConfigValid()) {
-		// saveModel.printErrorAndExit();
-		// }
 
 		System.out.println("Configuration:");
 
@@ -109,10 +120,10 @@ public class VLog4jClientMaterialize implements Runnable {
 				RuleParser.parseInto(kb, new FileInputStream(ruleFile));
 				System.out.println("  --rule-file: " + ruleFile);
 			} catch (FileNotFoundException e) {
-				System.out.println("File not found: " + ruleFile + ". " + e.getMessage());
+				System.err.println("File not found: " + ruleFile + ". " + e.getMessage());
 				System.exit(1);
 			} catch (ParsingException e) {
-				System.out.println("Failed to parse rule file: " + ruleFile + ". " + e.getMessage());
+				System.err.println("Failed to parse rule file: " + ruleFile + ". " + e.getMessage());
 				System.exit(1);
 			}
 		}
@@ -121,11 +132,13 @@ public class VLog4jClientMaterialize implements Runnable {
 		List<PositiveLiteral> queries = new ArrayList<>();
 		for (String queryString : queryStrings) {
 			try {
-				queries.add(RuleParser.parsePositiveLiteral(queryString));
-				System.out.println("  --query: " + queries.get(queries.size() - 1));
+				final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
+				queries.add(query);
+				System.out.println("  --query: " + query);
 			} catch (ParsingException e) {
-				System.out.println("Failed to parse query: " + queryString + ". " + e.getMessage());
-				System.exit(1);
+				System.err.println("Failed to parse query: \"\"\"" + queryString + "\"\"\".");
+				System.err.println(e.getMessage());
+				System.err.println("The query was skipped. Continuing ...");
 			}
 		}
 
@@ -153,11 +166,11 @@ public class VLog4jClientMaterialize implements Runnable {
 				reasoner.setReasoningTimeout(timeout);
 			}
 
+			System.out.println("Executing the chase ...");
 			try {
-				System.out.println("Executing the chase ...");
 				reasoner.reason();
 			} catch (IOException e) {
-				System.out.println("Something went wrong. Please check the log file.");
+				System.err.println("Something went wrong. Please check the log file." + e.getMessage());
 				System.exit(1);
 			}
 
@@ -166,23 +179,19 @@ public class VLog4jClientMaterialize implements Runnable {
 			// System.out.println("Saving model ...");
 			// }
 
-			String outputPath;
-			if (queries.size() > 0) {
+			if (!queries.isEmpty()) {
 				System.out.println("Answering queries ...");
 				for (PositiveLiteral query : queries) {
 					if (saveQueryResults.isSaveResults()) {
-						try {
-							outputPath = saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
-							reasoner.exportQueryAnswersToCsv(query, outputPath, true);
-						} catch (IOException e) {
-							System.out.println("Can't save query " + query);
-							System.exit(1);
-						}
+						// Save the query results
+						doSaveQueryResults(reasoner, query);
 					}
+
 					if (printQueryResults.isSizeOnly()) {
-						System.out.println(
-								"Elements in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
+						// print number of facts in results
+						doPrintResults(reasoner, query);
 					} else if (printQueryResults.isComplete()) {
+						// print facts
 						ExamplesUtils.printOutQueryAnswers(query, reasoner);
 					}
 				}
