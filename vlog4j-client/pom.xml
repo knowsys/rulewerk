@@ -41,6 +41,11 @@
 			<artifactId>picocli</artifactId>
 			<version>${picoli.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-shade-plugin</artifactId>
+			<version>${shade.version}</version>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
@@ -50,6 +55,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-shade-plugin</artifactId>
+						<version>${shade.version}</version>
 						<executions>
 							<execution>
 								<phase>package</phase>
