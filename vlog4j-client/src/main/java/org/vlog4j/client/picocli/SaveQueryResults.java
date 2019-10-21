@@ -75,10 +75,8 @@ public class SaveQueryResults {
 	}
 
 	public void printConfiguration() {
-		if (saveResults) {
-			System.out.println("  --save-query-results: " + saveResults);
-			System.out.println("  --output-query-result-directory: " + outputQueryResultDirectory);
-		}
+		System.out.println("  --save-query-results: " + saveResults);
+		System.out.println("  --output-query-result-directory: " + outputQueryResultDirectory);
 	}
 
 	public boolean isSaveResults() {

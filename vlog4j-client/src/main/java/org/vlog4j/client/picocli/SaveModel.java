@@ -51,8 +51,8 @@ public class SaveModel {
 	private String outputModelDirectory = "model";
 
 	/**
-	 * Check correct configuration of the class. If @code{--save-model} is
-	 * true, then a non-empty @code{--output-model-directory} is required.
+	 * Check correct configuration of the class. If @code{--save-model} is true,
+	 * then a non-empty @code{--output-model-directory} is required.
 	 * 
 	 * @throws ConfigurationException
 	 */
@@ -62,7 +62,7 @@ public class SaveModel {
 			throw new ConfigurationException(error_message);
 		}
 	}
-	
+
 	/**
 	 * Create directory to store the model
 	 */
@@ -73,10 +73,8 @@ public class SaveModel {
 	}
 
 	public void printConfiguration() {
-		if (saveModel) {
-			System.out.println("  --save-model: " + saveModel);
-			System.out.println("  --output-model-directory: " + outputModelDirectory);
-		}
+		System.out.println("  --save-model: " + saveModel);
+		System.out.println("  --output-model-directory: " + outputModelDirectory);
 	}
 
 	public boolean isSaveModel() {
