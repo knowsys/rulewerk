@@ -121,6 +121,7 @@ public class VLog4jClientMaterialize implements Runnable {
 			// TODO saveModel.validate();
 		} catch (ConfigurationException e) {
 			System.err.println("Configuration Error: " + e.getMessage());
+			System.err.println("Exiting the program.");
 			System.exit(1);
 		}
 	}
@@ -131,9 +132,11 @@ public class VLog4jClientMaterialize implements Runnable {
 				RuleParser.parseInto(kb, new FileInputStream(ruleFile));
 			} catch (FileNotFoundException e1) {
 				System.err.println("File not found: " + ruleFile + ". " + e1.getMessage());
+				System.err.println("Exiting the program.");
 				System.exit(1);
 			} catch (ParsingException e2) {
 				System.err.println("Failed to parse rule file: " + ruleFile + ". " + e2.getMessage());
+				System.err.println("Exiting the program.");
 				System.exit(1);
 			}
 		}
@@ -169,6 +172,7 @@ public class VLog4jClientMaterialize implements Runnable {
 			reasoner.reason();
 		} catch (IOException e) {
 			System.err.println("Something went wrong. Please check the log file." + e.getMessage());
+			System.err.println("Exiting the program.");
 			System.exit(1);
 		}
 
