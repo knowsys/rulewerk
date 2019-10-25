@@ -705,8 +705,11 @@ public class VLogReasoner implements Reasoner {
 	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Checking rules acyclicity is not allowed before loading!");
+			try {
+				load();
+			} catch (IOException e) { // FIXME: quick fix for https://github.com/knowsys/vlog4j/issues/128
+				throw new RuntimeException(e);
+			}
 		}
 
 		CyclicCheckResult checkCyclic;

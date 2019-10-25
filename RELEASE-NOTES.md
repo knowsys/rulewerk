@@ -16,6 +16,9 @@ New features:
 
 Other improvements:
 * Data model is better aligned with syntax supported by parser
+
+Bugfixes:
+* Acyclicity checks work again without calling reason() first (issue #128)
   
 
 VLog4j v0.4.0
