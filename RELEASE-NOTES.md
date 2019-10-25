@@ -1,6 +1,23 @@
 VLog4j Release Notes
 ====================
 
+VLog4j v0.5.0
+-------------
+
+Breaking changes:
+* The data model for rules has been refined and changed:
+  * Instead of Constant, specific types of constants are used to capture abtract and data values
+  * Instead of Variable, ExistentialVariable and UniversalVariable now indicate quantification
+  * Bland was renamed to NamedNull to avoid confusion with RDF blank nodes
+  * Methods to access terms now use Java Streams and are unified across syntactic objects
+
+New features:
+* ...
+
+Other improvements:
+* Data model is better aligned with syntax supported by parser
+  
+
 VLog4j v0.4.0
 -------------
 
