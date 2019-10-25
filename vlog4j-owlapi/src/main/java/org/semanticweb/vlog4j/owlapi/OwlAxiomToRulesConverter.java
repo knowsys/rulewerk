@@ -129,32 +129,34 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 * @param converter
 	 */
 	void addRule(final AbstractClassToRuleConverter converter) {
-		if (converter.isTautology()) {
-			return;
-		}
-		Conjunction<PositiveLiteral> headConjunction;
-		if (converter.head.isFalseOrEmpty()) {
-			headConjunction = new ConjunctionImpl<>(
-					Arrays.asList(OwlToRulesConversionHelper.getBottom(converter.mainTerm)));
-		} else {
-			headConjunction = new ConjunctionImpl<>(converter.head.getConjuncts());
-		}
+		if (!converter.isTautology()) {
+			final Conjunction<PositiveLiteral> headConjunction = this.constructHeadConjunction(converter);
 
-		Conjunction<PositiveLiteral> bodyConjunction;
-		if (converter.body.isTrueOrEmpty()) {
-			bodyConjunction = new ConjunctionImpl<>(
-					Arrays.asList(OwlToRulesConversionHelper.getTop(converter.mainTerm)));
-			if (headConjunction.getVariables().count() == 0) {
+			if (converter.body.isTrueOrEmpty() && (headConjunction.getVariables().count() == 0)) {
 				for (final PositiveLiteral conjunct : headConjunction.getLiterals()) {
 					this.facts.add(new FactImpl(conjunct.getPredicate(), conjunct.getArguments()));
 				}
-				return;
+			} else {
+				final Conjunction<PositiveLiteral> bodyConjunction = this.constructBodyConjunction(converter);
+				this.rules.add(Expressions.makePositiveLiteralsRule(headConjunction, bodyConjunction));
 			}
-		} else {
-			bodyConjunction = new ConjunctionImpl<>(converter.body.getConjuncts());
 		}
+	}
 
-		this.rules.add(Expressions.makePositiveLiteralsRule(headConjunction, bodyConjunction));
+	private Conjunction<PositiveLiteral> constructBodyConjunction(final AbstractClassToRuleConverter converter) {
+		if (converter.body.isTrueOrEmpty()) {
+			return new ConjunctionImpl<>(Arrays.asList(OwlToRulesConversionHelper.getTop(converter.mainTerm)));
+		} else {
+			return new ConjunctionImpl<>(converter.body.getConjuncts());
+		}
+	}
+
+	private Conjunction<PositiveLiteral> constructHeadConjunction(final AbstractClassToRuleConverter converter) {
+		if (converter.head.isFalseOrEmpty()) {
+			return new ConjunctionImpl<>(Arrays.asList(OwlToRulesConversionHelper.getBottom(converter.mainTerm)));
+		} else {
+			return new ConjunctionImpl<>(converter.head.getConjuncts());
+		}
 	}
 
 	Term replaceTerm(Term term, Term oldTerm, Term newTerm) {
