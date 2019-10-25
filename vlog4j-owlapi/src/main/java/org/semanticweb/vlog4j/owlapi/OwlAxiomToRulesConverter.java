@@ -164,10 +164,9 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	PositiveLiteralImpl makeTermReplacedLiteral(Literal literal, Term oldTerm, Term newTerm) {
 		if (literal.isNegated()) {
 			throw new RuntimeException("Nonmonotonic negation of literals is not handled in OWL conversion.");
-		} else {
-			return new PositiveLiteralImpl(literal.getPredicate(),
-					literal.getTerms().map(term -> replaceTerm(term, oldTerm, newTerm)).collect(Collectors.toList()));
 		}
+		return new PositiveLiteralImpl(literal.getPredicate(),
+				literal.getTerms().map(term -> replaceTerm(term, oldTerm, newTerm)).collect(Collectors.toList()));
 	}
 
 	/**
@@ -208,7 +207,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	/**
 	 * Processes an OWL class inclusion axiom with the two class expressions as
-	 * give, and adds the resulting rules. The method proceeds by first converting
+	 * given, and adds the resulting rules. The method proceeds by first converting
 	 * the superclass, then converting the subclass with the same body and head atom
 	 * buffers, and finally creating a rule from the collected body and head. The
 	 * conversions may lead to auxiliary rules being created during processing, so

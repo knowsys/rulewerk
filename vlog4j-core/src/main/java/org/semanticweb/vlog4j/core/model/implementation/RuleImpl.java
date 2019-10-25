@@ -62,9 +62,10 @@ public class RuleImpl implements Rule {
 		Validate.notEmpty(body.getLiterals(),
 				"Empty rule body not supported. Use Fact objects to assert unconditionally true atoms.");
 		Validate.notEmpty(head.getLiterals(),
-				"Empty rule head not supported. To capture integrityr constraints, use a dedicated predicate that represents a conradiction.");
+				"Empty rule head not supported. To capture integrity constraints, use a dedicated predicate that represents a contradiction.");
 		if (body.getExistentialVariables().count() > 0) {
-			throw new IllegalArgumentException("Rule body cannot contain existential variables. Rule was: " + head + " :- " + body);
+			throw new IllegalArgumentException(
+					"Rule body cannot contain existential variables. Rule was: " + head + " :- " + body);
 		}
 		Set<UniversalVariable> bodyVariables = body.getUniversalVariables().collect(Collectors.toSet());
 		if (head.getUniversalVariables().filter(x -> !bodyVariables.contains(x)).count() > 0) {

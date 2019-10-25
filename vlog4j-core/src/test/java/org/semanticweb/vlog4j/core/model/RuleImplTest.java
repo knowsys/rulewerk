@@ -91,7 +91,6 @@ public class RuleImplTest {
 		final Rule rule4 = new RuleImpl(bodyPositiveLiterals, bodyLiterals);
 		final Rule rule5 = new RuleImpl(bodyPositiveLiterals, bodyLiterals);
 
-//		assertNotEquals(rule3, rule1);
 		assertNotEquals(rule4, rule1);
 		assertNotEquals(rule5, rule1);
 		assertFalse(rule1.equals(null));

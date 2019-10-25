@@ -35,7 +35,7 @@ public interface SyntaxObject {
 	/**
 	 * Returns the stream of distinct terms that occur in this object.
 	 * 
-	 * @return stream of distinct terms used in this conjunction
+	 * @return stream of distinct terms used in this object
 	 */
 	Stream<Term> getTerms();
 

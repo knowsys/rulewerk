@@ -24,7 +24,7 @@ import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.TermVisitor;
 
 /**
- * Implements {@link NamedNull} terms. A blank is an entity used to represent
+ * Implements {@link NamedNull} terms. A null is an entity used to represent
  * anonymous domain elements introduced during the reasoning process to satisfy
  * existential restrictions.
  *
@@ -33,10 +33,9 @@ import org.semanticweb.vlog4j.core.model.api.TermVisitor;
 public class NamedNullImpl extends AbstractTermImpl implements NamedNull {
 
 	/**
-	 * Instantiates a <b>{@code BlankImpl}</b> object with the name
-	 * <b>{@code name}</b>.
+	 * Constructor.
 	 *
-	 * @param name cannot be a blank String (null, empty or whitespace).
+	 * @param name String that is not blank (null, empty, or whitespace).
 	 */
 	public NamedNullImpl(final String name) {
 		super(name);

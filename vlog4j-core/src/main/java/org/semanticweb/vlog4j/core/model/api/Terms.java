@@ -23,7 +23,7 @@ package org.semanticweb.vlog4j.core.model.api;
 import java.util.stream.Stream;
 
 /**
- * Collection of utility methods for handling terms.
+ * Collection of utility methods for handling {@link Term}s.
  * 
  * @author Markus Kroetzsch
  *
@@ -38,8 +38,7 @@ public class Terms {
 	 * @return stream of results
 	 */
 	public static Stream<Variable> getVariables(Stream<? extends Term> terms) {
-		return terms.filter(term -> term.getType() == TermType.UNIVERSAL_VARIABLE
-				|| term.getType() == TermType.EXISTENTIAL_VARIABLE).map(Variable.class::cast);
+		return terms.filter(term -> term.isVariable()).map(Variable.class::cast);
 	}
 
 	/**
@@ -50,9 +49,7 @@ public class Terms {
 	 * @return stream of results
 	 */
 	public static Stream<Constant> getConstants(Stream<? extends Term> terms) {
-		return terms.filter(term -> term.getType() == TermType.ABSTRACT_CONSTANT
-				|| term.getType() == TermType.DATATYPE_CONSTANT || term.getType() == TermType.LANGSTRING_CONSTANT)
-				.map(Constant.class::cast);
+		return terms.filter(term -> term.isConstant()).map(Constant.class::cast);
 	}
 
 	/**

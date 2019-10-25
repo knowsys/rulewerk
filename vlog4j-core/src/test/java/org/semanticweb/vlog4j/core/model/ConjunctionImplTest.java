@@ -50,9 +50,9 @@ public class ConjunctionImplTest {
 		final Literal positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
 		final NegativeLiteral negativeLiteral2 = Expressions.makeNegativeLiteral("p", y, x);
 		final Literal positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
-		final Literal negativeLiteral4 = Expressions.makePositiveLiteral("q", y, d, z);
+		final Literal positiveLiteral4 = Expressions.makePositiveLiteral("q", y, d, z);
 		final List<Literal> literalList = Arrays.asList(positiveLiteral1, negativeLiteral2, positiveLiteral3,
-				negativeLiteral4);
+				positiveLiteral4);
 
 		final Conjunction<Literal> conjunction = new ConjunctionImpl<>(literalList);
 

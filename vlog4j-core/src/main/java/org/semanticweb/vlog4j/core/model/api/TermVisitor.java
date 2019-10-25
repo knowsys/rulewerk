@@ -30,7 +30,7 @@ package org.semanticweb.vlog4j.core.model.api;
 public interface TermVisitor<T> {
 
 	/**
-	 * Visits a {@link AbstractConstant} and returns a result.
+	 * Visits an {@link AbstractConstant} and returns a result.
 	 * 
 	 * @param term the term to visit
 	 * @return some result
