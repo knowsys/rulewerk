@@ -46,13 +46,13 @@ public class LoggingTest {
 
 	public static final String LOGS_DIRECTORY = "src/test/data/logs/";
 
-	private static final Variable vx = Expressions.makeVariable("x");
+	private static final Variable vx = Expressions.makeUniversalVariable("x");
 	// p(?x) -> q(?x)
 	private static final PositiveLiteral ruleHeadQx = Expressions.makePositiveLiteral("q", vx);
 	private static final PositiveLiteral ruleBodyPx = Expressions.makePositiveLiteral("p", vx);
 	private static final Rule rule = Expressions.makeRule(ruleHeadQx, ruleBodyPx);
 
-	private static final Constant constantC = Expressions.makeConstant("c");
+	private static final Constant constantC = Expressions.makeAbstractConstant("c");
 	private static final Fact factPc = Expressions.makeFact("p", Arrays.asList(constantC));
 
 	private static final KnowledgeBase kb = new KnowledgeBase();

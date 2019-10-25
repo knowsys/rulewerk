@@ -1,10 +1,10 @@
 package org.semanticweb.vlog4j.core.model.api;
 
-/*-
+/*
  * #%L
  * VLog4j Core Components
  * %%
- * Copyright (C) 2018 - 2019 VLog4j Developers
+ * Copyright (C) 2019 VLog4j Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,16 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
-import java.util.List;
-
 /**
- * Interface for representing conjunctions of {@link Literal}s, i.e., lists of
- * (negated or positive) atomic formulas that are connected with logical AND.
- * Conjunctions may have free variables, since they contain no quantifiers.
- * 
- * @author Markus Krötzsch
+ * Interface for universally quantified variables, i.e., variables that appear
+ * in the scope of an (implicit) universal quantifier in a rule.
  *
+ * @author Markus Krötzsch
  */
-public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObject {
+public interface UniversalVariable extends Variable {
 
-	/**
-	 * Returns the list of literals that are part of this conjunction.
-	 * 
-	 * @return list of literals
-	 */
-	List<T> getLiterals();
-
+	@Override
+	default TermType getType() {
+		return TermType.UNIVERSAL_VARIABLE;
+	}
 }

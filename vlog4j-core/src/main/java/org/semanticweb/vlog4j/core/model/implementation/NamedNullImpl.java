@@ -1,9 +1,5 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
-import org.semanticweb.vlog4j.core.model.api.Constant;
-import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.api.TermVisitor;
-
 /*
  * #%L
  * VLog4j Core Components
@@ -24,36 +20,34 @@ import org.semanticweb.vlog4j.core.model.api.TermVisitor;
  * #L%
  */
 
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
+import org.semanticweb.vlog4j.core.model.api.TermVisitor;
+
 /**
- * Implements {@link Constant} terms. A constant is an entity used to represent
- * named domain elements in the domain.
+ * Implements {@link NamedNull} terms. A null is an entity used to represent
+ * anonymous domain elements introduced during the reasoning process to satisfy
+ * existential restrictions.
  *
  * @author david.carral@tu-dresden.de
  */
-public class ConstantImpl extends AbstractTermImpl implements Constant {
+public class NamedNullImpl extends AbstractTermImpl implements NamedNull {
 
 	/**
-	 * Instantiates a <b>{@code ConstantImpl}</b> object with the name <b>{@code name}</b>.
+	 * Constructor.
 	 *
-	 * @param name
-	 *            cannot be a blank String (null, empty or whitespace).
+	 * @param name String that is not blank (null, empty, or whitespace).
 	 */
-	public ConstantImpl(final String name) {
+	public NamedNullImpl(final String name) {
 		super(name);
-	}
-
-	@Override
-	public TermType getType() {
-		return TermType.CONSTANT;
 	}
 
 	@Override
 	public <T> T accept(TermVisitor<T> termVisitor) {
 		return termVisitor.visit(this);
 	}
-	
+
 	@Override
 	public String toString() {
-		return this.getName();
+		return "_" + this.getName();
 	}
 }

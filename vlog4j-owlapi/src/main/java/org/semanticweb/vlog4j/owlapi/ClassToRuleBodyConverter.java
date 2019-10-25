@@ -107,7 +107,7 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectAllValuesFrom ce) {
-		final Variable variable = this.parent.getFreshVariable();
+		final Variable variable = this.parent.getFreshExistentialVariable();
 		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, variable,
 				this.head);
 		if (!this.head.isFalse()) {

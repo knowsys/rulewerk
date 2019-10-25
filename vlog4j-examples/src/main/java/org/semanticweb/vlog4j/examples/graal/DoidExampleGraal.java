@@ -106,9 +106,9 @@ public class DoidExampleGraal {
 			}
 
 			/* Create additional rules with negated literals */
-			final Variable x = Expressions.makeVariable("X");
-			final Variable y = Expressions.makeVariable("Y");
-			final Variable z = Expressions.makeVariable("Z");
+			final Variable x = Expressions.makeUniversalVariable("X");
+			final Variable y = Expressions.makeUniversalVariable("Y");
+			final Variable z = Expressions.makeUniversalVariable("Z");
 			// humansWhoDiedOfNoncancer(X):-deathCause(X,Y),diseaseId(Y,Z),~cancerDisease(Z)
 			final NegativeLiteral notCancerDisease = Expressions.makeNegativeLiteral("cancerDisease", z);
 			final PositiveLiteral diseaseId = Expressions.makePositiveLiteral("diseaseId", y, z);

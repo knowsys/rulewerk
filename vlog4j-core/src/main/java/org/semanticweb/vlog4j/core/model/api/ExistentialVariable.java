@@ -20,23 +20,17 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
-import java.util.List;
-
 /**
- * Interface for representing conjunctions of {@link Literal}s, i.e., lists of
- * (negated or positive) atomic formulas that are connected with logical AND.
- * Conjunctions may have free variables, since they contain no quantifiers.
- * 
- * @author Markus Krötzsch
+ * Interface for existentially quantified variables, i.e., variables that appear
+ * in the scope of an (implicit) existential quantifier in a rule.
  *
+ * @author Markus Krötzsch
  */
-public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObject {
+public interface ExistentialVariable extends Variable {
 
-	/**
-	 * Returns the list of literals that are part of this conjunction.
-	 * 
-	 * @return list of literals
-	 */
-	List<T> getLiterals();
-
+	@Override
+	default TermType getType() {
+		return TermType.EXISTENTIAL_VARIABLE;
+	}
+	
 }

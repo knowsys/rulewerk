@@ -26,9 +26,12 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.datatypes.XMLDatatypeUtil;
 import org.openrdf.rio.ntriples.NTriplesUtil;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
-import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 
 final class RdfValueToTermConverter {
 
@@ -41,7 +44,7 @@ final class RdfValueToTermConverter {
 		} else if (value instanceof Literal) {
 			return rdfLiteralToConstant((Literal) value);
 		} else if (value instanceof URI) {
-			return rdfURItoConstant((URI) value);
+			return rdfUriToConstant((URI) value);
 		} else {
 			throw new RuntimeException("Unknown value type: " + value.getClass());
 		}
@@ -49,52 +52,24 @@ final class RdfValueToTermConverter {
 
 	static Term rdfBlankNodeToBlank(final BNode bNode) {
 		// IDs are generated to be unique in every Model.
-		return new BlankImpl(bNode.getID());
+		return new NamedNullImpl(bNode.getID());
 	}
 
-	static Term rdfURItoConstant(final URI uri) {
+	static Term rdfUriToConstant(final URI uri) {
 		final String escapedURIString = NTriplesUtil.escapeString(uri.toString());
-		return new ConstantImpl(escapedURIString);
+		return new AbstractConstantImpl(escapedURIString);
 	}
 
 	static Term rdfLiteralToConstant(final Literal literal) {
-		final String normalizedStringValueLiteral = buildNormalizedStringValue(literal);
-		return new ConstantImpl(normalizedStringValueLiteral);
-	}
-
-	/**
-	 * Serializes the given {@code literal} to the NTriples format for
-	 * {@link Literal}s, using a canonical representation.
-	 *
-	 * @param literal
-	 * @return a unique string representation of given {@code literal} in canonical
-	 *         form
-	 */
-	static String buildNormalizedStringValue(final Literal literal) {
 		final URI datatype = literal.getDatatype();
-
-		final StringBuilder sb = new StringBuilder();
-		// Do some character escaping on the label:
-		sb.append("\"");
-		final String normalizedLabel = (datatype != null) ? XMLDatatypeUtil.normalize(literal.getLabel(), datatype)
-				: literal.getLabel();
-		sb.append(NTriplesUtil.escapeString(normalizedLabel));
-		sb.append("\"");
-
-		if (literal.getLanguage() != null) {
-			// Append the literal's language
-			sb.append("@");
-			sb.append(literal.getLanguage());
+		if (datatype != null) {
+			return new DatatypeConstantImpl(XMLDatatypeUtil.normalize(literal.getLabel(), datatype),
+					datatype.toString());
+		} else if (literal.getLanguage() != null) {
+			return new LanguageStringConstantImpl(literal.getLabel(), literal.getLanguage());
 		} else {
-			if (datatype != null) { // Append the literal's datatype
-				sb.append("^^");
-				sb.append(NTriplesUtil.toNTriplesString(datatype));
-			} else { // Default to string for untyped literals:
-				sb.append("^^<http://www.w3.org/2001/XMLSchema#string>");
-			}
+			return new DatatypeConstantImpl(literal.getLabel(), PrefixDeclarations.XSD_STRING);
 		}
-
-		return sb.toString();
 	}
 
 }

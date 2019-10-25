@@ -20,20 +20,18 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
-import java.util.Set;
-
 /**
  * Interface for classes representing a rule. This implementation assumes that
- * rules are defined by their head and body literals, without explicitly specifying
- * quantifiers. All variables in the body are considered universally quantified;
- * all variables in the head that do not occur in the body are considered
- * existentially quantified.
+ * rules are defined by their head and body literals, without explicitly
+ * specifying quantifiers. All variables in the body are considered universally
+ * quantified; all variables in the head that do not occur in the body are
+ * considered existentially quantified.
  * 
  * @author Markus Krötzsch
  *
  */
-public interface Rule extends Statement {
-	
+public interface Rule extends SyntaxObject, Statement {
+
 	/**
 	 * Returns the conjunction of head literals (the consequence of the rule).
 	 *
@@ -47,19 +45,5 @@ public interface Rule extends Statement {
 	 * @return conjunction of literals
 	 */
 	Conjunction<Literal> getBody();
-
-	/**
-	 * Returns the existentially quantified head variables of this rule.
-	 *
-	 * @return a set of variables
-	 */
-	Set<Variable> getExistentiallyQuantifiedVariables();
-
-	/**
-	 * Returns the universally quantified variables of this rule.
-	 *
-	 * @return a set of variables
-	 */
-	Set<Variable> getUniversallyQuantifiedVariables();
 
 }

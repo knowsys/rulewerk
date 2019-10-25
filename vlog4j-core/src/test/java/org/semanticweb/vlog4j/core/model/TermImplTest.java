@@ -23,56 +23,148 @@ package org.semanticweb.vlog4j.core.model;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
+import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
-import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.ExistentialVariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
+import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
 
 public class TermImplTest {
 
 	@Test
-	public void constantImplEqualityTest() {
-		Term c = new ConstantImpl("c");
-		Term ctoo = new ConstantImpl("c");
-		Term a = new ConstantImpl("a");
-		Term v = new VariableImpl("c");
+	public void abstractConstantImplEqualityTest() {
+		Term c = new AbstractConstantImpl("c");
+		Term ctoo = new AbstractConstantImpl("c");
+		Term a = new AbstractConstantImpl("a");
+		Term v = new UniversalVariableImpl("c");
 
 		assertEquals(c, c);
 		assertEquals(ctoo, c);
 		assertNotEquals(a, c);
 		assertNotEquals(v, c);
-		assertNotEquals(a.hashCode(), c.hashCode());
-		assertNotEquals(v.hashCode(), c.hashCode());
+		assertEquals(c.hashCode(), ctoo.hashCode());
+		assertFalse(c.equals(null)); // written like this for recording coverage properly
+	}
+
+	@Test
+	public void datatypeConstantImplEqualityTest() {
+		Term c = new DatatypeConstantImpl("c", "http://example.org/mystring");
+		Term ctoo = new DatatypeConstantImpl("c", "http://example.org/mystring");
+		Term a = new DatatypeConstantImpl("a", "http://example.org/mystring");
+		Term b = new DatatypeConstantImpl("c", "http://example.org/mystring2");
+		Term v = new UniversalVariableImpl("c");
+
+		assertEquals(c, c);
+		assertEquals(ctoo, c);
+		assertNotEquals(a, c);
+		assertNotEquals(b, c);
+		assertNotEquals(v, c);
+		assertEquals(c.hashCode(), ctoo.hashCode());
+		assertFalse(c.equals(null)); // written like this for recording coverage properly
+	}
+
+	@Test
+	public void languageStringConstantImplEqualityTest() {
+		Term c = new LanguageStringConstantImpl("Test", "en");
+		Term ctoo = new LanguageStringConstantImpl("Test", "en");
+		Term a = new LanguageStringConstantImpl("Test2", "en");
+		Term b = new LanguageStringConstantImpl("Test", "de");
+		Term v = new UniversalVariableImpl("c");
+
+		assertEquals(c, c);
+		assertEquals(ctoo, c);
+		assertNotEquals(a, c);
+		assertNotEquals(b, c);
+		assertNotEquals(v, c);
+		assertEquals(c.hashCode(), ctoo.hashCode());
 		assertFalse(c.equals(null)); // written like this for recording coverage properly
 		assertFalse(c.equals("c")); // written like this for recording coverage properly
 	}
 
 	@Test
-	public void termGetterTest() {
-		Term c = new ConstantImpl("c");
+	public void abstractConstantGetterTest() {
+		Term c = new AbstractConstantImpl("c");
 		assertEquals("c", c.getName());
-		assertEquals(TermType.CONSTANT, c.getType());
-
-		Term v = new VariableImpl("v");
-		assertEquals("v", v.getName());
-		assertEquals(TermType.VARIABLE, v.getType());
+		assertEquals(TermType.ABSTRACT_CONSTANT, c.getType());
 	}
-	
+
+	@Test
+	public void datatypeConstantGetterTest() {
+		DatatypeConstant c = new DatatypeConstantImpl("c", "http://example.org/mystring");
+		assertEquals("c", c.getLexicalValue());
+		assertEquals("http://example.org/mystring", c.getDatatype());
+		assertEquals("\"c\"^^<http://example.org/mystring>", c.getName());
+		assertEquals(TermType.DATATYPE_CONSTANT, c.getType());
+	}
+
+	@Test
+	public void languageStringConstantGetterTest() {
+		LanguageStringConstant c = new LanguageStringConstantImpl("Test", "en");
+		assertEquals("Test", c.getString());
+		assertEquals("en", c.getLanguageTag());
+		assertEquals("\"Test\"@en", c.getName());
+		assertEquals(TermType.LANGSTRING_CONSTANT, c.getType());
+	}
+
+	@Test
+	public void universalVariableGetterTest() {
+		Term v = new UniversalVariableImpl("v");
+		assertEquals("v", v.getName());
+		assertEquals(TermType.UNIVERSAL_VARIABLE, v.getType());
+	}
+
+	@Test
+	public void existentialVariableGetterTest() {
+		Term v = new ExistentialVariableImpl("v");
+		assertEquals("v", v.getName());
+		assertEquals(TermType.EXISTENTIAL_VARIABLE, v.getType());
+	}
+
+	@Test
+	public void namedNullGetterTest() {
+		Term n = new NamedNullImpl("123");
+		assertEquals("123", n.getName());
+		assertEquals(TermType.NAMED_NULL, n.getType());
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void constantNameNonNullTest() {
-		new ConstantImpl((String)null);
+		new AbstractConstantImpl((String) null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void constantNameNonEmptyTest() {
-		new ConstantImpl("");
-	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void constantNameNonWhitespaceTest() {
-		new ConstantImpl(" ");
+		new AbstractConstantImpl("");
 	}
 
-	
+	@Test(expected = IllegalArgumentException.class)
+	public void constantNameNonWhitespaceTest() {
+		new AbstractConstantImpl(" ");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void languageTagNonEmptyTest() {
+		new LanguageStringConstantImpl("test", "");
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void languageStringNameNonNull() {
+		new LanguageStringConstantImpl(null, "");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void datatypeNonEmptyTest() {
+		new DatatypeConstantImpl("test", "");
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void lexicalValueNonNull() {
+		new DatatypeConstantImpl(null, "");
+	}
 
 }

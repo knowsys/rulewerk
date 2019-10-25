@@ -31,7 +31,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.semanticweb.vlog4j.core.model.api.Blank;
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -52,7 +52,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  * String as name.</li>
  * <li>{@link Literal}s are converted to {@link Constant}s with names containing
  * the canonical form of the literal label, the data type and the language.</li>
- * <li>{@link BNode}s are converted to {@link Blank}s with the generated blank
+ * <li>{@link BNode}s are converted to {@link NamedNull}s with the generated blank
  * ID as name. {@link BNode}s have unique generated IDs in the context a
  * {@link Model}s. Blanks with the same name loaded from different models will
  * have different ids.</li>

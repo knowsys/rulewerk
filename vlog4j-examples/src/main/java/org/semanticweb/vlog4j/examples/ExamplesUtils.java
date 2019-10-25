@@ -73,7 +73,7 @@ public final class ExamplesUtils {
 		final String pattern = "%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n";
 		consoleAppender.setLayout(new PatternLayout(pattern));
 		// Change to Level.ERROR for fewer messages:
-		consoleAppender.setThreshold(Level.DEBUG);
+		consoleAppender.setThreshold(Level.INFO);
 
 		consoleAppender.activateOptions();
 		Logger.getRootLogger().addAppender(consoleAppender);
@@ -166,7 +166,7 @@ public final class ExamplesUtils {
 	private static PositiveLiteral makeQueryAtom(final String predicateName, final int arity) {
 		final List<Term> vars = new ArrayList<>();
 		for (int i = 0; i < arity; i++) {
-			vars.add(Expressions.makeVariable("x" + i));
+			vars.add(Expressions.makeUniversalVariable("x" + i));
 		}
 		return Expressions.makePositiveLiteral(predicateName, vars);
 	}
