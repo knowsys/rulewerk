@@ -72,39 +72,4 @@ final class RdfValueToTermConverter {
 		}
 	}
 
-	/**
-	 * Serializes the given {@code literal} to the NTriples format for
-	 * {@link Literal}s, using a canonical representation.
-	 *
-	 * @param literal
-	 * @return a unique string representation of given {@code literal} in canonical
-	 *         form
-	 */
-	static String buildNormalizedStringValue(final Literal literal) {
-		final URI datatype = literal.getDatatype();
-
-		final StringBuilder sb = new StringBuilder();
-		// Do some character escaping on the label:
-		sb.append("\"");
-		final String normalizedLabel = (datatype != null) ? XMLDatatypeUtil.normalize(literal.getLabel(), datatype)
-				: literal.getLabel();
-		sb.append(NTriplesUtil.escapeString(normalizedLabel));
-		sb.append("\"");
-
-		if (literal.getLanguage() != null) {
-			// Append the literal's language
-			sb.append("@");
-			sb.append(literal.getLanguage());
-		} else {
-			if (datatype != null) { // Append the literal's datatype
-				sb.append("^^");
-				sb.append(NTriplesUtil.toNTriplesString(datatype));
-			} else { // Default to string for untyped literals:
-				sb.append("^^<http://www.w3.org/2001/XMLSchema#string>");
-			}
-		}
-
-		return sb.toString();
-	}
-
 }
