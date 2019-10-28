@@ -40,10 +40,6 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
  */
 public class Serializer {
 
-	public Serializer() {
-
-	}
-
 	public static String getRuleString(RuleImpl rule) {
 		return rule.getHead() + " :- " + rule.getBody() + ".";
 	}

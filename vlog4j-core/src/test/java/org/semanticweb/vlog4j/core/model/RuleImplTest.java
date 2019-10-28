@@ -78,6 +78,7 @@ public class RuleImplTest {
 		final Rule rule8 = Expressions.makePositiveLiteralsRule(headPositiveLiterals, bodyPositiveLiterals);
 
 		assertEquals(rule1, rule1);
+		assertEquals(rule1.toString(),"q(?X, !Y) :- p(?X, c), p(?X, ?Z).");
 		assertEquals(rule2, rule1);
 		assertEquals(rule2.hashCode(), rule1.hashCode());
 
@@ -95,6 +96,7 @@ public class RuleImplTest {
 		assertNotEquals(rule5, rule1);
 		assertFalse(rule1.equals(null));
 		assertFalse(rule1.equals(c));
+		
 	}
 
 	@Test(expected = IllegalArgumentException.class)
