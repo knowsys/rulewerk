@@ -47,6 +47,6 @@ public class AbstractConstantImpl extends AbstractTermImpl implements AbstractCo
 	
 	@Override
 	public String toString() {
-		return this.getName();
+		return Serializer.getConstantString(this);
 	}
 }

@@ -85,7 +85,7 @@ public class DataSourceDeclarationImpl implements DataSourceDeclaration {
 
 	@Override
 	public String toString() {
-		return "@source " + this.predicate.toString() + "(" + this.predicate.getArity() + ") : "
+		return "@source " + Serializer.getPredicateString(this.predicate) + "(" + this.predicate.getArity() + ") : "
 				+ this.dataSource.toConfigString() + " .";
 	}
 

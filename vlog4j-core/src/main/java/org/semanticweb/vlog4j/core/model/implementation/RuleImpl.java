@@ -105,7 +105,7 @@ public class RuleImpl implements Rule {
 
 	@Override
 	public String toString() {
-		return this.head + " :- " + this.body;
+		return Serializer.getRuleString(this);
 	}
 
 	@Override

@@ -60,7 +60,7 @@ public class DatatypeConstantImpl implements DatatypeConstant {
 
 	@Override
 	public String toString() {
-		return this.getName();
+		return Serializer.getDatatypeConstantString(this);
 	}
 
 	@Override
