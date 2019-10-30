@@ -22,8 +22,6 @@ package org.vlog4j.client.picocli;
 
 import java.io.File;
 
-import javax.naming.ConfigurationException;
-
 import picocli.CommandLine.Option;
 
 /**
@@ -33,6 +31,9 @@ import picocli.CommandLine.Option;
  *
  */
 public class SaveQueryResults {
+
+	static final String configurationErrorMessage = "Configuration Error: If @code{--save-query-results} is true, then a non empty @code{--output-query-result-directory} is required.\nExiting the program.";
+	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-query-result-directory}. Please check the path.\nExiting the program.";
 
 	/**
 	 * If true, Vlog4jClient will save the query result in
@@ -52,46 +53,66 @@ public class SaveQueryResults {
 	@Option(names = "--output-query-result-directory", description = "Directory to store the model. Used only if --save-query-results is true. \"query-results\" by default.")
 	private String outputQueryResultDirectory = "query-results";
 
+	public SaveQueryResults() {
+	}
+
+	public SaveQueryResults(boolean saveResults, String outputDir) {
+		this.saveResults = saveResults;
+		this.outputQueryResultDirectory = outputDir;
+	}
+
 	/**
 	 * Check correct configuration of the class. If @code{--save-query-results} is
 	 * true, then a non-empty @code{--output-query-result-directory} is required.
 	 * 
-	 * @throws ConfigurationException
+	 * @return @code{true} if configuration is valid.
 	 */
-	public void validate() throws ConfigurationException {
-		String error_message = "If @code{--save-query-results} is true, then a non empty @code{--output-query-result-directory} is required.";
-		if (saveResults && (outputQueryResultDirectory == null || outputQueryResultDirectory.isEmpty())) {
-			throw new ConfigurationException(error_message);
-		}
+	protected boolean isConfigurationValid() {
+		return !saveResults || (outputQueryResultDirectory != null && !outputQueryResultDirectory.isEmpty());
 	}
 
 	/**
-	 * Create directory to store query results
+	 * Check that the path to store the query results is either non-existing or a
+	 * directory.
+	 * 
+	 * @return @code{true} if conditions are satisfied.
 	 */
-	public void prepare() {
+	protected boolean isDirectoryValid() {
+		File file = new File(outputQueryResultDirectory);
+		return !file.exists() || file.isDirectory();
+	}
+
+	/**
+	 * Create directory to store query results if not present. It assumes that
+	 * configuration and directory are valid.
+	 */
+	protected void mkdir() {
 		if (saveResults) {
-			new File(outputQueryResultDirectory).mkdirs();
+			File file = new File(outputQueryResultDirectory);
+			if (!file.exists()) {
+				file.mkdirs();
+			}
 		}
 	}
 
-	public void printConfiguration() {
+	protected void printConfiguration() {
 		System.out.println("  --save-query-results: " + saveResults);
 		System.out.println("  --output-query-result-directory: " + outputQueryResultDirectory);
 	}
 
-	public boolean isSaveResults() {
+	protected boolean isSaveResults() {
 		return saveResults;
 	}
 
-	public void setSaveResults(boolean saveResults) {
+	protected void setSaveResults(boolean saveResults) {
 		this.saveResults = saveResults;
 	}
 
-	public String getOutputQueryResultDirectory() {
+	protected String getOutputQueryResultDirectory() {
 		return outputQueryResultDirectory;
 	}
 
-	public void setOutputQueryResultDirectory(String outputQueryResultDirectory) {
+	protected void setOutputQueryResultDirectory(String outputQueryResultDirectory) {
 		this.outputQueryResultDirectory = outputQueryResultDirectory;
 	}
 

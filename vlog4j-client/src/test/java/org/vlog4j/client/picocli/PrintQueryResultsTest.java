@@ -21,98 +21,84 @@ package org.vlog4j.client.picocli;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import org.junit.Test;
 import org.vlog4j.client.picocli.PrintQueryResults;
-import javax.naming.ConfigurationException;
 
 public class PrintQueryResultsTest {
 	String outputConfigurationBase = "  --print-query-result-size: %b\n  --print-complete-query-result: %b\n";
 
+	private final PrintQueryResults sizeTrueCompleteTrue = new PrintQueryResults(true, true);
+	private final PrintQueryResults sizeTrueCompleteFalse = new PrintQueryResults(true, false);
+	private final PrintQueryResults sizeFalseCompleteTrue = new PrintQueryResults(false, true);
+	private final PrintQueryResults sizeFalseCompleteFalse = new PrintQueryResults(false, false);
+
 	@Test
-	public void validate_sizeTrueCompleteFalse_valid() throws ConfigurationException {
+	public void isValid_sizeTrueCompleteFalse_valid() {
 		// default configuration
-		PrintQueryResults prq = new PrintQueryResults();
-		prq.setSizeOnly(true);
-		prq.setComplete(false);
-		prq.validate();
+		assertTrue(sizeTrueCompleteFalse.isValid());
 	}
 
 	@Test
-	public void validate_sizeFalseCompleteTrue_valid() throws ConfigurationException {
-		PrintQueryResults prq = new PrintQueryResults();
-		prq.setSizeOnly(false);
-		prq.setComplete(true);
-		prq.validate();
-	}
-
-	@Test(expected = ConfigurationException.class)
-	public void validate_sizeTrueCompleteTrue_notValid() throws ConfigurationException {
-		PrintQueryResults prq = new PrintQueryResults();
-		prq.setSizeOnly(true);
-		prq.setComplete(true);
-		prq.validate();
+	public void isValid_sizeFalseCompleteTrue_valid() {
+		assertTrue(sizeFalseCompleteTrue.isValid());
 	}
 
 	@Test
-	public void validate_sizeFalseCompleteFalse_valid() throws ConfigurationException {
-		PrintQueryResults prq = new PrintQueryResults();
-		prq.setSizeOnly(false);
-		prq.setComplete(false);
-		prq.validate();
+	public void isValid_sizeTrueCompleteTrue_notValid() {
+		assertFalse(sizeTrueCompleteTrue.isValid());
 	}
 
 	@Test
-	public void printConfiguration_sizeTrueCompleteFalse_valid() {
-		PrintQueryResults prq = new PrintQueryResults();
-		prq.setSizeOnly(true);
-		prq.setComplete(false);
-		assertEquals(String.format(outputConfigurationBase, true, false), captureOutputPrintConfiguration(prq));
+	public void isValid_sizeFalseCompleteFalse_valid() {
+		assertTrue(sizeFalseCompleteFalse.isValid());
 	}
 
 	@Test
-	public void printConfiguration_sizeFalseCompleteTrue_valid() {
-		PrintQueryResults prq = new PrintQueryResults();
-		prq.setSizeOnly(false);
-		prq.setComplete(true);
-		assertEquals(String.format(outputConfigurationBase, false, true), captureOutputPrintConfiguration(prq));
+	public void printConfiguration_sizeTrueCompleteFalse() {
+		assertEquals(String.format(outputConfigurationBase, true, false),
+				captureOutputPrintConfiguration(sizeTrueCompleteFalse));
 	}
 
 	@Test
-	public void printConfiguration_sizeTrueCompleteTrue_notValid() {
-		PrintQueryResults prq = new PrintQueryResults();
-		prq.setSizeOnly(true);
-		prq.setComplete(true);
-		assertEquals(String.format(outputConfigurationBase, true, true), captureOutputPrintConfiguration(prq));
+	public void printConfiguration_sizeFalseCompleteTrue() {
+		assertEquals(String.format(outputConfigurationBase, false, true),
+				captureOutputPrintConfiguration(sizeFalseCompleteTrue));
 	}
 
 	@Test
-	public void printConfiguration_sizeFalseCompleteFalse_valid() {
-		PrintQueryResults prq = new PrintQueryResults();
-		prq.setSizeOnly(false);
-		prq.setComplete(false);
-		assertEquals(String.format(outputConfigurationBase, false, false), captureOutputPrintConfiguration(prq));
+	public void printConfiguration_sizeTrueCompleteTrue() {
+		assertEquals(String.format(outputConfigurationBase, true, true),
+				captureOutputPrintConfiguration(sizeTrueCompleteTrue));
+	}
+
+	@Test
+	public void printConfiguration_sizeFalseCompleteFalse() {
+		assertEquals(String.format(outputConfigurationBase, false, false),
+				captureOutputPrintConfiguration(sizeFalseCompleteFalse));
 	}
 
 	@Test
 	public void setSizeOnly_and_isSizeOnly() {
 		PrintQueryResults prq = new PrintQueryResults();
 		prq.setSizeOnly(false);
-		assertEquals(false, prq.isSizeOnly());
+		assertFalse(prq.isSizeOnly());
 		prq.setSizeOnly(true);
-		assertEquals(true, prq.isSizeOnly());
+		assertTrue(prq.isSizeOnly());
 	}
 
 	@Test
 	public void setComplete_and_isComplete() {
 		PrintQueryResults prq = new PrintQueryResults();
 		prq.setComplete(false);
-		assertEquals(false, prq.isComplete());
+		assertFalse(prq.isComplete());
 		prq.setComplete(true);
-		assertEquals(true, prq.isComplete());
+		assertTrue(prq.isComplete());
 	}
 
 	private String captureOutputPrintConfiguration(PrintQueryResults prq) {

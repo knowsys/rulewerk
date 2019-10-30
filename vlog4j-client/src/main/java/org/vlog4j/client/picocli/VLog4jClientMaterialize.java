@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.ConfigurationException;
-
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -54,8 +52,7 @@ public class VLog4jClientMaterialize implements Runnable {
 	private final KnowledgeBase kb = new KnowledgeBase();
 	private final List<PositiveLiteral> queries = new ArrayList<>();
 
-	// TODO add link to rls syntax
-	@Option(names = "--rule-file", description = "Rule file(s) in rls syntax", required = true)
+	@Option(names = "--rule-file", description = "Rule file(s) in {@link https://github.com/knowsys/vlog4j/wiki/Rule-syntax-grammar} syntax", required = true)
 	private List<String> ruleFiles = new ArrayList<>();
 
 //  TODO
@@ -115,15 +112,22 @@ public class VLog4jClientMaterialize implements Runnable {
 	}
 
 	private void validateConfiguration() {
-		try {
-			printQueryResults.validate();
-			saveQueryResults.validate();
-			// TODO saveModel.validate();
-		} catch (ConfigurationException e) {
-			System.err.println("Configuration Error: " + e.getMessage());
-			System.err.println("Exiting the program.");
-			System.exit(1);
+		if (!printQueryResults.isValid()) {
+			printMessageAndExit(PrintQueryResults.configurationErrorMessage);
 		}
+		if (!saveQueryResults.isConfigurationValid()) {
+			printMessageAndExit(SaveQueryResults.configurationErrorMessage);
+		}
+		if (saveQueryResults.isSaveResults() && !saveQueryResults.isDirectoryValid()) {
+			printMessageAndExit(SaveQueryResults.wrongDirectoryErrorMessage);
+		}
+		// TODO
+		// if (!saveModel.isConfigurationValid()) {
+		// printMessageAndExit(SaveModel.configurationErrorMessage);
+		// }
+		// if (saveModel.isSaveResults() && !saveModel.isDirectoryValid()) {
+		// printMessageAndExit(SaveModel.wrongDirectoryErrorMessage);
+		// }
 	}
 
 	private void configureRules() {
@@ -131,13 +135,11 @@ public class VLog4jClientMaterialize implements Runnable {
 			try {
 				RuleParser.parseInto(kb, new FileInputStream(ruleFile));
 			} catch (FileNotFoundException e1) {
-				System.err.println("File not found: " + ruleFile + ". " + e1.getMessage());
-				System.err.println("Exiting the program.");
-				System.exit(1);
+				throw new RuntimeException(
+						"File not found: " + ruleFile + ". " + e1.getMessage() + "\nExiting the program.");
 			} catch (ParsingException e2) {
-				System.err.println("Failed to parse rule file: " + ruleFile + ". " + e2.getMessage());
-				System.err.println("Exiting the program.");
-				System.exit(1);
+				throw new RuntimeException(
+						"Failed to parse rule file: " + ruleFile + ". " + e2.getMessage() + "\nExiting the program.");
 			}
 		}
 	}
@@ -171,14 +173,14 @@ public class VLog4jClientMaterialize implements Runnable {
 		try {
 			reasoner.reason();
 		} catch (IOException e) {
-			System.err.println("Something went wrong. Please check the log file." + e.getMessage());
-			System.err.println("Exiting the program.");
-			System.exit(1);
+			throw new RuntimeException(
+					"Something went wrong. Please check the log file." + e.getMessage() + "\nExiting the program.");
 		}
 
 	}
 
 	// TODO private void saveModel() {...}
+
 	private void answerQueries(Reasoner reasoner) {
 		if (!queries.isEmpty()) {
 			System.out.println("Answering queries ...");
@@ -222,6 +224,7 @@ public class VLog4jClientMaterialize implements Runnable {
 	}
 
 	private void doSaveQueryResults(Reasoner reasoner, PositiveLiteral query) {
+		saveQueryResults.mkdir();
 		try {
 			reasoner.exportQueryAnswersToCsv(query, queryOputputPath(query), true);
 		} catch (IOException e) {
@@ -238,4 +241,10 @@ public class VLog4jClientMaterialize implements Runnable {
 	private String queryOputputPath(PositiveLiteral query) {
 		return saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
 	}
+
+	private void printMessageAndExit(String message) {
+		System.err.println(message);
+		System.exit(1);
+	}
+
 }

@@ -31,7 +31,7 @@ import picocli.CommandLine.Command;
  *
  */
 @Command(name = "java -jar VLog4jClient.jar", description = "VLog4jClient: A command line client of VLog4j.", subcommands = {
-		VLog4jClientMaterialize.class})
+		VLog4jClientMaterialize.class })
 public class VLog4jClient implements Runnable {
 
 	public static void main(String[] args) {

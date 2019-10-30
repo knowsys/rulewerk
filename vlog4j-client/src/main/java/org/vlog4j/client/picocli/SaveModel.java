@@ -22,8 +22,6 @@ package org.vlog4j.client.picocli;
 
 import java.io.File;
 
-import javax.naming.ConfigurationException;
-
 import picocli.CommandLine.Option;
 
 /**
@@ -33,6 +31,9 @@ import picocli.CommandLine.Option;
  *
  */
 public class SaveModel {
+
+	static final String configurationErrorMessage = "Configuration Error: If @code{--save-model} is true, then a non empty @code{--output-model-directory} is required.\nExiting the program.";
+	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-model-directory}. Please check the path.\nExiting the program.";
 
 	/**
 	 * If true, Vlog4jClient will save the model in {@code --output-model-directory}
@@ -50,25 +51,43 @@ public class SaveModel {
 	@Option(names = "--output-model-directory", description = "Directory to store the model. Used only if --store-model is true. \"model\" by default.")
 	private String outputModelDirectory = "model";
 
+	public SaveModel() {
+	}
+
+	public SaveModel(boolean saveModel, String outputDir) {
+		this.saveModel = saveModel;
+		this.outputModelDirectory = outputDir;
+	}
+
 	/**
 	 * Check correct configuration of the class. If @code{--save-model} is true,
 	 * then a non-empty @code{--output-model-directory} is required.
 	 * 
-	 * @throws ConfigurationException
+	 * @return @code{true} if configuration is valid.
 	 */
-	public void validate() throws ConfigurationException {
-		String error_message = "If @code{--save-model} is true, then a non empty @code{--output-model-directory} is required.";
-		if (saveModel && (outputModelDirectory == null || outputModelDirectory.isEmpty())) {
-			throw new ConfigurationException(error_message);
-		}
+	protected boolean isConfigurationValid() {
+		return !saveModel || (outputModelDirectory != null && !outputModelDirectory.isEmpty());
+	}
+
+	/**
+	 * Check that the path to store the model is either non-existing or a directory.
+	 * 
+	 * @return @code{true} if conditions are satisfied.
+	 */
+	protected boolean isDirectoryValid() {
+		File file = new File(outputModelDirectory);
+		return !file.exists() || file.isDirectory();
 	}
 
 	/**
 	 * Create directory to store the model
 	 */
-	public void prepare() {
+	public void mkdir() {
 		if (saveModel) {
-			new File(outputModelDirectory).mkdirs();
+			File file = new File(outputModelDirectory);
+			if (!file.exists()) {
+				file.mkdirs();
+			}
 		}
 	}
 

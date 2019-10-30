@@ -1,7 +1,5 @@
 package org.vlog4j.client.picocli;
 
-import javax.naming.ConfigurationException;
-
 /*-
  * #%L
  * VLog4j Client
@@ -32,6 +30,8 @@ import picocli.CommandLine.Option;
  */
 public class PrintQueryResults {
 
+	static final String configurationErrorMessage = "Configuration Error: @code{--print-query-result-size} and @code{--print-query-result} are mutually exclusive. Set only one to true.\n Exiting the program.";
+
 	/**
 	 * If true, Vlog4jClient will print the size of the query result. Mutually
 	 * exclusive with {@code --print-complete-query-result}
@@ -50,37 +50,42 @@ public class PrintQueryResults {
 	@Option(names = "--print-complete-query-result", description = "Boolean. If true, Vlog4jClient will print the query result in stdout. False by default.")
 	private boolean complete = false;
 
+	public PrintQueryResults() {
+	}
+
+	public PrintQueryResults(boolean sizeOnly, boolean complete) {
+		this.sizeOnly = sizeOnly;
+		this.complete = complete;
+	}
+
 	/**
 	 * Check correct configuration of the class. @code{--print-query-result-size}
 	 * and @code{--print-query-result} are mutually exclusive.
 	 * 
-	 * @throws ConfigurationException
+	 * @return @code{true} if configuration is valid.
 	 */
-	public void validate() throws ConfigurationException {
-		String error = "@code{--print-query-result-size} and @code{--print-query-result} are mutually exclusive. Set only one to true.";
-		if (sizeOnly && complete) {
-			throw new ConfigurationException(error);
-		}
+	protected boolean isValid() {
+		return !sizeOnly || !complete;
 	}
 
-	public void printConfiguration() {
+	protected void printConfiguration() {
 		System.out.println("  --print-query-result-size: " + sizeOnly);
 		System.out.println("  --print-complete-query-result: " + complete);
 	}
 
-	public boolean isSizeOnly() {
+	protected boolean isSizeOnly() {
 		return sizeOnly;
 	}
 
-	public void setSizeOnly(boolean sizeOnly) {
+	protected void setSizeOnly(boolean sizeOnly) {
 		this.sizeOnly = sizeOnly;
 	}
 
-	public boolean isComplete() {
+	protected boolean isComplete() {
 		return complete;
 	}
 
-	public void setComplete(boolean complete) {
+	protected void setComplete(boolean complete) {
 		this.complete = complete;
 	}
 }
