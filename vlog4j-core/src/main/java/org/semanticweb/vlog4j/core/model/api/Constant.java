@@ -21,13 +21,11 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Interface for constants, i.e., terms of type {@link TermType#CONSTANT}.
- * Domain elements that are denoted by constants are commonly known as <i>named
- * elements</i>.
+ * Interface for constants, i.e. for syntactic names that refer to domain
+ * elements.
  *
  * @author david.carral@tu-dresden.de
  * @author Markus Krötzsch
  */
 public interface Constant extends Term {
 }
-

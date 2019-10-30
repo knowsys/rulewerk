@@ -22,17 +22,14 @@ package org.semanticweb.vlog4j.core.model.implementation;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
-import org.semanticweb.vlog4j.core.model.api.Blank;
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 
 /**
  * Implements {@link Literal} objects. A literal is a formula of the form
@@ -74,7 +71,7 @@ public abstract class AbstractLiteralImpl implements Literal {
 		int result = 1;
 		result = prime * result + (this.isNegated() ? 1231 : 1237);
 		result = prime * result + this.getPredicate().hashCode();
-		result = prime * result + this.getTerms().hashCode();
+		result = prime * result + this.getArguments().hashCode();
 		return result;
 	}
 
@@ -92,7 +89,7 @@ public abstract class AbstractLiteralImpl implements Literal {
 		final Literal other = (Literal) obj;
 
 		return this.isNegated() == other.isNegated() && this.getPredicate().equals(other.getPredicate())
-				&& this.getTerms().equals(other.getTerms());
+				&& this.getArguments().equals(other.getArguments());
 	}
 
 	@Override
@@ -103,7 +100,7 @@ public abstract class AbstractLiteralImpl implements Literal {
 		}
 		stringBuilder.append(this.getPredicate().getName()).append("(");
 		boolean first = true;
-		for (final Term term : this.getTerms()) {
+		for (final Term term : this.getArguments()) {
 			if (first) {
 				first = false;
 			} else {
@@ -121,35 +118,13 @@ public abstract class AbstractLiteralImpl implements Literal {
 	}
 
 	@Override
-	public List<Term> getTerms() {
+	public List<Term> getArguments() {
 		return Collections.unmodifiableList(this.terms);
 	}
 
 	@Override
-	public Set<Variable> getVariables() {
-		final TermFilter termFilter = new TermFilter(TermType.VARIABLE);
-		for (final Term term : this.terms) {
-			term.accept(termFilter);
-		}
-		return termFilter.getVariables();
-	}
-
-	@Override
-	public Set<Constant> getConstants() {
-		final TermFilter termFilter = new TermFilter(TermType.CONSTANT);
-		for (final Term term : this.terms) {
-			term.accept(termFilter);
-		}
-		return termFilter.getConstants();
-	}
-
-	@Override
-	public Set<Blank> getBlanks() {
-		final TermFilter termFilter = new TermFilter(TermType.BLANK);
-		for (final Term term : this.terms) {
-			term.accept(termFilter);
-		}
-		return termFilter.getBlanks();
+	public Stream<Term> getTerms() {
+		return getArguments().stream().distinct();
 	}
 
 }

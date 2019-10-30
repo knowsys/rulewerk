@@ -20,23 +20,18 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
-import java.util.List;
-
 /**
- * Interface for representing conjunctions of {@link Literal}s, i.e., lists of
- * (negated or positive) atomic formulas that are connected with logical AND.
- * Conjunctions may have free variables, since they contain no quantifiers.
+ * Interface for abstract constants, i.e. for constants that represent an
+ * abstract domain element (in contrast to a specific value of a concrete
+ * datatype). Such terms are of type {@link TermType#ABSTRACT_CONSTANT}.
  * 
- * @author Markus Krötzsch
- *
+ * @author Markus Kroetzsch
  */
-public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObject {
+public interface AbstractConstant extends Constant {
 
-	/**
-	 * Returns the list of literals that are part of this conjunction.
-	 * 
-	 * @return list of literals
-	 */
-	List<T> getLiterals();
+	@Override
+	default TermType getType() {
+		return TermType.ABSTRACT_CONSTANT;
+	}
 
 }

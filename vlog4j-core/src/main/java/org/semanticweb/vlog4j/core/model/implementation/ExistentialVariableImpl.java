@@ -20,32 +20,32 @@ package org.semanticweb.vlog4j.core.model.implementation;
  * #L%
  */
 
-import java.util.List;
-
-import org.semanticweb.vlog4j.core.model.api.Fact;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
-import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.TermVisitor;
+import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
 
 /**
- * Standard implementation of the {@Fact} interface.
- * 
- * @author Markus Kroetzsch
+ * Simple implementation of {@link ExistentialVariable}.
  *
+ * @author Markus Kroetzsch
  */
-public class FactImpl extends PositiveLiteralImpl implements Fact {
+public class ExistentialVariableImpl extends AbstractTermImpl implements ExistentialVariable {
 
-	public FactImpl(Predicate predicate, List<Term> terms) {
-		super(predicate, terms);
-		for (Term t : terms) {
-			if (t.isVariable())
-				throw new IllegalArgumentException("Facts cannot contain variables.");
-		}
+	/**
+	 * Constructor.
+	 *
+	 * @param name cannot be a blank String (null, empty or whitespace).
+	 */
+	public ExistentialVariableImpl(final String name) {
+		super(name);
 	}
 
 	@Override
-	public <T> T accept(StatementVisitor<T> statementVisitor) {
-		return statementVisitor.visit(this);
+	public <T> T accept(TermVisitor<T> termVisitor) {
+		return termVisitor.visit(this);
 	}
 
+	@Override
+	public String toString() {
+		return "!" + this.getName();
+	}
 }

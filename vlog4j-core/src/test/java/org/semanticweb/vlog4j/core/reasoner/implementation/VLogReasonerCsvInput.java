@@ -48,9 +48,9 @@ public class VLogReasonerCsvInput {
 	private static final Predicate unaryPredicate1 = Expressions.makePredicate("p", 1);
 	private static final Predicate unaryPredicate2 = Expressions.makePredicate("q", 1);
 
-	private final Variable x = Expressions.makeVariable("x");
-	private final Constant c1 = Expressions.makeConstant("c1");
-	private final Constant c2 = Expressions.makeConstant("c2");
+	private final Variable x = Expressions.makeUniversalVariable("x");
+	private final Constant c1 = Expressions.makeAbstractConstant("c1");
+	private final Constant c2 = Expressions.makeAbstractConstant("c2");
 
 	@SuppressWarnings("unchecked")
 	private final Set<List<Term>> expectedUnaryQueryResult = Sets.newSet(Arrays.asList(this.c1), Arrays.asList(this.c2));

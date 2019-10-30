@@ -28,7 +28,7 @@ import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
-import org.semanticweb.vlog4j.core.model.implementation.VariableImpl;
+import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.Correctness;
@@ -217,7 +217,7 @@ public class VLogReasoner implements Reasoner {
 
 			final List<Term> terms = new ArrayList<>();
 			for (int i = 1; i <= predicate.getArity(); i++) {
-				terms.add(new VariableImpl("X" + i));
+				terms.add(new UniversalVariableImpl("X" + i));
 			}
 			final Literal body = new PositiveLiteralImpl(aliasPredicate, terms);
 			final PositiveLiteral head = new PositiveLiteralImpl(predicate, terms);
@@ -705,8 +705,11 @@ public class VLogReasoner implements Reasoner {
 	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Checking rules acyclicity is not allowed before loading!");
+			try {
+				load();
+			} catch (IOException e) { // FIXME: quick fix for https://github.com/knowsys/vlog4j/issues/128
+				throw new RuntimeException(e);
+			}
 		}
 
 		CyclicCheckResult checkCyclic;
