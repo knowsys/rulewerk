@@ -132,6 +132,42 @@ public class TermImplTest {
 		assertEquals(TermType.NAMED_NULL, n.getType());
 	}
 
+	@Test
+	public void testabstractConstantImpltoString() {
+		AbstractConstantImpl c = new AbstractConstantImpl("c");
+		assertEquals("c", c.toString());
+	}
+
+	@Test
+	public void testdatatypeConstantImpltoString() {
+		DatatypeConstantImpl c = new DatatypeConstantImpl("c", "http://example.org/mystring");
+		assertEquals("\"c\"^^<http://example.org/mystring>", c.toString());
+	}
+
+	@Test
+	public void testlanguageStringConstantImpltoString() {
+		LanguageStringConstantImpl c = new LanguageStringConstantImpl("Test", "en");
+		assertEquals("\"Test\"@en", c.toString());
+	}
+
+	@Test
+	public void testuniversalVariabletoString() {
+		UniversalVariableImpl v = new UniversalVariableImpl("v");
+		assertEquals("?v", v.toString());
+	}
+
+	@Test
+	public void testexistentialVariabletoString() {
+		ExistentialVariableImpl v = new ExistentialVariableImpl("v");
+		assertEquals("!v", v.toString());
+	}
+
+	@Test
+	public void testnamedNulltoString() {
+		NamedNullImpl n = new NamedNullImpl("123");
+		assertEquals("_123", n.toString());
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void constantNameNonNullTest() {
 		new AbstractConstantImpl((String) null);

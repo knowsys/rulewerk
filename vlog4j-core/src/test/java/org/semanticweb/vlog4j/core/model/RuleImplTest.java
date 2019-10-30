@@ -78,7 +78,6 @@ public class RuleImplTest {
 		final Rule rule8 = Expressions.makePositiveLiteralsRule(headPositiveLiterals, bodyPositiveLiterals);
 
 		assertEquals(rule1, rule1);
-		assertEquals(rule1.toString(),"q(?X, !Y) :- p(?X, c), p(?X, ?Z).");
 		assertEquals(rule2, rule1);
 		assertEquals(rule2.hashCode(), rule1.hashCode());
 
@@ -96,7 +95,7 @@ public class RuleImplTest {
 		assertNotEquals(rule5, rule1);
 		assertFalse(rule1.equals(null));
 		assertFalse(rule1.equals(c));
-		
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -137,6 +136,23 @@ public class RuleImplTest {
 		final PositiveLiteral literal1 = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X"));
 		final Literal literal2 = Expressions.makePositiveLiteral("q", Expressions.makeUniversalVariable("Y"));
 		Expressions.makeRule(literal1, literal2);
+	}
+
+	@Test
+	public void testtoString() {
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeExistentialVariable("Y");
+		final Variable z = Expressions.makeUniversalVariable("Z");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
+		final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
+		final PositiveLiteral headAtom1 = Expressions.makePositiveLiteral("q", x, y);
+		final Conjunction<Literal> bodyLiterals = Expressions.makeConjunction(atom1, atom2);
+		final Conjunction<PositiveLiteral> headPositiveLiterals = Expressions.makePositiveConjunction(headAtom1);
+		final Conjunction<PositiveLiteral> bodyPositiveLiterals = Expressions.makePositiveConjunction(atom1, atom2);
+		final Rule rule1 = new RuleImpl(headPositiveLiterals, bodyLiterals);
+		assertEquals("q(?X, !Y) :- p(?X, c), p(?X, ?Z).", rule1.toString());
+
 	}
 
 }

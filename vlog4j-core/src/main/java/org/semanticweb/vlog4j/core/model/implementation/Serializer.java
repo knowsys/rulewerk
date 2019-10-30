@@ -38,7 +38,11 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
  * @author Ali Elhalawati
  *
  */
-public class Serializer {
+public final class Serializer {
+
+	private Serializer() {
+
+	}
 
 	public static String getRuleString(RuleImpl rule) {
 		return rule.getHead() + " :- " + rule.getBody() + ".";
@@ -83,15 +87,16 @@ public class Serializer {
 		return datatypeconstant.getName();
 	}
 
+	public static String getNamedNullString(NamedNullImpl namednull) {
+		return "_" + namednull.getName();
+	}
+
 	public static String getLanguageConstantString(LanguageStringConstantImpl languagestringconstant) {
 		return languagestringconstant.getName();
 	}
 
-	public static String getNamedNullString(NamedNullImpl namednull) {
-		return "_" + namednull.toString();
-	}
 	public static String getPredicateString(Predicate predicate) {
-	return " Predicate [ name= " + predicate.getName() + ", arity= " + predicate.getArity() + "]";
+		return " Predicate [ name= " + predicate.getName() + ", arity= " + predicate.getArity() + "]";
 	}
 
 }
