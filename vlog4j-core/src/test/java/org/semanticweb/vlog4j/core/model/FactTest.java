@@ -60,7 +60,7 @@ public class FactTest {
 		final Constant c = Expressions.makeAbstractConstant("c");
 		final Constant d = Expressions.makeAbstractConstant("d");
 		final Fact f1 = Expressions.makeFact(p, Arrays.asList(c, d));
-		assertEquals("p(c, d)", f1.toString());
+		assertEquals("p(c, d).", f1.toString());
 	}
 
 }

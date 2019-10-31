@@ -47,5 +47,11 @@ public class FactImpl extends PositiveLiteralImpl implements Fact {
 	public <T> T accept(StatementVisitor<T> statementVisitor) {
 		return statementVisitor.visit(this);
 	}
+	
+	@Override
+	public String toString() {
+		return Serializer.getLiteralString(this)+".";
+	}
+	
 
 }

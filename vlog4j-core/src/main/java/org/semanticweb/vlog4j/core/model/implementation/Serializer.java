@@ -67,10 +67,6 @@ public final class Serializer {
 		return stringBuilder.toString();
 	}
 
-	public static String getFactString(FactImpl fact) {
-		return fact.toString() + ".";
-	}
-
 	public static String getConstantString(AbstractConstantImpl constant) {
 		return constant.getName();
 	}
