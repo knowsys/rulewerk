@@ -41,7 +41,6 @@ public class DataSourceDeclarationTest {
 				"?var wdt:P31 wd:Q5 .");
 		Predicate predicate1 = Expressions.makePredicate("p", 3);
 		DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource1);
-
 		DataSource dataSource2 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
 				"?var wdt:P31 wd:Q5 .");
 		Predicate predicate2 = Expressions.makePredicate("p", 3);
@@ -63,4 +62,16 @@ public class DataSourceDeclarationTest {
 		assertFalse(dataSourceDeclaration1.equals(null)); // written like this for recording coverage properly
 	}
 
+	@Test
+	public void testdataSourceDecalarationtoString() throws MalformedURLException {
+		DataSource dataSource1 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
+				"?var wdt:P31 wd:Q5 .");
+		Predicate predicate1 = Expressions.makePredicate("p", 3);
+		DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource1);
+		DataSource dataSource2 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
+				"?var wdt:P31 wd:Q5 .");
+		Predicate predicate2 = Expressions.makePredicate("p", 3);
+		DataSourceDeclaration dataSourceDeclaration2 = new DataSourceDeclarationImpl(predicate2, dataSource2);
+		assertEquals(dataSourceDeclaration1.toString(), dataSourceDeclaration2.toString());
+	}
 }

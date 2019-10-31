@@ -181,4 +181,19 @@ public class ConjunctionImplTest {
 		Expressions.makeConjunction(negativeLiteralList);
 	}
 
+	@Test
+	public void testconjunctiontoString() {
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
+		final PositiveLiteral positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
+		final PositiveLiteral positiveLiteral2 = Expressions.makePositiveLiteral("p", y, x);
+		final PositiveLiteral positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
+		final List<PositiveLiteral> positiveLiteralList = Arrays.asList(positiveLiteral1, positiveLiteral2,
+				positiveLiteral3);
+		final Conjunction<PositiveLiteral> conjunction1 = new ConjunctionImpl<>(positiveLiteralList);
+		assertEquals("p(?X, c), p(?Y, ?X), q(?X, d)", conjunction1.toString());
+	}
+
 }
