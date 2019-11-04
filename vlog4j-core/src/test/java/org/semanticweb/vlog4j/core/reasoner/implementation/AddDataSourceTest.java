@@ -50,15 +50,15 @@ public class AddDataSourceTest {
 	private static final String CSV_FILE_c_d_PATH = FileDataSourceTestUtils.INPUT_FOLDER + "unaryFactsCD.csv";
 
 	private final Set<List<Term>> csvFile_c1_c2_Content = new HashSet<>(Arrays
-			.asList(Arrays.asList(Expressions.makeConstant("c1")), Arrays.asList(Expressions.makeConstant("c2"))));
+			.asList(Arrays.asList(Expressions.makeAbstractConstant("c1")), Arrays.asList(Expressions.makeAbstractConstant("c2"))));
 
 	private final Set<List<Term>> csvFile_c_d_Content = new HashSet<>(
-			Arrays.asList(Arrays.asList(Expressions.makeConstant("c")), Arrays.asList(Expressions.makeConstant("d"))));;
+			Arrays.asList(Arrays.asList(Expressions.makeAbstractConstant("c")), Arrays.asList(Expressions.makeAbstractConstant("d"))));;
 
 	@Test
 	public void testAddDataSourceExistentDataForDifferentPredicates() throws IOException {
 		final Predicate predicateParity1 = Expressions.makePredicate("p", 1);
-		final Constant constantA = Expressions.makeConstant("a");
+		final Constant constantA = Expressions.makeAbstractConstant("a");
 		final Fact factPredicatePArity2 = Expressions.makeFact("p", Arrays.asList(constantA, constantA));
 		final Fact factPredicateQArity1 = Expressions.makeFact("q", Arrays.asList(constantA));
 		final Predicate predicateLArity1 = Expressions.makePredicate("l", 1);
@@ -74,12 +74,12 @@ public class AddDataSourceTest {
 			reasoner.load();
 			reasoner.reason();
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
-					Expressions.makePositiveLiteral(predicateLArity1, Expressions.makeVariable("x")), false)) {
+					Expressions.makePositiveLiteral(predicateLArity1, Expressions.makeUniversalVariable("x")), false)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 			}
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
-					Expressions.makePositiveLiteral(predicateParity1, Expressions.makeVariable("x")), false)) {
+					Expressions.makePositiveLiteral(predicateParity1, Expressions.makeUniversalVariable("x")), false)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 			}
@@ -100,12 +100,12 @@ public class AddDataSourceTest {
 			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
 			reasoner.load();
 			try (final QueryResultIterator queryResult = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
+					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeUniversalVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 			}
 			try (final QueryResultIterator queryResult = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
+					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeUniversalVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 			}
@@ -130,14 +130,14 @@ public class AddDataSourceTest {
 			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
 
 			try (final QueryResultIterator queryResult = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
+					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeUniversalVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
 			}
 			
 			// there is no fact for predicate Q loaded in the reasoner
 			try (final QueryResultIterator queryResult = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
+					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeUniversalVariable("x")), true)) {
 				assertFalse(queryResult.hasNext());
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 			}
@@ -161,13 +161,13 @@ public class AddDataSourceTest {
 			kb.addStatement(new DataSourceDeclarationImpl(predicateQ, dataSource));
 
 			try (final QueryResultIterator queryResult = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeVariable("x")), true)) {
+					.answerQuery(Expressions.makePositiveLiteral(predicateP, Expressions.makeUniversalVariable("x")), true)) {
 				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
 			}
 // there is no fact for predicate Q loaded in the reasoner
 			try (final QueryResultIterator queryResult = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeVariable("x")), true)) {
+					.answerQuery(Expressions.makePositiveLiteral(predicateQ, Expressions.makeUniversalVariable("x")), true)) {
 				assertFalse(queryResult.hasNext());
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 			}
@@ -189,7 +189,7 @@ public class AddDataSourceTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			try (QueryResultIterator queryResult = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeVariable("x")), true)) {
+					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeUniversalVariable("x")), true)) {
 				System.out.println(QueryResultsUtils.collectQueryResults(queryResult));
 			}
 		}
@@ -202,7 +202,7 @@ public class AddDataSourceTest {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
 		final Fact fact = Expressions.makeFact(Expressions.makePredicate("p", 1),
-				Arrays.asList(Expressions.makeConstant("a")));
+				Arrays.asList(Expressions.makeAbstractConstant("a")));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(fact);
@@ -211,7 +211,7 @@ public class AddDataSourceTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			try (QueryResultIterator queryResult = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeVariable("x")), true)) {
+					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeUniversalVariable("x")), true)) {
 				QueryResultsUtils.collectQueryResults(queryResult);
 			}
 		}
@@ -231,7 +231,7 @@ public class AddDataSourceTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 			try (QueryResultIterator queryResult = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeVariable("x")), true)) {
+					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeUniversalVariable("x")), true)) {
 				final Set<List<Term>> expectedAnswers = new HashSet<>(csvFile_c1_c2_Content);
 				expectedAnswers.addAll(csvFile_c_d_Content);
 
@@ -247,7 +247,7 @@ public class AddDataSourceTest {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
 		final Fact fact = Expressions.makeFact(Expressions.makePredicate("p", 1),
-				Arrays.asList(Expressions.makeConstant("a")));
+				Arrays.asList(Expressions.makeAbstractConstant("a")));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(fact);
@@ -256,9 +256,9 @@ public class AddDataSourceTest {
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 			try (QueryResultIterator queryResult = reasoner
-					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeVariable("x")), true)) {
+					.answerQuery(Expressions.makePositiveLiteral(predicate, Expressions.makeUniversalVariable("x")), true)) {
 				final Set<List<Term>> expectedAnswers = new HashSet<>(csvFile_c1_c2_Content);
-				expectedAnswers.add(Arrays.asList(Expressions.makeConstant("a")));
+				expectedAnswers.add(Arrays.asList(Expressions.makeAbstractConstant("a")));
 
 				assertEquals(expectedAnswers, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());

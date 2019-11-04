@@ -39,8 +39,8 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.implementation.BlankImpl;
-import org.semanticweb.vlog4j.core.model.implementation.ConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
+import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.FactImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
@@ -63,9 +63,9 @@ public class OwlToRulesConversionHelper {
 	 */
 	public static Term getIndividualTerm(final OWLIndividual owlIndividual) {
 		if (owlIndividual instanceof OWLNamedIndividual) {
-			return new ConstantImpl(((OWLNamedIndividual) owlIndividual).getIRI().toString());
+			return new AbstractConstantImpl(((OWLNamedIndividual) owlIndividual).getIRI().toString());
 		} else if (owlIndividual instanceof OWLAnonymousIndividual) {
-			return new BlankImpl(((OWLAnonymousIndividual) owlIndividual).getID().toString());
+			return new NamedNullImpl(((OWLAnonymousIndividual) owlIndividual).getID().toString());
 		} else {
 			throw new OwlFeatureNotSupportedException(
 					"Could not convert OWL individual '" + owlIndividual.toString() + "' to a term.");

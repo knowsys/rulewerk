@@ -40,11 +40,11 @@ public class VLogReasonerCsvOutput {
 	@Test
 	public void testEDBQuerySameConstantSubstitutesSameVariableName() throws IOException {
 		final String predicate = "p";
-		final Constant constantC = Expressions.makeConstant("c");
-		final Constant constantD = Expressions.makeConstant("d");
-		final Variable x = Expressions.makeVariable("X");
-		final Variable y = Expressions.makeVariable("Y");
-		final Variable z = Expressions.makeVariable("Z");
+		final Constant constantC = Expressions.makeAbstractConstant("c");
+		final Constant constantD = Expressions.makeAbstractConstant("d");
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeUniversalVariable("Y");
+		final Variable z = Expressions.makeUniversalVariable("Z");
 		final Fact fact = Expressions.makeFact(predicate, Arrays.asList(constantC, constantC, constantD));
 
 		final boolean includeBlanks = false;
@@ -88,8 +88,8 @@ public class VLogReasonerCsvOutput {
 	@Test(expected = IllegalArgumentException.class)
 	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningIncludeBlanks() throws IOException {
 
-		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
-				Expressions.makeVariable("?y"));
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("?x"),
+				Expressions.makeUniversalVariable("?y"));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -103,8 +103,8 @@ public class VLogReasonerCsvOutput {
 	@Test(expected = IllegalArgumentException.class)
 	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningExcludeBlanks() throws IOException {
 
-		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
-				Expressions.makeVariable("?y"));
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("?x"),
+				Expressions.makeUniversalVariable("?y"));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -119,8 +119,8 @@ public class VLogReasonerCsvOutput {
 	@Test(expected = IllegalArgumentException.class)
 	public void testExportQueryEmptyKnowledgeBaseAfterReasoningIncludeBlanks() throws IOException {
 
-		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
-				Expressions.makeVariable("?y"));
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("?x"),
+				Expressions.makeUniversalVariable("?y"));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -136,8 +136,8 @@ public class VLogReasonerCsvOutput {
 	@Test(expected = IllegalArgumentException.class)
 	public void testExportQueryEmptyKnowledgeBaseAfterReasoningExcludeBlanks() throws IOException {
 
-		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeVariable("?x"),
-				Expressions.makeVariable("?y"));
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("?x"),
+				Expressions.makeUniversalVariable("?y"));
 
 		final KnowledgeBase kb = new KnowledgeBase();
 

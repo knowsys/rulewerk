@@ -26,7 +26,6 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.TermType;
 
 /**
  * Standard implementation of the {@Fact} interface.
@@ -39,11 +38,11 @@ public class FactImpl extends PositiveLiteralImpl implements Fact {
 	public FactImpl(Predicate predicate, List<Term> terms) {
 		super(predicate, terms);
 		for (Term t : terms) {
-			if (t.getType() == TermType.VARIABLE)
+			if (t.isVariable())
 				throw new IllegalArgumentException("Facts cannot contain variables.");
 		}
 	}
-	
+
 	@Override
 	public <T> T accept(StatementVisitor<T> statementVisitor) {
 		return statementVisitor.visit(this);

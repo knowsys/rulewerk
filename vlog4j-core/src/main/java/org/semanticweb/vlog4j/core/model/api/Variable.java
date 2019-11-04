@@ -30,4 +30,3 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 public interface Variable extends Term {
 }
-

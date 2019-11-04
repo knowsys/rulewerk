@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
+import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -74,12 +75,12 @@ final class ModelToVLogConverter {
 	}
 
 	static String[] toVLogFactTuple(final Fact fact) {
-		final List<Term> terms = fact.getTerms();
+		final List<Term> terms = fact.getArguments();
 		final String[] vLogFactTuple = new String[terms.size()];
 		int i = 0;
 		for (final Term term : terms) {
 			// No checks for type of term -- only constants allowed in facts!
-			vLogFactTuple[i] = TermToVLogConverter.getVLogNameForConstant(term.getName());
+			vLogFactTuple[i] = TermToVLogConverter.getVLogNameForConstant((Constant)term);
 			i++;
 		}
 		return vLogFactTuple;
@@ -98,7 +99,7 @@ final class ModelToVLogConverter {
 	}
 
 	static karmaresearch.vlog.Atom toVLogAtom(final Literal literal) {
-		final karmaresearch.vlog.Term[] vLogTerms = toVLogTermArray(literal.getTerms());
+		final karmaresearch.vlog.Term[] vLogTerms = toVLogTermArray(literal.getArguments());
 		final String vLogPredicate = toVLogPredicate(literal.getPredicate());
 		final karmaresearch.vlog.Atom vLogAtom = new karmaresearch.vlog.Atom(vLogPredicate, literal.isNegated(),
 				vLogTerms);

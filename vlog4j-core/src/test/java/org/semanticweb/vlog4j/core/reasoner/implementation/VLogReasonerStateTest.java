@@ -55,9 +55,9 @@ public class VLogReasonerStateTest {
 
 	private static final Predicate p = Expressions.makePredicate("p", 1);
 	private static final Predicate q = Expressions.makePredicate("q", 1);
-	private static final Variable x = Expressions.makeVariable("x");
-	private static final Constant c = Expressions.makeConstant("c");
-	private static final Constant d = Expressions.makeConstant("d");
+	private static final Variable x = Expressions.makeUniversalVariable("x");
+	private static final Constant c = Expressions.makeAbstractConstant("c");
+	private static final Constant d = Expressions.makeAbstractConstant("d");
 	private static final PositiveLiteral exampleQueryAtom = Expressions.makePositiveLiteral("q", x);
 
 	private static final PositiveLiteral ruleHeadQx = Expressions.makePositiveLiteral(q, x);
@@ -246,13 +246,13 @@ public class VLogReasonerStateTest {
 	private void checkExplicitFacts(final Reasoner reasoner, final Predicate predicateR1) {
 		try (final QueryResultIterator queryResultIteratorPx = reasoner.answerQuery(ruleBodyPx, true)) {
 			assertTrue(queryResultIteratorPx.hasNext());
-			assertEquals(factPc.getTerms(), queryResultIteratorPx.next().getTerms());
+			assertEquals(factPc.getArguments(), queryResultIteratorPx.next().getTerms());
 			assertFalse(queryResultIteratorPx.hasNext());
 		}
 		try (final QueryResultIterator queryResultIteratorRx = reasoner
 				.answerQuery(Expressions.makePositiveLiteral(predicateR1, x), true)) {
 			assertTrue(queryResultIteratorRx.hasNext());
-			assertEquals(Arrays.asList(Expressions.makeConstant("d")), queryResultIteratorRx.next().getTerms());
+			assertEquals(Arrays.asList(Expressions.makeAbstractConstant("d")), queryResultIteratorRx.next().getTerms());
 			assertFalse(queryResultIteratorRx.hasNext());
 		}
 	}

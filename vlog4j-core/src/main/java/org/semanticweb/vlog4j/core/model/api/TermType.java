@@ -21,24 +21,42 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Enumeration listing the different types of terms ({@link #CONSTANT},
- * {@link #BLANK}, and {@link #VARIABLE}).
+ * Enumeration listing the different types of terms.
  *
  * @author david.carral@tu-dresden.de
+ * @author Markus Kroetzsch
  *
  */
 public enum TermType {
 	/**
-	 * A constant is an entity used to represent named domain elements.
+	 * An abstract constant is a term used to represent named domain elements that
+	 * are not a value of any specific datatype.
 	 */
-	CONSTANT,
+	ABSTRACT_CONSTANT,
 	/**
-	 * A blank is an entity used to represent anonymous domain elements introduced
-	 * during the reasoning process to satisfy existential restrictions.
+	 * A datatype constant is a term used to represent named domain elements that
+	 * are the value of a specific datatype.
 	 */
-	BLANK,
+	DATATYPE_CONSTANT,
 	/**
-	 * A variable is a parameter that stands for an arbitrary domain element.
+	 * A string constant with a language tag, used to represent values of type
+	 * http://www.w3.org/1999/02/22-rdf-syntax-ns#langString in RDF, OWL, and
+	 * related languages used with knowledge graphs.
 	 */
-	VARIABLE
+	LANGSTRING_CONSTANT,
+	/**
+	 * A named null is an entity used to represent anonymous domain elements
+	 * introduced during the reasoning process to satisfy existential restrictions.
+	 */
+	NAMED_NULL,
+	/**
+	 * A universal variable is a variable that can only be used in positions where
+	 * it is universally quantified, or implicitly assumed to be.
+	 */
+	UNIVERSAL_VARIABLE,
+	/**
+	 * An existential variable is a variable that can only be used in positions
+	 * where it is existentially quantified, or implicitly assumed to be.
+	 */
+	EXISTENTIAL_VARIABLE
 }

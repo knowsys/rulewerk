@@ -46,9 +46,11 @@ public final class RdfTestUtils {
 	static final String INPUT_FOLDER = "src/test/data/input/";
 	static final String OUTPUT_FOLDER = "src/test/data/output/";
 
-	static final Constant RDF_FIRST = Expressions.makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
-	static final Constant RDF_REST = Expressions.makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
-	static final Constant RDF_NIL = Expressions.makeConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+	static final Constant RDF_FIRST = Expressions
+			.makeAbstractConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
+	static final Constant RDF_REST = Expressions
+			.makeAbstractConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+	static final Constant RDF_NIL = Expressions.makeAbstractConstant("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
 
 	/*
 	 * This is a utility class. Therefore, it is best practice to do the following:
@@ -74,30 +76,15 @@ public final class RdfTestUtils {
 	}
 
 	static Term getSubjectFromTriple(final PositiveLiteral triple) {
-		return triple.getTerms().get(0);
+		return triple.getArguments().get(0);
 	}
 
 	static Term getPredicateFromTriple(final PositiveLiteral triple) {
-		return triple.getTerms().get(1);
+		return triple.getArguments().get(1);
 	}
 
 	static Term getObjectFromTriple(final PositiveLiteral triple) {
-		return triple.getTerms().get(2);
-	}
-
-	/*
-	 * Takes a value of a specific type in its abbreviated form (i.e. a bare value)
-	 * and returns the corresponding lexical form (i.e. a value accompanied by its
-	 * type).
-	 *
-	 * @param abbreviatedValue value in abbreviated form
-	 * 
-	 * @param type type of {@code abbreviated}
-	 * 
-	 * @return {@code abbreviatedValue} in lexical form
-	 */
-	static String intoLexical(final String abbreviatedValue, final String type) {
-		return "\"" + abbreviatedValue + "\"^^<http://www.w3.org/2001/XMLSchema#" + type + ">";
+		return triple.getArguments().get(2);
 	}
 
 	static Term getObjectOfFirstMatchedTriple(final Term subject, final Term predicate, final Set<Fact> facts) {

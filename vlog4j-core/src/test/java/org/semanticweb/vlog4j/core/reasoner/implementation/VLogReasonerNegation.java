@@ -41,13 +41,13 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public class VLogReasonerNegation {
 
-	private final Variable x = Expressions.makeVariable("x");
-	private final Variable y = Expressions.makeVariable("y");
+	private final Variable x = Expressions.makeUniversalVariable("x");
+	private final Variable y = Expressions.makeUniversalVariable("y");
 
-	private final Constant c = Expressions.makeConstant("c");
-	private final Constant d = Expressions.makeConstant("d");
-	private final Constant e = Expressions.makeConstant("e");
-	private final Constant f = Expressions.makeConstant("f");
+	private final Constant c = Expressions.makeAbstractConstant("c");
+	private final Constant d = Expressions.makeAbstractConstant("d");
+	private final Constant e = Expressions.makeAbstractConstant("e");
+	private final Constant f = Expressions.makeAbstractConstant("f");
 
 	private final Literal pXY = Expressions.makePositiveLiteral("P", x, y);
 	private final Literal notQXY = Expressions.makeNegativeLiteral("Q", x, y);

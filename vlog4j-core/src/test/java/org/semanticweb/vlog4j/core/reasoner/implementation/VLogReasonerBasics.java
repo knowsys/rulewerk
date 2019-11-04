@@ -46,9 +46,9 @@ public class VLogReasonerBasics {
 	final String constantNameC = "c";
 	final String constantNameD = "d";
 
-	final Constant constantC = Expressions.makeConstant(constantNameC);
-	final Constant constantD = Expressions.makeConstant(constantNameD);
-	final Variable x = Expressions.makeVariable("x");
+	final Constant constantC = Expressions.makeAbstractConstant(constantNameC);
+	final Constant constantD = Expressions.makeAbstractConstant(constantNameD);
+	final Variable x = Expressions.makeUniversalVariable("x");
 	final Fact factAc = Expressions.makeFact("A", Arrays.asList(constantC));
 	final Fact factAd = Expressions.makeFact("A", Arrays.asList(constantD));
 	final PositiveLiteral atomAx = Expressions.makePositiveLiteral("A", x);

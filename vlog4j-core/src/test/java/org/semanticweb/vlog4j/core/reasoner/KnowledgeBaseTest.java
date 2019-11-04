@@ -35,61 +35,61 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 public class KnowledgeBaseTest {
 
 	private KnowledgeBase kb;
-	private final Fact fact1 = Expressions.makeFact("P", Expressions.makeConstant("c"));
-	private final Fact fact2 = Expressions.makeFact("P", Expressions.makeConstant("d"));
-	private final Fact fact3 = Expressions.makeFact("Q", Expressions.makeConstant("c"));
+	private final Fact fact1 = Expressions.makeFact("P", Expressions.makeAbstractConstant("c"));
+	private final Fact fact2 = Expressions.makeFact("P", Expressions.makeAbstractConstant("d"));
+	private final Fact fact3 = Expressions.makeFact("Q", Expressions.makeAbstractConstant("c"));
 
 	@Before
 	public void initKB() {
-		kb = new KnowledgeBase();
-		kb.addStatements(fact1, fact2, fact3);
+		this.kb = new KnowledgeBase();
+		this.kb.addStatements(this.fact1, this.fact2, this.fact3);
 	}
 
 	@Test
 	public void testDoRemoveStatementExistent() {
-		final boolean removed = kb.doRemoveStatement(fact1);
+		final boolean removed = this.kb.doRemoveStatement(this.fact1);
 
 		assertTrue(removed);
-		assertEquals(Arrays.asList(fact2, fact3), kb.getFacts());
-		assertEquals(Sets.newSet(fact2), kb.getFactsByPredicate().get(fact1.getPredicate()));
+		assertEquals(Arrays.asList(this.fact2, this.fact3), this.kb.getFacts());
+		assertEquals(Sets.newSet(this.fact2), this.kb.getFactsByPredicate().get(this.fact1.getPredicate()));
 	}
 
 	@Test
 	public void testDoRemoveStatementOnlyExistentWithPredicate() {
-		final boolean removed = kb.doRemoveStatement(fact3);
+		final boolean removed = this.kb.doRemoveStatement(this.fact3);
 
 		assertTrue(removed);
-		assertEquals(Arrays.asList(fact1, fact2), kb.getFacts());
-		assertEquals(null, kb.getFactsByPredicate().get(fact3.getPredicate()));
+		assertEquals(Arrays.asList(this.fact1, this.fact2), this.kb.getFacts());
+		assertEquals(null, this.kb.getFactsByPredicate().get(this.fact3.getPredicate()));
 	}
 
 	@Test
 	public void testDoRemoveStatementInexistent() {
-		final Fact fact = Expressions.makeFact("P", Expressions.makeConstant("e"));
-		final boolean removed = kb.doRemoveStatement(fact);
+		final Fact fact = Expressions.makeFact("P", Expressions.makeAbstractConstant("e"));
+		final boolean removed = this.kb.doRemoveStatement(fact);
 
 		assertFalse(removed);
-		assertEquals(Arrays.asList(fact1, fact2, fact3), kb.getFacts());
-		assertEquals(Sets.newSet(fact1, fact2), kb.getFactsByPredicate().get(fact.getPredicate()));
+		assertEquals(Arrays.asList(this.fact1, this.fact2, this.fact3), this.kb.getFacts());
+		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(fact.getPredicate()));
 		
-		assertEquals(Sets.newSet(fact1, fact2), kb.getFactsByPredicate().get(fact1.getPredicate()));
-		assertEquals(Sets.newSet(fact1, fact2), kb.getFactsByPredicate().get(fact2.getPredicate()));
-		assertEquals(Sets.newSet(fact3), kb.getFactsByPredicate().get(fact3.getPredicate()));
+		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact1.getPredicate()));
+		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact2.getPredicate()));
+		assertEquals(Sets.newSet(this.fact3), this.kb.getFactsByPredicate().get(this.fact3.getPredicate()));
 	}
 
 	@Test
 	public void testDoRemoveStatementInexistentPredicate() {
 		
-		final Fact fact = Expressions.makeFact("R", Expressions.makeConstant("e"));
-		final boolean removed = kb.doRemoveStatement(fact);
+		final Fact fact = Expressions.makeFact("R", Expressions.makeAbstractConstant("e"));
+		final boolean removed = this.kb.doRemoveStatement(fact);
 
 		assertFalse(removed);
-		assertEquals(Arrays.asList(fact1, fact2, fact3), kb.getFacts());
-		assertEquals(null, kb.getFactsByPredicate().get(fact.getPredicate()));
+		assertEquals(Arrays.asList(this.fact1, this.fact2, this.fact3), this.kb.getFacts());
+		assertEquals(null, this.kb.getFactsByPredicate().get(fact.getPredicate()));
 		
-		assertEquals(Sets.newSet(fact1, fact2), kb.getFactsByPredicate().get(fact1.getPredicate()));
-		assertEquals(Sets.newSet(fact1, fact2), kb.getFactsByPredicate().get(fact2.getPredicate()));
-		assertEquals(Sets.newSet(fact3), kb.getFactsByPredicate().get(fact3.getPredicate()));
+		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact1.getPredicate()));
+		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact2.getPredicate()));
+		assertEquals(Sets.newSet(this.fact3), this.kb.getFactsByPredicate().get(this.fact3.getPredicate()));
 
 	}
 

@@ -92,9 +92,9 @@ public class AddDataFromSparqlQueryResults {
 				+ " ?child " + WIKIDATA_MOTHER_PROPERTY + " ?mother ." + " ?child " + WIKIDATA_FATHER_PROPERTY
 				+ " ?father .";
 
-		final Variable titleVariable = Expressions.makeVariable("title");
-		final Variable motherVariable = Expressions.makeVariable("mother");
-		final Variable fatherVariable = Expressions.makeVariable("father");
+		final Variable titleVariable = Expressions.makeUniversalVariable("title");
+		final Variable motherVariable = Expressions.makeUniversalVariable("mother");
+		final Variable fatherVariable = Expressions.makeUniversalVariable("father");
 
 		/*
 		 * The query variables are the variables from the query body which will appear
@@ -135,8 +135,8 @@ public class AddDataFromSparqlQueryResults {
 			 * We construct a query PositiveLiteral for the predicated associated to the
 			 * SPARQL query result.
 			 */
-			final PositiveLiteral query = Expressions.makePositiveLiteral(queryPredicate, Expressions.makeVariable("x"),
-					Expressions.makeVariable("y"), Expressions.makeVariable("z"));
+			final PositiveLiteral query = Expressions.makePositiveLiteral(queryPredicate, Expressions.makeUniversalVariable("x"),
+					Expressions.makeUniversalVariable("y"), Expressions.makeUniversalVariable("z"));
 
 			/* We query the reasoner for facts of the SPARQL query result predicate. */
 			System.out.println("Titles of publications by co-authors who have a child together:");
@@ -156,9 +156,9 @@ public class AddDataFromSparqlQueryResults {
 			 * publicationParents(?x, ?y, ?z) .
 			 */
 			final PositiveLiteral haveChildrenTogether = Expressions.makePositiveLiteral("haveChildrenTogether",
-					Expressions.makeVariable("y"), Expressions.makeVariable("z"));
-			final PositiveLiteral isMother = Expressions.makePositiveLiteral("isMother", Expressions.makeVariable("y"));
-			final PositiveLiteral isFather = Expressions.makePositiveLiteral("isFather", Expressions.makeVariable("z"));
+					Expressions.makeUniversalVariable("y"), Expressions.makeUniversalVariable("z"));
+			final PositiveLiteral isMother = Expressions.makePositiveLiteral("isMother", Expressions.makeUniversalVariable("y"));
+			final PositiveLiteral isFather = Expressions.makePositiveLiteral("isFather", Expressions.makeUniversalVariable("z"));
 			final Conjunction<PositiveLiteral> ruleHeadConjunction = Expressions
 					.makePositiveConjunction(haveChildrenTogether, isMother, isFather);
 			final Rule rule = Expressions.makeRule(ruleHeadConjunction, Expressions.makeConjunction(query));

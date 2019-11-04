@@ -1,12 +1,7 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
 import org.apache.commons.lang3.Validate;
-import org.eclipse.jdt.annotation.NonNull;
-import org.semanticweb.vlog4j.core.model.api.Blank;
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.TermType;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 
 /*
  * #%L
@@ -29,8 +24,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
  */
 
 /**
- * Abstract class implementing all methods used by all types of terms
- * ({@link Constant}, {@link Blank}, and {@link Variable}).
+ * Abstract class implementing all methods used by all types of terms.
  *
  * @author david.carral@tu-dresden.de
  */
@@ -38,7 +32,7 @@ public abstract class AbstractTermImpl implements Term {
 
 	private final String name;
 
-	public AbstractTermImpl(@NonNull final String name) {
+	public AbstractTermImpl(final String name) {
 		Validate.notBlank(name, "Terms cannot be named by blank strings");
 		this.name = new String(name);
 	}
@@ -47,9 +41,6 @@ public abstract class AbstractTermImpl implements Term {
 	public String getName() {
 		return this.name;
 	}
-
-	@Override
-	public abstract @NonNull TermType getType();
 
 	@Override
 	public int hashCode() {

@@ -110,7 +110,7 @@ public class AddDataFromRdfModel {
 		 */
 
 		/* Predicate names of the triples found in both RDF files. */
-		final Variable varPerson = Expressions.makeVariable("person");
+		final Variable varPerson = Expressions.makeUniversalVariable("person");
 		final Predicate predicateHasOrganizationName = Expressions.makePredicate("hasOrganizationName", 2);
 
 		/*

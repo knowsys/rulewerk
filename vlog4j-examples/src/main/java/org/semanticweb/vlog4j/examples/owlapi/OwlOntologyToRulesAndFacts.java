@@ -95,8 +95,8 @@ public class OwlOntologyToRulesAndFacts {
 			reasoner.reason();
 
 			/* Query for the parts of bike constant "b2". */
-			final Variable vx = Expressions.makeVariable("x");
-			final Constant b2 = Expressions.makeConstant("http://www.bike-example.ontology#b2");
+			final Variable vx = Expressions.makeUniversalVariable("x");
+			final Constant b2 = Expressions.makeAbstractConstant("http://www.bike-example.ontology#b2");
 
 			final PositiveLiteral b2HasPart = Expressions
 					.makePositiveLiteral("http://www.bike-example.ontology#hasPart", b2, vx);

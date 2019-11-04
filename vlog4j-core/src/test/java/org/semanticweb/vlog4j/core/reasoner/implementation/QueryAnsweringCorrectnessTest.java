@@ -51,13 +51,13 @@ public class QueryAnsweringCorrectnessTest {
 
 	private static final Predicate predP = Expressions.makePredicate("predP", 1);
 	private static final Predicate predQ = Expressions.makePredicate("predQ", 1);
-	private static final Variable x = Expressions.makeVariable("x");
-	private static final Constant c = Expressions.makeConstant("c");
-	private static final Constant d = Expressions.makeConstant("d");
-	private static final Constant g = Expressions.makeConstant("g");
-	private static final Constant h = Expressions.makeConstant("h");
-	private static final Constant e = Expressions.makeConstant("e");
-	private static final Constant f = Expressions.makeConstant("f");
+	private static final Variable x = Expressions.makeUniversalVariable("x");
+	private static final Constant c = Expressions.makeAbstractConstant("c");
+	private static final Constant d = Expressions.makeAbstractConstant("d");
+	private static final Constant g = Expressions.makeAbstractConstant("g");
+	private static final Constant h = Expressions.makeAbstractConstant("h");
+	private static final Constant e = Expressions.makeAbstractConstant("e");
+	private static final Constant f = Expressions.makeAbstractConstant("f");
 
 	private static final PositiveLiteral ruleHeadQx = Expressions.makePositiveLiteral(predQ, x);
 	private static final PositiveLiteral ruleBodyPx = Expressions.makePositiveLiteral(predP, x);
@@ -412,8 +412,8 @@ public class QueryAnsweringCorrectnessTest {
 
 	@Test
 	public void testMaterialisationIncomplete() throws IOException {
-		final Variable y = Expressions.makeVariable("y");
-		final Variable z = Expressions.makeVariable("z");
+		final Variable y = Expressions.makeUniversalVariable("y");
+		final Variable z = Expressions.makeExistentialVariable("z");
 
 		final Predicate predR = Expressions.makePredicate("predR", 2);
 

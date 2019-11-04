@@ -1,5 +1,8 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -20,17 +23,16 @@ package org.semanticweb.vlog4j.core.model.implementation;
  * #L%
  */
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Validate;
-import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
-import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
 
 /**
  * Implementation for {@link Rule}. Represents rules with non-empty heads and
@@ -46,26 +48,37 @@ public class RuleImpl implements Rule {
 
 	/**
 	 * Creates a Rule with a non-empty body and an non-empty head. All variables in
-	 * the body are considered universally quantified; all variables in the head
-	 * that do not occur in the body are considered existentially quantified.
+	 * the body must be universally quantified; all variables in the head that do
+	 * not occur in the body must be existentially quantified.
 	 *
-	 * @param head
-	 *            list of Literals (negated or non-negated) representing the rule
-	 *            body conjuncts.
-	 * @param body
-	 *            list of positive (non-negated) Literals representing the rule head
-	 *            conjuncts.
+	 * @param head list of Literals (negated or non-negated) representing the rule
+	 *             body conjuncts.
+	 * @param body list of positive (non-negated) Literals representing the rule
+	 *             head conjuncts.
 	 */
-	public RuleImpl(@NonNull final Conjunction<PositiveLiteral> head, @NonNull final Conjunction<Literal> body) {
+	public RuleImpl(final Conjunction<PositiveLiteral> head, final Conjunction<Literal> body) {
 		Validate.notNull(head);
 		Validate.notNull(body);
-		Validate.notEmpty(body.getLiterals());
-		Validate.notEmpty(head.getLiterals());
+		Validate.notEmpty(body.getLiterals(),
+				"Empty rule body not supported. Use Fact objects to assert unconditionally true atoms.");
+		Validate.notEmpty(head.getLiterals(),
+				"Empty rule head not supported. To capture integrity constraints, use a dedicated predicate that represents a contradiction.");
+		if (body.getExistentialVariables().count() > 0) {
+			throw new IllegalArgumentException(
+					"Rule body cannot contain existential variables. Rule was: " + head + " :- " + body);
+		}
+		Set<UniversalVariable> bodyVariables = body.getUniversalVariables().collect(Collectors.toSet());
+		if (head.getUniversalVariables().filter(x -> !bodyVariables.contains(x)).count() > 0) {
+			throw new IllegalArgumentException(
+					"Universally quantified variables in rule head must also occur in rule body. Rule was: " + head
+							+ " :- " + body);
+		}
 
 		this.head = head;
 		this.body = body;
+
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -106,20 +119,13 @@ public class RuleImpl implements Rule {
 	}
 
 	@Override
-	public Set<Variable> getExistentiallyQuantifiedVariables() {
-		final Set<Variable> result = new HashSet<>(this.head.getVariables());
-		result.removeAll(this.body.getVariables());
-		return result;
+	public <T> T accept(StatementVisitor<T> statementVisitor) {
+		return statementVisitor.visit(this);
 	}
 
 	@Override
-	public Set<Variable> getUniversallyQuantifiedVariables() {
-		return this.body.getVariables();
-	}
-	
-	@Override
-	public <T> T accept(StatementVisitor<T> statementVisitor) {
-		return statementVisitor.visit(this);
+	public Stream<Term> getTerms() {
+		return Stream.concat(this.body.getTerms(), this.head.getTerms()).distinct();
 	}
 
 }

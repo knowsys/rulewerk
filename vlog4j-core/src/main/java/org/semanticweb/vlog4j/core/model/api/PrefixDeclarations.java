@@ -37,6 +37,7 @@ public interface PrefixDeclarations {
 	static final String XSD_FLOAT = "http://www.w3.org/2001/XMLSchema#float";
 	static final String XSD_INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
 	static final String XSD_BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
+	static final String RDF_LANGSTRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
 
 	/**
 	 * Returns the relevant base namespace. This should always return a result,
