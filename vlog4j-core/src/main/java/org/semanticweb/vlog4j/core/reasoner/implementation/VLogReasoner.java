@@ -569,14 +569,14 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) {
+	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeNulls) {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
 
-		final boolean filterBlanks = !includeBlanks;
+		final boolean filterBlanks = !includeNulls;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 
 		TermQueryResultIterator stringQueryResultIterator;
@@ -592,6 +592,33 @@ public class VLogReasoner implements Reasoner {
 
 		logWarningOnCorrectness();
 		return new VLogQueryResultIterator(stringQueryResultIterator, this.correctness);
+	}
+
+	@Override
+	public long queryAnswerSize(PositiveLiteral query) {
+		return queryAnswerSize(query, true);
+	}
+
+	@Override
+	public long queryAnswerSize(PositiveLiteral query, boolean includeNulls) {
+		validateNotClosed();
+		validateKBLoaded("Querying is not alowed before reasoner is loaded!");
+		Validate.notNull(query, "Query atom must not be null!");
+
+		final boolean filterBlanks = !includeNulls;
+		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
+
+		int result = -1;
+		try {
+			result = this.vLog.querySize(vLogAtom, true, filterBlanks);
+		} catch (NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		} catch (NonExistingPredicateException e) {
+			LOGGER.warn("Query uses predicate " + query.getPredicate()
+					+ " that does not occur in the knowledge base. Answer must be empty!");
+			return 0;
+		}
+		return result;
 	}
 
 	@Override
@@ -740,19 +767,18 @@ public class VLogReasoner implements Reasoner {
 		// TODO more elaborate materialisation state handling
 
 		updateReasonerToKnowledgeBaseChanged();
-		
-		//updateCorrectnessOnStatementsAdded(statementsAdded);
+
+		// updateCorrectnessOnStatementsAdded(statementsAdded);
 		updateCorrectness();
 	}
-
 
 	@Override
 	public void onStatementAdded(Statement statementAdded) {
 		// TODO more elaborate materialisation state handling
 
 		updateReasonerToKnowledgeBaseChanged();
-		
-		//updateCorrectnessOnStatementAdded(statementAdded);
+
+		// updateCorrectnessOnStatementAdded(statementAdded);
 		updateCorrectness();
 	}
 
@@ -766,9 +792,9 @@ public class VLogReasoner implements Reasoner {
 
 	private void updateCorrectness() {
 		if (this.reasonerState == ReasonerState.KB_CHANGED) {
-			
+
 			final boolean noRules = this.knowledgeBase.getRules().isEmpty();
-			this.correctness = noRules? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
+			this.correctness = noRules ? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
 		}
 	}
 
@@ -781,6 +807,12 @@ public class VLogReasoner implements Reasoner {
 		if (this.reasonerState == ReasonerState.CLOSED) {
 			LOGGER.error("Invalid operation requested on a closed reasoner object!");
 			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner!");
+		}
+	}
+
+	void validateKBLoaded(String errorMessage) {
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+			throw new ReasonerStateException(this.reasonerState, errorMessage);
 		}
 	}
 
