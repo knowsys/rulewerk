@@ -44,13 +44,16 @@ public class VLogReasonerRdfInput {
 
 	private static final Predicate ternaryPredicate = Expressions.makePredicate("triple", 3);
 	private static final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(ternaryPredicate,
-			Expressions.makeUniversalVariable("s"), Expressions.makeUniversalVariable("p"), Expressions.makeUniversalVariable("o"));
+			Expressions.makeUniversalVariable("s"), Expressions.makeUniversalVariable("p"),
+			Expressions.makeUniversalVariable("o"));
 
 	@SuppressWarnings("unchecked")
 	private static final Set<List<Term>> expectedTernaryQueryResult = Sets.newSet(
-			Arrays.asList(Expressions.makeAbstractConstant("http://example.org/c1"), Expressions.makeAbstractConstant("http://example.org/p"),
+			Arrays.asList(Expressions.makeAbstractConstant("http://example.org/c1"),
+					Expressions.makeAbstractConstant("http://example.org/p"),
 					Expressions.makeAbstractConstant("http://example.org/c2")),
-			Arrays.asList(Expressions.makeAbstractConstant("http://example.org/c1"), Expressions.makeAbstractConstant("http://example.org/q"),
+			Arrays.asList(Expressions.makeAbstractConstant("http://example.org/c1"),
+					Expressions.makeAbstractConstant("http://example.org/q"),
 					Expressions.makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string")));
 
 	@Ignore
