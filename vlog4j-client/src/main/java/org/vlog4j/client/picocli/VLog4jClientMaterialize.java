@@ -227,8 +227,7 @@ public class VLog4jClientMaterialize implements Runnable {
 	}
 
 	private void doPrintResults(Reasoner reasoner, PositiveLiteral query) {
-		System.out.println(
-				"Number of query answers in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
+		System.out.println("Number of query answers in " + query + ": " + reasoner.queryAnswerSize(query));
 	}
 
 	private String queryOputputPath(PositiveLiteral query) {

@@ -39,7 +39,7 @@ import org.semanticweb.vlog4j.parser.RuleParser;
  */
 public class CountingTriangles {
 
-	public static void main(final String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException, ParsingException {
 		ExamplesUtils.configureLogging();
 
 		KnowledgeBase kb;
@@ -61,15 +61,18 @@ public class CountingTriangles {
 			/* Initialise reasoner and compute inferences */
 			reasoner.reason();
 
-			System.out.print("Found " + ExamplesUtils.getQueryAnswerCount("country(?X)", reasoner)
-					+ " countries in Wikidata");
+			final double countries = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("country(?X)"));
+			final double shareBorder = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("shareBorder(?X,?Y)"));
+			final double triangles = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)"));
+
+			System.out.print("Found " + countries + " countries in Wikidata");
 			// Due to symmetry, each joint border is found twice, hence we divide by 2:
-			System.out.println(", with " + (ExamplesUtils.getQueryAnswerCount("shareBorder(?X,?Y)", reasoner) / 2)
-					+ " pairs of them sharing a border.");
+			System.out.println(", with " + (shareBorder / 2) + " pairs of them sharing a border.");
 			// Due to symmetry, each triangle is found six times, hence we divide by 6:
 			System.out.println("The number of triangles of countries that mutually border each other was "
-					+ (ExamplesUtils.getQueryAnswerCount("triangle(?X,?Y,?Z)", reasoner) / 6) + ".");
+					+ (triangles / 6) + ".");
 		}
 
 	}
+
 }

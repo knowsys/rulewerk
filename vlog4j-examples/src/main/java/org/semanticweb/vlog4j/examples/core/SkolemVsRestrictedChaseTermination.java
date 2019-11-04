@@ -102,7 +102,7 @@ public class SkolemVsRestrictedChaseTermination {
 			 * restrictions.
 			 */
 			System.out.println("Before the timeout, the Skolem chase had produced "
-					+ ExamplesUtils.getQueryAnswerCount(queryHasPart, reasoner) + " results for hasPart(?X, ?Y).");
+					+ reasoner.queryAnswerSize(queryHasPart) + " results for hasPart(?X, ?Y).");
 
 			/*
 			 * 6. We reset the reasoner to discard all inferences, and apply the Restricted
