@@ -198,8 +198,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Adds a single statement to the knowledge base.
 	 * 
-	 * @param statement
-	 *            the statement to be added
+	 * @param statement the statement to be added
 	 * @return true, if the knowledge base has changed.
 	 */
 	public void addStatement(Statement statement) {
@@ -226,8 +225,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Adds a collection of statements to the knowledge base.
 	 * 
-	 * @param statements
-	 *            the statements to be added
+	 * @param statements the statements to be added
 	 */
 	public void addStatements(Collection<? extends Statement> statements) {
 		final List<Statement> addedStatements = new ArrayList<>();
@@ -244,8 +242,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Adds a list of statements to the knowledge base.
 	 * 
-	 * @param statements
-	 *            the statements to be added
+	 * @param statements the statements to be added
 	 */
 	public void addStatements(Statement... statements) {
 		final List<Statement> addedStatements = new ArrayList<>();
@@ -263,8 +260,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * Removes a single statement from the knowledge base.
 	 * 
 	 * @return true, if the knowledge base has changed.
-	 * @param statement
-	 *            the statement to remove
+	 * @param statement the statement to remove
 	 */
 	public void removeStatement(Statement statement) {
 		if (doRemoveStatement(statement)) {
@@ -275,8 +271,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Removes a single statement from the knowledge base.
 	 * 
-	 * @param statement
-	 *            the statement to remove
+	 * @param statement the statement to remove
 	 * @return true, if the knowledge base has changed.
 	 */
 	boolean doRemoveStatement(Statement statement) {
@@ -292,8 +287,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Removes a collection of statements to the knowledge base.
 	 * 
-	 * @param statements
-	 *            the statements to remove
+	 * @param statements the statements to remove
 	 */
 	public void removeStatements(Collection<? extends Statement> statements) {
 		final List<Statement> removedStatements = new ArrayList<>();
@@ -310,8 +304,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Removes a list of statements from the knowledge base.
 	 * 
-	 * @param statements
-	 *            the statements to remove
+	 * @param statements the statements to remove
 	 */
 	public void removeStatements(Statement... statements) {
 		final List<Statement> removedStatements = new ArrayList<>();

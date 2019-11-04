@@ -53,12 +53,12 @@ public class VLogReasonerCsvInput {
 	private final Constant c2 = Expressions.makeAbstractConstant("c2");
 
 	@SuppressWarnings("unchecked")
-	private final Set<List<Term>> expectedUnaryQueryResult = Sets.newSet(Arrays.asList(this.c1), Arrays.asList(this.c2));
+	private final Set<List<Term>> expectedUnaryQueryResult = Sets.newSet(Arrays.asList(this.c1),
+			Arrays.asList(this.c2));
 
 	@Test
 	public void testLoadEmptyCsvFile() throws IOException {
-		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(unaryPredicate1,
-				this.x);
+		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(unaryPredicate1, this.x);
 
 		FileDataSourceTestUtils.testLoadEmptyFile(unaryPredicate1, queryAtom,
 				new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.csv")));

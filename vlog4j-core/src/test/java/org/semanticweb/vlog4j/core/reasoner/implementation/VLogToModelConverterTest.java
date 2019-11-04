@@ -65,20 +65,18 @@ public class VLogToModelConverterTest {
 		Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
 		assertEquals(vLog4jTerm, convertedTerm);
 	}
-	
+
 	@Test
 	public void testNamedNullConversion() {
-		karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK,
-				"_123");
+		karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK, "_123");
 		Term vLog4jTerm = new NamedNullImpl("_123");
 		Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
 		assertEquals(vLog4jTerm, convertedTerm);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testVariableConversion() {
-		karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE,
-				"X");
+		karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X");
 		VLogToModelConverter.toTerm(vLogTerm);
 	}
 

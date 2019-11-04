@@ -79,7 +79,7 @@ public class VLogReasonerStateTest {
 			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, "", true);
 		}
 	}
-	
+
 	@Test(expected = ReasonerStateException.class)
 	public void testFailAnswerQueryAfterReset() throws IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -318,7 +318,7 @@ public class VLogReasonerStateTest {
 			reasoner.close();
 		}
 	}
-	
+
 	@Test
 	public void testStatementRemovalBeforeLoad() {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -328,7 +328,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.KB_NOT_LOADED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementsListRemovalBeforeLoad() {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -338,7 +338,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.KB_NOT_LOADED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementsArrayRemovalBeforeLoad() {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -348,7 +348,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.KB_NOT_LOADED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementRemovalAfterLoad() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -359,7 +359,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementsListRemovalAfterLoad() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -370,7 +370,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementsArrayRemovalAfterLoad() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -381,7 +381,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementRemovalBeforeReason() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -392,7 +392,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementsListRemovalBeforeReason() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -403,7 +403,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementsArrayRemovalBeforeReason() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -414,7 +414,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementRemovalAfterReason() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -425,7 +425,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementsListRemovalAfterReason() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -436,7 +436,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementsArrayRemovalAfterReason() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -447,7 +447,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementNotRemovedAfterReason() throws IOException {
 		final Fact newFact = Expressions.makeFact("newPred", c);
@@ -459,7 +459,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementsListNotRemovedAfterReason() throws IOException {
 		final Fact newFact = Expressions.makeFact("newPred", c);
@@ -471,7 +471,7 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
 		}
 	}
-	
+
 	@Test
 	public void testStatementsArrayListNotRemovedAfterReason() throws IOException {
 		final Fact newFact = Expressions.makeFact("newPred", c);
@@ -483,6 +483,5 @@ public class VLogReasonerStateTest {
 			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
 		}
 	}
-
 
 }

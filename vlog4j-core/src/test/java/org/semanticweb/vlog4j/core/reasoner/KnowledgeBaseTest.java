@@ -71,7 +71,7 @@ public class KnowledgeBaseTest {
 		assertFalse(removed);
 		assertEquals(Arrays.asList(this.fact1, this.fact2, this.fact3), this.kb.getFacts());
 		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(fact.getPredicate()));
-		
+
 		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact1.getPredicate()));
 		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact2.getPredicate()));
 		assertEquals(Sets.newSet(this.fact3), this.kb.getFactsByPredicate().get(this.fact3.getPredicate()));
@@ -79,14 +79,14 @@ public class KnowledgeBaseTest {
 
 	@Test
 	public void testDoRemoveStatementInexistentPredicate() {
-		
+
 		final Fact fact = Expressions.makeFact("R", Expressions.makeAbstractConstant("e"));
 		final boolean removed = this.kb.doRemoveStatement(fact);
 
 		assertFalse(removed);
 		assertEquals(Arrays.asList(this.fact1, this.fact2, this.fact3), this.kb.getFacts());
 		assertEquals(null, this.kb.getFactsByPredicate().get(fact.getPredicate()));
-		
+
 		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact1.getPredicate()));
 		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact2.getPredicate()));
 		assertEquals(Sets.newSet(this.fact3), this.kb.getFactsByPredicate().get(this.fact3.getPredicate()));

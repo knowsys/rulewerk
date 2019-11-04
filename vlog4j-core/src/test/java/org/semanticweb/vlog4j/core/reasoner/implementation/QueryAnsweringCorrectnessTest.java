@@ -490,7 +490,7 @@ public class QueryAnsweringCorrectnessTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testStatementRemovalAfterLoad() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -503,7 +503,7 @@ public class QueryAnsweringCorrectnessTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testStatementsListRemovalAfterLoad() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -516,7 +516,7 @@ public class QueryAnsweringCorrectnessTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testStatementsArrayRemovalAfterLoad() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -555,7 +555,7 @@ public class QueryAnsweringCorrectnessTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testStatementsArrayRemovalBeforeReason() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -594,7 +594,7 @@ public class QueryAnsweringCorrectnessTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testStatementsArrayRemovalAfterReason() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -621,7 +621,7 @@ public class QueryAnsweringCorrectnessTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testStatementsListNotRemovedAfterReason() throws IOException {
 		final Fact newFact = Expressions.makeFact("newPred", c);
@@ -635,7 +635,7 @@ public class QueryAnsweringCorrectnessTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testStatementsArrayNotRemovedAfterReason() throws IOException {
 		final Fact newFact = Expressions.makeFact("newPred", c);
@@ -649,7 +649,7 @@ public class QueryAnsweringCorrectnessTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testRemoveAndAddStatements() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
@@ -663,11 +663,11 @@ public class QueryAnsweringCorrectnessTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testRemoveAndAddSameStatementOnlyFacts() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatements(factPc,factPd);
+		kb.addStatements(factPc, factPd);
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 			kb.removeStatements(factPc);
@@ -677,11 +677,11 @@ public class QueryAnsweringCorrectnessTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testRemoveAndAddStatementsOnlyFacts() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatements(factPc,factPd);
+		kb.addStatements(factPc, factPd);
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 			kb.removeStatements(factPc, factPd);
