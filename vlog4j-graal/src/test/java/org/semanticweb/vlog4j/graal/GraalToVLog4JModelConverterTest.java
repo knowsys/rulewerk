@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Constant;
@@ -60,7 +61,7 @@ public class GraalToVLog4JModelConverterTest {
 	private final String y = "Y";
 	private final String z = "Z";
 
-	private final Constant vlog4j_socrate = Expressions.makeConstant(this.socrate);
+	private final Constant vlog4j_socrate = Expressions.makeAbstractConstant(this.socrate);
 
 	private final Predicate vlog4j_bicycle = Expressions.makePredicate(this.bicycle, 1);
 	private final Predicate vlog4j_hasPart = Expressions.makePredicate(this.hasPart, 2);
@@ -68,9 +69,10 @@ public class GraalToVLog4JModelConverterTest {
 	private final Predicate vlog4j_mortal = Expressions.makePredicate(this.mortal, 1);
 	private final Predicate vlog4j_wheel = Expressions.makePredicate(this.wheel, 1);
 
-	private final Variable vlog4j_x = Expressions.makeVariable(this.x);
-	private final Variable vlog4j_y = Expressions.makeVariable(this.y);
-	private final Variable vlog4j_z = Expressions.makeVariable(this.z);
+	private final Variable vlog4j_x = Expressions.makeUniversalVariable(this.x);
+	private final Variable vlog4j_y = Expressions.makeUniversalVariable(this.y);
+	private final Variable vlog4j_z = Expressions.makeUniversalVariable(this.z);
+	private final Variable vlog4j_ex_y = Expressions.makeExistentialVariable(this.y);
 
 	private final DefaultTermFactory termFactory = new DefaultTermFactory();
 
@@ -98,13 +100,13 @@ public class GraalToVLog4JModelConverterTest {
 	public void testConvertAtom() throws ParseException {
 		final PositiveLiteral vlog4j_atom = Expressions.makePositiveLiteral(this.vlog4j_human, this.vlog4j_socrate);
 		final fr.lirmm.graphik.graal.api.core.Atom graal_atom = new DefaultAtom(this.graal_human, this.graal_socrate);
-		assertEquals(vlog4j_atom, GraalToVLog4JModelConverter.convertAtom(graal_atom));
+		assertEquals(vlog4j_atom, GraalToVLog4JModelConverter.convertAtom(graal_atom, Collections.emptySet()));
 
 		final PositiveLiteral vlog4j_atom_2 = Expressions.makePositiveLiteral(this.vlog4j_hasPart, this.vlog4j_x,
 				this.vlog4j_socrate);
 		final fr.lirmm.graphik.graal.api.core.Atom graal_atom_2 = new DefaultAtom(this.graal_hasPart, this.graal_x,
 				this.graal_socrate);
-		assertEquals(vlog4j_atom_2, GraalToVLog4JModelConverter.convertAtom(graal_atom_2));
+		assertEquals(vlog4j_atom_2, GraalToVLog4JModelConverter.convertAtom(graal_atom_2, Collections.emptySet()));
 	}
 
 	@Test
@@ -134,10 +136,11 @@ public class GraalToVLog4JModelConverterTest {
 		// hasPart(X, Y), wheel(Y) :- bicycle(X)
 
 		final PositiveLiteral vlog4j_hasPart_atom = Expressions.makePositiveLiteral(this.vlog4j_hasPart, this.vlog4j_x,
-				this.vlog4j_y);
-		final PositiveLiteral vlog4j_wheel_atom = Expressions.makePositiveLiteral(this.vlog4j_wheel, this.vlog4j_y);
+				this.vlog4j_ex_y);
+		final PositiveLiteral vlog4j_wheel_atom = Expressions.makePositiveLiteral(this.vlog4j_wheel, this.vlog4j_ex_y);
 		final PositiveLiteral vlog4j_bicycle_atom = Expressions.makePositiveLiteral(this.vlog4j_bicycle, this.vlog4j_x);
-		final Rule vlog4j_rule = Expressions.makeRule(Expressions.makePositiveConjunction(vlog4j_hasPart_atom, vlog4j_wheel_atom),
+		final Rule vlog4j_rule = Expressions.makeRule(
+				Expressions.makePositiveConjunction(vlog4j_hasPart_atom, vlog4j_wheel_atom),
 				Expressions.makeConjunction(vlog4j_bicycle_atom));
 
 		final fr.lirmm.graphik.graal.api.core.Atom graal_hasPart_atom = new DefaultAtom(this.graal_hasPart,
@@ -155,8 +158,10 @@ public class GraalToVLog4JModelConverterTest {
 	public void testConvertQuery() throws ParseException {
 		// ?(X) :- mortal(X)
 		final String mortalQuery = "mortalQuery";
-		final PositiveLiteral query = Expressions.makePositiveLiteral(Expressions.makePredicate(mortalQuery, 1), this.vlog4j_x);
-		final Rule queryRule = Expressions.makeRule(query, Expressions.makePositiveLiteral(this.vlog4j_mortal, this.vlog4j_x));
+		final PositiveLiteral query = Expressions.makePositiveLiteral(Expressions.makePredicate(mortalQuery, 1),
+				this.vlog4j_x);
+		final Rule queryRule = Expressions.makeRule(query,
+				Expressions.makePositiveLiteral(this.vlog4j_mortal, this.vlog4j_x));
 
 		final fr.lirmm.graphik.graal.api.core.Atom graal_query_atom = new DefaultAtom(this.graal_mortal, this.graal_x);
 
@@ -202,15 +207,16 @@ public class GraalToVLog4JModelConverterTest {
 		final GraalConjunctiveQueryToRule importedComplexQuery = GraalToVLog4JModelConverter.convertQuery(complexQuery,
 				graal_complex_query);
 
-		final PositiveLiteral expectedComplexQueryAtom = Expressions.makePositiveLiteral(Expressions.makePredicate(complexQuery, 3),
-				this.vlog4j_x, this.vlog4j_x, this.vlog4j_y);
-		final PositiveLiteral vlog4j_predicate1_atom = Expressions.makePositiveLiteral(Expressions.makePredicate(predicate1, 1), this.vlog4j_x);
-		final PositiveLiteral vlog4j_predicate2_atom = Expressions.makePositiveLiteral(Expressions.makePredicate(predicate2, 2), this.vlog4j_y,
-				this.vlog4j_x);
-		final PositiveLiteral vlog4j_predicate3_atom = Expressions.makePositiveLiteral(Expressions.makePredicate(predicate3, 2), this.vlog4j_y,
-				Expressions.makeConstant(stockholm));
-		final PositiveLiteral vlog4j_predicate4_atom = Expressions.makePositiveLiteral(Expressions.makePredicate(predicate4, 3), this.vlog4j_x,
-				this.vlog4j_y, this.vlog4j_z);
+		final PositiveLiteral expectedComplexQueryAtom = Expressions.makePositiveLiteral(
+				Expressions.makePredicate(complexQuery, 3), this.vlog4j_x, this.vlog4j_x, this.vlog4j_y);
+		final PositiveLiteral vlog4j_predicate1_atom = Expressions
+				.makePositiveLiteral(Expressions.makePredicate(predicate1, 1), this.vlog4j_x);
+		final PositiveLiteral vlog4j_predicate2_atom = Expressions
+				.makePositiveLiteral(Expressions.makePredicate(predicate2, 2), this.vlog4j_y, this.vlog4j_x);
+		final PositiveLiteral vlog4j_predicate3_atom = Expressions.makePositiveLiteral(
+				Expressions.makePredicate(predicate3, 2), this.vlog4j_y, Expressions.makeAbstractConstant(stockholm));
+		final PositiveLiteral vlog4j_predicate4_atom = Expressions.makePositiveLiteral(
+				Expressions.makePredicate(predicate4, 3), this.vlog4j_x, this.vlog4j_y, this.vlog4j_z);
 		final Rule expectedComplexQueryRule = Expressions.makeRule(expectedComplexQueryAtom, vlog4j_predicate1_atom,
 				vlog4j_predicate2_atom, vlog4j_predicate3_atom, vlog4j_predicate4_atom);
 

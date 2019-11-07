@@ -55,7 +55,7 @@ public class VLogReasonerSparqlInput {
 	public void testSimpleSparqlQuery() throws IOException {
 		final URL endpoint = new URL("http://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
-				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
+				Arrays.asList(Expressions.makeUniversalVariable("b"), Expressions.makeUniversalVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// a has father b
 				"?a wdt:P22 ?b");
@@ -65,8 +65,9 @@ public class VLogReasonerSparqlInput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
-					fatherOfPredicate, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
+							Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 				final QueryResult firstAnswer = answerQuery.next();
@@ -80,7 +81,7 @@ public class VLogReasonerSparqlInput {
 	public void testSimpleSparqlQueryHttps() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
-				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
+				Arrays.asList(Expressions.makeUniversalVariable("b"), Expressions.makeUniversalVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// a has father b
 				"?a wdt:P22 ?b");
@@ -90,8 +91,9 @@ public class VLogReasonerSparqlInput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
-					fatherOfPredicate, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
+							Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 				final QueryResult firstAnswer = answerQuery.next();
@@ -114,7 +116,7 @@ public class VLogReasonerSparqlInput {
 	public void testSimpleSparqlQuery2() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
-				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
+				Arrays.asList(Expressions.makeUniversalVariable("b"), Expressions.makeUniversalVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// a has father b
 				"?a wdt:P22 ?b .");
@@ -124,8 +126,9 @@ public class VLogReasonerSparqlInput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
-					fatherOfPredicate, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
+							Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 			}
@@ -137,7 +140,7 @@ public class VLogReasonerSparqlInput {
 	public void testConjunctiveQueryNewLineCharacterInQueryBody() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
-				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
+				Arrays.asList(Expressions.makeUniversalVariable("a"), Expressions.makeUniversalVariable("c")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a .\n" + "?b wdt:P25 ?c");
@@ -147,8 +150,8 @@ public class VLogReasonerSparqlInput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether, Expressions.makeVariable("x"),
-					Expressions.makeVariable("y")), false);
+			reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether,
+					Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false);
 		}
 	}
 
@@ -157,7 +160,7 @@ public class VLogReasonerSparqlInput {
 	public void testConjunctiveQuery() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
-				Arrays.asList(Expressions.makeVariable("a"), Expressions.makeVariable("c")));
+				Arrays.asList(Expressions.makeUniversalVariable("a"), Expressions.makeUniversalVariable("c")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c
 				"?b wdt:P22 ?a ." + "?b wdt:P25 ?c");
@@ -167,8 +170,11 @@ public class VLogReasonerSparqlInput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
-					haveChildrenTogether, Expressions.makeVariable("x"), Expressions.makeVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner
+					.answerQuery(
+							Expressions.makePositiveLiteral(haveChildrenTogether,
+									Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")),
+							false)) {
 
 				assertTrue(answerQuery.hasNext());
 			}
@@ -179,7 +185,7 @@ public class VLogReasonerSparqlInput {
 	public void testDataSourcePredicateDoesNotMatchSparqlQueryTerms() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
-				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
+				Arrays.asList(Expressions.makeUniversalVariable("b"), Expressions.makeUniversalVariable("a")));
 
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				// b has father a and b has mother c

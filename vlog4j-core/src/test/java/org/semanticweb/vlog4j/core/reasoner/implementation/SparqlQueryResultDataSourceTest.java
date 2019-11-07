@@ -53,7 +53,7 @@ public class SparqlQueryResultDataSourceTest {
 	@Test
 	public void testToStringList() throws MalformedURLException {
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
-				Arrays.asList(Expressions.makeVariable("b"), Expressions.makeVariable("a")));
+				Arrays.asList(Expressions.makeUniversalVariable("b"), Expressions.makeUniversalVariable("a")));
 		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(endpoint, queryVariables,
 				"?a wdt:P22 ?b");
 		final String expectedStringConfig = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=SPARQL\n"
@@ -66,7 +66,7 @@ public class SparqlQueryResultDataSourceTest {
 	public void testEmptyQueryBodyList() throws IOException {
 
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
-				Arrays.asList(Expressions.makeVariable("a")));
+				Arrays.asList(Expressions.makeUniversalVariable("a")));
 		new SparqlQueryResultDataSource(endpoint, queryVariables, StringUtils.SPACE);
 	}
 

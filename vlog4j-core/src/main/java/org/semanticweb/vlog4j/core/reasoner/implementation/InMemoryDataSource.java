@@ -73,7 +73,7 @@ public class InMemoryDataSource implements DataSource {
 		}
 		data[nextEmptyTuple] = new String[arity];
 		for (int i = 0; i < arity; i++) {
-			data[nextEmptyTuple][i] = TermToVLogConverter.getVLogNameForConstant(constantNames[i]);
+			data[nextEmptyTuple][i] = TermToVLogConverter.getVLogNameForConstantName(constantNames[i]);
 		}
 		nextEmptyTuple++;
 	}

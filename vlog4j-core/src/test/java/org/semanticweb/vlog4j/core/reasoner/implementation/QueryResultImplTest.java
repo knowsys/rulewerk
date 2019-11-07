@@ -38,8 +38,8 @@ public class QueryResultImplTest {
 
 	@Test
 	public void testEquals() {
-		final Constant c1 = Expressions.makeConstant("C");
-		final Constant c2 = Expressions.makeConstant("ddd");
+		final Constant c1 = Expressions.makeAbstractConstant("C");
+		final Constant c2 = Expressions.makeAbstractConstant("ddd");
 		final List<Term> constantList = Arrays.asList(c1, c1, c2);
 
 		final QueryResult queryResult1 = new QueryResultImpl(constantList);

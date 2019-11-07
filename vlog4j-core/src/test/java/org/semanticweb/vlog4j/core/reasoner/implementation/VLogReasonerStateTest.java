@@ -49,14 +49,15 @@ import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
 
-public class ReasonerStateTest {
+public class VLogReasonerStateTest {
 
 	private static final Predicate p = Expressions.makePredicate("p", 1);
 	private static final Predicate q = Expressions.makePredicate("q", 1);
-	private static final Variable x = Expressions.makeVariable("x");
-	private static final Constant c = Expressions.makeConstant("c");
-	private static final Constant d = Expressions.makeConstant("d");
+	private static final Variable x = Expressions.makeUniversalVariable("x");
+	private static final Constant c = Expressions.makeAbstractConstant("c");
+	private static final Constant d = Expressions.makeAbstractConstant("d");
 	private static final PositiveLiteral exampleQueryAtom = Expressions.makePositiveLiteral("q", x);
 
 	private static final PositiveLiteral ruleHeadQx = Expressions.makePositiveLiteral(q, x);
@@ -78,7 +79,7 @@ public class ReasonerStateTest {
 			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, "", true);
 		}
 	}
-	
+
 	@Test(expected = ReasonerStateException.class)
 	public void testFailAnswerQueryAfterReset() throws IOException {
 		try (final Reasoner reasoner = Reasoner.getInstance()) {
@@ -96,7 +97,6 @@ public class ReasonerStateTest {
 			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, "", true);
 		}
 	}
-
 
 	@Test
 	public void testAddFactsAndQuery() throws IOException {
@@ -119,7 +119,7 @@ public class ReasonerStateTest {
 			reasoner.getKnowledgeBase().addStatement(factPd);
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(query, true)) {
-				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, queryResult.getCorrectness());
+				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
 				assertEquals(expectedAnswersC, QueryResultsUtils.collectQueryResults(queryResult));
 			}
 
@@ -246,13 +246,13 @@ public class ReasonerStateTest {
 	private void checkExplicitFacts(final Reasoner reasoner, final Predicate predicateR1) {
 		try (final QueryResultIterator queryResultIteratorPx = reasoner.answerQuery(ruleBodyPx, true)) {
 			assertTrue(queryResultIteratorPx.hasNext());
-			assertEquals(factPc.getTerms(), queryResultIteratorPx.next().getTerms());
+			assertEquals(factPc.getArguments(), queryResultIteratorPx.next().getTerms());
 			assertFalse(queryResultIteratorPx.hasNext());
 		}
 		try (final QueryResultIterator queryResultIteratorRx = reasoner
 				.answerQuery(Expressions.makePositiveLiteral(predicateR1, x), true)) {
 			assertTrue(queryResultIteratorRx.hasNext());
-			assertEquals(Arrays.asList(Expressions.makeConstant("d")), queryResultIteratorRx.next().getTerms());
+			assertEquals(Arrays.asList(Expressions.makeAbstractConstant("d")), queryResultIteratorRx.next().getTerms());
 			assertFalse(queryResultIteratorRx.hasNext());
 		}
 	}
@@ -316,6 +316,171 @@ public class ReasonerStateTest {
 			reasoner.load();
 			reasoner.close();
 			reasoner.close();
+		}
+	}
+
+	@Test
+	public void testStatementRemovalBeforeLoad() {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			kb.removeStatement(ruleQxPx);
+			assertEquals(ReasonerState.KB_NOT_LOADED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementsListRemovalBeforeLoad() {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			kb.removeStatements(Arrays.asList(factPc, factPd));
+			assertEquals(ReasonerState.KB_NOT_LOADED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementsArrayRemovalBeforeLoad() {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			kb.removeStatements(factPc, factPd);
+			assertEquals(ReasonerState.KB_NOT_LOADED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementRemovalAfterLoad() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			kb.removeStatement(ruleQxPx);
+			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementsListRemovalAfterLoad() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			kb.removeStatements(Arrays.asList(ruleQxPx, factPd));
+			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementsArrayRemovalAfterLoad() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+			kb.removeStatements(Arrays.asList(ruleQxPx, factPd));
+			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementRemovalBeforeReason() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			kb.removeStatement(ruleQxPx);
+			reasoner.reason();
+			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementsListRemovalBeforeReason() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			kb.removeStatements(Arrays.asList(ruleQxPx, factPd));
+			reasoner.reason();
+			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementsArrayRemovalBeforeReason() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			kb.removeStatements(ruleQxPx, factPd);
+			reasoner.reason();
+			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementRemovalAfterReason() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.removeStatement(ruleQxPx);
+			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementsListRemovalAfterReason() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.removeStatements(Arrays.asList(factPc, ruleQxPx));
+			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementsArrayRemovalAfterReason() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.removeStatements(factPc, ruleQxPx);
+			assertEquals(ReasonerState.KB_CHANGED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementNotRemovedAfterReason() throws IOException {
+		final Fact newFact = Expressions.makeFact("newPred", c);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.removeStatement(newFact);
+			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementsListNotRemovedAfterReason() throws IOException {
+		final Fact newFact = Expressions.makeFact("newPred", c);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.removeStatements(Arrays.asList(newFact));
+			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
+		}
+	}
+
+	@Test
+	public void testStatementsArrayListNotRemovedAfterReason() throws IOException {
+		final Fact newFact = Expressions.makeFact("newPred", c);
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(ruleQxPx, factPc, factPd);
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.removeStatements(newFact, newFact);
+			assertEquals(ReasonerState.MATERIALISED, reasoner.getReasonerState());
 		}
 	}
 

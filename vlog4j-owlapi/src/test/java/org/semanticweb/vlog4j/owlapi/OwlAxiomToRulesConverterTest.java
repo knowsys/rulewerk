@@ -242,7 +242,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
 		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, Arrays.asList(secondVariable));
 		final PositiveLiteral atB = Expressions.makePositiveLiteral(nB, Arrays.asList(converter.frontierVariable));
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR,
@@ -262,7 +262,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeExistentialVariable("Y1");
 		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, Arrays.asList(secondVariable));
 		final PositiveLiteral atB = Expressions.makePositiveLiteral(nB, Arrays.asList(converter.frontierVariable));
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR,
@@ -284,19 +284,22 @@ public class OwlAxiomToRulesConverterTest {
 		axiom.accept(converter);
 
 		final Predicate auxPredicate = OwlToRulesConversionHelper.getAuxiliaryClassPredicate(Arrays.asList(cA));
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeExistentialVariable("Y1");
+		final Variable secondVariableUniversal = Expressions.makeUniversalVariable("Y1");
 
 		final PositiveLiteral atB = Expressions.makePositiveLiteral(nB, Arrays.asList(converter.frontierVariable));
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR,
 				Arrays.asList(converter.frontierVariable, secondVariable));
 		final PositiveLiteral atAux = Expressions.makePositiveLiteral(auxPredicate, Arrays.asList(secondVariable));
-		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, Arrays.asList(secondVariable));
-		final PositiveLiteral bot = OwlToRulesConversionHelper.getBottom(secondVariable);
-
 		final Rule rule1 = Expressions.makeRule(Expressions.makePositiveConjunction(atR, atAux),
 				Expressions.makeConjunction(atB));
+
+		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, Arrays.asList(secondVariableUniversal));
+		final PositiveLiteral bot = OwlToRulesConversionHelper.getBottom(secondVariableUniversal);
+		final PositiveLiteral atAuxUniversal = Expressions.makePositiveLiteral(auxPredicate,
+				Arrays.asList(secondVariableUniversal));
 		final Rule rule2 = Expressions.makeRule(Expressions.makePositiveConjunction(bot),
-				Expressions.makeConjunction(atAux, atA));
+				Expressions.makeConjunction(atAuxUniversal, atA));
 
 		assertEquals(Sets.newSet(rule1, rule2), converter.rules);
 	}
@@ -309,7 +312,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, converter.frontierVariable, secondVariable);
 		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, secondVariable);
 		final PositiveLiteral atB = Expressions.makePositiveLiteral(nB, converter.frontierVariable);
@@ -347,8 +350,8 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Term consta = Expressions.makeConstant(getIri("a").toString());
-		final Term constb = Expressions.makeConstant(getIri("b").toString());
+		final Term consta = Expressions.makeAbstractConstant(getIri("a").toString());
+		final Term constb = Expressions.makeAbstractConstant(getIri("b").toString());
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, converter.frontierVariable, consta);
 		final PositiveLiteral atS = Expressions.makePositiveLiteral(nS, converter.frontierVariable, constb);
 
@@ -366,8 +369,8 @@ public class OwlAxiomToRulesConverterTest {
 		Rab.accept(converter);
 		invSab.accept(converter);
 
-		final Term consta = Expressions.makeConstant(getIri("a").toString());
-		final Term constb = Expressions.makeConstant(getIri("b").toString());
+		final Term consta = Expressions.makeAbstractConstant(getIri("a").toString());
+		final Term constb = Expressions.makeAbstractConstant(getIri("b").toString());
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, Arrays.asList(consta, constb));
 		final PositiveLiteral atS = Expressions.makePositiveLiteral(nS, Arrays.asList(constb, consta));
 
@@ -384,9 +387,9 @@ public class OwlAxiomToRulesConverterTest {
 		Ca.accept(converter);
 		BandhasRba.accept(converter);
 
-		final Term consta = Expressions.makeConstant(getIri("a").toString());
-		final Term constb = Expressions.makeConstant(getIri("b").toString());
-		final Term constc = Expressions.makeConstant(getIri("c").toString());
+		final Term consta = Expressions.makeAbstractConstant(getIri("a").toString());
+		final Term constb = Expressions.makeAbstractConstant(getIri("b").toString());
+		final Term constc = Expressions.makeAbstractConstant(getIri("c").toString());
 		final PositiveLiteral atC = Expressions.makePositiveLiteral(nC, constc);
 		final PositiveLiteral atB = Expressions.makePositiveLiteral(nB, consta);
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, consta, constb);
@@ -401,8 +404,8 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		Rab.accept(converter);
 
-		final Term consta = Expressions.makeConstant(getIri("a").toString());
-		final Term constb = Expressions.makeConstant(getIri("b").toString());
+		final Term consta = Expressions.makeAbstractConstant(getIri("a").toString());
+		final Term constb = Expressions.makeAbstractConstant(getIri("b").toString());
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, Arrays.asList(consta, constb));
 		final PositiveLiteral bot = OwlToRulesConversionHelper.getBottom(consta);
 
@@ -418,7 +421,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, converter.frontierVariable, secondVariable);
 		final PositiveLiteral atS = Expressions.makePositiveLiteral(nS, secondVariable, converter.frontierVariable);
 		final Rule rule = Expressions.makeRule(atS, atR);
@@ -433,7 +436,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
 		final PositiveLiteral at1 = Expressions.makePositiveLiteral(nR, converter.frontierVariable, secondVariable);
 		final PositiveLiteral at2 = Expressions.makePositiveLiteral(nR, secondVariable, converter.frontierVariable);
 		final Rule rule = Expressions.makeRule(OwlToRulesConversionHelper.getBottom(converter.frontierVariable), at1,
@@ -449,7 +452,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
 		final PositiveLiteral at1 = Expressions.makePositiveLiteral(nR, converter.frontierVariable, secondVariable);
 		final PositiveLiteral at2 = Expressions.makePositiveLiteral(nR, secondVariable, converter.frontierVariable);
 		final Rule rule = Expressions.makeRule(at2, at1);
@@ -492,7 +495,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, converter.frontierVariable, secondVariable);
 		final PositiveLiteral atS = Expressions.makePositiveLiteral(nS, secondVariable, converter.frontierVariable);
 		final Rule rule1 = Expressions.makeRule(atS, atR);
@@ -508,7 +511,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR,
 				Arrays.asList(converter.frontierVariable, secondVariable));
 		final PositiveLiteral atS = Expressions.makePositiveLiteral(nS,
@@ -537,9 +540,9 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable var1 = Expressions.makeVariable("Y1");
-		final Variable var2 = Expressions.makeVariable("Y2");
-		final Variable var3 = Expressions.makeVariable("Y3");
+		final Variable var1 = Expressions.makeUniversalVariable("Y1");
+		final Variable var2 = Expressions.makeUniversalVariable("Y2");
+		final Variable var3 = Expressions.makeUniversalVariable("Y3");
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR,
 				Arrays.asList(converter.frontierVariable, var1));
 		final PositiveLiteral atS = Expressions.makePositiveLiteral(nS, Arrays.asList(var2, var1));
@@ -558,8 +561,8 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable var1 = Expressions.makeVariable("Y1");
-		final Variable var2 = Expressions.makeVariable("Y2");
+		final Variable var1 = Expressions.makeUniversalVariable("Y1");
+		final Variable var2 = Expressions.makeUniversalVariable("Y2");
 		final PositiveLiteral at1 = Expressions.makePositiveLiteral(nR,
 				Arrays.asList(converter.frontierVariable, var1));
 		final PositiveLiteral at2 = Expressions.makePositiveLiteral(nR, Arrays.asList(var1, var2));
@@ -603,7 +606,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, converter.frontierVariable, secondVariable);
 		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, converter.frontierVariable);
 
@@ -619,7 +622,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Variable secondVariable = Expressions.makeVariable("Y1");
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, converter.frontierVariable, secondVariable);
 		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, secondVariable);
 
