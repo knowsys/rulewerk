@@ -139,7 +139,7 @@ public class RuleImplTest {
 	}
 
 	@Test
-	public void testtoString() {
+	public void ruleToStringTest() {
 		final Variable x = Expressions.makeUniversalVariable("X");
 		final Variable y = Expressions.makeExistentialVariable("Y");
 		final Variable z = Expressions.makeUniversalVariable("Z");

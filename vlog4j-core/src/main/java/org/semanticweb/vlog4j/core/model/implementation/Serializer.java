@@ -106,7 +106,7 @@ public final class Serializer {
 				+ datasourcedeclaration.getPredicate().getArity() + ") : "
 				+ datasourcedeclaration.getDataSource().toConfigString() + " .";
 	}
-	
+
 	public static String getConjunctionString(Conjunction<Literal> conjunction) {
 		final StringBuilder stringBuilder = new StringBuilder();
 		boolean first = true;
