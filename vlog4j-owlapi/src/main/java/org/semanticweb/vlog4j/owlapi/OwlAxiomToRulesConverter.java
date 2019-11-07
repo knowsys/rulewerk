@@ -520,7 +520,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final SWRLRule rule) {
-		// TODO support SWRL rules
+		throw new OwlFeatureNotSupportedException("SWRLRule currently not supported.");
 
 	}
 
