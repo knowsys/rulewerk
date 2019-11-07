@@ -95,7 +95,7 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 			} else {
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(Serializer.getLiteralString((AbstractLiteralImpl) literal));
+			stringBuilder.append(Serializer.getLiteralString(literal));
 		}
 		return stringBuilder.toString();
 	}

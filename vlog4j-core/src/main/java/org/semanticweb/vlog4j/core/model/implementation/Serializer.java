@@ -24,16 +24,22 @@ import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
+import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
+import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
 import org.semanticweb.vlog4j.core.model.api.Fact;
+import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 
 /**
- * Simple class implementation of various toString methods to ensure the correct
- * parsable string output of the different Data models.
+ * A utility class with static methods to obtain the correct parsable string
+ * representation of the different data models.
  * 
  * @author Ali Elhalawati
  *
@@ -44,11 +50,11 @@ public final class Serializer {
 
 	}
 
-	public static String getRuleString(RuleImpl rule) {
+	public static String getRuleString(Rule rule) {
 		return rule.getHead() + " :- " + rule.getBody() + ".";
 	}
 
-	public static String getLiteralString(AbstractLiteralImpl literal) {
+	public static String getLiteralString(Literal literal) {
 		final StringBuilder stringBuilder = new StringBuilder("");
 		if (literal.isNegated()) {
 			stringBuilder.append("~");
@@ -67,32 +73,52 @@ public final class Serializer {
 		return stringBuilder.toString();
 	}
 
-	public static String getConstantString(AbstractConstantImpl constant) {
+	public static String getConstantString(Constant constant) {
 		return constant.getName();
 	}
 
-	public static String getExistentialVarString(ExistentialVariableImpl existentialvariable) {
+	public static String getExistentialVarString(ExistentialVariable existentialvariable) {
 		return "!" + existentialvariable.getName();
 	}
 
-	public static String getUniversalVarString(UniversalVariableImpl universalvariable) {
+	public static String getUniversalVarString(UniversalVariable universalvariable) {
 		return "?" + universalvariable.getName();
 	}
 
-	public static String getDatatypeConstantString(DatatypeConstantImpl datatypeconstant) {
+	public static String getDatatypeConstantString(DatatypeConstant datatypeconstant) {
 		return datatypeconstant.getName();
 	}
 
-	public static String getNamedNullString(NamedNullImpl namednull) {
+	public static String getNamedNullString(NamedNull namednull) {
 		return "_" + namednull.getName();
 	}
 
-	public static String getLanguageConstantString(LanguageStringConstantImpl languagestringconstant) {
+	public static String getLanguageConstantString(LanguageStringConstant languagestringconstant) {
 		return languagestringconstant.getName();
 	}
 
 	public static String getPredicateString(Predicate predicate) {
 		return " Predicate [ name= " + predicate.getName() + ", arity= " + predicate.getArity() + "]";
+	}
+
+	public static String getDataSourceDeclarationString(DataSourceDeclaration datasourcedeclaration) {
+		return "@source " + getPredicateString(datasourcedeclaration.getPredicate()) + "("
+				+ datasourcedeclaration.getPredicate().getArity() + ") : "
+				+ datasourcedeclaration.getDataSource().toConfigString() + " .";
+	}
+	
+	public static String getConjunctionString(Conjunction<Literal> conjunction) {
+		final StringBuilder stringBuilder = new StringBuilder();
+		boolean first = true;
+		for (final Literal literal : conjunction.getLiterals()) {
+			if (first) {
+				first = false;
+			} else {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(getLiteralString(literal));
+		}
+		return stringBuilder.toString();
 	}
 
 }

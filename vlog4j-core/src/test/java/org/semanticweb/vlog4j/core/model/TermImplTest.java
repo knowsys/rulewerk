@@ -133,37 +133,37 @@ public class TermImplTest {
 	}
 
 	@Test
-	public void testabstractConstantImpltoString() {
+	public void abstractConstantToStringTest() {
 		AbstractConstantImpl c = new AbstractConstantImpl("c");
 		assertEquals("c", c.toString());
 	}
 
 	@Test
-	public void testdatatypeConstantImpltoString() {
+	public void datatypeConstantToStringTest() {
 		DatatypeConstantImpl c = new DatatypeConstantImpl("c", "http://example.org/mystring");
 		assertEquals("\"c\"^^<http://example.org/mystring>", c.toString());
 	}
 
 	@Test
-	public void testlanguageStringConstantImpltoString() {
+	public void languageStringConstantToStringTest() {
 		LanguageStringConstantImpl c = new LanguageStringConstantImpl("Test", "en");
 		assertEquals("\"Test\"@en", c.toString());
 	}
 
 	@Test
-	public void testuniversalVariabletoString() {
+	public void universalVariableToStringTest() {
 		UniversalVariableImpl v = new UniversalVariableImpl("v");
 		assertEquals("?v", v.toString());
 	}
 
 	@Test
-	public void testexistentialVariabletoString() {
+	public void existentialVariableToStringTest() {
 		ExistentialVariableImpl v = new ExistentialVariableImpl("v");
 		assertEquals("!v", v.toString());
 	}
 
 	@Test
-	public void testnamedNulltoString() {
+	public void namedNullToStringTest() {
 		NamedNullImpl n = new NamedNullImpl("123");
 		assertEquals("_123", n.toString());
 	}

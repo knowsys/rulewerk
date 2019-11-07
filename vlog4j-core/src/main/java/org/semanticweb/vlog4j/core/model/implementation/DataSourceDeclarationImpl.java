@@ -77,7 +77,7 @@ public class DataSourceDeclarationImpl implements DataSourceDeclaration {
 
 		return (this.predicate.equals(other.getPredicate())) && this.dataSource.equals(other.getDataSource());
 	}
-	
+
 	@Override
 	public <T> T accept(StatementVisitor<T> statementVisitor) {
 		return statementVisitor.visit(this);
@@ -85,8 +85,7 @@ public class DataSourceDeclarationImpl implements DataSourceDeclaration {
 
 	@Override
 	public String toString() {
-		return "@source " + Serializer.getPredicateString(this.predicate) + "(" + this.predicate.getArity() + ") : "
-				+ this.dataSource.toConfigString() + " .";
+		return Serializer.getDataSourceDeclarationString(this);
 	}
 
 }

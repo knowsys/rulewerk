@@ -55,7 +55,7 @@ public class FactTest {
 	}
 
 	@Test
-	public void testtoString() {
+	public void factToStringTest() {
 		final Predicate p = Expressions.makePredicate("p", 2);
 		final Constant c = Expressions.makeAbstractConstant("c");
 		final Constant d = Expressions.makeAbstractConstant("d");

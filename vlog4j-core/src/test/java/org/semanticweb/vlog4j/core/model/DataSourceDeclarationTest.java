@@ -63,7 +63,7 @@ public class DataSourceDeclarationTest {
 	}
 
 	@Test
-	public void testdataSourceDecalarationtoString() throws MalformedURLException {
+	public void dataSourceDecalarationToStringTest() throws MalformedURLException {
 		DataSource dataSource1 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
 				"?var wdt:P31 wd:Q5 .");
 		Predicate predicate1 = Expressions.makePredicate("p", 3);
