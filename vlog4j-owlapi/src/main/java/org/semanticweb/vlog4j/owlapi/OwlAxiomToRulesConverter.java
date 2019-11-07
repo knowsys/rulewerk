@@ -221,24 +221,24 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 * @param superClass
 	 */
 	void addSubClassAxiom(final OWLClassExpression subClass, final OWLClassExpression superClass) {
-		this.startAxiomConversion();
+		if (subClass instanceof OWLObjectOneOf) {
+			final OWLObjectOneOf subClassInstaceOf = (OWLObjectOneOf) subClass;
+			subClassInstaceOf.individuals().forEach(individual -> visitClassAssertionAxiom(individual, superClass));
+		} else {
+			this.startAxiomConversion();
 
-		final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(this.frontierVariable, this);
-		superClass.accept(headConverter);
-		final ClassToRuleBodyConverter bodyConverter = new ClassToRuleBodyConverter(this.frontierVariable,
-				headConverter.body, headConverter.head, this);
-		bodyConverter.handleDisjunction(subClass, this.frontierVariable);
-		this.addRule(bodyConverter);
+			final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(this.frontierVariable, this);
+			superClass.accept(headConverter);
+			final ClassToRuleBodyConverter bodyConverter = new ClassToRuleBodyConverter(this.frontierVariable,
+					headConverter.body, headConverter.head, this);
+			bodyConverter.handleDisjunction(subClass, this.frontierVariable);
+			this.addRule(bodyConverter);
+		}
 	}
 
 	@Override
 	public void visit(final OWLSubClassOfAxiom axiom) {
-		if (axiom.getSubClass() instanceof OWLObjectOneOf) {
-			final OWLObjectOneOf subClass = (OWLObjectOneOf) axiom.getSubClass();
-			subClass.individuals().forEach(individual -> visitClassAssertionAxiom(individual, axiom.getSuperClass()));
-		} else {
-			this.addSubClassAxiom(axiom.getSubClass(), axiom.getSuperClass());
-		}
+		this.addSubClassAxiom(axiom.getSubClass(), axiom.getSuperClass());
 	}
 
 	@Override
