@@ -87,17 +87,7 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 
 	@Override
 	public String toString() {
-		final StringBuilder stringBuilder = new StringBuilder();
-		boolean first = true;
-		for (final T literal : this.literals) {
-			if (first) {
-				first = false;
-			} else {
-				stringBuilder.append(", ");
-			}
-			stringBuilder.append(Serializer.getLiteralString(literal));
-		}
-		return stringBuilder.toString();
+		return Serializer.getConjunctionString(this);
 	}
 
 }

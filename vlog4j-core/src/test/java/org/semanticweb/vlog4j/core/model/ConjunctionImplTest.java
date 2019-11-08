@@ -182,7 +182,7 @@ public class ConjunctionImplTest {
 	}
 
 	@Test
-	public void conjunctiontToStringTest() {
+	public void conjunctionToStringTest() {
 		final Variable x = Expressions.makeUniversalVariable("X");
 		final Variable y = Expressions.makeUniversalVariable("Y");
 		final Constant c = Expressions.makeAbstractConstant("c");

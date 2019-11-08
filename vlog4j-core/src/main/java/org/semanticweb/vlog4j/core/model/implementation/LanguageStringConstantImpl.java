@@ -84,7 +84,7 @@ public class LanguageStringConstantImpl implements LanguageStringConstant {
 
 	@Override
 	public String toString() {
-		return Serializer.getLanguageConstantString(this);
+		return Serializer.getConstantString(this);
 	}
 
 }

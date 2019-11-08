@@ -77,37 +77,29 @@ public final class Serializer {
 		return constant.getName();
 	}
 
-	public static String getExistentialVarString(ExistentialVariable existentialvariable) {
-		return "!" + existentialvariable.getName();
+	public static String getExistentialVarString(ExistentialVariable existentialVariable) {
+		return "!" + existentialVariable.getName();
 	}
 
-	public static String getUniversalVarString(UniversalVariable universalvariable) {
-		return "?" + universalvariable.getName();
+	public static String getUniversalVarString(UniversalVariable universalVariable) {
+		return "?" + universalVariable.getName();
 	}
 
-	public static String getDatatypeConstantString(DatatypeConstant datatypeconstant) {
-		return datatypeconstant.getName();
-	}
-
-	public static String getNamedNullString(NamedNull namednull) {
-		return "_" + namednull.getName();
-	}
-
-	public static String getLanguageConstantString(LanguageStringConstant languagestringconstant) {
-		return languagestringconstant.getName();
+	public static String getNamedNullString(NamedNull namedNull) {
+		return "_" + namedNull.getName();
 	}
 
 	public static String getPredicateString(Predicate predicate) {
 		return " Predicate [ name= " + predicate.getName() + ", arity= " + predicate.getArity() + "]";
 	}
 
-	public static String getDataSourceDeclarationString(DataSourceDeclaration datasourcedeclaration) {
-		return "@source " + getPredicateString(datasourcedeclaration.getPredicate()) + "("
-				+ datasourcedeclaration.getPredicate().getArity() + ") : "
-				+ datasourcedeclaration.getDataSource().toConfigString() + " .";
+	public static String getDataSourceDeclarationString(DataSourceDeclaration dataSourceDeclaration) {
+		return "@source " + dataSourceDeclaration.getPredicate().getName() + "("
+				+ dataSourceDeclaration.getPredicate().getArity() + ") : "
+				+ dataSourceDeclaration.getDataSource().toConfigString() + " .";
 	}
 
-	public static String getConjunctionString(Conjunction<Literal> conjunction) {
+	public static String getConjunctionString(Conjunction<? extends Literal> conjunction) {
 		final StringBuilder stringBuilder = new StringBuilder();
 		boolean first = true;
 		for (final Literal literal : conjunction.getLiterals()) {
