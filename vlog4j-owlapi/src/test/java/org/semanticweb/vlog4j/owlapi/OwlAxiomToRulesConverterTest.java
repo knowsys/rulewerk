@@ -36,11 +36,13 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
@@ -72,29 +74,33 @@ public class OwlAxiomToRulesConverterTest {
 		return Expressions.makePredicate("http://example.org/" + localName, 2);
 	}
 
-	static OWLClass cA = getOwlClass("A");
-	static OWLClass cB = getOwlClass("B");
-	static OWLClass cC = getOwlClass("C");
-	static OWLClass cD = getOwlClass("D");
-	static OWLClass cE = getOwlClass("E");
-	static OWLObjectProperty pR = getOwlObjectProperty("Rule");
-	static OWLObjectProperty pS = getOwlObjectProperty("S");
-	static OWLObjectProperty pT = getOwlObjectProperty("T");
-	static OWLObjectProperty pU = getOwlObjectProperty("U");
+	static final OWLClass cA = getOwlClass("A");
+	static final OWLClass cB = getOwlClass("B");
+	static final OWLClass cC = getOwlClass("C");
+	static final OWLClass cD = getOwlClass("D");
+	static final OWLClass cE = getOwlClass("E");
+	static final OWLObjectProperty pR = getOwlObjectProperty("Rule");
+	static final OWLObjectProperty pS = getOwlObjectProperty("S");
+	static final OWLObjectProperty pT = getOwlObjectProperty("T");
+	static final OWLObjectProperty pU = getOwlObjectProperty("U");
 
-	static Predicate nA = getClassPredicate("A");
-	static Predicate nB = getClassPredicate("B");
-	static Predicate nC = getClassPredicate("C");
-	static Predicate nD = getClassPredicate("D");
-	static Predicate nE = getClassPredicate("E");
-	static Predicate nR = getPropertyPredicate("Rule");
-	static Predicate nS = getPropertyPredicate("S");
-	static Predicate nT = getPropertyPredicate("T");
-	static Predicate nU = getPropertyPredicate("U");
+	static final Predicate nA = getClassPredicate("A");
+	static final Predicate nB = getClassPredicate("B");
+	static final Predicate nC = getClassPredicate("C");
+	static final Predicate nD = getClassPredicate("D");
+	static final Predicate nE = getClassPredicate("E");
+	static final Predicate nR = getPropertyPredicate("Rule");
+	static final Predicate nS = getPropertyPredicate("S");
+	static final Predicate nT = getPropertyPredicate("T");
+	static final Predicate nU = getPropertyPredicate("U");
 
-	static OWLIndividual inda = df.getOWLNamedIndividual(getIri("a"));
-	static OWLIndividual indb = df.getOWLNamedIndividual(getIri("b"));
-	static OWLIndividual indc = df.getOWLNamedIndividual(getIri("c"));
+	static final OWLIndividual inda = df.getOWLNamedIndividual(getIri("a"));
+	static final OWLIndividual indb = df.getOWLNamedIndividual(getIri("b"));
+	static final OWLIndividual indc = df.getOWLNamedIndividual(getIri("c"));
+	
+	static final Term consta = Expressions.makeAbstractConstant(getIri("a").toString());
+	static final Term constb = Expressions.makeAbstractConstant(getIri("b").toString());
+	static final Term constc = Expressions.makeAbstractConstant(getIri("c").toString());
 
 	@Test
 	public void testSimpleRule() {
@@ -387,9 +393,7 @@ public class OwlAxiomToRulesConverterTest {
 		Ca.accept(converter);
 		BandhasRba.accept(converter);
 
-		final Term consta = Expressions.makeAbstractConstant(getIri("a").toString());
-		final Term constb = Expressions.makeAbstractConstant(getIri("b").toString());
-		final Term constc = Expressions.makeAbstractConstant(getIri("c").toString());
+
 		final PositiveLiteral atC = Expressions.makePositiveLiteral(nC, constc);
 		final PositiveLiteral atB = Expressions.makePositiveLiteral(nB, consta);
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, consta, constb);
@@ -630,6 +634,65 @@ public class OwlAxiomToRulesConverterTest {
 				Expressions.makeConjunction(Arrays.asList(atR)));
 
 		assertEquals(Collections.singleton(rule), converter.rules);
+	}
+
+	@Test
+	public void testNominalSubClassOfClass() {
+		OWLObjectOneOf oneOfa = df.getOWLObjectOneOf(inda);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(oneOfa, cA);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+		
+		final Fact expectedFact = Expressions.makeFact(nA, consta);
+		assertEquals(Collections.singleton(expectedFact), converter.facts);
+		assertTrue(converter.rules.isEmpty());
+	}
+
+	@Test
+	public void testNominalsSubClassOfClass() {
+		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(oneOfab, cA);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		final Fact expectedFact1 = Expressions.makeFact(nA, consta);
+		final Fact expectedFact2 = Expressions.makeFact(nA, constb);
+
+		assertEquals(Sets.newSet(expectedFact1,expectedFact2), converter.facts);
+		assertTrue(converter.rules.isEmpty());
+	}
+	
+	@Test
+	public void testNominalsInConjunctionSubClassOfClass() {
+		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(oneOfab,cB);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+//TODO
+		System.out.println(converter.rules);
+		
+	}
+
+	@Test(expected = OwlFeatureNotSupportedException.class)
+	public void testNominalSuperClassOfClass() {
+		OWLObjectOneOf oneOfa = df.getOWLObjectOneOf(inda);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, oneOfa);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+	}
+	
+	@Test(expected = OwlFeatureNotSupportedException.class)
+	public void testNominalsSuperClassOfClass() {
+		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA,oneOfab);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
 	}
 
 	@Ignore
