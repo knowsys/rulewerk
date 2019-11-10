@@ -190,10 +190,12 @@ public class ConjunctionImplTest {
 		final PositiveLiteral positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
 		final PositiveLiteral positiveLiteral2 = Expressions.makePositiveLiteral("p", y, x);
 		final PositiveLiteral positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
-		final List<PositiveLiteral> positiveLiteralList = Arrays.asList(positiveLiteral1, positiveLiteral2,
-				positiveLiteral3);
-		final Conjunction<PositiveLiteral> conjunction1 = new ConjunctionImpl<>(positiveLiteralList);
-		assertEquals("p(?X, c), p(?Y, ?X), q(?X, d)", conjunction1.toString());
+		final NegativeLiteral NegativeLiteral = Expressions.makeNegativeLiteral("r", x, d);
+		final PositiveLiteral PositiveLiteral4 = Expressions.makePositiveLiteral("s", c, d);
+		final List<Literal> LiteralList = Arrays.asList(positiveLiteral1, positiveLiteral2, positiveLiteral3,
+				NegativeLiteral, PositiveLiteral4);
+		final Conjunction<Literal> conjunction1 = new ConjunctionImpl<>(LiteralList);
+		assertEquals("p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, d)", conjunction1.toString());
 	}
 
 }

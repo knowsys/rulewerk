@@ -51,7 +51,7 @@ public final class Serializer {
 	}
 
 	public static String getRuleString(Rule rule) {
-		return rule.getHead() + " :- " + rule.getBody() + ".";
+		return getConjunctionString(rule.getHead()) + " :- " + getConjunctionString(rule.getBody()) + ".";
 	}
 
 	public static String getLiteralString(Literal literal) {
