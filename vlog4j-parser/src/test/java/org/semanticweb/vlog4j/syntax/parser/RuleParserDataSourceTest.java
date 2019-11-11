@@ -33,7 +33,7 @@ import java.util.Arrays;
 import javax.sql.DataSource;
 
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Statement;
@@ -103,7 +103,7 @@ public class RuleParserDataSourceTest {
         DataSourceDeclarationHandler handler = mock(DataSourceDeclarationHandler.class);
         ParserConfiguration parserConfiguration = new ParserConfiguration();
         parserConfiguration.registerDataSource("mock-source", handler);
-        doReturn(source).when(handler).handleDeclaration(Matchers.<String[]>any());
+        doReturn(source).when(handler).handleDeclaration(ArgumentMatchers.<String[]>any());
 
         String input = "@source p(2) : mock-source(\"hello\", \"world\") .";
         String[] expectedArguments = {"hello", "world"};
