@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.owlapi;
 
-import java.util.ArrayList;
-
 /*-
  * #%L
  * VLog4j OWL API Support
@@ -23,8 +21,6 @@ import java.util.ArrayList;
  */
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.OWLClass;
@@ -46,7 +42,6 @@ import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
@@ -156,28 +151,11 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 				this.body);
 	}
 
+	// TODO support this feature
 	@Override
 	public void visit(final OWLObjectOneOf ce) {
-		System.out.println("Body");
-		System.out.println(this.body.getConjuncts());
-		System.out.println("Head");
-		System.out.println(this.head.getConjuncts());
-
-		System.out.println("Parent body: " + parent.rules);
-
-		ce.individuals().forEach(individual -> {
-			final Term individualTerm = OwlToRulesConversionHelper.getIndividualTerm(individual);
-
-			if (this.body.exists()) {
-				SimpleConjunction newBody = RulesHelper.replaceTerm(this.body, this.mainTerm, individualTerm);
-				System.out.println("New Body: " + newBody);
-			}
-			if (this.head.exists()) {
-				SimpleConjunction newHead = RulesHelper.replaceTerm(this.head, this.mainTerm, individualTerm);
-				System.out.println("New Head: " + newHead);
-			}
-
-		});
+		throw new OwlFeatureNotSupportedException(
+				"OWLObjectOneOf in complex class expressions currently not supported!");
 	}
 
 	@Override

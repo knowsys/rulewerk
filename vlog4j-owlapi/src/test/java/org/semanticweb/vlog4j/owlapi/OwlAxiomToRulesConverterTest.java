@@ -97,7 +97,7 @@ public class OwlAxiomToRulesConverterTest {
 	static final OWLIndividual inda = df.getOWLNamedIndividual(getIri("a"));
 	static final OWLIndividual indb = df.getOWLNamedIndividual(getIri("b"));
 	static final OWLIndividual indc = df.getOWLNamedIndividual(getIri("c"));
-	
+
 	static final Term consta = Expressions.makeAbstractConstant(getIri("a").toString());
 	static final Term constb = Expressions.makeAbstractConstant(getIri("b").toString());
 	static final Term constc = Expressions.makeAbstractConstant(getIri("c").toString());
@@ -393,7 +393,6 @@ public class OwlAxiomToRulesConverterTest {
 		Ca.accept(converter);
 		BandhasRba.accept(converter);
 
-
 		final PositiveLiteral atC = Expressions.makePositiveLiteral(nC, constc);
 		final PositiveLiteral atB = Expressions.makePositiveLiteral(nB, consta);
 		final PositiveLiteral atR = Expressions.makePositiveLiteral(nR, consta, constb);
@@ -636,6 +635,9 @@ public class OwlAxiomToRulesConverterTest {
 		assertEquals(Collections.singleton(rule), converter.rules);
 	}
 
+	/*
+	 * {a} \sqsubseteq A
+	 */
 	@Test
 	public void testNominalSubClassOfClass() {
 		OWLObjectOneOf oneOfa = df.getOWLObjectOneOf(inda);
@@ -643,12 +645,15 @@ public class OwlAxiomToRulesConverterTest {
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
-		
+
 		final Fact expectedFact = Expressions.makeFact(nA, consta);
 		assertEquals(Collections.singleton(expectedFact), converter.facts);
 		assertTrue(converter.rules.isEmpty());
 	}
 
+	/*
+	 * {a,b} \sqsubseteq A
+	 */
 	@Test
 	public void testNominalsSubClassOfClass() {
 		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
@@ -660,23 +665,56 @@ public class OwlAxiomToRulesConverterTest {
 		final Fact expectedFact1 = Expressions.makeFact(nA, consta);
 		final Fact expectedFact2 = Expressions.makeFact(nA, constb);
 
-		assertEquals(Sets.newSet(expectedFact1,expectedFact2), converter.facts);
+		assertEquals(Sets.newSet(expectedFact1, expectedFact2), converter.facts);
 		assertTrue(converter.rules.isEmpty());
 	}
-	
-	@Test
-	public void testNominalsInConjunctionSubClassOfClass() {
+
+	/*
+	 * ({a,b} \sqcap B) \sqsubseteq A
+	 */
+	@Test(expected = OwlFeatureNotSupportedException.class)
+	// TODO support this feature
+	public void testNominalsInConjunctionLeftSubClassOfClass() {
 		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(oneOfab,cB);
+		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(oneOfab, cB);
 		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
-//TODO
-		System.out.println(converter.rules);
-		
+	}
+	
+	/*
+	 * (B \sqcap {a,b}) \sqsubseteq A
+	 */
+	@Test(expected = OwlFeatureNotSupportedException.class)
+	// TODO support this feature
+	public void testNominalsInConjunctionRightSubClassOfClass() {
+		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(cB, oneOfab);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
 	}
 
+	
+	/*
+	 * A \sqsubseteq (B \sqcap {a,b}) 
+	 */
+	@Test(expected = OwlFeatureNotSupportedException.class)
+	public void testClassSubClassOfNominalsInConjunctionRight() {
+		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(cB, oneOfab);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, conjunction);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+	}
+
+
+	/*
+	 * A \sqsubseteq {a}
+	 */
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testNominalSuperClassOfClass() {
 		OWLObjectOneOf oneOfa = df.getOWLObjectOneOf(inda);
@@ -685,11 +723,14 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 	}
-	
+
+	/*
+	 * A \sqsubseteq {a,b}
+	 */
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testNominalsSuperClassOfClass() {
 		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA,oneOfab);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, oneOfab);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
