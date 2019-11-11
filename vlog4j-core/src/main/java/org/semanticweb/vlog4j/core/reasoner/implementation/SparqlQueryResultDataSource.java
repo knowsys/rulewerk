@@ -164,4 +164,10 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 				+ ", queryBody=" + queryBody + "]";
 	}
 
+	@Override
+	public String getSyntacticRepresentation() {
+		return "Sparql(\"" + endpoint + "\"" + ", \"" + queryVariables + "\""
+				+ ", \"" + queryBody + "\") .";
+	}
+
 }

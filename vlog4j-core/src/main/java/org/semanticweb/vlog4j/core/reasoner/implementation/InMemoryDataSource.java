@@ -101,4 +101,10 @@ public class InMemoryDataSource implements DataSource {
 		return null;
 	}
 
+	@Override
+	public String getSyntacticRepresentation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

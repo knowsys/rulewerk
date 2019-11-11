@@ -71,4 +71,9 @@ public class RdfFileDataSource extends FileDataSource {
 		return "RdfFileDataSource [rdfFile=" + getFile() + "]";
 	}
 
+	@Override
+	public String getSyntacticRepresentation() {
+		return "load-rdf(\"" + getFile() + "\") .";
+	}
+
 }

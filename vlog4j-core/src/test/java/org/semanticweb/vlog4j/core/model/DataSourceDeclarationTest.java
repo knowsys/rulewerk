@@ -22,15 +22,23 @@ package org.semanticweb.vlog4j.core.model;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSourceTestUtils;
+import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 public class DataSourceDeclarationTest {
@@ -73,5 +81,27 @@ public class DataSourceDeclarationTest {
 		Predicate predicate2 = Expressions.makePredicate("p", 3);
 		DataSourceDeclaration dataSourceDeclaration2 = new DataSourceDeclarationImpl(predicate2, dataSource2);
 		assertEquals(dataSourceDeclaration1.toString(), dataSourceDeclaration2.toString());
+	}
+
+	@Test
+	public void DataSourceDeclarationToStringTest() throws IOException {
+		final String csvFile = FileDataSourceTestUtils.INPUT_FOLDER + "file.csv";
+		final File unzippedRdfFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt");
+		Predicate predicate1 = Expressions.makePredicate("p", 3);
+		Predicate predicate2 = Expressions.makePredicate("q", 1);
+		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(new URL("https://example.org/"),
+				"var", "?var wdt:P31 wd:Q5 .");
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(csvFile));
+		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
+		final DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource);
+		final DataSourceDeclaration dataSourceDeclaration2 = new DataSourceDeclarationImpl(predicate2,
+				unzippedCsvFileDataSource);
+		final DataSourceDeclaration dataSourceDeclaration3 = new DataSourceDeclarationImpl(predicate2,
+				unzippedRdfFileDataSource);
+		assertEquals("Sparql(\"https://example.org/\", \"var\", \"?var wdt:P31 wd:Q5 .\") .",
+				dataSourceDeclaration1.toString());
+		assertEquals("load-csv(\"src/test/data/input/file.csv\") .", dataSourceDeclaration2.toString());
+		assertEquals("load-rdf(\"src/test/data/input/file.nt\") .", dataSourceDeclaration3.toString());
+
 	}
 }

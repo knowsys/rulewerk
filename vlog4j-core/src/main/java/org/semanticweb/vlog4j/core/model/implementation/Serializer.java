@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
@@ -110,9 +111,7 @@ public final class Serializer {
 	}
 
 	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
-		return "@source " + dataSourceDeclaration.getPredicate().getName() + "("
-				+ dataSourceDeclaration.getPredicate().getArity() + ") : "
-				+ dataSourceDeclaration.getDataSource().toConfigString() + " .";
+		return dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
 	}
 
 	public static String getString(Conjunction<? extends Literal> conjunction) {
