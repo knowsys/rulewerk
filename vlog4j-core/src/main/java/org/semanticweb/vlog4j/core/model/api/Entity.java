@@ -20,13 +20,10 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
-
 import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
 public interface Entity {
-	
-	 String getSyntacticRepresentation();
-	
 
+	String getSyntacticRepresentation();
 
 }
