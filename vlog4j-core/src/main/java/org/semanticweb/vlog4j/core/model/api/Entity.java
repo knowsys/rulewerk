@@ -23,7 +23,7 @@ package org.semanticweb.vlog4j.core.model.api;
 
 import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
-public interface SyntacticRepresentation {
+public interface Entity {
 	
 	 String getSyntacticRepresentation();
 	

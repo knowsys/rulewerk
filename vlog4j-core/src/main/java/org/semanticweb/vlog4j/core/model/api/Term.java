@@ -27,7 +27,7 @@ package org.semanticweb.vlog4j.core.model.api;
  * @author david.carral@tu-dresden.de
  * @author Markus Krötzsch
  */
-public interface Term extends SyntacticRepresentation {
+public interface Term extends Entity {
 
 	/**
 	 * Returns the name this term. The name uniquely identifies terms of the same

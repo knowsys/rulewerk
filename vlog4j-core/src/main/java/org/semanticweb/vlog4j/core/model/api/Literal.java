@@ -22,6 +22,8 @@ package org.semanticweb.vlog4j.core.model.api;
 
 import java.util.List;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /**
  * Interface for literals. A positive literal is simply an atomic formula, i.e.,
  * a formula of the form P(t1,...,tn) where P is a {@link Predicate} of arity n
@@ -31,7 +33,7 @@ import java.util.List;
  * @author david.carral@tu-dresden.de
  * @author Irina Dragoste
  */
-public interface Literal extends SyntaxObject, SyntacticRepresentation {
+public interface Literal extends SyntaxObject, Entity {
 
 	boolean isNegated();
 

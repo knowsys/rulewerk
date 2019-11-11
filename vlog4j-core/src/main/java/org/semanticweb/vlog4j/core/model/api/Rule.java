@@ -30,7 +30,7 @@ package org.semanticweb.vlog4j.core.model.api;
  * @author Markus Krötzsch
  *
  */
-public interface Rule extends SyntaxObject, Statement, SyntacticRepresentation {
+public interface Rule extends SyntaxObject, Statement, Entity {
 
 	/**
 	 * Returns the conjunction of head literals (the consequence of the rule).

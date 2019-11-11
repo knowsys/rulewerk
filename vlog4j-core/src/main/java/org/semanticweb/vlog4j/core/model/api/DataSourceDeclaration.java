@@ -27,7 +27,7 @@ package org.semanticweb.vlog4j.core.model.api;
  * @author Markus Kroetzsch
  *
  */
-public interface DataSourceDeclaration extends Statement, SyntacticRepresentation{
+public interface DataSourceDeclaration extends Statement, Entity{
 
 	/**
 	 * Returns the {@link Predicate} that this source applies to.
