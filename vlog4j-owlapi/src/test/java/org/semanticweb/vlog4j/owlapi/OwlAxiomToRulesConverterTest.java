@@ -631,6 +631,19 @@ public class OwlAxiomToRulesConverterTest {
 
 		assertEquals(Collections.singleton(rule), converter.rules);
 	}
+	
+	/*
+	 * A \sqsubseteq <1 .R
+	 */
+	@Test(expected = OwlFeatureNotSupportedException.class)
+	public void testSubClassOfMaxCardinality() {
+		
+		OWLClassExpression maxCard = df.getOWLObjectMaxCardinality(1, pR);
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, maxCard );
+		
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+	}
 
 	@Ignore
 	public void test() {
