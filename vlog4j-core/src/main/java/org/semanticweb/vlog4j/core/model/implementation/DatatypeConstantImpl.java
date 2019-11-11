@@ -58,14 +58,18 @@ public class DatatypeConstantImpl implements DatatypeConstant {
 		return this.lexicalValue;
 	}
 
+	public String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
 	@Override
 	public String toString() {
-		return Serializer.getConstantString(this);
+		return getSyntacticRepresentation();
 	}
 
 	@Override
 	public String getName() {
-		return "\"" + lexicalValue.replace("\\", "\\\\").replace("\"", "\\\"") + "\"^^<" + datatype + ">";
+		return Serializer.getDatatypeConstantName(this);
 	}
 
 	@Override

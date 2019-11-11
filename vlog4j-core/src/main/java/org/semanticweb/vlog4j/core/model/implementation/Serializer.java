@@ -50,11 +50,11 @@ public final class Serializer {
 
 	}
 
-	public static String getRuleString(Rule rule) {
-		return getConjunctionString(rule.getHead()) + " :- " + getConjunctionString(rule.getBody()) + ".";
+	public static String getString(Rule rule) {
+		return getString(rule.getHead()) + " :- " + getString(rule.getBody()) + ".";
 	}
 
-	public static String getLiteralString(Literal literal) {
+	public static String getString(Literal literal) {
 		final StringBuilder stringBuilder = new StringBuilder("");
 		if (literal.isNegated()) {
 			stringBuilder.append("~");
@@ -67,39 +67,55 @@ public final class Serializer {
 			} else {
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(term);
+			stringBuilder.append(term.getSyntacticRepresentation());
 		}
 		stringBuilder.append(")");
 		return stringBuilder.toString();
 	}
 
-	public static String getConstantString(Constant constant) {
+	public static String getString(Fact fact) {
+		final StringBuilder stringBuilder = new StringBuilder("");
+		stringBuilder.append(fact.getPredicate().getName()).append("(");
+		boolean first = true;
+		for (final Term term : fact.getArguments()) {
+			if (first) {
+				first = false;
+			} else {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(term.getSyntacticRepresentation());
+		}
+		stringBuilder.append(").");
+		return stringBuilder.toString();
+	}
+
+	public static String getString(Constant constant) {
 		return constant.getName();
 	}
 
-	public static String getExistentialVarString(ExistentialVariable existentialVariable) {
+	public static String getString(ExistentialVariable existentialVariable) {
 		return "!" + existentialVariable.getName();
 	}
 
-	public static String getUniversalVarString(UniversalVariable universalVariable) {
+	public static String getString(UniversalVariable universalVariable) {
 		return "?" + universalVariable.getName();
 	}
 
-	public static String getNamedNullString(NamedNull namedNull) {
+	public static String getString(NamedNull namedNull) {
 		return "_" + namedNull.getName();
 	}
 
-	public static String getPredicateString(Predicate predicate) {
+	public static String getString(Predicate predicate) {
 		return " Predicate [ name= " + predicate.getName() + ", arity= " + predicate.getArity() + "]";
 	}
 
-	public static String getDataSourceDeclarationString(DataSourceDeclaration dataSourceDeclaration) {
+	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
 		return "@source " + dataSourceDeclaration.getPredicate().getName() + "("
 				+ dataSourceDeclaration.getPredicate().getArity() + ") : "
 				+ dataSourceDeclaration.getDataSource().toConfigString() + " .";
 	}
 
-	public static String getConjunctionString(Conjunction<? extends Literal> conjunction) {
+	public static String getString(Conjunction<? extends Literal> conjunction) {
 		final StringBuilder stringBuilder = new StringBuilder();
 		boolean first = true;
 		for (final Literal literal : conjunction.getLiterals()) {
@@ -108,9 +124,19 @@ public final class Serializer {
 			} else {
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(getLiteralString(literal));
+			stringBuilder.append(getString(literal));
 		}
 		return stringBuilder.toString();
+	}
+
+	public static String getLanguageStringConstantName(LanguageStringConstant languageStringConstant) {
+		return "\"" + languageStringConstant.getString().replace("\\", "\\\\").replace("\"", "\\\"") + "\"@"
+				+ languageStringConstant.getLanguageTag();
+	}
+
+	public static String getDatatypeConstantName(DatatypeConstant datatypeConstant) {
+		return "\"" + datatypeConstant.getLexicalValue().replace("\\", "\\\\").replace("\"", "\\\"") + "\"^^<"
+				+ datatypeConstant.getDatatype() + ">";
 	}
 
 }

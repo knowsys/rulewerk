@@ -31,7 +31,7 @@ import java.util.List;
  * @author david.carral@tu-dresden.de
  * @author Irina Dragoste
  */
-public interface Literal extends SyntaxObject {
+public interface Literal extends SyntaxObject, SyntacticRepresentation {
 
 	boolean isNegated();
 

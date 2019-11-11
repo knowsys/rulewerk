@@ -20,26 +20,13 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
-/**
- * A declaration for an external data source, which assigns a predicate to a
- * source.
- * 
- * @author Markus Kroetzsch
- *
- */
-public interface DataSourceDeclaration extends Statement, SyntacticRepresentation{
 
-	/**
-	 * Returns the {@link Predicate} that this source applies to.
-	 * 
-	 * @return predicate into which data from the given source is loaded
-	 */
-	Predicate getPredicate();
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
-	/**
-	 * Returns the {@link DataSource} that the data is loaded from.
-	 * 
-	 * @return data source specification
-	 */
-	DataSource getDataSource();
+public interface SyntacticRepresentation {
+	
+	 String getSyntacticRepresentation();
+	
+
+
 }

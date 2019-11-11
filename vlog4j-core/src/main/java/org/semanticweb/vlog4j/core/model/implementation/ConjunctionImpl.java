@@ -85,9 +85,13 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 		return getLiterals().iterator();
 	}
 
+	public String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
 	@Override
 	public String toString() {
-		return Serializer.getConjunctionString(this);
+		return getSyntacticRepresentation();
 	}
 
 }

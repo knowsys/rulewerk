@@ -92,9 +92,13 @@ public abstract class AbstractLiteralImpl implements Literal {
 				&& this.getArguments().equals(other.getArguments());
 	}
 
+	public String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
 	@Override
 	public String toString() {
-		return Serializer.getLiteralString(this);
+		return getSyntacticRepresentation();
 	}
 
 	@Override

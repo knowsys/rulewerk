@@ -28,6 +28,7 @@ import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
@@ -127,6 +128,15 @@ public class VLogReasoner implements Reasoner {
 				return false;
 			final LocalFactsDataSourceDeclaration other = (LocalFactsDataSourceDeclaration) obj;
 			return predicate.equals(other.predicate);
+		}
+
+		public String getSyntacticRepresentation() {
+			return Serializer.getString(this);
+		}
+
+		@Override
+		public String toString() {
+			return getSyntacticRepresentation();
 		}
 
 	}
@@ -740,19 +750,18 @@ public class VLogReasoner implements Reasoner {
 		// TODO more elaborate materialisation state handling
 
 		updateReasonerToKnowledgeBaseChanged();
-		
-		//updateCorrectnessOnStatementsAdded(statementsAdded);
+
+		// updateCorrectnessOnStatementsAdded(statementsAdded);
 		updateCorrectness();
 	}
-
 
 	@Override
 	public void onStatementAdded(Statement statementAdded) {
 		// TODO more elaborate materialisation state handling
 
 		updateReasonerToKnowledgeBaseChanged();
-		
-		//updateCorrectnessOnStatementAdded(statementAdded);
+
+		// updateCorrectnessOnStatementAdded(statementAdded);
 		updateCorrectness();
 	}
 
@@ -766,9 +775,9 @@ public class VLogReasoner implements Reasoner {
 
 	private void updateCorrectness() {
 		if (this.reasonerState == ReasonerState.KB_CHANGED) {
-			
+
 			final boolean noRules = this.knowledgeBase.getRules().isEmpty();
-			this.correctness = noRules? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
+			this.correctness = noRules ? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
 		}
 	}
 

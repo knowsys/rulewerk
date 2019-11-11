@@ -29,7 +29,7 @@ package org.semanticweb.vlog4j.core.model.api;
  * @author Irina Dragoste
  *
  */
-public interface Predicate {
+public interface Predicate extends SyntacticRepresentation {
 
 	/**
 	 * The name of the Predicate.

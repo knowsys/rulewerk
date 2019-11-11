@@ -31,10 +31,10 @@ import org.semanticweb.vlog4j.core.model.api.TermVisitor;
 public class AbstractConstantImpl extends AbstractTermImpl implements AbstractConstant {
 
 	/**
-	 * Instantiates a <b>{@code ConstantImpl}</b> object with the name <b>{@code name}</b>.
+	 * Instantiates a <b>{@code ConstantImpl}</b> object with the name
+	 * <b>{@code name}</b>.
 	 *
-	 * @param name
-	 *            cannot be a blank String (null, empty or whitespace).
+	 * @param name cannot be a blank String (null, empty or whitespace).
 	 */
 	public AbstractConstantImpl(final String name) {
 		super(name);
@@ -44,9 +44,13 @@ public class AbstractConstantImpl extends AbstractTermImpl implements AbstractCo
 	public <T> T accept(TermVisitor<T> termVisitor) {
 		return termVisitor.visit(this);
 	}
-	
+
+	public String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
 	@Override
 	public String toString() {
-		return Serializer.getConstantString(this);
+		return getSyntacticRepresentation();
 	}
 }

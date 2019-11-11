@@ -44,8 +44,12 @@ public class ExistentialVariableImpl extends AbstractTermImpl implements Existen
 		return termVisitor.visit(this);
 	}
 
+	public String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
 	@Override
 	public String toString() {
-		return Serializer.getExistentialVarString(this);
+		return getSyntacticRepresentation();
 	}
 }

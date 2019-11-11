@@ -44,8 +44,12 @@ public class UniversalVariableImpl extends AbstractTermImpl implements Universal
 		return termVisitor.visit(this);
 	}
 
+	public String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
 	@Override
 	public String toString() {
-		return Serializer.getUniversalVarString(this);
+		return getSyntacticRepresentation();
 	}
 }
