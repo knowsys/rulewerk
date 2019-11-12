@@ -29,8 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import javax.sql.DataSource;
+import java.util.List;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -46,6 +45,7 @@ import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
+import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 public class RuleParserDataSourceTest {
 	@Test
@@ -91,24 +91,25 @@ public class RuleParserDataSourceTest {
 		RuleParser.parse(input);
 	}
 
-    @Test(expected = ParsingException.class)
-    public void testUnknownDataSource() throws ParsingException {
-        String input = "@source p(2) : unknown-data-source(\"hello, world\") .";
-        RuleParser.parse(input);
-    }
+	@Test(expected = ParsingException.class)
+	public void testUnknownDataSource() throws ParsingException {
+		String input = "@source p(2) : unknown-data-source(\"hello, world\") .";
+		RuleParser.parse(input);
+	}
 
-    @Test
-    public void testCustomDataSource() throws ParsingException {
-        CsvFileDataSource source = mock(CsvFileDataSource.class);
-        DataSourceDeclarationHandler handler = mock(DataSourceDeclarationHandler.class);
-        ParserConfiguration parserConfiguration = new ParserConfiguration();
-        parserConfiguration.registerDataSource("mock-source", handler);
-        doReturn(source).when(handler).handleDeclaration(ArgumentMatchers.<String[]>any());
+	@Test
+	public void testCustomDataSource() throws ParsingException {
+		CsvFileDataSource source = mock(CsvFileDataSource.class);
+		DataSourceDeclarationHandler handler = mock(DataSourceDeclarationHandler.class);
+		ParserConfiguration parserConfiguration = new ParserConfiguration();
+		parserConfiguration.registerDataSource("mock-source", handler);
+		doReturn(source).when(handler).handleDeclaration(ArgumentMatchers.<List<String>>any(),
+				ArgumentMatchers.<SubParserFactory>any());
 
-        String input = "@source p(2) : mock-source(\"hello\", \"world\") .";
-        String[] expectedArguments = {"hello", "world"};
-        RuleParser.parse(input, parserConfiguration);
+		String input = "@source p(2) : mock-source(\"hello\", \"world\") .";
+		List<String> expectedArguments = Arrays.asList("hello", "world");
+		RuleParser.parse(input, parserConfiguration);
 
-        verify(handler).handleDeclaration(eq(expectedArguments));
-    }
+		verify(handler).handleDeclaration(eq(expectedArguments), ArgumentMatchers.<SubParserFactory>any());
+	}
 }

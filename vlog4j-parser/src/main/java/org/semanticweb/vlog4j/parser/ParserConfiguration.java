@@ -1,10 +1,5 @@
 package org.semanticweb.vlog4j.parser;
 
-import java.util.HashMap;
-
-import org.semanticweb.vlog4j.core.model.api.DataSource;
-import org.semanticweb.vlog4j.parser.javacc.ParseException;
-
 /*-
  * #%L
  * vlog4j-parser
@@ -25,58 +20,81 @@ import org.semanticweb.vlog4j.parser.javacc.ParseException;
  * #L%
  */
 
+import java.util.HashMap;
+import java.util.List;
+
+import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.parser.datasources.CsvFileDataSourceDeclarationHandler;
+import org.semanticweb.vlog4j.parser.datasources.RdfFileDataSourceDeclarationHandler;
+import org.semanticweb.vlog4j.parser.datasources.SparqlQueryResultDataSourceDeclarationHandler;
+import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
+
 /**
  * Class to keep parser configuration.
  *
  * @author Maximilian Marx
  */
 public class ParserConfiguration {
-    /**
-     * Register a new Data Source.
-     *
-     * @param name
-     *        Name of the data source, as it appears in the declaring directive.
-     *
-     * @param handler
-     *        Handler for parsing a data source declaration.
-     *
-     * @throws IllegalArgumentException if the provided name is already registered.
-     * @return this
-     */
-    public ParserConfiguration registerDataSource(String name, DataSourceDeclarationHandler handler) throws IllegalArgumentException {
-        if (dataSources.containsKey(name)) {
-            throw new IllegalArgumentException("Data source \"" + name + "\" is already registered.");
-        }
+	public ParserConfiguration() {
+		registerDefaultDataSources();
+	}
 
-        this.dataSources.put(name, handler);
-        return this;
-    }
+	/**
+	 * Register a new Data Source.
+	 *
+	 * @param name    Name of the data source, as it appears in the declaring
+	 *                directive.
+	 * @param handler Handler for parsing a data source declaration.
+	 *
+	 * @throws IllegalArgumentException if the provided name is already registered.
+	 * @return this
+	 */
+	public ParserConfiguration registerDataSource(String name, DataSourceDeclarationHandler handler)
+			throws IllegalArgumentException {
+		if (dataSources.containsKey(name)) {
+			throw new IllegalArgumentException("Data source \"" + name + "\" is already registered.");
+		}
 
-    /**
-     * Parse a Data Source declaration.
-     *
-     * @param name
-     *        Name of the data source.
-     *
-     * @param args
-     *        arguments given in the data source declaration.
-     *
-     * @throws ParsingException when the declaration is invalid, e.g., if the Data Source is not known.
-     *
-     * @return the Data Source instance.
-     */
-    public DataSource parseDataSourceDeclaration(String name, String[] args) throws ParsingException {
-        DataSourceDeclarationHandler handler = dataSources.get(name);
+		this.dataSources.put(name, handler);
+		return this;
+	}
 
-        if (handler == null) {
-            throw new ParsingException("Data source \"" + name + "\" is not known.");
-        }
+	/**
+	 * Parse a Data Source declaration.
+	 *
+	 * @param name             Name of the data source.
+	 * @param args             arguments given in the data source declaration.
+	 * @param subParserFactory a {@link SubParserFactory} instance that creates
+	 *                         parser with the same context as the current parser.
+	 *
+	 * @throws ParsingException when the declaration is invalid, e.g., if the Data
+	 *                          Source is not known.
+	 *
+	 * @return the Data Source instance.
+	 */
+	public DataSource parseDataSourceDeclaration(String name, List<String> args,
+			final SubParserFactory subParserFactory) throws ParsingException {
+		DataSourceDeclarationHandler handler = dataSources.get(name);
 
-        return handler.handleDeclaration(args);
-    }
+		if (handler == null) {
+			throw new ParsingException("Data source \"" + name + "\" is not known.");
+		}
 
-    /**
-     * The registered data sources.
-     */
-    HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
+		return handler.handleDeclaration(args, subParserFactory);
+	}
+
+	/**
+	 * Register built-in data sources (currently CSV, RDF, SPARQL).
+	 */
+	private void registerDefaultDataSources() {
+		registerDataSource("load-csv", new CsvFileDataSourceDeclarationHandler());
+		registerDataSource("load-rdf", new RdfFileDataSourceDeclarationHandler());
+		registerDataSource("sparql", new SparqlQueryResultDataSourceDeclarationHandler());
+	}
+
+
+	/**
+	 * The registered data sources.
+	 */
+	private HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
 }

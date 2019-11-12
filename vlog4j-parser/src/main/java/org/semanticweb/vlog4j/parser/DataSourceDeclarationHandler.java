@@ -20,8 +20,10 @@ package org.semanticweb.vlog4j.parser;
  * #L%
  */
 
+import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 /**
  * Handler for parsing a custom Data Source declaration.
@@ -30,14 +32,33 @@ import org.semanticweb.vlog4j.core.model.api.DataSource;
  */
 @FunctionalInterface
 public interface DataSourceDeclarationHandler {
-    /**
-     * Parse a Data Source Declaration.
-     *
-     * @param arguments
-     *        Arguments given to the Data Source declaration.
-     *
-     * @throws ParsingException when the given arguments are invalid for the Data Source.
-     * @return DataSource a DataSource instance.
-     */
-    DataSource handleDeclaration(String[] arguments) throws ParsingException;
+	/**
+	 * Parse a Data Source Declaration.
+	 *
+	 * @param arguments        Arguments given to the Data Source declaration.
+	 * @param subParserFactory a factory for obtaining a SubParser, sharing the
+	 *                         parser's state, but bound to new input.
+	 *
+	 * @throws ParsingException when the given arity or arguments are invalid for
+	 *                          the Data Source.
+	 * @return a @{link DataSource} instance corresponding to the given arguments.
+	 */
+	public DataSource handleDeclaration(List<String> arguments, final SubParserFactory subParserFactory)
+			throws ParsingException;
+
+	/**
+	 * Validate the provided number of arguments to the data source.
+	 *
+	 * @param arguments Arguments given to the Data Source declaration.
+	 * @param number    expected number of arguments
+	 *
+	 * @throws ParsingException when the given number of Arguments is invalid for
+	 *                          the Data Source.
+	 */
+	static void verifyCorrectNumberOfArguments(List<String> arguments, int number) throws ParsingException {
+		if (arguments.size() != number) {
+			throw new ParsingException("Invalid number of arguments " + arguments.size()
+					+ " for Data Source declaration, expected " + number);
+		}
+	}
 }

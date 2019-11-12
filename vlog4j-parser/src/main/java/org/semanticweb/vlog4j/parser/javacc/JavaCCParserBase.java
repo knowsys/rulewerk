@@ -52,7 +52,7 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
  *
  */
 public class JavaCCParserBase {
-	final PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
+	PrefixDeclarations prefixDeclarations;
 
 	KnowledgeBase knowledgeBase;
     ParserConfiguration parserConfiguration;
@@ -91,6 +91,7 @@ public class JavaCCParserBase {
 
 	public JavaCCParserBase() {
 		this.knowledgeBase = new KnowledgeBase();
+		this.prefixDeclarations = new LocalPrefixDeclarations();
         this.parserConfiguration = new ParserConfiguration();
 	}
 
@@ -106,21 +107,18 @@ public class JavaCCParserBase {
 		return Expressions.makeDatatypeConstant(lexicalForm, PrefixDeclarations.XSD_DOUBLE);
 	}
 
-	void addDataSource(String predicateName, int arity, DataSource dataSource) {
+	void addDataSource(String predicateName, int arity, DataSource dataSource) throws ParseException {
+		if (dataSource.getRequiredArity().isPresent()) {
+			Integer requiredArity = dataSource.getRequiredArity().get();
+			if (requiredArity != arity) {
+				throw new ParseException("Invalid arity " + arity + " for data source, "
+										 + "expected " + requiredArity + ".");
+			}
+		}
+
 		Predicate predicate = Expressions.makePredicate(predicateName, arity);
 		knowledgeBase.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
 	}
-
-    static String[] collectStrings(String str, String[] rest) {
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add(str);
-
-        for (String next : rest) {
-            strings.add(next);
-        }
-
-        return strings.toArray(rest);
-    }
 
 	static String unescapeStr(String s, int line, int column) throws ParseException {
 		return unescape(s, '\\', false, line, column);
@@ -213,7 +211,7 @@ public class JavaCCParserBase {
 
 	/**
 	 * Creates a suitable {@link Constant} from the parsed data.
-	 * 
+	 *
 	 * @param string      the string data (unescaped)
 	 * @param languageTag the language tag, or null if not present
 	 * @param datatype    the datatype, or null if not provided
@@ -255,5 +253,11 @@ public class JavaCCParserBase {
         return parserConfiguration;
     }
 
+	protected void setPrefixDeclarations(PrefixDeclarations prefixDeclarations) {
+		this.prefixDeclarations = prefixDeclarations;
+	}
 
+	protected PrefixDeclarations getPrefixDeclarations() {
+		return prefixDeclarations;
+	}
 }
