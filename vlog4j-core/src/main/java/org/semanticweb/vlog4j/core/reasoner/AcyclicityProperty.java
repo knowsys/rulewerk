@@ -20,7 +20,7 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 //TODO javadoc
-public enum AcyclicityNotion {
+public enum AcyclicityProperty {
 	/**
 	 * Joint Acyclicity
 	 */
@@ -36,5 +36,6 @@ public enum AcyclicityNotion {
 	/**
 	 * Restricted Model-Faithful Acyclicity
 	 */
-	RMFA
+	RMFA;
+
 }

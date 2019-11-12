@@ -29,7 +29,7 @@ import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
 import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
-import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
+import org.semanticweb.vlog4j.core.reasoner.AcyclicityProperty;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
@@ -667,22 +667,22 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public boolean isJA() {
-		return checkAcyclicity(AcyclicityNotion.JA);
+		return checkAcyclicity(AcyclicityProperty.JA);
 	}
 
 	@Override
 	public boolean isRJA() {
-		return checkAcyclicity(AcyclicityNotion.RJA);
+		return checkAcyclicity(AcyclicityProperty.RJA);
 	}
 
 	@Override
 	public boolean isMFA() {
-		return checkAcyclicity(AcyclicityNotion.MFA);
+		return checkAcyclicity(AcyclicityProperty.MFA);
 	}
 
 	@Override
 	public boolean isRMFA() {
-		return checkAcyclicity(AcyclicityNotion.RMFA);
+		return checkAcyclicity(AcyclicityProperty.RMFA);
 	}
 
 	@Override
@@ -702,7 +702,7 @@ public class VLogReasoner implements Reasoner {
 		return checkCyclic.equals(CyclicCheckResult.CYCLIC);
 	}
 
-	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
+	private boolean checkAcyclicity(final AcyclicityProperty acyclNotion) {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			try {
