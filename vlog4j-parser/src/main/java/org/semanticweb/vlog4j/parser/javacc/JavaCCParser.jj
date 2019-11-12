@@ -36,6 +36,7 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
@@ -259,8 +260,8 @@ Term term(FormulaContext context) throws PrefixDeclarationException:
     String s;
     Constant c;
 }
-{   //TODO move Expressions.makeConstant to JavaCCParserBase
-    s = IRI(false)       { return Expressions.makeAbstractConstant(s); }
+{
+    s = IRI(false)       { return createConstant(s); }
 |   c = NumericLiteral() { return c; }
 |   c = RDFLiteral()     { return c; }
 |   t = < UNIVAR >
@@ -281,7 +282,7 @@ Term term(FormulaContext context) throws PrefixDeclarationException:
             throw new ParseException("Existentialy quantified variables can not appear in the body. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
         return Expressions.makeExistentialVariable(s);
     }
-|   t = < VARORPREDNAME > { return Expressions.makeAbstractConstant(prefixDeclarations.absolutize(t.image));}
+|   t = < VARORPREDNAME > { return createConstant(t.image); }
 }
 
 /** [16] */
@@ -290,21 +291,20 @@ Constant NumericLiteral() :
     Token t;
 }
 {
-    t = < INTEGER > { return createIntegerConstant(t.image); }
-|   t = < DECIMAL > { return createDecimalConstant(t.image); }
-|   t = < DOUBLE >  { return createDoubleConstant(t.image); }
+    t = < INTEGER > { return createConstant(t.image, PrefixDeclarations.XSD_INTEGER); }
+|   t = < DECIMAL > { return createConstant(t.image, PrefixDeclarations.XSD_DECIMAL); }
+|   t = < DOUBLE >  { return createConstant(t.image, PrefixDeclarations.XSD_DOUBLE); }
 }
 
 Constant RDFLiteral() throws PrefixDeclarationException:
 {
-    Token t;
     String lex = null;
     String lang = null;   // Optional lang tag and datatype.
     String dt = null;
 }
 {
     lex = String() ( lang = Langtag() | < DATATYPE > dt = IRI(false) )?
-    { return createDataConstant(lex, lang, dt); }
+    { return createConstant(lex, lang, dt); }
 }
 
 String Langtag() :

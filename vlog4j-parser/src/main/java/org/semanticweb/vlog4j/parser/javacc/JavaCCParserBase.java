@@ -23,6 +23,7 @@ package org.semanticweb.vlog4j.parser.javacc;
 import java.util.HashSet;
 import java.util.List;
 
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
@@ -34,6 +35,7 @@ import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.DefaultParserConfiguration;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
+import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 
 /**
@@ -94,16 +96,33 @@ public class JavaCCParserBase {
 		this.parserConfiguration = new DefaultParserConfiguration();
 	}
 
-	Constant createIntegerConstant(String lexicalForm) {
-		return Expressions.makeDatatypeConstant(lexicalForm, PrefixDeclarations.XSD_INTEGER);
+	Constant createConstant(String lexicalForm) throws ParseException {
+		try {
+			return Expressions.makeAbstractConstant(prefixDeclarations.absolutize(lexicalForm));
+		} catch (PrefixDeclarationException e) {
+			throw new ParseException(e.getMessage());
+		}
 	}
 
-	Constant createDecimalConstant(String lexicalForm) {
-		return Expressions.makeDatatypeConstant(lexicalForm, PrefixDeclarations.XSD_DECIMAL);
+	Constant createConstant(String lexicalForm, String datatype) throws ParseException {
+		return createConstant(lexicalForm, null, datatype);
 	}
 
-	Constant createDoubleConstant(String lexicalForm) {
-		return Expressions.makeDatatypeConstant(lexicalForm, PrefixDeclarations.XSD_DOUBLE);
+
+	/**
+	 * Creates a suitable {@link Constant} from the parsed data.
+	 *
+	 * @param string      the string data (unescaped)
+	 * @param languageTag the language tag, or null if not present
+	 * @param datatype    the datatype, or null if not provided
+	 * @return suitable constant
+	 */
+	Constant createConstant(String lexicalForm, String languageTag, String datatype) throws ParseException {
+		try {
+			return parserConfiguration.parseConstant(lexicalForm, languageTag, datatype);
+		} catch (ParsingException e) {
+			throw new ParseException(e.getMessage());
+		}
 	}
 
 	void addDataSource(String predicateName, int arity, DataSource dataSource) throws ParseException {
@@ -206,25 +225,6 @@ public class JavaCCParserBase {
 	/** remove the first n charcacters from the string */
 	static String stripChars(String s, int n) {
 		return s.substring(n, s.length());
-	}
-
-	/**
-	 * Creates a suitable {@link Constant} from the parsed data.
-	 *
-	 * @param string      the string data (unescaped)
-	 * @param languageTag the language tag, or null if not present
-	 * @param datatype    the datatype, or null if not provided
-	 * @return suitable constant
-	 */
-	Constant createDataConstant(String string, String languageTag, String datatype) {
-		// https://www.w3.org/TR/turtle/#grammar-production-String RDFLiteral
-		if (datatype != null) {
-			return new DatatypeConstantImpl(string, datatype);
-		} else if (languageTag != null) {
-			return new LanguageStringConstantImpl(string, languageTag);
-		} else {
-			return new DatatypeConstantImpl(string, "http://www.w3.org/2001/XMLSchema#string");
-		}
 	}
 
 	/**

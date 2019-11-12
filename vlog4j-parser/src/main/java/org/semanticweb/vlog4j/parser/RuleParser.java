@@ -28,6 +28,7 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.SyntaxObject;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParser;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.FormulaContext;
@@ -46,18 +47,21 @@ public class RuleParser {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(RuleParser.class);
 
-    public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final String encoding, final ParserConfiguration parserConfiguration) throws ParsingException {
-        final JavaCCParser parser = new JavaCCParser(stream, encoding);
-        parser.setKnowledgeBase(knowledgeBase);
-        parser.setParserConfiguration(parserConfiguration);
-        doParse(parser);
-    }
+	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final String encoding,
+			final ParserConfiguration parserConfiguration) throws ParsingException {
+		final JavaCCParser parser = new JavaCCParser(stream, encoding);
+		parser.setKnowledgeBase(knowledgeBase);
+		parser.setParserConfiguration(parserConfiguration);
+		doParse(parser);
+	}
 
-	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final ParserConfiguration parserConfiguration) throws ParsingException {
+	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream,
+			final ParserConfiguration parserConfiguration) throws ParsingException {
 		parseInto(knowledgeBase, stream, "UTF-8", parserConfiguration);
 	}
 
-	public static void parseInto(final KnowledgeBase knowledgeBase, final String input, final ParserConfiguration parserConfiguration) throws ParsingException {
+	public static void parseInto(final KnowledgeBase knowledgeBase, final String input,
+			final ParserConfiguration parserConfiguration) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		parseInto(knowledgeBase, inputStream, "UTF-8", parserConfiguration);
 	}
@@ -78,20 +82,23 @@ public class RuleParser {
 		parseInto(knowledgeBase, inputStream, "UTF-8");
 	}
 
-    public static KnowledgeBase parse(final InputStream stream, final String encoding, final ParserConfiguration parserConfiguration) throws ParsingException {
-        JavaCCParser parser = new JavaCCParser(stream, encoding);
-        parser.setParserConfiguration(parserConfiguration);
-        return doParse(parser);
-    }
+	public static KnowledgeBase parse(final InputStream stream, final String encoding,
+			final ParserConfiguration parserConfiguration) throws ParsingException {
+		JavaCCParser parser = new JavaCCParser(stream, encoding);
+		parser.setParserConfiguration(parserConfiguration);
+		return doParse(parser);
+	}
 
-    public static KnowledgeBase parse(final InputStream stream, final ParserConfiguration parserConfiguration) throws ParsingException {
-        return parse(stream, "UTF-8", parserConfiguration);
-    }
+	public static KnowledgeBase parse(final InputStream stream, final ParserConfiguration parserConfiguration)
+			throws ParsingException {
+		return parse(stream, "UTF-8", parserConfiguration);
+	}
 
-    public static KnowledgeBase parse(final String input, final ParserConfiguration parserConfiguration) throws ParsingException {
-        final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-        return parse(inputStream, "UTF-8", parserConfiguration);
-    }
+	public static KnowledgeBase parse(final String input, final ParserConfiguration parserConfiguration)
+			throws ParsingException {
+		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+		return parse(inputStream, "UTF-8", parserConfiguration);
+	}
 
 	public static KnowledgeBase parse(final InputStream stream, final String encoding) throws ParsingException {
 		return doParse(new JavaCCParser(stream, encoding));
@@ -106,48 +113,79 @@ public class RuleParser {
 		return parse(inputStream, "UTF-8");
 	}
 
-	public static Rule parseRule(final String input) throws ParsingException {
+	/**
+	 * Interface for a method parsing a {@link SyntaxObject}.
+	 *
+	 * This is needed to specify the exceptions thrown by the parse method.
+	 */
+	@FunctionalInterface
+	interface SyntaxObjectParser<T extends SyntaxObject> {
+		T parse(final JavaCCParser parser) throws ParseException, PrefixDeclarationException, TokenMgrError;
+	}
+
+	/**
+	 * Parse a {@link SyntaxObject}.
+	 *
+	 * @param input               Input string.
+	 * @param parserAction        Parsing method for the {@code T}.
+	 * @param syntaxObjectType    Description of the type {@code T} being parsed.
+	 * @param parserConfiguration {@link ParserConfiguration} instance, or null.
+	 *
+	 * @throws ParsingException when an error during parsing occurs.
+	 * @return an appropriate instance of {@code T}
+	 */
+	static <T extends SyntaxObject> T parseSyntaxObject(final String input, SyntaxObjectParser<T> parserAction,
+			final String syntaxObjectType, final ParserConfiguration parserConfiguration) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
-		try {
-			return localParser.rule();
-		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
-			LOGGER.error("Exception while parsing rule: {}!", input);
-			throw new ParsingException("Exception while parsing rule", e);
+
+		if (parserConfiguration != null) {
+			localParser.setParserConfiguration(parserConfiguration);
 		}
+
+		try {
+			return parserAction.parse(localParser);
+		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
+			LOGGER.error("Exception while parsing " + syntaxObjectType + ": {}!", input);
+			throw new ParsingException("Exception while parsing " + syntaxObjectType, e);
+		}
+	}
+
+	public static Rule parseRule(final String input, final ParserConfiguration parserConfiguration)
+			throws ParsingException {
+		return parseSyntaxObject(input, JavaCCParser::rule, "rule", parserConfiguration);
+	}
+
+	public static Rule parseRule(final String input) throws ParsingException {
+		return parseRule(input, null);
+	}
+
+	public static Literal parseLiteral(final String input, final ParserConfiguration parserConfiguration)
+			throws ParsingException {
+		return parseSyntaxObject(input, parser -> parser.literal(FormulaContext.HEAD), "literal", parserConfiguration);
 	}
 
 	public static Literal parseLiteral(final String input) throws ParsingException {
-		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
-		try {
-			return localParser.literal(FormulaContext.HEAD);
-		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
-			LOGGER.error("Exception while parsing literal: {}!", input);
-			throw new ParsingException("Exception while parsing literal", e);
-		}
+		return parseLiteral(input, null);
+	}
+
+	public static PositiveLiteral parsePositiveLiteral(final String input,
+			final ParserConfiguration parserConfiguration) throws ParsingException {
+		return parseSyntaxObject(input, parser -> parser.positiveLiteral(FormulaContext.HEAD), "positivel literal",
+				parserConfiguration);
 	}
 
 	public static PositiveLiteral parsePositiveLiteral(final String input) throws ParsingException {
-		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
-		try {
-			return localParser.positiveLiteral(FormulaContext.HEAD);
-		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
-			LOGGER.error("Exception while parsing positive literal: {}!", input);
-			throw new ParsingException("Exception while parsing positive literal", e);
-		}
+		return parsePositiveLiteral(input, null);
+	}
+
+	public static Fact parseFact(final String input, final ParserConfiguration parserConfiguration)
+			throws ParsingException {
+		return parseSyntaxObject(input, parser -> parser.fact(FormulaContext.HEAD), "fact", parserConfiguration);
 	}
 
 	public static Fact parseFact(final String input) throws ParsingException {
-		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
-		try {
-			return localParser.fact(FormulaContext.HEAD);
-		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
-			LOGGER.error("Exception while parsing fact: {}!", input);
-			throw new ParsingException("Exception while parsing fact: {}!", e);
-		}
+		return parseFact(input, null);
 	}
 
 	static KnowledgeBase doParse(final JavaCCParser parser) throws ParsingException {

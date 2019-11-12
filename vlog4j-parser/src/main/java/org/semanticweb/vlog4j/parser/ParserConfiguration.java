@@ -23,7 +23,10 @@ package org.semanticweb.vlog4j.parser;
 import java.util.HashMap;
 import java.util.List;
 
+import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 /**
@@ -77,7 +80,68 @@ public class ParserConfiguration {
 	}
 
 	/**
+	 * Parse a constant with optional data type and language tag.
+	 *
+	 * @param lexicalForm the (unescaped) lexical form of the constant.
+	 * @param languageTag the language tag, or null if not present.
+	 * @param the         datatype, or null if not present.
+	 * @note At most one of {@code languageTag} and {@code datatype} may be
+	 *       non-null.
+	 *
+	 * @throws ParsingException         when the lexical form is invalid for the
+	 *                                  given data type.
+	 * @throws IllegalArgumentException when neither {@code languageTag} and
+	 *                                  {@code datatype} are null.
+	 * @return the {@link Constant} corresponding to the given arguments.
+	 */
+	public Constant parseConstant(String lexicalForm, String languageTag, String datatype)
+			throws ParsingException, IllegalArgumentException {
+		if (languageTag != null && datatype != null) {
+			throw new IllegalArgumentException(
+					"A constant with a language tag may not explicitly specify a data type.");
+		} else if (languageTag != null) {
+			return Expressions.makeLanguageStringConstant(lexicalForm, languageTag);
+		} else {
+			String type = ((datatype != null) ? datatype : PrefixDeclarations.XSD_STRING);
+			DatatypeConstantHandler handler = datatypes.get(type);
+
+			if (handler != null) {
+				return handler.createConstant(lexicalForm);
+			}
+
+			return Expressions.makeDatatypeConstant(lexicalForm, type);
+		}
+	}
+
+	/**
+	 * Register a new data type.
+	 *
+	 * @param name    the IRI representing the data type.
+	 * @param handler a {@link DatatypeConstantHandler} that parses a syntactic form
+	 *                into a {@link Constant}.
+	 *
+	 * @throws IllegalArgumentException when the data type name has already been
+	 *                                  registered.
+	 *
+	 * @return this
+	 */
+	public ParserConfiguration registerDatatype(String name, DatatypeConstantHandler handler)
+			throws IllegalArgumentException {
+		if (datatypes.containsKey(name)) {
+			throw new IllegalArgumentException("Data type \"" + name + "\" is already registered.");
+		}
+
+		this.datatypes.put(name, handler);
+		return this;
+	}
+
+	/**
 	 * The registered data sources.
 	 */
 	private HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
+
+	/**
+	 * The registered datatypes.
+	 */
+	private HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
 }

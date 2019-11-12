@@ -19,15 +19,19 @@ package org.semanticweb.vlog4j.syntax.parser;
  * limitations under the License.
  * #L%
  */
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
+import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
@@ -36,6 +40,8 @@ import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.parser.DatatypeConstantHandler;
+import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -373,5 +379,20 @@ public class RuleParserTest {
 		Fact f = RuleParser.parseFact("<a:b>(a).");
 		Fact f2 = Expressions.makeFact("a:b", a);
 		assertEquals(f, f2);
+	}
+
+	@Test
+	public void testCustomDatatype() throws ParsingException {
+		final String typename = "http://example.org/#test";
+		DatatypeConstant constant = Expressions.makeDatatypeConstant("test", typename);
+		DatatypeConstantHandler handler = mock(DatatypeConstantHandler.class);
+		ParserConfiguration parserConfiguration = new ParserConfiguration();
+		parserConfiguration.registerDatatype(typename, handler);
+		doReturn(constant).when(handler).createConstant(ArgumentMatchers.eq("hello, world"));
+
+		String input = "p(\"hello, world\"^^<" + typename + ">) .";
+		Literal literal = RuleParser.parseLiteral(input, parserConfiguration);
+		DatatypeConstant result = (DatatypeConstant) literal.getConstants().toArray()[0];
+		assertEquals(constant, result);
 	}
 }
