@@ -89,8 +89,8 @@ public class DataSourceDeclarationTest {
 		final File unzippedRdfFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt");
 		Predicate predicate1 = Expressions.makePredicate("p", 3);
 		Predicate predicate2 = Expressions.makePredicate("q", 1);
-		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(new URL("https://example.org/"),
-				"var", "?var wdt:P31 wd:Q5 .");
+		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(
+				new URL("https://example.org/sparql"), "var", "?var wdt:P31 wd:Q5 .");
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(csvFile));
 		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
 		final DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource);
@@ -98,10 +98,10 @@ public class DataSourceDeclarationTest {
 				unzippedCsvFileDataSource);
 		final DataSourceDeclaration dataSourceDeclaration3 = new DataSourceDeclarationImpl(predicate2,
 				unzippedRdfFileDataSource);
-		assertEquals("Sparql(\"https://example.org/\", \"var\", \"?var wdt:P31 wd:Q5 .\") .",
+		assertEquals("@source p(3): sparql(<https://example.org/sparql>, \"var\", \"?var wdt:P31 wd:Q5 .\") .",
 				dataSourceDeclaration1.toString());
-		assertEquals("load-csv(\"src/test/data/input/file.csv\") .", dataSourceDeclaration2.toString());
-		assertEquals("load-rdf(\"src/test/data/input/file.nt\") .", dataSourceDeclaration3.toString());
+		assertEquals("@source q(1): load-csv(\"src/test/data/input/file.csv\") .", dataSourceDeclaration2.toString());
+		assertEquals("@source q(1): load-rdf(\"src/test/data/input/file.nt\") .", dataSourceDeclaration3.toString());
 
 	}
 }

@@ -22,6 +22,13 @@ package org.semanticweb.vlog4j.core.model.api;
 
 import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
+/**
+ * Interface with getSyntacticRepresentation method that must be extended by any
+ * data model that can be parsed in order to obtain its correct parsable string.
+ * 
+ * @author Ali Elhalawati
+ *
+ */
 public interface Entity {
 
 	String getSyntacticRepresentation();

@@ -111,7 +111,9 @@ public final class Serializer {
 	}
 
 	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
-		return dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
+		return "@source " + dataSourceDeclaration.getPredicate().getName() + "("
+				+ dataSourceDeclaration.getPredicate().getArity() + "): "
+				+ dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
 	}
 
 	public static String getString(Conjunction<? extends Literal> conjunction) {
