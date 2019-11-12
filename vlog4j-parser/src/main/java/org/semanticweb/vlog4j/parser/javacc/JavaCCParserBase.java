@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.parser.javacc;
 
-import java.util.ArrayList;
-
 /*-
  * #%L
  * vlog4j-parser
@@ -33,6 +31,7 @@ import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.parser.DefaultParserConfiguration;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -55,7 +54,7 @@ public class JavaCCParserBase {
 	PrefixDeclarations prefixDeclarations;
 
 	KnowledgeBase knowledgeBase;
-    ParserConfiguration parserConfiguration;
+	ParserConfiguration parserConfiguration;
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -92,7 +91,7 @@ public class JavaCCParserBase {
 	public JavaCCParserBase() {
 		this.knowledgeBase = new KnowledgeBase();
 		this.prefixDeclarations = new LocalPrefixDeclarations();
-        this.parserConfiguration = new ParserConfiguration();
+		this.parserConfiguration = new DefaultParserConfiguration();
 	}
 
 	Constant createIntegerConstant(String lexicalForm) {
@@ -111,8 +110,8 @@ public class JavaCCParserBase {
 		if (dataSource.getRequiredArity().isPresent()) {
 			Integer requiredArity = dataSource.getRequiredArity().get();
 			if (requiredArity != arity) {
-				throw new ParseException("Invalid arity " + arity + " for data source, "
-										 + "expected " + requiredArity + ".");
+				throw new ParseException(
+						"Invalid arity " + arity + " for data source, " + "expected " + requiredArity + ".");
 			}
 		}
 
@@ -245,13 +244,13 @@ public class JavaCCParserBase {
 		return knowledgeBase;
 	}
 
-    public void setParserConfiguration(ParserConfiguration parserConfiguration) {
-        this.parserConfiguration = parserConfiguration;
-    }
+	public void setParserConfiguration(ParserConfiguration parserConfiguration) {
+		this.parserConfiguration = parserConfiguration;
+	}
 
-    public ParserConfiguration getParserConfiguration() {
-        return parserConfiguration;
-    }
+	public ParserConfiguration getParserConfiguration() {
+		return parserConfiguration;
+	}
 
 	protected void setPrefixDeclarations(PrefixDeclarations prefixDeclarations) {
 		this.prefixDeclarations = prefixDeclarations;

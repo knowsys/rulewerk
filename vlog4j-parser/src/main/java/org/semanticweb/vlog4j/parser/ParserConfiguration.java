@@ -24,9 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.DataSource;
-import org.semanticweb.vlog4j.parser.datasources.CsvFileDataSourceDeclarationHandler;
-import org.semanticweb.vlog4j.parser.datasources.RdfFileDataSourceDeclarationHandler;
-import org.semanticweb.vlog4j.parser.datasources.SparqlQueryResultDataSourceDeclarationHandler;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 /**
@@ -35,10 +32,6 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  * @author Maximilian Marx
  */
 public class ParserConfiguration {
-	public ParserConfiguration() {
-		registerDefaultDataSources();
-	}
-
 	/**
 	 * Register a new Data Source.
 	 *
@@ -82,16 +75,6 @@ public class ParserConfiguration {
 
 		return handler.handleDeclaration(args, subParserFactory);
 	}
-
-	/**
-	 * Register built-in data sources (currently CSV, RDF, SPARQL).
-	 */
-	private void registerDefaultDataSources() {
-		registerDataSource("load-csv", new CsvFileDataSourceDeclarationHandler());
-		registerDataSource("load-rdf", new RdfFileDataSourceDeclarationHandler());
-		registerDataSource("sparql", new SparqlQueryResultDataSourceDeclarationHandler());
-	}
-
 
 	/**
 	 * The registered data sources.
