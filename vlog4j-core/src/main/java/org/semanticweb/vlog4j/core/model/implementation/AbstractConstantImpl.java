@@ -45,10 +45,6 @@ public class AbstractConstantImpl extends AbstractTermImpl implements AbstractCo
 		return termVisitor.visit(this);
 	}
 
-	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
-
 	@Override
 	public String toString() {
 		return getSyntacticRepresentation();

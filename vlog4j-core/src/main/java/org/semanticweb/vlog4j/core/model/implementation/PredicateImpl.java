@@ -85,10 +85,6 @@ public class PredicateImpl implements Predicate {
 		return this.arity == other.getArity() && this.name.equals(other.getName());
 	}
 
-	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
-
 	@Override
 	public String toString() {
 		return getSyntacticRepresentation();

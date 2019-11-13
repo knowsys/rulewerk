@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.api;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -46,5 +48,10 @@ public interface Predicate extends Entity {
 	 * @return the arity of the Predicate.
 	 */
 	int getArity();
+
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
 
 }

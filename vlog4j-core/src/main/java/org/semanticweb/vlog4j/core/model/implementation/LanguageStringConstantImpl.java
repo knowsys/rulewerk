@@ -82,10 +82,6 @@ public class LanguageStringConstantImpl implements LanguageStringConstant {
 		return this.string.equals(other.getString()) && this.lang.equals(other.getLanguageTag());
 	}
 
-	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
-
 	@Override
 	public String toString() {
 		return getSyntacticRepresentation();

@@ -71,19 +71,6 @@ public class DataSourceDeclarationTest {
 	}
 
 	@Test
-	public void dataSourceDecalarationToStringTest() throws MalformedURLException {
-		DataSource dataSource1 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
-				"?var wdt:P31 wd:Q5 .");
-		Predicate predicate1 = Expressions.makePredicate("p", 3);
-		DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource1);
-		DataSource dataSource2 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
-				"?var wdt:P31 wd:Q5 .");
-		Predicate predicate2 = Expressions.makePredicate("p", 3);
-		DataSourceDeclaration dataSourceDeclaration2 = new DataSourceDeclarationImpl(predicate2, dataSource2);
-		assertEquals(dataSourceDeclaration1.toString(), dataSourceDeclaration2.toString());
-	}
-
-	@Test
 	public void DataSourceDeclarationToStringTest() throws IOException {
 		final String csvFile = FileDataSourceTestUtils.INPUT_FOLDER + "file.csv";
 		final File unzippedRdfFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt");

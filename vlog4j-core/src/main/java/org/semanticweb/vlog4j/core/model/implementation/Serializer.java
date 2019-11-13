@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
-import java.util.List;
-
 /*-
  * #%L
  * VLog4j Core Components
@@ -24,7 +22,6 @@ import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
-import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
@@ -36,7 +33,6 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 
 /**
  * A utility class with static methods to obtain the correct parsable string
@@ -74,20 +70,8 @@ public final class Serializer {
 		return stringBuilder.toString();
 	}
 
-	public static String getString(Fact fact) {
-		final StringBuilder stringBuilder = new StringBuilder("");
-		stringBuilder.append(fact.getPredicate().getName()).append("(");
-		boolean first = true;
-		for (final Term term : fact.getArguments()) {
-			if (first) {
-				first = false;
-			} else {
-				stringBuilder.append(", ");
-			}
-			stringBuilder.append(term.getSyntacticRepresentation());
-		}
-		stringBuilder.append(").");
-		return stringBuilder.toString();
+	public static String getFactString(Fact fact) {
+		return getString(fact) + ".";
 	}
 
 	public static String getString(Constant constant) {

@@ -50,7 +50,7 @@ public class FactImpl extends PositiveLiteralImpl implements Fact {
 
 	@Override
 	public String toString() {
-		return Serializer.getString(this);
+		return getSyntacticRepresentation();
 	}
 
 }

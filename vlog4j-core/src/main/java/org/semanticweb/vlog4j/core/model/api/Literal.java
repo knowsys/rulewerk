@@ -52,4 +52,9 @@ public interface Literal extends SyntaxObject, Entity {
 	 */
 	List<Term> getArguments();
 
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
 }

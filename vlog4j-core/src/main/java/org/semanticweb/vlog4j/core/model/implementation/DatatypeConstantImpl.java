@@ -58,10 +58,6 @@ public class DatatypeConstantImpl implements DatatypeConstant {
 		return this.lexicalValue;
 	}
 
-	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
-
 	@Override
 	public String toString() {
 		return getSyntacticRepresentation();

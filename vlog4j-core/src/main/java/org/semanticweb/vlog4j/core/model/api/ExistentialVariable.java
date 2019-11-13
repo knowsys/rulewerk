@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.api;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -32,5 +34,10 @@ public interface ExistentialVariable extends Variable {
 	default TermType getType() {
 		return TermType.EXISTENTIAL_VARIABLE;
 	}
-	
+
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
 }

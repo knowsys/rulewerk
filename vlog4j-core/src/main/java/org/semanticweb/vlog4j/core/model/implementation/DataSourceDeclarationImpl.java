@@ -83,10 +83,6 @@ public class DataSourceDeclarationImpl implements DataSourceDeclaration {
 		return statementVisitor.visit(this);
 	}
 
-	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
-
 	@Override
 	public String toString() {
 		return getSyntacticRepresentation();

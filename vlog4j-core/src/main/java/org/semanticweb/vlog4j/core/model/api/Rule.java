@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.api;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -45,5 +47,10 @@ public interface Rule extends SyntaxObject, Statement, Entity {
 	 * @return conjunction of literals
 	 */
 	Conjunction<Literal> getBody();
+
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
 
 }

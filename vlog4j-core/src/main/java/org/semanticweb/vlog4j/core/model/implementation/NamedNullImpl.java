@@ -46,10 +46,6 @@ public class NamedNullImpl extends AbstractTermImpl implements NamedNull {
 		return termVisitor.visit(this);
 	}
 
-	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
-
 	@Override
 	public String toString() {
 		return getSyntacticRepresentation();

@@ -103,11 +103,6 @@ public class RuleImpl implements Rule {
 		return this.head.equals(other.getHead()) && this.body.equals(other.getBody());
 	}
 
-	
-	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
-
 	@Override
 	public String toString() {
 		return getSyntacticRepresentation();
