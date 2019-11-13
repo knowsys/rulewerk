@@ -377,6 +377,9 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 */
 	long queryAnswerSize(PositiveLiteral query);
 
+	// TODO add javadoc, examples
+	long getExtensionSize(PositiveLiteral literal);
+
 	// TODO add examples to query javadoc
 	/**
 	 * Evaluates an atomic ({@code query}), and returns the number of implicit facts

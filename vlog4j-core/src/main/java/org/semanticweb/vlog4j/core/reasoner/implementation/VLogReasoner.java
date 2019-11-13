@@ -608,7 +608,7 @@ public class VLogReasoner implements Reasoner {
 		final boolean filterBlanks = !includeNulls;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 
-		int result = -1;
+		long result = -1;
 		try {
 			result = this.vLog.querySize(vLogAtom, true, filterBlanks);
 		} catch (NotStartedException e) {
@@ -617,6 +617,22 @@ public class VLogReasoner implements Reasoner {
 			LOGGER.warn("Query uses predicate " + query.getPredicate()
 					+ " that does not occur in the knowledge base. Answer must be empty!");
 			return 0;
+		}
+		return result;
+	}
+
+	@Override
+	public long getExtensionSize(PositiveLiteral literal) {
+		validateNotClosed();
+		validateKBLoaded("Querying is not alowed before reasoner is loaded!");
+
+		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(literal);
+
+		long result = 0;
+		try {
+			result = this.vLog.getExtensionSize(this.vLog.getPredicateId(vLogAtom.getPredicate()));
+		} catch (NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
 		}
 		return result;
 	}
