@@ -21,14 +21,14 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Interface for every parsable Data model that has a string representation
+ * Interface for every parsable data model that has a string representation
  * 
  * @author Ali Elhalawati
  *
  */
 public interface Entity {
 	/**
-	 * returns the parsable String representation of an Entity.
+	 * returns the parsable string representation of an Entity.
 	 * 
 	 * @return non-empty String
 	 */
