@@ -86,44 +86,17 @@ public class EntityTest {
 	final Rule rule2 = new RuleImpl(headPositiveLiterals, bodyConjunction);
 
 	@Test
-	public void factToStringRoundTripTest() {
-		KnowledgeBase kb = new KnowledgeBase();
-		KnowledgeBase kb2 = new KnowledgeBase();
-		kb.addStatement(f1);
-		kb2.addStatement(f2);
-		assertEquals(f1.toString(), kb.getFacts().get(0).toString());
-		assertEquals(f2.toString(), kb2.getFacts().get(0).toString());
+	public void factToStringRoundTripTest() throws ParsingException {
+		assertEquals(RuleParser.parseFact(f1.toString()), RuleParser.parseFact("p(f, \"Test\"@en)."));
+		assertEquals(RuleParser.parseFact(f2.toString()),
+				RuleParser.parseFact("p(\"data\"^^<http://example.org/mystring>, d)."));
 	}
 
 	@Test
-	public void literalToStringRoundTripTest() {
-		KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatement(rule1);
-		assertEquals(headAtom1.toString(), rule1.getHead().getLiterals().get(0).toString());
-	}
-
-	@Test
-	public void conjunctionToStringRoundTripTest() {
-		KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatement(rule1);
-		assertEquals(bodyConjunction.toString(), rule2.getBody().toString());
-	}
-
-	@Test
-	public void predicateToStringRoundTripTest() {
-		KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatement(rule1);
-		assertEquals(bodyConjunction.getLiterals().get(0).getPredicate().toString(), p.toString());
-	}
-
-	@Test
-	public void ruleToStringRoundTripTest() {
-		KnowledgeBase kb = new KnowledgeBase();
-		KnowledgeBase kb2 = new KnowledgeBase();
-		kb.addStatement(rule1);
-		kb2.addStatement(rule2);
-		assertEquals(kb.getRules().get(0).toString(), rule1.toString());
-		assertEquals(kb2.getRules().get(0).toString(), rule2.toString());
+	public void ruleToStringRoundTripTest() throws ParsingException {
+		assertEquals(RuleParser.parseRule(rule1.toString()), RuleParser.parseRule("q(?X, !Z) :- p(?X, c), p(?X, ?Y)."));
+		assertEquals(RuleParser.parseRule(rule2.toString()),
+				RuleParser.parseRule("q(?X, !Z) :- p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, \"Test\"@en)."));
 	}
 
 	@Test
@@ -143,7 +116,6 @@ public class EntityTest {
 				unzippedCsvFileDataSource);
 		final DataSourceDeclaration dataSourceDeclaration3 = new DataSourceDeclarationImpl(predicate1,
 				unzippedRdfFileDataSource);
-		System.out.println(dataSourceDeclaration1.toString());
 		RuleParser.parseInto(kb, dataSourceDeclaration1.toString());
 		RuleParser.parseInto(kb, dataSourceDeclaration2.toString());
 		RuleParser.parseInto(kb, dataSourceDeclaration3.toString());
