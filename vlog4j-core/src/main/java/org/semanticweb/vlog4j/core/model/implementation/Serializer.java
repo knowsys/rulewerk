@@ -42,15 +42,31 @@ import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
  *
  */
 public final class Serializer {
-
+	/**
+	 * Constructor.
+	 */
 	private Serializer() {
 
 	}
 
+	/**
+	 * Creates a String representation of a given {@link Rule}. Example: "p(?X) :-
+	 * q(?X,?Y)."
+	 * 
+	 * @param rule a {@link Rule}
+	 * @return String representation corresponding to a given {@link Rule}.
+	 */
 	public static String getString(Rule rule) {
 		return getString(rule.getHead()) + " :- " + getString(rule.getBody()) + ".";
 	}
 
+	/**
+	 * Creates a String representation of a given {@link Literal}. Example:
+	 * "~q(?X,?Y)"
+	 * 
+	 * @param literal a {@link Literal}
+	 * @return String representation corresponding to a given {@link Literal}.
+	 */
 	public static String getString(Literal literal) {
 		final StringBuilder stringBuilder = new StringBuilder("");
 		if (literal.isNegated()) {
@@ -70,36 +86,92 @@ public final class Serializer {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * Creates a String representation of a given {@link Fact}. Example: "q(a)."
+	 * 
+	 * @param fact a {@link Fact}
+	 * @return String representation corresponding to a given {@link Fact}.
+	 */
 	public static String getFactString(Fact fact) {
 		return getString(fact) + ".";
 	}
 
+	/**
+	 * Creates a String representation of a given {@link Constant}. Example: "c"
+	 * 
+	 * @param constant a {@link Constant}
+	 * @return String representation corresponding to a given {@link Constant}.
+	 */
 	public static String getString(Constant constant) {
 		return constant.getName();
 	}
 
+	/**
+	 * Creates a String representation of a given {@link ExistentialVariable}.
+	 * Example: "!X"
+	 * 
+	 * @param existentialVariable a {@link ExistentialVariable}
+	 * @return String representation corresponding to a given
+	 *         {@link ExistentialVariable}.
+	 */
 	public static String getString(ExistentialVariable existentialVariable) {
 		return "!" + existentialVariable.getName();
 	}
 
+	/**
+	 * Creates a String representation of a given {@link UniversalVariable}.
+	 * Example: "?X"
+	 * 
+	 * @param universalVariable a {@link UniversalVariable}
+	 * @return String representation corresponding to a given
+	 *         {@link UniversalVariable}.
+	 */
 	public static String getString(UniversalVariable universalVariable) {
 		return "?" + universalVariable.getName();
 	}
 
+	/**
+	 * Creates a String representation of a given {@link NamedNull}. Example: "_123"
+	 * 
+	 * @param namedNull a {@link NamedNull}
+	 * @return String representation corresponding to a given {@link NamedNull}.
+	 */
 	public static String getString(NamedNull namedNull) {
 		return "_" + namedNull.getName();
 	}
 
+	/**
+	 * Creates a String representation of a given {@link Predicate}. Example: "p(2)"
+	 * 
+	 * @param predicate a {@link Predicate}
+	 * @return String representation corresponding to a given {@link Predicate}.
+	 */
 	public static String getString(Predicate predicate) {
-		return " Predicate [ name= " + predicate.getName() + ", arity= " + predicate.getArity() + "]";
+		return predicate.getName() + "(" + predicate.getArity() + ")";
 	}
 
+	/**
+	 * Creates a String representation of a given {@link DataSourceDeclaration}.
+	 * Example: "@source p(3): sparql(<https://example.org/sparql>, "var", "?var
+	 * wdt:P31 wd:Q5 .") ."
+	 * 
+	 * @param dataSourceDeclaration a {@link DataSourceDeclaration}
+	 * @return String representation corresponding to a given
+	 *         {@link DataSourceDeclaration}.
+	 */
 	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
 		return "@source " + dataSourceDeclaration.getPredicate().getName() + "("
 				+ dataSourceDeclaration.getPredicate().getArity() + "): "
 				+ dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
 	}
 
+	/**
+	 * Creates a String representation of a given {@link Conjunction}. Example:
+	 * "p(?X,?Y), ~q(a,?Z)"
+	 * 
+	 * @param conjunction a {@link Conjunction}
+	 * @return String representation corresponding to a given {@link Conjunction}.
+	 */
 	public static String getString(Conjunction<? extends Literal> conjunction) {
 		final StringBuilder stringBuilder = new StringBuilder();
 		boolean first = true;
@@ -114,12 +186,28 @@ public final class Serializer {
 		return stringBuilder.toString();
 	}
 
-	public static String getLanguageStringConstantName(LanguageStringConstant languageStringConstant) {
+	/**
+	 * Creates a String representation corresponding to the name of a given
+	 * {@link LanguageStringConstant}. Example: ""Test"@en"
+	 * 
+	 * @param languageStringConstant a {@link LanguageStringConstant}
+	 * @return String representation corresponding to the name of a given
+	 *         {@link LanguageStringConstant}.
+	 */
+	public static String getConstantName(LanguageStringConstant languageStringConstant) {
 		return "\"" + languageStringConstant.getString().replace("\\", "\\\\").replace("\"", "\\\"") + "\"@"
 				+ languageStringConstant.getLanguageTag();
 	}
 
-	public static String getDatatypeConstantName(DatatypeConstant datatypeConstant) {
+	/**
+	 * Creates a String representation corresponding to the name of a given
+	 * {@link DatatypeConstant}. Example: ""c"^^<http://example.org/mystring>"
+	 * 
+	 * @param datatypeConstant a {@link DatatypeConstant}
+	 * @return String representation corresponding to a given
+	 *         {@link DatatypeConstant}.
+	 */
+	public static String getConstantName(DatatypeConstant datatypeConstant) {
 		return "\"" + datatypeConstant.getLexicalValue().replace("\\", "\\\\").replace("\"", "\\\"") + "\"^^<"
 				+ datatypeConstant.getDatatype() + ">";
 	}

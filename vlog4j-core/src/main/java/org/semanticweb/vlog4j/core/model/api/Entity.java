@@ -28,7 +28,7 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 public interface Entity {
 	/**
-	 * returns the parsable string representation of an Entity.
+	 * Returns the parsable string representation of an Entity.
 	 * 
 	 * @return non-empty String
 	 */

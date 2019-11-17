@@ -76,7 +76,7 @@ public class PredicateImplTest {
 	@Test
 	public void predicateToStringTest() {
 		final Predicate p1 = new PredicateImpl("p", 1);
-		assertEquals(" Predicate [ name= p, arity= 1]", p1.toString());
+		assertEquals("p(1)", p1.toString());
 	}
 
 }
