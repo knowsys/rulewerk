@@ -48,11 +48,13 @@ import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLHasKeyAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
@@ -219,14 +221,19 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 * @param superClass
 	 */
 	void addSubClassAxiom(final OWLClassExpression subClass, final OWLClassExpression superClass) {
-		this.startAxiomConversion();
+		if (subClass instanceof OWLObjectOneOf) {
+			final OWLObjectOneOf subClassObjectOneOf = (OWLObjectOneOf) subClass;
+			subClassObjectOneOf.individuals().forEach(individual -> visitClassAssertionAxiom(individual, superClass));
+		} else {
+			this.startAxiomConversion();
 
-		final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(this.frontierVariable, this);
-		superClass.accept(headConverter);
-		final ClassToRuleBodyConverter bodyConverter = new ClassToRuleBodyConverter(this.frontierVariable,
-				headConverter.body, headConverter.head, this);
-		bodyConverter.handleDisjunction(subClass, this.frontierVariable);
-		this.addRule(bodyConverter);
+			final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(this.frontierVariable, this);
+			superClass.accept(headConverter);
+			final ClassToRuleBodyConverter bodyConverter = new ClassToRuleBodyConverter(this.frontierVariable,
+					headConverter.body, headConverter.head, this);
+			bodyConverter.handleDisjunction(subClass, this.frontierVariable);
+			this.addRule(bodyConverter);
+		}
 	}
 
 	@Override
@@ -398,10 +405,14 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLClassAssertionAxiom axiom) {
+		visitClassAssertionAxiom(axiom.getIndividual(), axiom.getClassExpression());
+	}
+
+	void visitClassAssertionAxiom(final OWLIndividual individual, final OWLClassExpression classExpression) {
 		this.startAxiomConversion();
-		final Term term = OwlToRulesConversionHelper.getIndividualTerm(axiom.getIndividual());
+		final Term term = OwlToRulesConversionHelper.getIndividualTerm(individual);
 		final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(term, this);
-		axiom.getClassExpression().accept(headConverter);
+		classExpression.accept(headConverter);
 		this.addRule(headConverter);
 	}
 
@@ -509,7 +520,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final SWRLRule rule) {
-		// TODO support SWRL rules
+		throw new OwlFeatureNotSupportedException("SWRLRule currently not supported.");
 
 	}
 

@@ -151,10 +151,11 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 				this.body);
 	}
 
+	// TODO support this feature
 	@Override
 	public void visit(final OWLObjectOneOf ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"OWLObjectOneOf in complex class expressions currently not supported!");
 	}
 
 	@Override
