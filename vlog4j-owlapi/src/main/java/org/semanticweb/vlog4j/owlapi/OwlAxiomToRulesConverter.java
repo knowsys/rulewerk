@@ -222,8 +222,8 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 */
 	void addSubClassAxiom(final OWLClassExpression subClass, final OWLClassExpression superClass) {
 		if (subClass instanceof OWLObjectOneOf) {
-			final OWLObjectOneOf subClassInstaceOf = (OWLObjectOneOf) subClass;
-			subClassInstaceOf.individuals().forEach(individual -> visitClassAssertionAxiom(individual, superClass));
+			final OWLObjectOneOf subClassObjectOneOf = (OWLObjectOneOf) subClass;
+			subClassObjectOneOf.individuals().forEach(individual -> visitClassAssertionAxiom(individual, superClass));
 		} else {
 			this.startAxiomConversion();
 
