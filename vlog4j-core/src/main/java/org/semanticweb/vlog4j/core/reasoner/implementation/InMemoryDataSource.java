@@ -96,13 +96,23 @@ public class InMemoryDataSource implements DataSource {
 	 * Returns null to indicate that this {@link DataSource} cannot be passed to
 	 * VLog in a configuration string.
 	 */
-	@Override
-	public String toConfigString() {
-		return null;
-	}
 
 	@Override
 	public String getSyntacticRepresentation() {
+
+		String message = "\\\\ This data source holds facts: \n";
+		StringBuilder facts = new StringBuilder("");
+		facts.append(message);
+		for (int i = 0; i < this.getData().length; i++) {
+			for (int j = 0; j < data[i].length; j++) {
+				facts.append(data[i][j] + "\n");
+			}
+		}
+		return facts.toString();
+	}
+
+	@Override
+	public String toConfigString() {
 		// TODO Auto-generated method stub
 		return null;
 	}

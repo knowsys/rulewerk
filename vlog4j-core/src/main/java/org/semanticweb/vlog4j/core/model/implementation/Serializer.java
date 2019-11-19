@@ -50,7 +50,7 @@ public final class Serializer {
 	public static final String universalIdentifier = "?";
 	public static final String namedNullIdentifier = "_";
 	public static final String openParentheses = "(";
-	public static final String closeParentheses = ")";
+	public static final String closingParentheses = ")";
 	public static final String ruleSeparator = ":-";
 
 	/**
@@ -94,7 +94,7 @@ public final class Serializer {
 			}
 			stringBuilder.append(term.getSyntacticRepresentation());
 		}
-		stringBuilder.append(closeParentheses);
+		stringBuilder.append(closingParentheses);
 		return stringBuilder.toString();
 	}
 
@@ -167,7 +167,7 @@ public final class Serializer {
 	 * @return String representation corresponding to a given {@link Predicate}.
 	 */
 	public static String getString(Predicate predicate) {
-		return predicate.getName() + openParentheses + predicate.getArity() + closeParentheses;
+		return predicate.getName() + openParentheses + predicate.getArity() + closingParentheses;
 	}
 
 	/**
@@ -180,7 +180,7 @@ public final class Serializer {
 	 */
 	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
 		return "@source " + dataSourceDeclaration.getPredicate().getName() + openParentheses
-				+ dataSourceDeclaration.getPredicate().getArity() + closeParentheses + ": "
+				+ dataSourceDeclaration.getPredicate().getArity() + closingParentheses + ": "
 				+ dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
 	}
 
