@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
@@ -59,7 +58,7 @@ public class EntityTest {
 		assertEquals(f3, RuleParser.parseFact(f3.toString()));
 	}
 
-	public void AbstractConstantToStringRoundTripTest() throws ParsingException {
+	public void abstractConstantToStringRoundTripTest() throws ParsingException {
 		AbstractConstantImpl f = new AbstractConstantImpl("f");
 		AbstractConstantImpl a = new AbstractConstantImpl("1");
 		Predicate p = Expressions.makePredicate("p", 1);
@@ -85,7 +84,7 @@ public class EntityTest {
 	}
 
 	@Test
-	public void ConjunctionToStringRoundTripTest() throws ParsingException {
+	public void conjunctionToStringRoundTripTest() throws ParsingException {
 		Constant c = Expressions.makeAbstractConstant("c");
 		Variable x = Expressions.makeUniversalVariable("X");
 		Variable y = Expressions.makeUniversalVariable("Y");
@@ -100,7 +99,7 @@ public class EntityTest {
 	}
 
 	@Test
-	public void LiteralToStringRoundTripTest() throws ParsingException {
+	public void literalToStringRoundTripTest() throws ParsingException {
 		Constant c = Expressions.makeAbstractConstant("c");
 		Variable x = Expressions.makeUniversalVariable("X");
 		Variable z = Expressions.makeExistentialVariable("Z");
@@ -111,7 +110,7 @@ public class EntityTest {
 	}
 
 	@Test
-	public void DatatypeDoubleConstantToStringRoundTripTest() throws ParsingException {
+	public void datatypeDoubleConstantToStringRoundTripTest() throws ParsingException {
 		String shortDoubleConstant = "12.345E67";
 		assertEquals(shortDoubleConstant,
 				RuleParser.parseFact("p(\"12.345E67\"^^<http://www.w3.org/2001/XMLSchema#double>).").getArguments()
@@ -120,14 +119,14 @@ public class EntityTest {
 	}
 
 	@Test
-	public void DatatypeFloatConstantToStringRoundTripTest() throws ParsingException {
+	public void datatypeFloatConstantToStringRoundTripTest() throws ParsingException {
 		String floatConstant = "\"0.5\"^^<http://www.w3.org/2001/XMLSchema#float>";
 		assertEquals(floatConstant, RuleParser.parseFact("p(\"0.5\"^^<http://www.w3.org/2001/XMLSchema#float>).")
 				.getArguments().get(0).toString());
 	}
 
 	@Test
-	public void DatatypeStringConstantToStringRoundTripTest() throws ParsingException {
+	public void datatypeStringConstantToStringRoundTripTest() throws ParsingException {
 		String shortStringConstant = "\"data\"";
 		assertEquals(shortStringConstant, RuleParser
 				.parseFact("p(\"data\"^^<http://www.w3.org/2001/XMLSchema#string>).").getArguments().get(0).toString());
@@ -135,7 +134,7 @@ public class EntityTest {
 	}
 
 	@Test
-	public void DatatypeIntegerConstantToStringRoundTripTest() throws ParsingException {
+	public void datatypeIntegerConstantToStringRoundTripTest() throws ParsingException {
 		String shortIntegerConstant = "1";
 		assertEquals(shortIntegerConstant, RuleParser.parseFact("p(\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>).")
 				.getArguments().get(0).toString());
@@ -143,7 +142,7 @@ public class EntityTest {
 	}
 
 	@Test
-	public void DatatypeDecimalToStringRoundTripTest() throws ParsingException {
+	public void datatypeDecimalToStringRoundTripTest() throws ParsingException {
 		String shortDecimalConstant = "0.23";
 		assertEquals(shortDecimalConstant,
 				RuleParser.parseFact("p(\"0.23\"^^<http://www.w3.org/2001/XMLSchema#decimal>).").getArguments().get(0)
