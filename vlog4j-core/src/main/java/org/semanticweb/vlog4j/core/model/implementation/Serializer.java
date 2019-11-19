@@ -49,8 +49,8 @@ public final class Serializer {
 	public static final String existentialIdentifier = "!";
 	public static final String universalIdentifier = "?";
 	public static final String namedNullIdentifier = "_";
-	public static final String openParentheses = "(";
-	public static final String closingParentheses = ")";
+	public static final String openParenthesis = "(";
+	public static final String closingParenthesis = ")";
 	public static final String ruleSeparator = ":-";
 
 	/**
@@ -84,7 +84,7 @@ public final class Serializer {
 		if (literal.isNegated()) {
 			stringBuilder.append(negativeIdentifier);
 		}
-		stringBuilder.append(literal.getPredicate().getName()).append(openParentheses);
+		stringBuilder.append(literal.getPredicate().getName()).append(openParenthesis);
 		boolean first = true;
 		for (final Term term : literal.getArguments()) {
 			if (first) {
@@ -94,7 +94,7 @@ public final class Serializer {
 			}
 			stringBuilder.append(term.getSyntacticRepresentation());
 		}
-		stringBuilder.append(closingParentheses);
+		stringBuilder.append(closingParenthesis);
 		return stringBuilder.toString();
 	}
 
@@ -167,7 +167,7 @@ public final class Serializer {
 	 * @return String representation corresponding to a given {@link Predicate}.
 	 */
 	public static String getString(Predicate predicate) {
-		return predicate.getName() + openParentheses + predicate.getArity() + closingParentheses;
+		return predicate.getName() + openParenthesis + predicate.getArity() + closingParenthesis;
 	}
 
 	/**
@@ -179,8 +179,8 @@ public final class Serializer {
 	 *         {@link DataSourceDeclaration}.
 	 */
 	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
-		return "@source " + dataSourceDeclaration.getPredicate().getName() + openParentheses
-				+ dataSourceDeclaration.getPredicate().getArity() + closingParentheses + ": "
+		return "@source " + dataSourceDeclaration.getPredicate().getName() + openParenthesis
+				+ dataSourceDeclaration.getPredicate().getArity() + closingParenthesis + ": "
 				+ dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
 	}
 
