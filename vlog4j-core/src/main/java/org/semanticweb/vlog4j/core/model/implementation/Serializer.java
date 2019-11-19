@@ -30,6 +30,7 @@ import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
@@ -42,6 +43,16 @@ import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
  *
  */
 public final class Serializer {
+	public static final String negativeIdentifier = "~";
+	public static final String comma = ",";
+	public static final String dot = ".";
+	public static final String existentialIdentifier = "!";
+	public static final String universalIdentifier = "?";
+	public static final String namedNullIdentifier = "_";
+	public static final String openBracket = "(";
+	public static final String closeBracket = ")";
+	public static final String ruleSeparator = ":-";
+
 	/**
 	 * Constructor.
 	 */
@@ -50,55 +61,58 @@ public final class Serializer {
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Rule}. Example: "p(?X) :-
-	 * q(?X,?Y)."
+	 * Creates a String representation of a given {@link Rule}.
 	 * 
-	 * @param rule a {@link Rule}
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @param rule a {@link Rule}.
 	 * @return String representation corresponding to a given {@link Rule}.
+	 * 
 	 */
 	public static String getString(Rule rule) {
-		return getString(rule.getHead()) + " :- " + getString(rule.getBody()) + ".";
+		return getString(rule.getHead()) + " " + ruleSeparator + " " + getString(rule.getBody()) + dot;
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Literal}. Example:
-	 * "~q(?X,?Y)"
+	 * Creates a String representation of a given {@link Literal}.
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param literal a {@link Literal}
 	 * @return String representation corresponding to a given {@link Literal}.
 	 */
 	public static String getString(Literal literal) {
 		final StringBuilder stringBuilder = new StringBuilder("");
 		if (literal.isNegated()) {
-			stringBuilder.append("~");
+			stringBuilder.append(negativeIdentifier);
 		}
-		stringBuilder.append(literal.getPredicate().getName()).append("(");
+		stringBuilder.append(literal.getPredicate().getName()).append(openBracket);
 		boolean first = true;
 		for (final Term term : literal.getArguments()) {
 			if (first) {
 				first = false;
 			} else {
-				stringBuilder.append(", ");
+				stringBuilder.append(comma + " ");
 			}
 			stringBuilder.append(term.getSyntacticRepresentation());
 		}
-		stringBuilder.append(")");
+		stringBuilder.append(closeBracket);
 		return stringBuilder.toString();
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Fact}. Example: "q(a)."
+	 * Creates a String representation of a given {@link Fact}.
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param fact a {@link Fact}
 	 * @return String representation corresponding to a given {@link Fact}.
 	 */
 	public static String getFactString(Fact fact) {
-		return getString(fact) + ".";
+		return getString(fact) + dot;
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Constant}. Example: "c"
+	 * Creates a String representation of a given {@link Constant}.
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param constant a {@link Constant}
 	 * @return String representation corresponding to a given {@link Constant}.
 	 */
@@ -106,69 +120,74 @@ public final class Serializer {
 		return constant.getName();
 	}
 
+	public static String getString(DatatypeConstant constant) {
+		return getShortConstantName(constant);
+	}
+
 	/**
 	 * Creates a String representation of a given {@link ExistentialVariable}.
-	 * Example: "!X"
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param existentialVariable a {@link ExistentialVariable}
 	 * @return String representation corresponding to a given
 	 *         {@link ExistentialVariable}.
 	 */
 	public static String getString(ExistentialVariable existentialVariable) {
-		return "!" + existentialVariable.getName();
+		return existentialIdentifier + existentialVariable.getName();
 	}
 
 	/**
 	 * Creates a String representation of a given {@link UniversalVariable}.
-	 * Example: "?X"
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param universalVariable a {@link UniversalVariable}
 	 * @return String representation corresponding to a given
 	 *         {@link UniversalVariable}.
 	 */
 	public static String getString(UniversalVariable universalVariable) {
-		return "?" + universalVariable.getName();
+		return universalIdentifier + universalVariable.getName();
 	}
 
 	/**
-	 * Creates a String representation of a given {@link NamedNull}. Example: "_123"
+	 * Creates a String representation of a given {@link NamedNull}.
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param namedNull a {@link NamedNull}
 	 * @return String representation corresponding to a given {@link NamedNull}.
 	 */
 	public static String getString(NamedNull namedNull) {
-		return "_" + namedNull.getName();
+		return namedNullIdentifier + namedNull.getName();
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Predicate}. Example: "p(2)"
+	 * Creates a String representation of a given {@link Predicate}.
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param predicate a {@link Predicate}
 	 * @return String representation corresponding to a given {@link Predicate}.
 	 */
 	public static String getString(Predicate predicate) {
-		return predicate.getName() + "(" + predicate.getArity() + ")";
+		return predicate.getName() + openBracket + predicate.getArity() + closeBracket;
 	}
 
 	/**
 	 * Creates a String representation of a given {@link DataSourceDeclaration}.
-	 * Example: "@source p(3): sparql(<https://example.org/sparql>, "var", "?var
-	 * wdt:P31 wd:Q5 .") ."
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param dataSourceDeclaration a {@link DataSourceDeclaration}
 	 * @return String representation corresponding to a given
 	 *         {@link DataSourceDeclaration}.
 	 */
 	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
-		return "@source " + dataSourceDeclaration.getPredicate().getName() + "("
-				+ dataSourceDeclaration.getPredicate().getArity() + "): "
+		return "@source " + dataSourceDeclaration.getPredicate().getName() + openBracket
+				+ dataSourceDeclaration.getPredicate().getArity() + closeBracket + ": "
 				+ dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Conjunction}. Example:
-	 * "p(?X,?Y), ~q(a,?Z)"
+	 * Creates a String representation of a given {@link Conjunction}.
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param conjunction a {@link Conjunction}
 	 * @return String representation corresponding to a given {@link Conjunction}.
 	 */
@@ -179,7 +198,7 @@ public final class Serializer {
 			if (first) {
 				first = false;
 			} else {
-				stringBuilder.append(", ");
+				stringBuilder.append(comma + " ");
 			}
 			stringBuilder.append(getString(literal));
 		}
@@ -188,8 +207,9 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation corresponding to the name of a given
-	 * {@link LanguageStringConstant}. Example: ""Test"@en"
+	 * {@link LanguageStringConstant}.
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param languageStringConstant a {@link LanguageStringConstant}
 	 * @return String representation corresponding to the name of a given
 	 *         {@link LanguageStringConstant}.
@@ -201,8 +221,26 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation corresponding to the name of a given
-	 * {@link DatatypeConstant}. Example: ""c"^^<http://example.org/mystring>"
+	 * {@link DatatypeConstant} without an IRI.
 	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @param datatypeConstant a {@link DatatypeConstant}
+	 * @return String representation corresponding to a given
+	 *         {@link DatatypeConstant}.
+	 */
+	public static String getShortConstantName(DatatypeConstant datatypeConstant) {
+		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
+			return "\"" + datatypeConstant.getLexicalValue() + "\"";
+		} else {
+			return datatypeConstant.getLexicalValue();
+		}
+	}
+
+	/**
+	 * Creates a String representation corresponding to the name of a given
+	 * {@link DatatypeConstant} including an IRI.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.

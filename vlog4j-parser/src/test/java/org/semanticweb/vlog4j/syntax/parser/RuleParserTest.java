@@ -41,6 +41,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
+import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
@@ -409,6 +410,23 @@ public class RuleParserTest {
 	public void testBlankPredicateName() throws ParsingException {
 		String input = "_:(a) .";
 		RuleParser.parse(input);
+	}
+
+	@Test
+	public void DatatypeConstantgRoundTripTest() throws ParsingException {
+		DatatypeConstantImpl datatypeConstantString = new DatatypeConstantImpl("data", PrefixDeclarations.XSD_STRING);
+		DatatypeConstantImpl datatypeConstantInteger = new DatatypeConstantImpl("1", PrefixDeclarations.XSD_INTEGER);
+		DatatypeConstantImpl datatypeConstantFloat = new DatatypeConstantImpl("0.5", PrefixDeclarations.XSD_FLOAT);
+		DatatypeConstantImpl datatypeConstantDouble = new DatatypeConstantImpl("0.5", PrefixDeclarations.XSD_DOUBLE);
+		assertEquals(datatypeConstantString,
+				RuleParser.parseFact("p(\"data\"^^<http://www.w3.org/2001/XMLSchema#string>).").getArguments().get(0));
+		assertEquals(datatypeConstantInteger,
+				RuleParser.parseFact("p(\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>).").getArguments().get(0));
+		assertEquals(datatypeConstantFloat,
+				RuleParser.parseFact("p(\"0.5\"^^<http://www.w3.org/2001/XMLSchema#float>).").getArguments().get(0));
+		assertEquals(datatypeConstantDouble,
+				RuleParser.parseFact("p(\"0.5\"^^<http://www.w3.org/2001/XMLSchema#double>).").getArguments().get(0));
+
 	}
 
 }

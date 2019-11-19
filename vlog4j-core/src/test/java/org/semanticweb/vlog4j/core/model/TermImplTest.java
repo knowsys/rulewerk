@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
@@ -141,8 +142,8 @@ public class TermImplTest {
 
 	@Test
 	public void datatypeConstantToStringTest() {
-		DatatypeConstantImpl c = new DatatypeConstantImpl("c", "http://example.org/mystring");
-		assertEquals("\"c\"^^<http://example.org/mystring>", c.toString());
+		DatatypeConstantImpl c = new DatatypeConstantImpl("c", PrefixDeclarations.XSD_STRING);
+		assertEquals("\"c\"", c.toString());
 	}
 
 	@Test

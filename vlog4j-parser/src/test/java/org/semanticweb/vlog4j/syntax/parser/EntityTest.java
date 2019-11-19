@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
+import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;

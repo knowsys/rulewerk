@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
@@ -28,7 +29,6 @@ import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
-import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
@@ -130,13 +130,11 @@ public class VLogReasoner implements Reasoner {
 			return predicate.equals(other.predicate);
 		}
 
-		public String getSyntacticRepresentation() {
-			return Serializer.getString(this);
-		}
-
 		@Override
-		public String toString() {
-			return getSyntacticRepresentation();
+		public String getSyntacticRepresentation() {
+
+			throw new NotImplementedException(
+					"This method is not implemented for type LocalFactsDataSourceDeclaration");
 		}
 
 	}
