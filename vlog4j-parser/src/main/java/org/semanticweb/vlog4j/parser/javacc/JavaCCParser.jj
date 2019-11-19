@@ -49,6 +49,10 @@ public class JavaCCParser extends JavaCCParserBase
 	private SubParserFactory getSubParserFactory() {
 		return new SubParserFactory(this);
 	}
+
+	public void ensureEndOfInput() throws ParseException {
+		jj_consume_token(EOF);
+	}
 }
 
 PARSER_END(JavaCCParser)

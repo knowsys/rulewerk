@@ -144,7 +144,9 @@ public class RuleParser {
 		}
 
 		try {
-			return parserAction.parse(localParser);
+			T result = parserAction.parse(localParser);
+			localParser.ensureEndOfInput();
+			return result;
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
 			LOGGER.error("Exception while parsing " + syntaxObjectType + ": {}!", input);
 			throw new ParsingException("Exception while parsing " + syntaxObjectType, e);

@@ -365,6 +365,27 @@ public class RuleParserTest {
 		RuleParser.parse(input);
 	}
 
+	@Test(expected = ParsingException.class)
+	public void testInvalidDatatypeOnLiteral() throws ParsingException {
+		final String input = "P(\"a\")^^whatever";
+		RuleParser.parseLiteral(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testNonIriTypeInDatatypeLiteral() throws ParsingException {
+		final String input = "P(\"a\"^^whatever)";
+		RuleParser.parseLiteral(input);
+	}
+
+	@Test
+	public void testIriTypeInDatatypeLiteral() throws ParsingException {
+		final String iri = "whatever";
+		final String input = "P(\"a\"^^<" + iri + ">)";
+		Literal literal = RuleParser.parseLiteral(input);
+		DatatypeConstant result = (DatatypeConstant) literal.getConstants().toArray()[0];
+		assertEquals(iri, result.getDatatype());
+	}
+
 	@Test
 	public void predicateRelativeNumericIRITest() throws ParsingException {
 		AbstractConstantImpl a = new AbstractConstantImpl("a");
@@ -390,7 +411,7 @@ public class RuleParserTest {
 		parserConfiguration.registerDatatype(typename, handler);
 		doReturn(constant).when(handler).createConstant(ArgumentMatchers.eq("hello, world"));
 
-		String input = "p(\"hello, world\"^^<" + typename + ">) .";
+		String input = "p(\"hello, world\"^^<" + typename + ">)";
 		Literal literal = RuleParser.parseLiteral(input, parserConfiguration);
 		DatatypeConstant result = (DatatypeConstant) literal.getConstants().toArray()[0];
 		assertEquals(constant, result);
