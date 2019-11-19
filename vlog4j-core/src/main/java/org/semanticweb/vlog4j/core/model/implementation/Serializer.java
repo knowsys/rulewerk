@@ -49,8 +49,8 @@ public final class Serializer {
 	public static final String existentialIdentifier = "!";
 	public static final String universalIdentifier = "?";
 	public static final String namedNullIdentifier = "_";
-	public static final String openBracket = "(";
-	public static final String closeBracket = ")";
+	public static final String openParentheses = "(";
+	public static final String closeParentheses = ")";
 	public static final String ruleSeparator = ":-";
 
 	/**
@@ -84,7 +84,7 @@ public final class Serializer {
 		if (literal.isNegated()) {
 			stringBuilder.append(negativeIdentifier);
 		}
-		stringBuilder.append(literal.getPredicate().getName()).append(openBracket);
+		stringBuilder.append(literal.getPredicate().getName()).append(openParentheses);
 		boolean first = true;
 		for (final Term term : literal.getArguments()) {
 			if (first) {
@@ -94,7 +94,7 @@ public final class Serializer {
 			}
 			stringBuilder.append(term.getSyntacticRepresentation());
 		}
-		stringBuilder.append(closeBracket);
+		stringBuilder.append(closeParentheses);
 		return stringBuilder.toString();
 	}
 
@@ -167,7 +167,7 @@ public final class Serializer {
 	 * @return String representation corresponding to a given {@link Predicate}.
 	 */
 	public static String getString(Predicate predicate) {
-		return predicate.getName() + openBracket + predicate.getArity() + closeBracket;
+		return predicate.getName() + openParentheses + predicate.getArity() + closeParentheses;
 	}
 
 	/**
@@ -179,8 +179,8 @@ public final class Serializer {
 	 *         {@link DataSourceDeclaration}.
 	 */
 	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
-		return "@source " + dataSourceDeclaration.getPredicate().getName() + openBracket
-				+ dataSourceDeclaration.getPredicate().getArity() + closeBracket + ": "
+		return "@source " + dataSourceDeclaration.getPredicate().getName() + openParentheses
+				+ dataSourceDeclaration.getPredicate().getArity() + closeParentheses + ": "
 				+ dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
 	}
 
@@ -234,8 +234,7 @@ public final class Serializer {
 		} else {
 			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
 					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
-					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DOUBLE)
-					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_FLOAT)) {
+					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DOUBLE)) {
 				return datatypeConstant.getLexicalValue();
 			} else {
 				return getConstantName(datatypeConstant);

@@ -418,6 +418,7 @@ public class RuleParserTest {
 		DatatypeConstantImpl datatypeConstantInteger = new DatatypeConstantImpl("1", PrefixDeclarations.XSD_INTEGER);
 		DatatypeConstantImpl datatypeConstantFloat = new DatatypeConstantImpl("0.5", PrefixDeclarations.XSD_FLOAT);
 		DatatypeConstantImpl datatypeConstantDouble = new DatatypeConstantImpl("0.5", PrefixDeclarations.XSD_DOUBLE);
+		DatatypeConstantImpl datatypeConstantDecimal = new DatatypeConstantImpl("0.23", PrefixDeclarations.XSD_DECIMAL);
 		assertEquals(datatypeConstantString,
 				RuleParser.parseFact("p(\"data\"^^<http://www.w3.org/2001/XMLSchema#string>).").getArguments().get(0));
 		assertEquals(datatypeConstantInteger,
@@ -426,6 +427,8 @@ public class RuleParserTest {
 				RuleParser.parseFact("p(\"0.5\"^^<http://www.w3.org/2001/XMLSchema#float>).").getArguments().get(0));
 		assertEquals(datatypeConstantDouble,
 				RuleParser.parseFact("p(\"0.5\"^^<http://www.w3.org/2001/XMLSchema#double>).").getArguments().get(0));
+		assertEquals(datatypeConstantDecimal,
+				RuleParser.parseFact("p(\"0.23\"^^<http://www.w3.org/2001/XMLSchema#decimal>).").getArguments().get(0));
 
 	}
 
