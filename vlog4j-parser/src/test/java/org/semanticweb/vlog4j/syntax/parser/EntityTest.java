@@ -51,30 +51,6 @@ import org.semanticweb.vlog4j.parser.RuleParser;
 
 public class EntityTest {
 
-	final Variable y2 = Expressions.makeUniversalVariable("Y");
-	final Constant d = Expressions.makeAbstractConstant("d");
-
-	final LanguageStringConstantImpl s = new LanguageStringConstantImpl("Test", "en");
-
-	// final PositiveLiteral positiveLiteral1 = Expressions.makePositiveLiteral("p",
-	// x, c);
-	// final PositiveLiteral positiveLiteral2 = Expressions.makePositiveLiteral("p",
-	// y2, x);
-	// final PositiveLiteral positiveLiteral3 = Expressions.makePositiveLiteral("q",
-	// x, d);
-	// final NegativeLiteral NegativeLiteral = Expressions.makeNegativeLiteral("r",
-	// x, d);
-	// final PositiveLiteral PositiveLiteral4 = Expressions.makePositiveLiteral("s",
-	// c, s);
-	// final List<Literal> LiteralList = Arrays.asList(positiveLiteral1,
-	// positiveLiteral2, positiveLiteral3,
-	// NegativeLiteral, PositiveLiteral4);
-
-	// final Conjunction<Literal> bodyConjunction = new
-	// ConjunctionImpl<>(LiteralList);
-
-	// final Rule rule2 = new RuleImpl(headPositiveLiterals, bodyConjunction);
-
 	@Test
 	public void languageStringConstantToStringRoundTripTest() throws ParsingException {
 		LanguageStringConstantImpl s = new LanguageStringConstantImpl("Test", "en");
