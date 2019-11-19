@@ -232,7 +232,15 @@ public final class Serializer {
 		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
 			return "\"" + datatypeConstant.getLexicalValue() + "\"";
 		} else {
-			return datatypeConstant.getLexicalValue();
+			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
+					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
+					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DOUBLE)
+					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_FLOAT)) {
+				return datatypeConstant.getLexicalValue();
+			} else {
+				return getConstantName(datatypeConstant);
+			}
+
 		}
 	}
 

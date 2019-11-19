@@ -37,6 +37,7 @@ import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
@@ -62,7 +63,7 @@ public class EntityTest {
 	final Constant c = Expressions.makeAbstractConstant("c");
 	final AbstractConstantImpl f = new AbstractConstantImpl("f");
 	final LanguageStringConstantImpl s = new LanguageStringConstantImpl("Test", "en");
-	final DatatypeConstantImpl data = new DatatypeConstantImpl("data", "http://example.org/mystring");
+	final DatatypeConstantImpl data = new DatatypeConstantImpl("data", PrefixDeclarations.XSD_STRING);
 	final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
 	final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, y);
 	final PositiveLiteral headAtom1 = Expressions.makePositiveLiteral("q", x, z);
@@ -86,7 +87,7 @@ public class EntityTest {
 	public void factToStringRoundTripTest() throws ParsingException {
 		assertEquals(RuleParser.parseFact(f1.toString()), RuleParser.parseFact("p(f, \"Test\"@en)."));
 		assertEquals(RuleParser.parseFact(f2.toString()),
-				RuleParser.parseFact("p(\"data\"^^<http://example.org/mystring>, d)."));
+				RuleParser.parseFact("p(\"data\"^^<http://www.w3.org/2001/XMLSchema#string>, d)."));
 	}
 
 	@Test
@@ -94,6 +95,23 @@ public class EntityTest {
 		assertEquals(RuleParser.parseRule(rule1.toString()), RuleParser.parseRule("q(?X, !Z) :- p(?X, c), p(?X, ?Y)."));
 		assertEquals(RuleParser.parseRule(rule2.toString()),
 				RuleParser.parseRule("q(?X, !Z) :- p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, \"Test\"@en)."));
+	}
+
+	@Test
+	public void DatatypeConstantgRoundTripTest() throws ParsingException {
+		DatatypeConstantImpl datatypeConstantString = new DatatypeConstantImpl("data", PrefixDeclarations.XSD_STRING);
+		DatatypeConstantImpl datatypeConstantInteger = new DatatypeConstantImpl("1", PrefixDeclarations.XSD_INTEGER);
+		DatatypeConstantImpl datatypeConstantFloat = new DatatypeConstantImpl("0.5", PrefixDeclarations.XSD_FLOAT);
+		DatatypeConstantImpl datatypeConstantDouble = new DatatypeConstantImpl("0.5", PrefixDeclarations.XSD_DOUBLE);
+		assertEquals("\"data\"", RuleParser.parseFact("p(\"data\"^^<http://www.w3.org/2001/XMLSchema#string>).")
+				.getArguments().get(0).toString());
+		assertEquals("1", RuleParser.parseFact("p(\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>).").getArguments()
+				.get(0).toString());
+		assertEquals("0.5", RuleParser.parseFact("p(\"0.5\"^^<http://www.w3.org/2001/XMLSchema#float>).").getArguments()
+				.get(0).toString());
+		assertEquals("0.5", RuleParser.parseFact("p(\"0.5\"^^<http://www.w3.org/2001/XMLSchema#double>).")
+				.getArguments().get(0).toString());
+
 	}
 
 	@Test
