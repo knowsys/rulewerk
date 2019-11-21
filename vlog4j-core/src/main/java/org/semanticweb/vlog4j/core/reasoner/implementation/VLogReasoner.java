@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
@@ -133,7 +132,7 @@ public class VLogReasoner implements Reasoner {
 		@Override
 		public String getSyntacticRepresentation() {
 
-			throw new NotImplementedException(
+			throw new UnsupportedOperationException(
 					"This method is not implemented for type LocalFactsDataSourceDeclaration");
 		}
 

@@ -43,21 +43,32 @@ import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
  *
  */
 public final class Serializer {
-	public static final String negativeIdentifier = "~";
-	public static final String comma = ",";
-	public static final String dot = ".";
-	public static final String existentialIdentifier = "!";
-	public static final String universalIdentifier = "?";
-	public static final String namedNullIdentifier = "_";
-	public static final String openParenthesis = "(";
-	public static final String closingParenthesis = ")";
-	public static final String ruleSeparator = ":-";
+	public static final String NEGATIVE_IDENTIFIER = "~";
+	public static final String COMMA = ", ";
+	public static final String DOT = ".";
+	public static final String EXISTENTIAL_IDENTIFIER = "!";
+	public static final String UNIVERSAL_IDENTIFIER = "?";
+	public static final String NAMEDNULL_IDENTIFIER = "_";
+	public static final String OPEN_PARENTHESIS = "(";
+	public static final String CLOSING_PARENTHESIS = ")";
+	public static final String RULE_SEPARATOR = " :- ";
+	public static final String AT = "@";
+	public static final String SOURCE = "@source ";
+	public static final String COLON = ": ";
+	public static final String CARET = "^";
+	public static final String LESS_THAN = "<";
+	public static final String MORE_THAN = ">";
+	public static final String ESCAPED_QUOTE = "\"";
 
 	/**
 	 * Constructor.
 	 */
 	private Serializer() {
 
+	}
+
+	private static String escape(String string) {
+		return string.replace("\\", "\\\\").replace("\"", "\\\"");
 	}
 
 	/**
@@ -69,7 +80,7 @@ public final class Serializer {
 	 * 
 	 */
 	public static String getString(Rule rule) {
-		return getString(rule.getHead()) + " " + ruleSeparator + " " + getString(rule.getBody()) + dot;
+		return getString(rule.getHead()) + RULE_SEPARATOR + getString(rule.getBody()) + DOT;
 	}
 
 	/**
@@ -82,19 +93,19 @@ public final class Serializer {
 	public static String getString(Literal literal) {
 		final StringBuilder stringBuilder = new StringBuilder("");
 		if (literal.isNegated()) {
-			stringBuilder.append(negativeIdentifier);
+			stringBuilder.append(NEGATIVE_IDENTIFIER);
 		}
-		stringBuilder.append(literal.getPredicate().getName()).append(openParenthesis);
+		stringBuilder.append(literal.getPredicate().getName()).append(OPEN_PARENTHESIS);
 		boolean first = true;
 		for (final Term term : literal.getArguments()) {
 			if (first) {
 				first = false;
 			} else {
-				stringBuilder.append(comma + " ");
+				stringBuilder.append(COMMA);
 			}
 			stringBuilder.append(term.getSyntacticRepresentation());
 		}
-		stringBuilder.append(closingParenthesis);
+		stringBuilder.append(CLOSING_PARENTHESIS);
 		return stringBuilder.toString();
 	}
 
@@ -106,7 +117,7 @@ public final class Serializer {
 	 * @return String representation corresponding to a given {@link Fact}.
 	 */
 	public static String getFactString(Fact fact) {
-		return getString(fact) + dot;
+		return getString(fact) + DOT;
 	}
 
 	/**
@@ -133,7 +144,7 @@ public final class Serializer {
 	 *         {@link ExistentialVariable}.
 	 */
 	public static String getString(ExistentialVariable existentialVariable) {
-		return existentialIdentifier + existentialVariable.getName();
+		return EXISTENTIAL_IDENTIFIER + existentialVariable.getName();
 	}
 
 	/**
@@ -145,7 +156,7 @@ public final class Serializer {
 	 *         {@link UniversalVariable}.
 	 */
 	public static String getString(UniversalVariable universalVariable) {
-		return universalIdentifier + universalVariable.getName();
+		return UNIVERSAL_IDENTIFIER + universalVariable.getName();
 	}
 
 	/**
@@ -156,7 +167,7 @@ public final class Serializer {
 	 * @return String representation corresponding to a given {@link NamedNull}.
 	 */
 	public static String getString(NamedNull namedNull) {
-		return namedNullIdentifier + namedNull.getName();
+		return NAMEDNULL_IDENTIFIER + namedNull.getName();
 	}
 
 	/**
@@ -167,7 +178,7 @@ public final class Serializer {
 	 * @return String representation corresponding to a given {@link Predicate}.
 	 */
 	public static String getString(Predicate predicate) {
-		return predicate.getName() + openParenthesis + predicate.getArity() + closingParenthesis;
+		return predicate.getName() + OPEN_PARENTHESIS + predicate.getArity() + CLOSING_PARENTHESIS;
 	}
 
 	/**
@@ -179,8 +190,8 @@ public final class Serializer {
 	 *         {@link DataSourceDeclaration}.
 	 */
 	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
-		return "@source " + dataSourceDeclaration.getPredicate().getName() + openParenthesis
-				+ dataSourceDeclaration.getPredicate().getArity() + closingParenthesis + ": "
+		return SOURCE + dataSourceDeclaration.getPredicate().getName() + OPEN_PARENTHESIS
+				+ dataSourceDeclaration.getPredicate().getArity() + CLOSING_PARENTHESIS + COLON
 				+ dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
 	}
 
@@ -198,7 +209,7 @@ public final class Serializer {
 			if (first) {
 				first = false;
 			} else {
-				stringBuilder.append(comma + " ");
+				stringBuilder.append(COMMA);
 			}
 			stringBuilder.append(getString(literal));
 		}
@@ -215,7 +226,7 @@ public final class Serializer {
 	 *         {@link LanguageStringConstant}.
 	 */
 	public static String getConstantName(LanguageStringConstant languageStringConstant) {
-		return "\"" + languageStringConstant.getString().replace("\\", "\\\\").replace("\"", "\\\"") + "\"@"
+		return ESCAPED_QUOTE + escape(languageStringConstant.getString()) + ESCAPED_QUOTE + AT
 				+ languageStringConstant.getLanguageTag();
 	}
 
@@ -230,7 +241,7 @@ public final class Serializer {
 	 */
 	public static String getShortConstantName(DatatypeConstant datatypeConstant) {
 		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
-			return "\"" + datatypeConstant.getLexicalValue() + "\"";
+			return ESCAPED_QUOTE + datatypeConstant.getLexicalValue() + ESCAPED_QUOTE;
 		} else {
 			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
 					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
@@ -253,8 +264,8 @@ public final class Serializer {
 	 *         {@link DatatypeConstant}.
 	 */
 	public static String getConstantName(DatatypeConstant datatypeConstant) {
-		return "\"" + datatypeConstant.getLexicalValue().replace("\\", "\\\\").replace("\"", "\\\"") + "\"^^<"
-				+ datatypeConstant.getDatatype() + ">";
+		return ESCAPED_QUOTE + escape(datatypeConstant.getLexicalValue()) + ESCAPED_QUOTE + CARET + CARET + LESS_THAN
+				+ datatypeConstant.getDatatype() + MORE_THAN;
 	}
 
 }
