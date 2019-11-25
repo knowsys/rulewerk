@@ -22,8 +22,6 @@ package org.vlog4j.client.picocli;
 
 import java.io.File;
 
-import javax.naming.ConfigurationException;
-
 import picocli.CommandLine.Option;
 
 /**
@@ -33,6 +31,10 @@ import picocli.CommandLine.Option;
  *
  */
 public class SaveQueryResults {
+	public static final String DEFAULT_OUTPUT_DIR_NAME = "query-results";
+
+	static final String configurationErrorMessage = "Configuration Error: If @code{--save-query-results} is true, then a non empty @code{--output-query-result-directory} is required.";
+	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-query-result-directory}. Please check the path.";
 
 	/**
 	 * If true, Vlog4jClient will save the query result in
@@ -49,52 +51,72 @@ public class SaveQueryResults {
 	 *
 	 * @default query-results
 	 */
-	@Option(names = "--output-query-result-directory", description = "Directory to store the model. Used only if --save-query-results is true. \"query-results\" by default.")
-	private String outputQueryResultDirectory = "query-results";
+	@Option(names = "--output-query-result-directory", description = "Directory to store the model. Used only if --save-query-results is true. \""
+			+ DEFAULT_OUTPUT_DIR_NAME + "\" by default.")
+	private String outputQueryResultDirectory = DEFAULT_OUTPUT_DIR_NAME;
+
+	public SaveQueryResults() {
+	}
+
+	public SaveQueryResults(final boolean saveResults, final String outputDir) {
+		this.saveResults = saveResults;
+		this.outputQueryResultDirectory = outputDir;
+	}
 
 	/**
 	 * Check correct configuration of the class. If @code{--save-query-results} is
 	 * true, then a non-empty @code{--output-query-result-directory} is required.
 	 * 
-	 * @throws ConfigurationException
+	 * @return @code{true} if configuration is valid.
 	 */
-	public void validate() throws ConfigurationException {
-		String error_message = "If @code{--save-query-results} is true, then a non empty @code{--output-query-result-directory} is required.";
-		if (saveResults && (outputQueryResultDirectory == null || outputQueryResultDirectory.isEmpty())) {
-			throw new ConfigurationException(error_message);
-		}
+	public boolean isConfigurationValid() {
+		return !this.saveResults
+				|| ((this.outputQueryResultDirectory != null) && !this.outputQueryResultDirectory.isEmpty());
 	}
 
 	/**
-	 * Create directory to store query results
+	 * Check that the path to store the query results is either non-existing or a
+	 * directory.
+	 * 
+	 * @return @code{true} if conditions are satisfied.
 	 */
-	public void prepare() {
-		if (saveResults) {
-			new File(outputQueryResultDirectory).mkdirs();
-		}
-	}
-
-	public void printConfiguration() {
-		if (saveResults) {
-			System.out.println("  --save-query-results: " + saveResults);
-			System.out.println("  --output-query-result-directory: " + outputQueryResultDirectory);
-		}
+	public boolean isDirectoryValid() {
+		final File file = new File(this.outputQueryResultDirectory);
+		return !file.exists() || file.isDirectory();
 	}
 
 	public boolean isSaveResults() {
-		return saveResults;
+		return this.saveResults;
 	}
 
-	public void setSaveResults(boolean saveResults) {
+	public void setSaveResults(final boolean saveResults) {
 		this.saveResults = saveResults;
 	}
 
 	public String getOutputQueryResultDirectory() {
-		return outputQueryResultDirectory;
+		return this.outputQueryResultDirectory;
 	}
 
-	public void setOutputQueryResultDirectory(String outputQueryResultDirectory) {
+	public void setOutputQueryResultDirectory(final String outputQueryResultDirectory) {
 		this.outputQueryResultDirectory = outputQueryResultDirectory;
+	}
+
+	/**
+	 * Create directory to store query results if not present. It assumes that
+	 * configuration and directory are valid.
+	 */
+	void mkdir() {
+		if (this.saveResults) {
+			final File file = new File(this.outputQueryResultDirectory);
+			if (!file.exists()) {
+				file.mkdirs();
+			}
+		}
+	}
+
+	void printConfiguration() {
+		System.out.println("  --save-query-results: " + this.saveResults);
+		System.out.println("  --output-query-result-directory: " + this.outputQueryResultDirectory);
 	}
 
 }

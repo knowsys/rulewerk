@@ -22,8 +22,6 @@ package org.vlog4j.client.picocli;
 
 import java.io.File;
 
-import javax.naming.ConfigurationException;
-
 import picocli.CommandLine.Option;
 
 /**
@@ -33,6 +31,11 @@ import picocli.CommandLine.Option;
  *
  */
 public class SaveModel {
+
+	public static final String DEFAULT_OUTPUT_DIR_NAME = "model";
+
+	static final String configurationErrorMessage = "Configuration Error: If @code{--save-model} is true, then a non empty @code{--output-model-directory} is required.";
+	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-model-directory}. Please check the path.";
 
 	/**
 	 * If true, Vlog4jClient will save the model in {@code --output-model-directory}
@@ -47,51 +50,68 @@ public class SaveModel {
 	 *
 	 * @default "model"
 	 */
-	@Option(names = "--output-model-directory", description = "Directory to store the model. Used only if --store-model is true. \"model\" by default.")
-	private String outputModelDirectory = "model";
+	@Option(names = "--output-model-directory", description = "Directory to store the model. Used only if --store-model is true. \""
+			+ DEFAULT_OUTPUT_DIR_NAME + "\" by default.")
+	private String outputModelDirectory = DEFAULT_OUTPUT_DIR_NAME;
+
+	public SaveModel() {
+	}
+
+	public SaveModel(final boolean saveModel, final String outputDir) {
+		this.saveModel = saveModel;
+		this.outputModelDirectory = outputDir;
+	}
 
 	/**
-	 * Check correct configuration of the class. If @code{--save-model} is
-	 * true, then a non-empty @code{--output-model-directory} is required.
+	 * Check correct configuration of the class. If @code{--save-model} is true,
+	 * then a non-empty @code{--output-model-directory} is required.
 	 * 
-	 * @throws ConfigurationException
+	 * @return @code{true} if configuration is valid.
 	 */
-	public void validate() throws ConfigurationException {
-		String error_message = "If @code{--save-model} is true, then a non empty @code{--output-model-directory} is required.";
-		if (saveModel && (outputModelDirectory == null || outputModelDirectory.isEmpty())) {
-			throw new ConfigurationException(error_message);
-		}
+	public boolean isConfigurationValid() {
+		return !this.saveModel || ((this.outputModelDirectory != null) && !this.outputModelDirectory.isEmpty());
 	}
-	
+
+	/**
+	 * Check that the path to store the model is either non-existing or a directory.
+	 * 
+	 * @return @code{true} if conditions are satisfied.
+	 */
+	public boolean isDirectoryValid() {
+		final File file = new File(this.outputModelDirectory);
+		return !file.exists() || file.isDirectory();
+	}
+
 	/**
 	 * Create directory to store the model
 	 */
-	public void prepare() {
-		if (saveModel) {
-			new File(outputModelDirectory).mkdirs();
+	void mkdir() {
+		if (this.saveModel) {
+			final File file = new File(this.outputModelDirectory);
+			if (!file.exists()) {
+				file.mkdirs();
+			}
 		}
 	}
 
 	public void printConfiguration() {
-		if (saveModel) {
-			System.out.println("  --save-model: " + saveModel);
-			System.out.println("  --output-model-directory: " + outputModelDirectory);
-		}
+		System.out.println("  --save-model: " + this.saveModel);
+		System.out.println("  --output-model-directory: " + this.outputModelDirectory);
 	}
 
 	public boolean isSaveModel() {
-		return saveModel;
+		return this.saveModel;
 	}
 
-	public void setSaveModel(boolean saveModel) {
+	public void setSaveModel(final boolean saveModel) {
 		this.saveModel = saveModel;
 	}
 
 	public String getOutputModelDirectory() {
-		return outputModelDirectory;
+		return this.outputModelDirectory;
 	}
 
-	public void setOutputModelDirectory(String outputModelDirectory) {
+	public void setOutputModelDirectory(final String outputModelDirectory) {
 		this.outputModelDirectory = outputModelDirectory;
 	}
 
