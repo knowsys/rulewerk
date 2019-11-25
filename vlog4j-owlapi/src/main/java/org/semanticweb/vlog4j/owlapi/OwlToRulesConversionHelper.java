@@ -227,7 +227,7 @@ public class OwlToRulesConversionHelper {
 		}
 	}
 
-	private static PositiveLiteral getDataPropertyAtom(final OWLDataPropertyExpression owlDataPropertyExpression,
+	static PositiveLiteral getDataPropertyAtom(final OWLDataPropertyExpression owlDataPropertyExpression,
 			final Term sourceTerm, final Term targetTerm) {
 		return new PositiveLiteralImpl(
 				OwlToRulesConversionHelper.getPropertyPredicate(owlDataPropertyExpression.asOWLDataProperty()),
@@ -273,8 +273,8 @@ public class OwlToRulesConversionHelper {
 		}
 	}
 
-	private static Fact getDataPropertyFact(final OWLDataPropertyExpression owlDataPropertyExpression,
-			final Term sourceTerm, final Term targetTerm) {
+	static Fact getDataPropertyFact(final OWLDataPropertyExpression owlDataPropertyExpression, final Term sourceTerm,
+			final Term targetTerm) {
 		return new FactImpl(
 				OwlToRulesConversionHelper.getPropertyPredicate(owlDataPropertyExpression.asOWLDataProperty()),
 				Arrays.asList(sourceTerm, targetTerm));
