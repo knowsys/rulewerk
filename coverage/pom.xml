@@ -48,6 +48,11 @@
 	<build>
 	  <plugins>
 		<plugin>
+		  <!-- Create code coverage reports and submit them to coveralls.io. -->
+		  <groupId>org.eluder.coveralls</groupId>
+		  <artifactId>coveralls-maven-plugin</artifactId>
+		</plugin>
+		<plugin>
 		  <groupId>org.jacoco</groupId>
 		  <artifactId>jacoco-maven-plugin</artifactId>
 		  <executions>
@@ -57,19 +62,6 @@
 			  <goals>
 				<goal>report-aggregate</goal>
 			  </goals>
-			  <configuration>
-				<excludes>
-				  <!-- Do not consider generated source code. Plugin fails for these files. -->
-				  <exclude>**/javacc/JavaCCParser.java</exclude>
-				  <exclude>**/javacc/JavaCCParserConstants.java</exclude>
-				  <exclude>**/javacc/JavaCCParserTokenManager.java</exclude>
-				  <exclude>**/javacc/JavaCharStream.java</exclude>
-				  <exclude>**/javacc/ParseException.java</exclude>
-				  <exclude>**/javacc/SimpleCharStream.java</exclude>
-				  <exclude>**/javacc/Token.java</exclude>
-				  <exclude>**/javacc/TokenMgrError.java</exclude>
-				</excludes>
-			  </configuration>
 			</execution>
 		  </executions>
 		</plugin>

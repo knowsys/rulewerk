@@ -238,10 +238,25 @@
 			  </configuration>
 			</plugin>
 			<plugin>
-				<!-- Create code coverage reports and submit them to coveralls.io. -->
-				<groupId>org.eluder.coveralls</groupId>
-				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>4.3.0</version>
+			  <!-- Create code coverage reports and submit them to coveralls.io. -->
+			  <groupId>org.eluder.coveralls</groupId>
+			  <artifactId>coveralls-maven-plugin</artifactId>
+			  <version>4.3.0</version>
+			  <configuration>
+				<jacocoReports>
+				  <file>coverage/target/site/jacoco-aggregate/jacoco.xml</file>
+				</jacocoReports>
+			  </configuration>
+			  <!-- workaround for
+				   https://github.com/trautonen/coveralls-maven-plugin/issues/112
+			  -->
+			  <dependencies>
+				<dependency>
+				  <groupId>javax.xml.bind</groupId>
+				  <artifactId>jaxb-api</artifactId>
+				  <version>2.3.1</version>
+				</dependency>
+			  </dependencies>
 			</plugin>
 			<plugin>
 			  <!-- Plugin for actually computing code coverage. -->
@@ -257,11 +272,38 @@
 					<propertyName>surefireArgLine</propertyName>
 				  </configuration>
 				</execution>
+				<execution>
+				  <id>default-cli</id>
+				  <goals>
+					<goal>report</goal>
+				  </goals>
+				  <phase>test</phase>
+				  <configuration>
+					<!-- use a non-standard output directory so the
+					     coveralls plugin will not try to aggregate
+					     this into the final coverage report, since we
+					     want to control aggregation ourselves. -->
+					<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+				  </configuration>
+				</execution>
 			  </executions>
+			<configuration>
+			  <excludes>
+				<!-- Do not consider generated source code. Plugin fails for these files. -->
+				<exclude>**/javacc/JavaCCParser*</exclude>
+				<exclude>**/javacc/JavaCCParserConstants*</exclude>
+				<exclude>**/javacc/JavaCCParserTokenManager*</exclude>
+				<exclude>**/javacc/JavaCharStream*</exclude>
+				<exclude>**/javacc/ParseException*</exclude>
+				<exclude>**/javacc/SimpleCharStream*</exclude>
+				<exclude>**/javacc/Token*</exclude>
+				<exclude>**/javacc/TokenMgrError*</exclude>
+			  </excludes>
+			</configuration>
 			</plugin>
 			<plugin>
-				<!-- Plugin for creating Javadocs; goal for preparing docs for upload
-					to github: javadoc:aggregate -->
+			  <!-- Plugin for creating Javadocs; goal for preparing
+			       docs for upload to github: javadoc:aggregate -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven.javadoc.version}</version>
