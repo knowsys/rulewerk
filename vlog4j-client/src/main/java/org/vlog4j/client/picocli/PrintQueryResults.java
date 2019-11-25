@@ -30,7 +30,7 @@ import picocli.CommandLine.Option;
  */
 public class PrintQueryResults {
 
-	static final String configurationErrorMessage = "Configuration Error: @code{--print-query-result-size} and @code{--print-query-result} are mutually exclusive. Set only one to true.\n Exiting the program.";
+	static final String configurationErrorMessage = "Configuration Error: @code{--print-query-result-size} and @code{--print-query-result} are mutually exclusive. Set only one to true.";
 
 	/**
 	 * If true, Vlog4jClient will print the size of the query result. Mutually
@@ -53,7 +53,7 @@ public class PrintQueryResults {
 	public PrintQueryResults() {
 	}
 
-	public PrintQueryResults(boolean sizeOnly, boolean complete) {
+	public PrintQueryResults(final boolean sizeOnly, final boolean complete) {
 		this.sizeOnly = sizeOnly;
 		this.complete = complete;
 	}
@@ -64,28 +64,28 @@ public class PrintQueryResults {
 	 * 
 	 * @return @code{true} if configuration is valid.
 	 */
-	protected boolean isValid() {
-		return !sizeOnly || !complete;
+	public boolean isValid() {
+		return !this.sizeOnly || !this.complete;
 	}
 
-	protected void printConfiguration() {
-		System.out.println("  --print-query-result-size: " + sizeOnly);
-		System.out.println("  --print-complete-query-result: " + complete);
+	public boolean isSizeOnly() {
+		return this.sizeOnly;
 	}
 
-	protected boolean isSizeOnly() {
-		return sizeOnly;
-	}
-
-	protected void setSizeOnly(boolean sizeOnly) {
+	public void setSizeOnly(final boolean sizeOnly) {
 		this.sizeOnly = sizeOnly;
 	}
 
-	protected boolean isComplete() {
-		return complete;
+	public boolean isComplete() {
+		return this.complete;
 	}
 
-	protected void setComplete(boolean complete) {
+	public void setComplete(final boolean complete) {
 		this.complete = complete;
+	}
+
+	void printConfiguration() {
+		System.out.println("  --print-query-result-size: " + this.sizeOnly);
+		System.out.println("  --print-complete-query-result: " + this.complete);
 	}
 }

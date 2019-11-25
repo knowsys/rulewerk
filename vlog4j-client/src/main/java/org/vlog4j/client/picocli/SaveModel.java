@@ -32,8 +32,8 @@ import picocli.CommandLine.Option;
  */
 public class SaveModel {
 
-	static final String configurationErrorMessage = "Configuration Error: If @code{--save-model} is true, then a non empty @code{--output-model-directory} is required.\nExiting the program.";
-	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-model-directory}. Please check the path.\nExiting the program.";
+	static final String configurationErrorMessage = "Configuration Error: If @code{--save-model} is true, then a non empty @code{--output-model-directory} is required.";
+	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-model-directory}. Please check the path.";
 
 	/**
 	 * If true, Vlog4jClient will save the model in {@code --output-model-directory}
@@ -54,7 +54,7 @@ public class SaveModel {
 	public SaveModel() {
 	}
 
-	public SaveModel(boolean saveModel, String outputDir) {
+	public SaveModel(final boolean saveModel, final String outputDir) {
 		this.saveModel = saveModel;
 		this.outputModelDirectory = outputDir;
 	}
@@ -65,8 +65,8 @@ public class SaveModel {
 	 * 
 	 * @return @code{true} if configuration is valid.
 	 */
-	protected boolean isConfigurationValid() {
-		return !saveModel || (outputModelDirectory != null && !outputModelDirectory.isEmpty());
+	public boolean isConfigurationValid() {
+		return !this.saveModel || ((this.outputModelDirectory != null) && !this.outputModelDirectory.isEmpty());
 	}
 
 	/**
@@ -74,17 +74,17 @@ public class SaveModel {
 	 * 
 	 * @return @code{true} if conditions are satisfied.
 	 */
-	protected boolean isDirectoryValid() {
-		File file = new File(outputModelDirectory);
+	public boolean isDirectoryValid() {
+		final File file = new File(this.outputModelDirectory);
 		return !file.exists() || file.isDirectory();
 	}
 
 	/**
 	 * Create directory to store the model
 	 */
-	public void mkdir() {
-		if (saveModel) {
-			File file = new File(outputModelDirectory);
+	void mkdir() {
+		if (this.saveModel) {
+			final File file = new File(this.outputModelDirectory);
 			if (!file.exists()) {
 				file.mkdirs();
 			}
@@ -92,23 +92,23 @@ public class SaveModel {
 	}
 
 	public void printConfiguration() {
-		System.out.println("  --save-model: " + saveModel);
-		System.out.println("  --output-model-directory: " + outputModelDirectory);
+		System.out.println("  --save-model: " + this.saveModel);
+		System.out.println("  --output-model-directory: " + this.outputModelDirectory);
 	}
 
 	public boolean isSaveModel() {
-		return saveModel;
+		return this.saveModel;
 	}
 
-	public void setSaveModel(boolean saveModel) {
+	public void setSaveModel(final boolean saveModel) {
 		this.saveModel = saveModel;
 	}
 
 	public String getOutputModelDirectory() {
-		return outputModelDirectory;
+		return this.outputModelDirectory;
 	}
 
-	public void setOutputModelDirectory(String outputModelDirectory) {
+	public void setOutputModelDirectory(final String outputModelDirectory) {
 		this.outputModelDirectory = outputModelDirectory;
 	}
 

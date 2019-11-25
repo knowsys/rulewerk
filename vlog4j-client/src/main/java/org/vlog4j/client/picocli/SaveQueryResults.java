@@ -32,8 +32,8 @@ import picocli.CommandLine.Option;
  */
 public class SaveQueryResults {
 
-	static final String configurationErrorMessage = "Configuration Error: If @code{--save-query-results} is true, then a non empty @code{--output-query-result-directory} is required.\nExiting the program.";
-	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-query-result-directory}. Please check the path.\nExiting the program.";
+	static final String configurationErrorMessage = "Configuration Error: If @code{--save-query-results} is true, then a non empty @code{--output-query-result-directory} is required.";
+	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-query-result-directory}. Please check the path.";
 
 	/**
 	 * If true, Vlog4jClient will save the query result in
@@ -56,7 +56,7 @@ public class SaveQueryResults {
 	public SaveQueryResults() {
 	}
 
-	public SaveQueryResults(boolean saveResults, String outputDir) {
+	public SaveQueryResults(final boolean saveResults, final String outputDir) {
 		this.saveResults = saveResults;
 		this.outputQueryResultDirectory = outputDir;
 	}
@@ -67,8 +67,9 @@ public class SaveQueryResults {
 	 * 
 	 * @return @code{true} if configuration is valid.
 	 */
-	protected boolean isConfigurationValid() {
-		return !saveResults || (outputQueryResultDirectory != null && !outputQueryResultDirectory.isEmpty());
+	public boolean isConfigurationValid() {
+		return !this.saveResults
+				|| ((this.outputQueryResultDirectory != null) && !this.outputQueryResultDirectory.isEmpty());
 	}
 
 	/**
@@ -77,43 +78,43 @@ public class SaveQueryResults {
 	 * 
 	 * @return @code{true} if conditions are satisfied.
 	 */
-	protected boolean isDirectoryValid() {
-		File file = new File(outputQueryResultDirectory);
+	public boolean isDirectoryValid() {
+		final File file = new File(this.outputQueryResultDirectory);
 		return !file.exists() || file.isDirectory();
+	}
+
+	public boolean isSaveResults() {
+		return this.saveResults;
+	}
+
+	public void setSaveResults(final boolean saveResults) {
+		this.saveResults = saveResults;
+	}
+
+	public String getOutputQueryResultDirectory() {
+		return this.outputQueryResultDirectory;
+	}
+
+	public void setOutputQueryResultDirectory(final String outputQueryResultDirectory) {
+		this.outputQueryResultDirectory = outputQueryResultDirectory;
 	}
 
 	/**
 	 * Create directory to store query results if not present. It assumes that
 	 * configuration and directory are valid.
 	 */
-	protected void mkdir() {
-		if (saveResults) {
-			File file = new File(outputQueryResultDirectory);
+	void mkdir() {
+		if (this.saveResults) {
+			final File file = new File(this.outputQueryResultDirectory);
 			if (!file.exists()) {
 				file.mkdirs();
 			}
 		}
 	}
 
-	protected void printConfiguration() {
-		System.out.println("  --save-query-results: " + saveResults);
-		System.out.println("  --output-query-result-directory: " + outputQueryResultDirectory);
-	}
-
-	protected boolean isSaveResults() {
-		return saveResults;
-	}
-
-	protected void setSaveResults(boolean saveResults) {
-		this.saveResults = saveResults;
-	}
-
-	protected String getOutputQueryResultDirectory() {
-		return outputQueryResultDirectory;
-	}
-
-	protected void setOutputQueryResultDirectory(String outputQueryResultDirectory) {
-		this.outputQueryResultDirectory = outputQueryResultDirectory;
+	void printConfiguration() {
+		System.out.println("  --save-query-results: " + this.saveResults);
+		System.out.println("  --output-query-result-directory: " + this.outputQueryResultDirectory);
 	}
 
 }
