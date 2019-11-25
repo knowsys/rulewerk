@@ -15,6 +15,9 @@
 	<url>https://github.com/knowsys/vlog4j</url>
 
 	<modules>
+	  <!-- when adding a module, make sure to also add it as a
+		   dependency in the coverage module, otherwise it will not be
+		   included in the coverage report -->
 		<module>vlog4j-core</module>
 		<module>vlog4j-rdf</module>
 		<module>vlog4j-examples</module>
@@ -22,6 +25,7 @@
 		<module>vlog4j-graal</module>
 		<module>vlog4j-parser</module>
 		<module>vlog4j-client</module>
+		<module>coverage</module>
 	</modules>
 
 	<licenses>
@@ -200,6 +204,11 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+				<plugin>
+				  <groupId>org.jacoco</groupId>
+				  <artifactId>jacoco-maven-plugin</artifactId>
+				  <version>0.8.5</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -218,11 +227,16 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-surefire-plugin</artifactId>
-              <version>3.0.0-M4</version>
-            </plugin>
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-surefire-plugin</artifactId>
+			  <version>3.0.0-M4</version>
+			  <configuration>
+				<argLine>${surefireArgLine}</argLine>
+				<forkCount>1C</forkCount>
+				<reuseForks>true</reuseForks>
+			  </configuration>
+			</plugin>
 			<plugin>
 				<!-- Create code coverage reports and submit them to coveralls.io. -->
 				<groupId>org.eluder.coveralls</groupId>
@@ -230,34 +244,23 @@
 				<version>4.3.0</version>
 			</plugin>
 			<plugin>
-				<!-- Plugin for actually computing code coverage. -->
-				<!-- Change format to html and call mvn cobertura:cobertura to generate 
-					HTML report locally. -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<format>xml</format>
-					<!-- <format>html</format> -->
-					<maxmem>256m</maxmem>
-					<!-- aggregated reports for multi-module projects -->
-					<aggregate>true</aggregate>
-					<instrumentation>
-						<excludes>
-							<!-- Do not consider generated source code. Plugin fails for these 
-								files. -->
-							<exclude>**/javacc/JavaCC*.class</exclude>
-							<exclude>**/javacc/JavaCharStream.class</exclude>
-							<exclude>**/javacc/ParseException.class</exclude>
-							<exclude>**/javacc/SimpleCharStream.class</exclude>
-							<exclude>**/javacc/Token.class</exclude>
-							<exclude>**/javacc/TokenMgrError.class</exclude>
-						</excludes>
-					</instrumentation>
-				</configuration>
+			  <!-- Plugin for actually computing code coverage. -->
+			  <groupId>org.jacoco</groupId>
+			  <artifactId>jacoco-maven-plugin</artifactId>
+			  <executions>
+				<execution>
+				  <id>prepare-agent</id>
+				  <goals>
+					<goal>prepare-agent</goal>
+				  </goals>
+				  <configuration>
+					<propertyName>surefireArgLine</propertyName>
+				  </configuration>
+				</execution>
+			  </executions>
 			</plugin>
 			<plugin>
-				<!-- Plugin for creating Javadocs; goal for preparing docs for upload 
+				<!-- Plugin for creating Javadocs; goal for preparing docs for upload
 					to github: javadoc:aggregate -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>

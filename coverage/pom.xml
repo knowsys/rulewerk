@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.semanticweb.vlog4j</groupId>
+		<artifactId>vlog4j-parent</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>coverage</artifactId>
+
+	<name>coverage</name>
+	<dependencies>
+	  <dependency>
+		<groupId>org.semanticweb.vlog4j</groupId>
+		<artifactId>vlog4j-core</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.semanticweb.vlog4j</groupId>
+		<artifactId>vlog4j-rdf</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.semanticweb.vlog4j</groupId>
+		<artifactId>vlog4j-examples</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.semanticweb.vlog4j</groupId>
+		<artifactId>vlog4j-owlapi</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.semanticweb.vlog4j</groupId>
+		<artifactId>vlog4j-graal</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.semanticweb.vlog4j</groupId>
+		<artifactId>vlog4j-parser</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	  </dependency>
+	</dependencies>
+
+	<build>
+	  <plugins>
+		<plugin>
+		  <groupId>org.jacoco</groupId>
+		  <artifactId>jacoco-maven-plugin</artifactId>
+		  <executions>
+			<execution>
+			  <id>aggregate-reports-ut</id>
+			  <phase>test</phase>
+			  <goals>
+				<goal>report-aggregate</goal>
+			  </goals>
+			  <configuration>
+				<excludes>
+				  <!-- Do not consider generated source code. Plugin fails for these files. -->
+				  <exclude>**/javacc/JavaCC*.class</exclude>
+				  <exclude>**/javacc/JavaCharStream.class</exclude>
+				  <exclude>**/javacc/ParseException.class</exclude>
+				  <exclude>**/javacc/SimpleCharStream.class</exclude>
+				  <exclude>**/javacc/Token.class</exclude>
+				  <exclude>**/javacc/TokenMgrError.class</exclude>
+				</excludes>
+			  </configuration>
+			</execution>
+		  </executions>
+		</plugin>
+	  </plugins>
+	</build>
+</project>
