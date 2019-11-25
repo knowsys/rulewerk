@@ -27,17 +27,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.Statement;
-import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
@@ -51,50 +45,41 @@ public class RuleParserDataSourceTest {
 	@Test
 	public void testCsvSource() throws ParsingException, IOException {
 		String input = "@source p(2) : load-csv(\"src/main/data/input/example.csv\") .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		CsvFileDataSource csvds = new CsvFileDataSource(new File("src/main/data/input/example.csv"));
-		Predicate p = Expressions.makePredicate("p", 2);
-		DataSourceDeclaration d = new DataSourceDeclarationImpl(p, csvds);
-		assertEquals(Arrays.asList(d), statements);
+		assertEquals(csvds, RuleParser.parseDataSourceDeclaration(input));
 	}
 
 	@Test
 	public void testRdfSource() throws ParsingException, IOException {
 		String input = "@source p(3) : load-rdf(\"src/main/data/input/example.nt.gz\") .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		RdfFileDataSource rdfds = new RdfFileDataSource(new File("src/main/data/input/example.nt.gz"));
-		Predicate p = Expressions.makePredicate("p", 3);
-		DataSourceDeclaration d = new DataSourceDeclarationImpl(p, rdfds);
-		assertEquals(Arrays.asList(d), statements);
+		assertEquals(rdfds, RuleParser.parseDataSourceDeclaration(input));
 	}
 
 	@Test(expected = ParsingException.class)
 	public void testRdfSourceInvalidArity() throws ParsingException, IOException {
 		String input = "@source p(2) : load-rdf(\"src/main/data/input/example.nt.gz\") .";
-		RuleParser.parse(input);
+		RuleParser.parseDataSourceDeclaration(input);
 	}
 
 	@Test
 	public void testSparqlSource() throws ParsingException, MalformedURLException {
 		String input = "@source p(2) : sparql(<https://query.wikidata.org/sparql>,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		SparqlQueryResultDataSource sparqlds = new SparqlQueryResultDataSource(
 				new URL("https://query.wikidata.org/sparql"), "disease, doid", "?disease wdt:P699 ?doid .");
-		Predicate p = Expressions.makePredicate("p", 2);
-		DataSourceDeclaration d = new DataSourceDeclarationImpl(p, sparqlds);
-		assertEquals(Arrays.asList(d), statements);
+		assertEquals(sparqlds, RuleParser.parseDataSourceDeclaration(input));
 	}
 
 	@Test(expected = ParsingException.class)
 	public void testSparqlSourceMalformedUrl() throws ParsingException, MalformedURLException {
 		String input = "@source p(2) : sparql(<not a URL>,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
-		RuleParser.parse(input);
+		RuleParser.parseDataSourceDeclaration(input);
 	}
 
 	@Test(expected = ParsingException.class)
 	public void testUnknownDataSource() throws ParsingException {
 		String input = "@source p(2) : unknown-data-source(\"hello, world\") .";
-		RuleParser.parse(input);
+		RuleParser.parseDataSourceDeclaration(input);
 	}
 
 	@Test
@@ -108,7 +93,7 @@ public class RuleParserDataSourceTest {
 
 		String input = "@source p(2) : mock-source(\"hello\", \"world\") .";
 		List<String> expectedArguments = Arrays.asList("hello", "world");
-		RuleParser.parse(input, parserConfiguration);
+		RuleParser.parseDataSourceDeclaration(input, parserConfiguration);
 
 		verify(handler).handleDeclaration(eq(expectedArguments), ArgumentMatchers.<SubParserFactory>any());
 	}

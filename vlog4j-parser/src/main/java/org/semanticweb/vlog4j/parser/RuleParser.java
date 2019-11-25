@@ -22,13 +22,16 @@ package org.semanticweb.vlog4j.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.List;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.SyntaxObject;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParser;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.FormulaContext;
@@ -114,28 +117,29 @@ public class RuleParser {
 	}
 
 	/**
-	 * Interface for a method parsing a {@link SyntaxObject}.
+	 * Interface for a method parsing a fragment of the supported syntax.
 	 *
 	 * This is needed to specify the exceptions thrown by the parse method.
 	 */
 	@FunctionalInterface
-	interface SyntaxObjectParser<T extends SyntaxObject> {
-		T parse(final JavaCCParser parser) throws ParseException, PrefixDeclarationException, TokenMgrError;
+	interface SyntaxFragmentParser<T> {
+		T parse(final JavaCCParser parser)
+				throws ParsingException, ParseException, PrefixDeclarationException, TokenMgrError;
 	}
 
 	/**
-	 * Parse a {@link SyntaxObject}.
+	 * Parse a syntax fragment.
 	 *
 	 * @param input               Input string.
 	 * @param parserAction        Parsing method for the {@code T}.
-	 * @param syntaxObjectType    Description of the type {@code T} being parsed.
+	 * @param syntaxFragmentType  Description of the type {@code T} being parsed.
 	 * @param parserConfiguration {@link ParserConfiguration} instance, or null.
 	 *
 	 * @throws ParsingException when an error during parsing occurs.
 	 * @return an appropriate instance of {@code T}
 	 */
-	static <T extends SyntaxObject> T parseSyntaxObject(final String input, SyntaxObjectParser<T> parserAction,
-			final String syntaxObjectType, final ParserConfiguration parserConfiguration) throws ParsingException {
+	static <T> T parseSyntaxFragment(final String input, SyntaxFragmentParser<T> parserAction,
+			final String syntaxFragmentType, final ParserConfiguration parserConfiguration) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 
@@ -148,14 +152,14 @@ public class RuleParser {
 			localParser.ensureEndOfInput();
 			return result;
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
-			LOGGER.error("Exception while parsing " + syntaxObjectType + ": {}!", input);
-			throw new ParsingException("Exception while parsing " + syntaxObjectType, e);
+			LOGGER.error("Exception while parsing " + syntaxFragmentType + ": {}!", input);
+			throw new ParsingException("Exception while parsing " + syntaxFragmentType, e);
 		}
 	}
 
 	public static Rule parseRule(final String input, final ParserConfiguration parserConfiguration)
 			throws ParsingException {
-		return parseSyntaxObject(input, JavaCCParser::rule, "rule", parserConfiguration);
+		return parseSyntaxFragment(input, JavaCCParser::rule, "rule", parserConfiguration);
 	}
 
 	public static Rule parseRule(final String input) throws ParsingException {
@@ -164,7 +168,8 @@ public class RuleParser {
 
 	public static Literal parseLiteral(final String input, final ParserConfiguration parserConfiguration)
 			throws ParsingException {
-		return parseSyntaxObject(input, parser -> parser.literal(FormulaContext.HEAD), "literal", parserConfiguration);
+		return parseSyntaxFragment(input, parser -> parser.literal(FormulaContext.HEAD), "literal",
+				parserConfiguration);
 	}
 
 	public static Literal parseLiteral(final String input) throws ParsingException {
@@ -173,7 +178,7 @@ public class RuleParser {
 
 	public static PositiveLiteral parsePositiveLiteral(final String input,
 			final ParserConfiguration parserConfiguration) throws ParsingException {
-		return parseSyntaxObject(input, parser -> parser.positiveLiteral(FormulaContext.HEAD), "positivel literal",
+		return parseSyntaxFragment(input, parser -> parser.positiveLiteral(FormulaContext.HEAD), "positivel literal",
 				parserConfiguration);
 	}
 
@@ -183,11 +188,39 @@ public class RuleParser {
 
 	public static Fact parseFact(final String input, final ParserConfiguration parserConfiguration)
 			throws ParsingException {
-		return parseSyntaxObject(input, parser -> parser.fact(FormulaContext.HEAD), "fact", parserConfiguration);
+		return parseSyntaxFragment(input, parser -> parser.fact(FormulaContext.HEAD), "fact", parserConfiguration);
 	}
 
 	public static Fact parseFact(final String input) throws ParsingException {
 		return parseFact(input, null);
+	}
+
+	public static Term parseTerm(final String input, final FormulaContext context,
+			final ParserConfiguration parserConfiguration) throws ParsingException {
+		return parseSyntaxFragment(input, parser -> parser.term(context), "term", parserConfiguration);
+	}
+
+	public static Term parseTerm(final String input, final ParserConfiguration parserConfiguration)
+			throws ParsingException {
+		return parseTerm(input, FormulaContext.HEAD, parserConfiguration);
+	}
+
+	public static Term parseTerm(final String input, final FormulaContext context) throws ParsingException {
+		return parseTerm(input, context, null);
+	}
+
+	public static Term parseTerm(final String input) throws ParsingException {
+		return parseTerm(input, (ParserConfiguration) null);
+	}
+
+	public static DataSource parseDataSourceDeclaration(final String input, ParserConfiguration parserConfiguration)
+			throws ParsingException {
+		return parseSyntaxFragment(input, RuleParser::parseAndExtractDatasourceDeclaration, "data source declaration",
+				parserConfiguration);
+	}
+
+	public static DataSource parseDataSourceDeclaration(final String input) throws ParsingException {
+		return parseDataSourceDeclaration(input, null);
 	}
 
 	static KnowledgeBase doParse(final JavaCCParser parser) throws ParsingException {
@@ -198,6 +231,21 @@ public class RuleParser {
 			throw new ParsingException("Exception while parsing Knowledge Base.", e);
 		}
 		return parser.getKnowledgeBase();
+	}
+
+	protected static DataSource parseAndExtractDatasourceDeclaration(final JavaCCParser parser)
+			throws ParsingException, ParseException, PrefixDeclarationException {
+		parser.source();
+
+		final List<DataSourceDeclaration> dataSourceDeclarations = parser.getKnowledgeBase()
+				.getDataSourceDeclarations();
+
+		if (dataSourceDeclarations.size() != 1) {
+			throw new ParsingException(
+					"Unexpected number of data source declarations: " + dataSourceDeclarations.size());
+		}
+
+		return dataSourceDeclarations.get(0).getDataSource();
 	}
 
 }

@@ -186,11 +186,10 @@ public class RuleParserTest {
 
 	@Test
 	public void testIntegerLiteral() throws ParsingException {
-		String input = "p(42) .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		String input = "p(42)";
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("42", PrefixDeclarations.XSD_INTEGER));
-		assertEquals(Arrays.asList(integerLiteral), statements);
+		assertEquals(integerLiteral, RuleParser.parseLiteral(input));
 	}
 
 	@Test
@@ -204,90 +203,81 @@ public class RuleParserTest {
 
 	@Test
 	public void testFullIntegerLiteral() throws ParsingException {
-		String input = "p(\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + "> ) .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		String input = "p(\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + "> )";
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("42", PrefixDeclarations.XSD_INTEGER));
-		assertEquals(Arrays.asList(integerLiteral), statements);
+		assertEquals(integerLiteral, RuleParser.parseLiteral(input));
 	}
 
 	@Test
 	public void testDecimalLiteral() throws ParsingException {
-		String input = "p(-5.0) .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		String input = "p(-5.0)";
 		PositiveLiteral decimalLiteral = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("-5.0", PrefixDeclarations.XSD_DECIMAL));
-		assertEquals(Arrays.asList(decimalLiteral), statements);
+		assertEquals(decimalLiteral, RuleParser.parseLiteral(input));
 	}
 
 	@Test
 	public void testDoubleLiteral() throws ParsingException {
-		String input = "p(4.2E9) .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		String input = "p(4.2E9)";
 		PositiveLiteral doubleLiteral = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("4.2E9", PrefixDeclarations.XSD_DOUBLE));
-		assertEquals(Arrays.asList(doubleLiteral), statements);
+		assertEquals(doubleLiteral, RuleParser.parseLiteral(input));
 	}
 
 	@Test
 	public void testStringLiteral() throws ParsingException {
-		String input = "p(\"abc\") .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		assertEquals(Arrays.asList(fact2), statements);
+		String input = "p(\"abc\")";
+		assertEquals(fact2, RuleParser.parseLiteral(input));
 	}
 
 	@Test(expected = ParsingException.class)
 	public void testIncompleteStringLiteral() throws ParsingException {
-		String input = "p(\"abc) .";
-		RuleParser.parse(input);
+		String input = "p(\"abc)";
+		RuleParser.parseLiteral(input);
 	}
 
 	@Test
 	public void testStringLiteralEscapes() throws ParsingException {
-		String input = "p(\"_\\\"_\\\\_\\n_\\t_\") ."; // User input: p("_\"_\\_\n_\t_")
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		String input = "p(\"_\\\"_\\\\_\\n_\\t_\")"; // User input: p("_\"_\\_\n_\t_")
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("_\"_\\_\n_\t_", PrefixDeclarations.XSD_STRING));
-		assertEquals(Arrays.asList(fact), statements);
+		assertEquals(fact, RuleParser.parseLiteral(input));
 	}
 
 	@Test
 	public void testStringLiteralAllEscapes() throws ParsingException {
 		// User input: p("_\n_\t_\r_\b_\f_\'_\"_\\_")
-		String input = "p(\"_\\n_\\t_\\r_\\b_\\f_\\'_\\\"_\\\\_\") .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		String input = "p(\"_\\n_\\t_\\r_\\b_\\f_\\'_\\\"_\\\\_\")";
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("_\n_\t_\r_\b_\f_\'_\"_\\_", PrefixDeclarations.XSD_STRING));
-		assertEquals(Arrays.asList(fact), statements);
+		assertEquals(fact, RuleParser.parseLiteral(input));
 	}
 
 	@Test
 	public void testStringLiteralMultiLine() throws ParsingException {
-		String input = "p('''line 1\n\n" + "line 2\n" + "line 3''') ."; // User input: p("a\"b\\c")
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		String input = "p('''line 1\n\n" + "line 2\n" + "line 3''')"; // User input: p("a\"b\\c")
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("line 1\n\nline 2\nline 3", PrefixDeclarations.XSD_STRING));
-		assertEquals(Arrays.asList(fact), statements);
+		assertEquals(fact, RuleParser.parseLiteral(input));
 	}
 
 	@Test(expected = ParsingException.class)
 	public void testIncompleteStringLiteralMultiLine() throws ParsingException {
-		String input = "p('''abc\ndef'') .";
-		RuleParser.parse(input);
+		String input = "p('''abc\ndef'')";
+		RuleParser.parseLiteral(input);
 	}
 
 	@Test
 	public void testFullLiteral() throws ParsingException {
-		String input = "p(\"abc\"^^<http://www.w3.org/2001/XMLSchema#string>) .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		assertEquals(Arrays.asList(fact2), statements);
+		String input = "p(\"abc\"^^<http://www.w3.org/2001/XMLSchema#string>)";
+		assertEquals(fact2, RuleParser.parseLiteral(input));
 	}
 
 	@Test
 	public void testUnicodeLiteral() throws ParsingException {
-		String input = "p(\"\\u0061\\u0062\\u0063\") ."; // "abc"
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		assertEquals(Arrays.asList(fact2), statements);
+		String input = "p(\"\\u0061\\u0062\\u0063\")"; // "abc"
+		assertEquals(fact2, RuleParser.parseLiteral(input));
 	}
 
 	@Test
@@ -306,11 +296,10 @@ public class RuleParserTest {
 
 	@Test
 	public void testLangStringLiteral() throws ParsingException {
-		String input = "p(\"abc\"@en-gb) .";
-		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		String input = "p(\"abc\"@en-gb)";
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeLanguageStringConstant("abc", "en-gb"));
-		assertEquals(Arrays.asList(fact), statements);
+		assertEquals(fact, RuleParser.parseLiteral(input));
 	}
 
 	@Test
@@ -373,8 +362,8 @@ public class RuleParserTest {
 
 	@Test(expected = ParsingException.class)
 	public void testNonIriTypeInDatatypeLiteral() throws ParsingException {
-		final String input = "P(\"a\"^^whatever)";
-		RuleParser.parseLiteral(input);
+		final String input = "\"a\"^^whatever";
+		RuleParser.parseTerm(input);
 	}
 
 	@Test
