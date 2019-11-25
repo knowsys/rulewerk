@@ -32,6 +32,8 @@ import picocli.CommandLine.Option;
  */
 public class SaveModel {
 
+	public static final String DEFAULT_OUTPUT_DIR_NAME = "model";
+
 	static final String configurationErrorMessage = "Configuration Error: If @code{--save-model} is true, then a non empty @code{--output-model-directory} is required.";
 	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-model-directory}. Please check the path.";
 
@@ -48,8 +50,9 @@ public class SaveModel {
 	 *
 	 * @default "model"
 	 */
-	@Option(names = "--output-model-directory", description = "Directory to store the model. Used only if --store-model is true. \"model\" by default.")
-	private String outputModelDirectory = "model";
+	@Option(names = "--output-model-directory", description = "Directory to store the model. Used only if --store-model is true. \""
+			+ DEFAULT_OUTPUT_DIR_NAME + "\" by default.")
+	private String outputModelDirectory = DEFAULT_OUTPUT_DIR_NAME;
 
 	public SaveModel() {
 	}

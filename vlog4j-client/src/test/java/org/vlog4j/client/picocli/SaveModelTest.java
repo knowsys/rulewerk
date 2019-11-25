@@ -5,11 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Rule;
 
 /*-
@@ -34,18 +33,20 @@ import org.junit.Rule;
 
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.vlog4j.client.picocli.SaveModel;
 
 public class SaveModelTest {
-	private final String outputConfigurationBase = "  --save-model: %b\n  --output-model-directory: %s\n";
-	private final String defaultDir = "model";
 
-	private final SaveModel saveTrueDefaultDir = new SaveModel(true, defaultDir);
-	private final SaveModel saveTrueEmptyDir = new SaveModel(true, "");
-	private final SaveModel saveTrueNullDir = new SaveModel(true, null);
-	private final SaveModel saveFalseDefaultDir = new SaveModel(false, defaultDir);
-	private final SaveModel saveFalseEmptyDir = new SaveModel(false, "");
-	private final SaveModel saveFalseNullDir = new SaveModel(false, null);
+	private final static SaveModel saveTrueDefaultDir = new SaveModel();
+	private final static SaveModel saveTrueEmptyDir = new SaveModel(true, "");
+	private final static SaveModel saveTrueNullDir = new SaveModel(true, null);
+	private final static SaveModel saveFalseDefaultDir = new SaveModel();
+	private final static SaveModel saveFalseEmptyDir = new SaveModel(false, "");
+	private final static SaveModel saveFalseNullDir = new SaveModel(false, null);
+	
+	static {
+		saveTrueDefaultDir.setSaveModel(true);
+		saveFalseDefaultDir.setSaveModel(false);
+	}
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -132,39 +133,63 @@ public class SaveModelTest {
 	}
 
 	@Test
-	public void printConfiguration_saveTrueDefaultDir() {
-		assertEquals(String.format(outputConfigurationBase, true, defaultDir),
-				captureOutputPrintConfiguration(saveTrueDefaultDir));
+	public void isSaveModel_saveTrueDefaultDir() {
+		assertTrue(saveTrueDefaultDir.isSaveModel());
 	}
 
 	@Test
-	public void printConfiguration_saveTrueEmptyDir() {
-		assertEquals(String.format(outputConfigurationBase, true, ""),
-				captureOutputPrintConfiguration(saveTrueEmptyDir));
+	public void getOutputModelDirectory_saveTrueDefaultDir() {
+		assertEquals(SaveModel.DEFAULT_OUTPUT_DIR_NAME, saveTrueDefaultDir.getOutputModelDirectory());
 	}
 
 	@Test
-	public void printConfiguration_saveTrueNullDir() {
-		assertEquals(String.format(outputConfigurationBase, true, null),
-				captureOutputPrintConfiguration(saveTrueNullDir));
+	public void isSaveModel_saveTrueEmptyDir() {
+		assertTrue(saveTrueEmptyDir.isSaveModel());
 	}
 
 	@Test
-	public void printConfiguration_saveFalseDefaultDir() {
-		assertEquals(String.format(outputConfigurationBase, false, defaultDir),
-				captureOutputPrintConfiguration(saveFalseDefaultDir));
+	public void getOutputModelDirectory_saveTrueEmptyDir() {
+		assertEquals(StringUtils.EMPTY, saveTrueEmptyDir.getOutputModelDirectory());
 	}
 
 	@Test
-	public void printConfiguration_saveFalseEmptyDir() {
-		assertEquals(String.format(outputConfigurationBase, false, ""),
-				captureOutputPrintConfiguration(saveFalseEmptyDir));
+	public void isSaveModel_saveTrueNullDir() {
+		assertTrue(saveTrueNullDir.isSaveModel());
 	}
 
 	@Test
-	public void printConfiguration_saveFalseNullDir() {
-		assertEquals(String.format(outputConfigurationBase, false, null),
-				captureOutputPrintConfiguration(saveFalseNullDir));
+	public void getOutputModelDirectory_saveTrueNullDir() {
+		assertNull(saveTrueNullDir.getOutputModelDirectory());
+	}
+
+	@Test
+	public void isSaveModel_saveFalseDefaultDir() {
+		assertFalse(saveFalseDefaultDir.isSaveModel());
+	}
+
+	@Test
+	public void getOutputModelDirectory_saveFalseDefaultDir() {
+		assertEquals(SaveModel.DEFAULT_OUTPUT_DIR_NAME, saveFalseDefaultDir.getOutputModelDirectory());
+	}
+
+	@Test
+	public void isSaveModel_saveFalseEmptyDir() {
+		assertFalse(saveFalseEmptyDir.isSaveModel());
+	}
+
+	@Test
+	public void getOutputModelDirectory_saveFalseEmptyDir() {
+		assertEquals(StringUtils.EMPTY, saveFalseEmptyDir.getOutputModelDirectory());
+	}
+
+	@Test
+	public void isSaveModel_saveFalseNullDir() {
+		assertFalse(saveFalseNullDir.isSaveModel());
+	}
+
+	@Test
+	public void getOutputModelDirectory_saveFalseNullDir() {
+		assertNull(saveFalseNullDir.getOutputModelDirectory());
 	}
 
 	@Test
@@ -185,20 +210,4 @@ public class SaveModelTest {
 		assertNull(sm.getOutputModelDirectory());
 	}
 
-	private String captureOutputPrintConfiguration(SaveModel sm) {
-		// Output Variables
-		ByteArrayOutputStream result = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(result);
-		// Save default System.out
-		PrintStream systemOut = System.out;
-		// Change System.out
-		System.setOut(ps);
-		// Do something
-		sm.printConfiguration();
-		// Restore previous state
-		System.out.flush();
-		System.setOut(systemOut);
-		// return result
-		return result.toString();
-	}
 }

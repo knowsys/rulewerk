@@ -5,10 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 
 import org.junit.Rule;
 
@@ -36,15 +34,14 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 public class SaveQueryResultsTest {
-	private final String outputConfigurationBase = "  --save-query-results: %b\n  --output-query-result-directory: %s\n";
-	private final String defaultDir = "query-results";
 
-	private final SaveQueryResults saveTrueDefaultDir = new SaveQueryResults(true, defaultDir);
-	private final SaveQueryResults saveTrueEmptyDir = new SaveQueryResults(true, "");
-	private final SaveQueryResults saveTrueNullDir = new SaveQueryResults(true, null);
-	private final SaveQueryResults saveFalseDefaultDir = new SaveQueryResults(false, defaultDir);
-	private final SaveQueryResults saveFalseEmptyDir = new SaveQueryResults(false, "");
-	private final SaveQueryResults saveFalseNullDir = new SaveQueryResults(false, null);
+	private static final SaveQueryResults saveTrueDefaultDir = new SaveQueryResults(true,
+			SaveQueryResults.DEFAULT_OUTPUT_DIR_NAME);
+	private static final SaveQueryResults saveTrueEmptyDir = new SaveQueryResults(true, "");
+	private static final SaveQueryResults saveTrueNullDir = new SaveQueryResults(true, null);
+	private static final SaveQueryResults saveFalseDefaultDir = new SaveQueryResults();
+	private static final SaveQueryResults saveFalseEmptyDir = new SaveQueryResults(false, "");
+	private static final SaveQueryResults saveFalseNullDir = new SaveQueryResults(false, null);
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -131,39 +128,13 @@ public class SaveQueryResultsTest {
 	}
 
 	@Test
-	public void printConfiguration_saveTrueDefaultDir() {
-		assertEquals(String.format(outputConfigurationBase, true, defaultDir),
-				captureOutputPrintConfiguration(saveTrueDefaultDir));
+	public void isSaveResultsl_saveFalseDefaultDir() {
+		assertFalse(saveFalseDefaultDir.isSaveResults());
 	}
 
 	@Test
-	public void printConfiguration_saveTrueEmptyDir() {
-		assertEquals(String.format(outputConfigurationBase, true, ""),
-				captureOutputPrintConfiguration(saveTrueEmptyDir));
-	}
-
-	@Test
-	public void printConfiguration_saveTrueNullDir() {
-		assertEquals(String.format(outputConfigurationBase, true, null),
-				captureOutputPrintConfiguration(saveTrueNullDir));
-	}
-
-	@Test
-	public void printConfiguration_saveFalseDefaultDir() {
-		assertEquals(String.format(outputConfigurationBase, false, defaultDir),
-				captureOutputPrintConfiguration(saveFalseDefaultDir));
-	}
-
-	@Test
-	public void printConfiguration_saveFalseEmptyDir() {
-		assertEquals(String.format(outputConfigurationBase, false, ""),
-				captureOutputPrintConfiguration(saveFalseEmptyDir));
-	}
-
-	@Test
-	public void printConfiguration_saveFalseNullDir() {
-		assertEquals(String.format(outputConfigurationBase, false, null),
-				captureOutputPrintConfiguration(saveFalseNullDir));
+	public void getOutputQueryResultDirectory_saveFalseDefaultDir() {
+		assertEquals(SaveQueryResults.DEFAULT_OUTPUT_DIR_NAME, saveFalseDefaultDir.getOutputQueryResultDirectory());
 	}
 
 	@Test
@@ -184,20 +155,4 @@ public class SaveQueryResultsTest {
 		assertNull(srq.getOutputQueryResultDirectory());
 	}
 
-	private String captureOutputPrintConfiguration(SaveQueryResults srq) {
-		// Output Variables
-		ByteArrayOutputStream result = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(result);
-		// Save default System.out
-		PrintStream systemOut = System.out;
-		// Change System.out
-		System.setOut(ps);
-		// Do something
-		srq.printConfiguration();
-		// Restore previous state
-		System.out.flush();
-		System.setOut(systemOut);
-		// return result
-		return result.toString();
-	}
 }

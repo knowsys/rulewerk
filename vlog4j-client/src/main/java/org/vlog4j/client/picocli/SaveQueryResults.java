@@ -31,6 +31,7 @@ import picocli.CommandLine.Option;
  *
  */
 public class SaveQueryResults {
+	public static final String DEFAULT_OUTPUT_DIR_NAME = "query-results";
 
 	static final String configurationErrorMessage = "Configuration Error: If @code{--save-query-results} is true, then a non empty @code{--output-query-result-directory} is required.";
 	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-query-result-directory}. Please check the path.";
@@ -50,8 +51,9 @@ public class SaveQueryResults {
 	 *
 	 * @default query-results
 	 */
-	@Option(names = "--output-query-result-directory", description = "Directory to store the model. Used only if --save-query-results is true. \"query-results\" by default.")
-	private String outputQueryResultDirectory = "query-results";
+	@Option(names = "--output-query-result-directory", description = "Directory to store the model. Used only if --save-query-results is true. \""
+			+ DEFAULT_OUTPUT_DIR_NAME + "\" by default.")
+	private String outputQueryResultDirectory = DEFAULT_OUTPUT_DIR_NAME;
 
 	public SaveQueryResults() {
 	}
