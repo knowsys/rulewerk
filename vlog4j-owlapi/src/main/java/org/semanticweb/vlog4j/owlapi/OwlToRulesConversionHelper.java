@@ -214,9 +214,8 @@ public class OwlToRulesConversionHelper {
 		}
 	}
 
-	private static PositiveLiteral getObjectPropertyAtom(
-			final OWLObjectPropertyExpression owlObjectPropertyExpression, final Term sourceTerm,
-			final Term targetTerm) {
+	static PositiveLiteral getObjectPropertyAtom(final OWLObjectPropertyExpression owlObjectPropertyExpression,
+			final Term sourceTerm, final Term targetTerm) {
 		if (owlObjectPropertyExpression.isAnonymous()) {
 			final Predicate predicate = OwlToRulesConversionHelper
 					.getPropertyPredicate(owlObjectPropertyExpression.getInverseProperty().asOWLObjectProperty());
@@ -261,7 +260,7 @@ public class OwlToRulesConversionHelper {
 		}
 	}
 
-	private static Fact getObjectPropertyFact(final OWLObjectPropertyExpression owlObjectPropertyExpression,
+	static Fact getObjectPropertyFact(final OWLObjectPropertyExpression owlObjectPropertyExpression,
 			final Term sourceTerm, final Term targetTerm) {
 		if (owlObjectPropertyExpression.isAnonymous()) {
 			final Predicate predicate = OwlToRulesConversionHelper

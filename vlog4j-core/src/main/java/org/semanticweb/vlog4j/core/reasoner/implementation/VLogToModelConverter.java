@@ -23,6 +23,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
@@ -81,23 +82,7 @@ class VLogToModelConverter {
 		String name = vLogTerm.getName();
 		switch (vLogTerm.getTermType()) {
 		case CONSTANT:
-			if (name.charAt(0) == '<' && name.charAt(name.length() - 1) == '>') { // strip <> off IRIs
-				return new AbstractConstantImpl(name.substring(1, name.length() - 1));
-			} else if (name.charAt(0) == '"') {
-				if (name.charAt(name.length() - 1) == '>') {
-					int startTypeIdx = name.lastIndexOf('<', name.length() - 2);
-					String datatype = name.substring(startTypeIdx + 1, name.length() - 1);
-					String lexicalValue = name.substring(1, startTypeIdx - 3);
-					return new DatatypeConstantImpl(lexicalValue, datatype);
-				} else {
-					int startTypeIdx = name.lastIndexOf('@', name.length() - 2);
-					String languageTag = name.substring(startTypeIdx + 1, name.length());
-					String string = name.substring(1, startTypeIdx - 1);
-					return new LanguageStringConstantImpl(string, languageTag);
-				}
-			} else {
-				return new AbstractConstantImpl(name);
-			}
+			return toConstant(name);
 		case BLANK:
 			return new NamedNullImpl(name);
 		case VARIABLE:
@@ -105,6 +90,33 @@ class VLogToModelConverter {
 					"VLog variables cannot be converted without knowing if they are universally or existentially quantified.");
 		default:
 			throw new IllegalArgumentException("Unexpected VLog term type: " + vLogTerm.getTermType());
+		}
+	}
+
+	/**
+	 * Creates a {@link Constant} from the given VLog constant name.
+	 * 
+	 * @param vLogConstantName the string name used by VLog
+	 * @return {@link Constant} object
+	 */
+	private static Constant toConstant(String vLogConstantName) {
+		if (vLogConstantName.charAt(0) == '<' && vLogConstantName.charAt(vLogConstantName.length() - 1) == '>') {
+			// strip <> off of IRIs
+			return new AbstractConstantImpl(vLogConstantName.substring(1, vLogConstantName.length() - 1));
+		} else if (vLogConstantName.charAt(0) == '"') {
+			if (vLogConstantName.charAt(vLogConstantName.length() - 1) == '>') {
+				int startTypeIdx = vLogConstantName.lastIndexOf('<', vLogConstantName.length() - 2);
+				String datatype = vLogConstantName.substring(startTypeIdx + 1, vLogConstantName.length() - 1);
+				String lexicalValue = vLogConstantName.substring(1, startTypeIdx - 3);
+				return new DatatypeConstantImpl(lexicalValue, datatype);
+			} else {
+				int startTypeIdx = vLogConstantName.lastIndexOf('@', vLogConstantName.length() - 2);
+				String languageTag = vLogConstantName.substring(startTypeIdx + 1, vLogConstantName.length());
+				String string = vLogConstantName.substring(1, startTypeIdx - 1);
+				return new LanguageStringConstantImpl(string, languageTag);
+			}
+		} else {
+			return new AbstractConstantImpl(vLogConstantName);
 		}
 	}
 

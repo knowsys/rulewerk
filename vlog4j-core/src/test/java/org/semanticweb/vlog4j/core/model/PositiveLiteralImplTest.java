@@ -46,9 +46,6 @@ public class PositiveLiteralImplTest {
 		final PositiveLiteral atomP = Expressions.makePositiveLiteral("p", x, c, d, y);
 		final PositiveLiteral atomQ = Expressions.makePositiveLiteral("q", c, d);
 
-//		final Set<Variable> variables = Sets.newSet(x, y);
-//		final Set<Constant> constants = Sets.newSet(c, d);
-
 		assertEquals("p", atomP.getPredicate().getName());
 		assertEquals(atomP.getArguments().size(), atomP.getPredicate().getArity());
 

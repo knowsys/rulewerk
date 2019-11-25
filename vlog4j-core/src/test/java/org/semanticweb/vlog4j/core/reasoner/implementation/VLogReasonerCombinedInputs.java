@@ -56,7 +56,8 @@ public class VLogReasonerCombinedInputs {
 	final Fact factQc2 = Expressions.makeFact(q, Arrays.asList(Expressions.makeAbstractConstant("c2")));
 	final Fact factQd = Expressions.makeFact(q, Arrays.asList(Expressions.makeAbstractConstant("d")));
 	final Fact factPd = Expressions.makeFact("p", Arrays.asList(Expressions.makeAbstractConstant("d")));
-	final PositiveLiteral queryQx = Expressions.makePositiveLiteral(q, Arrays.asList(Expressions.makeUniversalVariable("x")));
+	final PositiveLiteral queryQx = Expressions.makePositiveLiteral(q,
+			Arrays.asList(Expressions.makeUniversalVariable("x")));
 
 	final Set<List<Term>> resultsCC1C2D = new HashSet<>(
 			Arrays.asList(Collections.singletonList(Expressions.makeAbstractConstant("c")),

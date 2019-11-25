@@ -284,8 +284,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
 	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
 	 * the {@code query} are matched by terms in the fact, either named
-	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The same
-	 * variable name identifies the same term in the answer fact. <br>
+	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The
+	 * same variable name identifies the same term in the answer fact. <br>
 	 * A query answer is represented by a {@link QueryResult}. A query can have
 	 * multiple, distinct query answers. This method returns an Iterator over these
 	 * answers. <br>
@@ -316,19 +316,19 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * </ul>
 	 * 
 	 *
-	 * @param query         a {@link PositiveLiteral} representing the query to be
-	 *                      answered.
-	 * @param includeBlanks if {@code true}, {@link QueryResult}s containing terms
-	 *                      of type {@link TermType#NAMED_NULL} (representing anonymous
-	 *                      individuals introduced to satisfy rule existentially
-	 *                      quantified variables) will be included. Otherwise, the
-	 *                      answers will only contain the {@link QueryResult}s with
-	 *                      terms of type {@link TermType#CONSTANT} (representing
-	 *                      named individuals).
+	 * @param query        a {@link PositiveLiteral} representing the query to be
+	 *                     answered.
+	 * @param includeNulls if {@code true}, {@link QueryResult}s containing terms of
+	 *                     type {@link TermType#NAMED_NULL} (representing anonymous
+	 *                     individuals introduced to satisfy rule existentially
+	 *                     quantified variables) will be included. Otherwise, the
+	 *                     answers will only contain the {@link QueryResult}s with
+	 *                     terms of type {@link TermType#CONSTANT} (representing
+	 *                     named individuals).
 	 * @return QueryResultIterator that iterates over distinct answers to the query.
 	 *         It also contains the {@link Correctness} of the query answers.
 	 */
-	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks);
+	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeNulls);
 
 	// TODO add examples to query javadoc
 	/**
@@ -341,24 +341,24 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
 	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
 	 * the {@code query} are matched by terms in the fact, either named
-	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The same
-	 * variable name identifies the same term in the answer fact. <br>
+	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The
+	 * same variable name identifies the same term in the answer fact. <br>
 	 * A query can have multiple, distinct query answers. Each answers is written on
 	 * a separate line in the given file.
 	 *
-	 * @param query         a {@link PositiveLiteral} representing the query to be
-	 *                      answered.
-	 * @param csvFilePath   path to a <i><b>.csv</b></i> file where the query
-	 *                      answers will be written. Each line of the
-	 *                      <i><b>.csv</b></i> file represents a query answer, and
-	 *                      it will contain the fact term names as columns.
-	 * @param includeBlanks if {@code true}, answers containing terms of type
-	 *                      {@link TermType#NAMED_NULL} (representing anonymous
-	 *                      individuals introduced to satisfy rule existentially
-	 *                      quantified variables) will be included. Otherwise, the
-	 *                      answers will only contain those with terms of type
-	 *                      {@link TermType#CONSTANT} (representing named
-	 *                      individuals).
+	 * @param query        a {@link PositiveLiteral} representing the query to be
+	 *                     answered.
+	 * @param csvFilePath  path to a <i><b>.csv</b></i> file where the query answers
+	 *                     will be written. Each line of the <i><b>.csv</b></i> file
+	 *                     represents a query answer, and it will contain the fact
+	 *                     term names as columns.
+	 * @param includeNulls if {@code true}, answers containing terms of type
+	 *                     {@link TermType#NAMED_NULL} (representing anonymous
+	 *                     individuals introduced to satisfy rule existentially
+	 *                     quantified variables) will be included. Otherwise, the
+	 *                     answers will only contain those with terms of type
+	 *                     {@link TermType#CONSTANT} (representing named
+	 *                     individuals).
 	 *
 	 * @throws IOException if an I/O error occurs regarding given file
 	 *                     ({@code csvFilePath)}.
@@ -389,7 +389,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         </ul>
 	 * 
 	 */
-	Correctness exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeBlanks)
+	Correctness exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeNulls)
 			throws IOException;
 
 	/**

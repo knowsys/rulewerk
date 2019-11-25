@@ -60,7 +60,10 @@ public final class GraalToVLog4JModelConverter {
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom} into a
 	 * {@link PositiveLiteral VLog4J PositiveLiteral}.
 	 *
-	 * @param atom A {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom}
+	 * @param atom                 A {@link fr.lirmm.graphik.graal.api.core.Atom
+	 *                             Graal Atom}
+	 * @param existentialVariables set of variables that are existentially
+	 *                             quantified
 	 * @return A {@link PositiveLiteral VLog4J PositiveLiteral}
 	 */
 	public static PositiveLiteral convertAtom(final fr.lirmm.graphik.graal.api.core.Atom atom,
@@ -122,7 +125,9 @@ public final class GraalToVLog4JModelConverter {
 	 * Converts a {@link AtomSet Graal AtomSet} into a {@link Conjunction VLog4J
 	 * Conjunction} of {@link PositiveLiteral}s.
 	 *
-	 * @param atomSet A {@link AtomSet Graal AtomSet}
+	 * @param atomSet              A {@link AtomSet Graal AtomSet}
+	 * @param existentialVariables set of variables that are existentially
+	 *                             quantified
 	 * @return A {@link Conjunction VLog4J Conjunction}
 	 */
 	private static Conjunction<PositiveLiteral> convertAtomSet(final AtomSet atomSet,
@@ -237,7 +242,9 @@ public final class GraalToVLog4JModelConverter {
 	 * {@link fr.lirmm.graphik.graal.api.core.Term#isConstant() Constant}, a
 	 * {@link GraalConvertException} is thrown.
 	 *
-	 * @param term A {@link fr.lirmm.graphik.graal.api.core.Term Graal Term.
+	 * @param term                 A {@link fr.lirmm.graphik.graal.api.core.Term}
+	 * @param existentialVariables set of variables that are existentially
+	 *                             quantified
 	 * @return A {@link Term VLog4J Term}, with {@link Term#getName()} equal to
 	 *         {@link fr.lirmm.graphik.graal.api.core.Term#getIdentifier()}, if it
 	 *         is a Variable, and {@link Term#getName()} equal to

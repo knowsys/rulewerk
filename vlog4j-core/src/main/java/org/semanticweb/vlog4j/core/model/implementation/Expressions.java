@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
 import org.semanticweb.vlog4j.core.model.api.Fact;
@@ -78,7 +77,7 @@ public final class Expressions {
 	 * Creates an {@link AbstractConstant}.
 	 * 
 	 * @param name name of the constant
-	 * @return a {@link Constant} corresponding to the input.
+	 * @return an {@link AbstractConstant} corresponding to the input.
 	 */
 	public static AbstractConstant makeAbstractConstant(String name) {
 		return new AbstractConstantImpl(name);
@@ -89,7 +88,7 @@ public final class Expressions {
 	 * 
 	 * @param lexicalValue the lexical representation of the data value
 	 * @param datatypeIri  the full absolute IRI of the datatype of this literal
-	 * @return a {@link Constant} corresponding to the input.
+	 * @return a {@link DatatypeConstant} corresponding to the input.
 	 */
 	public static DatatypeConstant makeDatatypeConstant(String lexicalValue, String datatypeIri) {
 		return new DatatypeConstantImpl(lexicalValue, datatypeIri);
@@ -101,7 +100,7 @@ public final class Expressions {
 	 * @param string      the string value of the constant
 	 * @param languageTag the BCP 47 language tag of the constant; should be in
 	 *                    lower case
-	 * @return a {@link Constant} corresponding to the input.
+	 * @return a {@link LanguageStringConstant} corresponding to the input.
 	 */
 	public static LanguageStringConstant makeLanguageStringConstant(String string, String languageTag) {
 		return new LanguageStringConstantImpl(string, languageTag);

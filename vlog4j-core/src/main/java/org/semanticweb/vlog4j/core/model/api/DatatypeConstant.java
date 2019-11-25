@@ -48,9 +48,9 @@ public interface DatatypeConstant extends Constant {
 	String getDatatype();
 
 	/**
-	 * Returns the lexical value of the literal, i.e. a string that encodes a
-	 * specific value based on the datatype of this literal. Note that there can be
-	 * several strings that represent the same value, depending on the rules of the
+	 * Returns the lexical value of the data value, i.e. a string that encodes a
+	 * specific value based on the value's datatype. Note that there can be several
+	 * strings that represent the same value, depending on the rules of the
 	 * datatype, and that there the value used here does not have to be a canonical
 	 * representation.
 	 * 

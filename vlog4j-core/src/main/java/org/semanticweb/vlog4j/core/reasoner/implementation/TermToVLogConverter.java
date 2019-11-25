@@ -90,8 +90,6 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * Converts the string representation of a constant in VLog4j directly to the
 	 * name of a constant in VLog, without parsing it into a {@link Constant} first.
 	 * 
-	 * TODO Is this the appropriate location for this code?
-	 * 
 	 * @param vLog4jConstantName
 	 * @return VLog constant string
 	 */
@@ -124,7 +122,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	}
 
 	/**
-	 * Transforms a Blank to a {@link karmaresearch.vlog.Term} with the same name
+	 * Transforms a named null to a {@link karmaresearch.vlog.Term} with the same name
 	 * and type {@link karmaresearch.vlog.Term.TermType#BLANK}.
 	 */
 	@Override

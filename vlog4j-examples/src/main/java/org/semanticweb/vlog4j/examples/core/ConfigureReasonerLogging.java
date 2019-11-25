@@ -21,12 +21,8 @@ package org.semanticweb.vlog4j.examples.core;
  */
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.semanticweb.vlog4j.core.model.api.Fact;
-import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;

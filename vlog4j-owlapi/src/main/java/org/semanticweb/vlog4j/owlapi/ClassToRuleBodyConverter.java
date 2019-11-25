@@ -108,7 +108,7 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 	@Override
 	public void visit(final OWLObjectAllValuesFrom ce) {
 		final Variable variable = this.parent.getFreshExistentialVariable();
-		OwlToRulesConversionHelper.addConjunctForObjectPropertyExpression(ce.getProperty(), this.mainTerm, variable,
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, variable,
 				this.head);
 		if (!this.head.isFalse()) {
 			this.handleConjunction(Arrays.asList(ce.getFiller()), variable);
@@ -118,7 +118,7 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 	@Override
 	public void visit(final OWLObjectHasValue ce) {
 		final Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller());
-		OwlToRulesConversionHelper.addConjunctForObjectPropertyExpression(ce.getProperty(), this.mainTerm, term, this.body);
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, term, this.body);
 	}
 
 	@Override
@@ -147,14 +147,15 @@ public class ClassToRuleBodyConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectHasSelf ce) {
-		OwlToRulesConversionHelper.addConjunctForObjectPropertyExpression(ce.getProperty(), this.mainTerm, this.mainTerm,
+		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, this.mainTerm,
 				this.body);
 	}
 
+	// TODO support this feature
 	@Override
 	public void visit(final OWLObjectOneOf ce) {
-		// TODO Auto-generated method stub
-
+		throw new OwlFeatureNotSupportedException(
+				"OWLObjectOneOf in complex class expressions currently not supported!");
 	}
 
 	@Override

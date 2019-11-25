@@ -45,10 +45,28 @@ public interface Term {
 	TermType getType();
 
 	/**
+	 * Returns true if the term represents some kind of constant.
+	 * 
+	 * @return true if term is constant
+	 */
+	default boolean isConstant() {
+		return this.getType() == TermType.ABSTRACT_CONSTANT || this.getType() == TermType.DATATYPE_CONSTANT
+				|| this.getType() == TermType.LANGSTRING_CONSTANT;
+	}
+
+	/**
+	 * Returns true if the term represents some kind of variable.
+	 * 
+	 * @return true if term is variable
+	 */
+	default boolean isVariable() {
+		return this.getType() == TermType.UNIVERSAL_VARIABLE || this.getType() == TermType.EXISTENTIAL_VARIABLE;
+	}
+
+	/**
 	 * Accept a {@link TermVisitor} and return its output.
 	 *
-	 * @param termVisitor
-	 *            the TermVisitor
+	 * @param termVisitor the TermVisitor
 	 * @return output of the visitor
 	 */
 	<T> T accept(TermVisitor<T> termVisitor);

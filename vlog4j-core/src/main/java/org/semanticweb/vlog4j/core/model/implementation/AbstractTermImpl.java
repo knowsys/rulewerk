@@ -1,10 +1,7 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
 import org.apache.commons.lang3.Validate;
-import org.semanticweb.vlog4j.core.model.api.NamedNull;
-import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.Variable;
 
 /*
  * #%L
@@ -27,8 +24,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
  */
 
 /**
- * Abstract class implementing all methods used by all types of terms
- * ({@link Constant}, {@link NamedNull}, and {@link Variable}).
+ * Abstract class implementing all methods used by all types of terms.
  *
  * @author david.carral@tu-dresden.de
  */

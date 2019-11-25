@@ -55,18 +55,9 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 		return Collections.unmodifiableList(this.literals);
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public Stream<Term> getTerms() {
-		Stream<Term> result = null;
-		for (final T literal : this.literals) {
-			if (result == null) {
-				result = literal.getTerms();
-			} else {
-				result = Stream.concat(result, literal.getTerms());
-			}
-		}
-		return result.distinct();
+		return this.literals.stream().flatMap(l -> l.getTerms()).distinct();
 	}
 
 	@Override

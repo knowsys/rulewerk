@@ -705,8 +705,11 @@ public class VLogReasoner implements Reasoner {
 	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Checking rules acyclicity is not allowed before loading!");
+			try {
+				load();
+			} catch (IOException e) { // FIXME: quick fix for https://github.com/knowsys/vlog4j/issues/128
+				throw new RuntimeException(e);
+			}
 		}
 
 		CyclicCheckResult checkCyclic;
@@ -737,20 +740,31 @@ public class VLogReasoner implements Reasoner {
 		// TODO more elaborate materialisation state handling
 
 		updateReasonerToKnowledgeBaseChanged();
-		
-		//updateCorrectnessOnStatementsAdded(statementsAdded);
-		updateCorrectness();
-	}
 
+		// updateCorrectnessOnStatementsAdded(statementsAdded);
+		updateCorrectnessOnStatementsAdded();
+	}
 
 	@Override
 	public void onStatementAdded(Statement statementAdded) {
 		// TODO more elaborate materialisation state handling
 
 		updateReasonerToKnowledgeBaseChanged();
-		
-		//updateCorrectnessOnStatementAdded(statementAdded);
-		updateCorrectness();
+
+		// updateCorrectnessOnStatementAdded(statementAdded);
+		updateCorrectnessOnStatementsAdded();
+	}
+
+	@Override
+	public void onStatementRemoved(Statement statementRemoved) {
+		updateReasonerToKnowledgeBaseChanged();
+		updateCorrectnessOnStatementsRemoved();
+	}
+
+	@Override
+	public void onStatementsRemoved(List<Statement> statementsRemoved) {
+		updateReasonerToKnowledgeBaseChanged();
+		updateCorrectnessOnStatementsRemoved();
 	}
 
 	private void updateReasonerToKnowledgeBaseChanged() {
@@ -761,11 +775,17 @@ public class VLogReasoner implements Reasoner {
 		}
 	}
 
-	private void updateCorrectness() {
+	private void updateCorrectnessOnStatementsAdded() {
 		if (this.reasonerState == ReasonerState.KB_CHANGED) {
-			
-			final boolean noRules = this.knowledgeBase.getRules().isEmpty();
-			this.correctness = noRules? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
+			// TODO refine
+			this.correctness = Correctness.INCORRECT;
+		}
+	}
+
+	private void updateCorrectnessOnStatementsRemoved() {
+		if (this.reasonerState == ReasonerState.KB_CHANGED) {
+			// TODO refine
+			this.correctness = Correctness.INCORRECT;
 		}
 	}
 
@@ -779,6 +799,14 @@ public class VLogReasoner implements Reasoner {
 			LOGGER.error("Invalid operation requested on a closed reasoner object!");
 			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner!");
 		}
+	}
+
+	ReasonerState getReasonerState() {
+		return this.reasonerState;
+	}
+
+	void setReasonerState(ReasonerState reasonerState) {
+		this.reasonerState = reasonerState;
 	}
 
 }
