@@ -47,6 +47,7 @@ import org.semanticweb.vlog4j.parser.ParsingException;
  *
  * @author Markus Kroetzsch
  * @author Larry Gonzalez
+ * @author Maximilian Marx
  * @author Jena developers, Apache Software Foundation (ASF)
  *
  */
@@ -86,6 +87,35 @@ public class JavaCCParserBase {
 		 * occurrence).
 		 */
 		BODY
+	}
+
+	/**
+	 * Defines delimiters for configurable literals.
+	 *
+	 * Since the parser is generated from a fixed grammar, we need to provide
+	 * productions for these literals, even if they are not part of the syntax. With
+	 * the {@link DefaultParserConfiguration}, any occurence of these literals will
+	 * result in a {@link ParseException}.
+	 *
+	 * @author Maximilian Marx
+	 */
+	public enum ConfigurableLiteralDelimiter {
+		/**
+		 * Literals of the form {@code |…|}
+		 */
+		PIPE,
+		/**
+		 * Literals of the form {@code #…#}
+		 */
+		HASH,
+		/**
+		 * Literals of the form {@code […]}
+		 */
+		BRACKET,
+		/**
+		 * Literals of the form {@code {…}}
+		 */
+		BRACE,
 	}
 
 	public JavaCCParserBase() {
@@ -211,14 +241,16 @@ public class JavaCCParserBase {
 		return sb.toString();
 	}
 
-	/** Remove first and last characters (e.g. ' or "") from a string */
-	static String stripQuotes(String s) {
-		return s.substring(1, s.length() - 1);
-	}
-
-	/** Remove first 3 and last 3 characters (e.g. ''' or """) from a string */
-	static String stripQuotes3(String s) {
-		return s.substring(3, s.length() - 3);
+	/**
+	 *	Remove the first and last {@code n} characters from string {@code s}
+	 *
+	 * @param s string to strip delimiters from
+	 * @param n number of characters to strip from both ends
+	 *
+	 * @return the stripped string.
+	 */
+	static String stripDelimiters(String s, int n) {
+		return s.substring(n, s.length() - n);
 	}
 
 	/** remove the first n charcacters from the string */

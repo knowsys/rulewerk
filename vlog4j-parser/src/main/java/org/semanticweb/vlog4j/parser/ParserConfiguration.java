@@ -29,6 +29,7 @@ import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.ConfigurableLiteralDelimiter;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 /**
@@ -46,6 +47,11 @@ public class ParserConfiguration {
 	 * The registered datatypes.
 	 */
 	private final HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
+
+	/**
+	 * The registered configurable literals.
+	 */
+	private HashMap<ConfigurableLiteralDelimiter, ConfigurableLiteralHandler> literals = new HashMap<>();
 
 	/**
 	 * Register a new (type of) Data Source.
@@ -137,6 +143,41 @@ public class ParserConfiguration {
 	}
 
 	/**
+	 * Check if a handler for this
+	 * {@link org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.ConfigurableLiteralDelimiter}
+	 * is registered
+	 *
+	 * @param delimiter delimiter to check.
+	 * @return true if a handler for the given delimiter is registered.
+	 */
+	public boolean isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter delimiter) {
+		return literals.containsKey(delimiter);
+	}
+
+	/**
+	 * Parse a configurable literal.
+	 *
+	 * @param delimiter        delimiter given for the syntactic form.
+	 * @param syntacticForm    syntantic form of the literal to parse.
+	 * @param subParserFactory a {@link SubParserFactory} instance that creates
+	 *                         parser with the same context as the current parser.
+	 *
+	 * @throws ParsingException when no handler for the literal is registered, or
+	 *                          the given syntactic form is invalid.
+	 * @return an appropriate {@link Constant} instance.
+	 */
+	public Constant parseConfigurableLiteral(ConfigurableLiteralDelimiter delimiter, String syntacticForm,
+			final SubParserFactory subParserFactory) throws ParsingException {
+		if (!isConfigurableLiteralRegistered(delimiter)) {
+			throw new ParsingException(
+					"No handler for configurable literal delimiter \"" + delimiter + "\" registered.");
+		}
+
+		ConfigurableLiteralHandler handler = literals.get(delimiter);
+		return handler.parseLiteral(syntacticForm, subParserFactory);
+	}
+
+	/**
 	 * Register a new data type.
 	 *
 	 * @param name    the IRI representing the data type.
@@ -153,6 +194,16 @@ public class ParserConfiguration {
 		Validate.isTrue(!this.datatypes.containsKey(name), "The Data type \"%s\" is already registered.", name);
 
 		this.datatypes.put(name, handler);
+		return this;
+	}
+
+	public ParserConfiguration registerLiteral(ConfigurableLiteralDelimiter delimiter,
+			ConfigurableLiteralHandler handler) throws IllegalArgumentException {
+		if (literals.containsKey(delimiter)) {
+			throw new IllegalArgumentException("Literal delimiter \"" + delimiter + "\" is already registered.");
+		}
+
+		this.literals.put(delimiter, handler);
 		return this;
 	}
 }

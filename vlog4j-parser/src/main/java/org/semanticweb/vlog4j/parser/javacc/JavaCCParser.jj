@@ -285,6 +285,11 @@ Term term(FormulaContext context) throws PrefixDeclarationException:
         return Expressions.makeExistentialVariable(s);
     }
 |   t = < VARORPREDNAME > { return createConstant(t.image); }
+|   try {
+		c = ConfigurableLiteral () { return c; }
+	} catch (ParsingException e) {
+		throw new ParseException("Invalid configurable literal expression: " + e.getMessage());
+	}
 }
 
 /** [16] */
@@ -309,6 +314,42 @@ Constant RDFLiteral() throws PrefixDeclarationException:
     { return createConstant(lex, lang, dt); }
 }
 
+Constant ConfigurableLiteral() throws ParsingException:
+{
+	Token t;
+}
+{
+	( LOOKAHEAD( < PIPE_DELIMINATED_LITERAL >,
+				 { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.PIPE) } )
+	 t = < PIPE_DELIMINATED_LITERAL > {
+		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.PIPE,
+															stripDelimiters(t.image, 1),
+															getSubParserFactory());
+	 }
+	 | LOOKAHEAD( < HASH_DELIMINATED_LITERAL >,
+				  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.HASH) } )
+	 t = < HASH_DELIMINATED_LITERAL > {
+		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.HASH,
+															stripDelimiters(t.image, 1),
+															getSubParserFactory());
+	 }
+	 // | LOOKAHEAD( < BRACKET_DELIMINATED_LITERAL >,
+	 // 			  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACKET) } )
+	 // t = < BRACKET_DELIMINATED_LITERAL > {
+	 // 	return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACKET,
+	 // 														stripDelimiters(t.image, 1),
+	 // 														getSubParserFactory());
+	 // }
+	 | LOOKAHEAD( < BRACE_DELIMINATED_LITERAL >,
+				  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACE) } )
+	 t = < BRACE_DELIMINATED_LITERAL > {
+		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACE,
+															stripDelimiters(t.image, 1),
+															getSubParserFactory());
+	 }
+	 )
+}
+
 String Langtag() :
 {
     Token t;
@@ -330,11 +371,10 @@ String String():
     String lex;
 }
 {
-    (
-         t = < STRING_LITERAL1 >      { lex = stripQuotes(t.image);  }
-    |    t = < STRING_LITERAL2 >      { lex = stripQuotes(t.image);  }
-    |    t = < STRING_LITERAL_LONG1 > { lex = stripQuotes3(t.image); }
-    |    t = < STRING_LITERAL_LONG2 > { lex = stripQuotes3(t.image); }
+    ( t = < STRING_LITERAL1 >      { lex = stripDelimiters(t.image, 1);  }
+	| t = < STRING_LITERAL2 >      { lex = stripDelimiters(t.image, 1);  }
+	| t = < STRING_LITERAL_LONG1 > { lex = stripDelimiters(t.image, 3); }
+	| t = < STRING_LITERAL_LONG2 > { lex = stripDelimiters(t.image, 3); }
     )
     {
         lex = unescapeStr(lex, t.beginLine, t.beginColumn);
@@ -394,7 +434,7 @@ String IRIREF() :
     t = < IRI >
     {
         // we remove '<' and '>'
-        return t.image.substring(1,t.image.length()-1);
+        return stripDelimiters(t.image, 1);
     }
 }
 
@@ -582,4 +622,12 @@ TOKEN :
       )*
       < PN_CHARS >
     )? >
+}
+
+TOKEN :
+{
+	< PIPE_DELIMINATED_LITERAL : ( "|" (~[ "|" ])* "|" ) > : DEFAULT
+|   < HASH_DELIMINATED_LITERAL : ( "#" (~[ "#" ])* "#" ) > : DEFAULT
+// |   < BRACKET_DELIMINATED_LITERAL : ( "[" (~[ "]" ])* "]" ) > : DEFAULT
+|   < BRACE_DELIMINATED_LITERAL : ( "{" (~[ "}" ])* "}" ) > : DEFAULT
 }
