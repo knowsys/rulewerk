@@ -55,10 +55,16 @@ public final class Serializer {
 	public static final String AT = "@";
 	public static final String SOURCE = "@source ";
 	public static final String COLON = ": ";
+	public static final String COLON_UNSPACED = ":";
 	public static final String CARET = "^";
 	public static final String LESS_THAN = "<";
 	public static final String MORE_THAN = ">";
-	public static final String ESCAPED_QUOTE = "\"";
+	public static final String QUOTE = "\"";
+	public static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
+	public static final String INTEGER = "^[-+]?\\d+$";
+	public static final String DECIMAL = "^(\\d*\\.)?\\d+$";
+	public static final String TRUE = "true";
+	public static final String FALSE = "false";
 
 	/**
 	 * Constructor.
@@ -103,7 +109,8 @@ public final class Serializer {
 			} else {
 				stringBuilder.append(COMMA);
 			}
-			stringBuilder.append(term.getSyntacticRepresentation());
+			String string = term.getSyntacticRepresentation();
+			stringBuilder.append(string);
 		}
 		stringBuilder.append(CLOSING_PARENTHESIS);
 		return stringBuilder.toString();
@@ -128,11 +135,13 @@ public final class Serializer {
 	 * @return String representation corresponding to a given {@link Constant}.
 	 */
 	public static String getString(Constant constant) {
-		return constant.getName();
-	}
-
-	public static String getString(DatatypeConstant constant) {
-		return getShortConstantName(constant);
+		if (constant.getName().contains(COLON_UNSPACED) || constant.getName().matches(INTEGER)
+				|| constant.getName().matches(DOUBLE) || constant.getName().matches(DECIMAL)
+				|| constant.getName().equals(TRUE) || constant.getName().equals(FALSE)) {
+			return LESS_THAN + constant.getName() + MORE_THAN;
+		} else {
+			return constant.getName();
+		}
 	}
 
 	/**
@@ -226,7 +235,7 @@ public final class Serializer {
 	 *         {@link LanguageStringConstant}.
 	 */
 	public static String getConstantName(LanguageStringConstant languageStringConstant) {
-		return ESCAPED_QUOTE + escape(languageStringConstant.getString()) + ESCAPED_QUOTE + AT
+		return QUOTE + escape(languageStringConstant.getString()) + QUOTE + AT
 				+ languageStringConstant.getLanguageTag();
 	}
 
@@ -239,9 +248,9 @@ public final class Serializer {
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
 	 */
-	public static String getShortConstantName(DatatypeConstant datatypeConstant) {
+	public static String getString(DatatypeConstant datatypeConstant) {
 		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
-			return ESCAPED_QUOTE + datatypeConstant.getLexicalValue() + ESCAPED_QUOTE;
+			return QUOTE + datatypeConstant.getLexicalValue() + QUOTE;
 		} else {
 			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
 					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
@@ -264,7 +273,7 @@ public final class Serializer {
 	 *         {@link DatatypeConstant}.
 	 */
 	public static String getConstantName(DatatypeConstant datatypeConstant) {
-		return ESCAPED_QUOTE + escape(datatypeConstant.getLexicalValue()) + ESCAPED_QUOTE + CARET + CARET + LESS_THAN
+		return QUOTE + escape(datatypeConstant.getLexicalValue()) + QUOTE + CARET + CARET + LESS_THAN
 				+ datatypeConstant.getDatatype() + MORE_THAN;
 	}
 

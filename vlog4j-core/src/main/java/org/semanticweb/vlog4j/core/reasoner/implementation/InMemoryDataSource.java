@@ -94,10 +94,8 @@ public class InMemoryDataSource implements DataSource {
 
 	@Override
 	public String getSyntacticRepresentation() {
-
-		String message = "This InMemoryDataSource holds the following tuples of constant names, one tuple per line:";
-		StringBuilder facts = new StringBuilder("");
-		facts.append(message);
+		StringBuilder facts = new StringBuilder(
+				"This InMemoryDataSource holds the following tuples of constant names, one tuple per line:");
 		for (int i = 0; i < this.getData().length; i++) {
 			for (int j = 0; j < data[i].length; j++) {
 				facts.append(data[i][j] + " ");

@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
+
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
@@ -54,18 +54,23 @@ public class EntityTest {
 	public void languageStringConstantToStringRoundTripTest() throws ParsingException {
 		LanguageStringConstantImpl s = new LanguageStringConstantImpl("Test", "en");
 		Predicate p = Expressions.makePredicate("p", 1);
-		Fact f3 = Expressions.makeFact(p, Arrays.asList(s));
+		Fact f3 = Expressions.makeFact(p, s);
 		assertEquals(f3, RuleParser.parseFact(f3.toString()));
 	}
 
-	public void abstractConstantToStringRoundTripTest() throws ParsingException {
+	@Test
+	public void abstractConstantStringToStringRoundTripTest() throws ParsingException {
 		AbstractConstantImpl f = new AbstractConstantImpl("f");
-		AbstractConstantImpl a = new AbstractConstantImpl("1");
-		Predicate p = Expressions.makePredicate("p", 1);
-		Fact f1 = Expressions.makeFact(p, Arrays.asList(f));
-		Fact f2 = Expressions.makeFact(p, Arrays.asList(a));
+		Fact f1 = Expressions.makeFact("p", f);
 		assertEquals(f1, RuleParser.parseFact(f1.toString()));
-		assertEquals(f2, RuleParser.parseFact(f2.toString()));
+	}
+
+	@Test
+	public void abstractConstantAbsoluteToStringRoundTripTest() throws ParsingException {
+		AbstractConstantImpl a = new AbstractConstantImpl("http://example.org/test");
+		Fact f1 = Expressions.makeFact("p", a);
+		System.out.println(f1.toString());
+		assertEquals(f1, RuleParser.parseFact(f1.toString()));
 	}
 
 	@Test
@@ -95,27 +100,34 @@ public class EntityTest {
 		Conjunction<Literal> bodyLiterals = Expressions.makeConjunction(atom1, atom2);
 		Conjunction<PositiveLiteral> headPositiveLiterals = Expressions.makePositiveConjunction(headAtom1);
 		Rule rule1 = new RuleImpl(headPositiveLiterals, bodyLiterals);
-		assertEquals(rule1, RuleParser.parseRule(rule1.toString()));
+		assertEquals(bodyLiterals, RuleParser.parseRule(rule1.toString()).getBody());
+		assertEquals(headPositiveLiterals, RuleParser.parseRule(rule1.toString()).getHead());
+	}
+
+	@Test
+	public void positiveLiteralToStringRoundTripTest() throws ParsingException {
+		Constant c = Expressions.makeAbstractConstant("c");
+		Variable x = Expressions.makeUniversalVariable("X");
+		PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
+		assertEquals(atom1, RuleParser.parseLiteral(atom1.toString()));
 	}
 
 	@Test
 	public void literalToStringRoundTripTest() throws ParsingException {
 		Constant c = Expressions.makeAbstractConstant("c");
 		Variable x = Expressions.makeUniversalVariable("X");
-		Variable z = Expressions.makeExistentialVariable("Z");
 		NegativeLiteral atom1 = Expressions.makeNegativeLiteral("p", x, c);
-		PositiveLiteral headAtom1 = Expressions.makePositiveLiteral("q", x, z);
-		Rule rule1 = Expressions.makeRule(headAtom1, atom1);
-		assertEquals(rule1, RuleParser.parseRule(rule1.toString()));
+		assertEquals(atom1, RuleParser.parseLiteral(atom1.toString()));
 	}
 
 	@Test
 	public void datatypeDoubleConstantToStringRoundTripTest() throws ParsingException {
 		String shortDoubleConstant = "12.345E67";
 		assertEquals(shortDoubleConstant,
-				RuleParser.parseFact("p(\"12.345E67\"^^<http://www.w3.org/2001/XMLSchema#double>).").getArguments()
-						.get(0).toString());
-		assertEquals(shortDoubleConstant, RuleParser.parseFact("p(12.345E67).").getArguments().get(0).toString());
+				RuleParser.parseFact("p(\"" + shortDoubleConstant + "\"^^<http://www.w3.org/2001/XMLSchema#double>).")
+						.getArguments().get(0).toString());
+		assertEquals(shortDoubleConstant,
+				RuleParser.parseFact("p(" + shortDoubleConstant + ").").getArguments().get(0).toString());
 	}
 
 	@Test
@@ -128,26 +140,31 @@ public class EntityTest {
 	@Test
 	public void datatypeStringConstantToStringRoundTripTest() throws ParsingException {
 		String shortStringConstant = "\"data\"";
-		assertEquals(shortStringConstant, RuleParser
-				.parseFact("p(\"data\"^^<http://www.w3.org/2001/XMLSchema#string>).").getArguments().get(0).toString());
-		assertEquals(shortStringConstant, RuleParser.parseFact("p(\"data\").").getArguments().get(0).toString());
+		assertEquals(shortStringConstant,
+				RuleParser.parseFact("p(" + shortStringConstant + "^^<http://www.w3.org/2001/XMLSchema#string>).")
+						.getArguments().get(0).toString());
+		assertEquals(shortStringConstant,
+				RuleParser.parseFact("p(" + shortStringConstant + ").").getArguments().get(0).toString());
 	}
 
 	@Test
 	public void datatypeIntegerConstantToStringRoundTripTest() throws ParsingException {
 		String shortIntegerConstant = "1";
-		assertEquals(shortIntegerConstant, RuleParser.parseFact("p(\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>).")
-				.getArguments().get(0).toString());
-		assertEquals(shortIntegerConstant, RuleParser.parseFact("p(1).").getArguments().get(0).toString());
+		assertEquals(shortIntegerConstant,
+				RuleParser.parseFact("p(\"" + shortIntegerConstant + "\"^^<http://www.w3.org/2001/XMLSchema#integer>).")
+						.getArguments().get(0).toString());
+		assertEquals(shortIntegerConstant,
+				RuleParser.parseFact("p(" + shortIntegerConstant + ").").getArguments().get(0).toString());
 	}
 
 	@Test
 	public void datatypeDecimalToStringRoundTripTest() throws ParsingException {
 		String shortDecimalConstant = "0.23";
 		assertEquals(shortDecimalConstant,
-				RuleParser.parseFact("p(\"0.23\"^^<http://www.w3.org/2001/XMLSchema#decimal>).").getArguments().get(0)
-						.toString());
-		assertEquals(shortDecimalConstant, RuleParser.parseFact("p(0.23).").getArguments().get(0).toString());
+				RuleParser.parseFact("p(\"" + shortDecimalConstant + "\"^^<http://www.w3.org/2001/XMLSchema#decimal>).")
+						.getArguments().get(0).toString());
+		assertEquals(shortDecimalConstant,
+				RuleParser.parseFact("p(" + shortDecimalConstant + ").").getArguments().get(0).toString());
 	}
 
 	@Test
@@ -164,10 +181,8 @@ public class EntityTest {
 	@Test
 	public void rdfDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
 		KnowledgeBase kb = new KnowledgeBase();
-		String INPUT_FOLDER = "src/test/data/input/";
-		File unzippedRdfFile = new File(INPUT_FOLDER + "file.nt");
 		Predicate predicate1 = Expressions.makePredicate("p", 3);
-		RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
+		RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(new File("src/test/data/input/file.nt"));
 		DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1,
 				unzippedRdfFileDataSource);
 		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
@@ -177,10 +192,8 @@ public class EntityTest {
 	@Test
 	public void csvDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
 		KnowledgeBase kb = new KnowledgeBase();
-		String INPUT_FOLDER = "src/test/data/input/";
-		String csvFile = INPUT_FOLDER + "file.csv";
 		Predicate predicate1 = Expressions.makePredicate("q", 1);
-		CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(csvFile));
+		CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File("src/test/data/input/file.csv"));
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1,
 				unzippedCsvFileDataSource);
 		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
