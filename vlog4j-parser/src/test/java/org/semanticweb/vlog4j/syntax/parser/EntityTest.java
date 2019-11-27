@@ -69,7 +69,34 @@ public class EntityTest {
 	public void abstractConstantAbsoluteToStringRoundTripTest() throws ParsingException {
 		AbstractConstantImpl a = new AbstractConstantImpl("http://example.org/test");
 		Fact f1 = Expressions.makeFact("p", a);
-		System.out.println(f1.toString());
+		assertEquals(f1, RuleParser.parseFact(f1.toString()));
+	}
+
+	@Test
+	public void abstractConstantRelativeDoubleToStringRoundTripTest() throws ParsingException {
+		AbstractConstantImpl b = new AbstractConstantImpl("4.2E9");
+		Fact f1 = Expressions.makeFact("p", b);
+		assertEquals(f1, RuleParser.parseFact(f1.toString()));
+	}
+
+	@Test
+	public void abstractConstantRelativeIntegerToStringRoundTripTest() throws ParsingException {
+		AbstractConstantImpl b = new AbstractConstantImpl("11");
+		Fact f1 = Expressions.makeFact("p", b);
+		assertEquals(f1, RuleParser.parseFact(f1.toString()));
+	}
+
+	@Test
+	public void abstractConstantRelativeBooleanToStringRoundTripTest() throws ParsingException {
+		AbstractConstantImpl b = new AbstractConstantImpl("false");
+		Fact f1 = Expressions.makeFact("p", b);
+		assertEquals(f1, RuleParser.parseFact(f1.toString()));
+	}
+
+	@Test
+	public void abstractConstantRelativeDecimalToStringRoundTripTest() throws ParsingException {
+		AbstractConstantImpl b = new AbstractConstantImpl("-5.0");
+		Fact f1 = Expressions.makeFact("p", b);
 		assertEquals(f1, RuleParser.parseFact(f1.toString()));
 	}
 
