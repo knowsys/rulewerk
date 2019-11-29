@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -60,7 +62,7 @@ public final class Serializer {
 	public static final String LESS_THAN = "<";
 	public static final String MORE_THAN = ">";
 	public static final String QUOTE = "\"";
-	public static final String DOUBLE = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
+	public static final String DOUBLE = "^[-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?$";
 	public static final String INTEGER = "^[-+]?\\d+$";
 	public static final String DECIMAL = "^(\\d*\\.)?\\d+$";
 	public static final String TRUE = "true";
@@ -75,6 +77,16 @@ public final class Serializer {
 
 	private static String escape(String string) {
 		return string.replace("\\", "\\\\").replace("\"", "\\\"");
+	}
+
+	private static String checkRelativeAbsoluteIri(String string) {
+		if ((string.contains(COLON_UNSPACED) || string.matches(INTEGER) || string.matches(DOUBLE)
+				|| string.matches(DECIMAL) || string.equals(TRUE) || string.equals(FALSE))
+				&& (!string.contains(LESS_THAN))) {
+			return LESS_THAN + string + MORE_THAN;
+		} else {
+			return string;
+		}
 	}
 
 	/**
@@ -101,7 +113,7 @@ public final class Serializer {
 		if (literal.isNegated()) {
 			stringBuilder.append(NEGATIVE_IDENTIFIER);
 		}
-		stringBuilder.append(literal.getPredicate().getName()).append(OPEN_PARENTHESIS);
+		stringBuilder.append(checkRelativeAbsoluteIri(literal.getPredicate().getName())).append(OPEN_PARENTHESIS);
 		boolean first = true;
 		for (final Term term : literal.getArguments()) {
 			if (first) {
@@ -134,14 +146,8 @@ public final class Serializer {
 	 * @param constant a {@link Constant}
 	 * @return String representation corresponding to a given {@link Constant}.
 	 */
-	public static String getString(Constant constant) {
-		if (constant.getName().contains(COLON_UNSPACED) || constant.getName().matches(INTEGER)
-				|| constant.getName().matches(DOUBLE) || constant.getName().matches(DECIMAL)
-				|| constant.getName().equals(TRUE) || constant.getName().equals(FALSE)) {
-			return LESS_THAN + constant.getName() + MORE_THAN;
-		} else {
-			return constant.getName();
-		}
+	public static String getString(AbstractConstant constant) {
+		return checkRelativeAbsoluteIri(constant.getName());
 	}
 
 	/**

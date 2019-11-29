@@ -35,6 +35,7 @@ import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
@@ -98,6 +99,68 @@ public class EntityTest {
 		AbstractConstantImpl b = new AbstractConstantImpl("-5.0");
 		Fact f1 = Expressions.makeFact("p", b);
 		assertEquals(f1, RuleParser.parseFact(f1.toString()));
+	}
+
+	@Test
+	public void iriRoundTripTest() throws ParsingException {
+		String abstractConstant = "<1.0>";
+		Fact f2 = RuleParser.parseFact("p(" + abstractConstant + ").");
+		assertEquals(abstractConstant, f2.getArguments().get(0).toString());
+	}
+
+	@Test
+	public void iriRoundTripTest2() throws ParsingException {
+		String abstractConstant = "<a:b>";
+		Fact f2 = RuleParser.parseFact("p(" + abstractConstant + ").");
+		assertEquals(abstractConstant, f2.getArguments().get(0).toString());
+	}
+
+	@Test
+	public void iriRoundTripTest3() throws ParsingException {
+		String abstractConstant = "<a:1>";
+		Fact f2 = RuleParser.parseFact("p(" + abstractConstant + ").");
+		assertEquals(abstractConstant, f2.getArguments().get(0).toString());
+	}
+
+	@Test
+	public void predicateIriRoundTripTest() throws ParsingException {
+		AbstractConstantImpl a = new AbstractConstantImpl("a");
+		Fact f = Expressions.makeFact("1.e1", a);
+		assertEquals(f, RuleParser.parseFact(f.toString()));
+	}
+
+	@Test
+	public void predicateIriRoundTripTest2() throws ParsingException {
+		AbstractConstantImpl a = new AbstractConstantImpl("a");
+		Fact f = RuleParser.parseFact("<1.e1>(a).");
+		Fact f2 = Expressions.makeFact("1.e1", a);
+		assertEquals(f, f2);
+	}
+
+	@Test
+	public void predicateIriRoundTripTest3() throws ParsingException {
+		AbstractConstantImpl a = new AbstractConstantImpl("a");
+		Fact f = RuleParser.parseFact("<a:b>(a).");
+		Fact f2 = Expressions.makeFact("a:b", a);
+		assertEquals(f, f2);
+	}
+
+	@Test
+	public void predicateRoundTripTest3() throws ParsingException {
+		AbstractConstantImpl a = new AbstractConstantImpl("a");
+		Fact f2 = Expressions.makeFact("a:1", a);
+		assertEquals(f2, RuleParser.parseFact(f2.toString()));
+	}
+
+	@Test
+	public void iriAngularBracketsTest() throws ParsingException {
+		String constant = "a";
+		Fact fact = RuleParser.parseFact("p(" + constant + ")");
+		Term abstractConst = fact.getArguments().get(0);
+		assertEquals(constant, abstractConst.toString());
+		Fact fact2 = RuleParser.parseFact("p(<" + constant + ">)");
+		Term abstractConst2 = fact2.getArguments().get(0);
+		assertEquals(abstractConst, abstractConst2);
 	}
 
 	@Test

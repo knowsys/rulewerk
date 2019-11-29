@@ -65,6 +65,6 @@ public interface LanguageStringConstant extends Constant {
 
 	@Override
 	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
+		return Serializer.getConstantName(this);
 	}
 }
