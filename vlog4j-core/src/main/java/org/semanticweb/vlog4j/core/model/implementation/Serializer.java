@@ -81,8 +81,7 @@ public final class Serializer {
 
 	private static String checkRelativeAbsoluteIri(String string) {
 		if ((string.contains(COLON_UNSPACED) || string.matches(INTEGER) || string.matches(DOUBLE)
-				|| string.matches(DECIMAL) || string.equals(TRUE) || string.equals(FALSE))
-				&& (!string.contains(LESS_THAN))) {
+				|| string.matches(DECIMAL) || string.equals(TRUE) || string.equals(FALSE))) {
 			return LESS_THAN + string + MORE_THAN;
 		} else {
 			return string;
