@@ -26,15 +26,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.ConfigurationException;
-
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
-import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 import picocli.CommandLine.ArgGroup;
@@ -53,9 +50,8 @@ public class VLog4jClientMaterialize implements Runnable {
 	private final KnowledgeBase kb = new KnowledgeBase();
 	private final List<PositiveLiteral> queries = new ArrayList<>();
 
-	// TODO add link to rls syntax
-	@Option(names = "--rule-file", description = "Rule file(s) in rls syntax", required = true)
-	private List<String> ruleFiles = new ArrayList<>();
+	@Option(names = "--rule-file", description = "Rule file(s) in {@link https://github.com/knowsys/vlog4j/wiki/Rule-syntax-grammar} syntax", required = true)
+	private final List<String> ruleFiles = new ArrayList<>();
 
 //  TODO
 //	Support graal rule files
@@ -63,25 +59,25 @@ public class VLog4jClientMaterialize implements Runnable {
 //	private List<String> graalRuleFiles = new ArrayList<>();
 
 	@Option(names = "--log-level", description = "Log level of VLog (c++ library). One of: DEBUG, INFO, WARNING (default), ERROR.", required = false)
-	private LogLevel logLevel = LogLevel.WARNING;
+	private final LogLevel logLevel = LogLevel.WARNING;
 
 	@Option(names = "--log-file", description = "Log file of VLog (c++ library). VLog will log to the default system output by default", required = false)
 	private String logFile;
 
 	@Option(names = "--chase-algorithm", description = "Chase algorithm. RESTRICTED_CHASE (default) or SKOLEM_CHASE.", required = false)
-	private Algorithm chaseAlgorithm = Algorithm.RESTRICTED_CHASE;
+	private final Algorithm chaseAlgorithm = Algorithm.RESTRICTED_CHASE;
 
 	@Option(names = "--timeout", description = "Timeout in seconds. Infinite by default", required = false)
-	private int timeout = 0;
+	private final int timeout = 0;
 
 	@Option(names = "--query", description = "Positive not-ground Literals to query after materialization in rls syntax. Vlog4jClient will print the size of its extension", required = true)
-	private List<String> queryStrings = new ArrayList<>();
+	private final List<String> queryStrings = new ArrayList<>();
 
 	@ArgGroup(exclusive = false)
-	private PrintQueryResults printQueryResults = new PrintQueryResults();
+	private final PrintQueryResults printQueryResults = new PrintQueryResults();
 
 	@ArgGroup(exclusive = false)
-	private SaveQueryResults saveQueryResults = new SaveQueryResults();
+	private final SaveQueryResults saveQueryResults = new SaveQueryResults();
 
 	// TODO
 	// @ArgGroup(exclusive = false)
@@ -89,7 +85,7 @@ public class VLog4jClientMaterialize implements Runnable {
 
 	@Override
 	public void run() {
-		ExamplesUtils.configureLogging();
+		ClientUtils.configureLogging();
 
 		/* Validate configuration */
 		this.validateConfiguration();
@@ -103,7 +99,7 @@ public class VLog4jClientMaterialize implements Runnable {
 		/* Print configuration */
 		this.printConfiguration();
 
-		try (Reasoner reasoner = new VLogReasoner(kb)) {
+		try (Reasoner reasoner = new VLogReasoner(this.kb)) {
 
 			this.materialize(reasoner);
 			// TODO if (saveModel.saveModel) { this.saveModel(); }
@@ -114,36 +110,42 @@ public class VLog4jClientMaterialize implements Runnable {
 	}
 
 	private void validateConfiguration() {
-		try {
-			printQueryResults.validate();
-			saveQueryResults.validate();
-			// TODO saveModel.validate();
-		} catch (ConfigurationException e) {
-			System.err.println("Configuration Error: " + e.getMessage());
-			System.exit(1);
+		if (!this.printQueryResults.isValid()) {
+			this.printErrorMessageAndExit(PrintQueryResults.configurationErrorMessage);
 		}
+		if (!this.saveQueryResults.isConfigurationValid()) {
+			this.printErrorMessageAndExit(SaveQueryResults.configurationErrorMessage);
+		}
+		if (this.saveQueryResults.isSaveResults() && !this.saveQueryResults.isDirectoryValid()) {
+			this.printErrorMessageAndExit(SaveQueryResults.wrongDirectoryErrorMessage);
+		}
+		// TODO
+		// if (!saveModel.isConfigurationValid()) {
+		// printMessageAndExit(SaveModel.configurationErrorMessage);
+		// }
+		// if (saveModel.isSaveResults() && !saveModel.isDirectoryValid()) {
+		// printMessageAndExit(SaveModel.wrongDirectoryErrorMessage);
+		// }
 	}
 
 	private void configureRules() {
-		for (String ruleFile : ruleFiles) {
+		for (final String ruleFile : this.ruleFiles) {
 			try {
-				RuleParser.parseInto(kb, new FileInputStream(ruleFile));
-			} catch (FileNotFoundException e1) {
-				System.err.println("File not found: " + ruleFile + ". " + e1.getMessage());
-				System.exit(1);
-			} catch (ParsingException e2) {
-				System.err.println("Failed to parse rule file: " + ruleFile + ". " + e2.getMessage());
-				System.exit(1);
+				RuleParser.parseInto(this.kb, new FileInputStream(ruleFile));
+			} catch (final FileNotFoundException e1) {
+				this.printErrorMessageAndExit("File not found: " + ruleFile + "\n " + e1.getMessage());
+			} catch (final ParsingException e2) {
+				this.printErrorMessageAndExit("Failed to parse rule file: " + ruleFile + "\n " + e2.getMessage());
 			}
 		}
 	}
 
 	private void configureQueries() {
-		for (String queryString : queryStrings) {
+		for (final String queryString : this.queryStrings) {
 			try {
 				final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
-				queries.add(query);
-			} catch (ParsingException e) {
+				this.queries.add(query);
+			} catch (final ParsingException e) {
 				System.err.println("Failed to parse query: \"\"\"" + queryString + "\"\"\".");
 				System.err.println(e.getMessage());
 				System.err.println("The query was skipped. Continuing ...");
@@ -151,44 +153,45 @@ public class VLog4jClientMaterialize implements Runnable {
 		}
 	}
 
-	private void materialize(Reasoner reasoner) {
+	private void materialize(final Reasoner reasoner) {
 		// logFile
-		reasoner.setLogFile(logFile);
+		reasoner.setLogFile(this.logFile);
 		// logLevel
-		reasoner.setLogLevel(logLevel);
+		reasoner.setLogLevel(this.logLevel);
 		// chaseAlgorithm
-		reasoner.setAlgorithm(chaseAlgorithm);
+		reasoner.setAlgorithm(this.chaseAlgorithm);
 		// timeout
-		if (timeout > 0) {
-			reasoner.setReasoningTimeout(timeout);
+		if (this.timeout > 0) {
+			reasoner.setReasoningTimeout(this.timeout);
 		}
 
 		System.out.println("Executing the chase ...");
 		try {
 			reasoner.reason();
-		} catch (IOException e) {
-			System.err.println("Something went wrong. Please check the log file." + e.getMessage());
-			System.exit(1);
+		} catch (final IOException e) {
+			this.printErrorMessageAndExit(
+					"Something went wrong during reasoning. Please check the reasoner log file.\n" + e.getMessage());
 		}
 
 	}
 
 	// TODO private void saveModel() {...}
-	private void answerQueries(Reasoner reasoner) {
-		if (!queries.isEmpty()) {
+
+	private void answerQueries(final Reasoner reasoner) {
+		if (!this.queries.isEmpty()) {
 			System.out.println("Answering queries ...");
-			for (PositiveLiteral query : queries) {
-				if (saveQueryResults.isSaveResults()) {
+			for (final PositiveLiteral query : this.queries) {
+				if (this.saveQueryResults.isSaveResults()) {
 					// Save the query results
-					doSaveQueryResults(reasoner, query);
+					this.doSaveQueryResults(reasoner, query);
 				}
 
-				if (printQueryResults.isSizeOnly()) {
+				if (this.printQueryResults.isSizeOnly()) {
 					// print number of facts in results
-					doPrintResults(reasoner, query);
-				} else if (printQueryResults.isComplete()) {
+					this.doPrintResults(reasoner, query);
+				} else if (this.printQueryResults.isComplete()) {
 					// print facts
-					ExamplesUtils.printOutQueryAnswers(query, reasoner);
+					ClientUtils.printOutQueryAnswers(query, reasoner);
 				}
 			}
 		}
@@ -197,40 +200,48 @@ public class VLog4jClientMaterialize implements Runnable {
 	private void printConfiguration() {
 		System.out.println("Configuration:");
 
-		for (String ruleFile : ruleFiles) {
+		for (final String ruleFile : this.ruleFiles) {
 			System.out.println("  --rule-file: " + ruleFile);
 		}
 
-		for (PositiveLiteral query : queries) {
+		for (final PositiveLiteral query : this.queries) {
 			System.out.println("  --query: " + query);
 		}
 
-		System.out.println("  --log-file: " + logFile);
-		System.out.println("  --log-level: " + logLevel);
-		System.out.println("  --chase-algorithm: " + chaseAlgorithm);
-		System.out.println("  --timeout: " + ((timeout > 0) ? timeout : "none"));
+		System.out.println("  --log-file: " + this.logFile);
+		System.out.println("  --log-level: " + this.logLevel);
+		System.out.println("  --chase-algorithm: " + this.chaseAlgorithm);
+		System.out.println("  --timeout: " + ((this.timeout > 0) ? this.timeout : "none"));
 
 		/* Print what to do with the result */
-		printQueryResults.printConfiguration();
-		saveQueryResults.printConfiguration();
+		this.printQueryResults.printConfiguration();
+		this.saveQueryResults.printConfiguration();
 		// TODO saveModel.printConfiguration();
 	}
 
-	private void doSaveQueryResults(Reasoner reasoner, PositiveLiteral query) {
+	private void doSaveQueryResults(final Reasoner reasoner, final PositiveLiteral query) {
+		this.saveQueryResults.mkdir();
 		try {
-			reasoner.exportQueryAnswersToCsv(query, queryOputputPath(query), true);
-		} catch (IOException e) {
+			reasoner.exportQueryAnswersToCsv(query, this.queryOputputPath(query), true);
+		} catch (final IOException e) {
 			System.err.println("Can't save query: \"\"\"" + query + "\"\"\".");
 			System.err.println(e.getMessage());
 		}
 	}
 
-	private void doPrintResults(Reasoner reasoner, PositiveLiteral query) {
+	private void doPrintResults(final Reasoner reasoner, final PositiveLiteral query) {
 		System.out.println(
-				"Number of query answers in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
+				"Number of query answers in " + query + ": " + ClientUtils.getQueryAnswerCount(query, reasoner));
 	}
 
-	private String queryOputputPath(PositiveLiteral query) {
-		return saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
+	private String queryOputputPath(final PositiveLiteral query) {
+		return this.saveQueryResults.getOutputQueryResultDirectory() + "/" + query + ".csv";
 	}
+
+	private void printErrorMessageAndExit(final String message) {
+		System.err.println(message);
+		System.out.println("Exiting the program.");
+		System.exit(1);
+	}
+
 }
