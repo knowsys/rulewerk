@@ -88,6 +88,10 @@ public final class Serializer {
 		}
 	}
 
+	private static String addQuote(String string) {
+		return QUOTE + string + QUOTE;
+	}
+
 	/**
 	 * Creates a String representation of a given {@link Rule}.
 	 * 
@@ -240,8 +244,7 @@ public final class Serializer {
 	 *         {@link LanguageStringConstant}.
 	 */
 	public static String getConstantName(LanguageStringConstant languageStringConstant) {
-		return QUOTE + escape(languageStringConstant.getString()) + QUOTE + AT
-				+ languageStringConstant.getLanguageTag();
+		return addQuote(escape(languageStringConstant.getString())) + AT + languageStringConstant.getLanguageTag();
 	}
 
 	/**
@@ -255,7 +258,7 @@ public final class Serializer {
 	 */
 	public static String getString(DatatypeConstant datatypeConstant) {
 		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
-			return QUOTE + datatypeConstant.getLexicalValue() + QUOTE;
+			return addQuote(datatypeConstant.getLexicalValue());
 		} else {
 			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
 					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
@@ -278,7 +281,7 @@ public final class Serializer {
 	 *         {@link DatatypeConstant}.
 	 */
 	public static String getConstantName(DatatypeConstant datatypeConstant) {
-		return QUOTE + escape(datatypeConstant.getLexicalValue()) + QUOTE + CARET + CARET + LESS_THAN
+		return addQuote(escape(datatypeConstant.getLexicalValue())) + CARET + CARET + LESS_THAN
 				+ datatypeConstant.getDatatype() + MORE_THAN;
 	}
 
