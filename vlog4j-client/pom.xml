@@ -31,10 +31,10 @@
 			<artifactId>vlog4j-parser</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>vlog4j-examples</artifactId>
-			<version>${project.version}</version>
+		<dependency> 
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>info.picocli</groupId>

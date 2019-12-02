@@ -32,7 +32,6 @@ import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
-import org.semanticweb.vlog4j.examples.ExamplesUtils;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -87,7 +86,7 @@ public class VLog4jClientMaterialize implements Runnable {
 
 	@Override
 	public void run() {
-		ExamplesUtils.configureLogging();
+		ClientUtils.configureLogging();
 
 		/* Validate configuration */
 		this.validateConfiguration();
@@ -193,7 +192,7 @@ public class VLog4jClientMaterialize implements Runnable {
 					this.doPrintResults(reasoner, query);
 				} else if (this.printQueryResults.isComplete()) {
 					// print facts
-					ExamplesUtils.printOutQueryAnswers(query, reasoner);
+					ClientUtils.printOutQueryAnswers(query, reasoner);
 				}
 			}
 		}
@@ -233,7 +232,7 @@ public class VLog4jClientMaterialize implements Runnable {
 
 	private void doPrintResults(final Reasoner reasoner, final PositiveLiteral query) {
 		System.out.println(
-				"Number of query answers in " + query + ": " + ExamplesUtils.getQueryAnswerCount(query, reasoner));
+				"Number of query answers in " + query + ": " + ClientUtils.getQueryAnswerCount(query, reasoner));
 	}
 
 	private String queryOputputPath(final PositiveLiteral query) {
