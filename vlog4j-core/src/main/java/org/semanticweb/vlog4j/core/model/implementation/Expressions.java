@@ -49,16 +49,6 @@ import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
 
 public final class Expressions {
 
-	public static final String COLON_UNSPACED = ":";
-	public static final String LESS_THAN = "<";
-	public static final String MORE_THAN = ">";
-	public static final String QUOTE = "\"";
-	public static final String DOUBLE = "^[-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?$";
-	public static final String INTEGER = "^[-+]?\\d+$";
-	public static final String DECIMAL = "^(\\d*\\.)?\\d+$";
-	public static final String TRUE = "true";
-	public static final String FALSE = "false";
-
 	/**
 	 * Private constructor prevents this utilities class to be instantiated.
 	 */

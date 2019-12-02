@@ -130,22 +130,6 @@ public class EntityTest {
 	}
 
 	@Test
-	public void predicateIriRoundTripTest2() throws ParsingException {
-		AbstractConstantImpl a = new AbstractConstantImpl("a");
-		Fact f = RuleParser.parseFact("<1.e1>(a).");
-		Fact f2 = Expressions.makeFact("1.e1", a);
-		assertEquals(f, f2);
-	}
-
-	@Test
-	public void predicateIriRoundTripTest3() throws ParsingException {
-		AbstractConstantImpl a = new AbstractConstantImpl("a");
-		Fact f = RuleParser.parseFact("<a:b>(a).");
-		Fact f2 = Expressions.makeFact("a:b", a);
-		assertEquals(f, f2);
-	}
-
-	@Test
 	public void predicateRoundTripTest3() throws ParsingException {
 		AbstractConstantImpl a = new AbstractConstantImpl("a");
 		Fact f2 = Expressions.makeFact("a:1", a);
@@ -223,8 +207,7 @@ public class EntityTest {
 	@Test
 	public void datatypeFloatConstantToStringRoundTripTest() throws ParsingException {
 		String floatConstant = "\"0.5\"^^<http://www.w3.org/2001/XMLSchema#float>";
-		assertEquals(floatConstant, RuleParser.parseFact("p(\"0.5\"^^<http://www.w3.org/2001/XMLSchema#float>).")
-				.getArguments().get(0).toString());
+		assertEquals(floatConstant, RuleParser.parseFact("p(" + floatConstant + ").").getArguments().get(0).toString());
 	}
 
 	@Test

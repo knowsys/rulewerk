@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -39,6 +40,7 @@ import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
@@ -408,6 +410,22 @@ public class RuleParserTest {
 	public void testBlankPredicateName() throws ParsingException {
 		String input = "_:(a) .";
 		RuleParser.parse(input);
+	}
+
+	@Test
+	public void predicateIriRoundTripTest() throws ParsingException {
+		AbstractConstantImpl a = new AbstractConstantImpl("a");
+		Fact f = RuleParser.parseFact("<1.e1>(a).");
+		Fact f2 = Expressions.makeFact("1.e1", a);
+		assertEquals(f, f2);
+	}
+
+	@Test
+	public void predicateIriRoundTripTest2() throws ParsingException {
+		AbstractConstantImpl a = new AbstractConstantImpl("a");
+		Fact f = RuleParser.parseFact("<a:b>(a).");
+		Fact f2 = Expressions.makeFact("a:b", a);
+		assertEquals(f, f2);
 	}
 
 }
