@@ -808,5 +808,4 @@ public class VLogReasoner implements Reasoner {
 	void setReasonerState(ReasonerState reasonerState) {
 		this.reasonerState = reasonerState;
 	}
-
 }
