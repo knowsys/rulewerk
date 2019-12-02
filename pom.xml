@@ -14,6 +14,20 @@
 	<description>A Java library for working with the VLog rule engine</description>
 	<url>https://github.com/knowsys/vlog4j</url>
 
+	<modules>
+		<!-- when adding a module, make sure to also add it as a
+			 dependency in the coverage module, otherwise it will not be
+			 included in the coverage report -->
+		<module>vlog4j-core</module>
+		<module>vlog4j-rdf</module>
+		<module>vlog4j-examples</module>
+		<module>vlog4j-owlapi</module>
+		<module>vlog4j-graal</module>
+		<module>vlog4j-parser</module>
+		<module>vlog4j-client</module>
+		<!-- <module>coverage</module> -->
+	</modules>
+
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
@@ -266,9 +280,9 @@
 				  <phase>test</phase>
 				  <configuration>
 					<!-- use a non-standard output directory so the
-					     coveralls plugin will not try to aggregate
-					     this into the final coverage report, since we
-					     want to control aggregation ourselves. -->
+						 coveralls plugin will not try to aggregate
+						 this into the final coverage report, since we
+						 want to control aggregation ourselves. -->
 					<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
 				  </configuration>
 				</execution>
@@ -289,7 +303,7 @@
 			</plugin>
 			<plugin>
 			  <!-- Plugin for creating Javadocs; goal for preparing
-			       docs for upload to github: javadoc:aggregate -->
+				   docs for upload to github: javadoc:aggregate -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven.javadoc.version}</version>
@@ -315,37 +329,6 @@
 	</build>
 
 	<profiles>
-        <profile>
-            <!-- this needs to be called client so that we can avoid
-                 duplicating all of the modules in a separate client
-                 profile, since profiles can't be chained. -->
-            <id>client</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-	        <modules>
-	            <!-- when adding a module, make sure to also add it as a
-		             dependency in the coverage module, otherwise it will not be
-		             included in the coverage report -->
-		        <module>vlog4j-core</module>
-		        <module>vlog4j-rdf</module>
-		        <module>vlog4j-examples</module>
-		        <module>vlog4j-owlapi</module>
-		        <module>vlog4j-graal</module>
-		        <module>vlog4j-parser</module>
-		        <module>vlog4j-client</module>
-		        <module>coverage</module>
-	        </modules>
-        </profile>
-        <profile>
-            <!-- when installing the compiled vlog library, only
-                 include the core module, as otherwise the build will
-                 fail due to cyclic dependencies. -->
-            <id>development</id>
-            <modules>
-                <module>vlog4j-core</module>
-            </modules>
-        </profile>
 		<profile>
 			<id>sign</id>
 			<build>
@@ -399,6 +382,24 @@
 								<goals>
 									<goal>sign</goal>
 								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>development</id>
+			<build>
+				<plugins>
+					<plugin>
+						<!-- Plugin for actually computing code coverage. -->
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<phase>none</phase>
 							</execution>
 						</executions>
 					</plugin>
