@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.api;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -27,7 +29,7 @@ package org.semanticweb.vlog4j.core.model.api;
  * @author Markus Kroetzsch
  *
  */
-public interface DataSourceDeclaration extends Statement {
+public interface DataSourceDeclaration extends Statement, Entity {
 
 	/**
 	 * Returns the {@link Predicate} that this source applies to.
@@ -42,4 +44,9 @@ public interface DataSourceDeclaration extends Statement {
 	 * @return data source specification
 	 */
 	DataSource getDataSource();
+
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
 }

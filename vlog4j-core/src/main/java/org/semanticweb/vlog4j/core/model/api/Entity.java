@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.core.model.api;
 
-import org.semanticweb.vlog4j.core.model.implementation.Serializer;
-
 /*-
  * #%L
  * VLog4j Core Components
@@ -23,17 +21,17 @@ import org.semanticweb.vlog4j.core.model.implementation.Serializer;
  */
 
 /**
- * A fact is a positive (non-negated) literal that contains only constants as
- * its terms, but no variables.
+ * Interface for every parsable data model that has a string representation
  * 
- * @author Markus Kroetzsch
+ * @author Ali Elhalawati
  *
  */
-public interface Fact extends PositiveLiteral, Statement {
-
-	@Override
-	default String getSyntacticRepresentation() {
-		return Serializer.getFactString(this);
-	}
+public interface Entity {
+	/**
+	 * Returns the parsable string representation of an Entity.
+	 * 
+	 * @return non-empty String
+	 */
+	String getSyntacticRepresentation();
 
 }

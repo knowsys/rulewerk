@@ -44,7 +44,7 @@ public class LanguageStringConstantImpl implements LanguageStringConstant {
 
 	@Override
 	public String getName() {
-		return "\"" + string.replace("\\", "\\\\").replace("\"", "\\\"") + "\"@" + lang;
+		return Serializer.getConstantName(this);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class LanguageStringConstantImpl implements LanguageStringConstant {
 
 	@Override
 	public String toString() {
-		return getName();
+		return getSyntacticRepresentation();
 	}
 
 }

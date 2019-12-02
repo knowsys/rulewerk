@@ -60,12 +60,12 @@ public class DatatypeConstantImpl implements DatatypeConstant {
 
 	@Override
 	public String toString() {
-		return this.getName();
+		return getSyntacticRepresentation();
 	}
 
 	@Override
 	public String getName() {
-		return "\"" + lexicalValue.replace("\\", "\\\\").replace("\"", "\\\"") + "\"^^<" + datatype + ">";
+		return Serializer.getConstantName(this);
 	}
 
 	@Override

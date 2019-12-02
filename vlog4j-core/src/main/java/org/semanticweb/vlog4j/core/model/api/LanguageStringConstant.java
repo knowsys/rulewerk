@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.api;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -60,4 +62,9 @@ public interface LanguageStringConstant extends Constant {
 	 * @return a non-empty string
 	 */
 	String getLanguageTag();
+
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getConstantName(this);
+	}
 }

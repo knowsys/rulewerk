@@ -26,7 +26,7 @@ package org.semanticweb.vlog4j.core.model.api;
  * @author Irina Dragoste
  *
  */
-public interface DataSource {
+public interface DataSource extends Entity {
 	
 	/**
 	 * Constructs a String representation of the data source.

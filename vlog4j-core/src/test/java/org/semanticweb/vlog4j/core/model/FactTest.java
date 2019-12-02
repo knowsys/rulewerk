@@ -19,8 +19,7 @@ package org.semanticweb.vlog4j.core.model;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
@@ -52,6 +51,15 @@ public class FactTest {
 		Predicate p = Expressions.makePredicate("p", 1);
 		Variable x = Expressions.makeUniversalVariable("X");
 		new FactImpl(p, Arrays.asList(x));
+	}
+
+	@Test
+	public void factToStringTest() {
+		final Predicate p = Expressions.makePredicate("p", 2);
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
+		final Fact f1 = Expressions.makeFact(p, Arrays.asList(c, d));
+		assertEquals("p(c, d).", f1.toString());
 	}
 
 }

@@ -142,4 +142,15 @@ public class NegativeLiteralImplTest {
 				Expressions.makeUniversalVariable("X"));
 	}
 
+	@Test
+	public void negativeLiteralTostringTest() {
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Predicate predicateP = new PredicateImpl("p", 2);
+		final Literal atom2 = Expressions.makeNegativeLiteral("p", x, c);
+		final Literal atom3 = new NegativeLiteralImpl(predicateP, Arrays.asList(x, c));
+		assertEquals("~p(?X, c)", atom2.toString());
+		assertEquals("~p(?X, c)", atom3.toString());
+
+	}
 }

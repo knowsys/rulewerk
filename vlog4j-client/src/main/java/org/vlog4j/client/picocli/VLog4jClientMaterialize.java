@@ -34,7 +34,6 @@ import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
-
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;

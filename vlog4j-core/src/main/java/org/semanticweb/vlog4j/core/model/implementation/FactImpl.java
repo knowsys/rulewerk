@@ -48,4 +48,9 @@ public class FactImpl extends PositiveLiteralImpl implements Fact {
 		return statementVisitor.visit(this);
 	}
 
+	@Override
+	public String toString() {
+		return getSyntacticRepresentation();
+	}
+
 }

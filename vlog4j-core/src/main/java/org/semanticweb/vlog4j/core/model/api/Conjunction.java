@@ -22,6 +22,8 @@ package org.semanticweb.vlog4j.core.model.api;
 
 import java.util.List;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /**
  * Interface for representing conjunctions of {@link Literal}s, i.e., lists of
  * (negated or positive) atomic formulas that are connected with logical AND.
@@ -30,7 +32,7 @@ import java.util.List;
  * @author Markus Krötzsch
  *
  */
-public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObject {
+public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObject, Entity {
 
 	/**
 	 * Returns the list of literals that are part of this conjunction.
@@ -38,5 +40,10 @@ public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObjec
 	 * @return list of literals
 	 */
 	List<T> getLiterals();
+
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
 
 }

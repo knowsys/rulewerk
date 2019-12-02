@@ -23,14 +23,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
+import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
 
 public class RuleImplTest {
@@ -95,6 +101,7 @@ public class RuleImplTest {
 		assertNotEquals(rule5, rule1);
 		assertFalse(rule1.equals(null));
 		assertFalse(rule1.equals(c));
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -135,6 +142,35 @@ public class RuleImplTest {
 		final PositiveLiteral literal1 = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X"));
 		final Literal literal2 = Expressions.makePositiveLiteral("q", Expressions.makeUniversalVariable("Y"));
 		Expressions.makeRule(literal1, literal2);
+	}
+
+	@Test
+	public void ruleToStringTest() {
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Variable y = Expressions.makeExistentialVariable("Y");
+		final Variable z = Expressions.makeUniversalVariable("Z");
+		final Variable y2 = Expressions.makeUniversalVariable("Y");
+		final Constant d = Expressions.makeAbstractConstant("d");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		LanguageStringConstantImpl s = new LanguageStringConstantImpl("Test", "en");
+		final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
+		final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
+		final PositiveLiteral headAtom1 = Expressions.makePositiveLiteral("q", x, y);
+		final PositiveLiteral positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
+		final PositiveLiteral positiveLiteral2 = Expressions.makePositiveLiteral("p", y2, x);
+		final PositiveLiteral positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
+		final NegativeLiteral NegativeLiteral = Expressions.makeNegativeLiteral("r", x, d);
+		final PositiveLiteral PositiveLiteral4 = Expressions.makePositiveLiteral("s", c, s);
+		final List<Literal> LiteralList = Arrays.asList(positiveLiteral1, positiveLiteral2, positiveLiteral3,
+				NegativeLiteral, PositiveLiteral4);
+		final Conjunction<Literal> bodyLiterals = Expressions.makeConjunction(atom1, atom2);
+		final Conjunction<PositiveLiteral> headPositiveLiterals = Expressions.makePositiveConjunction(headAtom1);
+		final Conjunction<Literal> bodyConjunction = new ConjunctionImpl<>(LiteralList);
+		final Rule rule1 = new RuleImpl(headPositiveLiterals, bodyLiterals);
+		final Rule rule2 = new RuleImpl(headPositiveLiterals, bodyConjunction);
+		assertEquals("q(?X, !Y) :- p(?X, c), p(?X, ?Z).", rule1.toString());
+		assertEquals("q(?X, !Y) :- p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, \"Test\"@en).", rule2.toString());
+
 	}
 
 }

@@ -94,22 +94,7 @@ public abstract class AbstractLiteralImpl implements Literal {
 
 	@Override
 	public String toString() {
-		final StringBuilder stringBuilder = new StringBuilder("");
-		if (this.isNegated()) {
-			stringBuilder.append("~");
-		}
-		stringBuilder.append(this.getPredicate().getName()).append("(");
-		boolean first = true;
-		for (final Term term : this.getArguments()) {
-			if (first) {
-				first = false;
-			} else {
-				stringBuilder.append(", ");
-			}
-			stringBuilder.append(term);
-		}
-		stringBuilder.append(")");
-		return stringBuilder.toString();
+		return getSyntacticRepresentation();
 	}
 
 	@Override
