@@ -16,6 +16,7 @@ matrix:
                       - g++-7
           jdk:
               - openjdk8
+          env: CC=gcc-7 CXX=g++-7
 
         - os: osx
 
