@@ -25,7 +25,7 @@
 		<module>vlog4j-graal</module>
 		<module>vlog4j-parser</module>
 		<module>vlog4j-client</module>
-		<!-- <module>coverage</module> -->
+		<module>coverage</module>
 	</modules>
 
 	<licenses>
