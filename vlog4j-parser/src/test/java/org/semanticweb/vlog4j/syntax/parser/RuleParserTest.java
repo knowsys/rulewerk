@@ -413,7 +413,7 @@ public class RuleParserTest {
 	}
 
 	@Test
-	public void predicateNormalIriEqualityTest() throws ParsingException {
+	public void predicateRelativeNumericIriTest() throws ParsingException {
 		AbstractConstantImpl a = new AbstractConstantImpl("a");
 		Fact f = RuleParser.parseFact("<1.e1>(a).");
 		Fact f2 = Expressions.makeFact("1.e1", a);
@@ -421,7 +421,7 @@ public class RuleParserTest {
 	}
 
 	@Test
-	public void predicateNormalIriEqualityTest2() throws ParsingException {
+	public void predicateAbsoluteIriTest() throws ParsingException {
 		AbstractConstantImpl a = new AbstractConstantImpl("a");
 		Fact f = RuleParser.parseFact("<a:b>(a).");
 		Fact f2 = Expressions.makeFact("a:b", a);
