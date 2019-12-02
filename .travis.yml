@@ -13,12 +13,12 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - gcc-7
-                      - g++-7
+                      - gcc-6
+                      - g++-6
                       - libstdc++6
           jdk:
               - openjdk8
-          env: CC=gcc-7 CXX=g++-7
+          env: CC=gcc-6 CXX=g++-6
 
         - os: linux
           dist: xenial
@@ -33,6 +33,11 @@ matrix:
           env: CC=gcc-7 CXX=g++-7
 
         - os: osx
+
+
+jobs:
+    allow_failures:
+        - dist: trusty
 
 
 ## Uncomment section below and the packages above to build unreleased snapshots of karmaresearch/vlog into vlog4j-base jar
