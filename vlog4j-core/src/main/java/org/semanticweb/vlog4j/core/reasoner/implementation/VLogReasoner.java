@@ -129,13 +129,6 @@ public class VLogReasoner implements Reasoner {
 			return predicate.equals(other.predicate);
 		}
 
-		@Override
-		public String getSyntacticRepresentation() {
-
-			throw new UnsupportedOperationException(
-					"This method is not implemented for type LocalFactsDataSourceDeclaration");
-		}
-
 	}
 
 	/**
@@ -749,7 +742,7 @@ public class VLogReasoner implements Reasoner {
 		updateReasonerToKnowledgeBaseChanged();
 
 		// updateCorrectnessOnStatementsAdded(statementsAdded);
-		updateCorrectness();
+		updateCorrectnessOnStatementsAdded();
 	}
 
 	@Override
@@ -759,7 +752,19 @@ public class VLogReasoner implements Reasoner {
 		updateReasonerToKnowledgeBaseChanged();
 
 		// updateCorrectnessOnStatementAdded(statementAdded);
-		updateCorrectness();
+		updateCorrectnessOnStatementsAdded();
+	}
+
+	@Override
+	public void onStatementRemoved(Statement statementRemoved) {
+		updateReasonerToKnowledgeBaseChanged();
+		updateCorrectnessOnStatementsRemoved();
+	}
+
+	@Override
+	public void onStatementsRemoved(List<Statement> statementsRemoved) {
+		updateReasonerToKnowledgeBaseChanged();
+		updateCorrectnessOnStatementsRemoved();
 	}
 
 	private void updateReasonerToKnowledgeBaseChanged() {
@@ -770,11 +775,17 @@ public class VLogReasoner implements Reasoner {
 		}
 	}
 
-	private void updateCorrectness() {
+	private void updateCorrectnessOnStatementsAdded() {
 		if (this.reasonerState == ReasonerState.KB_CHANGED) {
+			// TODO refine
+			this.correctness = Correctness.INCORRECT;
+		}
+	}
 
-			final boolean noRules = this.knowledgeBase.getRules().isEmpty();
-			this.correctness = noRules ? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
+	private void updateCorrectnessOnStatementsRemoved() {
+		if (this.reasonerState == ReasonerState.KB_CHANGED) {
+			// TODO refine
+			this.correctness = Correctness.INCORRECT;
 		}
 	}
 
@@ -788,6 +799,14 @@ public class VLogReasoner implements Reasoner {
 			LOGGER.error("Invalid operation requested on a closed reasoner object!");
 			throw new ReasonerStateException(this.reasonerState, "Operation not allowed after closing reasoner!");
 		}
+	}
+
+	ReasonerState getReasonerState() {
+		return this.reasonerState;
+	}
+
+	void setReasonerState(ReasonerState reasonerState) {
+		this.reasonerState = reasonerState;
 	}
 
 }
