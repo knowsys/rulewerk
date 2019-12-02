@@ -46,12 +46,11 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 	/**
 	 * Creates a data source from answers to a remote SPARQL query.
 	 * 
-	 * @param endpoint
-	 *            web location of the resource the query will be evaluated on
-	 * @param queryVariables
-	 *            comma-separated list of SPARQL variable names (without leading ? or $)
-	 * @param queryBody
-	 *            content of the <i>WHERE</i> clause in the SPARQL query
+	 * @param endpoint       web location of the resource the query will be
+	 *                       evaluated on
+	 * @param queryVariables comma-separated list of SPARQL variable names (without
+	 *                       leading ? or $)
+	 * @param queryBody      content of the <i>WHERE</i> clause in the SPARQL query
 	 */
 	// TODO add examples to javadoc
 	// TODO add illegal argument exceptions to javadoc
@@ -70,15 +69,15 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 	/**
 	 * Creates a data source from answers to a remote SPARQL query.
 	 * 
-	 * @param endpoint
-	 *            the web location of the resource the query will be evaluated on.
-	 * @param queryVariables
-	 *            the variables of the query, in the given order. The variable at
-	 *            each position in the ordered set will be mapped to its
-	 *            correspondent query answer term at the same position.
-	 * @param queryBody
-	 *            the content of the <i>WHERE</i> clause in the SPARQL query. Must
-	 *            not contain {@code newline} characters ({@code "\n")}.
+	 * @param endpoint       the web location of the resource the query will be
+	 *                       evaluated on.
+	 * @param queryVariables the variables of the query, in the given order. The
+	 *                       variable at each position in the ordered set will be
+	 *                       mapped to its correspondent query answer term at the
+	 *                       same position.
+	 * @param queryBody      the content of the <i>WHERE</i> clause in the SPARQL
+	 *                       query. Must not contain {@code newline} characters
+	 *                       ({@code "\n")}.
 	 */
 	// TODO add examples to javadoc
 	// TODO add illegal argument exceptions to javadoc
@@ -162,6 +161,11 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 	public String toString() {
 		return "SparqlQueryResultDataSource [endpoint=" + endpoint + ", queryVariables=" + queryVariables
 				+ ", queryBody=" + queryBody + "]";
+	}
+
+	@Override
+	public String getSyntacticRepresentation() {
+		return "sparql(" + "<" + endpoint + ">" + ", \"" + queryVariables + "\"" + ", \"" + queryBody + "\") .";
 	}
 
 }

@@ -46,6 +46,6 @@ public class UniversalVariableImpl extends AbstractTermImpl implements Universal
 
 	@Override
 	public String toString() {
-		return "?" + this.getName();
+		return getSyntacticRepresentation();
 	}
 }

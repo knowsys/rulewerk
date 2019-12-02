@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.api;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -31,5 +33,10 @@ public interface UniversalVariable extends Variable {
 	@Override
 	default TermType getType() {
 		return TermType.UNIVERSAL_VARIABLE;
+	}
+
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getString(this);
 	}
 }

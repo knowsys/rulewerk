@@ -129,6 +129,13 @@ public class VLogReasoner implements Reasoner {
 			return predicate.equals(other.predicate);
 		}
 
+		@Override
+		public String getSyntacticRepresentation() {
+
+			throw new UnsupportedOperationException(
+					"This method is not implemented for type LocalFactsDataSourceDeclaration");
+		}
+
 	}
 
 	/**
@@ -740,19 +747,18 @@ public class VLogReasoner implements Reasoner {
 		// TODO more elaborate materialisation state handling
 
 		updateReasonerToKnowledgeBaseChanged();
-		
-		//updateCorrectnessOnStatementsAdded(statementsAdded);
+
+		// updateCorrectnessOnStatementsAdded(statementsAdded);
 		updateCorrectness();
 	}
-
 
 	@Override
 	public void onStatementAdded(Statement statementAdded) {
 		// TODO more elaborate materialisation state handling
 
 		updateReasonerToKnowledgeBaseChanged();
-		
-		//updateCorrectnessOnStatementAdded(statementAdded);
+
+		// updateCorrectnessOnStatementAdded(statementAdded);
 		updateCorrectness();
 	}
 
@@ -766,9 +772,9 @@ public class VLogReasoner implements Reasoner {
 
 	private void updateCorrectness() {
 		if (this.reasonerState == ReasonerState.KB_CHANGED) {
-			
+
 			final boolean noRules = this.knowledgeBase.getRules().isEmpty();
-			this.correctness = noRules? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
+			this.correctness = noRules ? Correctness.SOUND_BUT_INCOMPLETE : Correctness.INCORRECT;
 		}
 	}
 

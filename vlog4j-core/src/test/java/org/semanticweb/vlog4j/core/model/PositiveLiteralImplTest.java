@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
+
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
@@ -137,6 +138,18 @@ public class PositiveLiteralImplTest {
 		final Predicate predicateArity1 = Expressions.makePredicate("p", 1);
 		Expressions.makePositiveLiteral(predicateArity1, Expressions.makeAbstractConstant("c"),
 				Expressions.makeUniversalVariable("X"));
+	}
+
+	@Test
+	public void positiveLiteralTostringTest() {
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Predicate predicateP = new PredicateImpl("p", 2);
+		final Literal atom2 = Expressions.makePositiveLiteral("p", x, c);
+		final Literal atom3 = new PositiveLiteralImpl(predicateP, Arrays.asList(x, c));
+		assertEquals("p(?X, c)", atom2.toString());
+		assertEquals("p(?X, c)", atom3.toString());
+
 	}
 
 }

@@ -19,12 +19,14 @@ package org.semanticweb.vlog4j.core.model;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
@@ -95,10 +97,10 @@ public class TermImplTest {
 
 	@Test
 	public void datatypeConstantGetterTest() {
-		DatatypeConstant c = new DatatypeConstantImpl("c", "http://example.org/mystring");
+		DatatypeConstant c = new DatatypeConstantImpl("c", PrefixDeclarations.XSD_STRING);
 		assertEquals("c", c.getLexicalValue());
-		assertEquals("http://example.org/mystring", c.getDatatype());
-		assertEquals("\"c\"^^<http://example.org/mystring>", c.getName());
+		assertEquals("http://www.w3.org/2001/XMLSchema#string", c.getDatatype());
+		assertEquals("\"c\"^^<http://www.w3.org/2001/XMLSchema#string>", c.getName());
 		assertEquals(TermType.DATATYPE_CONSTANT, c.getType());
 	}
 
@@ -130,6 +132,42 @@ public class TermImplTest {
 		Term n = new NamedNullImpl("123");
 		assertEquals("123", n.getName());
 		assertEquals(TermType.NAMED_NULL, n.getType());
+	}
+
+	@Test
+	public void abstractConstantToStringTest() {
+		AbstractConstantImpl c = new AbstractConstantImpl("c");
+		assertEquals("c", c.toString());
+	}
+
+	@Test
+	public void datatypeConstantToStringTest() {
+		DatatypeConstantImpl c = new DatatypeConstantImpl("c", PrefixDeclarations.XSD_STRING);
+		assertEquals("\"c\"", c.toString());
+	}
+
+	@Test
+	public void languageStringConstantToStringTest() {
+		LanguageStringConstantImpl c = new LanguageStringConstantImpl("Test", "en");
+		assertEquals("\"Test\"@en", c.toString());
+	}
+
+	@Test
+	public void universalVariableToStringTest() {
+		UniversalVariableImpl v = new UniversalVariableImpl("v");
+		assertEquals("?v", v.toString());
+	}
+
+	@Test
+	public void existentialVariableToStringTest() {
+		ExistentialVariableImpl v = new ExistentialVariableImpl("v");
+		assertEquals("!v", v.toString());
+	}
+
+	@Test
+	public void namedNullToStringTest() {
+		NamedNullImpl n = new NamedNullImpl("123");
+		assertEquals("_123", n.toString());
 	}
 
 	@Test(expected = NullPointerException.class)

@@ -73,4 +73,9 @@ public class CsvFileDataSource extends FileDataSource {
 		return "CsvFileDataSource [csvFile=" + getFile() + "]";
 	}
 
+	@Override
+	public String getSyntacticRepresentation() {
+		return "load-csv(\"" + getFile() + "\") .";
+	}
+
 }
