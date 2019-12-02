@@ -14,6 +14,7 @@ matrix:
                       - ubuntu-toolchain-r-test
                   packages:
                       - g++-7
+                      - libstdc++6
           jdk:
               - openjdk8
           env: CC=gcc-7 CXX=g++-7
@@ -22,8 +23,8 @@ matrix:
 
 
 ## Uncomment section below and the packages above to build unreleased snapshots of karmaresearch/vlog into vlog4j-base jar
-before_install:
- - sh ./build-vlog-library.sh
+# before_install:
+#  - sh ./build-vlog-library.sh
 
 install: mvn install $OPTIONS -DskipTests=true
 
