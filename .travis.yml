@@ -13,14 +13,24 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - gcc-5
-                      - g++-5
+                      - gcc-6
+                      - g++-6
+                      - libstdc++-6
           jdk:
               - openjdk8
-          env: CC=gcc-5 CXX=g++-5
+          env: CC=gcc-6 CXX=g++-6
 
         - os: linux
           dist: xenial
+          addons:
+              apt:
+                  sources:
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - gcc-7
+                      - g++-7
+                      - libstdc++-7
+          env: CC=gcc-7 CXX=g++-7
 
         - os: osx
 
