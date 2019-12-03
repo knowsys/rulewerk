@@ -152,7 +152,7 @@ public class RuleImplTest {
 		final Variable y2 = Expressions.makeUniversalVariable("Y");
 		final Constant d = Expressions.makeAbstractConstant("d");
 		final Constant c = Expressions.makeAbstractConstant("c");
-		LanguageStringConstantImpl s = new LanguageStringConstantImpl("Test", "en");
+		final LanguageStringConstantImpl s = new LanguageStringConstantImpl("Test", "en");
 		final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
 		final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
 		final PositiveLiteral headAtom1 = Expressions.makePositiveLiteral("q", x, y);
@@ -168,8 +168,8 @@ public class RuleImplTest {
 		final Conjunction<Literal> bodyConjunction = new ConjunctionImpl<>(LiteralList);
 		final Rule rule1 = new RuleImpl(headPositiveLiterals, bodyLiterals);
 		final Rule rule2 = new RuleImpl(headPositiveLiterals, bodyConjunction);
-		assertEquals("q(?X, !Y) :- p(?X, c), p(?X, ?Z).", rule1.toString());
-		assertEquals("q(?X, !Y) :- p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, \"Test\"@en).", rule2.toString());
+		assertEquals("q(?X, !Y) :- p(?X, c), p(?X, ?Z) .", rule1.toString());
+		assertEquals("q(?X, !Y) :- p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, \"Test\"@en) .", rule2.toString());
 
 	}
 

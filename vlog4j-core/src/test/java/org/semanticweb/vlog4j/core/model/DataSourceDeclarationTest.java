@@ -87,39 +87,36 @@ public class DataSourceDeclarationTest {
 		final String fileName = "file.csv";
 
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(relativeDirName, fileName));
-		final DataSourceDeclaration dataSourceDeclaration2 = new DataSourceDeclarationImpl(predicate2,
+		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate2,
 				unzippedCsvFileDataSource);
 
 		final String expectedFilePath = relativeDirName + File.separator + fileName;
-		assertEquals("@source q(1): load-csv(\"" + expectedFilePath + "\") .", dataSourceDeclaration2.toString());
+		assertEquals("@source q(1): load-csv(\"" + expectedFilePath + "\") .", dataSourceDeclaration.toString());
 	}
 
-	// TODO: have String representation of files OS independent
+	// FIXME: have String representation of files OS independent
 	@Ignore
 	@Test
 	public void toString_CsvFileDataSource_absolutePath_windowsPathSeparator() throws IOException {
-		final Predicate predicate2 = Expressions.makePredicate("q", 1);
-		// "D:\\VLOG\\java-api-applications\\vlog4j\\vlog4j\\vlog4j-core\\src\\test\\data\input\\file.csv";
+		final Predicate predicate = Expressions.makePredicate("q", 1);
 		final String absoluteFilePathWindows = "D:\\input\\file.csv";
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(absoluteFilePathWindows));
-		final DataSourceDeclaration dataSourceDeclaration2 = new DataSourceDeclarationImpl(predicate2,
+		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
 				unzippedCsvFileDataSource);
-		assertEquals("@source q(1): load-csv(\"D:/input/file.csv\") .",
-				dataSourceDeclaration2.toString());
+		assertEquals("@source q(1): load-csv(\"D:/input/file.csv\") .", dataSourceDeclaration.toString());
 	}
 
 	@Test
 	public void toString_RdfFileDataSource_relativePath() throws IOException {
-		final Predicate predicate2 = Expressions.makePredicate("q", 1);
+		final Predicate predicate = Expressions.makePredicate("q", 1);
 		final String relativeDirName = "dir";
 		final String fileName = "file.nt";
 		final File unzippedRdfFile = new File(relativeDirName, fileName);
 		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
-		final DataSourceDeclaration dataSourceDeclaration3 = new DataSourceDeclarationImpl(predicate2,
+		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
 				unzippedRdfFileDataSource);
 
 		final String expectedFilePath = relativeDirName + File.separator + fileName;
-		assertEquals("@source q(1): load-rdf(\"" + expectedFilePath + "\") .",
-				dataSourceDeclaration3.toString());
+		assertEquals("@source q(1): load-rdf(\"" + expectedFilePath + "\") .", dataSourceDeclaration.toString());
 	}
 }

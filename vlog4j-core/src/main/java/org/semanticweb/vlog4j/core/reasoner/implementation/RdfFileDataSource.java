@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
 /**
  * An {@code RdfFileDataSource} stores facts in the RDF N-Triples format inside
@@ -68,12 +69,12 @@ public class RdfFileDataSource extends FileDataSource {
 
 	@Override
 	public String toString() {
-		return "RdfFileDataSource [rdfFile=" + getFile() + "]";
+		return "RdfFileDataSource [rdfFile=" + this.getFile() + "]";
 	}
 
 	@Override
 	public String getSyntacticRepresentation() {
-		return "load-rdf(\"" + getFile() + "\") .";
+		return Serializer.getString(this);
 	}
 
 }
