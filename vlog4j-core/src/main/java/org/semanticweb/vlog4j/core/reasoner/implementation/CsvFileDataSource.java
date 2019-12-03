@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
 /**
  * An {@code CsvFileDataSource} stores facts in the CSV format inside a file of
@@ -75,7 +76,7 @@ public class CsvFileDataSource extends FileDataSource {
 
 	@Override
 	public String getSyntacticRepresentation() {
-		return "load-csv(\"" + getFile() + "\") .";
+		return Serializer.getString(this);
 	}
 
 }

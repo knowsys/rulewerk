@@ -1,5 +1,6 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 
 /*-
@@ -36,6 +37,10 @@ import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
+import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 /**
  * A utility class with static methods to obtain the correct parsable string
@@ -55,18 +60,22 @@ public final class Serializer {
 	public static final String CLOSING_PARENTHESIS = ")";
 	public static final String RULE_SEPARATOR = " :- ";
 	public static final String AT = "@";
-	public static final String SOURCE = "@source ";
+	public static final String DATA_SOURCE = "@source ";
+	public static final String CSV_FILE_DATA_SOURCE = "load-csv";
+	private static final String RDF_FILE_DATA_SOURCE = "load-rdf";
+	private static final String SPARQL_QUERY_RESULT_DATA_SOURCE = "sparql";
 	public static final String COLON = ": ";
 	public static final String COLON_UNSPACED = ":";
 	public static final String CARET = "^";
 	public static final String LESS_THAN = "<";
 	public static final String MORE_THAN = ">";
 	public static final String QUOTE = "\"";
-	public static final String DOUBLE = "^[-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?$";
-	public static final String INTEGER = "^[-+]?\\d+$";
-	public static final String DECIMAL = "^(\\d*\\.)?\\d+$";
-	public static final String TRUE = "true";
-	public static final String FALSE = "false";
+
+	public static final String REGEX_DOUBLE = "^[-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?$";
+	public static final String REGEX_INTEGER = "^[-+]?\\d+$";
+	public static final String REGEX_DECIMAL = "^(\\d*\\.)?\\d+$";
+	public static final String REGEX_TRUE = "true";
+	public static final String REGEX_FALSE = "false";
 
 	/**
 	 * Constructor.
@@ -75,28 +84,12 @@ public final class Serializer {
 
 	}
 
-	private static String escape(String string) {
-		return string.replace("\\", "\\\\").replace("\"", "\\\"");
-	}
-
-	private static String checkRelativeAbsoluteIri(String string) {
-		if ((string.contains(COLON_UNSPACED) || string.matches(INTEGER) || string.matches(DOUBLE)
-				|| string.matches(DECIMAL) || string.equals(TRUE) || string.equals(FALSE))) {
-			return LESS_THAN + string + MORE_THAN;
-		} else {
-			return string;
-		}
-	}
-
-	private static String addQuote(String string) {
-		return QUOTE + string + QUOTE;
-	}
-
 	/**
 	 * Creates a String representation of a given {@link Rule}.
 	 * 
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param rule a {@link Rule}.
+	 * @param rule
+	 *            a {@link Rule}.
 	 * @return String representation corresponding to a given {@link Rule}.
 	 * 
 	 */
@@ -105,119 +98,11 @@ public final class Serializer {
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Literal}.
-	 * 
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param literal a {@link Literal}
-	 * @return String representation corresponding to a given {@link Literal}.
-	 */
-	public static String getString(Literal literal) {
-		final StringBuilder stringBuilder = new StringBuilder("");
-		if (literal.isNegated()) {
-			stringBuilder.append(NEGATIVE_IDENTIFIER);
-		}
-		stringBuilder.append(checkRelativeAbsoluteIri(literal.getPredicate().getName())).append(OPEN_PARENTHESIS);
-		boolean first = true;
-		for (final Term term : literal.getArguments()) {
-			if (first) {
-				first = false;
-			} else {
-				stringBuilder.append(COMMA);
-			}
-			String string = term.getSyntacticRepresentation();
-			stringBuilder.append(string);
-		}
-		stringBuilder.append(CLOSING_PARENTHESIS);
-		return stringBuilder.toString();
-	}
-
-	/**
-	 * Creates a String representation of a given {@link Fact}.
-	 * 
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param fact a {@link Fact}
-	 * @return String representation corresponding to a given {@link Fact}.
-	 */
-	public static String getFactString(Fact fact) {
-		return getString(fact) + DOT;
-	}
-
-	/**
-	 * Creates a String representation of a given {@link Constant}.
-	 * 
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param constant a {@link Constant}
-	 * @return String representation corresponding to a given {@link Constant}.
-	 */
-	public static String getString(AbstractConstant constant) {
-		return checkRelativeAbsoluteIri(constant.getName());
-	}
-
-	/**
-	 * Creates a String representation of a given {@link ExistentialVariable}.
-	 * 
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param existentialVariable a {@link ExistentialVariable}
-	 * @return String representation corresponding to a given
-	 *         {@link ExistentialVariable}.
-	 */
-	public static String getString(ExistentialVariable existentialVariable) {
-		return EXISTENTIAL_IDENTIFIER + existentialVariable.getName();
-	}
-
-	/**
-	 * Creates a String representation of a given {@link UniversalVariable}.
-	 * 
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param universalVariable a {@link UniversalVariable}
-	 * @return String representation corresponding to a given
-	 *         {@link UniversalVariable}.
-	 */
-	public static String getString(UniversalVariable universalVariable) {
-		return UNIVERSAL_IDENTIFIER + universalVariable.getName();
-	}
-
-	/**
-	 * Creates a String representation of a given {@link NamedNull}.
-	 * 
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param namedNull a {@link NamedNull}
-	 * @return String representation corresponding to a given {@link NamedNull}.
-	 */
-	public static String getString(NamedNull namedNull) {
-		return NAMEDNULL_IDENTIFIER + namedNull.getName();
-	}
-
-	/**
-	 * Creates a String representation of a given {@link Predicate}.
-	 * 
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param predicate a {@link Predicate}
-	 * @return String representation corresponding to a given {@link Predicate}.
-	 */
-	public static String getString(Predicate predicate) {
-		return predicate.getName() + OPEN_PARENTHESIS + predicate.getArity() + CLOSING_PARENTHESIS;
-	}
-
-	/**
-	 * Creates a String representation of a given {@link DataSourceDeclaration}.
-	 * 
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param dataSourceDeclaration a {@link DataSourceDeclaration}
-	 * @return String representation corresponding to a given
-	 *         {@link DataSourceDeclaration}.
-	 */
-	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
-		return SOURCE + dataSourceDeclaration.getPredicate().getName() + OPEN_PARENTHESIS
-				+ dataSourceDeclaration.getPredicate().getArity() + CLOSING_PARENTHESIS + COLON
-				+ dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
-	}
-
-	/**
 	 * Creates a String representation of a given {@link Conjunction}.
 	 * 
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param conjunction a {@link Conjunction}
+	 * @param conjunction
+	 *            a {@link Conjunction}
 	 * @return String representation corresponding to a given {@link Conjunction}.
 	 */
 	public static String getString(Conjunction<? extends Literal> conjunction) {
@@ -235,16 +120,69 @@ public final class Serializer {
 	}
 
 	/**
+	 * Creates a String representation of a given {@link Literal}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @param literal
+	 *            a {@link Literal}
+	 * @return String representation corresponding to a given {@link Literal}.
+	 */
+	public static String getString(Literal literal) {
+		final StringBuilder stringBuilder = new StringBuilder("");
+		if (literal.isNegated()) {
+			stringBuilder.append(NEGATIVE_IDENTIFIER);
+		}
+		stringBuilder.append(getIRIString(literal.getPredicate().getName())).append(OPEN_PARENTHESIS);
+		boolean first = true;
+		for (final Term term : literal.getArguments()) {
+			if (first) {
+				first = false;
+			} else {
+				stringBuilder.append(COMMA);
+			}
+			final String string = term.getSyntacticRepresentation();
+			stringBuilder.append(string);
+		}
+		stringBuilder.append(CLOSING_PARENTHESIS);
+		return stringBuilder.toString();
+	}
+
+	/**
+	 * Creates a String representation of a given {@link Fact}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @param fact
+	 *            a {@link Fact}
+	 * @return String representation corresponding to a given {@link Fact}.
+	 */
+	public static String getFactString(Fact fact) {
+		return getString(fact) + DOT;
+	}
+
+	/**
+	 * Creates a String representation of a given {@link Constant}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @param constant
+	 *            a {@link Constant}
+	 * @return String representation corresponding to a given {@link Constant}.
+	 */
+	public static String getString(AbstractConstant constant) {
+		return getIRIString(constant.getName());
+	}
+
+	/**
 	 * Creates a String representation corresponding to the name of a given
 	 * {@link LanguageStringConstant}.
 	 * 
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param languageStringConstant a {@link LanguageStringConstant}
+	 * @param languageStringConstant
+	 *            a {@link LanguageStringConstant}
 	 * @return String representation corresponding to the name of a given
 	 *         {@link LanguageStringConstant}.
 	 */
 	public static String getConstantName(LanguageStringConstant languageStringConstant) {
-		return addQuote(escape(languageStringConstant.getString())) + AT + languageStringConstant.getLanguageTag();
+		return addQuotes(escape(languageStringConstant.getString())) + AT + languageStringConstant.getLanguageTag();
 	}
 
 	/**
@@ -252,13 +190,14 @@ public final class Serializer {
 	 * {@link DatatypeConstant} without an IRI.
 	 * 
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param datatypeConstant a {@link DatatypeConstant}
+	 * @param datatypeConstant
+	 *            a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
 	 */
 	public static String getString(DatatypeConstant datatypeConstant) {
 		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
-			return addQuote(datatypeConstant.getLexicalValue());
+			return addQuotes(datatypeConstant.getLexicalValue());
 		} else {
 			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
 					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
@@ -267,7 +206,6 @@ public final class Serializer {
 			} else {
 				return getConstantName(datatypeConstant);
 			}
-
 		}
 	}
 
@@ -276,13 +214,151 @@ public final class Serializer {
 	 * {@link DatatypeConstant} including an IRI.
 	 * 
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
-	 * @param datatypeConstant a {@link DatatypeConstant}
+	 * @param datatypeConstant
+	 *            a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
 	 */
 	public static String getConstantName(DatatypeConstant datatypeConstant) {
-		return addQuote(escape(datatypeConstant.getLexicalValue())) + CARET + CARET + LESS_THAN
-				+ datatypeConstant.getDatatype() + MORE_THAN;
+		return addQuotes(escape(datatypeConstant.getLexicalValue())) + CARET + CARET
+				+ addAngleBrackets(datatypeConstant.getDatatype());
+	}
+
+	/**
+	 * Creates a String representation of a given {@link ExistentialVariable}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @param existentialVariable
+	 *            a {@link ExistentialVariable}
+	 * @return String representation corresponding to a given
+	 *         {@link ExistentialVariable}.
+	 */
+	public static String getString(ExistentialVariable existentialVariable) {
+		return EXISTENTIAL_IDENTIFIER + existentialVariable.getName();
+	}
+
+	/**
+	 * Creates a String representation of a given {@link UniversalVariable}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @param universalVariable
+	 *            a {@link UniversalVariable}
+	 * @return String representation corresponding to a given
+	 *         {@link UniversalVariable}.
+	 */
+	public static String getString(UniversalVariable universalVariable) {
+		return UNIVERSAL_IDENTIFIER + universalVariable.getName();
+	}
+
+	/**
+	 * Creates a String representation of a given {@link NamedNull}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @param namedNull
+	 *            a {@link NamedNull}
+	 * @return String representation corresponding to a given {@link NamedNull}.
+	 */
+	public static String getString(NamedNull namedNull) {
+		return NAMEDNULL_IDENTIFIER + namedNull.getName();
+	}
+
+	/**
+	 * Creates a String representation of a given {@link Predicate}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @param predicate
+	 *            a {@link Predicate}
+	 * @return String representation corresponding to a given {@link Predicate}.
+	 */
+	public static String getString(Predicate predicate) {
+		return predicate.getName() + OPEN_PARENTHESIS + predicate.getArity() + CLOSING_PARENTHESIS;
+	}
+
+	/**
+	 * Creates a String representation of a given {@link DataSourceDeclaration}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @param dataSourceDeclaration
+	 *            a {@link DataSourceDeclaration}
+	 * @return String representation corresponding to a given
+	 *         {@link DataSourceDeclaration}.
+	 */
+	public static String getString(DataSourceDeclaration dataSourceDeclaration) {
+		return DATA_SOURCE + dataSourceDeclaration.getPredicate().getName() + OPEN_PARENTHESIS
+				+ dataSourceDeclaration.getPredicate().getArity() + CLOSING_PARENTHESIS + COLON
+				+ dataSourceDeclaration.getDataSource().getSyntacticRepresentation();
+	}
+
+	/**
+	 * Creates a String representation of a given {@link CsvFileDataSource}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki">.
+	 * 
+	 * @param csvFileDataSource
+	 * @return String representation corresponding to a given
+	 *         {@link CsvFileDataSource}.
+	 */
+	public static String getString(CsvFileDataSource csvFileDataSource) {
+		return CSV_FILE_DATA_SOURCE + OPEN_PARENTHESIS + getFileString(csvFileDataSource) + CLOSING_PARENTHESIS
+				+ StringUtils.SPACE + DOT;
+	}
+
+	/**
+	 * Creates a String representation of a given {@link RdfFileDataSource}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki">.
+	 * 
+	 * 
+	 * @param rdfFileDataSource
+	 * @return String representation corresponding to a given
+	 *         {@link RdfFileDataSource}.
+	 */
+	public static String getString(RdfFileDataSource rdfFileDataSource) {
+		return RDF_FILE_DATA_SOURCE + OPEN_PARENTHESIS + getFileString(rdfFileDataSource) + CLOSING_PARENTHESIS
+				+ StringUtils.SPACE + DOT;
+	}
+
+	/**
+	 * Creates a String representation of a given
+	 * {@link SparqlQueryResultDataSource}.
+	 * 
+	 * @see <"https://github.com/knowsys/vlog4j/wiki">.
+	 * 
+	 * 
+	 * @param dataSource
+	 * @return String representation corresponding to a given
+	 *         {@link SparqlQueryResultDataSource}.
+	 */
+	public static String getString(SparqlQueryResultDataSource dataSource) {
+		return SPARQL_QUERY_RESULT_DATA_SOURCE + OPEN_PARENTHESIS
+				+ addAngleBrackets(dataSource.getEndpoint().toString()) + COMMA
+				+ addQuotes(dataSource.getQueryVariables()) + COMMA + addQuotes(dataSource.getQueryBody())
+				+ CLOSING_PARENTHESIS + StringUtils.SPACE + DOT;
+	}
+
+	private static String getFileString(FileDataSource fileDataSource) {
+		return addQuotes(fileDataSource.getFile().toString());
+	}
+
+	private static String getIRIString(String string) {
+		if (string.contains(COLON_UNSPACED) || string.matches(REGEX_INTEGER) || string.matches(REGEX_DOUBLE)
+				|| string.matches(REGEX_DECIMAL) || string.equals(REGEX_TRUE) || string.equals(REGEX_FALSE)) {
+			return addAngleBrackets(string);
+		} else {
+			return string;
+		}
+	}
+
+	private static String escape(String string) {
+		return string.replace("\\", "\\\\").replace("\"", "\\\"");
+	}
+
+	private static String addQuotes(String string) {
+		return QUOTE + string + QUOTE;
+	}
+
+	private static String addAngleBrackets(String string) {
+		return LESS_THAN + string + MORE_THAN;
 	}
 
 }

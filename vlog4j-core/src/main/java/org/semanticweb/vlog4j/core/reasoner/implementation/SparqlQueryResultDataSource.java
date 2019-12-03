@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
 /**
  * A SparqlQueryResultDataSource provide the results of a SPARQL query on a
@@ -96,15 +97,15 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 	}
 
 	public URL getEndpoint() {
-		return endpoint;
+		return this.endpoint;
 	}
 
 	public String getQueryBody() {
-		return queryBody;
+		return this.queryBody;
 	}
 
 	public String getQueryVariables() {
-		return queryVariables;
+		return this.queryVariables;
 	}
 
 	@Override
@@ -115,9 +116,9 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 
 						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
 
-						"EDB%1$d_param0=" + endpoint + "\n" + "EDB%1$d_param1=" + queryVariables + "\n" +
+						"EDB%1$d_param0=" + this.endpoint + "\n" + "EDB%1$d_param1=" + this.queryVariables + "\n" +
 
-						"EDB%1$d_param2=" + queryBody + "\n";
+						"EDB%1$d_param2=" + this.queryBody + "\n";
 
 		return configStringPattern;
 	}
@@ -138,20 +139,23 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + endpoint.hashCode();
-		result = prime * result + queryBody.hashCode();
-		result = prime * result + queryVariables.hashCode();
+		result = prime * result + this.endpoint.hashCode();
+		result = prime * result + this.queryBody.hashCode();
+		result = prime * result + this.queryVariables.hashCode();
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		final SparqlQueryResultDataSource other = (SparqlQueryResultDataSource) obj;
 		return this.endpoint.equals(other.getEndpoint()) && this.queryVariables.equals(other.getQueryVariables())
 				&& this.queryBody.equals(other.getQueryBody());
@@ -159,13 +163,13 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 
 	@Override
 	public String toString() {
-		return "SparqlQueryResultDataSource [endpoint=" + endpoint + ", queryVariables=" + queryVariables
-				+ ", queryBody=" + queryBody + "]";
+		return "SparqlQueryResultDataSource [endpoint=" + this.endpoint + ", queryVariables=" + this.queryVariables
+				+ ", queryBody=" + this.queryBody + "]";
 	}
 
 	@Override
 	public String getSyntacticRepresentation() {
-		return "sparql(" + "<" + endpoint + ">" + ", \"" + queryVariables + "\"" + ", \"" + queryBody + "\") .";
+		return Serializer.getString(this);
 	}
 
 }
