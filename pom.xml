@@ -15,6 +15,9 @@
 	<url>https://github.com/knowsys/vlog4j</url>
 
 	<modules>
+		<!-- when adding a module, make sure to also add it as a
+			 dependency in the coverage module, otherwise it will not be
+			 included in the coverage report -->
 		<module>vlog4j-core</module>
 		<module>vlog4j-rdf</module>
 		<module>vlog4j-examples</module>
@@ -22,6 +25,7 @@
 		<module>vlog4j-graal</module>
 		<module>vlog4j-parser</module>
 		<module>vlog4j-client</module>
+		<module>coverage</module>
 	</modules>
 
 	<licenses>
@@ -137,7 +141,7 @@
 					</executions>
 				</plugin>
 				<plugin>
-					<!-- This plugin's configuration is used to store Eclipse m2e settings 
+					<!-- This plugin's configuration is used to store Eclipse m2e settings
 						only. It has no influence on the Maven build. -->
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -200,6 +204,11 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+				<plugin>
+				  <groupId>org.jacoco</groupId>
+				  <artifactId>jacoco-maven-plugin</artifactId>
+				  <version>0.8.5</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -208,7 +217,7 @@
 				<artifactId>license-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<!-- Used to set JRE version; will be used by IDEs like Eclipse as the 
+				<!-- Used to set JRE version; will be used by IDEs like Eclipse as the
 					target JRE (default is 1.5) -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -219,41 +228,82 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- Create code coverage reports and submit them to coveralls.io. -->
-				<groupId>org.eluder.coveralls</groupId>
-				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>4.3.0</version>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-surefire-plugin</artifactId>
+			  <version>3.0.0-M4</version>
+			  <configuration>
+				<argLine>${surefireArgLine}</argLine>
+				<forkCount>1C</forkCount>
+				<reuseForks>true</reuseForks>
+			  </configuration>
 			</plugin>
 			<plugin>
-				<!-- Plugin for actually computing code coverage. -->
-				<!-- Change format to html and call mvn cobertura:cobertura to generate 
-					HTML report locally. -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<format>xml</format>
-					<!-- <format>html</format> -->
-					<maxmem>256m</maxmem>
-					<!-- aggregated reports for multi-module projects -->
-					<aggregate>true</aggregate>
-					<instrumentation>
-						<excludes>
-							<!-- Do not consider generated source code. Plugin fails for these 
-								files. -->
-							<exclude>**/javacc/JavaCC*.class</exclude>
-							<exclude>**/javacc/JavaCharStream.class</exclude>
-							<exclude>**/javacc/ParseException.class</exclude>
-							<exclude>**/javacc/SimpleCharStream.class</exclude>
-							<exclude>**/javacc/Token.class</exclude>
-							<exclude>**/javacc/TokenMgrError.class</exclude>
-						</excludes>
-					</instrumentation>
-				</configuration>
+			  <!-- Create code coverage reports and submit them to coveralls.io. -->
+			  <groupId>org.eluder.coveralls</groupId>
+			  <artifactId>coveralls-maven-plugin</artifactId>
+			  <version>4.3.0</version>
+			  <configuration>
+				<jacocoReports>
+				  <file>coverage/target/site/jacoco-aggregate/jacoco.xml</file>
+				</jacocoReports>
+			  </configuration>
+			  <!-- workaround for
+				   https://github.com/trautonen/coveralls-maven-plugin/issues/112
+			  -->
+			  <dependencies>
+				<dependency>
+				  <groupId>javax.xml.bind</groupId>
+				  <artifactId>jaxb-api</artifactId>
+				  <version>2.3.1</version>
+				</dependency>
+			  </dependencies>
 			</plugin>
 			<plugin>
-				<!-- Plugin for creating Javadocs; goal for preparing docs for upload 
-					to github: javadoc:aggregate -->
+			  <!-- Plugin for actually computing code coverage. -->
+			  <groupId>org.jacoco</groupId>
+			  <artifactId>jacoco-maven-plugin</artifactId>
+			  <executions>
+				<execution>
+				  <id>prepare-agent</id>
+				  <goals>
+					<goal>prepare-agent</goal>
+				  </goals>
+				  <configuration>
+					<propertyName>surefireArgLine</propertyName>
+				  </configuration>
+				</execution>
+				<execution>
+				  <id>default-cli</id>
+				  <goals>
+					<goal>report</goal>
+				  </goals>
+				  <phase>test</phase>
+				  <configuration>
+					<!-- use a non-standard output directory so the
+						 coveralls plugin will not try to aggregate
+						 this into the final coverage report, since we
+						 want to control aggregation ourselves. -->
+					<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+				  </configuration>
+				</execution>
+			  </executions>
+			<configuration>
+			  <excludes>
+				<!-- Do not consider generated source code. Plugin fails for these files. -->
+				<exclude>**/javacc/JavaCCParser*</exclude>
+				<exclude>**/javacc/JavaCCParserConstants*</exclude>
+				<exclude>**/javacc/JavaCCParserTokenManager*</exclude>
+				<exclude>**/javacc/JavaCharStream*</exclude>
+				<exclude>**/javacc/ParseException*</exclude>
+				<exclude>**/javacc/SimpleCharStream*</exclude>
+				<exclude>**/javacc/Token*</exclude>
+				<exclude>**/javacc/TokenMgrError*</exclude>
+			  </excludes>
+			</configuration>
+			</plugin>
+			<plugin>
+			  <!-- Plugin for creating Javadocs; goal for preparing
+				   docs for upload to github: javadoc:aggregate -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven.javadoc.version}</version>
@@ -332,6 +382,24 @@
 								<goals>
 									<goal>sign</goal>
 								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>development</id>
+			<build>
+				<plugins>
+					<plugin>
+						<!-- Plugin for actually computing code coverage. -->
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<phase>none</phase>
 							</execution>
 						</executions>
 					</plugin>

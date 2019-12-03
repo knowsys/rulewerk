@@ -1,4 +1,4 @@
-package org.vlog4j.client.picocli;
+package org.semanticweb.vlog4j.client.picocli;
 
 /*-
  * #%L
@@ -9,9 +9,9 @@ package org.vlog4j.client.picocli;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,7 @@ import picocli.CommandLine.Option;
 
 /**
  * Class to implement a command to execute full materialization.
- * 
+ *
  * @author Larry Gonzalez
  *
  */
@@ -59,19 +59,19 @@ public class VLog4jClientMaterialize implements Runnable {
 //	private List<String> graalRuleFiles = new ArrayList<>();
 
 	@Option(names = "--log-level", description = "Log level of VLog (c++ library). One of: DEBUG, INFO, WARNING (default), ERROR.", required = false)
-	private final LogLevel logLevel = LogLevel.WARNING;
+	private LogLevel logLevel = LogLevel.WARNING;
 
 	@Option(names = "--log-file", description = "Log file of VLog (c++ library). VLog will log to the default system output by default", required = false)
 	private String logFile;
 
 	@Option(names = "--chase-algorithm", description = "Chase algorithm. RESTRICTED_CHASE (default) or SKOLEM_CHASE.", required = false)
-	private final Algorithm chaseAlgorithm = Algorithm.RESTRICTED_CHASE;
+	private Algorithm chaseAlgorithm = Algorithm.RESTRICTED_CHASE;
 
 	@Option(names = "--timeout", description = "Timeout in seconds. Infinite by default", required = false)
-	private final int timeout = 0;
+	private int timeout = 0;
 
 	@Option(names = "--query", description = "Positive not-ground Literals to query after materialization in rls syntax. Vlog4jClient will print the size of its extension", required = true)
-	private final List<String> queryStrings = new ArrayList<>();
+	private List<String> queryStrings = new ArrayList<>();
 
 	@ArgGroup(exclusive = false)
 	private final PrintQueryResults printQueryResults = new PrintQueryResults();

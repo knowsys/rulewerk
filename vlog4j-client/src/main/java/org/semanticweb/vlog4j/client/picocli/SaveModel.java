@@ -1,4 +1,4 @@
-package org.vlog4j.client.picocli;
+package org.semanticweb.vlog4j.client.picocli;
 
 /*-
  * #%L
@@ -9,9 +9,9 @@ package org.vlog4j.client.picocli;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ import picocli.CommandLine.Option;
 
 /**
  * Helper class to save the resulting model of the materialization process.
- * 
+ *
  * @author Larry Gonzalez
  *
  */
@@ -65,7 +65,7 @@ public class SaveModel {
 	/**
 	 * Check correct configuration of the class. If @code{--save-model} is true,
 	 * then a non-empty @code{--output-model-directory} is required.
-	 * 
+	 *
 	 * @return @code{true} if configuration is valid.
 	 */
 	public boolean isConfigurationValid() {
@@ -74,7 +74,7 @@ public class SaveModel {
 
 	/**
 	 * Check that the path to store the model is either non-existing or a directory.
-	 * 
+	 *
 	 * @return @code{true} if conditions are satisfied.
 	 */
 	public boolean isDirectoryValid() {
