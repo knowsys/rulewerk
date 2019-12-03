@@ -27,10 +27,10 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - gcc-7
-                      - g++-7
+                      - gcc-6
+                      - g++-6
                       - libstdc++6
-          env: CC=gcc-7 CXX=g++-7
+          env: CC=gcc-6 CXX=g++-6
 
         - os: osx
 
