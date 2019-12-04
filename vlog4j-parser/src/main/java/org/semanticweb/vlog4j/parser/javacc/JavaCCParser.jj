@@ -103,7 +103,7 @@ void source() throws PrefixDeclarationException:
     Token arity;
 }
 {
-    < SOURCE > predicateName = predicateName() < LPAREN > arity = < INTEGER > < RPAREN > < COLON > dataSource = dataSource() < DOT >
+    < SOURCE > predicateName = predicateName() < LBRACK > arity = < INTEGER > < RBRACK > < COLON > dataSource = dataSource() < DOT >
     {
       int nArity;
       nArity = Integer.parseInt(arity.image);
@@ -518,6 +518,8 @@ TOKEN :
 {
   < LPAREN : "(" >
 | < RPAREN : ")" >
+| < LBRACK : "[" >
+| < RBRACK : "]" >
 | < COMMA : "," >
 | < DOT : "." >
 | < ARROW : ":-" >

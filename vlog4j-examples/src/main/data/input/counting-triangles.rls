@@ -2,7 +2,7 @@
 
 % From Wikidata, get all countries (items with P31 relation to Q6256, or subclasses thereof: P279*)
 % that border (P47) each other:
-@source borders(2): sparql(wdqs:sparql, "country1,country2", 
+@source borders[2]: sparql(wdqs:sparql, "country1,country2",
    '''?country1 wdt:P31/wdt:P279* wd:Q6256 .
       ?country2 wdt:P31/wdt:P279* wd:Q6256 .
       ?country1 wdt:P47 ?country2 .''') .
@@ -15,4 +15,3 @@ country(?X) :- shareBorder(?X, ?Y) .
 
 % Compute all triangles:
 triangle(?X,?Y,?Z) :- shareBorder(?X,?Y), shareBorder(?Y,?Z), shareBorder(?Z,?X) .
-

@@ -10,6 +10,7 @@ Breaking changes:
   * Instead of Variable, ExistentialVariable and UniversalVariable now indicate quantification
   * Blank was renamed to NamedNull to avoid confusion with RDF blank nodes
   * Methods to access terms now use Java Streams and are unified across syntactic objects
+* Data source declarations now use brackets to denote arity, e.g., `@source predicate[2]: load-csv()`
 
 New features:
 * New module vlog4j-client provides a stand-alone command line client jar for VLog4j
@@ -31,17 +32,17 @@ VLog4j v0.4.0
 -------------
 
 Breaking changes:
-* The Reasoner interface has changed (knowledge base and related methods moved to KnowledgeBase) 
+* The Reasoner interface has changed (knowledge base and related methods moved to KnowledgeBase)
 * The EdbIdbSeparation is obsolete and does no longer exist
 * IRIs loaded from RDF inputs no longer include surrounding < > in their string identifier
 * A new interface Fact has replaced the overly general PositiveLiteral in many places
 
 New features:
 * New own syntax for rules, facts, and data sources to create knowledge bases from files or strings in Java
-* Input predicates can now be used with multiple sources and in rule heads (no more EDB-IDB distinction) 
+* Input predicates can now be used with multiple sources and in rule heads (no more EDB-IDB distinction)
 * New InMemoryDataSource for efficient in-memory fact loading
 * New KnowledgeBase class separates facts, data sources, and rules from the actual Reasoner
-* Modifications to the knowledge base are taken into account by the reasoner 
+* Modifications to the knowledge base are taken into account by the reasoner
 * New and updated example programs to illustrate use of syntax
 
 Other improvements:
@@ -52,7 +53,7 @@ Other improvements:
 * Better code structure and testing
 
 Bugfixes:
-* Several reasoning errors in VLog (backend) have been discovered and fixed in the version used now 
+* Several reasoning errors in VLog (backend) have been discovered and fixed in the version used now
 
 
 VLog4j v0.3.0
@@ -68,7 +69,7 @@ VLog4j v0.2.0
 -------------
 
 New features:
-* supporting File data sources of N-Triples format (.nt file extension) 
+* supporting File data sources of N-Triples format (.nt file extension)
 * supporting g-zipped data source files (.csv.gz, .nt.gz)
 
 VLog4j v0.1.0
@@ -80,4 +81,3 @@ New features:
 * Essential data models for rules and facts, and essential reasoner functionality
 * support for reading from RDF files
 * support for converting rules from OWL ontology, loaded with the OWL API
-

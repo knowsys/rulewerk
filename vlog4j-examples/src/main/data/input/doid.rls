@@ -1,24 +1,24 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix wdqs: <https://query.wikidata.org/> .
 
-@source doidTriple(3): load-rdf("src/main/data/input/doid.nt.gz") .
-@source diseaseId(2): sparql(wdqs:sparql, "disease,doid", "?disease wdt:P699 ?doid .") .
-@source recentDeaths(1): sparql(wdqs:sparql, "human", 
+@source doidTriple[3]: load-rdf("src/main/data/input/doid.nt.gz") .
+@source diseaseId[2]: sparql(wdqs:sparql, "disease,doid", "?disease wdt:P699 ?doid .") .
+@source recentDeaths[1]: sparql(wdqs:sparql, "human",
    '''?human wdt:P31 wd:Q5;
       wdt:P570 ?deathDate .
       FILTER (YEAR(?deathDate) = 2018)''') .
-@source recentDeathsCause(2): sparql(wdqs:sparql, "human,causeOfDeath", 
+@source recentDeathsCause[2]: sparql(wdqs:sparql, "human,causeOfDeath",
    '''?human wdt:P31 wd:Q5;
       wdt:P570 ?deathDate ;
-      wdt:P509 ?causeOfDeath . 
+      wdt:P509 ?causeOfDeath .
       FILTER (YEAR(?deathDate) = 2018)''') .
 
 % Combine recent death data (infer "unknown" cause if no cause given):
 deathCause(?X, ?Z) :- recentDeathsCause(?X, ?Z) .
 deathCause(?X, !Z) :- recentDeaths(?X) .
 
-% Mark Wikidata diseases that have a DOID: 
-hasDoid(?X) :- diseaseId(?X, ?DoidId) . 
+% Mark Wikidata diseases that have a DOID:
+hasDoid(?X) :- diseaseId(?X, ?DoidId) .
 
 % Relate DOID string ID (used on Wikidata) to DOID IRI (used in DOID ontology)
 doid(?Iri, ?DoidId) :- doidTriple(?Iri, <http://www.geneontology.org/formats/oboInOwl#id>,?DoidId) .
@@ -34,4 +34,3 @@ cancerDisease(?Xdoid) :- diseaseHierarchy(?X, ?Y), doid(?Y, "DOID:162"), doid(?X
 humansWhoDiedOfCancer(?X) :- deathCause(?X, ?Y), diseaseId(?Y, ?Z), cancerDisease(?Z) .
 humansWhoDiedOfNoncancer(?X) :- deathCause(?X, ?Y), diseaseId(?Y, ?Z), ~cancerDisease(?Z) .
 humansWhoDiedOfNoncancer(?X) :- deathCause(?X, ?Y), ~hasDoid(?Y) .
-

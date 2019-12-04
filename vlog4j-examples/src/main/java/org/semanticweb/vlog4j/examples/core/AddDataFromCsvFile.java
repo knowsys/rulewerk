@@ -56,11 +56,11 @@ public class AddDataFromCsvFile {
 		ExamplesUtils.configureLogging();
 
 		final String initialFactsHasPart = ""// a file input:
-				+ "@source hasPart(2) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz\") .";
+				+ "@source hasPart[2] : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "hasPartEDB.csv.gz\") .";
 
 		final String rules = "" // first declare file inputs:
-				+ "@source bicycle(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz\") ."
-				+ "@source wheel(1) : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz\") ."
+				+ "@source bicycle[1] : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "bicycleEDB.csv.gz\") ."
+				+ "@source wheel[1] : load-csv(\"" + ExamplesUtils.INPUT_FOLDER + "wheelEDB.csv.gz\") ."
 				// every bicycle has some part that is a wheel:
 				+ "hasPart(?X, !Y), wheel(!Y) :- bicycle(?X) ."
 				// every wheel is part of some bicycle:

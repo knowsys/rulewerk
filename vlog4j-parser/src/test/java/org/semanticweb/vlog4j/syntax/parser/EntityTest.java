@@ -21,14 +21,9 @@ package org.semanticweb.vlog4j.syntax.parser;
  */
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NegativeLiteral;
@@ -38,14 +33,9 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
-import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -239,38 +229,4 @@ public class EntityTest {
 		assertEquals(shortDecimalConstant,
 				RuleParser.parseFact("p(" + shortDecimalConstant + ").").getArguments().get(0).toString());
 	}
-
-	@Test
-	public void sparqlDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
-		KnowledgeBase kb = new KnowledgeBase();
-		Predicate predicate1 = Expressions.makePredicate("p", 3);
-		SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(new URL("https://example.org/sparql"),
-				"var", "?var wdt:P31 wd:Q5 .");
-		DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource);
-		RuleParser.parseInto(kb, dataSourceDeclaration1.toString());
-		assertEquals(dataSourceDeclaration1, kb.getDataSourceDeclarations().get(0));
-	}
-
-	@Test
-	public void rdfDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
-		KnowledgeBase kb = new KnowledgeBase();
-		Predicate predicate1 = Expressions.makePredicate("p", 3);
-		RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(new File("src/test/data/input/file.nt"));
-		DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1,
-				unzippedRdfFileDataSource);
-		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
-		assertEquals(dataSourceDeclaration, kb.getDataSourceDeclarations().get(0));
-	}
-
-	@Test
-	public void csvDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
-		KnowledgeBase kb = new KnowledgeBase();
-		Predicate predicate1 = Expressions.makePredicate("q", 1);
-		CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File("src/test/data/input/file.csv"));
-		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1,
-				unzippedCsvFileDataSource);
-		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
-		assertEquals(dataSourceDeclaration, kb.getDataSourceDeclarations().get(0));
-	}
-
 }

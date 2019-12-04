@@ -67,7 +67,7 @@ public class AddDataFromRdfFile {
 				+ "@prefix ex: <https://example.org/> ."
 				+ "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
 				// specify data sources:
-				+ "@source triple(3) : load-rdf(\"" + ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt.gz\") ."
+				+ "@source triple[3] : load-rdf(\"" + ExamplesUtils.INPUT_FOLDER + "ternaryBicycleEDB.nt.gz\") ."
 				// every bicycle has some part that is a wheel:
 				+ "triple(?S, ex:hasPart, !X), triple(!X, rdf:type, ex:wheel) :- triple(?S, rdf:type, ex:bicycle) ."
 				// every wheel is part of some bicycle:
