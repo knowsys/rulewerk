@@ -8,18 +8,24 @@ Breaking changes:
 * The data model for rules has been refined and changed:
   * Instead of Constant, specific types of constants are used to capture abtract and data values
   * Instead of Variable, ExistentialVariable and UniversalVariable now indicate quantification
-  * Bland was renamed to NamedNull to avoid confusion with RDF blank nodes
+  * Blank was renamed to NamedNull to avoid confusion with RDF blank nodes
   * Methods to access terms now use Java Streams and are unified across syntactic objects
 
 New features:
-* ...
+* New module vlog4j-client provides a stand-alone command line client jar for VLog4j
+* A wiki for VLog4j use and related publications has been created: https://github.com/knowsys/vlog4j/wiki
 
 Other improvements:
 * Data model is better aligned with syntax supported by parser
+* Java object Statements (rules, facts, datasource declarations) String representation is parseable
+* OWL API dependency has been upgraded from 4.5.1 to latest (5.1.11)
+* SL4J dependency has been upgraded from 1.7.10 to latest (1.7.28)
+* Cobertura test coverage tool has been replaced by JaCoCo
 
 Bugfixes:
 * Acyclicity checks work again without calling reason() first (issue #128)
-  
+* in vlog4j-owlapi, class expressions of type ObjectMaxCardinality are not allowed in superclasses (issue #104)
+* in vlog4j-owlapi, class expressions of type ObjectOneOf are only allowed as subclasses in axioms of type subClassOf (issue  #20)
 
 VLog4j v0.4.0
 -------------
