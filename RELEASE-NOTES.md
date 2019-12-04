@@ -15,6 +15,7 @@ Breaking changes:
 New features:
 * New module vlog4j-client provides a stand-alone command line client jar for VLog4j
 * A wiki for VLog4j use and related publications has been created: https://github.com/knowsys/vlog4j/wiki
+* The parser behaviour for data source declarations and certain datatype literals can be customised.
 
 Other improvements:
 * Data model is better aligned with syntax supported by parser
@@ -27,6 +28,7 @@ Bugfixes:
 * Acyclicity checks work again without calling reason() first (issue #128)
 * in vlog4j-owlapi, class expressions of type ObjectMaxCardinality are not allowed in superclasses (issue #104)
 * in vlog4j-owlapi, class expressions of type ObjectOneOf are only allowed as subclasses in axioms of type subClassOf (issue  #20)
+* When parsing syntactic fragment such as Facts or Literals, the parser now enforces that all input is consumed.
 
 VLog4j v0.4.0
 -------------

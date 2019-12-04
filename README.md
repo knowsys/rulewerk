@@ -28,10 +28,12 @@ You need to use Java 1.8 or above. Available modules include:
 * **vlog4j-owlapi**: support for converting rules from OWL ontology, loaded with the OWL API
 * **vlog4j-client**: stand-alone application that builds a [command-line client](https://github.com/knowsys/vlog4j/wiki/Standalone-client) for VLog4j.
 
-The released packages use vlog4j-base, which packages system-dependent binaries for Linux, MacOS, and Windows, and should work out of the box with current versions of these systems. In case of problems, or if you are using the current development version, own binaries can be compiled as follows:
+The released packages use vlog4j-base, which packages system-dependent binaries for Linux, macOS, and Windows, and should work out of the box with current versions of these systems (for linux, you will need at least libstdc++-v3.4.22; for macOS, you will need at least macOS 10.14). In case of problems, or if you are using the current development version, own binaries can be compiled as follows:
 
 * Run [build-vlog-library.sh](https://github.com/knowsys/vlog4j/blob/master/build-vlog-library.sh) or execute the commands in this file manually. This will compile a local jar file on your system, copy it to ```./vlog4j-core/lib/jvlog-local.jar```, and install the new jar locally in Maven in place of the distributed version of vlog4j-base.
 * Run ```mvn install``` to test if the setup works
+
+
 
 Documentation
 -------------
@@ -47,5 +49,5 @@ Development
 * Pull requests are welcome.
 * The master branch may require a development version of VLog.
 Use the script `build-vlog-library.sh` to create and install it on your machine (you may need to delete previous local builds first).
-* Users of Eclipse should install the javacc plugin to generate the parser sources. After installing the plugin, right-click on the file `JavaCCParser.jj` in `org.semanticweb.vlog4j.parser.javacc`, and select "compile with javacc". This step needs to be repeated when the file changes. 
+* Users of Eclipse should install the javacc plugin to generate the parser sources. After installing the plugin, right-click on the file `JavaCCParser.jj` in `org.semanticweb.vlog4j.parser.javacc`, and select "compile with javacc". This step needs to be repeated when the file changes.
 * We largely follow [Java Programming Style Guidelines published by Petroware](https://petroware.no/javastyle.html). The main exception are the names of private members, which do not usually end in underscores in our code.
