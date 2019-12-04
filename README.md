@@ -26,7 +26,7 @@ You need to use Java 1.8 or above. Available modules include:
 * **vlog4j-graal**: support for converting rules, facts and queries from [Graal](http://graphik-team.github.io/graal/) API objects and [DLGP](http://graphik-team.github.io/graal/doc/dlgp) files
 * **vlog4j-rdf**: support for reading from RDF files in Java (not required for loading RDF directly during reasoning)
 * **vlog4j-owlapi**: support for converting rules from OWL ontology, loaded with the OWL API
-* **vlog4j-client** stand-alone application that builds a command-line client for VLog4j
+* **vlog4j-client**: stand-alone application that builds a command-line client for VLog4j
 
 The released packages use vlog4j-base, which packages system-dependent binaries for Linux, MacOS, and Windows, and should work out of the box with current versions of these systems. In case of problems, or if you are using the current development version, own binaries can be compiled as follows:
 
@@ -39,7 +39,7 @@ Documentation
 * The module **vlog4j-examples** includes short example programs that demonstrate various features and use cases
 * The GitHub project **[VLog4j Example](https://github.com/knowsys/vlog4j-example)** shows how to use VLog4j in own Maven projects and can be used as a skeleton for own projects
 * [JavaDoc](https://knowsys.github.io/vlog4j/) is available online and through the Maven packages.
-* VLog4j[Wiki](https://github.com/knowsys/vlog4j/wiki) is available online
+* A VLog4j [Wiki](https://github.com/knowsys/vlog4j/wiki) is available online.
 
 Development
 -----------
