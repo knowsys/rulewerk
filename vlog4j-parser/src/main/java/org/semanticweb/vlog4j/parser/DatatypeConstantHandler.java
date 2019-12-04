@@ -23,14 +23,14 @@ package org.semanticweb.vlog4j.parser;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 
 /**
- * Handler for parsing a custom Data Source declaration.
+ * Handler for parsing a custom Datatype constant.
  *
  * @author Maximilian Marx
  */
 @FunctionalInterface
 public interface DatatypeConstantHandler {
 	/**
-	 * Parse a Data Source Declaration.
+	 * Parse a datatype constant.
 	 *
 	 * @param lexicalForm lexical representation of the constant.
 	 *

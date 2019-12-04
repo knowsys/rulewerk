@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
  */
 public class RuleParser {
 
+	private static final String DEFAULT_STRING_ENCODING = "UTF-8";
+
 	private static Logger LOGGER = LoggerFactory.getLogger(RuleParser.class);
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final String encoding,
@@ -60,13 +62,13 @@ public class RuleParser {
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream,
 			final ParserConfiguration parserConfiguration) throws ParsingException {
-		parseInto(knowledgeBase, stream, "UTF-8", parserConfiguration);
+		parseInto(knowledgeBase, stream, DEFAULT_STRING_ENCODING, parserConfiguration);
 	}
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final String input,
 			final ParserConfiguration parserConfiguration) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		parseInto(knowledgeBase, inputStream, "UTF-8", parserConfiguration);
+		parseInto(knowledgeBase, inputStream, DEFAULT_STRING_ENCODING, parserConfiguration);
 	}
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final String encoding)
@@ -77,12 +79,12 @@ public class RuleParser {
 	}
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream) throws ParsingException {
-		parseInto(knowledgeBase, stream, "UTF-8");
+		parseInto(knowledgeBase, stream, DEFAULT_STRING_ENCODING);
 	}
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final String input) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		parseInto(knowledgeBase, inputStream, "UTF-8");
+		parseInto(knowledgeBase, inputStream, DEFAULT_STRING_ENCODING);
 	}
 
 	public static KnowledgeBase parse(final InputStream stream, final String encoding,
@@ -94,13 +96,13 @@ public class RuleParser {
 
 	public static KnowledgeBase parse(final InputStream stream, final ParserConfiguration parserConfiguration)
 			throws ParsingException {
-		return parse(stream, "UTF-8", parserConfiguration);
+		return parse(stream, DEFAULT_STRING_ENCODING, parserConfiguration);
 	}
 
 	public static KnowledgeBase parse(final String input, final ParserConfiguration parserConfiguration)
 			throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		return parse(inputStream, "UTF-8", parserConfiguration);
+		return parse(inputStream, DEFAULT_STRING_ENCODING, parserConfiguration);
 	}
 
 	public static KnowledgeBase parse(final InputStream stream, final String encoding) throws ParsingException {
@@ -108,12 +110,12 @@ public class RuleParser {
 	}
 
 	public static KnowledgeBase parse(final InputStream stream) throws ParsingException {
-		return parse(stream, "UTF-8");
+		return parse(stream, DEFAULT_STRING_ENCODING);
 	}
 
 	public static KnowledgeBase parse(final String input) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		return parse(inputStream, "UTF-8");
+		return parse(inputStream, DEFAULT_STRING_ENCODING);
 	}
 
 	/**
@@ -141,20 +143,21 @@ public class RuleParser {
 	static <T> T parseSyntaxFragment(final String input, SyntaxFragmentParser<T> parserAction,
 			final String syntaxFragmentType, final ParserConfiguration parserConfiguration) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
+		final JavaCCParser localParser = new JavaCCParser(inputStream, DEFAULT_STRING_ENCODING);
 
 		if (parserConfiguration != null) {
 			localParser.setParserConfiguration(parserConfiguration);
 		}
 
+		T result;
 		try {
-			T result = parserAction.parse(localParser);
+			result = parserAction.parse(localParser);
 			localParser.ensureEndOfInput();
-			return result;
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
 			LOGGER.error("Exception while parsing " + syntaxFragmentType + ": {}!", input);
 			throw new ParsingException("Exception while parsing " + syntaxFragmentType, e);
 		}
+		return result;
 	}
 
 	public static Rule parseRule(final String input, final ParserConfiguration parserConfiguration)

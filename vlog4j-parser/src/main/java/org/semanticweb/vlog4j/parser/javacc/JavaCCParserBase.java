@@ -21,22 +21,19 @@ package org.semanticweb.vlog4j.parser.javacc;
  */
 
 import java.util.HashSet;
-import java.util.List;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
-import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.DefaultParserConfiguration;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
 
 /**
  * Basic methods used in the JavaCC-generated parser.
@@ -53,23 +50,23 @@ import org.semanticweb.vlog4j.core.model.api.Predicate;
  *
  */
 public class JavaCCParserBase {
-	PrefixDeclarations prefixDeclarations;
+	protected PrefixDeclarations prefixDeclarations;
 
-	KnowledgeBase knowledgeBase;
-	ParserConfiguration parserConfiguration;
+	protected KnowledgeBase knowledgeBase;
+	protected ParserConfiguration parserConfiguration;
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
 	 */
-	final HashSet<String> bodyVars = new HashSet<String>();
+	protected final HashSet<String> bodyVars = new HashSet<String>();
 	/**
 	 * "Local" variable to remember existential head variables during parsing.
 	 */
-	final HashSet<String> headExiVars = new HashSet<String>();;
+	protected final HashSet<String> headExiVars = new HashSet<String>();;
 	/**
 	 * "Local" variable to remember universal head variables during parsing.
 	 */
-	final HashSet<String> headUniVars = new HashSet<String>();;
+	protected final HashSet<String> headUniVars = new HashSet<String>();;
 
 	/**
 	 * Defines the context for parsing sub-formulas.
@@ -121,7 +118,9 @@ public class JavaCCParserBase {
 		try {
 			return parserConfiguration.parseConstant(lexicalForm, languageTag, datatype);
 		} catch (ParsingException e) {
-			throw new ParseException(e.getMessage());
+			ParseException parseException = new ParseException(e.getMessage());
+			parseException.initCause(e);
+			throw parseException;
 		}
 	}
 

@@ -45,23 +45,22 @@ public class SparqlQueryResultDataSourceDeclarationHandler implements DataSource
 	@Override
 	public DataSource handleDeclaration(List<String> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
-		DataSourceDeclarationHandler.verifyCorrectNumberOfArguments(arguments, 3);
+		DataSourceDeclarationHandler.validateNumberOfArguments(arguments, 3);
 
 		String endpoint = arguments.get(0);
+		URL endpointUrl;
 		try {
 			JavaCCParser parser = subParserFactory.makeSubParser(endpoint);
-			endpoint = parser.IRI(false);
+			endpointUrl = new URL(parser.IRI(false));
 		} catch (ParseException | PrefixDeclarationException e) {
 			throw new ParsingException(e);
+		} catch (MalformedURLException e) {
+			throw new ParsingException("SPARQL endpoint \"" + endpoint + "\" is not a valid URL: " + e.getMessage(), e);
 		}
 
 		String variables = arguments.get(1);
 		String query = arguments.get(2);
 
-		try {
-			return new SparqlQueryResultDataSource(new URL(endpoint), variables, query);
-		} catch (MalformedURLException e) {
-			throw new ParsingException("SPARQL endpoint \"" + endpoint + "\" is not a valid URL: " + e.getMessage(), e);
-		}
+		return new SparqlQueryResultDataSource(endpointUrl, variables, query);
 	}
 }

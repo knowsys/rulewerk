@@ -55,7 +55,7 @@ public interface DataSourceDeclarationHandler {
 	 * @throws ParsingException when the given number of Arguments is invalid for
 	 *                          the Data Source.
 	 */
-	static void verifyCorrectNumberOfArguments(List<String> arguments, int number) throws ParsingException {
+	static void validateNumberOfArguments(List<String> arguments, int number) throws ParsingException {
 		if (arguments.size() != number) {
 			throw new ParsingException("Invalid number of arguments " + arguments.size()
 					+ " for Data Source declaration, expected " + number);

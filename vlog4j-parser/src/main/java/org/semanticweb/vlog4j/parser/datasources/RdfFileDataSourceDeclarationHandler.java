@@ -39,7 +39,7 @@ public class RdfFileDataSourceDeclarationHandler implements DataSourceDeclaratio
 	@Override
 	public DataSource handleDeclaration(List<String> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
-		DataSourceDeclarationHandler.verifyCorrectNumberOfArguments(arguments, 1);
+		DataSourceDeclarationHandler.validateNumberOfArguments(arguments, 1);
 		String fileName = arguments.get(0);
 
 		try {

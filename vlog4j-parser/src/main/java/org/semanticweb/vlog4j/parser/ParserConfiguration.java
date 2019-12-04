@@ -23,6 +23,7 @@ package org.semanticweb.vlog4j.parser;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
@@ -36,6 +37,16 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  */
 public class ParserConfiguration {
 	/**
+	 * The registered data sources.
+	 */
+	private HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
+
+	/**
+	 * The registered datatypes.
+	 */
+	private HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
+
+	/**
 	 * Register a new Data Source.
 	 *
 	 * @param name    Name of the data source, as it appears in the declaring
@@ -47,9 +58,7 @@ public class ParserConfiguration {
 	 */
 	public ParserConfiguration registerDataSource(String name, DataSourceDeclarationHandler handler)
 			throws IllegalArgumentException {
-		if (dataSources.containsKey(name)) {
-			throw new IllegalArgumentException("Data source \"" + name + "\" is already registered.");
-		}
+		Validate.isTrue(!dataSources.containsKey(name), "The Data Source \"%s\" is already registered.", name);
 
 		this.dataSources.put(name, handler);
 		return this;
@@ -96,10 +105,10 @@ public class ParserConfiguration {
 	 */
 	public Constant parseConstant(String lexicalForm, String languageTag, String datatype)
 			throws ParsingException, IllegalArgumentException {
-		if (languageTag != null && datatype != null) {
-			throw new IllegalArgumentException(
-					"A constant with a language tag may not explicitly specify a data type.");
-		} else if (languageTag != null) {
+		Validate.isTrue(languageTag == null || datatype == null,
+				"A constant with a language tag may not explicitly specify a data type.");
+
+		if (languageTag != null) {
 			return Expressions.makeLanguageStringConstant(lexicalForm, languageTag);
 		} else {
 			String type = ((datatype != null) ? datatype : PrefixDeclarations.XSD_STRING);
@@ -127,21 +136,9 @@ public class ParserConfiguration {
 	 */
 	public ParserConfiguration registerDatatype(String name, DatatypeConstantHandler handler)
 			throws IllegalArgumentException {
-		if (datatypes.containsKey(name)) {
-			throw new IllegalArgumentException("Data type \"" + name + "\" is already registered.");
-		}
+		Validate.isTrue(!dataSources.containsKey(name), "The Data type \"%s\" is already registered.", name);
 
 		this.datatypes.put(name, handler);
 		return this;
 	}
-
-	/**
-	 * The registered data sources.
-	 */
-	private HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
-
-	/**
-	 * The registered datatypes.
-	 */
-	private HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
 }

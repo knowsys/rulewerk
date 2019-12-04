@@ -49,31 +49,35 @@ import org.semanticweb.vlog4j.parser.RuleParser;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 public class RuleParserDataSourceTest {
+	private static final String EXAMPLE_RDF_FILE_PATH = "src/main/data/input/example.nt.gz";
+	private static final String EXAMPLE_CSV_FILE_PATH = "src/main/data/input/example.csv";
+	private static final String WIKIDATA_SPARQL_ENDPOINT_URI = "https://query.wikidata.org/sparql";
+
 	@Test
 	public void testCsvSource() throws ParsingException, IOException {
-		String input = "@source p[2] : load-csv(\"src/main/data/input/example.csv\") .";
-		CsvFileDataSource csvds = new CsvFileDataSource(new File("src/main/data/input/example.csv"));
+		String input = "@source p[2] : load-csv(\"" +  EXAMPLE_CSV_FILE_PATH + "\") .";
+		CsvFileDataSource csvds = new CsvFileDataSource(new File(EXAMPLE_CSV_FILE_PATH));
 		assertEquals(csvds, RuleParser.parseDataSourceDeclaration(input));
 	}
 
 	@Test
 	public void testRdfSource() throws ParsingException, IOException {
-		String input = "@source p[3] : load-rdf(\"src/main/data/input/example.nt.gz\") .";
-		RdfFileDataSource rdfds = new RdfFileDataSource(new File("src/main/data/input/example.nt.gz"));
+		String input = "@source p[3] : load-rdf(\"" + EXAMPLE_RDF_FILE_PATH + "\") .";
+		RdfFileDataSource rdfds = new RdfFileDataSource(new File(EXAMPLE_RDF_FILE_PATH));
 		assertEquals(rdfds, RuleParser.parseDataSourceDeclaration(input));
 	}
 
 	@Test(expected = ParsingException.class)
 	public void testRdfSourceInvalidArity() throws ParsingException, IOException {
-		String input = "@source p[2] : load-rdf(\"src/main/data/input/example.nt.gz\") .";
+		String input = "@source p[2] : load-rdf(\"" + EXAMPLE_RDF_FILE_PATH + "\") .";
 		RuleParser.parseDataSourceDeclaration(input);
 	}
 
 	@Test
 	public void testSparqlSource() throws ParsingException, MalformedURLException {
-		String input = "@source p[2] : sparql(<https://query.wikidata.org/sparql>,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
+		String input = "@source p[2] : sparql(<" + WIKIDATA_SPARQL_ENDPOINT_URI + ">,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
 		SparqlQueryResultDataSource sparqlds = new SparqlQueryResultDataSource(
-				new URL("https://query.wikidata.org/sparql"), "disease, doid", "?disease wdt:P699 ?doid .");
+				new URL(WIKIDATA_SPARQL_ENDPOINT_URI), "disease, doid", "?disease wdt:P699 ?doid .");
 		assertEquals(sparqlds, RuleParser.parseDataSourceDeclaration(input));
 	}
 
@@ -109,7 +113,7 @@ public class RuleParserDataSourceTest {
 	public void sparqlDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
 		KnowledgeBase kb = new KnowledgeBase();
 		Predicate predicate1 = Expressions.makePredicate("p", 3);
-		SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(new URL("https://example.org/sparql"),
+		SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(new URL(WIKIDATA_SPARQL_ENDPOINT_URI),
 				"var", "?var wdt:P31 wd:Q5 .");
 		DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource);
 		RuleParser.parseInto(kb, dataSourceDeclaration1.toString());
@@ -120,7 +124,7 @@ public class RuleParserDataSourceTest {
 	public void rdfDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
 		KnowledgeBase kb = new KnowledgeBase();
 		Predicate predicate1 = Expressions.makePredicate("p", 3);
-		RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(new File("src/test/data/input/file.nt"));
+		RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(new File(EXAMPLE_RDF_FILE_PATH));
 		DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1,
 				unzippedRdfFileDataSource);
 		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
@@ -131,7 +135,7 @@ public class RuleParserDataSourceTest {
 	public void csvDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
 		KnowledgeBase kb = new KnowledgeBase();
 		Predicate predicate1 = Expressions.makePredicate("q", 1);
-		CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File("src/test/data/input/file.csv"));
+		CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(EXAMPLE_CSV_FILE_PATH));
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1,
 				unzippedCsvFileDataSource);
 		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
