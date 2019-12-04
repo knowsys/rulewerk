@@ -19,6 +19,7 @@ matrix:
           env: CC=gcc-6 CXX=g++-6
 
         - os: osx
+          osx_image: xcode10.2
 
 
 jobs:
