@@ -5,6 +5,8 @@ matrix:
           dist: bionic
           jdk:
               - openjdk11
+          after_success:
+              - mvn clean test jacoco:report coveralls:report
 
         - os: linux
           dist: xenial
@@ -34,9 +36,6 @@ jobs:
 #  - sh ./build-vlog-library.sh
 
 install: mvn install $OPTIONS -DskipTests=true
-
-after_success:
-  - mvn clean test jacoco:report coveralls:report
 
 sudo: false
 
