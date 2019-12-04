@@ -138,7 +138,7 @@ void statement() throws PrefixDeclarationException:
 }
 {
     LOOKAHEAD(rule()) statement = rule() { knowledgeBase.addStatement(statement);}
-|   statement = fact(FormulaContext.HEAD) < DOT > //not from a rule
+|   statement = fact(FormulaContext.HEAD) //not from a rule
     {
 		knowledgeBase.addStatement(statement);
     }
@@ -217,7 +217,7 @@ Fact fact(FormulaContext context) throws PrefixDeclarationException:
     String predicateName;
 }
 {
-    predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN >
+    predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN > < DOT >
     {
       try {
       	return Expressions.makeFact(predicateName, terms);

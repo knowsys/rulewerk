@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.syntax.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,28 +40,28 @@ public class RuleParserParseFactTest {
 
 	@Test
 	public void testFactArityOne() throws ParsingException {
-		assertEquals(RuleParser.parseFact("p(\"a\")"), factA);
+		assertEquals(RuleParser.parseFact("p(\"a\") ."), factA);
 	}
 
 	@Test
 	public void testFactArityOneWithDataType() throws ParsingException {
-		assertEquals(RuleParser.parseFact("p(\"a\")"), factA);
+		assertEquals(RuleParser.parseFact("p(\"a\") ."), factA);
 	}
 
 	@Test
 	public void testFactArityTwo() throws ParsingException {
-		assertEquals(RuleParser.parseFact("p(\"a\",\"b\")"), factAB);
+		assertEquals(RuleParser.parseFact("p(\"a\",\"b\") ."), factAB);
 	}
 
 	@Test(expected = ParsingException.class)
 	public void testFactWithVariable() throws ParsingException {
-		String input = "p(?X)";
+		String input = "p(?X) .";
 		RuleParser.parseFact(input);
 	}
 
 	@Test(expected = ParsingException.class)
 	public void testZeroArityFact() throws ParsingException {
-		String input = "p()";
+		String input = "p() .";
 		RuleParser.parseFact(input);
 	}
 
