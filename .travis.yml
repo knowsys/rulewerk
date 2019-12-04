@@ -7,20 +7,6 @@ matrix:
               - openjdk11
 
         - os: linux
-          dist: trusty
-          addons:
-              apt:
-                  sources:
-                      - ubuntu-toolchain-r-test
-                  packages:
-                      - gcc-6
-                      - g++-6
-                      - libstdc++6
-          jdk:
-              - openjdk8
-          env: CC=gcc-6 CXX=g++-6
-
-        - os: linux
           dist: xenial
           addons:
               apt:
@@ -33,6 +19,7 @@ matrix:
           env: CC=gcc-6 CXX=g++-6
 
         - os: osx
+          osx_image: xcode10.2
 
 
 jobs:
@@ -49,7 +36,6 @@ install: mvn install $OPTIONS -DskipTests=true
 after_success:
   - mvn clean test jacoco:report coveralls:report
 
-dist: bionic
 sudo: false
 
 cache:
