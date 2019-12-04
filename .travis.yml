@@ -17,6 +17,8 @@ matrix:
                       - g++-6
                       - libstdc++6
           env: CC=gcc-6 CXX=g++-6
+          jdk:
+              - openjdk8
 
         - os: osx
           osx_image: xcode10.2
