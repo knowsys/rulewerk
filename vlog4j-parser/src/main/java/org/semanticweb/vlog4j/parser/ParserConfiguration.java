@@ -47,7 +47,14 @@ public class ParserConfiguration {
 	private HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
 
 	/**
-	 * Register a new Data Source.
+	 * Register a new (type of) Data Source.
+	 *
+	 * This registers a handler for some custom value of the {@code DATASOURCE}
+	 * production of the rules grammar, corresponding to some {@link DataSource}
+	 * type.
+	 *
+	 * @see <"https://github.com/knowsys/vlog4j/wiki/Rule-syntax-grammar"> for the
+	 *      grammar.
 	 *
 	 * @param name    Name of the data source, as it appears in the declaring
 	 *                directive.
@@ -66,6 +73,9 @@ public class ParserConfiguration {
 
 	/**
 	 * Parse a Data Source declaration.
+	 *
+	 * This is called by the parser to construct a {@link DataSourceDeclaration}. It
+	 * is responsible for instantiating an appropriate {@link DataSource} type.
 	 *
 	 * @param name             Name of the data source.
 	 * @param args             arguments given in the data source declaration.
