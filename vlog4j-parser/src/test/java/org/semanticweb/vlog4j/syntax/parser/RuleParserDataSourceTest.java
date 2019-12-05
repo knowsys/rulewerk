@@ -55,16 +55,16 @@ public class RuleParserDataSourceTest {
 
 	@Test
 	public void testCsvSource() throws ParsingException, IOException {
-		String input = "@source p[2] : load-csv(\"" +  EXAMPLE_CSV_FILE_PATH + "\") .";
+		String input = "@source p[2] : load-csv(\"" + EXAMPLE_CSV_FILE_PATH + "\") .";
 		CsvFileDataSource csvds = new CsvFileDataSource(new File(EXAMPLE_CSV_FILE_PATH));
-		assertEquals(csvds, RuleParser.parseDataSourceDeclaration(input));
+		assertEquals(csvds, RuleParser.parseDataSourceDeclaration(input).getDataSource());
 	}
 
 	@Test
 	public void testRdfSource() throws ParsingException, IOException {
 		String input = "@source p[3] : load-rdf(\"" + EXAMPLE_RDF_FILE_PATH + "\") .";
 		RdfFileDataSource rdfds = new RdfFileDataSource(new File(EXAMPLE_RDF_FILE_PATH));
-		assertEquals(rdfds, RuleParser.parseDataSourceDeclaration(input));
+		assertEquals(rdfds, RuleParser.parseDataSourceDeclaration(input).getDataSource());
 	}
 
 	@Test(expected = ParsingException.class)
@@ -75,10 +75,11 @@ public class RuleParserDataSourceTest {
 
 	@Test
 	public void testSparqlSource() throws ParsingException, MalformedURLException {
-		String input = "@source p[2] : sparql(<" + WIKIDATA_SPARQL_ENDPOINT_URI + ">,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
-		SparqlQueryResultDataSource sparqlds = new SparqlQueryResultDataSource(
-				new URL(WIKIDATA_SPARQL_ENDPOINT_URI), "disease, doid", "?disease wdt:P699 ?doid .");
-		assertEquals(sparqlds, RuleParser.parseDataSourceDeclaration(input));
+		String input = "@source p[2] : sparql(<" + WIKIDATA_SPARQL_ENDPOINT_URI
+				+ ">,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
+		SparqlQueryResultDataSource sparqlds = new SparqlQueryResultDataSource(new URL(WIKIDATA_SPARQL_ENDPOINT_URI),
+				"disease, doid", "?disease wdt:P699 ?doid .");
+		assertEquals(sparqlds, RuleParser.parseDataSourceDeclaration(input).getDataSource());
 	}
 
 	@Test(expected = ParsingException.class)

@@ -216,13 +216,13 @@ public class RuleParser {
 		return parseTerm(input, (ParserConfiguration) null);
 	}
 
-	public static DataSource parseDataSourceDeclaration(final String input, ParserConfiguration parserConfiguration)
+	public static DataSourceDeclaration parseDataSourceDeclaration(final String input, ParserConfiguration parserConfiguration)
 			throws ParsingException {
 		return parseSyntaxFragment(input, RuleParser::parseAndExtractDatasourceDeclaration, "data source declaration",
 				parserConfiguration);
 	}
 
-	public static DataSource parseDataSourceDeclaration(final String input) throws ParsingException {
+	public static DataSourceDeclaration parseDataSourceDeclaration(final String input) throws ParsingException {
 		return parseDataSourceDeclaration(input, null);
 	}
 
@@ -236,7 +236,7 @@ public class RuleParser {
 		return parser.getKnowledgeBase();
 	}
 
-	protected static DataSource parseAndExtractDatasourceDeclaration(final JavaCCParser parser)
+	protected static DataSourceDeclaration parseAndExtractDatasourceDeclaration(final JavaCCParser parser)
 			throws ParsingException, ParseException, PrefixDeclarationException {
 		parser.source();
 
@@ -248,7 +248,7 @@ public class RuleParser {
 					"Unexpected number of data source declarations: " + dataSourceDeclarations.size());
 		}
 
-		return dataSourceDeclarations.get(0).getDataSource();
+		return dataSourceDeclarations.get(0);
 	}
 
 }
