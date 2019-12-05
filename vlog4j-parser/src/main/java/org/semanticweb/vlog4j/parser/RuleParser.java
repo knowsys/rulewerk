@@ -27,6 +27,7 @@ import java.util.List;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
+import org.semanticweb.vlog4j.core.model.api.Entity;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -124,7 +125,7 @@ public class RuleParser {
 	 * This is needed to specify the exceptions thrown by the parse method.
 	 */
 	@FunctionalInterface
-	interface SyntaxFragmentParser<T> {
+	interface SyntaxFragmentParser<T extends Entity> {
 		T parse(final JavaCCParser parser)
 				throws ParsingException, ParseException, PrefixDeclarationException, TokenMgrError;
 	}
@@ -140,7 +141,7 @@ public class RuleParser {
 	 * @throws ParsingException when an error during parsing occurs.
 	 * @return an appropriate instance of {@code T}
 	 */
-	static <T> T parseSyntaxFragment(final String input, SyntaxFragmentParser<T> parserAction,
+	static <T extends Entity> T parseSyntaxFragment(final String input, SyntaxFragmentParser<T> parserAction,
 			final String syntaxFragmentType, final ParserConfiguration parserConfiguration) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		final JavaCCParser localParser = new JavaCCParser(inputStream, DEFAULT_STRING_ENCODING);
