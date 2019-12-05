@@ -108,8 +108,6 @@ void source() throws PrefixDeclarationException:
       int nArity;
       nArity = Integer.parseInt(arity.image);
       // Do not catch NumberFormatException: < INTEGER > matches must parse as int in Java!
-      if ( dataSource instanceof RdfFileDataSource && nArity != 3 )
-        throw new ParseException("Cannot load RDF data into predicate of arity " + nArity +".");
 
       addDataSource(predicateName, nArity, dataSource);
     }
@@ -126,7 +124,7 @@ DataSource dataSource() throws PrefixDeclarationException:
         try {
             return parserConfiguration.parseDataSourceDeclaration(sourceName.image, arguments, getSubParserFactory());
         } catch (ParsingException e) {
-            throw new ParseException(e.getMessage());
+			throw makeParseExceptionWithCause(e);
         }
     }
 }
@@ -222,7 +220,7 @@ Fact fact(FormulaContext context) throws PrefixDeclarationException:
       try {
       	return Expressions.makeFact(predicateName, terms);
       } catch (IllegalArgumentException e) {
-       throw new ParseException("Error parsing fact: " + e.toString());
+		  throw makeParseExceptionWithCause("Error parsing fact: " + e.getMessage(), e);
       }
     }
 }

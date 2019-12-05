@@ -97,14 +97,13 @@ public class JavaCCParserBase {
 		try {
 			return Expressions.makeAbstractConstant(prefixDeclarations.absolutize(lexicalForm));
 		} catch (PrefixDeclarationException e) {
-			throw new ParseException(e.getMessage());
+			throw makeParseExceptionWithCause(e);
 		}
 	}
 
 	Constant createConstant(String lexicalForm, String datatype) throws ParseException {
 		return createConstant(lexicalForm, null, datatype);
 	}
-
 
 	/**
 	 * Creates a suitable {@link Constant} from the parsed data.
@@ -118,9 +117,7 @@ public class JavaCCParserBase {
 		try {
 			return parserConfiguration.parseConstant(lexicalForm, languageTag, datatype);
 		} catch (ParsingException e) {
-			ParseException parseException = new ParseException(e.getMessage());
-			parseException.initCause(e);
-			throw parseException;
+			throw makeParseExceptionWithCause(e);
 		}
 	}
 
@@ -233,6 +230,24 @@ public class JavaCCParserBase {
 		this.bodyVars.clear();
 		this.headExiVars.clear();
 		this.headUniVars.clear();
+	}
+
+	/**
+	 * Convert a throwable into a ParseException.
+	 *
+	 * @param message The error message.
+	 * @param cause   The {@link Throwable} that caused this exception.
+	 *
+	 * @return A {@link ParseException} with appropriate cause and message.
+	 */
+	protected ParseException makeParseExceptionWithCause(String message, Throwable cause) {
+		ParseException parseException = new ParseException(message);
+		parseException.initCause(cause);
+		return parseException;
+	}
+
+	protected ParseException makeParseExceptionWithCause(Throwable cause) {
+		return makeParseExceptionWithCause(cause.getMessage(), cause);
 	}
 
 	public void setKnowledgeBase(KnowledgeBase knowledgeBase) {
