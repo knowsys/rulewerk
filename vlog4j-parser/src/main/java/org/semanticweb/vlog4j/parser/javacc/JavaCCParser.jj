@@ -122,7 +122,7 @@ DataSource dataSource() throws PrefixDeclarationException:
 	(sourceName = < DIRECTIVENAME > | sourceName = < VARORPREDNAME >) < LPAREN > arguments = Arguments() < RPAREN >
     {
         try {
-            return parserConfiguration.parseDataSourceDeclaration(sourceName.image, arguments, getSubParserFactory());
+            return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(sourceName.image, arguments, getSubParserFactory());
         } catch (ParsingException e) {
 			throw makeParseExceptionWithCause(e);
         }

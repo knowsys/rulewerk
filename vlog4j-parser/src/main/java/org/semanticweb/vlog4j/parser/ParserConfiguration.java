@@ -72,7 +72,7 @@ public class ParserConfiguration {
 	}
 
 	/**
-	 * Parse a Data Source declaration.
+	 * Parse the source-specific part of a Data Source declaration.
 	 *
 	 * This is called by the parser to construct a {@link DataSourceDeclaration}. It
 	 * is responsible for instantiating an appropriate {@link DataSource} type.
@@ -87,7 +87,7 @@ public class ParserConfiguration {
 	 *
 	 * @return the Data Source instance.
 	 */
-	public DataSource parseDataSourceDeclaration(String name, List<String> args,
+	public DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(String name, List<String> args,
 			final SubParserFactory subParserFactory) throws ParsingException {
 		DataSourceDeclarationHandler handler = dataSources.get(name);
 
