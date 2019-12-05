@@ -121,15 +121,19 @@ public class ParserConfiguration {
 		if (languageTag != null) {
 			return Expressions.makeLanguageStringConstant(lexicalForm, languageTag);
 		} else {
-			String type = ((datatype != null) ? datatype : PrefixDeclarations.XSD_STRING);
-			DatatypeConstantHandler handler = datatypes.get(type);
-
-			if (handler != null) {
-				return handler.createConstant(lexicalForm);
-			}
-
-			return Expressions.makeDatatypeConstant(lexicalForm, type);
+			return parseDatatypeConstant(lexicalForm, datatype);
 		}
+	}
+
+	private Constant parseDatatypeConstant(String lexicalForm, String datatype) throws ParsingException {
+		String type = ((datatype != null) ? datatype : PrefixDeclarations.XSD_STRING);
+		DatatypeConstantHandler handler = datatypes.get(type);
+
+		if (handler != null) {
+			return handler.createConstant(lexicalForm);
+		}
+
+		return Expressions.makeDatatypeConstant(lexicalForm, type);
 	}
 
 	/**

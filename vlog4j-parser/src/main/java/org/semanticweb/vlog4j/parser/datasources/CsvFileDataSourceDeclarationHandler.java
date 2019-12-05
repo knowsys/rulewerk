@@ -41,9 +41,10 @@ public class CsvFileDataSourceDeclarationHandler implements DataSourceDeclaratio
 			throws ParsingException {
 		DataSourceDeclarationHandler.validateNumberOfArguments(arguments, 1);
 		String fileName = arguments.get(0);
+		File file = new File(fileName);
 
 		try {
-			return new CsvFileDataSource(new File(fileName));
+			return new CsvFileDataSource(file);
 		} catch (IOException e) {
 			throw new ParsingException("Could not use source file \"" + fileName + "\": " + e.getMessage(), e);
 		}

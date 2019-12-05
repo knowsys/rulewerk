@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
+import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
  * Factory for creating a SubParser sharing configuration, state, and
@@ -35,6 +36,10 @@ import org.semanticweb.vlog4j.parser.ParserConfiguration;
  * @author Maximilian Marx
  */
 public class SubParserFactory {
+	private KnowledgeBase knowledgeBase;
+	private ParserConfiguration parserConfiguration;
+	private PrefixDeclarations prefixDeclarations;
+
 	/**
 	 * Construct a SubParserFactory.
 	 *
@@ -57,22 +62,18 @@ public class SubParserFactory {
 	 */
 	public JavaCCParser makeSubParser(final InputStream inputStream, final String encoding) {
 		JavaCCParser subParser = new JavaCCParser(inputStream, encoding);
-		subParser.setKnowledgeBase(knowledgeBase);
-		subParser.setPrefixDeclarations(prefixDeclarations);
-		subParser.setParserConfiguration(parserConfiguration);
+		subParser.setKnowledgeBase(this.knowledgeBase);
+		subParser.setPrefixDeclarations(this.prefixDeclarations);
+		subParser.setParserConfiguration(this.parserConfiguration);
 
 		return subParser;
 	}
 
 	public JavaCCParser makeSubParser(final InputStream inputStream) {
-		return makeSubParser(inputStream, "UTF-8");
+		return makeSubParser(inputStream, RuleParser.DEFAULT_STRING_ENCODING);
 	}
 
 	public JavaCCParser makeSubParser(final String string) {
 		return makeSubParser(new ByteArrayInputStream(string.getBytes()));
 	}
-
-	private KnowledgeBase knowledgeBase;
-	private ParserConfiguration parserConfiguration;
-	private PrefixDeclarations prefixDeclarations;
 }

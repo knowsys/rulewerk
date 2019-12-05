@@ -47,9 +47,9 @@
 			<plugin>
 				<!-- add the generated sources to the project, so the
 					 LSP server will find the code. -->
-					 <groupId>org.codehaus.mojo</groupId>
-					 <artifactId>build-helper-maven-plugin</artifactId>
-					 <version>1.8</version>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.8</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>

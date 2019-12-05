@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RuleParser {
 
-	private static final String DEFAULT_STRING_ENCODING = "UTF-8";
+	public static final String DEFAULT_STRING_ENCODING = "UTF-8";
 
 	private static Logger LOGGER = LoggerFactory.getLogger(RuleParser.class);
 

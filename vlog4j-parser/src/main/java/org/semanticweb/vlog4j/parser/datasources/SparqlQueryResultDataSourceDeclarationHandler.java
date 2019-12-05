@@ -2,7 +2,7 @@ package org.semanticweb.vlog4j.parser.datasources;
 
 /*-
  * #%L
- * vlog4j-parser
+ * VLog4j Parser
  * %%
  * Copyright (C) 2018 - 2019 VLog4j Developers
  * %%
@@ -20,15 +20,12 @@ package org.semanticweb.vlog4j.parser.datasources;
  * #L%
  */
 
-import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -48,12 +45,17 @@ public class SparqlQueryResultDataSourceDeclarationHandler implements DataSource
 		DataSourceDeclarationHandler.validateNumberOfArguments(arguments, 3);
 
 		String endpoint = arguments.get(0);
-		URL endpointUrl;
+		JavaCCParser parser = subParserFactory.makeSubParser(endpoint);
+		String parsedEndpoint;
 		try {
-			JavaCCParser parser = subParserFactory.makeSubParser(endpoint);
-			endpointUrl = new URL(parser.IRI(false));
+			parsedEndpoint = parser.IRI(false);
 		} catch (ParseException | PrefixDeclarationException e) {
 			throw new ParsingException(e);
+		}
+
+		URL endpointUrl;
+		try {
+			endpointUrl = new URL(parsedEndpoint);
 		} catch (MalformedURLException e) {
 			throw new ParsingException("SPARQL endpoint \"" + endpoint + "\" is not a valid URL: " + e.getMessage(), e);
 		}

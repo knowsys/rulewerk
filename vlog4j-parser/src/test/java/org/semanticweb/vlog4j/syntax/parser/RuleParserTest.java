@@ -367,7 +367,7 @@ public class RuleParserTest {
 	}
 
 	@Test(expected = ParsingException.class)
-	public void testInvalidDatatypeOnLiteral() throws ParsingException {
+	public void parseLiteral_invalidLiteralString_throws() throws ParsingException {
 		final String input = "P(\"a\")^^whatever";
 		RuleParser.parseLiteral(input);
 	}

@@ -41,9 +41,10 @@ public class RdfFileDataSourceDeclarationHandler implements DataSourceDeclaratio
 			throws ParsingException {
 		DataSourceDeclarationHandler.validateNumberOfArguments(arguments, 1);
 		String fileName = arguments.get(0);
+		File file = new File(fileName);
 
 		try {
-			return new RdfFileDataSource(new File(fileName));
+			return new RdfFileDataSource(file);
 		} catch (IOException e) {
 			throw new ParsingException("Could not use source file \"" + fileName + "\": " + e.getMessage(), e);
 		}

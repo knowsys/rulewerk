@@ -23,6 +23,7 @@ package org.semanticweb.vlog4j.parser.javacc;
 import java.util.HashSet;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
@@ -62,11 +63,11 @@ public class JavaCCParserBase {
 	/**
 	 * "Local" variable to remember existential head variables during parsing.
 	 */
-	protected final HashSet<String> headExiVars = new HashSet<String>();;
+	protected final HashSet<String> headExiVars = new HashSet<String>();
 	/**
 	 * "Local" variable to remember universal head variables during parsing.
 	 */
-	protected final HashSet<String> headUniVars = new HashSet<String>();;
+	protected final HashSet<String> headUniVars = new HashSet<String>();
 
 	/**
 	 * Defines the context for parsing sub-formulas.
@@ -93,12 +94,14 @@ public class JavaCCParserBase {
 		this.parserConfiguration = new DefaultParserConfiguration();
 	}
 
-	Constant createConstant(String lexicalForm) throws ParseException {
+	AbstractConstant createConstant(String lexicalForm) throws ParseException {
+		String absoluteIri;
 		try {
-			return Expressions.makeAbstractConstant(prefixDeclarations.absolutize(lexicalForm));
+			absoluteIri = prefixDeclarations.absolutize(lexicalForm);
 		} catch (PrefixDeclarationException e) {
 			throw makeParseExceptionWithCause(e);
 		}
+		return Expressions.makeAbstractConstant(absoluteIri);
 	}
 
 	Constant createConstant(String lexicalForm, String datatype) throws ParseException {
@@ -124,7 +127,7 @@ public class JavaCCParserBase {
 	void addDataSource(String predicateName, int arity, DataSource dataSource) throws ParseException {
 		if (dataSource.getRequiredArity().isPresent()) {
 			Integer requiredArity = dataSource.getRequiredArity().get();
-			if (requiredArity != arity) {
+			if (arity != requiredArity) {
 				throw new ParseException(
 						"Invalid arity " + arity + " for data source, " + "expected " + requiredArity + ".");
 			}
