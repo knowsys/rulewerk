@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
@@ -32,7 +33,7 @@ import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 /**
  * A SparqlQueryResultDataSource provide the results of a SPARQL query on a
  * given web endpoint.
- * 
+ *
  * @author Irina Dragoste
  *
  */
@@ -46,7 +47,7 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 
 	/**
 	 * Creates a data source from answers to a remote SPARQL query.
-	 * 
+	 *
 	 * @param endpoint       web location of the resource the query will be
 	 *                       evaluated on
 	 * @param queryVariables comma-separated list of SPARQL variable names (without
@@ -69,7 +70,7 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 
 	/**
 	 * Creates a data source from answers to a remote SPARQL query.
-	 * 
+	 *
 	 * @param endpoint       the web location of the resource the query will be
 	 *                       evaluated on.
 	 * @param queryVariables the variables of the query, in the given order. The
@@ -133,6 +134,10 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 			}
 		}
 		return sb.toString();
+	}
+
+	public Optional<Integer> getRequiredArity() {
+		return Optional.of(this.queryVariables.split(",").length);
 	}
 
 	@Override

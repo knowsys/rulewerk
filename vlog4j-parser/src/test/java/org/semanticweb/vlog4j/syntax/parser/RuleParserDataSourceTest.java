@@ -83,8 +83,10 @@ public class RuleParserDataSourceTest {
 	}
 
 	@Test(expected = ParsingException.class)
-	public void testSparqlSourceMalformedUrl() throws ParsingException, MalformedURLException {
-		String input = "@source p[2] : sparql(<not a URL>,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
+	public void parseDataSourceDeclaration_sparqlSourceInvalidArity_throws()
+			throws ParsingException, MalformedURLException {
+		String input = "@source p[3] : sparql(<" + WIKIDATA_SPARQL_ENDPOINT_URI
+				+ ">,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
 		RuleParser.parseDataSourceDeclaration(input);
 	}
 
@@ -113,7 +115,7 @@ public class RuleParserDataSourceTest {
 	@Test
 	public void sparqlDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
 		KnowledgeBase kb = new KnowledgeBase();
-		Predicate predicate1 = Expressions.makePredicate("p", 3);
+		Predicate predicate1 = Expressions.makePredicate("p", 1);
 		SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(new URL(WIKIDATA_SPARQL_ENDPOINT_URI),
 				"var", "?var wdt:P31 wd:Q5 .");
 		DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource);
