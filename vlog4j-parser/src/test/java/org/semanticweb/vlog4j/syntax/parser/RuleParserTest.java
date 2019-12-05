@@ -254,6 +254,18 @@ public class RuleParserTest {
 		assertEquals(fact, RuleParser.parseLiteral(input));
 	}
 
+	@Test(expected = ParsingException.class)
+	public void parseLiteral_invalidEscapeSequence_throws() throws ParsingException {
+		String input = "p(\"\\ÿ\")";
+		RuleParser.parseLiteral(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseLiteral_incompleteEscapeAtEndOfLiteral_throws() throws ParsingException {
+		String input = "p(\"\\\")";
+		RuleParser.parseLiteral(input);
+	}
+
 	@Test
 	public void testStringLiteralMultiLine() throws ParsingException {
 		String input = "p('''line 1\n\n" + "line 2\n" + "line 3''')"; // User input: p("a\"b\\c")

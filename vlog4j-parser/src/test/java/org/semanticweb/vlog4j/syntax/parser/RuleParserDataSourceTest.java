@@ -91,6 +91,45 @@ public class RuleParserDataSourceTest {
 	}
 
 	@Test(expected = ParsingException.class)
+	public void parseDataSourceDeclaration_sparqlSourceMalformedUri_throws()
+			throws ParsingException, MalformedURLException {
+		String input = "@source p[3] : sparql(\"<no-uri>\",\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
+		RuleParser.parseDataSourceDeclaration(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseDataSourceDeclaration_sparqlSourceUnknownPrefix_throws()
+			throws ParsingException, MalformedURLException {
+		String input = "@source p[3] : sparql(\"wdqs:sparql\",\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
+		RuleParser.parseDataSourceDeclaration(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseDataSourceDeclaration_sparqlSourceUnparseableUrl_throws()
+			throws ParsingException, MalformedURLException {
+		String input = "@source p[3] : sparql(\"wdqs:<sparql>\",\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
+		RuleParser.parseDataSourceDeclaration(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testSparqlSourceMalformedUrl() throws ParsingException, MalformedURLException {
+		String input = "@source p[2] : sparql(<not a URL>,\"disease, doid\",\"?disease wdt:P699 ?doid .\") .";
+		RuleParser.parseDataSourceDeclaration(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseDataSourceDeclaration_csvSourceInvalidPath_throws() throws ParsingException {
+		String input = "@source p[1] : load-csv(\"\0.csv\") .";
+		RuleParser.parseDataSourceDeclaration(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseDataSourceDeclaration_rdfSourceInvalidPath_throws() throws ParsingException {
+		String input = "@source p[3] : load-rdf(\"\0.nt\") .";
+		RuleParser.parseDataSourceDeclaration(input);
+	}
+
+	@Test(expected = ParsingException.class)
 	public void testUnknownDataSource() throws ParsingException {
 		String input = "@source p[2] : unknown-data-source(\"hello, world\") .";
 		RuleParser.parseDataSourceDeclaration(input);
@@ -143,5 +182,10 @@ public class RuleParserDataSourceTest {
 				unzippedCsvFileDataSource);
 		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
 		assertEquals(dataSourceDeclaration, kb.getDataSourceDeclarations().get(0));
+	}
+
+	@Test(expected = ParsingException.class)
+	public void sparqlDataSourceDeclaration_invalidNumberOfArguments_throws() throws ParsingException {
+		RuleParser.parseDataSourceDeclaration("@source p[1] : sparql(<" + WIKIDATA_SPARQL_ENDPOINT_URI + ">) .");
 	}
 }
