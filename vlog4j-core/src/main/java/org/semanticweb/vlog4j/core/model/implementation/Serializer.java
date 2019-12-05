@@ -191,7 +191,7 @@ public final class Serializer {
 	 */
 	public static String getString(final DatatypeConstant datatypeConstant) {
 		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
-			return addQuotes(datatypeConstant.getLexicalValue());
+			return addQuotes(escape(datatypeConstant.getLexicalValue()));
 		} else {
 			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
 					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
@@ -335,7 +335,15 @@ public final class Serializer {
 	}
 
 	private static String escape(final String string) {
-		return string.replace("\\", "\\\\").replace("\"", "\\\"");
+		return string
+			.replace("\\", "\\\\")
+			.replace("\"", "\\\"")
+			.replace("\t", "\\t")
+			.replace("\b", "\\b")
+			.replace("\n", "\\n")
+			.replace("\r", "\\r")
+			.replace("\f", "\\f");
+		// don't touch single quotes here since we only construct double-quoted strings
 	}
 
 	private static String addQuotes(final String string) {

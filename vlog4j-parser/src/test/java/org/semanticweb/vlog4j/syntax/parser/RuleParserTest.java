@@ -238,7 +238,7 @@ public class RuleParserTest {
 	}
 
 	@Test
-	public void testStringLiteralEscapes() throws ParsingException {
+	public void parseLiteral_escapeSequences_success() throws ParsingException {
 		String input = "p(\"_\\\"_\\\\_\\n_\\t_\")"; // User input: p("_\"_\\_\n_\t_")
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("_\"_\\_\n_\t_", PrefixDeclarations.XSD_STRING));
@@ -246,12 +246,26 @@ public class RuleParserTest {
 	}
 
 	@Test
-	public void testStringLiteralAllEscapes() throws ParsingException {
+	public void parseLiteral_escapeSequences_roundTrips() throws ParsingException {
+		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
+				Expressions.makeDatatypeConstant("_\"_\\_\n_\t_", PrefixDeclarations.XSD_STRING));
+		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
+	}
+
+	@Test
+	public void parseLiteral_allEscapeSequences_success() throws ParsingException {
 		// User input: p("_\n_\t_\r_\b_\f_\'_\"_\\_")
 		String input = "p(\"_\\n_\\t_\\r_\\b_\\f_\\'_\\\"_\\\\_\")";
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("_\n_\t_\r_\b_\f_\'_\"_\\_", PrefixDeclarations.XSD_STRING));
 		assertEquals(fact, RuleParser.parseLiteral(input));
+	}
+
+	@Test
+	public void parseLiteral_allEscapeSequences_roundTrips() throws ParsingException {
+		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
+				Expressions.makeDatatypeConstant("_\n_\t_\r_\b_\f_\'_\"_\\_", PrefixDeclarations.XSD_STRING));
+		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
 	}
 
 	@Test(expected = ParsingException.class)
@@ -267,11 +281,18 @@ public class RuleParserTest {
 	}
 
 	@Test
-	public void testStringLiteralMultiLine() throws ParsingException {
+	public void parseLiteral_multiLineLiteral_success() throws ParsingException {
 		String input = "p('''line 1\n\n" + "line 2\n" + "line 3''')"; // User input: p("a\"b\\c")
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("line 1\n\nline 2\nline 3", PrefixDeclarations.XSD_STRING));
 		assertEquals(fact, RuleParser.parseLiteral(input));
+	}
+
+	@Test
+	public void parseLiteral_multiLineLiteral_roundTrips() throws ParsingException {
+		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
+				Expressions.makeDatatypeConstant("line 1\n\nline 2\nline 3", PrefixDeclarations.XSD_STRING));
+		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
 	}
 
 	@Test(expected = ParsingException.class)
