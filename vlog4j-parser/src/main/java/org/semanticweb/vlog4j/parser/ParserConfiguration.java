@@ -136,7 +136,7 @@ public class ParserConfiguration {
 	 */
 	public ParserConfiguration registerDatatype(String name, DatatypeConstantHandler handler)
 			throws IllegalArgumentException {
-		Validate.isTrue(!dataSources.containsKey(name), "The Data type \"%s\" is already registered.", name);
+		Validate.isTrue(!datatypes.containsKey(name), "The Data type \"%s\" is already registered.", name);
 
 		this.datatypes.put(name, handler);
 		return this;
