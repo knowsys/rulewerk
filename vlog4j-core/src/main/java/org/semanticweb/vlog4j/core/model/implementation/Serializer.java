@@ -63,8 +63,8 @@ public final class Serializer {
 	public static final String AT = "@";
 	public static final String DATA_SOURCE = "@source ";
 	public static final String CSV_FILE_DATA_SOURCE = "load-csv";
-	private static final String RDF_FILE_DATA_SOURCE = "load-rdf";
-	private static final String SPARQL_QUERY_RESULT_DATA_SOURCE = "sparql";
+	public static final String RDF_FILE_DATA_SOURCE = "load-rdf";
+	public static final String SPARQL_QUERY_RESULT_DATA_SOURCE = "sparql";
 	public static final String DATA_SOURCE_SEPARATOR = ": ";
 	public static final String COLON = ":";
 	public static final String DOUBLE_CARET = "^^";

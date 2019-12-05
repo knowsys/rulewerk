@@ -20,6 +20,7 @@ package org.semanticweb.vlog4j.parser;
  * #L%
  */
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 import org.semanticweb.vlog4j.parser.datasources.CsvFileDataSourceDeclarationHandler;
 import org.semanticweb.vlog4j.parser.datasources.RdfFileDataSourceDeclarationHandler;
 import org.semanticweb.vlog4j.parser.datasources.SparqlQueryResultDataSourceDeclarationHandler;
@@ -39,8 +40,9 @@ public class DefaultParserConfiguration extends ParserConfiguration {
 	 * Register built-in data sources (currently CSV, RDF, SPARQL).
 	 */
 	private void registerDefaultDataSources() {
-		registerDataSource("load-csv", new CsvFileDataSourceDeclarationHandler());
-		registerDataSource("load-rdf", new RdfFileDataSourceDeclarationHandler());
-		registerDataSource("sparql", new SparqlQueryResultDataSourceDeclarationHandler());
+		registerDataSource(Serializer.CSV_FILE_DATA_SOURCE, new CsvFileDataSourceDeclarationHandler());
+		registerDataSource(Serializer.RDF_FILE_DATA_SOURCE, new RdfFileDataSourceDeclarationHandler());
+		registerDataSource(Serializer.SPARQL_QUERY_RESULT_DATA_SOURCE,
+				new SparqlQueryResultDataSourceDeclarationHandler());
 	}
 }
