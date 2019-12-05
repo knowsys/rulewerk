@@ -322,7 +322,7 @@ public final class Serializer {
 	}
 
 	private static String getFileString(final FileDataSource fileDataSource) {
-		return addQuotes(fileDataSource.getFile().toString());
+		return addQuotes(escape(fileDataSource.getFile().toString()));
 	}
 
 	private static String getIRIString(final String string) {

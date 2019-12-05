@@ -188,4 +188,9 @@ public class RuleParserDataSourceTest {
 	public void sparqlDataSourceDeclaration_invalidNumberOfArguments_throws() throws ParsingException {
 		RuleParser.parseDataSourceDeclaration("@source p[1] : sparql(<" + WIKIDATA_SPARQL_ENDPOINT_URI + ">) .");
 	}
+
+	@Test
+	public void parseDataSourceDeclaration_windowsStylePathName_success() throws ParsingException, IOException {
+		RuleParser.parseDataSourceDeclaration("@source p[1] : load-csv(\"\\\\test\\\\with\\\\backslashes.csv\") .");
+	}
 }
