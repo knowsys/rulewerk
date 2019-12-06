@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.parser.javacc;
 
+import java.io.ByteArrayInputStream;
+
 /*-
  * #%L
  * vlog4j-parser
@@ -21,7 +23,6 @@ package org.semanticweb.vlog4j.parser.javacc;
  */
 
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
 
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -29,23 +30,23 @@ import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
- * Factory for creating a SubParser sharing configuration, state, and
- * prefixes, but with an independent input stream, to be used, e.g.,
- * for parsing arguments in data source declarations.
+ * Factory for creating a SubParser sharing configuration, state, and prefixes,
+ * but with an independent input stream, to be used, e.g., for parsing arguments
+ * in data source declarations.
  *
  * @author Maximilian Marx
  */
 public class SubParserFactory {
-	private KnowledgeBase knowledgeBase;
-	private ParserConfiguration parserConfiguration;
-	private PrefixDeclarations prefixDeclarations;
+	private final KnowledgeBase knowledgeBase;
+	private final ParserConfiguration parserConfiguration;
+	private final PrefixDeclarations prefixDeclarations;
 
 	/**
 	 * Construct a SubParserFactory.
 	 *
-	 * @argument parser the parser instance to get the state from.
+	 * @param parser the parser instance to get the state from.
 	 */
-	SubParserFactory(JavaCCParser parser) {
+	SubParserFactory(final JavaCCParser parser) {
 		this.knowledgeBase = parser.getKnowledgeBase();
 		this.prefixDeclarations = parser.getPrefixDeclarations();
 		this.parserConfiguration = parser.getParserConfiguration();
@@ -54,14 +55,14 @@ public class SubParserFactory {
 	/**
 	 * Create a new parser with the specified state and given input.
 	 *
-	 * @argument inputStream the input stream to parse.
-	 * @argument encoding encoding of the input stream.
+	 * @param inputStream the input stream to parse.
+	 * @param encoding    encoding of the input stream.
 	 *
-	 * @return A new {@link JavaCCParser} bound to inputStream and
-	 * with the specified parser state.
+	 * @return A new {@link JavaCCParser} bound to inputStream and with the
+	 *         specified parser state.
 	 */
 	public JavaCCParser makeSubParser(final InputStream inputStream, final String encoding) {
-		JavaCCParser subParser = new JavaCCParser(inputStream, encoding);
+		final JavaCCParser subParser = new JavaCCParser(inputStream, encoding);
 		subParser.setKnowledgeBase(this.knowledgeBase);
 		subParser.setPrefixDeclarations(this.prefixDeclarations);
 		subParser.setParserConfiguration(this.parserConfiguration);
@@ -70,10 +71,10 @@ public class SubParserFactory {
 	}
 
 	public JavaCCParser makeSubParser(final InputStream inputStream) {
-		return makeSubParser(inputStream, RuleParser.DEFAULT_STRING_ENCODING);
+		return this.makeSubParser(inputStream, RuleParser.DEFAULT_STRING_ENCODING);
 	}
 
 	public JavaCCParser makeSubParser(final String string) {
-		return makeSubParser(new ByteArrayInputStream(string.getBytes()));
+		return this.makeSubParser(new ByteArrayInputStream(string.getBytes()));
 	}
 }

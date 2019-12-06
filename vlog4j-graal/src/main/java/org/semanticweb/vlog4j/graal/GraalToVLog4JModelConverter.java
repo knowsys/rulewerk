@@ -93,8 +93,8 @@ public final class GraalToVLog4JModelConverter {
 	 * Atoms} into a {@link List} of {@link PositiveLiteral VLog4J
 	 * PositiveLiterals}.
 	 *
-	 * @param literals A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom
-	 *                 Graal Atoms}.
+	 * @param literals list of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
+	 *                 Atoms}.
 	 * @return A {@link List} of {@link PositiveLiteral VLog4J PositiveLiterals}.
 	 */
 	public static List<PositiveLiteral> convertAtoms(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
@@ -109,8 +109,8 @@ public final class GraalToVLog4JModelConverter {
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
 	 * Atoms} into a {@link List} of {@link Fact VLog4j facts}.
 	 *
-	 * @param literals A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom
-	 *                 Graal Atoms}.
+	 * @param literals list of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
+	 *                 Atoms}.
 	 * @return A {@link List} of {@link Fact VLog4j facts}.
 	 */
 	public static List<Fact> convertAtomsToFacts(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {

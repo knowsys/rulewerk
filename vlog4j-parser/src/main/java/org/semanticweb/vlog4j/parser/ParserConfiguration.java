@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
@@ -39,12 +40,12 @@ public class ParserConfiguration {
 	/**
 	 * The registered data sources.
 	 */
-	private HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
+	private final HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
 
 	/**
 	 * The registered datatypes.
 	 */
-	private HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
+	private final HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
 
 	/**
 	 * Register a new (type of) Data Source.
@@ -53,8 +54,8 @@ public class ParserConfiguration {
 	 * production of the rules grammar, corresponding to some {@link DataSource}
 	 * type.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki/Rule-syntax-grammar"> for the
-	 *      grammar.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki/Rule-syntax-grammar">
+	 *      the grammar</a>.
 	 *
 	 * @param name    Name of the data source, as it appears in the declaring
 	 *                directive.
@@ -63,9 +64,9 @@ public class ParserConfiguration {
 	 * @throws IllegalArgumentException if the provided name is already registered.
 	 * @return this
 	 */
-	public ParserConfiguration registerDataSource(String name, DataSourceDeclarationHandler handler)
+	public ParserConfiguration registerDataSource(final String name, final DataSourceDeclarationHandler handler)
 			throws IllegalArgumentException {
-		Validate.isTrue(!dataSources.containsKey(name), "The Data Source \"%s\" is already registered.", name);
+		Validate.isTrue(!this.dataSources.containsKey(name), "The Data Source \"%s\" is already registered.", name);
 
 		this.dataSources.put(name, handler);
 		return this;
@@ -87,9 +88,9 @@ public class ParserConfiguration {
 	 *
 	 * @return the Data Source instance.
 	 */
-	public DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(String name, List<String> args,
+	public DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(final String name, final List<String> args,
 			final SubParserFactory subParserFactory) throws ParsingException {
-		DataSourceDeclarationHandler handler = dataSources.get(name);
+		final DataSourceDeclarationHandler handler = this.dataSources.get(name);
 
 		if (handler == null) {
 			throw new ParsingException("Data source \"" + name + "\" is not known.");
@@ -104,8 +105,7 @@ public class ParserConfiguration {
 	 * @param lexicalForm the (unescaped) lexical form of the constant.
 	 * @param languageTag the language tag, or null if not present.
 	 * @param the         datatype, or null if not present.
-	 * @note At most one of {@code languageTag} and {@code datatype} may be
-	 *       non-null.
+	 * @pre At most one of {@code languageTag} and {@code datatype} may be non-null.
 	 *
 	 * @throws ParsingException         when the lexical form is invalid for the
 	 *                                  given data type.
@@ -113,21 +113,21 @@ public class ParserConfiguration {
 	 *                                  {@code datatype} are non-null.
 	 * @return the {@link Constant} corresponding to the given arguments.
 	 */
-	public Constant parseConstant(String lexicalForm, String languageTag, String datatype)
+	public Constant parseConstant(final String lexicalForm, final String languageTag, final String datatype)
 			throws ParsingException, IllegalArgumentException {
-		Validate.isTrue(languageTag == null || datatype == null,
+		Validate.isTrue((languageTag == null) || (datatype == null),
 				"A constant with a language tag may not explicitly specify a data type.");
 
 		if (languageTag != null) {
 			return Expressions.makeLanguageStringConstant(lexicalForm, languageTag);
 		} else {
-			return parseDatatypeConstant(lexicalForm, datatype);
+			return this.parseDatatypeConstant(lexicalForm, datatype);
 		}
 	}
 
-	private Constant parseDatatypeConstant(String lexicalForm, String datatype) throws ParsingException {
-		String type = ((datatype != null) ? datatype : PrefixDeclarations.XSD_STRING);
-		DatatypeConstantHandler handler = datatypes.get(type);
+	private Constant parseDatatypeConstant(final String lexicalForm, final String datatype) throws ParsingException {
+		final String type = ((datatype != null) ? datatype : PrefixDeclarations.XSD_STRING);
+		final DatatypeConstantHandler handler = this.datatypes.get(type);
 
 		if (handler != null) {
 			return handler.createConstant(lexicalForm);
@@ -148,9 +148,9 @@ public class ParserConfiguration {
 	 *
 	 * @return this
 	 */
-	public ParserConfiguration registerDatatype(String name, DatatypeConstantHandler handler)
+	public ParserConfiguration registerDatatype(final String name, final DatatypeConstantHandler handler)
 			throws IllegalArgumentException {
-		Validate.isTrue(!datatypes.containsKey(name), "The Data type \"%s\" is already registered.", name);
+		Validate.isTrue(!this.datatypes.containsKey(name), "The Data type \"%s\" is already registered.", name);
 
 		this.datatypes.put(name, handler);
 		return this;
