@@ -22,7 +22,7 @@ The current release of VLog4j is version 0.5.0. The easiest way of using the lib
 You need to use Java 1.8 or above. Available modules include:
 
 * **vlog4j-core**: essential data models for rules and facts, and essential reasoner functionality
-* **vlog4j-parser**: support for processing knowledge bases in VLog4j syntax
+* **vlog4j-parser**: support for processing knowledge bases in [VLog4j syntax](https://github.com/knowsys/vlog4j/wiki/Rule-syntax-grammar)
 * **vlog4j-graal**: support for converting rules, facts and queries from [Graal](http://graphik-team.github.io/graal/) API objects and [DLGP](http://graphik-team.github.io/graal/doc/dlgp) files
 * **vlog4j-rdf**: support for reading from RDF files in Java (not required for loading RDF directly during reasoning)
 * **vlog4j-owlapi**: support for converting rules from OWL ontology, loaded with the OWL API
@@ -41,7 +41,7 @@ Documentation
 * The module **vlog4j-examples** includes short example programs that demonstrate various features and use cases
 * The GitHub project **[VLog4j Example](https://github.com/knowsys/vlog4j-example)** shows how to use VLog4j in own Maven projects and can be used as a skeleton for own projects
 * [JavaDoc](https://knowsys.github.io/vlog4j/) is available online and through the Maven packages.
-* A VLog4j [Wiki](https://github.com/knowsys/vlog4j/wiki) is available online, with detailed information about vlog4j usage, the supported rule language, and related publications.
+* A VLog4j [Wiki](https://github.com/knowsys/vlog4j/wiki) is available online, with detailed information about vlog4j usage, the supported rule language [examples](https://github.com/knowsys/vlog4j/wiki/Rule-syntax-by-examples) and [grammar](https://github.com/knowsys/vlog4j/wiki/Rule-syntax-grammar), and related publications.
 
 Development
 -----------
