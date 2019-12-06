@@ -136,6 +136,7 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 		return sb.toString();
 	}
 
+	@Override
 	public Optional<Integer> getRequiredArity() {
 		return Optional.of(this.queryVariables.split(",").length);
 	}

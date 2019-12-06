@@ -109,8 +109,8 @@ public class ParserConfiguration {
 	 *
 	 * @throws ParsingException         when the lexical form is invalid for the
 	 *                                  given data type.
-	 * @throws IllegalArgumentException when neither {@code languageTag} and
-	 *                                  {@code datatype} are null.
+	 * @throws IllegalArgumentException when both {@code languageTag} and
+	 *                                  {@code datatype} are non-null.
 	 * @return the {@link Constant} corresponding to the given arguments.
 	 */
 	public Constant parseConstant(String lexicalForm, String languageTag, String datatype)

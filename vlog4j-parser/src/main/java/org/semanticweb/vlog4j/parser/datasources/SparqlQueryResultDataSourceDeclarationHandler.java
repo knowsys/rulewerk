@@ -50,7 +50,7 @@ public class SparqlQueryResultDataSourceDeclarationHandler implements DataSource
 		try {
 			parsedEndpoint = parser.IRI(false);
 		} catch (ParseException | PrefixDeclarationException e) {
-			throw new ParsingException(e);
+			throw new ParsingException("Error while parsing endpoint IRI in SPARQL query data source: " + e.getMessage(), e);
 		}
 
 		URL endpointUrl;

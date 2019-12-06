@@ -99,7 +99,7 @@ public class JavaCCParserBase {
 		try {
 			absoluteIri = prefixDeclarations.absolutize(lexicalForm);
 		} catch (PrefixDeclarationException e) {
-			throw makeParseExceptionWithCause(e);
+			throw makeParseExceptionWithCause("Failed to parse IRI", e);
 		}
 		return Expressions.makeAbstractConstant(absoluteIri);
 	}
@@ -120,7 +120,7 @@ public class JavaCCParserBase {
 		try {
 			return parserConfiguration.parseConstant(lexicalForm, languageTag, datatype);
 		} catch (ParsingException e) {
-			throw makeParseExceptionWithCause(e);
+			throw makeParseExceptionWithCause("Failed to parse Constant", e);
 		}
 	}
 
@@ -247,10 +247,6 @@ public class JavaCCParserBase {
 		ParseException parseException = new ParseException(message);
 		parseException.initCause(cause);
 		return parseException;
-	}
-
-	protected ParseException makeParseExceptionWithCause(Throwable cause) {
-		return makeParseExceptionWithCause(cause.getMessage(), cause);
 	}
 
 	public void setKnowledgeBase(KnowledgeBase knowledgeBase) {

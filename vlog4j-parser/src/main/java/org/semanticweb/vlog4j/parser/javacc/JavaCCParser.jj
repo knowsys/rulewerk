@@ -124,7 +124,7 @@ DataSource dataSource() throws PrefixDeclarationException:
         try {
             return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(sourceName.image, arguments, getSubParserFactory());
         } catch (ParsingException e) {
-			throw makeParseExceptionWithCause(e);
+			throw makeParseExceptionWithCause("Failed while trying to parse the source-specific part of a data source declaration", e);
         }
     }
 }

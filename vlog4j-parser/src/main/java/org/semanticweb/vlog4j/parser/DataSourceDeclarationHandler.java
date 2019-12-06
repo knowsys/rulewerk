@@ -35,15 +35,15 @@ public interface DataSourceDeclarationHandler {
 	/**
 	 * Parse a Data Source Declaration.
 	 *
-	 * This is called by the parser to instantiate the {@link DataSource}
-	 * component of a {@link DataSourceDeclaration}.
+	 * This is called by the parser to instantiate the {@link DataSource} component
+	 * of a {@link DataSourceDeclaration}.
 	 *
 	 * @param arguments        Arguments given to the Data Source declaration.
 	 * @param subParserFactory a factory for obtaining a SubParser, sharing the
 	 *                         parser's state, but bound to new input.
 	 *
-	 * @throws ParsingException when the given arity or arguments are invalid for
-	 *                          the Data Source.
+	 * @throws ParsingException when any of the arguments is invalid for the Data
+	 *                          Source, or the number of arguments is invalid.
 	 * @return a {@link DataSource} instance corresponding to the given arguments.
 	 */
 	public DataSource handleDeclaration(List<String> arguments, final SubParserFactory subParserFactory)

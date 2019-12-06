@@ -411,7 +411,7 @@ public class RuleParserTest {
 	@Test
 	public void predicateRelativeNumericIRITest() throws ParsingException {
 		AbstractConstantImpl a = new AbstractConstantImpl("a");
-		Fact f = RuleParser.parseFact("<1.e1>(a).");
+		Fact f = RuleParser.parseFact("<1.e1>(a)."); // 1.e1 == "10"^^xsd:double
 		Fact f2 = Expressions.makeFact("1.e1", a);
 		assertEquals(f, f2);
 	}
