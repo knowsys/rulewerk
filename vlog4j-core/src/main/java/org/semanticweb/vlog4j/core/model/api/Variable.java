@@ -21,9 +21,10 @@ package org.semanticweb.vlog4j.core.model.api;
  */
 
 /**
- * Interface for variables, i.e., terms of type {@link TermType#VARIABLE}.
- * Variables are terms that can be quantified to create formulas that refer to
- * some or all values of the domain.
+ * Interface for variables, i.e., terms of type
+ * {@link TermType#UNIVERSAL_VARIABLE} and
+ * {@link TermType#EXISTENTIAL_VARIABLE}. Variables are terms that can be
+ * quantified to create formulas that refer to some or all values of the domain.
  *
  * @author david.carral@tu-dresden.de
  * @author Markus Krötzsch

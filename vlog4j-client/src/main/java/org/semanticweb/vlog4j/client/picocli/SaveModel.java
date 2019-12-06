@@ -63,10 +63,10 @@ public class SaveModel {
 	}
 
 	/**
-	 * Check correct configuration of the class. If @code{--save-model} is true,
-	 * then a non-empty @code{--output-model-directory} is required.
+	 * Check correct configuration of the class. If {@code --save-model} is true,
+	 * then a non-empty {@code --output-model-directory} is required.
 	 *
-	 * @return @code{true} if configuration is valid.
+	 * @return {@code true} if configuration is valid.
 	 */
 	public boolean isConfigurationValid() {
 		return !this.saveModel || ((this.outputModelDirectory != null) && !this.outputModelDirectory.isEmpty());
@@ -75,7 +75,7 @@ public class SaveModel {
 	/**
 	 * Check that the path to store the model is either non-existing or a directory.
 	 *
-	 * @return @code{true} if conditions are satisfied.
+	 * @return {@code true} if conditions are satisfied.
 	 */
 	public boolean isDirectoryValid() {
 		final File file = new File(this.outputModelDirectory);

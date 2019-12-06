@@ -100,8 +100,8 @@ public final class ExamplesUtils {
 	 * Prints out the answers given by {@code reasoner} to the query
 	 * ({@code queryAtom}).
 	 *
-	 * @param queryAtom query to be answered
-	 * @param reasoner  reasoner to query on
+	 * @param queryString query to be answered
+	 * @param reasoner    reasoner to query on
 	 */
 	public static void printOutQueryAnswers(final String queryString, final Reasoner reasoner) {
 		try {
@@ -129,8 +129,8 @@ public final class ExamplesUtils {
 	 * Returns the number of answers returned by {@code reasoner} to the query
 	 * ({@code queryAtom}).
 	 *
-	 * @param queryAtom query to be answered
-	 * @param reasoner  reasoner to query on
+	 * @param queryString query to be answered
+	 * @param reasoner    reasoner to query on
 	 */
 	public static int getQueryAnswerCount(final String queryString, final Reasoner reasoner) {
 		try {

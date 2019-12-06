@@ -88,7 +88,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Rule}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param rule a {@link Rule}.
 	 * @return String representation corresponding to a given {@link Rule}.
 	 *
@@ -100,7 +100,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Conjunction}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param conjunction a {@link Conjunction}
 	 * @return String representation corresponding to a given {@link Conjunction}.
 	 */
@@ -121,7 +121,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Literal}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param literal a {@link Literal}
 	 * @return String representation corresponding to a given {@link Literal}.
 	 */
@@ -148,7 +148,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Fact}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param fact a {@link Fact}
 	 * @return String representation corresponding to a given {@link Fact}.
 	 */
@@ -159,7 +159,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Constant}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param constant a {@link Constant}
 	 * @return String representation corresponding to a given {@link Constant}.
 	 */
@@ -171,7 +171,7 @@ public final class Serializer {
 	 * Creates a String representation corresponding to the name of a given
 	 * {@link LanguageStringConstant}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param languageStringConstant a {@link LanguageStringConstant}
 	 * @return String representation corresponding to the name of a given
 	 *         {@link LanguageStringConstant}.
@@ -184,7 +184,7 @@ public final class Serializer {
 	 * Creates a String representation corresponding to the name of a given
 	 * {@link DatatypeConstant} without an IRI.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
@@ -207,7 +207,7 @@ public final class Serializer {
 	 * Creates a String representation corresponding to the name of a given
 	 * {@link DatatypeConstant} including an IRI.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
@@ -220,7 +220,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link ExistentialVariable}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param existentialVariable a {@link ExistentialVariable}
 	 * @return String representation corresponding to a given
 	 *         {@link ExistentialVariable}.
@@ -232,7 +232,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link UniversalVariable}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param universalVariable a {@link UniversalVariable}
 	 * @return String representation corresponding to a given
 	 *         {@link UniversalVariable}.
@@ -244,7 +244,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link NamedNull}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param namedNull a {@link NamedNull}
 	 * @return String representation corresponding to a given {@link NamedNull}.
 	 */
@@ -255,7 +255,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Predicate}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param predicate a {@link Predicate}
 	 * @return String representation corresponding to a given {@link Predicate}.
 	 */
@@ -266,7 +266,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link DataSourceDeclaration}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param dataSourceDeclaration a {@link DataSourceDeclaration}
 	 * @return String representation corresponding to a given
 	 *         {@link DataSourceDeclaration}.
@@ -279,7 +279,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link CsvFileDataSource}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki">.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> ..
 	 *
 	 * @param csvFileDataSource
 	 * @return String representation corresponding to a given
@@ -292,7 +292,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link RdfFileDataSource}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki">.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> ..
 	 *
 	 *
 	 * @param rdfFileDataSource
@@ -307,7 +307,7 @@ public final class Serializer {
 	 * Creates a String representation of a given
 	 * {@link SparqlQueryResultDataSource}.
 	 *
-	 * @see <"https://github.com/knowsys/vlog4j/wiki">.
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 *
 	 *
 	 * @param dataSource
@@ -335,14 +335,8 @@ public final class Serializer {
 	}
 
 	private static String escape(final String string) {
-		return string
-			.replace("\\", "\\\\")
-			.replace("\"", "\\\"")
-			.replace("\t", "\\t")
-			.replace("\b", "\\b")
-			.replace("\n", "\\n")
-			.replace("\r", "\\r")
-			.replace("\f", "\\f");
+		return string.replace("\\", "\\\\").replace("\"", "\\\"").replace("\t", "\\t").replace("\b", "\\b")
+				.replace("\n", "\\n").replace("\r", "\\r").replace("\f", "\\f");
 		// don't touch single quotes here since we only construct double-quoted strings
 	}
 

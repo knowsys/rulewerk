@@ -64,10 +64,10 @@ public class SaveQueryResults {
 	}
 
 	/**
-	 * Check correct configuration of the class. If @code{--save-query-results} is
-	 * true, then a non-empty @code{--output-query-result-directory} is required.
+	 * Check correct configuration of the class. If {@code --save-query-results} is
+	 * true, then a non-empty {@code --output-query-result-directory} is required.
 	 *
-	 * @return @code{true} if configuration is valid.
+	 * @return {@code true} if configuration is valid.
 	 */
 	public boolean isConfigurationValid() {
 		return !this.saveResults
@@ -78,7 +78,7 @@ public class SaveQueryResults {
 	 * Check that the path to store the query results is either non-existing or a
 	 * directory.
 	 *
-	 * @return @code{true} if conditions are satisfied.
+	 * @return {@code true} if conditions are satisfied.
 	 */
 	public boolean isDirectoryValid() {
 		final File file = new File(this.outputQueryResultDirectory);

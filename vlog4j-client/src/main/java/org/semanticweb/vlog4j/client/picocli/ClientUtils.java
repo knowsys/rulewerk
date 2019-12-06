@@ -96,6 +96,8 @@ public final class ClientUtils {
 	 *
 	 * @param queryAtom query to be answered
 	 * @param reasoner  reasoner to query on
+	 * 
+	 * @return number of answers to the given query
 	 */
 	public static int getQueryAnswerCount(final PositiveLiteral queryAtom, final Reasoner reasoner) {
 		try (final QueryResultIterator answers = reasoner.answerQuery(queryAtom, true)) {

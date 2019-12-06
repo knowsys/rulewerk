@@ -29,14 +29,12 @@ package org.semanticweb.vlog4j.core.reasoner;
  */
 public enum ReasonerState {
 	/**
-	 * State a Reasoner is in before method {@link Reasoner#load()} has been called.
-	 * Querying is not allowed in this state.
+	 * State a Reasoner is in before loading. Querying is not allowed in this state.
 	 */
 	KB_NOT_LOADED("knowledge base not loaded"),
 	/**
-	 * State a Reasoner is in after method {@link Reasoner#load()} has been called,
-	 * and before method {@link Reasoner#reason()} has been called. The Reasoner can
-	 * be queried.
+	 * State a Reasoner is in after loading, and before method
+	 * {@link Reasoner#reason()} has been called. The Reasoner can be queried.
 	 */
 	KB_LOADED("knowledge base loaded"),
 
@@ -65,13 +63,13 @@ public enum ReasonerState {
 
 	private final String name;
 
-	private ReasonerState(String name) {
+	private ReasonerState(final String name) {
 		this.name = name;
 	}
 
 	@Override
 	public String toString() {
-		return name;
+		return this.name;
 	}
 
 }

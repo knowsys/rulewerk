@@ -63,18 +63,18 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	private class AddStatementVisitor implements StatementVisitor<Boolean> {
 		@Override
-		public Boolean visit(Fact statement) {
-			addFact(statement);
+		public Boolean visit(final Fact statement) {
+			KnowledgeBase.this.addFact(statement);
 			return true;
 		}
 
 		@Override
-		public Boolean visit(Rule statement) {
+		public Boolean visit(final Rule statement) {
 			return true;
 		}
 
 		@Override
-		public Boolean visit(DataSourceDeclaration statement) {
+		public Boolean visit(final DataSourceDeclaration statement) {
 			KnowledgeBase.this.dataSourceDeclarations.add(statement);
 			return true;
 		}
@@ -92,18 +92,18 @@ public class KnowledgeBase implements Iterable<Statement> {
 	private class RemoveStatementVisitor implements StatementVisitor<Boolean> {
 
 		@Override
-		public Boolean visit(Fact statement) {
-			removeFact(statement);
+		public Boolean visit(final Fact statement) {
+			KnowledgeBase.this.removeFact(statement);
 			return true;
 		}
 
 		@Override
-		public Boolean visit(Rule statement) {
+		public Boolean visit(final Rule statement) {
 			return true;
 		}
 
 		@Override
-		public Boolean visit(DataSourceDeclaration statement) {
+		public Boolean visit(final DataSourceDeclaration statement) {
 			KnowledgeBase.this.dataSourceDeclarations.remove(statement);
 			return true;
 		}
@@ -116,7 +116,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 		final ArrayList<T> extracted = new ArrayList<>();
 		final Class<T> ownType;
 
-		ExtractStatementsVisitor(Class<T> type) {
+		ExtractStatementsVisitor(final Class<T> type) {
 			this.ownType = type;
 		}
 
@@ -126,7 +126,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public Void visit(Fact statement) {
+		public Void visit(final Fact statement) {
 			if (this.ownType.equals(Fact.class)) {
 				this.extracted.add((T) statement);
 			}
@@ -135,7 +135,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public Void visit(Rule statement) {
+		public Void visit(final Rule statement) {
 			if (this.ownType.equals(Rule.class)) {
 				this.extracted.add((T) statement);
 			}
@@ -144,7 +144,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public Void visit(DataSourceDeclaration statement) {
+		public Void visit(final DataSourceDeclaration statement) {
 			if (this.ownType.equals(DataSourceDeclaration.class)) {
 				this.extracted.add((T) statement);
 			}
@@ -181,7 +181,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * 
 	 * @param listener
 	 */
-	public void addListener(KnowledgeBaseListener listener) {
+	public void addListener(final KnowledgeBaseListener listener) {
 		this.listeners.add(listener);
 	}
 
@@ -190,7 +190,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * 
 	 * @param listener
 	 */
-	public void deleteListener(KnowledgeBaseListener listener) {
+	public void deleteListener(final KnowledgeBaseListener listener) {
 		this.listeners.remove(listener);
 
 	}
@@ -199,11 +199,10 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * Adds a single statement to the knowledge base.
 	 * 
 	 * @param statement the statement to be added
-	 * @return true, if the knowledge base has changed.
 	 */
-	public void addStatement(Statement statement) {
-		if (doAddStatement(statement)) {
-			notifyListenersOnStatementAdded(statement);
+	public void addStatement(final Statement statement) {
+		if (this.doAddStatement(statement)) {
+			this.notifyListenersOnStatementAdded(statement);
 		}
 	}
 
@@ -213,7 +212,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @param statement the statement to be added
 	 * @return true, if the knowledge base has changed.
 	 */
-	boolean doAddStatement(Statement statement) {
+	boolean doAddStatement(final Statement statement) {
 		Validate.notNull(statement, "Statement cannot be Null!");
 		if (!this.statements.contains(statement) && statement.accept(this.addStatementVisitor)) {
 			this.statements.add(statement);
@@ -227,16 +226,16 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * 
 	 * @param statements the statements to be added
 	 */
-	public void addStatements(Collection<? extends Statement> statements) {
+	public void addStatements(final Collection<? extends Statement> statements) {
 		final List<Statement> addedStatements = new ArrayList<>();
 
 		for (final Statement statement : statements) {
-			if (doAddStatement(statement)) {
+			if (this.doAddStatement(statement)) {
 				addedStatements.add(statement);
 			}
 		}
 
-		notifyListenersOnStatementsAdded(addedStatements);
+		this.notifyListenersOnStatementsAdded(addedStatements);
 	}
 
 	/**
@@ -244,27 +243,26 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * 
 	 * @param statements the statements to be added
 	 */
-	public void addStatements(Statement... statements) {
+	public void addStatements(final Statement... statements) {
 		final List<Statement> addedStatements = new ArrayList<>();
 
 		for (final Statement statement : statements) {
-			if (doAddStatement(statement)) {
+			if (this.doAddStatement(statement)) {
 				addedStatements.add(statement);
 			}
 		}
 
-		notifyListenersOnStatementsAdded(addedStatements);
+		this.notifyListenersOnStatementsAdded(addedStatements);
 	}
 
 	/**
 	 * Removes a single statement from the knowledge base.
 	 * 
-	 * @return true, if the knowledge base has changed.
 	 * @param statement the statement to remove
 	 */
-	public void removeStatement(Statement statement) {
-		if (doRemoveStatement(statement)) {
-			notifyListenersOnStatementRemoved(statement);
+	public void removeStatement(final Statement statement) {
+		if (this.doRemoveStatement(statement)) {
+			this.notifyListenersOnStatementRemoved(statement);
 		}
 	}
 
@@ -274,7 +272,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @param statement the statement to remove
 	 * @return true, if the knowledge base has changed.
 	 */
-	boolean doRemoveStatement(Statement statement) {
+	boolean doRemoveStatement(final Statement statement) {
 		Validate.notNull(statement, "Statement cannot be Null!");
 
 		if (this.statements.contains(statement) && statement.accept(this.removeStatementVisitor)) {
@@ -289,16 +287,16 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * 
 	 * @param statements the statements to remove
 	 */
-	public void removeStatements(Collection<? extends Statement> statements) {
+	public void removeStatements(final Collection<? extends Statement> statements) {
 		final List<Statement> removedStatements = new ArrayList<>();
 
 		for (final Statement statement : statements) {
-			if (doRemoveStatement(statement)) {
+			if (this.doRemoveStatement(statement)) {
 				removedStatements.add(statement);
 			}
 		}
 
-		notifyListenersOnStatementsRemoved(removedStatements);
+		this.notifyListenersOnStatementsRemoved(removedStatements);
 	}
 
 	/**
@@ -306,16 +304,16 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * 
 	 * @param statements the statements to remove
 	 */
-	public void removeStatements(Statement... statements) {
+	public void removeStatements(final Statement... statements) {
 		final List<Statement> removedStatements = new ArrayList<>();
 
 		for (final Statement statement : statements) {
-			if (doRemoveStatement(statement)) {
+			if (this.doRemoveStatement(statement)) {
 				removedStatements.add(statement);
 			}
 		}
 
-		notifyListenersOnStatementsRemoved(removedStatements);
+		this.notifyListenersOnStatementsRemoved(removedStatements);
 	}
 
 	private void notifyListenersOnStatementAdded(final Statement addedStatement) {
@@ -332,13 +330,13 @@ public class KnowledgeBase implements Iterable<Statement> {
 		}
 	}
 
-	private void notifyListenersOnStatementRemoved(Statement removedStatement) {
+	private void notifyListenersOnStatementRemoved(final Statement removedStatement) {
 		for (final KnowledgeBaseListener listener : this.listeners) {
 			listener.onStatementRemoved(removedStatement);
 		}
 	}
 
-	private void notifyListenersOnStatementsRemoved(List<Statement> removedStatements) {
+	private void notifyListenersOnStatementsRemoved(final List<Statement> removedStatements) {
 		if (!removedStatements.isEmpty()) {
 			for (final KnowledgeBaseListener listener : this.listeners) {
 				listener.onStatementsRemoved(removedStatements);
@@ -353,7 +351,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @return list of {@link Rule}s
 	 */
 	public List<Rule> getRules() {
-		return getStatementsByType(Rule.class);
+		return this.getStatementsByType(Rule.class);
 	}
 
 	/**
@@ -363,7 +361,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @return list of {@link Fact}s
 	 */
 	public List<Fact> getFacts() {
-		return getStatementsByType(Fact.class);
+		return this.getStatementsByType(Fact.class);
 	}
 
 	/**
@@ -374,10 +372,10 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @return list of {@link DataSourceDeclaration}s
 	 */
 	public List<DataSourceDeclaration> getDataSourceDeclarations() {
-		return getStatementsByType(DataSourceDeclaration.class);
+		return this.getStatementsByType(DataSourceDeclaration.class);
 	}
 
-	<T> List<T> getStatementsByType(Class<T> type) {
+	<T> List<T> getStatementsByType(final Class<T> type) {
 		final ExtractStatementsVisitor<T> visitor = new ExtractStatementsVisitor<>(type);
 		for (final Statement statement : this.statements) {
 			statement.accept(visitor);
@@ -391,7 +389,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * 
 	 * @param fact the fact to add
 	 */
-	void addFact(Fact fact) {
+	void addFact(final Fact fact) {
 		final Predicate predicate = fact.getPredicate();
 		this.factsByPredicate.putIfAbsent(predicate, new HashSet<>());
 		this.factsByPredicate.get(predicate).add(fact);
@@ -403,7 +401,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * 
 	 * @param fact the fact to remove
 	 */
-	void removeFact(Fact fact) {
+	void removeFact(final Fact fact) {
 		final Predicate predicate = fact.getPredicate();
 		final Set<PositiveLiteral> facts = this.factsByPredicate.get(predicate);
 		facts.remove(fact);

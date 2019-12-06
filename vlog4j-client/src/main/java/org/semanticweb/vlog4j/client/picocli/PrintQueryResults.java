@@ -59,10 +59,10 @@ public class PrintQueryResults {
 	}
 
 	/**
-	 * Check correct configuration of the class. @code{--print-query-result-size}
-	 * and @code{--print-query-result} are mutually exclusive.
+	 * Check correct configuration of the class. {@code --print-query-result-size}
+	 * and {@code --print-query-result} are mutually exclusive.
 	 *
-	 * @return @code{true} if configuration is valid.
+	 * @return {@code true} if configuration is valid.
 	 */
 	public boolean isValid() {
 		return !this.sizeOnly || !this.complete;
