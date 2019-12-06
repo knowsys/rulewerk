@@ -11,9 +11,9 @@ import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,7 +44,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultData
 /**
  * A utility class with static methods to obtain the correct parsable string
  * representation of the different data models.
- * 
+ *
  * @author Ali Elhalawati
  *
  */
@@ -55,14 +55,16 @@ public final class Serializer {
 	public static final String EXISTENTIAL_IDENTIFIER = "!";
 	public static final String UNIVERSAL_IDENTIFIER = "?";
 	public static final String NAMEDNULL_IDENTIFIER = "_";
-	public static final String OPEN_PARENTHESIS = "(";
+	public static final String OPENING_PARENTHESIS = "(";
 	public static final String CLOSING_PARENTHESIS = ")";
+	public static final String OPENING_BRACKET = "[";
+	public static final String CLOSING_BRACKET = "]";
 	public static final String RULE_SEPARATOR = " :- ";
 	public static final String AT = "@";
 	public static final String DATA_SOURCE = "@source ";
 	public static final String CSV_FILE_DATA_SOURCE = "load-csv";
-	private static final String RDF_FILE_DATA_SOURCE = "load-rdf";
-	private static final String SPARQL_QUERY_RESULT_DATA_SOURCE = "sparql";
+	public static final String RDF_FILE_DATA_SOURCE = "load-rdf";
+	public static final String SPARQL_QUERY_RESULT_DATA_SOURCE = "sparql";
 	public static final String DATA_SOURCE_SEPARATOR = ": ";
 	public static final String COLON = ":";
 	public static final String DOUBLE_CARET = "^^";
@@ -85,11 +87,11 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation of a given {@link Rule}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param rule a {@link Rule}.
 	 * @return String representation corresponding to a given {@link Rule}.
-	 * 
+	 *
 	 */
 	public static String getString(final Rule rule) {
 		return getString(rule.getHead()) + RULE_SEPARATOR + getString(rule.getBody()) + STATEMENT_SEPARATOR;
@@ -97,7 +99,7 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation of a given {@link Conjunction}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param conjunction a {@link Conjunction}
 	 * @return String representation corresponding to a given {@link Conjunction}.
@@ -118,7 +120,7 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation of a given {@link Literal}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param literal a {@link Literal}
 	 * @return String representation corresponding to a given {@link Literal}.
@@ -128,7 +130,7 @@ public final class Serializer {
 		if (literal.isNegated()) {
 			stringBuilder.append(NEGATIVE_IDENTIFIER);
 		}
-		stringBuilder.append(getIRIString(literal.getPredicate().getName())).append(OPEN_PARENTHESIS);
+		stringBuilder.append(getIRIString(literal.getPredicate().getName())).append(OPENING_PARENTHESIS);
 		boolean first = true;
 		for (final Term term : literal.getArguments()) {
 			if (first) {
@@ -145,7 +147,7 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation of a given {@link Fact}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param fact a {@link Fact}
 	 * @return String representation corresponding to a given {@link Fact}.
@@ -156,7 +158,7 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation of a given {@link Constant}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param constant a {@link Constant}
 	 * @return String representation corresponding to a given {@link Constant}.
@@ -168,7 +170,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation corresponding to the name of a given
 	 * {@link LanguageStringConstant}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param languageStringConstant a {@link LanguageStringConstant}
 	 * @return String representation corresponding to the name of a given
@@ -181,7 +183,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation corresponding to the name of a given
 	 * {@link DatatypeConstant} without an IRI.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
@@ -189,7 +191,7 @@ public final class Serializer {
 	 */
 	public static String getString(final DatatypeConstant datatypeConstant) {
 		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
-			return addQuotes(datatypeConstant.getLexicalValue());
+			return addQuotes(escape(datatypeConstant.getLexicalValue()));
 		} else {
 			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
 					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
@@ -204,7 +206,7 @@ public final class Serializer {
 	/**
 	 * Creates a String representation corresponding to the name of a given
 	 * {@link DatatypeConstant} including an IRI.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
@@ -217,7 +219,7 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation of a given {@link ExistentialVariable}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param existentialVariable a {@link ExistentialVariable}
 	 * @return String representation corresponding to a given
@@ -229,7 +231,7 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation of a given {@link UniversalVariable}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param universalVariable a {@link UniversalVariable}
 	 * @return String representation corresponding to a given
@@ -241,7 +243,7 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation of a given {@link NamedNull}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param namedNull a {@link NamedNull}
 	 * @return String representation corresponding to a given {@link NamedNull}.
@@ -252,18 +254,18 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation of a given {@link Predicate}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param predicate a {@link Predicate}
 	 * @return String representation corresponding to a given {@link Predicate}.
 	 */
 	public static String getString(final Predicate predicate) {
-		return predicate.getName() + OPEN_PARENTHESIS + predicate.getArity() + CLOSING_PARENTHESIS;
+		return predicate.getName() + OPENING_BRACKET + predicate.getArity() + CLOSING_BRACKET;
 	}
 
 	/**
 	 * Creates a String representation of a given {@link DataSourceDeclaration}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki"> for wiki.
 	 * @param dataSourceDeclaration a {@link DataSourceDeclaration}
 	 * @return String representation corresponding to a given
@@ -276,51 +278,51 @@ public final class Serializer {
 
 	/**
 	 * Creates a String representation of a given {@link CsvFileDataSource}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki">.
-	 * 
+	 *
 	 * @param csvFileDataSource
 	 * @return String representation corresponding to a given
 	 *         {@link CsvFileDataSource}.
 	 */
 	public static String getString(final CsvFileDataSource csvFileDataSource) {
-		return CSV_FILE_DATA_SOURCE + OPEN_PARENTHESIS + getFileString(csvFileDataSource) + CLOSING_PARENTHESIS;
+		return CSV_FILE_DATA_SOURCE + OPENING_PARENTHESIS + getFileString(csvFileDataSource) + CLOSING_PARENTHESIS;
 	}
 
 	/**
 	 * Creates a String representation of a given {@link RdfFileDataSource}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki">.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param rdfFileDataSource
 	 * @return String representation corresponding to a given
 	 *         {@link RdfFileDataSource}.
 	 */
 	public static String getString(final RdfFileDataSource rdfFileDataSource) {
-		return RDF_FILE_DATA_SOURCE + OPEN_PARENTHESIS + getFileString(rdfFileDataSource) + CLOSING_PARENTHESIS;
+		return RDF_FILE_DATA_SOURCE + OPENING_PARENTHESIS + getFileString(rdfFileDataSource) + CLOSING_PARENTHESIS;
 	}
 
 	/**
 	 * Creates a String representation of a given
 	 * {@link SparqlQueryResultDataSource}.
-	 * 
+	 *
 	 * @see <"https://github.com/knowsys/vlog4j/wiki">.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param dataSource
 	 * @return String representation corresponding to a given
 	 *         {@link SparqlQueryResultDataSource}.
 	 */
 	public static String getString(final SparqlQueryResultDataSource dataSource) {
-		return SPARQL_QUERY_RESULT_DATA_SOURCE + OPEN_PARENTHESIS
+		return SPARQL_QUERY_RESULT_DATA_SOURCE + OPENING_PARENTHESIS
 				+ addAngleBrackets(dataSource.getEndpoint().toString()) + COMMA
 				+ addQuotes(dataSource.getQueryVariables()) + COMMA + addQuotes(dataSource.getQueryBody())
 				+ CLOSING_PARENTHESIS;
 	}
 
 	private static String getFileString(final FileDataSource fileDataSource) {
-		return addQuotes(fileDataSource.getFile().toString());
+		return addQuotes(escape(fileDataSource.getFile().toString()));
 	}
 
 	private static String getIRIString(final String string) {
@@ -333,7 +335,15 @@ public final class Serializer {
 	}
 
 	private static String escape(final String string) {
-		return string.replace("\\", "\\\\").replace("\"", "\\\"");
+		return string
+			.replace("\\", "\\\\")
+			.replace("\"", "\\\"")
+			.replace("\t", "\\t")
+			.replace("\b", "\\b")
+			.replace("\n", "\\n")
+			.replace("\r", "\\r")
+			.replace("\f", "\\f");
+		// don't touch single quotes here since we only construct double-quoted strings
 	}
 
 	private static String addQuotes(final String string) {

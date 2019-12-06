@@ -64,7 +64,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<eclipse.jdt.annotation.version>2.1.100</eclipse.jdt.annotation.version>
 		<junit.version>4.12</junit.version>
-		<mockito.version>1.10.19</mockito.version>
+		<mockito.version>2.28.2</mockito.version>
 		<slf4j.version>1.7.28</slf4j.version>
 		<apache.commons.lang.version>3.9</apache.commons.lang.version>
 		<apache.commons.csv.version>1.5</apache.commons.csv.version>
@@ -290,14 +290,14 @@
 			<configuration>
 			  <excludes>
 				<!-- Do not consider generated source code. Plugin fails for these files. -->
-				<exclude>**/javacc/JavaCCParser*</exclude>
-				<exclude>**/javacc/JavaCCParserConstants*</exclude>
-				<exclude>**/javacc/JavaCCParserTokenManager*</exclude>
-				<exclude>**/javacc/JavaCharStream*</exclude>
-				<exclude>**/javacc/ParseException*</exclude>
-				<exclude>**/javacc/SimpleCharStream*</exclude>
-				<exclude>**/javacc/Token*</exclude>
-				<exclude>**/javacc/TokenMgrError*</exclude>
+				<exclude>**/javacc/JavaCCParser.class</exclude>
+				<exclude>**/javacc/JavaCCParserConstants.class</exclude>
+				<exclude>**/javacc/JavaCCParserTokenManager.class</exclude>
+				<exclude>**/javacc/JavaCharStream.class</exclude>
+				<exclude>**/javacc/ParseException.class</exclude>
+				<exclude>**/javacc/SimpleCharStream.class</exclude>
+				<exclude>**/javacc/Token.class</exclude>
+				<exclude>**/javacc/TokenMgrError.class</exclude>
 			  </excludes>
 			</configuration>
 			</plugin>

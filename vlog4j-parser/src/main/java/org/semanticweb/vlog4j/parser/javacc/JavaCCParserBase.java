@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.parser.javacc;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,52 +22,56 @@ package org.semanticweb.vlog4j.parser.javacc;
 
 import java.util.HashSet;
 
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
-import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.parser.DefaultParserConfiguration;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.parser.ParserConfiguration;
+import org.semanticweb.vlog4j.parser.ParsingException;
 
 /**
  * Basic methods used in the JavaCC-generated parser.
- * 
+ *
  * Implementation of some string escaping methods adapted from Apache Jena,
  * released under Apache 2.0 license terms.
- * 
+ *
  * @see <a href=
  *      "https://github.com/apache/jena/blob/master/jena-core/src/main/java/org/apache/jena/n3/turtle/ParserBase.java">https://github.com/apache/jena/blob/master/jena-core/src/main/java/org/apache/jena/n3/turtle/ParserBase.java</a>
- * 
+ *
  * @author Markus Kroetzsch
  * @author Larry Gonzalez
  * @author Jena developers, Apache Software Foundation (ASF)
  *
  */
 public class JavaCCParserBase {
-	final PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
+	protected PrefixDeclarations prefixDeclarations;
 
-	KnowledgeBase knowledgeBase;
+	protected KnowledgeBase knowledgeBase;
+	protected ParserConfiguration parserConfiguration;
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
 	 */
-	final HashSet<String> bodyVars = new HashSet<String>();
+	protected final HashSet<String> bodyVars = new HashSet<String>();
 	/**
 	 * "Local" variable to remember existential head variables during parsing.
 	 */
-	final HashSet<String> headExiVars = new HashSet<String>();;
+	protected final HashSet<String> headExiVars = new HashSet<String>();
 	/**
 	 * "Local" variable to remember universal head variables during parsing.
 	 */
-	final HashSet<String> headUniVars = new HashSet<String>();;
+	protected final HashSet<String> headUniVars = new HashSet<String>();
 
 	/**
 	 * Defines the context for parsing sub-formulas.
-	 * 
+	 *
 	 * @author Markus Kroetzsch
 	 *
 	 */
@@ -86,21 +90,49 @@ public class JavaCCParserBase {
 
 	public JavaCCParserBase() {
 		this.knowledgeBase = new KnowledgeBase();
+		this.prefixDeclarations = new LocalPrefixDeclarations();
+		this.parserConfiguration = new DefaultParserConfiguration();
 	}
 
-	Constant createIntegerConstant(String lexicalForm) {
-		return Expressions.makeDatatypeConstant(lexicalForm, PrefixDeclarations.XSD_INTEGER);
+	AbstractConstant createConstant(String lexicalForm) throws ParseException {
+		String absoluteIri;
+		try {
+			absoluteIri = prefixDeclarations.absolutize(lexicalForm);
+		} catch (PrefixDeclarationException e) {
+			throw makeParseExceptionWithCause("Failed to parse IRI", e);
+		}
+		return Expressions.makeAbstractConstant(absoluteIri);
 	}
 
-	Constant createDecimalConstant(String lexicalForm) {
-		return Expressions.makeDatatypeConstant(lexicalForm, PrefixDeclarations.XSD_DECIMAL);
+	Constant createConstant(String lexicalForm, String datatype) throws ParseException {
+		return createConstant(lexicalForm, null, datatype);
 	}
 
-	Constant createDoubleConstant(String lexicalForm) {
-		return Expressions.makeDatatypeConstant(lexicalForm, PrefixDeclarations.XSD_DOUBLE);
+	/**
+	 * Creates a suitable {@link Constant} from the parsed data.
+	 *
+	 * @param string      the string data (unescaped)
+	 * @param languageTag the language tag, or null if not present
+	 * @param datatype    the datatype, or null if not provided
+	 * @return suitable constant
+	 */
+	Constant createConstant(String lexicalForm, String languageTag, String datatype) throws ParseException {
+		try {
+			return parserConfiguration.parseConstant(lexicalForm, languageTag, datatype);
+		} catch (ParsingException e) {
+			throw makeParseExceptionWithCause("Failed to parse Constant", e);
+		}
 	}
 
-	void addDataSource(String predicateName, int arity, DataSource dataSource) {
+	void addDataSource(String predicateName, int arity, DataSource dataSource) throws ParseException {
+		if (dataSource.getRequiredArity().isPresent()) {
+			Integer requiredArity = dataSource.getRequiredArity().get();
+			if (arity != requiredArity) {
+				throw new ParseException(
+						"Invalid arity " + arity + " for data source, " + "expected " + requiredArity + ".");
+			}
+		}
+
 		Predicate predicate = Expressions.makePredicate(predicateName, arity);
 		knowledgeBase.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
 	}
@@ -195,31 +227,26 @@ public class JavaCCParserBase {
 	}
 
 	/**
-	 * Creates a suitable {@link Constant} from the parsed data.
-	 * 
-	 * @param string      the string data (unescaped)
-	 * @param languageTag the language tag, or null if not present
-	 * @param datatype    the datatype, or null if not provided
-	 * @return suitable constant
-	 */
-	Constant createDataConstant(String string, String languageTag, String datatype) {
-		// https://www.w3.org/TR/turtle/#grammar-production-String RDFLiteral
-		if (datatype != null) {
-			return new DatatypeConstantImpl(string, datatype);
-		} else if (languageTag != null) {
-			return new LanguageStringConstantImpl(string, languageTag);
-		} else {
-			return new DatatypeConstantImpl(string, "http://www.w3.org/2001/XMLSchema#string");
-		}
-	}
-
-	/**
 	 * Reset the local set variables used when parsing a rule.
 	 */
 	void resetVariableSets() {
 		this.bodyVars.clear();
 		this.headExiVars.clear();
 		this.headUniVars.clear();
+	}
+
+	/**
+	 * Convert a throwable into a ParseException.
+	 *
+	 * @param message The error message.
+	 * @param cause   The {@link Throwable} that caused this exception.
+	 *
+	 * @return A {@link ParseException} with appropriate cause and message.
+	 */
+	protected ParseException makeParseExceptionWithCause(String message, Throwable cause) {
+		ParseException parseException = new ParseException(message);
+		parseException.initCause(cause);
+		return parseException;
 	}
 
 	public void setKnowledgeBase(KnowledgeBase knowledgeBase) {
@@ -230,4 +257,19 @@ public class JavaCCParserBase {
 		return knowledgeBase;
 	}
 
+	public void setParserConfiguration(ParserConfiguration parserConfiguration) {
+		this.parserConfiguration = parserConfiguration;
+	}
+
+	public ParserConfiguration getParserConfiguration() {
+		return parserConfiguration;
+	}
+
+	protected void setPrefixDeclarations(PrefixDeclarations prefixDeclarations) {
+		this.prefixDeclarations = prefixDeclarations;
+	}
+
+	protected PrefixDeclarations getPrefixDeclarations() {
+		return prefixDeclarations;
+	}
 }

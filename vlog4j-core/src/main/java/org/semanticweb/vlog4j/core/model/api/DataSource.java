@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.model.api;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,20 +20,32 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
+import java.util.Optional;
+
 /**
  * Interfaces various types of data sources for storing facts.
- * 
+ *
  * @author Irina Dragoste
  *
  */
 public interface DataSource extends Entity {
-	
+
 	/**
 	 * Constructs a String representation of the data source.
-	 * 
+	 *
 	 * @return a String representation of the data source configuration for a
 	 *         certain predicate.
 	 */
 	public String toConfigString();
+
+	/**
+	 * Retrieve the required arity of target predicates for the data source.
+	 *
+	 * @return the required arity for the data source, or Optional.empty() if there
+	 *         is none.
+	 */
+	public default Optional<Integer> getRequiredArity() {
+		return Optional.empty();
+	}
 
 }

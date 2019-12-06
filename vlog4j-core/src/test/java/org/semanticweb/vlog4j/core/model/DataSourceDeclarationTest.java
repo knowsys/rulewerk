@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,7 +75,7 @@ public class DataSourceDeclarationTest {
 				new URL("https://example.org/sparql"), "var", "?var wdt:P31 wd:Q5 .");
 
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate, dataSource);
-		assertEquals("@source p(3): sparql(<https://example.org/sparql>, \"var\", \"?var wdt:P31 wd:Q5 .\") .",
+		assertEquals("@source p[3]: sparql(<https://example.org/sparql>, \"var\", \"?var wdt:P31 wd:Q5 .\") .",
 				dataSourceDeclaration.toString());
 
 	}
@@ -91,7 +91,7 @@ public class DataSourceDeclarationTest {
 				unzippedCsvFileDataSource);
 
 		final String expectedFilePath = relativeDirName + File.separator + fileName;
-		assertEquals("@source q(1): load-csv(\"" + expectedFilePath + "\") .", dataSourceDeclaration.toString());
+		assertEquals("@source q[1]: load-csv(\"" + expectedFilePath + "\") .", dataSourceDeclaration.toString());
 	}
 
 	// FIXME: have String representation of files OS independent
@@ -103,7 +103,7 @@ public class DataSourceDeclarationTest {
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(absoluteFilePathWindows));
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
 				unzippedCsvFileDataSource);
-		assertEquals("@source q(1): load-csv(\"D:/input/file.csv\") .", dataSourceDeclaration.toString());
+		assertEquals("@source q[1]: load-csv(\"D:/input/file.csv\") .", dataSourceDeclaration.toString());
 	}
 
 	@Test
@@ -117,6 +117,6 @@ public class DataSourceDeclarationTest {
 				unzippedRdfFileDataSource);
 
 		final String expectedFilePath = relativeDirName + File.separator + fileName;
-		assertEquals("@source q(1): load-rdf(\"" + expectedFilePath + "\") .", dataSourceDeclaration.toString());
+		assertEquals("@source q[1]: load-rdf(\"" + expectedFilePath + "\") .", dataSourceDeclaration.toString());
 	}
 }
