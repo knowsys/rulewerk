@@ -177,7 +177,7 @@ public final class Serializer {
 	 *         {@link LanguageStringConstant}.
 	 */
 	public static String getConstantName(final LanguageStringConstant languageStringConstant) {
-		return addQuotes(escape(languageStringConstant.getString())) + AT + languageStringConstant.getLanguageTag();
+		return getString(languageStringConstant.getString()) + AT + languageStringConstant.getLanguageTag();
 	}
 
 	/**
@@ -191,7 +191,7 @@ public final class Serializer {
 	 */
 	public static String getString(final DatatypeConstant datatypeConstant) {
 		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
-			return addQuotes(escape(datatypeConstant.getLexicalValue()));
+			return getString(datatypeConstant.getLexicalValue());
 		} else {
 			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
 					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
@@ -213,7 +213,7 @@ public final class Serializer {
 	 *         {@link DatatypeConstant}.
 	 */
 	public static String getConstantName(final DatatypeConstant datatypeConstant) {
-		return addQuotes(escape(datatypeConstant.getLexicalValue())) + DOUBLE_CARET
+		return getString(datatypeConstant.getLexicalValue()) + DOUBLE_CARET
 				+ addAngleBrackets(datatypeConstant.getDatatype());
 	}
 
@@ -322,7 +322,7 @@ public final class Serializer {
 	}
 
 	private static String getFileString(final FileDataSource fileDataSource) {
-		return addQuotes(escape(fileDataSource.getFile().toString()));
+		return getString(fileDataSource.getFile().toString());
 	}
 
 	private static String getIRIString(final String string) {
@@ -335,13 +335,46 @@ public final class Serializer {
 	}
 
 	/**
-	 * Escapes (with '\') special character occurrences in given {@code string}. The
-	 * special characters are: "\", "'", "\t", "\b", "\n", "\r", "\f".
+	 * Constructs the parseable, serialized representation of given {@code string}.
+	 * Escapes (with {@code \}) special character occurrences in given
+	 * {@code string}, and surrounds the result with double quotation marks
+	 * ({@code "}). The special characters are:
+	 * <ul>
+	 * <li>{@code \}</li>
+	 * <li>{@code "}</li>
+	 * <li>{@code \t}</li>
+	 * <li>{@code \b}</li>
+	 * <li>{@code \n}</li>
+	 * <li>{@code \r}</li>
+	 * <li>{@code \f}</li>
+	 * <ul>
+	 * Example for {@code string = "\\a"}, the returned value is
+	 * {@code string = "\"\\\\a\""}
+	 * 
+	 * @param string
+	 * @return an escaped string surrounded by {@code "}.
+	 */
+	public static String getString(final String string) {
+		return addQuotes(escape(string));
+	}
+
+	/**
+	 * Escapes (with {@code \}) special character occurrences in given
+	 * {@code string}. The special characters are:
+	 * <ul>
+	 * <li>{@code \}</li>
+	 * <li>{@code "}</li>
+	 * <li>{@code \t}</li>
+	 * <li>{@code \b}</li>
+	 * <li>{@code \n}</li>
+	 * <li>{@code \r}</li>
+	 * <li>{@code \f}</li>
+	 * <ul>
 	 * 
 	 * @param string
 	 * @return an escaped string
 	 */
-	public static String escape(final String string) {
+	private static String escape(final String string) {
 		return string.replace("\\", "\\\\").replace("\"", "\\\"").replace("\t", "\\t").replace("\b", "\\b")
 				.replace("\n", "\\n").replace("\r", "\\r").replace("\f", "\\f");
 		// don't touch single quotes here since we only construct double-quoted strings
@@ -350,6 +383,7 @@ public final class Serializer {
 	private static String addQuotes(final String string) {
 		return QUOTE + string + QUOTE;
 	}
+
 
 	private static String addAngleBrackets(final String string) {
 		return LESS_THAN + string + MORE_THAN;

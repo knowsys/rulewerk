@@ -91,8 +91,8 @@ public class DataSourceDeclarationTest {
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate2,
 				unzippedCsvFileDataSource);
 
-		final String expectedFilePath = Serializer.escape(relativeDirName + File.separator + fileName);
-		assertEquals("@source q[1]: load-csv(\"" + expectedFilePath + "\") .",
+		final String expectedFilePath = Serializer.getString(relativeDirName + File.separator + fileName);
+		assertEquals("@source q[1]: load-csv(" + expectedFilePath + ") .",
 				dataSourceDeclaration.toString());
 	}
 
@@ -118,7 +118,7 @@ public class DataSourceDeclarationTest {
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
 				unzippedRdfFileDataSource);
 
-		final String expectedFilePath = Serializer.escape(relativeDirName + File.separator + fileName);
-		assertEquals("@source q[1]: load-rdf(\"" + expectedFilePath + "\") .", dataSourceDeclaration.toString());
+		final String expectedFilePath = Serializer.getString(relativeDirName + File.separator + fileName);
+		assertEquals("@source q[1]: load-rdf(" + expectedFilePath + ") .", dataSourceDeclaration.toString());
 	}
 }
