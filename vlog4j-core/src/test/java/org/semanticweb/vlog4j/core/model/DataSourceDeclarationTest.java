@@ -35,6 +35,7 @@ import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
@@ -90,8 +91,9 @@ public class DataSourceDeclarationTest {
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate2,
 				unzippedCsvFileDataSource);
 
-		final String expectedFilePath = relativeDirName + File.separator + fileName;
-		assertEquals("@source q[1]: load-csv(\"" + expectedFilePath + "\") .", dataSourceDeclaration.toString());
+		final String expectedFilePath = Serializer.escape(relativeDirName + File.separator + fileName);
+		assertEquals("@source q[1]: load-csv(\"" + expectedFilePath + "\") .",
+				dataSourceDeclaration.toString());
 	}
 
 	// FIXME: have String representation of files OS independent
@@ -116,7 +118,7 @@ public class DataSourceDeclarationTest {
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
 				unzippedRdfFileDataSource);
 
-		final String expectedFilePath = relativeDirName + File.separator + fileName;
+		final String expectedFilePath = Serializer.escape(relativeDirName + File.separator + fileName);
 		assertEquals("@source q[1]: load-rdf(\"" + expectedFilePath + "\") .", dataSourceDeclaration.toString());
 	}
 }

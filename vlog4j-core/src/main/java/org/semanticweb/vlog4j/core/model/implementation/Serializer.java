@@ -334,7 +334,14 @@ public final class Serializer {
 		}
 	}
 
-	private static String escape(final String string) {
+	/**
+	 * Escapes (with '\') special character occurrences in given {@code string}. The
+	 * special characters are: "\", "'", "\t", "\b", "\n", "\r", "\f".
+	 * 
+	 * @param string
+	 * @return an escaped string
+	 */
+	public static String escape(final String string) {
 		return string.replace("\\", "\\\\").replace("\"", "\\\"").replace("\t", "\\t").replace("\b", "\\b")
 				.replace("\n", "\\n").replace("\r", "\\r").replace("\f", "\\f");
 		// don't touch single quotes here since we only construct double-quoted strings
