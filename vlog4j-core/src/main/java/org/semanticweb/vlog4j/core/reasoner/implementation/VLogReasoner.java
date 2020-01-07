@@ -1,6 +1,8 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +22,7 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
@@ -808,4 +811,51 @@ public class VLogReasoner implements Reasoner {
 	void setReasonerState(ReasonerState reasonerState) {
 		this.reasonerState = reasonerState;
 	}
+
+	@Override
+	public void getKbFacts(OutputStream stream) throws IOException {
+		// TODO Auto-generated method stub
+		HashSet<PositiveLiteral> headLiterals = new HashSet<PositiveLiteral>();
+		for (Rule rule : this.knowledgeBase.getRules()) {
+			for (PositiveLiteral positiveLiteral : rule.getHead()) {
+				headLiterals.add(positiveLiteral);
+			}
+		}
+		for (PositiveLiteral positiveliteral : headLiterals) {
+			try (final QueryResultIterator queryAnswers = this.answerQuery(positiveliteral, true)) {
+				while (queryAnswers.hasNext()) {
+					QueryResult queryAnswer = queryAnswers.next();
+					stream.write((positiveliteral.getPredicate().getName()
+							+ queryAnswer.getTerms().toString().replace("[", "(").replace("]", ").") + "\n")
+									.getBytes());
+				}
+			}
+		}
+		stream.close();
+
+	}
+
+	@Override
+	public void getKbFacts(String filePath) throws IOException {
+		// TODO Auto-generated method stub
+		OutputStream stream = new FileOutputStream(filePath);
+		HashSet<PositiveLiteral> headLiterals = new HashSet<PositiveLiteral>();
+		for (Rule rule : this.knowledgeBase.getRules()) {
+			for (PositiveLiteral positiveLiteral : rule.getHead()) {
+				headLiterals.add(positiveLiteral);
+			}
+		}
+		for (PositiveLiteral positiveliteral : headLiterals) {
+			try (final QueryResultIterator queryAnswers = this.answerQuery(positiveliteral, true)) {
+				while (queryAnswers.hasNext()) {
+					QueryResult queryAnswer = queryAnswers.next();
+					stream.write((positiveliteral.getPredicate().getName()
+							+ queryAnswer.getTerms().toString().replace("[", "(").replace("]", ").") + "\n")
+									.getBytes());
+				}
+			}
+		}
+		stream.close();
+	}
+
 }

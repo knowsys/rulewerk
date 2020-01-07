@@ -1,6 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
@@ -85,6 +86,10 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return the reasoner's knowledge base
 	 */
 	KnowledgeBase getKnowledgeBase();
+
+	void getKbFacts(OutputStream stream) throws IOException;
+
+	void getKbFacts(String filePath) throws IOException;
 
 	/**
 	 * Sets the algorithm that will be used for reasoning over the knowledge base.
