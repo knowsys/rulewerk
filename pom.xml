@@ -233,7 +233,7 @@
 			  <version>3.0.0-M4</version>
 			  <configuration>
 				<argLine>${surefireArgLine}</argLine>
-				<forkCount>1C</forkCount>
+				<forkCount>1</forkCount>
 				<reuseForks>true</reuseForks>
 			  </configuration>
 			</plugin>
