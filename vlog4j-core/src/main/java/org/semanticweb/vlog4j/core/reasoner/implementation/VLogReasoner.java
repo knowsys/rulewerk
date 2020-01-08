@@ -839,23 +839,6 @@ public class VLogReasoner implements Reasoner {
 	public void getKbFacts(String filePath) throws IOException {
 		// TODO Auto-generated method stub
 		OutputStream stream = new FileOutputStream(filePath);
-		HashSet<PositiveLiteral> headLiterals = new HashSet<PositiveLiteral>();
-		for (Rule rule : this.knowledgeBase.getRules()) {
-			for (PositiveLiteral positiveLiteral : rule.getHead()) {
-				headLiterals.add(positiveLiteral);
-			}
-		}
-		for (PositiveLiteral positiveliteral : headLiterals) {
-			try (final QueryResultIterator queryAnswers = this.answerQuery(positiveliteral, true)) {
-				while (queryAnswers.hasNext()) {
-					QueryResult queryAnswer = queryAnswers.next();
-					stream.write((positiveliteral.getPredicate().getName()
-							+ queryAnswer.getTerms().toString().replace("[", "(").replace("]", ").") + "\n")
-									.getBytes());
-				}
-			}
-		}
-		stream.close();
+		getKbFacts(stream);
 	}
-
 }
