@@ -813,8 +813,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void getKbFacts(OutputStream stream) throws IOException {
-		// TODO Auto-generated method stub
+	public void writeInferredFacts(OutputStream stream) throws IOException {
 		HashSet<PositiveLiteral> headLiterals = new HashSet<PositiveLiteral>();
 		for (Rule rule : this.knowledgeBase.getRules()) {
 			for (PositiveLiteral positiveLiteral : rule.getHead()) {
@@ -836,9 +835,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void getKbFacts(String filePath) throws IOException {
-		// TODO Auto-generated method stub
+	public void writeInferredFacts(String filePath) throws IOException {
 		OutputStream stream = new FileOutputStream(filePath);
-		getKbFacts(stream);
+		writeInferredFacts(stream);
 	}
 }
