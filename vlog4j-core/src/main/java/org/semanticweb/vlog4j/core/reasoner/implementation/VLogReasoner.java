@@ -22,15 +22,16 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.ConjunctionImpl;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 import org.semanticweb.vlog4j.core.model.implementation.UniversalVariableImpl;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
@@ -814,21 +815,29 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void writeInferredFacts(OutputStream stream) throws IOException {
-		HashSet<PositiveLiteral> headLiterals = new HashSet<PositiveLiteral>();
+		HashSet<Predicate> toBeQueriedHeadPredicates = new HashSet<Predicate>();
+		for (Fact fact : this.knowledgeBase.getFacts()) {
+			stream.write((fact.toString() + "\n").getBytes());
+		}
 		for (Rule rule : this.knowledgeBase.getRules()) {
-			for (PositiveLiteral positiveLiteral : rule.getHead()) {
-				headLiterals.add(positiveLiteral);
+			for (Literal literal : rule.getHead()) {
+				toBeQueriedHeadPredicates.add(literal.getPredicate());
 			}
 		}
-		for (PositiveLiteral positiveliteral : headLiterals) {
-			try (final QueryResultIterator queryAnswers = this.answerQuery(positiveliteral, true)) {
-				while (queryAnswers.hasNext()) {
-					QueryResult queryAnswer = queryAnswers.next();
-					stream.write((positiveliteral.getPredicate().getName()
-							+ queryAnswer.getTerms().toString().replace("[", "(").replace("]", ").") + "\n")
-									.getBytes());
-				}
+		for (Predicate predicate : toBeQueriedHeadPredicates) {
+			ArrayList<Term> tobeGroundedVariables = new ArrayList<Term>();
+			for (int i = 0; i < predicate.getArity(); i++) {
+				tobeGroundedVariables.add(Expressions.makeUniversalVariable("X" + i));
 			}
+			final QueryResultIterator answers = this
+					.answerQuery(Expressions.makePositiveLiteral(predicate, tobeGroundedVariables), true);
+			answers.forEachRemaining(queryAnswer -> {
+				try {
+					stream.write(Serializer.getFactOutput(predicate, queryAnswer.getTerms()).getBytes());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
 		}
 		stream.close();
 

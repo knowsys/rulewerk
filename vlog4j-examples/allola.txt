@@ -1,0 +1,23 @@
+location(germany, europe) .
+location(uk, europe) .
+location(saxony, germany) .
+location(dresden, saxony) .
+city(dresden) .
+country(germany) .
+country(uk) .
+university(tudresden, germany) .
+university(uoxford, uk) .
+streetAddress(tudresden, "Mommsenstraße 9", "01069", "Dresden") .
+zipLocation("01069", dresden) .
+locatedIn(germany, europe) .
+locatedIn(uk, europe) .
+locatedIn(dresden, saxony) .
+locatedIn(saxony, germany) .
+locatedIn(dresden, germany) .
+locatedIn(dresden, europe) .
+locatedIn(saxony, europe) .
+locatedIn(_2_4_0, uk) .
+locatedIn(_2_4_0, europe) .
+address(tudresden, "Mommsenstraße 9", "01069", dresden) .
+address(uoxford, _2_2_0, _2_3_0, _2_4_0) .
+inEuropeOutsideGermany(uoxford) .

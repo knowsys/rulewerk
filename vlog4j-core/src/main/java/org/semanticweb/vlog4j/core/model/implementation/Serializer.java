@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+import java.util.List;
+
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 
 /*-
@@ -384,9 +386,13 @@ public final class Serializer {
 		return QUOTE + string + QUOTE;
 	}
 
-
 	private static String addAngleBrackets(final String string) {
 		return LESS_THAN + string + MORE_THAN;
+	}
+
+	public static String getFactOutput(Predicate predicate, List<Term> terms) {
+		return predicate.getName() + terms.toString().replace(OPENING_BRACKET, OPENING_PARENTHESIS)
+				.replace(CLOSING_BRACKET, CLOSING_PARENTHESIS + STATEMENT_SEPARATOR + "\n");
 	}
 
 }
