@@ -182,7 +182,7 @@ public class RuleParser {
 
 	public static PositiveLiteral parsePositiveLiteral(final String input,
 			final ParserConfiguration parserConfiguration) throws ParsingException {
-		return parseSyntaxFragment(input, parser -> parser.positiveLiteral(FormulaContext.HEAD), "positivel literal",
+		return parseSyntaxFragment(input, parser -> parser.positiveLiteral(FormulaContext.HEAD), "positive literal",
 				parserConfiguration);
 	}
 
