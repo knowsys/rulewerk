@@ -816,13 +816,14 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void writeInferredFacts(OutputStream stream) throws IOException {
 		HashSet<Predicate> toBeQueriedHeadPredicates = new HashSet<Predicate>();
-		for (Fact fact : this.knowledgeBase.getFacts()) {
-			stream.write((fact.toString() + "\n").getBytes());
-		}
 		for (Rule rule : this.knowledgeBase.getRules()) {
 			for (Literal literal : rule.getHead()) {
 				toBeQueriedHeadPredicates.add(literal.getPredicate());
 			}
+		}
+		for (Fact fact : this.knowledgeBase.getFacts()) {
+			if (!toBeQueriedHeadPredicates.contains(fact.getPredicate()))
+				stream.write((fact.toString() + "\n").getBytes());
 		}
 		for (Predicate predicate : toBeQueriedHeadPredicates) {
 			ArrayList<Term> tobeGroundedVariables = new ArrayList<Term>();
@@ -834,13 +835,14 @@ public class VLogReasoner implements Reasoner {
 			answers.forEachRemaining(queryAnswer -> {
 				try {
 					stream.write(Serializer.getFactOutput(predicate, queryAnswer.getTerms()).getBytes());
-				} catch (IOException e) {
+				}
+
+				catch (IOException e) {
 					e.printStackTrace();
 				}
 			});
 		}
 		stream.close();
-
 	}
 
 	@Override

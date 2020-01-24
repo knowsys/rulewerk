@@ -19,27 +19,43 @@ package org.semanticweb.vlog4j.syntax.parser;
  * limitations under the License.
  * #L%
  */
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
-import org.semanticweb.vlog4j.core.model.api.Fact;
+import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.DatatypeConstantHandler;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -437,5 +453,83 @@ public class RuleParserTest {
 		Literal literal = RuleParser.parseLiteral(input, parserConfiguration);
 		DatatypeConstant result = (DatatypeConstant) literal.getConstants().toArray()[0];
 		assertEquals(constant, result);
+	}
+
+	@Test
+	public void testGetFacts() throws ParsingException, IOException {
+		KnowledgeBase kb = new KnowledgeBase();
+		final DataSource dataSource1 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
+				"?var wdt:P31 wd:Q5 .");
+		final Predicate predicate1 = Expressions.makePredicate("country", 1);
+		final DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource1);
+		final DataSource dataSource2 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
+				"?var wdt:P31 wd:Q5 .");
+		final Predicate predicate2 = Expressions.makePredicate("inEuropeOutsideGermany", 1);
+		final DataSourceDeclaration dataSourceDeclaration2 = new DataSourceDeclarationImpl(predicate2, dataSource2);
+		final DataSource dataSource3 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var2",
+				"?var2 wdt:P31 wd:Q5 .");
+		final DataSourceDeclaration dataSourceDeclaration3 = new DataSourceDeclarationImpl(predicate2, dataSource3);
+		final Predicate predicate4 = Expressions.makePredicate("city", 1);
+		final DataSourceDeclaration dataSourceDeclaration4 = new DataSourceDeclarationImpl(predicate4, dataSource2);
+		RuleParser.parseInto(kb, fact.toString() + ".");
+		RuleParser.parseInto(kb, dataSourceDeclaration1.toString());
+		RuleParser.parseInto(kb, dataSourceDeclaration2.toString());
+		RuleParser.parseInto(kb, dataSourceDeclaration3.toString());
+		RuleParser.parseInto(kb, dataSourceDeclaration4.toString());
+		final String rules = "location(germany,europe). \n" //
+				+ "location(saxony,germany). \n" //
+				+ "location(dresden,saxony). \n" //
+				+ "locatedIn(Egypt,Africa). \n" //
+				+ "address(TSH, \"Pragerstraße 13\", \"01069\", dresden). \n" //
+				+ "city(dresden). \n" //
+				+ "country(germany). \n" //
+				+ "university(tudresden, germany). \n" //
+				+ "streetAddress(tudresden, \"Mommsenstraße 9\", \"01069\", \"Dresden\") . \n" //
+				+ "zipLocation(\"01069\", dresden) . \n" //
+				+ "locatedIn(?X,?Y) :- location(?X,?Y) . \n" //
+				+ "locatedIn(?X,?Z) :- locatedIn(?X,?Y), locatedIn(?Y,?Z) . \n" //
+				+ "address(?Uni, ?Street, ?ZIP, ?City) :- streetAddress(?Uni, ?Street, ?ZIP, ?CityName), zipLocation(?ZIP, ?City) . \n"
+				+ "address(?Uni, !Street, !ZIP, !City), locatedIn(!City, ?Country) :- university(?Uni, ?Country) . \n";
+		RuleParser.parseInto(kb, rules);
+		final String facts = "location(germany,europe). \n" //
+				+ "location(saxony,germany). \n" //
+				+ "location(dresden,saxony). \n" //
+				+ "location(germany, europe) . \n" //
+				+ "locatedIn(Egypt, Africa). \n" //
+				+ "address(TSH, \"Pragerstraße 13\", \"01069\", dresden). \n" //
+				+ "city(dresden). \n" //
+				+ "country(germany). \n" //
+				+ "university(tudresden, germany). \n" //
+				+ "streetAddress(tudresden, \"Mommsenstraße 9\", \"01069\", \"Dresden\") . \n" //
+				+ "zipLocation(\"01069\", dresden) . \n" //
+				+ "locatedIn(germany, europe) . \n" //
+				+ "locatedIn(dresden, saxony) . \n" //
+				+ "locatedIn(saxony, germany) . \n" //
+				+ "locatedIn(dresden, germany) . \n" //
+				+ "locatedIn(dresden, europe) . \n" //
+				+ "locatedIn(saxony, europe) . \n" //
+				+ "address(tudresden, \"Mommsenstraße 9\", \"01069\", dresden) . \n"
+				+ "<http://example.org/s>(<http://example.org/c>) . \n";
+		KnowledgeBase kb2 = new KnowledgeBase();
+		KnowledgeBase kb3 = new KnowledgeBase();
+		RuleParser.parseInto(kb2, facts);
+		try (final Reasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			File file = new File("test.txt");
+			OutputStream stream = new FileOutputStream(file);
+			reasoner.writeInferredFacts(stream);
+			stream.flush();
+			BufferedReader input = new BufferedReader(new FileReader(file));
+			String factString = "";
+			while ((factString = input.readLine()) != null) {
+				if (!factString.contains("_"))
+					RuleParser.parseInto(kb3, factString);
+			}
+			input.close();
+			assertEquals(new HashSet<Fact>(kb2.getFacts()), new HashSet<Fact>(kb3.getFacts()));
+			file.delete();
+
+		}
+
 	}
 }
