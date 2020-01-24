@@ -20,7 +20,9 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 import java.util.List;
+import java.util.Deque;
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.LinkedList;
 
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -57,43 +59,61 @@ public class JavaCCParser extends JavaCCParserBase
 
 PARSER_END(JavaCCParser)
 
+TOKEN_MGR_DECLS : {
+	// use initializer block to work around auto-generated constructors.
+	{
+		states = new ArrayDeque<Integer>();
+	}
 
-void parse() throws PrefixDeclarationException:
-{
-}
-{
-    ( base() )?
-    ( prefix() )*
-    ( source() )*
-    ( statement() )*
-    < EOF >
-}
+	Deque<Integer> states;
 
-void base() throws PrefixDeclarationException:
-{
-    String iriString;
-}
-{
-    < BASE > iriString = IRIREF() < DOT >
-    {
-        prefixDeclarations.setBase(iriString);
-    }
+	void pushState() {
+	  states.push(curLexState);
+	}
+
+	void popState() {
+		SwitchTo(states.pop());
+	}
 }
 
-void prefix() throws PrefixDeclarationException:
-{
-    Token t;
-    String iriString;
+
+void parse() throws PrefixDeclarationException : {
+} {
+	( base() )?
+	( prefix() )*
+	( source() )*
+	( statement() )*
+	< EOF >
 }
-{
-  (
-    LOOKAHEAD(< COLON >) < PREFIX > t = < COLON > iriString = IRIREF() < DOT >
-  | < PREFIX > t = < PNAME_NS > iriString = IRIREF() < DOT >
-  )
-    {
-         //note that prefix includes the colon (:)
-         prefixDeclarations.setPrefix(t.image, iriString);
-    }
+
+void base() throws PrefixDeclarationException : {
+	Token iri;
+} {
+	< BASE > iri = < IRI_ABSOLUTE > < DOT > {
+		prefixDeclarations.setBase(iri.image);
+	}
+}
+
+void prefix() throws PrefixDeclarationException : {
+	Token pn;
+	String iri;
+} {
+	< PREFIX > pn = < PNAME_NS > iri = absoluteIri() < DOT > {
+		prefixDeclarations.setPrefix(pn.image, iri);
+	}
+}
+
+String absoluteIri() throws PrefixDeclarationException : {
+	Token iri;
+} {
+	iri = < IRI_ABSOLUTE > { return prefixDeclarations.absolutize(iri.image); }
+  | iri = < PNAME_LN > { return prefixDeclarations.resolvePrefixedName(iri.image); }
+}
+
+String quotedIri() throws PrefixDeclarationException : {
+	String iri;
+} {
+	iri = absoluteIri() { return "<" +  iri + ">"; }
 }
 
 void source() throws PrefixDeclarationException:
@@ -103,7 +123,7 @@ void source() throws PrefixDeclarationException:
     Token arity;
 }
 {
-    < SOURCE > predicateName = predicateName() < LBRACK > arity = < INTEGER > < RBRACK > < COLON > dataSource = dataSource() < DOT >
+    < SOURCE > predicateName = predicateName() arity = < ARITY > < COLON > dataSource = dataSource() < DOT >
     {
       int nArity;
       nArity = Integer.parseInt(arity.image);
@@ -119,7 +139,7 @@ DataSource dataSource() throws PrefixDeclarationException:
   List< String > arguments;
 }
 {
-	(sourceName = < DIRECTIVENAME > | sourceName = < VARORPREDNAME >) < LPAREN > arguments = Arguments() < RPAREN >
+	(sourceName = < ARGUMENT_NAME > | sourceName = < VARORPREDNAME >) < LPAREN > arguments = Arguments() < RPAREN >
     {
         try {
             return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(sourceName.image, arguments, getSubParserFactory());
@@ -246,14 +266,12 @@ List < Term > listOfTerms(FormulaContext context) throws PrefixDeclarationExcept
     { return list; }
 }
 
-String predicateName() throws PrefixDeclarationException:
-{
-    String s;
+String predicateName() throws PrefixDeclarationException : {
     Token t;
-}
-{
-    s = IRI(false) { return s; }
-|   t = < VARORPREDNAME > { return prefixDeclarations.absolutize(t.image); }
+	String s;
+} {
+	s = absoluteIri() { return s; }
+  |	t = < VARORPREDNAME > { return prefixDeclarations.absolutize(t.image); }
 }
 
 Term term(FormulaContext context) throws PrefixDeclarationException:
@@ -285,11 +303,11 @@ Term term(FormulaContext context) throws PrefixDeclarationException:
         return Expressions.makeExistentialVariable(s);
     }
 |   t = < VARORPREDNAME > { return createConstant(t.image); }
-|   try {
-		c = ConfigurableLiteral () { return c; }
-	} catch (ParsingException e) {
-		throw new ParseException("Invalid configurable literal expression: " + e.getMessage());
-	}
+// |   try {
+// 		c = ConfigurableLiteral () { return c; }
+// 	} catch (ParsingException e) {
+// 		throw new ParseException("Invalid configurable literal expression: " + e.getMessage());
+// 	}
 }
 
 /** [16] */
@@ -314,41 +332,41 @@ Constant RDFLiteral() throws PrefixDeclarationException:
     { return createConstant(lex, lang, dt); }
 }
 
-Constant ConfigurableLiteral() throws ParsingException:
-{
-	Token t;
-}
-{
-	( LOOKAHEAD( < PIPE_DELIMINATED_LITERAL >,
-				 { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.PIPE) } )
-	 t = < PIPE_DELIMINATED_LITERAL > {
-		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.PIPE,
-															stripDelimiters(t.image, 1),
-															getSubParserFactory());
-	 }
-	 | LOOKAHEAD( < HASH_DELIMINATED_LITERAL >,
-				  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.HASH) } )
-	 t = < HASH_DELIMINATED_LITERAL > {
-		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.HASH,
-															stripDelimiters(t.image, 1),
-															getSubParserFactory());
-	 }
-	 // | LOOKAHEAD( < BRACKET_DELIMINATED_LITERAL >,
-	 // 			  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACKET) } )
-	 // t = < BRACKET_DELIMINATED_LITERAL > {
-	 // 	return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACKET,
-	 // 														stripDelimiters(t.image, 1),
-	 // 														getSubParserFactory());
-	 // }
-	 | LOOKAHEAD( < BRACE_DELIMINATED_LITERAL >,
-				  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACE) } )
-	 t = < BRACE_DELIMINATED_LITERAL > {
-		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACE,
-															stripDelimiters(t.image, 1),
-															getSubParserFactory());
-	 }
-	 )
-}
+// Constant ConfigurableLiteral() throws ParsingException:
+// {
+// 	Token t;
+// }
+// {
+// 	( LOOKAHEAD( < PIPE_DELIMINATED_LITERAL >,
+// 				 { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.PIPE) } )
+// 	 t = < PIPE_DELIMINATED_LITERAL > {
+// 		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.PIPE,
+// 															stripDelimiters(t.image, 1),
+// 															getSubParserFactory());
+// 	 }
+// 	 | LOOKAHEAD( < HASH_DELIMINATED_LITERAL >,
+// 				  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.HASH) } )
+// 	 t = < HASH_DELIMINATED_LITERAL > {
+// 		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.HASH,
+// 															stripDelimiters(t.image, 1),
+// 															getSubParserFactory());
+// 	 }
+// 	 // | LOOKAHEAD( < BRACKET_DELIMINATED_LITERAL >,
+// 	 // 			  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACKET) } )
+// 	 // t = < BRACKET_DELIMINATED_LITERAL > {
+// 	 // 	return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACKET,
+// 	 // 														stripDelimiters(t.image, 1),
+// 	 // 														getSubParserFactory());
+// 	 // }
+// 	 | LOOKAHEAD( < BRACE_DELIMINATED_LITERAL >,
+// 				  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACE) } )
+// 	 t = < BRACE_DELIMINATED_LITERAL > {
+// 		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACE,
+// 															stripDelimiters(t.image, 1),
+// 															getSubParserFactory());
+// 	 }
+// 	 )
+// }
 
 String Langtag() :
 {
@@ -371,10 +389,10 @@ String String():
     String lex;
 }
 {
-    ( t = < STRING_LITERAL1 >      { lex = stripDelimiters(t.image, 1);  }
-	| t = < STRING_LITERAL2 >      { lex = stripDelimiters(t.image, 1);  }
-	| t = < STRING_LITERAL_LONG1 > { lex = stripDelimiters(t.image, 3); }
-	| t = < STRING_LITERAL_LONG2 > { lex = stripDelimiters(t.image, 3); }
+    ( t = < SINGLE_QUOTED_STRING >  { lex = stripDelimiters(t.image, 1); }
+	| t = < DOUBLE_QUOTED_STRING >  { lex = stripDelimiters(t.image, 1); }
+	| t = < TRIPLE_QUOTED_STRING >  { lex = stripDelimiters(t.image, 3); }
+	| t = < SIXFOLD_QUOTED_STRING > { lex = stripDelimiters(t.image, 3); }
     )
     {
         lex = unescapeStr(lex, t.beginLine, t.beginColumn);
@@ -388,7 +406,7 @@ LinkedList< String > Arguments() throws PrefixDeclarationException:
     LinkedList< String > rest = new LinkedList< String >();
 }
 {
-    (str = String() | str = IRI(true)) [< COMMA > rest = Arguments()]
+    (str = String() | str = quotedIri()) [< COMMA > rest = Arguments()]
     {
 		rest.addFirst(str);
         return rest;
@@ -401,7 +419,7 @@ String IRI(boolean includeAngleBrackets) throws PrefixDeclarationException:
 }
 {
     (
-        iri = IRIREF()
+	 iri = IRIREF()
     |   iri = PrefixedName()
     )
     {
@@ -439,195 +457,152 @@ String IRIREF() :
 }
 
 // ------------------------------------------
+
 // Whitespace
-SKIP :
-{
-  " "
-| "\t"
-| "\n"
-| "\r"
-| "\f"
+< * > SKIP : {
+  < WHITESPACE : [ " ", "\t", "\n", "\r", "\f" ] >
 }
 
-//Comments
-SKIP :{< "%" (~["\n"])* "\n" >}
+// Comments
+< * > SKIP : {
+  < COMMENT : "%" ( ~[ "\n" ] )* "\n" >
+}
 
 // ------------------------------------------
-TOKEN :
-{
-  < PREFIX : "@prefix" >
-| < BASE : "@base" >
-| < SOURCE : "@source" >
+MORE : {
+  "@": DIRECTIVE
 }
 
-TOKEN:
-{
-  < INTEGER : ([ "-", "+" ])? < DIGITS > >
-| < DECIMAL :
-    ([ "-", "+" ])?
-    (
-      (< DIGITS >)+ "." (< DIGITS >)*
-    | "." (< DIGITS >)+
-    )
-  >
-| < DOUBLE :
-    ([ "+", "-" ])?
-    (
-      ([ "0"-"9" ])+ "." ([ "0"-"9" ])* < EXPONENT >
-    | "." ([ "0"-"9" ])+ (< EXPONENT >)
-    | ([ "0"-"9" ])+ < EXPONENT >
-    )
-  >
-| < #DIGITS : ([ "0"-"9" ])+ >
-| < #EXPONENT : [ "e", "E" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >
+< DEFAULT, TERM, DIRECTIVE_ARGUMENTS > MORE : {
+	"<" { pushState(); } : ABSOLUTE_IRI
 }
 
-TOKEN:
-{
-  < STRING_LITERAL1 :
-    // Single quoted string
-    "'"
-    (
-      (~[ "'", "\\", "\n", "\r" ])
-    | < ECHAR >
-    )*
-    "'" >
-| < STRING_LITERAL2 :
-    // Double quoted string
-    "\""
-    (
-      (~[ "\"", "\\", "\n", "\r" ])
-    | < ECHAR >
-    )*
-    "\"" >
-| < STRING_LITERAL_LONG1 :
-    "'''"
-    (
-      ~[ "'", "\\" ]
-    | < ECHAR >
-    | ("'" ~[ "'" ])
-    | ("''" ~[ "'" ])
-    )*
-    "'''" >
-| < STRING_LITERAL_LONG2 :
-    "\"\"\""
-    (
-      ~[ "\"", "\\" ]
-    | < ECHAR >
-    | ("\"" ~[ "\"" ])
-    | ("\"\"" ~[ "\"" ])
-    )*
-    "\"\"\"" >
-| < #ECHAR :
-    "\\"
-    (
-      "t"
-    | "b"
-    | "n"
-    | "r"
-    | "f"
-    | "\\"
-    | "\""
-    | "'"
-    ) >
+< DEFAULT, BODY, TERM, DIRECTIVE_ARGUMENTS > TOKEN : {
+  < VARORPREDNAME : < A2Z> (< A2ZN >)* >
+  | < #A2Z : [ "a"-"z", "A"-"Z" ] >
+  | < #A2ZN : [ "a"-"z", "A"-"Z", "0"-"9" ] >
+  | < PNAME_LN : (< PN_PREFIX >)? ":" < PN_LOCAL > >
+  | < PNAME_NS : < PN_PREFIX > ":" >
+  | < #PN_CHARS_BASE : [ "a"-"z", "A"-"Z", "\u00c0"-"\u00d6",
+						 "\u00d8"-"\u00f6", "\u00f8"-"\u02ff",
+						 "\u0370"-"\u037d", "\u037f"-"\u1fff",
+						 "\u200c"-"\u200d", "\u2070"-"\u218f",
+						 "\u2c00"-"\u2fef", "\u3001"-"\ud7ff",
+						 "\uf900"-"\ufffd" ] >
+  | < #PN_CHARS_U : < PN_CHARS_BASE > | "_" >
+  | < #PN_CHARS : ( < PN_CHARS_U > | [ "-", "0"-"9", "\u00b7",
+									   "\u0300"-"\u036f",
+									   "\u203f"-"\u2040" ] ) >
+  | < #PN_PREFIX : < PN_CHARS_BASE >
+		( ( < PN_CHARS > | "." )* < PN_CHARS > )? >
+  | < #PN_LOCAL : ( < PN_CHARS_U > | [ ":", "0"-"9" ] )
+		( ( < PN_CHARS > | [ ".", ":" ] )* < PN_CHARS > )? >
+  |	< COMMA : "," >
+  | < LPAREN : "(" > {
+		pushState();
+
+		if (curLexState == DEFAULT || curLexState == BODY) {
+			SwitchTo(TERM);
+		}
+	}
+  | < RPAREN : ")" > { popState(); }
 }
 
-TOKEN :
-{
-  // Includes # for relative URIs
-  < IRI : "<" (~[ ">", "<", "\"", "{", "}", "^", "\\", "|", "`", "\u0000"-"\u0020" ])* ">" >
-| < PNAME_LN : (< PN_PREFIX >)? ":" < PN_LOCAL > >
-| < PNAME_NS : < PN_PREFIX > ":" >
-| < UNIVAR : < QMARK > < VARORPREDNAME > >
-| < EXIVAR : < EMARK > < VARORPREDNAME > >
-| < LANGTAG :
-    < AT > (< A2Z >)+
-    (
-      "-" (< A2ZN >)+
-    )* >
-| < VARORPREDNAME : < A2Z> (< A2ZN >)* >
-| < #A2Z : [ "a"-"z", "A"-"Z" ] >
-| < #A2ZN : [ "a"-"z", "A"-"Z", "0"-"9" ] >
-| < DIRECTIVENAME : < A2Z > (< A2ZNX >)* >
-| < #A2ZNX : [ "a"-"z", "A"-"Z", "0"-"9", "-", "_" ] >
+< TERM, DIRECTIVE_ARGUMENTS > TOKEN : {
+  < INTEGER : (< SIGN >)? < DIGITS > >
+  | < DECIMAL : (< SIGN >)? ( < DIGITS > "." (< DIGIT >)*
+							  | "." < DIGITS > ) >
+  | < DOUBLE : (< SIGN >)? ( < DIGITS > "." (< DIGIT >)* < EXPONENT >
+                           | "." (< DIGITS >) (< EXPONENT >)
+                           | < DIGITS > < EXPONENT > ) >
+  | < #SIGN : [ "+", "-" ] >
+  | < #DIGIT : [ "0"-"9" ] >
+  | < #DIGITS : (< DIGIT >)+ >
+  | < #EXPONENT : [ "e", "E" ] (< SIGN >)? < DIGITS > >
+  | < COLON : ":" >
 }
 
-TOKEN :
-{
-  < LPAREN : "(" >
-| < RPAREN : ")" >
-| < LBRACK : "[" >
-| < RBRACK : "]" >
-| < COMMA : "," >
-| < DOT : "." >
-| < ARROW : ":-" >
-| < QMARK : "?" >
-| < EMARK : "!" >
-| < TILDE : "~" >
-| < COLON : ":" >
-| < DATATYPE : "^^" >
-| < AT : "@" >
+TOKEN : {
+  < ARROW : ":-" > : BODY
 }
 
-TOKEN :
-{
-  < #PN_CHARS_BASE :
-    [ "A"-"Z" ]
-  | [ "a"-"z" ]
-  | [ "\u00c0"-"\u00d6" ]
-  | [ "\u00d8"-"\u00f6" ]
-  | [ "\u00f8"-"\u02ff" ]
-  | [ "\u0370"-"\u037d" ]
-  | [ "\u037f"-"\u1fff" ]
-  | [ "\u200c"-"\u200d" ]
-  | [ "\u2070"-"\u218f" ]
-  | [ "\u2c00"-"\u2fef" ]
-  | [ "\u3001"-"\ud7ff" ]
-  | [ "\uf900"-"\ufffd" ]
-  >
-  //  | [ ""#x10000-#xEFFFF]
-|
-  < #PN_CHARS_U :
-    < PN_CHARS_BASE >
-  | "_" >
-| < #PN_CHARS :
-    (
-      < PN_CHARS_U >
-    | "-"
-    | [ "0"-"9" ]
-    | "\u00b7"
-    | [ "\u0300"-"\u036f" ]
-    | [ "\u203f"-"\u2040" ]
-    ) >
-| < #PN_PREFIX :
-    < PN_CHARS_BASE >
-    (
-      (
-        < PN_CHARS >
-      | "."
-      )*
-      < PN_CHARS >
-    )? >
-| < #PN_LOCAL :
-    (
-      < PN_CHARS_U >
-    |  ":"
-    | [ "0"-"9" ]
-    )
-    (
-      (
-        < PN_CHARS >
-      | "."
-      | ":"
-      )*
-      < PN_CHARS >
-    )? >
+< DEFAULT, BODY > TOKEN : {
+  < TILDE : "~" >
 }
 
-TOKEN :
-{
-	< PIPE_DELIMINATED_LITERAL : ( "|" (~[ "|" ])* "|" ) > : DEFAULT
-|   < HASH_DELIMINATED_LITERAL : ( "#" (~[ "#" ])* "#" ) > : DEFAULT
-// |   < BRACKET_DELIMINATED_LITERAL : ( "[" (~[ "]" ])* "]" ) > : DEFAULT
-|   < BRACE_DELIMINATED_LITERAL : ( "{" (~[ "}" ])* "}" ) > : DEFAULT
+< ABSOLUTE_IRI > TOKEN : {
+	< IRI_ABSOLUTE : (~[ ">", "<", "\"", "{", "}", "^", "\\", "|", "`", "\u0000"-"\u0020" ])* ">" > {
+			  matchedToken.image = JavaCCParserBase.stripDelimiters(matchedToken.image, 1);
+			  popState();
+		  }
 }
+
+< DIRECTIVE > TOKEN : {
+    < BASE : "base" > : DIRECTIVE_ARGUMENTS
+  | < PREFIX : "prefix" > : DIRECTIVE_ARGUMENTS
+  | < SOURCE : "source" > : DIRECTIVE_ARGUMENTS
+  | < CUSTOM : < DIRECTIVENAME > > : DIRECTIVE_ARGUMENTS
+  | < DIRECTIVENAME : [ "a"-"z", "A"-"Z" ] ([ "a"-"z", "A"-"Z", "0"-"9", "-", "_" ])* >
+}
+
+< DEFAULT, BODY, DIRECTIVE_ARGUMENTS > TOKEN : {
+	< DOT : "." > : DEFAULT
+}
+
+< DIRECTIVE_ARGUMENTS > TOKEN : {
+  < ARITY : "[" < INTEGER > "]" > {
+			  matchedToken.image = JavaCCParserBase.stripDelimiters(matchedToken.image, 1);
+		  }
+  | < ARGUMENT_NAME : < DIRECTIVENAME > >
+}
+
+< TERM > TOKEN : {
+	< UNIVAR : "?" < VARORPREDNAME > >
+  | < EXIVAR : "!" < VARORPREDNAME > >
+  | < LANGTAG : "@" ( < A2Z > )+ ( "-" ( < A2ZN > )+ )? >
+  | < DATATYPE : "^^" >
+  | < IRI : "<" (~[ ">", "<", "\"", "{", "}", "^", "\\", "|", "`", "\u0000"-"\u0020" ])* ">" >
+}
+
+< TERM, DIRECTIVE_ARGUMENTS > MORE : {
+  < "'" > { pushState(); } : SINGLE_QUOTED
+  | < "\"" > { pushState(); } : DOUBLE_QUOTED
+  | < "'''" > { pushState(); }: TRIPLE_QUOTED
+  | < "\"\"\"" > { pushState(); } : SIXFOLD_QUOTED
+}
+
+< SINGLE_QUOTED > TOKEN : {
+	< SINGLE_QUOTED_STRING : ( ~[ "'", "\\", "\n", "\r" ]
+							 | < ESCAPE_SEQUENCE > )* "'" > { popState(); }
+}
+
+< DOUBLE_QUOTED > TOKEN : {
+	< DOUBLE_QUOTED_STRING : ( ~[ "\"", "\\", "\n", "\r" ]
+							 | < ESCAPE_SEQUENCE > )* "\"" > { popState(); }
+}
+
+< TRIPLE_QUOTED > TOKEN : {
+	< TRIPLE_QUOTED_STRING : ( ~[ "'", "\\" ]
+							 | < ESCAPE_SEQUENCE >
+							 | ( "'" ~[ "'" ] )
+							 | ( "''" ~[ "'" ] ) )* "'''" > { popState(); }
+}
+
+< SIXFOLD_QUOTED > TOKEN : {
+	< SIXFOLD_QUOTED_STRING : ( ~[ "\"", "\\" ]
+							  | < ESCAPE_SEQUENCE >
+							  | ( "\"" ~[ "\"" ] )
+							  | ( "\"\"" ~[ "\"" ] ) )* "\"\"\"" > { popState(); }
+}
+
+< SINGLE_QUOTED, DOUBLE_QUOTED, TRIPLE_QUOTED, SIXFOLD_QUOTED > MORE : {
+	< ESCAPE_SEQUENCE : "\\" [ "t", "b", "n", "r", "f", "\\", "\"", "'" ] >
+}
+
+// TOKEN :
+// {
+// 	< PIPE_DELIMINATED_LITERAL : ( "|" (~[ "|" ])* "|" ) > : DEFAULT
+// |   < HASH_DELIMINATED_LITERAL : ( "#" (~[ "#" ])* "#" ) > : DEFAULT
+// // |   < BRACKET_DELIMINATED_LITERAL : ( "[" (~[ "]" ])* "]" ) > : DEFAULT
+// |   < BRACE_DELIMINATED_LITERAL : ( "{" (~[ "}" ])* "}" ) > : DEFAULT
+// }
