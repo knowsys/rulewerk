@@ -36,7 +36,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
-public class QuerySizeTest {
+public class QueryAnswerSizeTest {
 
 	private static final Predicate predP = Expressions.makePredicate("P", 1);
 	private static final Predicate predQ = Expressions.makePredicate("Q", 1);
@@ -51,12 +51,17 @@ public class QuerySizeTest {
 	private static final PositiveLiteral Px = Expressions.makePositiveLiteral(predP, x);
 	private static final PositiveLiteral Qx = Expressions.makePositiveLiteral(predQ, x);
 	private static final PositiveLiteral Qy = Expressions.makePositiveLiteral(predQ, y);
+	private static final PositiveLiteral Rxx = Expressions.makePositiveLiteral(predR, x, x);
 	private static final PositiveLiteral Rxy = Expressions.makePositiveLiteral(predR, x, y);
+	private static final PositiveLiteral Ryy = Expressions.makePositiveLiteral(predR, y, y);
+
 	private static final Conjunction<PositiveLiteral> conRxyQy = Expressions.makePositiveConjunction(Rxy, Qy);
+	private static final Conjunction<PositiveLiteral> conRxxRxyRyy = Expressions.makePositiveConjunction(Rxx, Rxy, Ryy);
 	private static final Conjunction<Literal> conPx = Expressions.makeConjunction(Px);
 
-	private static final Rule ruleQxPx = Expressions.makeRule(Qx, Px);
+	private static final Rule QxPx = Expressions.makeRule(Qx, Px);
 	private static final Rule RxyQyPx = Expressions.makeRule(conRxyQy, conPx);
+	private static final Rule RxxRxyRyyPx = Expressions.makeRule(conRxxRxyRyy, conPx);
 
 	private static final Fact factPc = Expressions.makeFact(predP, c);
 	private static final Fact factPd = Expressions.makeFact(predP, d);
@@ -83,7 +88,7 @@ public class QuerySizeTest {
 	@Test
 	public void noFactsUniversalRule() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatement(ruleQxPx);
+		kb.addStatement(QxPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 			assertEquals(0, reasoner.queryAnswerSize(Px, true));
@@ -119,7 +124,7 @@ public class QuerySizeTest {
 	@Test
 	public void pFactsUniversalRule() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatements(factPc, factPd, ruleQxPx);
+		kb.addStatements(factPc, factPd, QxPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 			assertEquals(2, reasoner.queryAnswerSize(Px, true));
@@ -188,7 +193,7 @@ public class QuerySizeTest {
 	@Test
 	public void pFactsQFactsUniversalRule() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatements(factPc, factPd, factQe, factQf, ruleQxPx);
+		kb.addStatements(factPc, factPd, factQe, factQf, QxPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 			assertEquals(2, reasoner.queryAnswerSize(Px));
@@ -234,7 +239,7 @@ public class QuerySizeTest {
 	@Test
 	public void pFactsQFactsExistentialAndUniversalRule() throws IOException {
 		final KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatements(factPc, factPd, factQe, factQf, ruleQxPx, RxyQyPx);
+		kb.addStatements(factPc, factPd, factQe, factQf, QxPx, RxyQyPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 			assertEquals(2, reasoner.queryAnswerSize(Px));
@@ -259,4 +264,24 @@ public class QuerySizeTest {
 		}
 	}
 
+	@Test
+	public void pFactsLiteralWithSameVariables() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(factPc, factPd, RxxRxyRyyPx);
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			assertEquals(2, reasoner.queryAnswerSize(Px, true));
+			assertEquals(2, reasoner.queryAnswerSize(Px, false));
+
+			assertEquals(4, reasoner.queryAnswerSize(Rxx, true));
+			assertEquals(2, reasoner.queryAnswerSize(Rxx, false));
+
+			assertEquals(6, reasoner.queryAnswerSize(Rxy, true));
+			assertEquals(2, reasoner.queryAnswerSize(Rxy, false));
+
+			assertEquals(4, reasoner.queryAnswerSize(Ryy, true));
+			assertEquals(2, reasoner.queryAnswerSize(Ryy, false));
+
+		}
+	}
 }
