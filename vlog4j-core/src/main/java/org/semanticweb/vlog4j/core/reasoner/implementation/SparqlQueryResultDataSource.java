@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,15 +23,17 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
 /**
  * A SparqlQueryResultDataSource provide the results of a SPARQL query on a
  * given web endpoint.
- * 
+ *
  * @author Irina Dragoste
  *
  */
@@ -45,13 +47,12 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 
 	/**
 	 * Creates a data source from answers to a remote SPARQL query.
-	 * 
-	 * @param endpoint
-	 *            web location of the resource the query will be evaluated on
-	 * @param queryVariables
-	 *            comma-separated list of SPARQL variable names (without leading ? or $)
-	 * @param queryBody
-	 *            content of the <i>WHERE</i> clause in the SPARQL query
+	 *
+	 * @param endpoint       web location of the resource the query will be
+	 *                       evaluated on
+	 * @param queryVariables comma-separated list of SPARQL variable names (without
+	 *                       leading ? or $)
+	 * @param queryBody      content of the <i>WHERE</i> clause in the SPARQL query
 	 */
 	// TODO add examples to javadoc
 	// TODO add illegal argument exceptions to javadoc
@@ -69,16 +70,16 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 
 	/**
 	 * Creates a data source from answers to a remote SPARQL query.
-	 * 
-	 * @param endpoint
-	 *            the web location of the resource the query will be evaluated on.
-	 * @param queryVariables
-	 *            the variables of the query, in the given order. The variable at
-	 *            each position in the ordered set will be mapped to its
-	 *            correspondent query answer term at the same position.
-	 * @param queryBody
-	 *            the content of the <i>WHERE</i> clause in the SPARQL query. Must
-	 *            not contain {@code newline} characters ({@code "\n")}.
+	 *
+	 * @param endpoint       the web location of the resource the query will be
+	 *                       evaluated on.
+	 * @param queryVariables the variables of the query, in the given order. The
+	 *                       variable at each position in the ordered set will be
+	 *                       mapped to its correspondent query answer term at the
+	 *                       same position.
+	 * @param queryBody      the content of the <i>WHERE</i> clause in the SPARQL
+	 *                       query. Must not contain {@code newline} characters
+	 *                       ({@code "\n")}.
 	 */
 	// TODO add examples to javadoc
 	// TODO add illegal argument exceptions to javadoc
@@ -97,15 +98,15 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 	}
 
 	public URL getEndpoint() {
-		return endpoint;
+		return this.endpoint;
 	}
 
 	public String getQueryBody() {
-		return queryBody;
+		return this.queryBody;
 	}
 
 	public String getQueryVariables() {
-		return queryVariables;
+		return this.queryVariables;
 	}
 
 	@Override
@@ -116,9 +117,9 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 
 						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
 
-						"EDB%1$d_param0=" + endpoint + "\n" + "EDB%1$d_param1=" + queryVariables + "\n" +
+						"EDB%1$d_param0=" + this.endpoint + "\n" + "EDB%1$d_param1=" + this.queryVariables + "\n" +
 
-						"EDB%1$d_param2=" + queryBody + "\n";
+						"EDB%1$d_param2=" + this.queryBody + "\n";
 
 		return configStringPattern;
 	}
@@ -136,23 +137,31 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 	}
 
 	@Override
+	public Optional<Integer> getRequiredArity() {
+		return Optional.of(this.queryVariables.split(",").length);
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + endpoint.hashCode();
-		result = prime * result + queryBody.hashCode();
-		result = prime * result + queryVariables.hashCode();
+		result = prime * result + this.endpoint.hashCode();
+		result = prime * result + this.queryBody.hashCode();
+		result = prime * result + this.queryVariables.hashCode();
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		final SparqlQueryResultDataSource other = (SparqlQueryResultDataSource) obj;
 		return this.endpoint.equals(other.getEndpoint()) && this.queryVariables.equals(other.getQueryVariables())
 				&& this.queryBody.equals(other.getQueryBody());
@@ -160,8 +169,13 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 
 	@Override
 	public String toString() {
-		return "SparqlQueryResultDataSource [endpoint=" + endpoint + ", queryVariables=" + queryVariables
-				+ ", queryBody=" + queryBody + "]";
+		return "SparqlQueryResultDataSource [endpoint=" + this.endpoint + ", queryVariables=" + this.queryVariables
+				+ ", queryBody=" + this.queryBody + "]";
+	}
+
+	@Override
+	public String getSyntacticRepresentation() {
+		return Serializer.getString(this);
 	}
 
 }

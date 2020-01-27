@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.api;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -32,6 +34,11 @@ public interface AbstractConstant extends Constant {
 	@Override
 	default TermType getType() {
 		return TermType.ABSTRACT_CONSTANT;
+	}
+
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getString(this);
 	}
 
 }

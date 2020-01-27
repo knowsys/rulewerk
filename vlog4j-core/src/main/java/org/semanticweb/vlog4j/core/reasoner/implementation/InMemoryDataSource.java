@@ -23,10 +23,11 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import java.util.Arrays;
 
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 
 /**
  * A {@link DataSource} for representing a large number of facts that were
- * generated in Java. Rather than making {@link Fact} objects for all of them,
+ * generated in Java. Rather than creating {@link Fact} objects for all of them,
  * the object will directly accept tuples of constant names that are internally
  * stored in a form that can be passed to the reasoner directly, thereby saving
  * memory and loading time.
@@ -50,10 +51,10 @@ public class InMemoryDataSource implements DataSource {
 	 * @param arity           the number of parameters in a fact from this source
 	 * @param initialCapacity the planned number of facts
 	 */
-	public InMemoryDataSource(int arity, int initialCapacity) {
+	public InMemoryDataSource(final int arity, final int initialCapacity) {
 		this.capacity = initialCapacity;
 		this.arity = arity;
-		data = new String[initialCapacity][arity];
+		this.data = new String[initialCapacity][arity];
 	}
 
 	/**
@@ -62,20 +63,20 @@ public class InMemoryDataSource implements DataSource {
 	 * 
 	 * @param constantNames the string names of the constants in this fact
 	 */
-	public void addTuple(String... constantNames) {
-		if (constantNames.length != arity) {
-			throw new IllegalArgumentException("This data source holds tuples of arity " + arity
+	public void addTuple(final String... constantNames) {
+		if (constantNames.length != this.arity) {
+			throw new IllegalArgumentException("This data source holds tuples of arity " + this.arity
 					+ ". Adding a tuple of size " + constantNames.length + " is not possible.");
 		}
-		if (nextEmptyTuple == capacity) {
-			capacity = capacity * 2;
-			this.data = Arrays.copyOf(data, capacity);
+		if (this.nextEmptyTuple == this.capacity) {
+			this.capacity = this.capacity * 2;
+			this.data = Arrays.copyOf(this.data, this.capacity);
 		}
-		data[nextEmptyTuple] = new String[arity];
-		for (int i = 0; i < arity; i++) {
-			data[nextEmptyTuple][i] = TermToVLogConverter.getVLogNameForConstantName(constantNames[i]);
+		this.data[this.nextEmptyTuple] = new String[this.arity];
+		for (int i = 0; i < this.arity; i++) {
+			this.data[this.nextEmptyTuple][i] = TermToVLogConverter.getVLogNameForConstantName(constantNames[i]);
 		}
-		nextEmptyTuple++;
+		this.nextEmptyTuple++;
 	}
 
 	/**
@@ -85,17 +86,31 @@ public class InMemoryDataSource implements DataSource {
 	 * @return the data
 	 */
 	public String[][] getData() {
-		if (nextEmptyTuple == capacity) {
+		if (this.nextEmptyTuple == this.capacity) {
 			return this.data;
 		} else {
 			return Arrays.copyOf(this.data, this.nextEmptyTuple);
 		}
 	}
 
+	@Override
+	public String getSyntacticRepresentation() {
+		final StringBuilder sb = new StringBuilder(
+				"This InMemoryDataSource holds the following tuples of constant names, one tuple per line:");
+		for (int i = 0; i < this.getData().length; i++) {
+			for (int j = 0; j < this.data[i].length; j++) {
+				sb.append(this.data[i][j] + " ");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Returns null to indicate that this {@link DataSource} cannot be passed to
 	 * VLog in a configuration string.
 	 */
+
 	@Override
 	public String toConfigString() {
 		return null;

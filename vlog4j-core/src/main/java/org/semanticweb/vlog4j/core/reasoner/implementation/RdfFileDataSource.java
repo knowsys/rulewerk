@@ -23,8 +23,9 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
 /**
  * An {@code RdfFileDataSource} stores facts in the RDF N-Triples format inside
@@ -62,13 +63,22 @@ public class RdfFileDataSource extends FileDataSource {
 	 *                                  {@code rdfFile} does not occur in
 	 *                                  {@link #possibleExtensions}.
 	 */
-	public RdfFileDataSource(@NonNull final File rdfFile) throws IOException {
+	public RdfFileDataSource(final File rdfFile) throws IOException {
 		super(rdfFile, possibleExtensions);
 	}
 
 	@Override
 	public String toString() {
-		return "RdfFileDataSource [rdfFile=" + getFile() + "]";
+		return "RdfFileDataSource [rdfFile=" + this.getFile() + "]";
 	}
 
+	@Override
+	public String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
+	@Override
+	public Optional<Integer> getRequiredArity() {
+		return Optional.of(3);
+	}
 }

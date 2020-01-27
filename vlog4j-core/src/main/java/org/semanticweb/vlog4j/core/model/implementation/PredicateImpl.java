@@ -40,10 +40,8 @@ public class PredicateImpl implements Predicate {
 	/**
 	 * Constructor for {@link Predicate}s of arity 1 or higher.
 	 * 
-	 * @param name
-	 *            a non-blank String (not null, nor empty or whitespace).
-	 * @param arity
-	 *            an int value strictly greater than 0.
+	 * @param name  a non-blank String (not null, nor empty or whitespace).
+	 * @param arity an int value strictly greater than 0.
 	 */
 	public PredicateImpl(@NonNull String name, int arity) {
 		Validate.notBlank(name, "Predicates cannot be named by blank Strings.");
@@ -89,7 +87,7 @@ public class PredicateImpl implements Predicate {
 
 	@Override
 	public String toString() {
-		return "PredicateImpl [name=" + this.name + ", arity=" + this.arity + "]";
+		return getSyntacticRepresentation();
 	}
 
 }

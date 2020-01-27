@@ -19,8 +19,7 @@ package org.semanticweb.vlog4j.core.model;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
@@ -36,12 +35,12 @@ public class FactTest {
 
 	@Test
 	public void factsConstructor() {
-		Predicate p = Expressions.makePredicate("p", 2);
-		Constant c = Expressions.makeAbstractConstant("c");
-		Constant d = Expressions.makeAbstractConstant("d");
-		Fact f1 = Expressions.makeFact(p, Arrays.asList(c, d));
-		Fact f2 = Expressions.makeFact("p", Arrays.asList(c, d));
-		Fact f3 = new FactImpl(p, Arrays.asList(c, d));
+		final Predicate p = Expressions.makePredicate("p", 2);
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
+		final Fact f1 = Expressions.makeFact(p, Arrays.asList(c, d));
+		final Fact f2 = Expressions.makeFact("p", Arrays.asList(c, d));
+		final Fact f3 = new FactImpl(p, Arrays.asList(c, d));
 		assertEquals(f1, f2);
 		assertEquals(f1, f3);
 		assertEquals(f2, f3);
@@ -49,9 +48,18 @@ public class FactTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void factsOnlyContainConstants() {
-		Predicate p = Expressions.makePredicate("p", 1);
-		Variable x = Expressions.makeUniversalVariable("X");
+		final Predicate p = Expressions.makePredicate("p", 1);
+		final Variable x = Expressions.makeUniversalVariable("X");
 		new FactImpl(p, Arrays.asList(x));
+	}
+
+	@Test
+	public void factToStringTest() {
+		final Predicate p = Expressions.makePredicate("p", 2);
+		final Constant c = Expressions.makeAbstractConstant("c");
+		final Constant d = Expressions.makeAbstractConstant("d");
+		final Fact f1 = Expressions.makeFact(p, Arrays.asList(c, d));
+		assertEquals("p(c, d) .", f1.toString());
 	}
 
 }

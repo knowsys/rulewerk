@@ -45,7 +45,7 @@ import org.semanticweb.vlog4j.owlapi.OwlToRulesConverter;
 /**
  * This example shows how <b>vlog4j-owlapi</b> library (class
  * {@link OwlToRulesConverter}) can be used to transform an OWL ontology into
- * <b>vlog4j-core</b> {@link Rule}s and {@link Atom}s.
+ * <b>vlog4j-core</b> {@link Rule}s and {@link Fact}s.
  * 
  * @author Irina Dragoste
  *

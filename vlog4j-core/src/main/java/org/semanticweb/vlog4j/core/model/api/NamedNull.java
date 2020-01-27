@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.api;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /*
  * #%L
  * VLog4j Core Components
@@ -28,11 +30,15 @@ package org.semanticweb.vlog4j.core.model.api;
  * @author david.carral@tu-dresden.de
  */
 public interface NamedNull extends Term {
-	
+
 	@Override
 	default TermType getType() {
 		return TermType.NAMED_NULL;
 	}
-	
-}
 
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
+}

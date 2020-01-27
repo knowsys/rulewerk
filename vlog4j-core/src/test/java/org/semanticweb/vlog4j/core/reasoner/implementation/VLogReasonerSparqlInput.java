@@ -65,8 +65,9 @@ public class VLogReasonerSparqlInput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
-					fatherOfPredicate, Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
+							Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 				final QueryResult firstAnswer = answerQuery.next();
@@ -90,8 +91,9 @@ public class VLogReasonerSparqlInput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
-					fatherOfPredicate, Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
+							Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 				final QueryResult firstAnswer = answerQuery.next();
@@ -124,8 +126,9 @@ public class VLogReasonerSparqlInput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
-					fatherOfPredicate, Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner
+					.answerQuery(Expressions.makePositiveLiteral(fatherOfPredicate,
+							Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false)) {
 
 				assertTrue(answerQuery.hasNext());
 			}
@@ -147,8 +150,8 @@ public class VLogReasonerSparqlInput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether, Expressions.makeUniversalVariable("x"),
-					Expressions.makeUniversalVariable("y")), false);
+			reasoner.answerQuery(Expressions.makePositiveLiteral(haveChildrenTogether,
+					Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false);
 		}
 	}
 
@@ -167,8 +170,11 @@ public class VLogReasonerSparqlInput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			try (final QueryResultIterator answerQuery = reasoner.answerQuery(Expressions.makePositiveLiteral(
-					haveChildrenTogether, Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")), false)) {
+			try (final QueryResultIterator answerQuery = reasoner
+					.answerQuery(
+							Expressions.makePositiveLiteral(haveChildrenTogether,
+									Expressions.makeUniversalVariable("x"), Expressions.makeUniversalVariable("y")),
+							false)) {
 
 				assertTrue(answerQuery.hasNext());
 			}

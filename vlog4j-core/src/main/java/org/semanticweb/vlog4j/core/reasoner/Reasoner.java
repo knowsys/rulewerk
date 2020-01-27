@@ -2,15 +2,16 @@ package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.IOException;
 
+import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
+import org.semanticweb.vlog4j.core.model.api.ExistentialVariable;
 import org.semanticweb.vlog4j.core.model.api.Fact;
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.TermType;
+import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
-
-import karmaresearch.vlog.Atom;
 
 /*
  * #%L
@@ -50,17 +51,17 @@ import karmaresearch.vlog.Atom;
  *
  * The loaded reasoner can perform <b>atomic queries</b> on explicit and
  * implicit facts after calling {@link Reasoner#reason()}. Queries can provide
- * an iterator for the results ({@link #answerQuery(Atom, boolean)}, or the
- * results can be exported to a file
- * ({@link #exportQueryAnswersToCsv(Atom, String, boolean)}). <br>
+ * an iterator for the results ({@link #answerQuery(PositiveLiteral, boolean)},
+ * or the results can be exported to a file
+ * ({@link #exportQueryAnswersToCsv(PositiveLiteral, String, boolean)}). <br>
  * <br>
  * <b>Reasoning</b> with various {@link Algorithm}s is supported, that can lead
  * to different sets of inferred facts and different termination behavior. In
  * some cases, reasoning with rules with existentially quantified variables
- * {@link Rule#getExistentiallyQuantifiedVariables()} may not terminate. We
- * recommend reasoning with algorithm {@link Algorithm#RESTRICTED_CHASE}, as it
- * leads to termination in more cases. To avoid non-termination, a reasoning
- * timeout can be set ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
+ * ({@link ExistentialVariable}) may not terminate. We recommend reasoning with
+ * algorithm {@link Algorithm#RESTRICTED_CHASE}, as it leads to termination in
+ * more cases. To avoid non-termination, a reasoning timeout can be set
+ * ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
  *
  * @author Irina Dragoste
  *
@@ -73,7 +74,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *
 	 * @return a {@link VLogReasoner} instance.
 	 */
-	public static Reasoner getInstance() {
+	static Reasoner getInstance() {
 		final KnowledgeBase knowledgeBase = new KnowledgeBase();
 		return new VLogReasoner(knowledgeBase);
 	}
@@ -104,9 +105,9 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * In some cases, reasoning with rules with existentially quantified variables
-	 * {@link Rule#getExistentiallyQuantifiedVariables()} may not terminate. We
-	 * recommend reasoning with algorithm {@link Algorithm#RESTRICTED_CHASE}, as it
-	 * leads to termination in more cases. <br>
+	 * ({@link ExistentialVariable}) may not terminate. We recommend reasoning with
+	 * algorithm {@link Algorithm#RESTRICTED_CHASE}, as it leads to termination in
+	 * more cases. <br>
 	 * This method sets a timeout (in seconds) after which reasoning can be
 	 * artificially interrupted if it has not reached completion.
 	 *
@@ -178,7 +179,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic,
 	 * Cyclic, or cyclicity cannot be determined.
 	 * 
-	 * @return
+	 * @return the appropriate CyclicityResult.
 	 */
 	CyclicityResult checkForCycles();
 
@@ -259,9 +260,9 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * knowledge base rules. <br>
 	 * <br>
 	 * In some cases, reasoning with rules with existentially quantified variables
-	 * {@link Rule#getExistentiallyQuantifiedVariables()} may not terminate. We
-	 * recommend reasoning with algorithm {@link Algorithm#RESTRICTED_CHASE}, as it
-	 * leads to termination in more cases. <br>
+	 * {@link ExistentialVariable} may not terminate. We recommend reasoning with
+	 * algorithm {@link Algorithm#RESTRICTED_CHASE}, as it leads to termination in
+	 * more cases. <br>
 	 * To avoid non-termination, a reasoning timeout can be set
 	 * ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
 	 * 
@@ -281,11 +282,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * the reasoner and the explicit facts materialised by the reasoner. <br>
 	 * An answer to the query is the terms a fact that matches the {@code query}:
 	 * the fact predicate is the same as the {@code query} predicate, the
-	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
-	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
-	 * the {@code query} are matched by terms in the fact, either named
-	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The
-	 * same variable name identifies the same term in the answer fact. <br>
+	 * {@link Constant} terms of the {@code query} appear in the answer fact at the
+	 * same term position, and the {@link Variable} terms of the {@code query} are
+	 * matched by terms in the fact, either named ({@link Constant}) or anonymous
+	 * ({@link NamedNull}). The same variable name identifies the same term in the
+	 * answer fact. <br>
 	 * A query answer is represented by a {@link QueryResult}. A query can have
 	 * multiple, distinct query answers. This method returns an Iterator over these
 	 * answers. <br>
@@ -319,12 +320,12 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @param query        a {@link PositiveLiteral} representing the query to be
 	 *                     answered.
 	 * @param includeNulls if {@code true}, {@link QueryResult}s containing terms of
-	 *                     type {@link TermType#NAMED_NULL} (representing anonymous
+	 *                     type {@link NamedNull} (representing anonymous
 	 *                     individuals introduced to satisfy rule existentially
 	 *                     quantified variables) will be included. Otherwise, the
 	 *                     answers will only contain the {@link QueryResult}s with
-	 *                     terms of type {@link TermType#CONSTANT} (representing
-	 *                     named individuals).
+	 *                     terms of type {@link Constant} (representing named
+	 *                     individuals).
 	 * @return QueryResultIterator that iterates over distinct answers to the query.
 	 *         It also contains the {@link Correctness} of the query answers.
 	 */
@@ -399,11 +400,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * <br>
 	 * An answer to the query is the terms a fact that matches the {@code query}:
 	 * the fact predicate is the same as the {@code query} predicate, the
-	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
-	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
-	 * the {@code query} are matched by terms in the fact, either named
-	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The
-	 * same variable name identifies the same term in the answer fact. <br>
+	 * {@link Constant} terms of the {@code query} appear in the answer fact at the
+	 * same term position, and the {@link Variable} terms of the {@code query} are
+	 * matched by terms in the fact, either named ({@link Constant}) or anonymous
+	 * ({@link NamedNull}). The same variable name identifies the same term in the
+	 * answer fact. <br>
 	 * A query can have multiple, distinct query answers. Each answers is written on
 	 * a separate line in the given file.
 	 *
@@ -414,12 +415,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *                     represents a query answer, and it will contain the fact
 	 *                     term names as columns.
 	 * @param includeNulls if {@code true}, answers containing terms of type
-	 *                     {@link TermType#NAMED_NULL} (representing anonymous
-	 *                     individuals introduced to satisfy rule existentially
-	 *                     quantified variables) will be included. Otherwise, the
-	 *                     answers will only contain those with terms of type
-	 *                     {@link TermType#CONSTANT} (representing named
-	 *                     individuals).
+	 *                     {@link NamedNull} (representing anonymous individuals
+	 *                     introduced to satisfy rule existentially quantified
+	 *                     variables) will be included. Otherwise, the answers will
+	 *                     only contain those with terms of type {@link Constant}
+	 *                     (representing named individuals).
 	 *
 	 * @throws IOException if an I/O error occurs regarding given file
 	 *                     ({@code csvFilePath)}.

@@ -14,13 +14,16 @@ PARSER_BEGIN(JavaCCParser)
 package org.semanticweb.vlog4j.parser.javacc;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
+import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 
@@ -33,6 +36,7 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
@@ -42,6 +46,13 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
 public class JavaCCParser extends JavaCCParserBase
 {
+	private SubParserFactory getSubParserFactory() {
+		return new SubParserFactory(this);
+	}
+
+	public void ensureEndOfInput() throws ParseException {
+		jj_consume_token(EOF);
+	}
 }
 
 PARSER_END(JavaCCParser)
@@ -92,51 +103,31 @@ void source() throws PrefixDeclarationException:
     Token arity;
 }
 {
-    < SOURCE > predicateName = predicateName() < LPAREN > arity = < INTEGER > < RPAREN > < COLON > dataSource = dataSource() < DOT >
+    < SOURCE > predicateName = predicateName() < LBRACK > arity = < INTEGER > < RBRACK > < COLON > dataSource = dataSource() < DOT >
     {
       int nArity;
       nArity = Integer.parseInt(arity.image);
       // Do not catch NumberFormatException: < INTEGER > matches must parse as int in Java!
-      if ( dataSource instanceof RdfFileDataSource && nArity != 3 )
-        throw new ParseException("Cannot load RDF data into predicate of arity " + nArity +".");
-      addDataSource(predicateName, nArity,dataSource);
+
+      addDataSource(predicateName, nArity, dataSource);
     }
 }
 
 DataSource dataSource() throws PrefixDeclarationException:
 {
-  String fileName;
-  String endpoint;
-  String variables;
-  String query;
+  Token sourceName;
+  List< String > arguments;
 }
 {
-    < LOADCSV > < LPAREN > fileName = String() < RPAREN >
+	(sourceName = < DIRECTIVENAME > | sourceName = < VARORPREDNAME >) < LPAREN > arguments = Arguments() < RPAREN >
     {
-     try { 
-       return new CsvFileDataSource(new File(fileName)) ;
-     } catch (IOException e) {
-       throw new ParseException("Could not use source file \"" + fileName +"\": " + e.getMessage());
-     }
+        try {
+            return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(sourceName.image, arguments, getSubParserFactory());
+        } catch (ParsingException e) {
+			throw makeParseExceptionWithCause("Failed while trying to parse the source-specific part of a data source declaration", e);
+        }
     }
-|   < LOADRDF > < LPAREN > fileName = String() < RPAREN >
-    {
-     try {
-       return new RdfFileDataSource(new File(fileName)) ;
-     } catch (IOException e) {
-       throw new ParseException("Could not use source file \"" + fileName +"\": " + e.getMessage());
-     }
-    }
-|   < SPARQL > < LPAREN > endpoint = IRI(false) < COMMA > variables = String() < COMMA > query = String() < RPAREN >
-    {
-     try {
-       return new SparqlQueryResultDataSource(new URL(endpoint), variables, query);
-     } catch (MalformedURLException e) {
-       throw new ParseException("SPARQL endoint \"" + endpoint +"\" is not a valid URL: " + e.getMessage());
-     }
-    }    
 }
-
 
 void statement() throws PrefixDeclarationException:
 {
@@ -145,7 +136,7 @@ void statement() throws PrefixDeclarationException:
 }
 {
     LOOKAHEAD(rule()) statement = rule() { knowledgeBase.addStatement(statement);}
-|   statement = fact(FormulaContext.HEAD) < DOT > //not from a rule
+|   statement = fact(FormulaContext.HEAD) //not from a rule
     {
 		knowledgeBase.addStatement(statement);
     }
@@ -161,13 +152,13 @@ Rule rule() throws PrefixDeclarationException:
     {
         // check that the intersection between headExiVars and BodyVars is empty
         for (String variable : headExiVars) {
-          if (bodyVars.contains(variable)) 
+          if (bodyVars.contains(variable))
             throw new ParseException("Malformed rule " + head + " :- " + body + "\nExistential variable " + variable + " also used in rule body.");
         }
 
         // check that bodyVars contains headUniVars
         for (String variable : headUniVars) {
-          if (!bodyVars.contains(variable)) 
+          if (!bodyVars.contains(variable))
             throw new ParseException("Unsafe rule " + head + " :- " + body  + "\nUniversal variable " + variable + " occurs in head but not in body.");
         }
 
@@ -224,12 +215,12 @@ Fact fact(FormulaContext context) throws PrefixDeclarationException:
     String predicateName;
 }
 {
-    predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN >
+    predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN > < DOT >
     {
-      try { 
+      try {
       	return Expressions.makeFact(predicateName, terms);
       } catch (IllegalArgumentException e) {
-       throw new ParseException("Error parsing fact: " + e.toString());
+		  throw makeParseExceptionWithCause("Error parsing fact: " + e.getMessage(), e);
       }
     }
 }
@@ -271,8 +262,8 @@ Term term(FormulaContext context) throws PrefixDeclarationException:
     String s;
     Constant c;
 }
-{   //TODO move Expressions.makeConstant to JavaCCParserBase
-    s = IRI(false)       { return Expressions.makeAbstractConstant(s); }
+{
+    s = IRI(false)       { return createConstant(s); }
 |   c = NumericLiteral() { return c; }
 |   c = RDFLiteral()     { return c; }
 |   t = < UNIVAR >
@@ -293,7 +284,7 @@ Term term(FormulaContext context) throws PrefixDeclarationException:
             throw new ParseException("Existentialy quantified variables can not appear in the body. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
         return Expressions.makeExistentialVariable(s);
     }
-|   t = < VARORPREDNAME > { return Expressions.makeAbstractConstant(prefixDeclarations.absolutize(t.image));}
+|   t = < VARORPREDNAME > { return createConstant(t.image); }
 }
 
 /** [16] */
@@ -302,21 +293,20 @@ Constant NumericLiteral() :
     Token t;
 }
 {
-    t = < INTEGER > { return createIntegerConstant(t.image); }
-|   t = < DECIMAL > { return createDecimalConstant(t.image); }
-|   t = < DOUBLE >  { return createDoubleConstant(t.image); }
+    t = < INTEGER > { return createConstant(t.image, PrefixDeclarations.XSD_INTEGER); }
+|   t = < DECIMAL > { return createConstant(t.image, PrefixDeclarations.XSD_DECIMAL); }
+|   t = < DOUBLE >  { return createConstant(t.image, PrefixDeclarations.XSD_DOUBLE); }
 }
 
 Constant RDFLiteral() throws PrefixDeclarationException:
 {
-    Token t;
     String lex = null;
     String lang = null;   // Optional lang tag and datatype.
     String dt = null;
 }
 {
     lex = String() ( lang = Langtag() | < DATATYPE > dt = IRI(false) )?
-    { return createDataConstant(lex, lang, dt); }
+    { return createConstant(lex, lang, dt); }
 }
 
 String Langtag() :
@@ -349,6 +339,19 @@ String String():
     {
         lex = unescapeStr(lex, t.beginLine, t.beginColumn);
         return lex;
+    }
+}
+
+LinkedList< String > Arguments() throws PrefixDeclarationException:
+{
+    String str;
+    LinkedList< String > rest = new LinkedList< String >();
+}
+{
+    (str = String() | str = IRI(true)) [< COMMA > rest = Arguments()]
+    {
+		rest.addFirst(str);
+        return rest;
     }
 }
 
@@ -415,9 +418,6 @@ TOKEN :
   < PREFIX : "@prefix" >
 | < BASE : "@base" >
 | < SOURCE : "@source" >
-| < LOADCSV : "load-csv">
-| < LOADRDF : "load-rdf">
-| < SPARQL : "sparql">
 }
 
 TOKEN:
@@ -428,7 +428,7 @@ TOKEN:
     (
       (< DIGITS >)+ "." (< DIGITS >)*
     | "." (< DIGITS >)+
-    ) 
+    )
   >
 | < DOUBLE :
     ([ "+", "-" ])?
@@ -436,7 +436,7 @@ TOKEN:
       ([ "0"-"9" ])+ "." ([ "0"-"9" ])* < EXPONENT >
     | "." ([ "0"-"9" ])+ (< EXPONENT >)
     | ([ "0"-"9" ])+ < EXPONENT >
-    ) 
+    )
   >
 | < #DIGITS : ([ "0"-"9" ])+ >
 | < #EXPONENT : [ "e", "E" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >
@@ -508,12 +508,16 @@ TOKEN :
 | < VARORPREDNAME : < A2Z> (< A2ZN >)* >
 | < #A2Z : [ "a"-"z", "A"-"Z" ] >
 | < #A2ZN : [ "a"-"z", "A"-"Z", "0"-"9" ] >
+| < DIRECTIVENAME : < A2Z > (< A2ZNX >)* >
+| < #A2ZNX : [ "a"-"z", "A"-"Z", "0"-"9", "-", "_" ] >
 }
 
 TOKEN :
 {
   < LPAREN : "(" >
 | < RPAREN : ")" >
+| < LBRACK : "[" >
+| < RBRACK : "]" >
 | < COMMA : "," >
 | < DOT : "." >
 | < ARROW : ":-" >
@@ -539,10 +543,10 @@ TOKEN :
   | [ "\u2070"-"\u218f" ]
   | [ "\u2c00"-"\u2fef" ]
   | [ "\u3001"-"\ud7ff" ]
-  | [ "\uf900"-"\ufffd" ] 
+  | [ "\uf900"-"\ufffd" ]
   >
   //  | [ ""#x10000-#xEFFFF]
-| 
+|
   < #PN_CHARS_U :
     < PN_CHARS_BASE >
   | "_" >
@@ -579,4 +583,3 @@ TOKEN :
       < PN_CHARS >
     )? >
 }
-

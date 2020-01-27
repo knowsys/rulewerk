@@ -46,7 +46,9 @@ import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
  * @author Markus Krötzsch
  *
  */
+
 public final class Expressions {
+
 	/**
 	 * Private constructor prevents this utilities class to be instantiated.
 	 */

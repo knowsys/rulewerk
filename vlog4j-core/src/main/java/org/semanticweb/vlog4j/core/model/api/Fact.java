@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.api;
 
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /*-
  * #%L
  * VLog4j Core Components
@@ -28,5 +30,10 @@ package org.semanticweb.vlog4j.core.model.api;
  *
  */
 public interface Fact extends PositiveLiteral, Statement {
+
+	@Override
+	default String getSyntacticRepresentation() {
+		return Serializer.getFactString(this);
+	}
 
 }

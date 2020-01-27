@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,40 +19,46 @@ package org.semanticweb.vlog4j.core.model;
  * limitations under the License.
  * #L%
  */
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
-import static org.junit.Assert.*;
-
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 public class DataSourceDeclarationTest {
 
 	@Test
-	public void equalityTest() throws MalformedURLException {
-		DataSource dataSource1 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
+	public void testEquality() throws MalformedURLException {
+		final DataSource dataSource1 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
 				"?var wdt:P31 wd:Q5 .");
-		Predicate predicate1 = Expressions.makePredicate("p", 3);
-		DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource1);
-
-		DataSource dataSource2 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
+		final Predicate predicate1 = Expressions.makePredicate("p", 3);
+		final DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource1);
+		final DataSource dataSource2 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
 				"?var wdt:P31 wd:Q5 .");
-		Predicate predicate2 = Expressions.makePredicate("p", 3);
-		DataSourceDeclaration dataSourceDeclaration2 = new DataSourceDeclarationImpl(predicate2, dataSource2);
+		final Predicate predicate2 = Expressions.makePredicate("p", 3);
+		final DataSourceDeclaration dataSourceDeclaration2 = new DataSourceDeclarationImpl(predicate2, dataSource2);
 
-		DataSource dataSource3 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var2",
+		final DataSource dataSource3 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var2",
 				"?var2 wdt:P31 wd:Q5 .");
-		DataSourceDeclaration dataSourceDeclaration3 = new DataSourceDeclarationImpl(predicate2, dataSource3);
+		final DataSourceDeclaration dataSourceDeclaration3 = new DataSourceDeclarationImpl(predicate2, dataSource3);
 
-		Predicate predicate4 = Expressions.makePredicate("q", 1);
-		DataSourceDeclaration dataSourceDeclaration4 = new DataSourceDeclarationImpl(predicate4, dataSource2);
+		final Predicate predicate4 = Expressions.makePredicate("q", 1);
+		final DataSourceDeclaration dataSourceDeclaration4 = new DataSourceDeclarationImpl(predicate4, dataSource2);
 
 		assertEquals(dataSourceDeclaration1, dataSourceDeclaration1);
 		assertEquals(dataSourceDeclaration1, dataSourceDeclaration2);
@@ -63,4 +69,56 @@ public class DataSourceDeclarationTest {
 		assertFalse(dataSourceDeclaration1.equals(null)); // written like this for recording coverage properly
 	}
 
+	@Test
+	public void toString_SparqlQueryResultDataSource() throws IOException {
+		final Predicate predicate = Expressions.makePredicate("p", 3);
+		final SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(
+				new URL("https://example.org/sparql"), "var", "?var wdt:P31 wd:Q5 .");
+
+		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate, dataSource);
+		assertEquals("@source p[3]: sparql(<https://example.org/sparql>, \"var\", \"?var wdt:P31 wd:Q5 .\") .",
+				dataSourceDeclaration.toString());
+
+	}
+
+	@Test
+	public void toString_CsvFileDataSource() throws IOException {
+		final Predicate predicate2 = Expressions.makePredicate("q", 1);
+		final String relativeDirName = "dir";
+		final String fileName = "file.csv";
+
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(relativeDirName, fileName));
+		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate2,
+				unzippedCsvFileDataSource);
+
+		final String expectedFilePath = Serializer.getString(relativeDirName + File.separator + fileName);
+		assertEquals("@source q[1]: load-csv(" + expectedFilePath + ") .",
+				dataSourceDeclaration.toString());
+	}
+
+	// FIXME: have String representation of files OS independent
+	@Ignore
+	@Test
+	public void toString_CsvFileDataSource_absolutePath_windowsPathSeparator() throws IOException {
+		final Predicate predicate = Expressions.makePredicate("q", 1);
+		final String absoluteFilePathWindows = "D:\\input\\file.csv";
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(absoluteFilePathWindows));
+		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
+				unzippedCsvFileDataSource);
+		assertEquals("@source q[1]: load-csv(\"D:/input/file.csv\") .", dataSourceDeclaration.toString());
+	}
+
+	@Test
+	public void toString_RdfFileDataSource_relativePath() throws IOException {
+		final Predicate predicate = Expressions.makePredicate("q", 1);
+		final String relativeDirName = "dir";
+		final String fileName = "file.nt";
+		final File unzippedRdfFile = new File(relativeDirName, fileName);
+		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
+		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
+				unzippedRdfFileDataSource);
+
+		final String expectedFilePath = Serializer.getString(relativeDirName + File.separator + fileName);
+		assertEquals("@source q[1]: load-rdf(" + expectedFilePath + ") .", dataSourceDeclaration.toString());
+	}
 }

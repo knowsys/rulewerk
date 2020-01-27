@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.examples;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,10 +36,10 @@ import org.semanticweb.vlog4j.parser.RuleParser;
  * over. For a fair comparison, we restrict to Wikidata entities that have a
  * related English Wikipedia page (others cannot be in English DBpedia in the
  * first place).
- * 
+ *
  * The example query used asks for alumni of the University of Leipzig (one of
  * the oldest European universities).
- * 
+ *
  * @author Markus Kroetzsch
  *
  */
@@ -72,8 +72,8 @@ public class CompareWikidataDBpedia {
 		final String rules = "" //
 				+ "@prefix wdqs: <https://query.wikidata.org/> ." //
 				+ "@prefix dbp: <https://dbpedia.org/> ." //
-				+ "@source dbpResult(2) : sparql(dbp:sparql, \"result,enwikipage\", '''" + dbpediaSparql + "''') ." //
-				+ "@source wdResult(2) : sparql(wdqs:sparql, \"result,enwikipage\", '''" + wikidataSparql + "''') ." //
+				+ "@source dbpResult[2] : sparql(dbp:sparql, \"result,enwikipage\", '''" + dbpediaSparql + "''') ." //
+				+ "@source wdResult[2]) : sparql(wdqs:sparql, \"result,enwikipage\", '''" + wikidataSparql + "''') ." //
 				+ "% Rules:\n" //
 				+ "inWd(?Wikipage) :- wdResult(?WdId,?Wikipage)." //
 				+ "inDbp(?Wikipage) :- dbpResult(?DbpId,?Wikipage)." //

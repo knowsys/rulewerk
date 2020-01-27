@@ -1,29 +1,42 @@
 language: java
-jdk:
-  - openjdk8
-#  - oraclejdk8
-#  - oraclejdk9
+matrix:
+    include:
+        - os: linux
+          dist: bionic
+          jdk:
+              - openjdk11
+          after_success:
+              - mvn clean test jacoco:report coveralls:report
 
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - gcc-5
-    - g++-5
+        - os: linux
+          dist: xenial
+          addons:
+              apt:
+                  sources:
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - gcc-6
+                      - g++-6
+                      - libstdc++6
+          env: CC=gcc-6 CXX=g++-6
+          jdk:
+              - openjdk8
+
+        - os: osx
+          osx_image: xcode10.2
+
+
+jobs:
+    allow_failures:
+        - dist: trusty
+
 
 ## Uncomment section below and the packages above to build unreleased snapshots of karmaresearch/vlog into vlog4j-base jar
-#before_install:
- # - sudo apt-get install gcc-5 -y
- # - eval “CC=gcc-5 && CXX=g++-5”
- # - sh ./build-vlog-library.sh
+# before_install:
+#  - sh ./build-vlog-library.sh
 
 install: mvn install $OPTIONS -DskipTests=true
 
-after_success:
-  - mvn clean cobertura:cobertura coveralls:report
-
-dist: trusty
 sudo: false
 
 cache:
