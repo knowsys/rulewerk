@@ -622,22 +622,6 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public long getExtensionSize(PositiveLiteral literal) {
-		validateNotClosed();
-		validateKBLoaded("Querying is not alowed before reasoner is loaded!");
-
-		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(literal);
-
-		long result = 0;
-		try {
-			result = this.vLog.getExtensionSize(this.vLog.getPredicateId(vLogAtom.getPredicate()));
-		} catch (NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
-		}
-		return result;
-	}
-
-	@Override
 	public Correctness exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws IOException {
 		validateNotClosed();

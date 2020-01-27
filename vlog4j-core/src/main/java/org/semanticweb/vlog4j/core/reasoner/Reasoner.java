@@ -330,60 +330,19 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 */
 	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeNulls);
 
-	// TODO add examples to query javadoc
-	/**
-	 * Evaluates an atomic ({@code query}), and returns the number of implicit facts
-	 * loaded into the reasoner and the explicit facts materialised by the reasoner,
-	 * including nulls. <br>
-	 * An answer to the query is the terms a fact that matches the {@code query}:
-	 * the fact predicate is the same as the {@code query} predicate, the
-	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
-	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
-	 * the {@code query} are matched by terms in the fact, either named
-	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The
-	 * same variable name identifies the same term in the answer fact. <br>
-	 * A query answer is represented by a {@link QueryResult}. A query can have
-	 * multiple, distinct query answers. This method returns an Iterator over these
-	 * answers. <br>
-	 * 
-	 * Depending on the state of the reasoning (materialisation) and its
-	 * {@link KnowledgeBase}, the answers can have a different {@link Correctness}
-	 * ({@link QueryResultIterator#getCorrectness()}):
-	 * <ul>
-	 * <li>If {@link Correctness#SOUND_AND_COMPLETE}, materialisation over current
-	 * knowledge base has completed, and the query answers are guaranteed to be
-	 * correct.</li>
-	 * <li>If {@link Correctness#SOUND_BUT_INCOMPLETE}, the results are guaranteed
-	 * to be sound, but may be incomplete. This can happen
-	 * <ul>
-	 * <li>when materialisation has not completed ({@link Reasoner#reason()} returns
-	 * {@code false}),</li>
-	 * <li>or when the knowledge base was modified after reasoning, and the
-	 * materialisation does not reflect the current knowledge base.
-	 * Re-materialisation ({@link Reasoner#reason()}) is required in order to obtain
-	 * complete query answers with respect to the current knowledge base.</li>
-	 * </ul>
-	 * </li>
-	 * <li>If {@link Correctness#INCORRECT}, the results may be incomplete, and some
-	 * results may be unsound. This can happen when the knowledge base was modified
-	 * and the reasoner materialisation is no longer consistent with the current
-	 * knowledge base. Re-materialisation ({@link Reasoner#reason()}) is required,
-	 * in order to obtain correct query answers.
-	 * </ul>
-	 * 
-	 *
+	/*
 	 * @param query a {@link PositiveLiteral} representing the query to be answered.
-	 * @return number of facts in the extension of the query.
+	 *
+	 * @return queryAnswerSize(query, true), the number of facts in the extension of
+	 * the query.
 	 */
 	long queryAnswerSize(PositiveLiteral query);
 
-	// TODO add javadoc, examples
-	long getExtensionSize(PositiveLiteral literal);
-
 	// TODO add examples to query javadoc
 	/**
 	 * Evaluates an atomic ({@code query}), and returns the number of implicit facts
-	 * loaded into the reasoner and the explicit facts materialised by the reasoner.
+	 * loaded into the reasoner and the number of  explicit facts materialised by
+	 * the reasoner.
 	 * <br>
 	 * An answer to the query is the terms a fact that matches the {@code query}:
 	 * the fact predicate is the same as the {@code query} predicate, the
@@ -392,9 +351,6 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * the {@code query} are matched by terms in the fact, either named
 	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The
 	 * same variable name identifies the same term in the answer fact. <br>
-	 * A query answer is represented by a {@link QueryResult}. A query can have
-	 * multiple, distinct query answers. This method returns an Iterator over these
-	 * answers. <br>
 	 * 
 	 * Depending on the state of the reasoning (materialisation) and its
 	 * {@link KnowledgeBase}, the answers can have a different {@link Correctness}
