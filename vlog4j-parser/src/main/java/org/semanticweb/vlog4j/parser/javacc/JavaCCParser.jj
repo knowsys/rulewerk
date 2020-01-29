@@ -7,7 +7,7 @@ options
 
 	STATIC = false;
 	// DEBUG_PARSER = true;
-	// DEBUG_TOKEN_MANAGER   = true ;
+	// DEBUG_TOKEN_MANAGER = true;
 }
 
 PARSER_BEGIN(JavaCCParser)
@@ -499,24 +499,27 @@ TOKEN : {
 }
 
 < PAREN_DELIMITED > TOKEN : {
-	< PAREN_DELIMITED_LITERAL : ( ~ [ ")" ] )* ")" > {
+	< PAREN_DELIMITED_LITERAL : ( < UNPAREN > ( "(" < UNPAREN > ")" )* )* < UNPAREN > ")" > {
 		popState();
 		matchedToken.image = JavaCCParserBase.stripDelimiters(matchedToken.image, 1);
 	}
+  | < #UNPAREN : ( ~ [ "(", ")" ] )* >
 }
 
 < BRACE_DELIMITED > TOKEN : {
-	< BRACE_DELIMITED_LITERAL : ( ( ~ [ "}" ] | [ "}" ] ) )* "}" > {
+	< BRACE_DELIMITED_LITERAL : ( < UNBRACE > ( "{" < UNBRACE > "}" )* )* < UNBRACE > "}" > {
 		popState();
 		matchedToken.image = JavaCCParserBase.stripDelimiters(matchedToken.image, 1);
 	}
+  | < #UNBRACE : (~ [ "{", "}" ] )* >
 }
 
 < BRACKET_DELIMITED > TOKEN : {
-	< BRACKET_DELIMITED_LITERAL : ( ( ~ [ "]" ] | [ ")" ] ) )* "]" > {
+	< BRACKET_DELIMITED_LITERAL : ( < UNBRACKET > ( "[" < UNBRACKET >  "]" )* )* < UNBRACKET > "]" > {
 		popState();
 		matchedToken.image = JavaCCParserBase.stripDelimiters(matchedToken.image, 1);
 	}
+  | < #UNBRACKET : ( ~ [ "[", "]" ] )* >
 }
 
 < SINGLE_QUOTED > TOKEN : {
