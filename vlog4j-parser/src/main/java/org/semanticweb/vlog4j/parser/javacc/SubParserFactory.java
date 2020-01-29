@@ -30,9 +30,10 @@ import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
- * Factory for creating a SubParser sharing configuration, state, and prefixes,
- * but with an independent input stream, to be used, e.g., for parsing arguments
- * in data source declarations.
+ * Factory for creating a SubParser sharing configuration, (semantic)
+ * state, and prefixes, but with an independent input stream, to be
+ * used, e.g., for parsing arguments in data source declarations. The
+ * parser will start in the {@code DEFAULT} lexical state.
  *
  * @author Maximilian Marx
  */
@@ -44,7 +45,8 @@ public class SubParserFactory {
 	/**
 	 * Construct a SubParserFactory.
 	 *
-	 * @param parser the parser instance to get the state from.
+	 * @param parser the parser instance to get the (semantic) state
+	 * from.
 	 */
 	SubParserFactory(final JavaCCParser parser) {
 		this.knowledgeBase = parser.getKnowledgeBase();
@@ -53,7 +55,7 @@ public class SubParserFactory {
 	}
 
 	/**
-	 * Create a new parser with the specified state and given input.
+	 * Create a new parser with the specified (semantic) state and given input.
 	 *
 	 * @param inputStream the input stream to parse.
 	 * @param encoding    encoding of the input stream.

@@ -21,6 +21,7 @@ package org.semanticweb.vlog4j.parser.javacc;
  */
 
 import java.util.HashSet;
+import java.util.List;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
@@ -28,6 +29,8 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.Statement;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -52,10 +55,10 @@ import org.semanticweb.vlog4j.parser.ParsingException;
  *
  */
 public class JavaCCParserBase {
-	protected PrefixDeclarations prefixDeclarations;
+	private PrefixDeclarations prefixDeclarations;
 
-	protected KnowledgeBase knowledgeBase;
-	protected ParserConfiguration parserConfiguration;
+	private KnowledgeBase knowledgeBase;
+	private ParserConfiguration parserConfiguration;
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -153,6 +156,10 @@ public class JavaCCParserBase {
 		}
 	}
 
+	void addStatement(Statement statement) {
+		knowledgeBase.addStatement(statement);
+	}
+
 	void addDataSource(String predicateName, int arity, DataSource dataSource) throws ParseException {
 		if (dataSource.getRequiredArity().isPresent()) {
 			Integer requiredArity = dataSource.getRequiredArity().get();
@@ -163,7 +170,7 @@ public class JavaCCParserBase {
 		}
 
 		Predicate predicate = Expressions.makePredicate(predicateName, arity);
-		knowledgeBase.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
+		addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
 	}
 
 	static String unescapeStr(String s, int line, int column) throws ParseException {
@@ -296,11 +303,47 @@ public class JavaCCParserBase {
 		return parserConfiguration;
 	}
 
-	protected void setPrefixDeclarations(PrefixDeclarations prefixDeclarations) {
+	void setPrefixDeclarations(PrefixDeclarations prefixDeclarations) {
 		this.prefixDeclarations = prefixDeclarations;
 	}
 
-	protected PrefixDeclarations getPrefixDeclarations() {
+	PrefixDeclarations getPrefixDeclarations() {
 		return prefixDeclarations;
+	}
+
+	DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(String syntacticForm,
+			List<String> arguments, SubParserFactory subParserFactory) throws ParseException {
+		try {
+			return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(syntacticForm, arguments,
+					subParserFactory);
+		} catch (ParsingException e) {
+			throw makeParseExceptionWithCause(
+					"Failed while trying to parse the source-specific part of a data source declaration", e);
+		}
+	}
+
+	Term parseConfigurableLiteral(ConfigurableLiteralDelimiter delimiter, String syntacticForm,
+			SubParserFactory subParserFactory) throws ParsingException {
+				return parserConfiguration.parseConfigurableLiteral(delimiter, syntacticForm, subParserFactory);
+	}
+
+	boolean isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter delimiter) {
+		return parserConfiguration.isConfigurableLiteralRegistered(delimiter);
+	}
+
+	void setBase(String baseIri) throws PrefixDeclarationException {
+		prefixDeclarations.setBase(baseIri);
+	}
+
+	void setPrefix(String prefixName, String baseIri) throws PrefixDeclarationException {
+		prefixDeclarations.setPrefix(prefixName, baseIri);
+	}
+
+	String absolutizeIri(String iri) throws PrefixDeclarationException {
+		return prefixDeclarations.absolutize(iri);
+	}
+
+	String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException {
+		return prefixDeclarations.resolvePrefixedName(prefixedName);
 	}
 }

@@ -90,7 +90,7 @@ void base() throws PrefixDeclarationException : {
 	Token iri;
 } {
 	< BASE > iri = < IRI_ABSOLUTE > < DOT > {
-		prefixDeclarations.setBase(iri.image);
+		setBase(iri.image);
 	}
 }
 
@@ -99,15 +99,15 @@ void prefix() throws PrefixDeclarationException : {
 	String iri;
 } {
 	< PREFIX > pn = < PNAME_NS > iri = absoluteIri() < DOT > {
-		prefixDeclarations.setPrefix(pn.image, iri);
+		setPrefix(pn.image, iri);
 	}
 }
 
 String absoluteIri() throws PrefixDeclarationException : {
 	Token iri;
 } {
-	iri = < IRI_ABSOLUTE > { return prefixDeclarations.absolutize(iri.image); }
-  | iri = < PNAME_LN > { return prefixDeclarations.resolvePrefixedName(iri.image); }
+	iri = < IRI_ABSOLUTE > { return absolutizeIri(iri.image); }
+  | iri = < PNAME_LN > { return resolvePrefixedName(iri.image); }
 }
 
 String quotedIri() throws PrefixDeclarationException : {
@@ -137,11 +137,7 @@ DataSource dataSource() throws PrefixDeclarationException : {
 } {
 	( sourceName = < ARGUMENT_NAME >
 	| sourceName = < VARORPREDNAME > ) < LPAREN > arguments = Arguments() < RPAREN > {
-        try {
-            return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(sourceName.image, arguments, getSubParserFactory());
-        } catch (ParsingException e) {
-			throw makeParseExceptionWithCause("Failed while trying to parse the source-specific part of a data source declaration", e);
-        }
+		return parseDataSourceSpecificPartOfDataSourceDeclaration(sourceName.image, arguments, getSubParserFactory());
     }
 }
 
@@ -150,7 +146,9 @@ void statement() throws PrefixDeclarationException : {
     resetVariableSets();
 } {
     ( LOOKAHEAD(rule()) statement = rule()
-	| statement = fact(FormulaContext.HEAD) ) { knowledgeBase.addStatement(statement); }
+	| statement = fact(FormulaContext.HEAD) ) {
+		addStatement(statement);
+	}
 }
 
 Rule rule() throws PrefixDeclarationException : {
@@ -248,13 +246,14 @@ String predicateName() throws PrefixDeclarationException : {
 	String s;
 } {
 	s = absoluteIri() { return s; }
-  |	t = < VARORPREDNAME > { return prefixDeclarations.absolutize(t.image); }
+  |	t = < VARORPREDNAME > { return absolutizeIri(t.image); }
 }
 
 Term term(FormulaContext context) throws PrefixDeclarationException : {
     Token t;
     String s;
     Constant c;
+	Term tt;
 } {
     s = absoluteIri() { return createConstant(s); }
   | t = < VARORPREDNAME > { return createConstant(t.image); }
@@ -277,7 +276,7 @@ Term term(FormulaContext context) throws PrefixDeclarationException : {
         return Expressions.makeExistentialVariable(s);
     }
   | try {
-		c = ConfigurableLiteral () { return c; }
+		tt = ConfigurableLiteral () { return tt; }
 	} catch (ParsingException e) {
 		throw new ParseException("Invalid configurable literal expression: " + e.getMessage());
 	}
@@ -304,40 +303,34 @@ Constant RDFLiteral() throws PrefixDeclarationException : {
 	}
 }
 
-Constant ConfigurableLiteral() throws ParsingException : {
+Term ConfigurableLiteral() throws ParsingException : {
 	Token t;
 } {
 	( LOOKAHEAD( < PIPE_DELIMITED_LITERAL >,
-				 { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.PIPE) } )
+				 { isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.PIPE) } )
 	 t = < PIPE_DELIMITED_LITERAL > {
-		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.PIPE, t.image,
-															getSubParserFactory());
+		return parseConfigurableLiteral(ConfigurableLiteralDelimiter.PIPE, t.image, getSubParserFactory());
 	 }
 	 | LOOKAHEAD( < HASH_DELIMITED_LITERAL >,
-				  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.HASH) } )
+				  { isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.HASH) } )
 	 t = < HASH_DELIMITED_LITERAL > {
-		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.HASH, t.image,
-															getSubParserFactory());
+		return parseConfigurableLiteral(ConfigurableLiteralDelimiter.HASH, t.image, getSubParserFactory());
 	 }
 	 | LOOKAHEAD( < PAREN_DELIMITED_LITERAL >,
-				  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.PAREN) } )
+				  { isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.PAREN) } )
 	 t = < PAREN_DELIMITED_LITERAL > {
-		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.PAREN, t.image,
-															getSubParserFactory());
+		return parseConfigurableLiteral(ConfigurableLiteralDelimiter.PAREN, t.image, getSubParserFactory());
 	 }
 	 | LOOKAHEAD( < BRACE_DELIMITED_LITERAL >,
-				  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACE) } )
+				  { isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACE) } )
 	 t = < BRACE_DELIMITED_LITERAL > {
-		return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACE, t.image,
-															getSubParserFactory());
+		return parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACE, t.image, getSubParserFactory());
 	 }
 	 | LOOKAHEAD( < BRACKET_DELIMITED_LITERAL >,
-	 			  { parserConfiguration.isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACKET) } )
+	 			  { isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACKET) } )
 	 t = < BRACKET_DELIMITED_LITERAL > {
-	 	return parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACKET, t.image,
-	 														getSubParserFactory());
+	 	return parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACKET, t.image, getSubParserFactory());
 	 }
-
 	 )
 }
 
@@ -365,7 +358,7 @@ LinkedList< String > Arguments() throws PrefixDeclarationException : {
 String PrefixedName() throws PrefixDeclarationException : {
     Token t;
 } {
-	t = < PNAME_LN > { return prefixDeclarations.resolvePrefixedName(t.image); }
+	t = < PNAME_LN > { return resolvePrefixedName(t.image); }
 }
 
 // ------------------------------------------
