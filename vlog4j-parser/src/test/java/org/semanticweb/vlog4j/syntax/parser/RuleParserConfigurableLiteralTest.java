@@ -44,17 +44,20 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 public class RuleParserConfigurableLiteralTest {
 	public static final Constant pipeConstant = Expressions.makeAbstractConstant("testPipe");
 	public static final Constant hashConstant = Expressions.makeAbstractConstant("testHash");
-	public static final Constant bracketConstant = Expressions.makeAbstractConstant("testBracket");
+	public static final Constant parenConstant = Expressions.makeAbstractConstant("testParen");
 	public static final Constant braceConstant = Expressions.makeAbstractConstant("testBrace");
+	public static final Constant bracketConstant = Expressions.makeAbstractConstant("testBracket");
 
 	public static final ConfigurableLiteralHandler pipeHandler = getMockLiteralHandler(
 			ConfigurableLiteralDelimiter.PIPE, pipeConstant);
 	public static final ConfigurableLiteralHandler hashHandler = getMockLiteralHandler(
 			ConfigurableLiteralDelimiter.HASH, hashConstant);
-	public static final ConfigurableLiteralHandler bracketHandler = getMockLiteralHandler(
-			ConfigurableLiteralDelimiter.BRACKET, bracketConstant);
+	public static final ConfigurableLiteralHandler parenHandler = getMockLiteralHandler(
+			ConfigurableLiteralDelimiter.PAREN, parenConstant);
 	public static final ConfigurableLiteralHandler braceHandler = getMockLiteralHandler(
 			ConfigurableLiteralDelimiter.BRACE, braceConstant);
+	public static final ConfigurableLiteralHandler bracketHandler = getMockLiteralHandler(
+			ConfigurableLiteralDelimiter.BRACKET, bracketConstant);
 
 	@Test(expected = ParsingException.class)
 	public void testNoDefaultPipeLiteral() throws ParsingException {
@@ -93,12 +96,11 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	@Ignore
-	public void testCustomBracketLiteral() throws ParsingException {
+	public void testCustomParenLiteral() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACKET, bracketHandler);
-		Literal result = RuleParser.parseLiteral("p([test])", parserConfiguration);
-		assertEquals(bracketConstant, result.getConstants().toArray()[0]);
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PAREN, parenHandler);
+		Literal result = RuleParser.parseLiteral("p((test))", parserConfiguration);
+		assertEquals(parenConstant, result.getConstants().toArray()[0]);
 	}
 
 	@Test
@@ -110,14 +112,21 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	@Ignore
+	public void testCustomBracketLiteral() throws ParsingException {
+		ParserConfiguration parserConfiguration = new ParserConfiguration();
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACKET, bracketHandler);
+		Literal result = RuleParser.parseLiteral("p([test])", parserConfiguration);
+		assertEquals(bracketConstant, result.getConstants().toArray()[0]);
+	}
+
+	@Test
 	public void testMixedCustomLiterals() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PIPE, pipeHandler)
 				.registerLiteral(ConfigurableLiteralDelimiter.HASH, hashHandler)
 				.registerLiteral(ConfigurableLiteralDelimiter.BRACKET, bracketHandler)
 				.registerLiteral(ConfigurableLiteralDelimiter.BRACE, braceHandler);
-		Literal result = RuleParser.parseLiteral("p(||, #test#, [[], {})", parserConfiguration);
+		Literal result = RuleParser.parseLiteral("p(||, #test#, [], {})", parserConfiguration);
 		List<Constant> constants = result.getConstants().collect(Collectors.toList());
 		List<Constant> expected = new ArrayList<>(
 				Arrays.asList(pipeConstant, hashConstant, bracketConstant, braceConstant));
@@ -133,6 +142,32 @@ public class RuleParserConfigurableLiteralTest {
 				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		assertEquals(makeReversedConstant(label), result.getConstants().toArray()[0]);
+	}
+
+	@Test
+	public void testNestedBraceLiteral() throws ParsingException {
+		String label = "this is a test, do not worry.";
+		String input = "p({{" + label + "}})";
+		ParserConfiguration parserConfiguration = new ParserConfiguration();
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACE,
+				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
+		assertEquals(makeReversedConstant("{" + label + "}"), result.getConstants().toArray()[0]);
+	}
+
+	@Test
+	public void testMixedAndNestedCustomLiterals() throws ParsingException {
+		ParserConfiguration parserConfiguration = new ParserConfiguration();
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PIPE, pipeHandler)
+			.registerLiteral(ConfigurableLiteralDelimiter.HASH, hashHandler)
+			.registerLiteral(ConfigurableLiteralDelimiter.PAREN, parenHandler)
+			.registerLiteral(ConfigurableLiteralDelimiter.BRACE, braceHandler)
+			.registerLiteral(ConfigurableLiteralDelimiter.BRACKET, bracketHandler);
+		Literal result = RuleParser.parseLiteral("p(|{}|, #test#, [|test, #test#, test|], ([], {}, [{[{}]}]))", parserConfiguration);
+		List<Constant> constants = result.getConstants().collect(Collectors.toList());
+		List<Constant> expected = new ArrayList<>(
+				Arrays.asList(pipeConstant, hashConstant, bracketConstant, parenConstant));
+		assertEquals(expected, constants);
 	}
 
 	static Constant makeReversedConstant(String name) {

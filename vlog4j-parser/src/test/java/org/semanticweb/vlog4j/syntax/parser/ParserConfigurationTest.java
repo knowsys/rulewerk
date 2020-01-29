@@ -63,11 +63,4 @@ public class ParserConfigurationTest {
 		parserConfiguration.registerDataSource(SOURCE_NAME, dataSourceDeclarationHandler).registerDatatype(SOURCE_NAME,
 				datatypeConstantHandler);
 	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void parseConstant_languageTagWithExplictDatatype_throws() throws ParsingException {
-		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.parseConstant("test", "test", "test");
-	}
-
 }

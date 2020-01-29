@@ -106,32 +106,17 @@ public class ParserConfiguration {
 	}
 
 	/**
-	 * Parse a constant with optional data type and language tag.
+	 * Parse a constant with optional data type.
 	 *
 	 * @param lexicalForm the (unescaped) lexical form of the constant.
 	 * @param languageTag the language tag, or null if not present.
 	 * @param the         datatype, or null if not present.
-	 * @pre At most one of {@code languageTag} and {@code datatype} may be non-null.
 	 *
 	 * @throws ParsingException         when the lexical form is invalid for the
 	 *                                  given data type.
-	 * @throws IllegalArgumentException when both {@code languageTag} and
-	 *                                  {@code datatype} are non-null.
 	 * @return the {@link Constant} corresponding to the given arguments.
 	 */
-	public Constant parseConstant(final String lexicalForm, final String languageTag, final String datatype)
-			throws ParsingException, IllegalArgumentException {
-		Validate.isTrue((languageTag == null) || (datatype == null),
-				"A constant with a language tag may not explicitly specify a data type.");
-
-		if (languageTag != null) {
-			return Expressions.makeLanguageStringConstant(lexicalForm, languageTag);
-		} else {
-			return this.parseDatatypeConstant(lexicalForm, datatype);
-		}
-	}
-
-	private Constant parseDatatypeConstant(final String lexicalForm, final String datatype) throws ParsingException {
+	public Constant parseDatatypeConstant(final String lexicalForm, final String datatype) throws ParsingException {
 		final String type = ((datatype != null) ? datatype : PrefixDeclarations.XSD_STRING);
 		final DatatypeConstantHandler handler = this.datatypes.get(type);
 

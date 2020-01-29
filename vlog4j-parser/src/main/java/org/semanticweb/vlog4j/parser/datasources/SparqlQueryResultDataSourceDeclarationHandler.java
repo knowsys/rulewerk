@@ -47,13 +47,11 @@ public class SparqlQueryResultDataSourceDeclarationHandler implements DataSource
 		String endpoint = arguments.get(0);
 		JavaCCParser parser = subParserFactory.makeSubParser(endpoint);
 		String parsedEndpoint;
-		// try {
-			/// @TODO: actually make sure that this is a valid IRI
-		parsedEndpoint = endpoint.substring(1, endpoint.length() - 1);
-			//parsedEndpoint = parser.quotedIri();
-		// } catch (ParseException | PrefixDeclarationException e) {
-		// 	throw new ParsingException("Error while parsing endpoint IRI in SPARQL query data source: " + e.getMessage(), e);
-		// }
+		try {
+			parsedEndpoint = parser.absoluteIri();
+		} catch (ParseException | PrefixDeclarationException e) {
+			throw new ParsingException("Error while parsing endpoint IRI in SPARQL query data source: " + e.getMessage(), e);
+		}
 
 		URL endpointUrl;
 		try {

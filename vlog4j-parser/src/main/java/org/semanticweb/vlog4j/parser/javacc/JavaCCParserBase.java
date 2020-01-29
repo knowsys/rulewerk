@@ -109,13 +109,17 @@ public class JavaCCParserBase {
 		 */
 		HASH,
 		/**
-		 * Literals of the form {@code […]}
+		 * Literals of the form {@code (…)}
 		 */
-		BRACKET,
+		PAREN,
 		/**
 		 * Literals of the form {@code {…}}
 		 */
 		BRACE,
+		/**
+		 * Literals of the form {@code […]}
+		 */
+		BRACKET,
 	}
 
 	public JavaCCParserBase() {
@@ -134,21 +138,16 @@ public class JavaCCParserBase {
 		return Expressions.makeAbstractConstant(absoluteIri);
 	}
 
-	Constant createConstant(String lexicalForm, String datatype) throws ParseException {
-		return createConstant(lexicalForm, null, datatype);
-	}
-
 	/**
 	 * Creates a suitable {@link Constant} from the parsed data.
 	 *
 	 * @param string      the string data (unescaped)
-	 * @param languageTag the language tag, or null if not present
 	 * @param datatype    the datatype, or null if not provided
 	 * @return suitable constant
 	 */
-	Constant createConstant(String lexicalForm, String languageTag, String datatype) throws ParseException {
+	Constant createConstant(String lexicalForm, String datatype) throws ParseException {
 		try {
-			return parserConfiguration.parseConstant(lexicalForm, languageTag, datatype);
+			return parserConfiguration.parseDatatypeConstant(lexicalForm, datatype);
 		} catch (ParsingException e) {
 			throw makeParseExceptionWithCause("Failed to parse Constant", e);
 		}
