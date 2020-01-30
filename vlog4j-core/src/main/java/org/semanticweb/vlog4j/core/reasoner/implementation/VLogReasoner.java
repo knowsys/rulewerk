@@ -814,8 +814,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void writeInferredFacts(OutputStream stream) throws IOException {
-		HashSet<Predicate> toBeQueriedHeadPredicates = new HashSet<Predicate>();
+	public void writeFacts(OutputStream stream) throws IOException {
+		Set<Predicate> toBeQueriedHeadPredicates = new HashSet<Predicate>();
 		for (Rule rule : this.knowledgeBase.getRules()) {
 			for (Literal literal : rule.getHead()) {
 				toBeQueriedHeadPredicates.add(literal.getPredicate());
@@ -826,28 +826,29 @@ public class VLogReasoner implements Reasoner {
 				stream.write((fact.toString() + "\n").getBytes());
 		}
 		for (Predicate predicate : toBeQueriedHeadPredicates) {
-			ArrayList<Term> tobeGroundedVariables = new ArrayList<Term>();
+			List<Term> tobeGroundedVariables = new ArrayList<Term>();
 			for (int i = 0; i < predicate.getArity(); i++) {
 				tobeGroundedVariables.add(Expressions.makeUniversalVariable("X" + i));
 			}
-			final QueryResultIterator answers = this
-					.answerQuery(Expressions.makePositiveLiteral(predicate, tobeGroundedVariables), true);
-			answers.forEachRemaining(queryAnswer -> {
-				try {
-					stream.write(Serializer.getFactOutput(predicate, queryAnswer.getTerms()).getBytes());
-				}
+			try (final QueryResultIterator answers = this
+					.answerQuery(Expressions.makePositiveLiteral(predicate, tobeGroundedVariables), true)) {
+				answers.forEachRemaining(queryAnswer -> {
+					try {
+						stream.write(Serializer.getFactOutput(predicate, queryAnswer.getTerms()).getBytes());
+					} catch (IOException e) {
+						throw new RuntimeException();
+					}
+				});
 
-				catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
+			}
+
 		}
-		stream.close();
 	}
 
 	@Override
-	public void writeInferredFacts(String filePath) throws IOException {
-		OutputStream stream = new FileOutputStream(filePath);
-		writeInferredFacts(stream);
+	public void writeFacts(String filePath) throws IOException {
+		try (OutputStream stream = new FileOutputStream(filePath)) {
+			writeFacts(stream);
+		}
 	}
 }

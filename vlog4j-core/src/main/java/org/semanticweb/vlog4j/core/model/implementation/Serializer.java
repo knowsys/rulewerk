@@ -391,8 +391,10 @@ public final class Serializer {
 	}
 
 	public static String getFactOutput(Predicate predicate, List<Term> terms) {
-		return predicate.getName() + terms.toString().replace(OPENING_BRACKET, OPENING_PARENTHESIS)
-				.replace(CLOSING_BRACKET, CLOSING_PARENTHESIS + STATEMENT_SEPARATOR + "\n");
+		return getIRIString(predicate.getName())
+				+ terms.toString().replace(terms.toString().substring(0, 1), OPENING_PARENTHESIS).replace(
+						terms.toString().substring(terms.toString().length() - 1, terms.toString().length()),
+						CLOSING_PARENTHESIS + STATEMENT_SEPARATOR + "\n");
 	}
 
 }
