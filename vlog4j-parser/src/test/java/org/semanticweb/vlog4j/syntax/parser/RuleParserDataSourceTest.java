@@ -190,7 +190,7 @@ public class RuleParserDataSourceTest {
 	}
 
 	@Test
-	public void parseDataSourceDeclaration_windowsStylePathName_success() throws ParsingException, IOException {
+	public void parseDataSourceDeclaration_windowsStylePathName_succeeds() throws ParsingException, IOException {
 		RuleParser.parseDataSourceDeclaration("@source p[1] : load-csv(\"\\\\test\\\\with\\\\backslashes.csv\") .");
 	}
 }

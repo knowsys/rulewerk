@@ -59,12 +59,12 @@ public class RuleParserConfigurableLiteralTest {
 			ConfigurableLiteralDelimiter.BRACKET, bracketConstant);
 
 	@Test(expected = ParsingException.class)
-	public void testNoDefaultPipeLiteral() throws ParsingException {
+	public void parseLiteral_unregisteredCustomLiteral_throws() throws ParsingException {
 		RuleParser.parseLiteral("p(|test|)");
 	}
 
 	@Test
-	public void testCustomLiteralRegistration() throws ParsingException {
+	public void registerLiteral_succeeds() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PIPE, pipeHandler);
 		assertTrue("Configurable Literal Handler has been registered",
@@ -72,14 +72,14 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testNoDuplicateCustomLiteralRegistration() throws ParsingException, IllegalArgumentException {
+	public void registerLiteral_duplicateHandler_throws() throws ParsingException, IllegalArgumentException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PIPE, pipeHandler)
 				.registerLiteral(ConfigurableLiteralDelimiter.PIPE, hashHandler);
 	}
 
 	@Test
-	public void testCustomPipeLiteral() throws ParsingException {
+	public void parseLiteral_customPipeLiteral_succeeds() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PIPE, pipeHandler);
 		Literal result = RuleParser.parseLiteral("p(|test|)", parserConfiguration);
@@ -87,7 +87,7 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	public void testCustomHashLiteral() throws ParsingException {
+	public void parseLiteral_customHashLiteral_succeeds() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.HASH, hashHandler);
 		Literal result = RuleParser.parseLiteral("p(#test#)", parserConfiguration);
@@ -95,7 +95,7 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	public void testCustomParenLiteral() throws ParsingException {
+	public void parseLiteral_customParenLiteral_succeeds() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PAREN, parenHandler);
 		Literal result = RuleParser.parseLiteral("p((test))", parserConfiguration);
@@ -103,7 +103,7 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	public void testCustomBraceLiteral() throws ParsingException {
+	public void parseLiteral_customBraceLiteral_succeeds() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACE, braceHandler);
 		Literal result = RuleParser.parseLiteral("p({test})", parserConfiguration);
@@ -111,7 +111,7 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	public void testCustomBracketLiteral() throws ParsingException {
+	public void parseLiteral_customBracketLiteral_succeeds() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACKET, bracketHandler);
 		Literal result = RuleParser.parseLiteral("p([test])", parserConfiguration);
@@ -119,7 +119,7 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	public void testMixedCustomLiterals() throws ParsingException {
+	public void parseLiteral_mixedLiterals_succeeds() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PIPE, pipeHandler)
 				.registerLiteral(ConfigurableLiteralDelimiter.HASH, hashHandler)
@@ -133,33 +133,30 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	public void testNonTrivialCustomPipeLiteral() throws ParsingException {
+	public void parseLiteral_nontrivialPipeLiteral_succeeds() throws ParsingException {
 		String label = "this is a test, do not worry.";
 		String input = "p(|" + label + "|)";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PIPE,
-				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PIPE, reversingHandler);
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		assertEquals(makeReversedConstant(label), result.getConstants().toArray()[0]);
 	}
 
 	@Test
-	public void testNestedParenLiteral() throws ParsingException {
+	public void parseLiteral_nestedParenLiterals_succeeds() throws ParsingException {
 		String label = "(((this is a test, do not worry.)))";
 		String input = "p((" + label + "))";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PAREN,
-				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PAREN, reversingHandler);
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		assertEquals(makeReversedConstant(label), result.getConstants().toArray()[0]);
 	}
 
 	@Test
-	public void testMultipleParenLiterals() throws ParsingException {
+	public void parseLiteral_multipleParenLiterals_succeeds() throws ParsingException {
 		String input = "p((test), (tset))";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PAREN,
-				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PAREN, reversingHandler);
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		List<Constant> constants = result.getConstants().collect(Collectors.toList());
 		List<Constant> expected = new ArrayList<>(
@@ -168,35 +165,40 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	public void testMultipleNestedParenLiterals() throws ParsingException {
-		String input = "p(((test)), ((tset)))";
+	public void parseLiteral_multipleNestedParenLiterals_succeeds() throws ParsingException {
+		String input = "p(((test)), ((tset), (tst)))";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PAREN,
-				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PAREN, reversingHandler);
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		List<Constant> constants = result.getConstants().collect(Collectors.toList());
 		List<Constant> expected = new ArrayList<>(
-				 Arrays.asList(makeReversedConstant("(test)"), makeReversedConstant("(tset)")));
+				Arrays.asList(makeReversedConstant("(test)"), makeReversedConstant("(tset), (tst)")));
 		assertEquals(expected, constants);
 	}
 
+	@Test(expected = ParsingException.class)
+	public void parseLiteral_mismatchedNestedParenLiteral_throws() throws ParsingException {
+		String input = "p((test ())";
+		ParserConfiguration parserConfiguration = new ParserConfiguration();
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PAREN, reversingHandler);
+		RuleParser.parseLiteral(input, parserConfiguration);
+	}
+
 	@Test
-	public void testNestedBraceLiteral() throws ParsingException {
+	public void parseLiteral_nestedBraceLiteral_succeeds() throws ParsingException {
 		String label = "{{{this is a test, do not worry.}}}";
 		String input = "p({" + label + "})";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACE,
-				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACE, reversingHandler);
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		assertEquals(makeReversedConstant(label), result.getConstants().toArray()[0]);
 	}
 
 	@Test
-	public void testMultipleBraceLiterals() throws ParsingException {
+	public void parseLiteral_multipleBraceLiterals_succeeds() throws ParsingException {
 		String input = "p({test}, {tset})";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACE,
-				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACE, reversingHandler);
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		List<Constant> constants = result.getConstants().collect(Collectors.toList());
 		List<Constant> expected = new ArrayList<>(
@@ -205,11 +207,10 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	public void testMultipleNestedBraceLiterals() throws ParsingException {
+	public void parseLiteral_multipleNestedBraceLiterals_succeeds() throws ParsingException {
 		String input = "p({{test}}, {{tset}})";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACE,
-				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACE, reversingHandler);
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		List<Constant> constants = result.getConstants().collect(Collectors.toList());
 		List<Constant> expected = new ArrayList<>(
@@ -218,22 +219,20 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	public void testNestedBracketLiteral() throws ParsingException {
+	public void parseLiteral_nestedBracketLiteral_succeeds() throws ParsingException {
 		String label = "[[[this is a test, do not worry.]]]";
 		String input = "p([" + label + "])";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACKET,
-				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACKET, reversingHandler);
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		assertEquals(makeReversedConstant(label), result.getConstants().toArray()[0]);
 	}
 
 	@Test
-	public void testMultipleBracketLiterals() throws ParsingException {
+	public void parseLiteral_multipleBracketLiterals_succeeds() throws ParsingException {
 		String input = "p([test], [tset])";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACKET,
-				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACKET, reversingHandler);
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		List<Constant> constants = result.getConstants().collect(Collectors.toList());
 		List<Constant> expected = new ArrayList<>(
@@ -242,22 +241,19 @@ public class RuleParserConfigurableLiteralTest {
 	}
 
 	@Test
-	public void testMultipleNestedBracketLiterals() throws ParsingException {
-		String input = "p([[test]], [[tset]])";
-
-
+	public void parseLiteral_multipleNestedBracketLiterals_succeeds() throws ParsingException {
+		String input = "p([[test]], [[tset], [tst]])";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
-		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACKET,
-				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
+		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACKET, reversingHandler);
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		List<Constant> constants = result.getConstants().collect(Collectors.toList());
 		List<Constant> expected = new ArrayList<>(
-				 Arrays.asList(makeReversedConstant("[test]"), makeReversedConstant("[tset]")));
+				 Arrays.asList(makeReversedConstant("[test]"), makeReversedConstant("[tset], [tst]")));
 		assertEquals(expected, constants);
 	}
 
 	@Test
-	public void testMixedAndNestedCustomLiterals() throws ParsingException {
+	public void parseLiteral_mixedAndNestedLiterals_succeeds() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PIPE, pipeHandler)
 			.registerLiteral(ConfigurableLiteralDelimiter.HASH, hashHandler)
@@ -275,6 +271,9 @@ public class RuleParserConfigurableLiteralTest {
 		StringBuilder builder = new StringBuilder(name);
 		return Expressions.makeAbstractConstant(builder.reverse().toString());
 	}
+
+	static ConfigurableLiteralHandler reversingHandler =
+			(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm);
 
 	static ConfigurableLiteralHandler getMockLiteralHandler(ConfigurableLiteralDelimiter delimiter, Constant constant) {
 		ConfigurableLiteralHandler handler = mock(ConfigurableLiteralHandler.class);
