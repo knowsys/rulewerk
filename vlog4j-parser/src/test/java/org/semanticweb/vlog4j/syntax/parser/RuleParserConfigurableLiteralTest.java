@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.junit.Ignore;
 import org.mockito.ArgumentMatchers;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
@@ -146,13 +145,13 @@ public class RuleParserConfigurableLiteralTest {
 
 	@Test
 	public void testNestedParenLiteral() throws ParsingException {
-		String label = "this is a test, do not worry.";
-		String input = "p(((" + label + ")))";
+		String label = "(((this is a test, do not worry.)))";
+		String input = "p((" + label + "))";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PAREN,
 				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
-		assertEquals(makeReversedConstant("(" + label + ")"), result.getConstants().toArray()[0]);
+		assertEquals(makeReversedConstant(label), result.getConstants().toArray()[0]);
 	}
 
 	@Test
@@ -183,13 +182,13 @@ public class RuleParserConfigurableLiteralTest {
 
 	@Test
 	public void testNestedBraceLiteral() throws ParsingException {
-		String label = "this is a test, do not worry.";
-		String input = "p({{" + label + "}})";
+		String label = "{{{this is a test, do not worry.}}}";
+		String input = "p({" + label + "})";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACE,
 				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
-		assertEquals(makeReversedConstant("{" + label + "}"), result.getConstants().toArray()[0]);
+		assertEquals(makeReversedConstant(label), result.getConstants().toArray()[0]);
 	}
 
 	@Test
@@ -220,13 +219,13 @@ public class RuleParserConfigurableLiteralTest {
 
 	@Test
 	public void testNestedBracketLiteral() throws ParsingException {
-		String label = "this is a test, do not worry.";
-		String input = "p([[" + label + "]])";
+		String label = "[[[this is a test, do not worry.]]]";
+		String input = "p([" + label + "])";
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.BRACKET,
 				(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm));
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
-		assertEquals(makeReversedConstant("[" + label + "]"), result.getConstants().toArray()[0]);
+		assertEquals(makeReversedConstant(label), result.getConstants().toArray()[0]);
 	}
 
 	@Test

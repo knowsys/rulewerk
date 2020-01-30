@@ -7,6 +7,7 @@ options
 
 	STATIC = false;
 	// DEBUG_PARSER = true;
+	// DEBUG_LOOKAHEAD = true;
 	// DEBUG_TOKEN_MANAGER = true;
 }
 
@@ -45,7 +46,6 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultData
 
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 
-
 public class JavaCCParser extends JavaCCParserBase
 {
 	private SubParserFactory getSubParserFactory() {
@@ -68,14 +68,13 @@ TOKEN_MGR_DECLS : {
 	Deque<Integer> states;
 
 	void pushState() {
-	  states.push(curLexState);
+		states.push(curLexState);
 	}
 
 	void popState() {
 		SwitchTo(states.pop());
 	}
 }
-
 
 void parse() throws PrefixDeclarationException : {
 } {
@@ -304,6 +303,7 @@ Constant RDFLiteral() throws PrefixDeclarationException : {
 }
 
 Term ConfigurableLiteral() throws ParsingException : {
+	String s;
 	Token t;
 } {
 	( LOOKAHEAD( < PIPE_DELIMITED_LITERAL >,
@@ -316,22 +316,73 @@ Term ConfigurableLiteral() throws ParsingException : {
 	 t = < HASH_DELIMITED_LITERAL > {
 		return parseConfigurableLiteral(ConfigurableLiteralDelimiter.HASH, t.image, getSubParserFactory());
 	 }
-	 | LOOKAHEAD( < PAREN_DELIMITED_LITERAL >,
-				  { isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.PAREN) } )
-	 t = < PAREN_DELIMITED_LITERAL > {
-		return parseConfigurableLiteral(ConfigurableLiteralDelimiter.PAREN, t.image, getSubParserFactory());
+	 | LOOKAHEAD( < LPAREN >,
+	 			  { isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.PAREN) } )
+	 s = parenDelimitedLiteral() {
+	 	return parseConfigurableLiteral(ConfigurableLiteralDelimiter.PAREN, s, getSubParserFactory());
 	 }
-	 | LOOKAHEAD( < BRACE_DELIMITED_LITERAL >,
+	 | LOOKAHEAD( < LBRACE >,
 				  { isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACE) } )
-	 t = < BRACE_DELIMITED_LITERAL > {
-		return parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACE, t.image, getSubParserFactory());
+	  s = braceDelimitedLiteral() {
+		return parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACE, s, getSubParserFactory());
 	 }
-	 | LOOKAHEAD( < BRACKET_DELIMITED_LITERAL >,
+	 | LOOKAHEAD( < LBRACKET >,
 	 			  { isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter.BRACKET) } )
-	 t = < BRACKET_DELIMITED_LITERAL > {
-	 	return parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACKET, t.image, getSubParserFactory());
+	  s = bracketDelimitedLiteral() {
+	 	return parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACKET, s, getSubParserFactory());
 	 }
 	 )
+}
+
+String parenDelimitedLiteral() : {
+	String s;
+	StringBuilder sb = new StringBuilder();
+} {
+	< LPAREN > ( s = parenDelimitedLiteralBody() { sb.append(s); } )* < RPAREN > {
+		return sb.toString();
+	}
+}
+
+String parenDelimitedLiteralBody() : {
+	Token t;
+	String s;
+} {
+	t = < UNPAREN > { return t.image; }
+	| ( < LPAREN > s = parenDelimitedLiteralBody() < RPAREN > ) { return "(" + s + ")"; }
+}
+
+String braceDelimitedLiteral() : {
+	String s;
+	StringBuilder sb = new StringBuilder();
+} {
+	< LBRACE > ( s = braceDelimitedLiteralBody() { sb.append(s); } )* < RBRACE > {
+		return sb.toString();
+	}
+}
+
+String braceDelimitedLiteralBody() : {
+	Token t;
+	String s;
+} {
+	t = < UNBRACE > { return t.image; }
+	| ( < LBRACE > s = braceDelimitedLiteralBody() < RBRACE > ) { return "{" + s + "}"; }
+}
+
+String bracketDelimitedLiteral() : {
+	String s;
+	StringBuilder sb = new StringBuilder();
+} {
+	< LBRACKET > ( s = bracketDelimitedLiteralBody() { sb.append(s); } )* < RBRACKET > {
+		return sb.toString();
+	}
+}
+
+String bracketDelimitedLiteralBody() : {
+	Token t;
+	String s;
+} {
+	t = < UNBRACKET > { return t.image; }
+	| ( < LBRACKET > s = bracketDelimitedLiteralBody() < RBRACKET > ) { return "[" + s + "]"; }
 }
 
 String String() : {
@@ -402,17 +453,19 @@ MORE : {
   | < #PN_LOCAL : ( < PN_CHARS_U > | [ ":", "0"-"9" ] )
 		( ( < PN_CHARS > | [ ".", ":" ] )* < PN_CHARS > )? >
   |	< COMMA : "," >
-  | < RPAREN : ")" > { popState(); }
 }
 
-< DEFAULT, BODY , DIRECTIVE_ARGUMENTS > TOKEN : {
+< DEFAULT, BODY, TERM, DIRECTIVE_ARGUMENTS, PAREN_DELIMITED > TOKEN : {
 	< LPAREN : "(" > {
 		pushState();
 
-		if (curLexState == DEFAULT || curLexState == BODY) {
+		if (curLexState == TERM) {
+			SwitchTo(PAREN_DELIMITED);
+		} else if (curLexState == DEFAULT || curLexState == BODY) {
 			SwitchTo(TERM);
 		}
 	}
+  | < RPAREN : ")" > { popState(); }
 }
 
 < TERM, DIRECTIVE_ARGUMENTS > TOKEN : {
@@ -479,9 +532,14 @@ TOKEN : {
   | < "\"\"\"" > { pushState(); } : SIXFOLD_QUOTED
   | < "|" > { pushState(); } : PIPE_DELIMITED
   | < "#" > { pushState(); } : HASH_DELIMITED
-  | < < LPAREN > > { pushState(); } : PAREN_DELIMITED
-  | < "{" > { pushState(); } : BRACE_DELIMITED
-  | < "[" > { pushState(); } : BRACKET_DELIMITED
+}
+
+< TERM, BRACE_DELIMITED > TOKEN : {
+	< LBRACE : "{" > { pushState(); } : BRACE_DELIMITED
+}
+
+< TERM, BRACKET_DELIMITED > TOKEN : {
+    < LBRACKET : "[" > { pushState(); } : BRACKET_DELIMITED
 }
 
 < PIPE_DELIMITED > TOKEN : {
@@ -499,27 +557,17 @@ TOKEN : {
 }
 
 < PAREN_DELIMITED > TOKEN : {
-	< PAREN_DELIMITED_LITERAL : ( < UNPAREN > ( "(" < UNPAREN > ")" )* )* < UNPAREN > ")" > {
-		popState();
-		matchedToken.image = JavaCCParserBase.stripDelimiters(matchedToken.image, 1);
-	}
-  | < #UNPAREN : ( ~ [ "(", ")" ] )* >
+	< UNPAREN : ( ~ [ "(", ")" ] )+ >
 }
 
 < BRACE_DELIMITED > TOKEN : {
-	< BRACE_DELIMITED_LITERAL : ( < UNBRACE > ( "{" < UNBRACE > "}" )* )* < UNBRACE > "}" > {
-		popState();
-		matchedToken.image = JavaCCParserBase.stripDelimiters(matchedToken.image, 1);
-	}
-  | < #UNBRACE : (~ [ "{", "}" ] )* >
+	< RBRACE : "}" > { popState(); }
+  | < UNBRACE : (~ [ "{", "}" ] )+ >
 }
 
 < BRACKET_DELIMITED > TOKEN : {
-	< BRACKET_DELIMITED_LITERAL : ( < UNBRACKET > ( "[" < UNBRACKET >  "]" )* )* < UNBRACKET > "]" > {
-		popState();
-		matchedToken.image = JavaCCParserBase.stripDelimiters(matchedToken.image, 1);
-	}
-  | < #UNBRACKET : ( ~ [ "[", "]" ] )* >
+    < RBRACKET : "]" > { popState(); }
+  | < UNBRACKET : ( ~ [ "[", "]" ] )+ >
 }
 
 < SINGLE_QUOTED > TOKEN : {
