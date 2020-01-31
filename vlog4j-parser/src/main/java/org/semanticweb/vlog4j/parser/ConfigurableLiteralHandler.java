@@ -20,7 +20,7 @@ package org.semanticweb.vlog4j.parser;
  * #L%
  */
 
-import org.semanticweb.vlog4j.core.model.api.Constant;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 /**
@@ -40,5 +40,5 @@ public interface ConfigurableLiteralHandler {
 	 * @throws ParsingException when the given syntactic form is invalid.
 	 * @return an appropriate @{link Constant} instance.
 	 */
-	public Constant parseLiteral(String syntacticForm, final SubParserFactory subParserFactory) throws ParsingException;
+	public Term parseLiteral(String syntacticForm, final SubParserFactory subParserFactory) throws ParsingException;
 }

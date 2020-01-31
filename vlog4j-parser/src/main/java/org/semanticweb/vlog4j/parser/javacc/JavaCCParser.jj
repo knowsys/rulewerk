@@ -501,7 +501,7 @@ TOKEN : {
     < BASE : "base" > : DIRECTIVE_ARGUMENTS
   | < PREFIX : "prefix" > : DIRECTIVE_ARGUMENTS
   | < SOURCE : "source" > : DIRECTIVE_ARGUMENTS
-  | < CUSTOM : < DIRECTIVENAME > > : DIRECTIVE_ARGUMENTS
+  | < CUSTOM_DIRECTIVE : < DIRECTIVENAME > > : DIRECTIVE_ARGUMENTS
   | < DIRECTIVENAME : [ "a"-"z", "A"-"Z" ] ([ "a"-"z", "A"-"Z", "0"-"9", "-", "_" ])* >
 }
 

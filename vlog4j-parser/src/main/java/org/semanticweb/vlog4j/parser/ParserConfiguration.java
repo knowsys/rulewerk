@@ -28,6 +28,7 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.ConfigurableLiteralDelimiter;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
@@ -151,7 +152,7 @@ public class ParserConfiguration {
 	 *                          the given syntactic form is invalid.
 	 * @return an appropriate {@link Constant} instance.
 	 */
-	public Constant parseConfigurableLiteral(ConfigurableLiteralDelimiter delimiter, String syntacticForm,
+	public Term parseConfigurableLiteral(ConfigurableLiteralDelimiter delimiter, String syntacticForm,
 			final SubParserFactory subParserFactory) throws ParsingException {
 		if (!isConfigurableLiteralRegistered(delimiter)) {
 			throw new ParsingException(
