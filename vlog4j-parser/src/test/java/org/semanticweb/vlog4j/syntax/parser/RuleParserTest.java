@@ -52,8 +52,10 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.PredicateImpl;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
+import org.semanticweb.vlog4j.core.reasoner.implementation.InMemoryDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.DatatypeConstantHandler;
@@ -458,50 +460,27 @@ public class RuleParserTest {
 	@Test
 	public void testGetFacts() throws ParsingException, IOException {
 		KnowledgeBase kb = new KnowledgeBase();
-		final DataSource dataSource1 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
-				"?var wdt:P31 wd:Q5 .");
-		final Predicate predicate1 = Expressions.makePredicate("country", 1);
-		final DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource1);
-		final DataSource dataSource2 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var",
-				"?var wdt:P31 wd:Q5 .");
-		final Predicate predicate2 = Expressions.makePredicate("inEuropeOutsideGermany", 1);
-		final DataSourceDeclaration dataSourceDeclaration2 = new DataSourceDeclarationImpl(predicate2, dataSource2);
-		final DataSource dataSource3 = new SparqlQueryResultDataSource(new URL("https://example.org/"), "var2",
-				"?var2 wdt:P31 wd:Q5 .");
-		final DataSourceDeclaration dataSourceDeclaration3 = new DataSourceDeclarationImpl(predicate2, dataSource3);
-		final Predicate predicate4 = Expressions.makePredicate("city", 1);
-		final DataSourceDeclaration dataSourceDeclaration4 = new DataSourceDeclarationImpl(predicate4, dataSource2);
+		final InMemoryDataSource locations = new InMemoryDataSource(2, 3);
+		locations.addTuple("germany", "europe");
+		locations.addTuple("saxony", "germany");
+		locations.addTuple("dresden", "saxony");
 		RuleParser.parseInto(kb, fact.toString() + ".");
-		RuleParser.parseInto(kb, dataSourceDeclaration1.toString());
-		RuleParser.parseInto(kb, dataSourceDeclaration2.toString());
-		RuleParser.parseInto(kb, dataSourceDeclaration3.toString());
-		RuleParser.parseInto(kb, dataSourceDeclaration4.toString());
-		final String rules = "location(germany,europe). \n" //
-				+ "location(saxony,germany). \n" //
-				+ "location(dresden,saxony). \n" //
-				+ "locatedIn(Egypt,Africa). \n" //
+		final String sharedFacts = "locatedIn(Egypt,Africa). \n" //
 				+ "address(TSH, \"Pragerstraße 13\", \"01069\", dresden). \n" //
 				+ "city(dresden). \n" //
 				+ "country(germany). \n" //
 				+ "university(tudresden, germany). \n" //
 				+ "streetAddress(tudresden, \"Mommsenstraße 9\", \"01069\", \"Dresden\") . \n" //
-				+ "zipLocation(\"01069\", dresden) . \n" //
-				+ "locatedIn(?X,?Y) :- location(?X,?Y) . \n" //
+				+ "zipLocation(\"01069\", dresden) . \n";
+		final String rules = sharedFacts + "locatedIn(?X,?Y) :- location(?X,?Y) . \n" //
 				+ "locatedIn(?X,?Z) :- locatedIn(?X,?Y), locatedIn(?Y,?Z) . \n" //
 				+ "address(?Uni, ?Street, ?ZIP, ?City) :- streetAddress(?Uni, ?Street, ?ZIP, ?CityName), zipLocation(?ZIP, ?City) . \n"
 				+ "address(?Uni, !Street, !ZIP, !City), locatedIn(!City, ?Country) :- university(?Uni, ?Country) . \n";
 		RuleParser.parseInto(kb, rules);
-		final String facts = "location(germany,europe). \n" //
+		kb.addStatement(new DataSourceDeclarationImpl(Expressions.makePredicate("location", 2), locations));
+		final String facts = sharedFacts + "location(dresden,saxony). \n" //
+				+ "location(germany,europe). \n" //
 				+ "location(saxony,germany). \n" //
-				+ "location(dresden,saxony). \n" //
-				+ "location(germany, europe) . \n" //
-				+ "locatedIn(Egypt, Africa). \n" //
-				+ "address(TSH, \"Pragerstraße 13\", \"01069\", dresden). \n" //
-				+ "city(dresden). \n" //
-				+ "country(germany). \n" //
-				+ "university(tudresden, germany). \n" //
-				+ "streetAddress(tudresden, \"Mommsenstraße 9\", \"01069\", \"Dresden\") . \n" //
-				+ "zipLocation(\"01069\", dresden) . \n" //
 				+ "locatedIn(germany, europe) . \n" //
 				+ "locatedIn(dresden, saxony) . \n" //
 				+ "locatedIn(saxony, germany) . \n" //

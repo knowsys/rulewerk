@@ -821,10 +821,14 @@ public class VLogReasoner implements Reasoner {
 				toBeQueriedHeadPredicates.add(literal.getPredicate());
 			}
 		}
+		for (DataSourceDeclaration dataSourceDeclaration : this.knowledgeBase.getDataSourceDeclarations()) {
+			toBeQueriedHeadPredicates.add(dataSourceDeclaration.getPredicate());
+		}
 		for (Fact fact : this.knowledgeBase.getFacts()) {
 			if (!toBeQueriedHeadPredicates.contains(fact.getPredicate()))
 				stream.write((fact.toString() + "\n").getBytes());
 		}
+
 		for (Predicate predicate : toBeQueriedHeadPredicates) {
 			List<Term> tobeGroundedVariables = new ArrayList<Term>();
 			for (int i = 0; i < predicate.getArity(); i++) {
