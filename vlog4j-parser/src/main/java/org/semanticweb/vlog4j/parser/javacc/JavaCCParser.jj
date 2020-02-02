@@ -27,6 +27,7 @@ import java.util.ArrayDeque;
 import java.util.LinkedList;
 
 import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.DirectiveArgument;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 
@@ -109,12 +110,6 @@ String absoluteIri() throws PrefixDeclarationException : {
   | iri = < PNAME_LN > { return resolvePrefixedName(iri.image); }
 }
 
-String quotedIri() throws PrefixDeclarationException : {
-	String iri;
-} {
-	iri = absoluteIri() { return "<" +  iri + ">"; }
-}
-
 void source() throws PrefixDeclarationException : {
     String predicateName;
     DataSource dataSource;
@@ -132,7 +127,7 @@ void source() throws PrefixDeclarationException : {
 
 DataSource dataSource() throws PrefixDeclarationException : {
   Token sourceName;
-  List< String > arguments;
+  List< DirectiveArgument > arguments;
 } {
 	( sourceName = < ARGUMENT_NAME >
 	| sourceName = < VARORPREDNAME > ) < LPAREN > arguments = Arguments() < RPAREN > {
@@ -395,13 +390,25 @@ String String() : {
 	) { return unescapeStr(t.image, t.beginLine, t.beginColumn); }
 }
 
-LinkedList< String > Arguments() throws PrefixDeclarationException : {
+LinkedList< DirectiveArgument > Arguments() throws PrefixDeclarationException : {
+	DirectiveArgument argument;
     String str;
-    LinkedList< String > rest = new LinkedList< String >();
+	Term t;
+    LinkedList< DirectiveArgument > rest = new LinkedList< DirectiveArgument >();
 } {
-    ( str = String()
-	| str = quotedIri()) [< COMMA > rest = Arguments()] {
-		rest.addFirst(str);
+    ( str = String() { argument = DirectiveArgument.string(str); }
+	| str = absoluteIri() {
+		URL url;
+		try {
+			url = new URL(str);
+		} catch (MalformedURLException e) {
+			throw makeParseExceptionWithCause("Error parsing IRIhandler: " + e.getMessage(), e);
+		}
+		argument = DirectiveArgument.iri(url);
+	}
+    | t = term(FormulaContext.HEAD) { argument = DirectiveArgument.term(t); }
+    ) [< COMMA > rest = Arguments()] {
+		rest.addFirst(argument);
         return rest;
     }
 }

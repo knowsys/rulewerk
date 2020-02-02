@@ -47,7 +47,7 @@ public interface DataSourceDeclarationHandler {
 	 *                          Source, or the number of arguments is invalid.
 	 * @return a {@link DataSource} instance corresponding to the given arguments.
 	 */
-	DataSource handleDeclaration(List<String> arguments, final SubParserFactory subParserFactory)
+	DataSource handleDeclaration(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException;
 
 	/**
@@ -59,7 +59,7 @@ public interface DataSourceDeclarationHandler {
 	 * @throws ParsingException when the given number of Arguments is invalid for
 	 *                          the Data Source.
 	 */
-	static void validateNumberOfArguments(final List<String> arguments, final int number) throws ParsingException {
+	static void validateNumberOfArguments(final List<DirectiveArgument> arguments, final int number) throws ParsingException {
 		if (arguments.size() != number) {
 			throw new ParsingException("Invalid number of arguments " + arguments.size()
 					+ " for Data Source declaration, expected " + number);

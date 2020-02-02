@@ -95,8 +95,8 @@ public class ParserConfiguration {
 	 *
 	 * @return the Data Source instance.
 	 */
-	public DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(final String name, final List<String> args,
-			final SubParserFactory subParserFactory) throws ParsingException {
+	public DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(final String name,
+			final List<DirectiveArgument> args, final SubParserFactory subParserFactory) throws ParsingException {
 		final DataSourceDeclarationHandler handler = this.dataSources.get(name);
 
 		if (handler == null) {
@@ -113,8 +113,8 @@ public class ParserConfiguration {
 	 * @param languageTag the language tag, or null if not present.
 	 * @param the         datatype, or null if not present.
 	 *
-	 * @throws ParsingException         when the lexical form is invalid for the
-	 *                                  given data type.
+	 * @throws ParsingException when the lexical form is invalid for the given data
+	 *                          type.
 	 * @return the {@link Constant} corresponding to the given arguments.
 	 */
 	public Constant parseDatatypeConstant(final String lexicalForm, final String datatype) throws ParsingException {

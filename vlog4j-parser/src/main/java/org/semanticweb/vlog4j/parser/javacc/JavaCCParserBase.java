@@ -35,6 +35,7 @@ import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImp
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.DefaultParserConfiguration;
+import org.semanticweb.vlog4j.parser.DirectiveArgument;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -312,7 +313,7 @@ public class JavaCCParserBase {
 	}
 
 	DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(String syntacticForm,
-			List<String> arguments, SubParserFactory subParserFactory) throws ParseException {
+			List<DirectiveArgument> arguments, SubParserFactory subParserFactory) throws ParseException {
 		try {
 			return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(syntacticForm, arguments,
 					subParserFactory);

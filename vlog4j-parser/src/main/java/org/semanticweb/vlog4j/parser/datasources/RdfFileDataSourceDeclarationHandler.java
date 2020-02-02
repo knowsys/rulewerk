@@ -23,10 +23,12 @@ package org.semanticweb.vlog4j.parser.datasources;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
+import org.semanticweb.vlog4j.parser.DirectiveArgument;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
@@ -37,12 +39,18 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  */
 public class RdfFileDataSourceDeclarationHandler implements DataSourceDeclarationHandler {
 	@Override
-	public DataSource handleDeclaration(List<String> arguments, final SubParserFactory subParserFactory)
+	public DataSource handleDeclaration(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
 		DataSourceDeclarationHandler.validateNumberOfArguments(arguments, 1);
-		String fileName = arguments.get(0);
-		File file = new File(fileName);
+		DirectiveArgument fileNameArgument = arguments.get(0);
+		String fileName;
+		try {
+			fileName = fileNameArgument.fromString().get();
+		} catch (NoSuchElementException e) {
+			throw new ParsingException("File name \"" + fileNameArgument + "\" is not a string.", e);
+		}
 
+		File file = new File(fileName);
 		try {
 			return new RdfFileDataSource(file);
 		} catch (IOException e) {

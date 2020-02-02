@@ -4,14 +4,14 @@ package org.semanticweb.vlog4j.parser.datasources;
  * #%L
  * VLog4j Parser
  * %%
- * Copyright (C) 2018 - 2019 VLog4j Developers
+ * Copyright (C) 2018 - 2020 VLog4j Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,17 +20,15 @@ package org.semanticweb.vlog4j.parser.datasources;
  * #L%
  */
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
+import org.semanticweb.vlog4j.parser.DirectiveArgument;
 import org.semanticweb.vlog4j.parser.ParsingException;
-import org.semanticweb.vlog4j.parser.javacc.JavaCCParser;
-import org.semanticweb.vlog4j.parser.javacc.ParseException;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 /**
@@ -40,29 +38,35 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  */
 public class SparqlQueryResultDataSourceDeclarationHandler implements DataSourceDeclarationHandler {
 	@Override
-	public DataSource handleDeclaration(List<String> arguments, final SubParserFactory subParserFactory)
+	public DataSource handleDeclaration(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
 		DataSourceDeclarationHandler.validateNumberOfArguments(arguments, 3);
 
-		String endpoint = arguments.get(0);
-		JavaCCParser parser = subParserFactory.makeSubParser(endpoint);
-		String parsedEndpoint;
+		DirectiveArgument endpointArgument = arguments.get(0);
+		URL endpoint;
 		try {
-			parsedEndpoint = parser.absoluteIri();
-		} catch (ParseException | PrefixDeclarationException e) {
-			throw new ParsingException("Error while parsing endpoint IRI in SPARQL query data source: " + e.getMessage(), e);
+			endpoint = endpointArgument.fromIri().get();
+		} catch (NoSuchElementException e) {
+			throw new ParsingException(
+					"SPARQL endpoint \"" + endpointArgument + "\" is not a valid IRI: " + e.getMessage(), e);
 		}
 
-		URL endpointUrl;
+		DirectiveArgument variablesArgument = arguments.get(1);
+		String variables;
 		try {
-			endpointUrl = new URL(parsedEndpoint);
-		} catch (MalformedURLException e) {
-			throw new ParsingException("SPARQL endpoint \"" + endpoint + "\" is not a valid URL: " + e.getMessage(), e);
+			variables = variablesArgument.fromString().get();
+		} catch (NoSuchElementException e) {
+			throw new ParsingException("Variables list \"" + variablesArgument + "\" is not a string.", e);
 		}
 
-		String variables = arguments.get(1);
-		String query = arguments.get(2);
+		DirectiveArgument queryArgument = arguments.get(2);
+		String query;
+		try {
+			query = queryArgument.fromString().get();
+		} catch (NoSuchElementException e) {
+			throw new ParsingException("Query fragment \"" + queryArgument + "\" is not a string.", e);
+		}
 
-		return new SparqlQueryResultDataSource(endpointUrl, variables, query);
+		return new SparqlQueryResultDataSource(endpoint, variables, query);
 	}
 }

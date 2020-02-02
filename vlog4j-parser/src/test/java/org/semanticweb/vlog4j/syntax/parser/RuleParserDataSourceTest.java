@@ -43,6 +43,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
+import org.semanticweb.vlog4j.parser.DirectiveArgument;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
@@ -141,11 +142,12 @@ public class RuleParserDataSourceTest {
 		DataSourceDeclarationHandler handler = mock(DataSourceDeclarationHandler.class);
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerDataSource("mock-source", handler);
-		doReturn(source).when(handler).handleDeclaration(ArgumentMatchers.<List<String>>any(),
+		doReturn(source).when(handler).handleDeclaration(ArgumentMatchers.<List<DirectiveArgument>>any(),
 				ArgumentMatchers.<SubParserFactory>any());
 
 		String input = "@source p[2] : mock-source(\"hello\", \"world\") .";
-		List<String> expectedArguments = Arrays.asList("hello", "world");
+		List<DirectiveArgument> expectedArguments = Arrays.asList(DirectiveArgument.string("hello"),
+				DirectiveArgument.string("world"));
 		RuleParser.parseDataSourceDeclaration(input, parserConfiguration);
 
 		verify(handler).handleDeclaration(eq(expectedArguments), ArgumentMatchers.<SubParserFactory>any());
