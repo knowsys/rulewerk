@@ -21,6 +21,7 @@ package org.semanticweb.vlog4j.parser;
  */
 
 import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.Validate;
@@ -30,6 +31,7 @@ import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.ConfigurableLiteralDelimiter;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
@@ -40,7 +42,12 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  */
 public class ParserConfiguration {
 	/**
-	 * Whether to allow parsing Named Nulls.
+	 * Reserved directive names that are not allowed to be registered.
+	 */
+	public static final List<String> RESERVED_DIRECTIVE_NAMES = Arrays.asList("base", "prefix", "source");
+
+	/**
+	 * Whether parsing Named Nulls is allowed.
 	 */
 	private boolean allowNamedNulls = false;
 
@@ -58,6 +65,11 @@ public class ParserConfiguration {
 	 * The registered configurable literals.
 	 */
 	private HashMap<ConfigurableLiteralDelimiter, ConfigurableLiteralHandler> literals = new HashMap<>();
+
+	/**
+	 * The registered custom directives.
+	 */
+	private HashMap<String, DirectiveHandler<KnowledgeBase>> directives = new HashMap<>();
 
 	/**
 	 * Register a new (type of) Data Source.
@@ -194,23 +206,68 @@ public class ParserConfiguration {
 	 * @argument delimiter the delimiter to handle.
 	 * @argument handler the handler for this literal type.
 	 *
-	 * @throws IllegalArgumentException when the literal delimiter has
-	 *                                  already been registered.
+	 * @throws IllegalArgumentException when the literal delimiter has already been
+	 *                                  registered.
 	 *
 	 * @return this
 	 */
 	public ParserConfiguration registerLiteral(ConfigurableLiteralDelimiter delimiter,
 			ConfigurableLiteralHandler handler) throws IllegalArgumentException {
-		if (literals.containsKey(delimiter)) {
-			throw new IllegalArgumentException("Literal delimiter \"" + delimiter + "\" is already registered.");
-		}
+		Validate.isTrue(!this.literals.containsKey(delimiter), "Literal delimiter \"%s\" is already registered.",
+				delimiter);
 
 		this.literals.put(delimiter, handler);
 		return this;
 	}
 
 	/**
-	 * Set whether to allow parsing of {@link org.semanticweb.vlog4j.core.model.api.NamedNull}.
+	 * Register a directive.
+	 *
+	 * @argument name the name of the directive.
+	 * @argument handler the handler for this directive.
+	 *
+	 * @throws IllegalArgumentException when the directive name has already been
+	 *                                  registered, or is a reserved name (i.e., one
+	 *                                  of {@code base}, {@code prefix}, and
+	 *                                  {@code source}).
+	 *
+	 * @return this
+	 */
+	public ParserConfiguration registerDirective(String name, DirectiveHandler<KnowledgeBase> handler)
+			throws IllegalArgumentException {
+		Validate.isTrue(!RESERVED_DIRECTIVE_NAMES.contains(name), "The name \"%s\" is a reserved directive name.",
+				name);
+		Validate.isTrue(!this.directives.containsKey(name), "The directive \"%s\" is already registered.", name);
+
+		this.directives.put(name, handler);
+		return this;
+	}
+
+	/**
+	 * Parse a directive statement.
+	 *
+	 * @argument name the name of the directive.
+	 * @argument arguments the arguments given in the statement.
+	 *
+	 * @throws ParsingException when the directive is not known, or the arguments
+	 *                          are invalid for the directive.
+	 *
+	 * @return the (possibly updated) KnowledgeBase
+	 */
+	public KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments, SubParserFactory subParserFactory)
+			throws ParsingException {
+		final DirectiveHandler<KnowledgeBase> handler = this.directives.get(name);
+
+		if (handler == null) {
+			throw new ParsingException("Directive \"" + name + "\" is not known.");
+		}
+
+		return handler.handleDirective(arguments, subParserFactory);
+	}
+
+	/**
+	 * Set whether to allow parsing of
+	 * {@link semanticweb.vlog4j.core.model.api.NamedNull}.
 	 *
 	 * @argument allow true allows parsing of named nulls.
 	 *
@@ -240,7 +297,8 @@ public class ParserConfiguration {
 	}
 
 	/**
-	 * Whether parsing of {@link org.semanticweb.vlog4j.core.model.api.NamedNull} is allowed.
+	 * Whether parsing of {@link org.semanticweb.vlog4j.core.model.api.NamedNull} is
+	 * allowed.
 	 *
 	 * @return this
 	 */

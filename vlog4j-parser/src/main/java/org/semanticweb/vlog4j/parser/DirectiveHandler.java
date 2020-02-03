@@ -22,6 +22,8 @@ package org.semanticweb.vlog4j.parser;
 
 import java.util.List;
 
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.parser.javacc.JavaCCParser;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 /**
@@ -44,7 +46,7 @@ public interface DirectiveHandler<T> {
 	 *                          directive, or the number of arguments is invalid.
 	 * @return a {@code T} instance corresponding to the given arguments.
 	 */
-	T handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
+	public T handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException;
 
 	/**
@@ -56,11 +58,24 @@ public interface DirectiveHandler<T> {
 	 * @throws ParsingException when the given number of Arguments is invalid for
 	 *                          the Directive statement.
 	 */
-	static void validateNumberOfArguments(final List<DirectiveArgument> arguments, final int number)
+	public static void validateNumberOfArguments(final List<DirectiveArgument> arguments, final int number)
 			throws ParsingException {
 		if (arguments.size() != number) {
 			throw new ParsingException(
 					"Invalid number of arguments " + arguments.size() + " for Directive statement, expected " + number);
 		}
+	}
+
+	/**
+	 * Obtain a {@link KnowledgeBase} from a {@link SubParserFactory}.
+	 *
+	 * @argument subParserFactory the SubParserFactory.
+	 *
+	 * @return the knowledge base.
+	 */
+	default KnowledgeBase getKnowledgeBase(SubParserFactory subParserFactory) {
+		JavaCCParser subParser = subParserFactory.makeSubParser("");
+
+		return subParser.getKnowledgeBase();
 	}
 }

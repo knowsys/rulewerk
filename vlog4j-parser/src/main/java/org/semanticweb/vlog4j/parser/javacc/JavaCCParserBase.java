@@ -331,7 +331,15 @@ public class JavaCCParserBase {
 
 	Term parseConfigurableLiteral(ConfigurableLiteralDelimiter delimiter, String syntacticForm,
 			SubParserFactory subParserFactory) throws ParsingException {
-				return parserConfiguration.parseConfigurableLiteral(delimiter, syntacticForm, subParserFactory);
+		return parserConfiguration.parseConfigurableLiteral(delimiter, syntacticForm, subParserFactory);
+	}
+
+	KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments, SubParserFactory subParserFactory) throws ParseException {
+		try {
+			return parserConfiguration.parseDirectiveStatement(name, arguments, subParserFactory);
+		} catch (ParsingException e) {
+			throw makeParseExceptionWithCause("Failed while trying to parse directive statement", e);
+		}
 	}
 
 	boolean isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter delimiter) {
