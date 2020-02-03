@@ -142,7 +142,7 @@ public class RuleParserDataSourceTest {
 		DataSourceDeclarationHandler handler = mock(DataSourceDeclarationHandler.class);
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerDataSource("mock-source", handler);
-		doReturn(source).when(handler).handleDeclaration(ArgumentMatchers.<List<DirectiveArgument>>any(),
+		doReturn(source).when(handler).handleDirective(ArgumentMatchers.<List<DirectiveArgument>>any(),
 				ArgumentMatchers.<SubParserFactory>any());
 
 		String input = "@source p[2] : mock-source(\"hello\", \"world\") .";
@@ -150,7 +150,7 @@ public class RuleParserDataSourceTest {
 				DirectiveArgument.string("world"));
 		RuleParser.parseDataSourceDeclaration(input, parserConfiguration);
 
-		verify(handler).handleDeclaration(eq(expectedArguments), ArgumentMatchers.<SubParserFactory>any());
+		verify(handler).handleDirective(eq(expectedArguments), ArgumentMatchers.<SubParserFactory>any());
 	}
 
 	@Test

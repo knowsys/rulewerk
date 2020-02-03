@@ -29,6 +29,7 @@ import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
 import org.semanticweb.vlog4j.parser.DirectiveArgument;
+import org.semanticweb.vlog4j.parser.DirectiveHandler;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
@@ -39,9 +40,9 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  */
 public class CsvFileDataSourceDeclarationHandler implements DataSourceDeclarationHandler {
 	@Override
-	public DataSource handleDeclaration(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
+	public DataSource handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
-		DataSourceDeclarationHandler.validateNumberOfArguments(arguments, 1);
+		DirectiveHandler.validateNumberOfArguments(arguments, 1);
 		DirectiveArgument fileNameArgument = arguments.get(0);
 		String fileName;
 		try {

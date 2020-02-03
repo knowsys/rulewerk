@@ -103,7 +103,7 @@ public class ParserConfiguration {
 			throw new ParsingException("Data source \"" + name + "\" is not known.");
 		}
 
-		return handler.handleDeclaration(args, subParserFactory);
+		return handler.handleDirective(args, subParserFactory);
 	}
 
 	/**

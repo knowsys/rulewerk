@@ -20,11 +20,9 @@ package org.semanticweb.vlog4j.parser;
  * #L%
  */
 
-import java.util.List;
 
+import org.semanticweb.vlog4j.parser.DirectiveHandler;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
-import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 /**
  * Handler for parsing a custom Data Source declaration.
@@ -32,37 +30,5 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  * @author Maximilian Marx
  */
 @FunctionalInterface
-public interface DataSourceDeclarationHandler {
-	/**
-	 * Parse a Data Source Declaration.
-	 *
-	 * This is called by the parser to instantiate the {@link DataSource} component
-	 * of a {@link DataSourceDeclaration}.
-	 *
-	 * @param arguments        Arguments given to the Data Source declaration.
-	 * @param subParserFactory a factory for obtaining a SubParser, sharing the
-	 *                         parser's state, but bound to new input.
-	 *
-	 * @throws ParsingException when any of the arguments is invalid for the Data
-	 *                          Source, or the number of arguments is invalid.
-	 * @return a {@link DataSource} instance corresponding to the given arguments.
-	 */
-	DataSource handleDeclaration(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
-			throws ParsingException;
-
-	/**
-	 * Validate the provided number of arguments to the data source.
-	 *
-	 * @param arguments Arguments given to the Data Source declaration.
-	 * @param number    expected number of arguments
-	 *
-	 * @throws ParsingException when the given number of Arguments is invalid for
-	 *                          the Data Source.
-	 */
-	static void validateNumberOfArguments(final List<DirectiveArgument> arguments, final int number) throws ParsingException {
-		if (arguments.size() != number) {
-			throw new ParsingException("Invalid number of arguments " + arguments.size()
-					+ " for Data Source declaration, expected " + number);
-		}
-	}
+public interface DataSourceDeclarationHandler extends DirectiveHandler<DataSource> {
 }
