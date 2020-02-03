@@ -27,12 +27,14 @@ import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.DefaultParserConfiguration;
 import org.semanticweb.vlog4j.parser.DirectiveArgument;
@@ -140,6 +142,10 @@ public class JavaCCParserBase {
 			throw makeParseExceptionWithCause("Failed to parse IRI", e);
 		}
 		return Expressions.makeAbstractConstant(absoluteIri);
+	}
+
+	NamedNull createNamedNull(String lexicalForm) {
+		return new NamedNullImpl(lexicalForm);
 	}
 
 	/**
@@ -330,6 +336,10 @@ public class JavaCCParserBase {
 
 	boolean isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter delimiter) {
 		return parserConfiguration.isConfigurableLiteralRegistered(delimiter);
+	}
+
+	boolean isParsingOfNamedNullsAllowed() {
+		return parserConfiguration.isParsingOfNamedNullsAllowed();
 	}
 
 	void setBase(String baseIri) throws PrefixDeclarationException {

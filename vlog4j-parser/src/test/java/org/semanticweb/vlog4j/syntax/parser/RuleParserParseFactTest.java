@@ -25,8 +25,11 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
+import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -34,35 +37,51 @@ public class RuleParserParseFactTest {
 
 	private final Constant a = Expressions.makeDatatypeConstant("a", PrefixDeclarations.XSD_STRING);
 	private final Constant b = Expressions.makeDatatypeConstant("b", PrefixDeclarations.XSD_STRING);
+	private final NamedNull null1 = new NamedNullImpl("1");
 
 	private final Fact factA = Expressions.makeFact("p", a);
 	private final Fact factAB = Expressions.makeFact("p", a, b);
+	private final Fact fact1 = Expressions.makeFact("p", null1);
 
 	@Test
-	public void testFactArityOne() throws ParsingException {
+	public void parseFact_string_succeeds() throws ParsingException {
 		assertEquals(RuleParser.parseFact("p(\"a\") ."), factA);
 	}
 
 	@Test
-	public void testFactArityOneWithDataType() throws ParsingException {
-		assertEquals(RuleParser.parseFact("p(\"a\") ."), factA);
-	}
-
-	@Test
-	public void testFactArityTwo() throws ParsingException {
+	public void parseFact_twoStrings_succeeds() throws ParsingException {
 		assertEquals(RuleParser.parseFact("p(\"a\",\"b\") ."), factAB);
 	}
 
 	@Test(expected = ParsingException.class)
-	public void testFactWithVariable() throws ParsingException {
+	public void parseFact_nonGroundFact_throws() throws ParsingException {
 		String input = "p(?X) .";
 		RuleParser.parseFact(input);
 	}
 
 	@Test(expected = ParsingException.class)
-	public void testZeroArityFact() throws ParsingException {
+	public void parseFact_arityZeroFact_throws() throws ParsingException {
 		String input = "p() .";
 		RuleParser.parseFact(input);
 	}
 
+	@Test(expected = ParsingException.class)
+	public void parseFact_namedNull_throws() throws ParsingException {
+		String input = "p(_:1) .";
+		RuleParser.parseFact(input);
+	}
+
+	@Test
+	public void parseFact_namedNullAllowed_succeeds() throws ParsingException {
+		String input = "p(_:1) .";
+		ParserConfiguration parserConfiguration = new ParserConfiguration().allowNamedNulls();
+		assertEquals(RuleParser.parseFact(input, parserConfiguration), fact1);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseFact_namedNullAsPredicateName_throws() throws ParsingException {
+		String input = "_:p(\"a\") .";
+		ParserConfiguration parserConfiguration = new ParserConfiguration().allowNamedNulls();
+		RuleParser.parseFact(input, parserConfiguration);
+	}
 }

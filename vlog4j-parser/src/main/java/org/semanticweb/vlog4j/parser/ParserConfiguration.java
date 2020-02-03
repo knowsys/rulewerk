@@ -40,6 +40,11 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  */
 public class ParserConfiguration {
 	/**
+	 * Whether to allow parsing Named Nulls.
+	 */
+	private boolean allowNamedNulls = false;
+
+	/**
 	 * The registered data sources.
 	 */
 	private final HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
@@ -183,6 +188,17 @@ public class ParserConfiguration {
 		return this;
 	}
 
+	/**
+	 * Register a custom literal handler.
+	 *
+	 * @argument delimiter the delimiter to handle.
+	 * @argument handler the handler for this literal type.
+	 *
+	 * @throws IllegalArgumentException when the literal delimiter has
+	 *                                  already been registered.
+	 *
+	 * @return this
+	 */
 	public ParserConfiguration registerLiteral(ConfigurableLiteralDelimiter delimiter,
 			ConfigurableLiteralHandler handler) throws IllegalArgumentException {
 		if (literals.containsKey(delimiter)) {
@@ -191,5 +207,44 @@ public class ParserConfiguration {
 
 		this.literals.put(delimiter, handler);
 		return this;
+	}
+
+	/**
+	 * Set whether to allow parsing of {@link org.semanticweb.vlog4j.core.model.api.NamedNull}.
+	 *
+	 * @argument allow true allows parsing of named nulls.
+	 *
+	 * @return this
+	 */
+	public ParserConfiguration setNamedNulls(boolean allow) {
+		this.allowNamedNulls = allow;
+		return this;
+	}
+
+	/**
+	 * Allow parsing of {@link org.semanticweb.vlog4j.core.model.api.NamedNull}.
+	 *
+	 * @return this
+	 */
+	public ParserConfiguration allowNamedNulls() {
+		return this.setNamedNulls(true);
+	}
+
+	/**
+	 * Disallow parsing of {@link org.semanticweb.vlog4j.core.model.api.NamedNull}.
+	 *
+	 * @return this
+	 */
+	public ParserConfiguration disallowNamedNulls() {
+		return this.setNamedNulls(false);
+	}
+
+	/**
+	 * Whether parsing of {@link org.semanticweb.vlog4j.core.model.api.NamedNull} is allowed.
+	 *
+	 * @return this
+	 */
+	public boolean isParsingOfNamedNullsAllowed() {
+		return this.allowNamedNulls;
 	}
 }

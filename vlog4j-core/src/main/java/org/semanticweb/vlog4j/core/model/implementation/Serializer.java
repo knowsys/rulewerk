@@ -57,7 +57,7 @@ public final class Serializer {
 	public static final String NEGATIVE_IDENTIFIER = "~";
 	public static final String EXISTENTIAL_IDENTIFIER = "!";
 	public static final String UNIVERSAL_IDENTIFIER = "?";
-	public static final String NAMEDNULL_IDENTIFIER = "_";
+	public static final String NAMEDNULL_IDENTIFIER = "_:";
 	public static final String OPENING_PARENTHESIS = "(";
 	public static final String CLOSING_PARENTHESIS = ")";
 	public static final String OPENING_BRACKET = "[";
@@ -342,7 +342,7 @@ public final class Serializer {
 	 * <ul>
 	 * Example for {@code string = "\\a"}, the returned value is
 	 * {@code string = "\"\\\\a\""}
-	 * 
+	 *
 	 * @param string
 	 * @return an escaped string surrounded by {@code "}.
 	 */
@@ -362,7 +362,7 @@ public final class Serializer {
 	 * <li>{@code \r}</li>
 	 * <li>{@code \f}</li>
 	 * <ul>
-	 * 
+	 *
 	 * @param string
 	 * @return an escaped string
 	 */

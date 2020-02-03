@@ -251,6 +251,8 @@ Term term(FormulaContext context) throws PrefixDeclarationException : {
 } {
     s = absoluteIri() { return createConstant(s); }
   | t = < VARORPREDNAME > { return createConstant(t.image); }
+  | LOOKAHEAD( < NAMED_NULL >, { isParsingOfNamedNullsAllowed() })
+  	t = < NAMED_NULL > { return createNamedNull(t.image); }
   | c = NumericLiteral() { return c; }
   | c = RDFLiteral() { return c; }
   | t = < UNIVAR > {
@@ -396,8 +398,8 @@ LinkedList< DirectiveArgument > Arguments() throws PrefixDeclarationException : 
 	Term t;
     LinkedList< DirectiveArgument > rest = new LinkedList< DirectiveArgument >();
 } {
-    ( str = String() { argument = DirectiveArgument.string(str); }
-	| str = absoluteIri() {
+    ( LOOKAHEAD(String()) str = String() { argument = DirectiveArgument.string(str); }
+	| LOOKAHEAD(absoluteIri()) str = absoluteIri() {
 		URL url;
 		try {
 			url = new URL(str);
@@ -460,6 +462,9 @@ MORE : {
   | < #PN_LOCAL : ( < PN_CHARS_U > | [ ":", "0"-"9" ] )
 		( ( < PN_CHARS > | [ ".", ":" ] )* < PN_CHARS > )? >
   |	< COMMA : "," >
+  | < NAMED_NULL : "_:" ( < PN_CHARS_U > | [ "0"-"9" ] ) (( < PN_CHARS > | "." )* < PN_CHARS > )? > {
+		matchedToken.image = JavaCCParserBase.stripChars(matchedToken.image, 2);
+	}
 }
 
 < DEFAULT, BODY, TERM, DIRECTIVE_ARGUMENTS, PAREN_DELIMITED > TOKEN : {
