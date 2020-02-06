@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.parser.datasources;
+package org.semanticweb.vlog4j.parser.directives;
 
 /*-
  * #%L
@@ -21,33 +21,43 @@ package org.semanticweb.vlog4j.parser.datasources;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.DataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
-import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.DirectiveArgument;
 import org.semanticweb.vlog4j.parser.DirectiveHandler;
+import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.RuleParser;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 /**
- * Handler for parsing {@link RdfFileDataSource} declarations
+ * Handler for parsing {@code @import} statements.
  *
  * @author Maximilian Marx
  */
-public class RdfFileDataSourceDeclarationHandler implements DataSourceDeclarationHandler {
+public class ImportFileDirectiveHandler implements DirectiveHandler<KnowledgeBase> {
 	@Override
-	public DataSource handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
+	public KnowledgeBase handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
 		DirectiveHandler.validateNumberOfArguments(arguments, 1);
-		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "source file");
+		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "rules file");
+		FileInputStream stream;
 
+		// @todo(mx): should we try to prevent cyclic imports?
 		try {
-			return new RdfFileDataSource(file);
+			stream = new FileInputStream(file);
 		} catch (IOException e) {
-			throw new ParsingException("Could not use source file \"" + file.getName() + "\": " + e.getMessage(), e);
+			throw new ParsingException("Failed to read rules from \"" + file.getName() + "\"", e);
 		}
+
+		KnowledgeBase knowledgeBase = getKnowledgeBase(subParserFactory);
+		ParserConfiguration parserConfiguration = getParserConfiguration(subParserFactory);
+
+		RuleParser.parseInto(knowledgeBase, stream, parserConfiguration);
+
+		return knowledgeBase;
 	}
 }

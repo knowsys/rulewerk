@@ -20,8 +20,13 @@ package org.semanticweb.vlog4j.parser;
  * #L%
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParser;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
@@ -67,6 +72,91 @@ public interface DirectiveHandler<T> {
 	}
 
 	/**
+	 * Validate that the provided argument is a {@link String}.
+	 *
+	 * @param argument    the argument to validate
+	 * @param description a description of the argument, used in constructing the
+	 *                    error message.
+	 *
+	 * @throws ParsingException when the given argument is not a {@link String}.
+	 *
+	 * @return the contained {@link String}.
+	 */
+	public static String validateStringArgument(final DirectiveArgument argument, final String description)
+			throws ParsingException {
+		try {
+			return argument.fromString().get();
+		} catch (NoSuchElementException e) {
+			throw new ParsingException(description + "\"" + argument + "\" is not a string.", e);
+		}
+	}
+
+	/**
+	 * Validate that the provided argument is a file name.
+	 *
+	 * @param argument    the argument to validate
+	 * @param description a description of the argument, used in constructing the
+	 *                    error message.
+	 *
+	 * @throws ParsingException when the given argument is not a valid file name.
+	 *
+	 * @return the File corresponding to the contained file name.
+	 */
+	public static File validateFilenameArgument(final DirectiveArgument argument, final String description)
+			throws ParsingException {
+		String fileName = DirectiveHandler.validateStringArgument(argument, description);
+		File file = new File(fileName);
+		try {
+			// we don't care about the actual path, just that there is one.
+			file.getCanonicalPath();
+		} catch (IOException e) {
+			throw new ParsingException(description + "\"" + argument + "\" is not a valid file path.", e);
+		}
+
+		return file;
+	}
+
+	/**
+	 * Validate that the provided argument is an IRI.
+	 *
+	 * @param argument    the argument to validate
+	 * @param description a description of the argument, used in constructing the
+	 *                    error message.
+	 *
+	 * @throws ParsingException when the given argument is not an IRI.
+	 *
+	 * @return the contained IRI.
+	 */
+	public static URL validateIriArgument(final DirectiveArgument argument, final String description)
+			throws ParsingException {
+		try {
+			return argument.fromIri().get();
+		} catch (NoSuchElementException e) {
+			throw new ParsingException(description + "\"" + argument + "\" is not an IRI.", e);
+		}
+	}
+
+	/**
+	 * Validate that the provided argument is a {@link Term}.
+	 *
+	 * @param argument    the argument to validate
+	 * @param description a description of the argument, used in constructing the
+	 *                    error message.
+	 *
+	 * @throws ParsingException when the given argument is not a {@link Term}.
+	 *
+	 * @return the contained {@link Term}.
+	 */
+	public static Term validateTermArgument(final DirectiveArgument argument, final String description)
+			throws ParsingException {
+		try {
+			return argument.fromTerm().get();
+		} catch (NoSuchElementException e) {
+			throw new ParsingException(description + "\"" + argument + "\" is not a string.", e);
+		}
+	}
+
+	/**
 	 * Obtain a {@link KnowledgeBase} from a {@link SubParserFactory}.
 	 *
 	 * @argument subParserFactory the SubParserFactory.
@@ -77,5 +167,18 @@ public interface DirectiveHandler<T> {
 		JavaCCParser subParser = subParserFactory.makeSubParser("");
 
 		return subParser.getKnowledgeBase();
+	}
+
+	/**
+	 * Obtain a {@link ParserConfiguration} from a {@link SubParserFactory}.
+	 *
+	 * @argument subParserFactory the SubParserFactory.
+	 *
+	 * @return the parser configuration.
+	 */
+	default ParserConfiguration getParserConfiguration(SubParserFactory subParserFactory) {
+		JavaCCParser subParser = subParserFactory.makeSubParser("");
+
+		return subParser.getParserConfiguration();
 	}
 }

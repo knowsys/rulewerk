@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -40,6 +41,7 @@ import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.DatatypeConstantHandler;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -58,7 +60,7 @@ public class RuleParserTest {
 	private final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
 	private final PositiveLiteral atom3 = Expressions.makePositiveLiteral("http://example.org/q", x, y);
 	private final PositiveLiteral atom4 = Expressions.makePositiveLiteral("http://example.org/r", x, d);
-	private final Fact fact = Expressions.makeFact("http://example.org/s", c);
+	private final PositiveLiteral fact1 = Expressions.makePositiveLiteral("http://example.org/s", c);
 	private final PositiveLiteral fact2 = Expressions.makePositiveLiteral("p", abc);
 	private final Conjunction<Literal> body1 = Expressions.makeConjunction(atom1, atom2);
 	private final Conjunction<Literal> body2 = Expressions.makeConjunction(negAtom1, atom2);
@@ -70,28 +72,28 @@ public class RuleParserTest {
 	public void testExplicitIri() throws ParsingException {
 		String input = "<http://example.org/s>(<http://example.org/c>) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		assertEquals(Arrays.asList(fact), statements);
+		assertEquals(Arrays.asList(fact1), statements);
 	}
 
 	@Test
 	public void testPrefixResolution() throws ParsingException {
 		String input = "@prefix ex: <http://example.org/> . ex:s(ex:c) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		assertEquals(Arrays.asList(fact), statements);
+		assertEquals(Arrays.asList(fact1), statements);
 	}
 
 	@Test
 	public void testBaseRelativeResolution() throws ParsingException {
 		String input = "@base <http://example.org/> . <s>(<c>) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		assertEquals(Arrays.asList(fact), statements);
+		assertEquals(Arrays.asList(fact1), statements);
 	}
 
 	@Test
 	public void testBaseResolution() throws ParsingException {
 		String input = "@base <http://example.org/> . s(c) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		assertEquals(Arrays.asList(fact), statements);
+		assertEquals(Arrays.asList(fact1), statements);
 	}
 
 	@Test
@@ -317,7 +319,7 @@ public class RuleParserTest {
 	public void testUnicodeUri() throws ParsingException {
 		String input = "@base <http://example.org/> . @prefix ex: <http://example.org/> .  ex:\\u0073(c) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		assertEquals(Arrays.asList(fact), statements);
+		assertEquals(Arrays.asList(fact1), statements);
 	}
 
 	@Test
@@ -340,7 +342,7 @@ public class RuleParserTest {
 		String input = "@prefix ex: <http://example.org/> . % comment \n" + "%@prefix ex: <http:nourl> \n"
 				+ " ex:s(ex:c) . % comment \n";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
-		assertEquals(Arrays.asList(fact), statements);
+		assertEquals(Arrays.asList(fact1), statements);
 	}
 
 	@Test
@@ -439,4 +441,12 @@ public class RuleParserTest {
 		assertEquals(constant, result);
 	}
 
+	@Test
+	public void parse_importStatement_succeeds() throws ParsingException {
+		String input = "@import \"src/test/resources/facts.rls\" .";
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		List<PositiveLiteral> expected = Arrays.asList(fact1, fact2);
+		List<Fact> result = knowledgeBase.getFacts();
+		assertEquals(expected, result);
+	}
 }

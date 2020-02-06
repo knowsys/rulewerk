@@ -23,7 +23,6 @@ package org.semanticweb.vlog4j.parser.datasources;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
@@ -43,19 +42,12 @@ public class CsvFileDataSourceDeclarationHandler implements DataSourceDeclaratio
 	public DataSource handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
 		DirectiveHandler.validateNumberOfArguments(arguments, 1);
-		DirectiveArgument fileNameArgument = arguments.get(0);
-		String fileName;
-		try {
-			fileName = fileNameArgument.fromString().get();
-		} catch (NoSuchElementException e) {
-			throw new ParsingException("File name \"" + fileNameArgument + "\" is not a string.", e);
-		}
+		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "source file");
 
-		File file = new File(fileName);
 		try {
 			return new CsvFileDataSource(file);
 		} catch (IOException e) {
-			throw new ParsingException("Could not use source file \"" + fileName + "\": " + e.getMessage(), e);
+			throw new ParsingException("Could not use source file \"" + file.getName() + "\": " + e.getMessage(), e);
 		}
 	}
 }

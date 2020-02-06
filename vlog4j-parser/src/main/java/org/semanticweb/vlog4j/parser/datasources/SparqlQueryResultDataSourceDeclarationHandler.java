@@ -22,7 +22,6 @@ package org.semanticweb.vlog4j.parser.datasources;
 
 import java.net.URL;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
@@ -42,31 +41,9 @@ public class SparqlQueryResultDataSourceDeclarationHandler implements DataSource
 	public DataSource handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
 		DirectiveHandler.validateNumberOfArguments(arguments, 3);
-
-		DirectiveArgument endpointArgument = arguments.get(0);
-		URL endpoint;
-		try {
-			endpoint = endpointArgument.fromIri().get();
-		} catch (NoSuchElementException e) {
-			throw new ParsingException(
-					"SPARQL endpoint \"" + endpointArgument + "\" is not a valid IRI: " + e.getMessage(), e);
-		}
-
-		DirectiveArgument variablesArgument = arguments.get(1);
-		String variables;
-		try {
-			variables = variablesArgument.fromString().get();
-		} catch (NoSuchElementException e) {
-			throw new ParsingException("Variables list \"" + variablesArgument + "\" is not a string.", e);
-		}
-
-		DirectiveArgument queryArgument = arguments.get(2);
-		String query;
-		try {
-			query = queryArgument.fromString().get();
-		} catch (NoSuchElementException e) {
-			throw new ParsingException("Query fragment \"" + queryArgument + "\" is not a string.", e);
-		}
+		URL endpoint = DirectiveHandler.validateIriArgument(arguments.get(0), "SPARQL endpoint");
+		String variables = DirectiveHandler.validateStringArgument(arguments.get(1), "variables list");
+		String query = DirectiveHandler.validateStringArgument(arguments.get(2), "query fragment");
 
 		return new SparqlQueryResultDataSource(endpoint, variables, query);
 	}
