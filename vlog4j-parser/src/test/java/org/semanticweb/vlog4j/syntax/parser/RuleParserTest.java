@@ -24,14 +24,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -452,56 +451,34 @@ public class RuleParserTest {
 	}
 
 	@Test
-	public void testGetFacts() throws ParsingException, IOException {
+	public void testWriteInferences() throws ParsingException, IOException {
 		KnowledgeBase kb = new KnowledgeBase();
-		final InMemoryDataSource locations = new InMemoryDataSource(2, 3);
-		locations.addTuple("germany", "europe");
-		locations.addTuple("saxony", "germany");
-		locations.addTuple("dresden", "saxony");
+		final InMemoryDataSource locations = new InMemoryDataSource(2, 1);
+		locations.addTuple("dresden", "germany");
 		RuleParser.parseInto(kb, fact.toString() + ".");
-		final String sharedFacts = "locatedIn(Egypt,Africa). \n" //
+		final String rules = "locatedIn(Egypt,Africa). \n" //
 				+ "address(TSH, \"Pragerstraße 13\", \"01069\", dresden). \n" //
 				+ "city(dresden). \n" //
 				+ "country(germany). \n" //
 				+ "university(tudresden, germany). \n" //
-				+ "streetAddress(tudresden, \"Mommsenstraße 9\", \"01069\", \"Dresden\") . \n" //
-				+ "zipLocation(\"01069\", dresden) . \n";
-		final String rules = sharedFacts + "locatedIn(?X,?Y) :- location(?X,?Y) . \n" //
-				+ "locatedIn(?X,?Z) :- locatedIn(?X,?Y), locatedIn(?Y,?Z) . \n" //
-				+ "address(?Uni, ?Street, ?ZIP, ?City) :- streetAddress(?Uni, ?Street, ?ZIP, ?CityName), zipLocation(?ZIP, ?City) . \n"
+				+ "locatedIn(?X,?Y) :- location(?X,?Y) . \n" //
 				+ "address(?Uni, !Street, !ZIP, !City), locatedIn(!City, ?Country) :- university(?Uni, ?Country) . \n";
 		RuleParser.parseInto(kb, rules);
 		kb.addStatement(new DataSourceDeclarationImpl(Expressions.makePredicate("location", 2), locations));
-		final String facts = sharedFacts + "location(dresden,saxony). \n" //
-				+ "location(germany,europe). \n" //
-				+ "location(saxony,germany). \n" //
-				+ "locatedIn(germany, europe) . \n" //
-				+ "locatedIn(dresden, saxony) . \n" //
-				+ "locatedIn(saxony, germany) . \n" //
-				+ "locatedIn(dresden, germany) . \n" //
-				+ "locatedIn(dresden, europe) . \n" //
-				+ "locatedIn(saxony, europe) . \n" //
-				+ "address(tudresden, \"Mommsenstraße 9\", \"01069\", dresden) . \n"
-				+ "<http://example.org/s>(<http://example.org/c>) . \n";
-		KnowledgeBase kb2 = new KnowledgeBase();
-		KnowledgeBase kb3 = new KnowledgeBase();
-		RuleParser.parseInto(kb2, facts);
+		List<String> inferences = new ArrayList<String>();
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			File file = new File("test.txt");
-			OutputStream stream = new FileOutputStream(file);
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			reasoner.writeInferences(stream);
 			stream.flush();
-			BufferedReader input = new BufferedReader(new FileReader(file));
-			String factString = "";
-			while ((factString = input.readLine()) != null) {
-				if (!factString.contains("_"))
-					RuleParser.parseInto(kb3, factString);
-			}
-			input.close();
-			assertEquals(new HashSet<Fact>(kb2.getFacts()), new HashSet<Fact>(kb3.getFacts()));
-			file.delete();
+			try (BufferedReader input = new BufferedReader(new StringReader(stream.toString()))) {
+				String factString = "";
+				while ((factString = input.readLine()) != null) {
+					inferences.add(factString);
+				}
 
+			}
+			assertEquals(10, inferences.size());
 		}
 
 	}
