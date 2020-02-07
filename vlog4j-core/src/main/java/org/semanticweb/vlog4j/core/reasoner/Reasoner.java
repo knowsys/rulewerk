@@ -92,14 +92,14 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * 
 	 * @param an OutputStream for the facts to be written to.
 	 */
-	void writeFacts(OutputStream stream) throws IOException;
+	void writeInferences(OutputStream stream) throws IOException;
 
 	/**
 	 * Exports all the facts of the knowledge base to a desired file.
 	 * 
 	 * @param a String of the file path for the facts to be written to.
 	 */
-	void writeFacts(String filePath) throws IOException;
+	void writeInferences(String filePath) throws IOException;
 
 	/**
 	 * Sets the algorithm that will be used for reasoning over the knowledge base.

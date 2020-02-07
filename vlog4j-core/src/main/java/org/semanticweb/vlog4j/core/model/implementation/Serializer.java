@@ -390,11 +390,21 @@ public final class Serializer {
 		return LESS_THAN + string + MORE_THAN;
 	}
 
-	public static String getFactOutput(Predicate predicate, List<Term> terms) {
-		return getIRIString(predicate.getName())
-				+ terms.toString().replace(terms.toString().substring(0, 1), OPENING_PARENTHESIS).replace(
-						terms.toString().substring(terms.toString().length() - 1, terms.toString().length()),
-						CLOSING_PARENTHESIS + STATEMENT_SEPARATOR + "\n");
+	public static String getFactString(Predicate predicate, List<Term> terms) {
+		StringBuilder stringBuilder = new StringBuilder("");
+		stringBuilder.append(getIRIString(predicate.getName())).append(OPENING_PARENTHESIS);
+		boolean first = true;
+		for (Term term : terms) {
+			if (first) {
+				first = false;
+			} else {
+				stringBuilder.append(COMMA);
+			}
+			final String string = term.getSyntacticRepresentation();
+			stringBuilder.append(string);
+		}
+		stringBuilder.append(CLOSING_PARENTHESIS + STATEMENT_SEPARATOR + "\n");
+		return stringBuilder.toString();
 	}
 
 }

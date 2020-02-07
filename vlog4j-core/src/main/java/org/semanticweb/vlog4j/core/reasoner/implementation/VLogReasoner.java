@@ -814,7 +814,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void writeFacts(OutputStream stream) throws IOException {
+	public void writeInferences(OutputStream stream) throws IOException {
 		Set<Predicate> toBeQueriedHeadPredicates = new HashSet<Predicate>();
 		for (Rule rule : this.knowledgeBase.getRules()) {
 			for (Literal literal : rule.getHead()) {
@@ -825,8 +825,7 @@ public class VLogReasoner implements Reasoner {
 			toBeQueriedHeadPredicates.add(dataSourceDeclaration.getPredicate());
 		}
 		for (Fact fact : this.knowledgeBase.getFacts()) {
-			if (!toBeQueriedHeadPredicates.contains(fact.getPredicate()))
-				stream.write((fact.toString() + "\n").getBytes());
+			toBeQueriedHeadPredicates.add(fact.getPredicate());
 		}
 
 		for (Predicate predicate : toBeQueriedHeadPredicates) {
@@ -838,9 +837,9 @@ public class VLogReasoner implements Reasoner {
 					.answerQuery(Expressions.makePositiveLiteral(predicate, tobeGroundedVariables), true)) {
 				answers.forEachRemaining(queryAnswer -> {
 					try {
-						stream.write(Serializer.getFactOutput(predicate, queryAnswer.getTerms()).getBytes());
+						stream.write(Serializer.getFactString(predicate, queryAnswer.getTerms()).getBytes());
 					} catch (IOException e) {
-						throw new RuntimeException();
+						throw new RuntimeException(e);
 					}
 				});
 
@@ -850,9 +849,9 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void writeFacts(String filePath) throws IOException {
+	public void writeInferences(String filePath) throws IOException {
 		try (OutputStream stream = new FileOutputStream(filePath)) {
-			writeFacts(stream);
+			writeInferences(stream);
 		}
 	}
 }

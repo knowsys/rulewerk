@@ -490,7 +490,7 @@ public class RuleParserTest {
 			reasoner.reason();
 			File file = new File("test.txt");
 			OutputStream stream = new FileOutputStream(file);
-			reasoner.writeFacts(stream);
+			reasoner.writeInferences(stream);
 			stream.flush();
 			BufferedReader input = new BufferedReader(new FileReader(file));
 			String factString = "";
