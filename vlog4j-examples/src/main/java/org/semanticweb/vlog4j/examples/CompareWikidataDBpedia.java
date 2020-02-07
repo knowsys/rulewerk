@@ -73,7 +73,7 @@ public class CompareWikidataDBpedia {
 				+ "@prefix wdqs: <https://query.wikidata.org/> ." //
 				+ "@prefix dbp: <https://dbpedia.org/> ." //
 				+ "@source dbpResult[2] : sparql(dbp:sparql, \"result,enwikipage\", '''" + dbpediaSparql + "''') ." //
-				+ "@source wdResult[2]) : sparql(wdqs:sparql, \"result,enwikipage\", '''" + wikidataSparql + "''') ." //
+				+ "@source wdResult[2] : sparql(wdqs:sparql, \"result,enwikipage\", '''" + wikidataSparql + "''') ." //
 				+ "% Rules:\n" //
 				+ "inWd(?Wikipage) :- wdResult(?WdId,?Wikipage)." //
 				+ "inDbp(?Wikipage) :- dbpResult(?DbpId,?Wikipage)." //
