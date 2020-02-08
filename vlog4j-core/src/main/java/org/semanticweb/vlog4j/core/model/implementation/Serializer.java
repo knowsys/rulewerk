@@ -132,19 +132,7 @@ public final class Serializer {
 		if (literal.isNegated()) {
 			stringBuilder.append(NEGATIVE_IDENTIFIER);
 		}
-		stringBuilder.append(getIRIString(literal.getPredicate().getName())).append(OPENING_PARENTHESIS);
-		boolean first = true;
-		for (final Term term : literal.getArguments()) {
-			if (first) {
-				first = false;
-			} else {
-				stringBuilder.append(COMMA);
-			}
-			final String string = term.getSyntacticRepresentation();
-			stringBuilder.append(string);
-		}
-		stringBuilder.append(CLOSING_PARENTHESIS);
-		return stringBuilder.toString();
+		return getTermsString(literal.getArguments(), stringBuilder, literal.getPredicate());
 	}
 
 	/**
@@ -392,6 +380,11 @@ public final class Serializer {
 
 	public static String getFactString(Predicate predicate, List<Term> terms) {
 		StringBuilder stringBuilder = new StringBuilder("");
+		return getTermsString(terms, stringBuilder, predicate) + STATEMENT_SEPARATOR + "\n";
+
+	}
+
+	public static String getTermsString(List<Term> terms, StringBuilder stringBuilder, Predicate predicate) {
 		stringBuilder.append(getIRIString(predicate.getName())).append(OPENING_PARENTHESIS);
 		boolean first = true;
 		for (Term term : terms) {
@@ -403,8 +396,9 @@ public final class Serializer {
 			final String string = term.getSyntacticRepresentation();
 			stringBuilder.append(string);
 		}
-		stringBuilder.append(CLOSING_PARENTHESIS + STATEMENT_SEPARATOR + "\n");
+		stringBuilder.append(CLOSING_PARENTHESIS);
 		return stringBuilder.toString();
+
 	}
 
 }
