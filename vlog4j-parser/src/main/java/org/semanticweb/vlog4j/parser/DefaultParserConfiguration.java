@@ -25,6 +25,7 @@ import org.semanticweb.vlog4j.parser.datasources.CsvFileDataSourceDeclarationHan
 import org.semanticweb.vlog4j.parser.datasources.RdfFileDataSourceDeclarationHandler;
 import org.semanticweb.vlog4j.parser.datasources.SparqlQueryResultDataSourceDeclarationHandler;
 import org.semanticweb.vlog4j.parser.directives.ImportFileDirectiveHandler;
+import org.semanticweb.vlog4j.parser.directives.ImportFileRelativeDirectiveHandler;
 
 /**
  * Default parser configuration. Registers default data sources.
@@ -35,7 +36,7 @@ public class DefaultParserConfiguration extends ParserConfiguration {
 	public DefaultParserConfiguration() {
 		super();
 		registerDefaultDataSources();
-		registerDirective("import", new ImportFileDirectiveHandler());
+		registerDefaultDirectives();
 	}
 
 	/**
@@ -46,5 +47,10 @@ public class DefaultParserConfiguration extends ParserConfiguration {
 		registerDataSource(Serializer.RDF_FILE_DATA_SOURCE, new RdfFileDataSourceDeclarationHandler());
 		registerDataSource(Serializer.SPARQL_QUERY_RESULT_DATA_SOURCE,
 				new SparqlQueryResultDataSourceDeclarationHandler());
+	}
+
+	private void registerDefaultDirectives() {
+		registerDirective("import", new ImportFileDirectiveHandler());
+		registerDirective("import-relative", new ImportFileRelativeDirectiveHandler());
 	}
 }

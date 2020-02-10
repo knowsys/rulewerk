@@ -62,6 +62,7 @@ public class RuleParserTest {
 	private final PositiveLiteral atom4 = Expressions.makePositiveLiteral("http://example.org/r", x, d);
 	private final PositiveLiteral fact1 = Expressions.makePositiveLiteral("http://example.org/s", c);
 	private final PositiveLiteral fact2 = Expressions.makePositiveLiteral("p", abc);
+	private final PositiveLiteral fact3 = Expressions.makePositiveLiteral("http://example.org/p", abc);
 	private final Conjunction<Literal> body1 = Expressions.makeConjunction(atom1, atom2);
 	private final Conjunction<Literal> body2 = Expressions.makeConjunction(negAtom1, atom2);
 	private final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(atom3, atom4);
@@ -448,5 +449,21 @@ public class RuleParserTest {
 		List<PositiveLiteral> expected = Arrays.asList(fact1, fact2);
 		List<Fact> result = knowledgeBase.getFacts();
 		assertEquals(expected, result);
+	}
+
+	@Test
+	public void parse_relativeImportStatement_suceeds() throws ParsingException {
+		String input = "@base <http://example.org/> . @import-relative \"src/test/resources/facts.rls\" .";
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		List<PositiveLiteral> expected = Arrays.asList(fact1, fact3);
+		List<Fact> result = knowledgeBase.getFacts();
+		assertEquals(expected, result);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseInto_duplicateImportStatements_throws() throws ParsingException {
+		String input = "@import \"src/test/resources/facts.rls\" . ";
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		RuleParser.parseInto(knowledgeBase, input);
 	}
 }

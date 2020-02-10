@@ -310,11 +310,11 @@ public class JavaCCParserBase {
 		return parserConfiguration;
 	}
 
-	void setPrefixDeclarations(PrefixDeclarations prefixDeclarations) {
+	public void setPrefixDeclarations(PrefixDeclarations prefixDeclarations) {
 		this.prefixDeclarations = prefixDeclarations;
 	}
 
-	PrefixDeclarations getPrefixDeclarations() {
+	public PrefixDeclarations getPrefixDeclarations() {
 		return prefixDeclarations;
 	}
 

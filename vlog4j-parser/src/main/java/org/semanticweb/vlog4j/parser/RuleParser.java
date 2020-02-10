@@ -25,12 +25,12 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
-import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Entity;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -54,16 +54,44 @@ public class RuleParser {
 	private static Logger LOGGER = LoggerFactory.getLogger(RuleParser.class);
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final String encoding,
-			final ParserConfiguration parserConfiguration) throws ParsingException {
+			final ParserConfiguration parserConfiguration, final String baseIri) throws ParsingException {
 		final JavaCCParser parser = new JavaCCParser(stream, encoding);
+
+		if (baseIri != null) {
+			PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
+
+			try {
+				prefixDeclarations.setBase(baseIri);
+			} catch (PrefixDeclarationException e) {
+				throw new ParsingException("Invalid base IRI \"" + baseIri + "\"", e);
+			}
+			parser.setPrefixDeclarations(prefixDeclarations);
+		}
+
 		parser.setKnowledgeBase(knowledgeBase);
 		parser.setParserConfiguration(parserConfiguration);
 		doParse(parser);
 	}
 
+	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final String encoding,
+			final ParserConfiguration parserConfiguration) throws ParsingException {
+		parseInto(knowledgeBase, stream, encoding, parserConfiguration, null);
+	}
+
+	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream,
+			final ParserConfiguration parserConfiguration, final String baseIri) throws ParsingException {
+		parseInto(knowledgeBase, stream, DEFAULT_STRING_ENCODING, parserConfiguration, baseIri);
+	}
+
 	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream,
 			final ParserConfiguration parserConfiguration) throws ParsingException {
 		parseInto(knowledgeBase, stream, DEFAULT_STRING_ENCODING, parserConfiguration);
+	}
+
+	public static void parseInto(final KnowledgeBase knowledgeBase, final String input,
+			final ParserConfiguration parserConfiguration, final String baseIri) throws ParsingException {
+		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+		parseInto(knowledgeBase, inputStream, DEFAULT_STRING_ENCODING, parserConfiguration, baseIri);
 	}
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final String input,
@@ -217,8 +245,8 @@ public class RuleParser {
 		return parseTerm(input, (ParserConfiguration) null);
 	}
 
-	public static DataSourceDeclaration parseDataSourceDeclaration(final String input, ParserConfiguration parserConfiguration)
-			throws ParsingException {
+	public static DataSourceDeclaration parseDataSourceDeclaration(final String input,
+			ParserConfiguration parserConfiguration) throws ParsingException {
 		return parseSyntaxFragment(input, RuleParser::parseAndExtractDatasourceDeclaration, "data source declaration",
 				parserConfiguration);
 	}
