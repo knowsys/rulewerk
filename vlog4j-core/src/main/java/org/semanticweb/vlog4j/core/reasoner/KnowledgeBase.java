@@ -25,6 +25,7 @@ import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
+import org.semanticweb.vlog4j.core.model.implementation.MergeablePrefixDeclarations;
 
 /*-
  * #%L
@@ -168,13 +169,12 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	private final LinkedHashSet<Statement> statements = new LinkedHashSet<>();
 
-// TODO support prefixes
-//	/**
-//	 * Known prefixes that can be used to pretty-print the contents of the knowledge
-//	 * base. We try to preserve user-provided prefixes found in files when loading
-//	 * data.
-//	 */
-//	PrefixDeclarations prefixDeclarations;
+	/**
+	 * Known prefixes that can be used to pretty-print the contents of the knowledge
+	 * base. We try to preserve user-provided prefixes found in files when loading
+	 * data.
+	 */
+	private MergeablePrefixDeclarations prefixDeclarations = new MergeablePrefixDeclarations();
 
 	/**
 	 * Index structure that organises all facts by their predicate.
@@ -446,17 +446,19 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Import rules from a file.
 	 *
-	 * @param file the file to import
-	 * @param parseFunction a function that transforms a {@link KnowledgeBase} using the {@link InputStream}.
+	 * @param file          the file to import
+	 * @param parseFunction a function that transforms a {@link KnowledgeBase} using
+	 *                      the {@link InputStream}.
 	 *
-	 * @throws IOException when reading {@code file} fails
-	 * @throws IllegalArgumentException when {@code file} is null or has already been imported
-	 * @throws RuntimeException	when parseFunction throws
+	 * @throws IOException              when reading {@code file} fails
+	 * @throws IllegalArgumentException when {@code file} is null or has already
+	 *                                  been imported
+	 * @throws RuntimeException         when parseFunction throws
 	 *
+	 * @return this
 	 */
-	public KnowledgeBase importRulesFile(File file,
-										 BiFunction<InputStream, KnowledgeBase, KnowledgeBase> parseFunction)
-		throws RuntimeException, IOException, IllegalArgumentException {
+	public KnowledgeBase importRulesFile(File file, BiFunction<InputStream, KnowledgeBase, KnowledgeBase> parseFunction)
+			throws RuntimeException, IOException, IllegalArgumentException {
 		Validate.notNull(file, "file must not be null");
 
 		boolean isNewFile = importedFilePaths.add(file.getCanonicalPath());
@@ -465,5 +467,19 @@ public class KnowledgeBase implements Iterable<Statement> {
 		try (InputStream stream = new FileInputStream(file)) {
 			return parseFunction.apply(stream, this);
 		}
+	}
+
+	/**
+	 * Merge {@link PrefixDeclarations} into this knowledge base.
+	 *
+	 */
+	public KnowledgeBase mergePrefixDeclarations(PrefixDeclarations prefixDeclarations) {
+		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
+
+		return this;
+	}
+
+	public PrefixDeclarations getPrefixDeclarations() {
+		return this.prefixDeclarations;
 	}
 }

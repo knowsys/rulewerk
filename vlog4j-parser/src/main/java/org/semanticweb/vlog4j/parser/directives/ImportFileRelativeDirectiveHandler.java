@@ -54,7 +54,7 @@ public class ImportFileRelativeDirectiveHandler implements DirectiveHandler<Know
 		try {
 			return knowledgeBase.importRulesFile(file, (InputStream stream, KnowledgeBase kb) -> {
 				try {
-						RuleParser.parseInto(kb, stream, parserConfiguration, prefixDeclarations.getBase());
+					RuleParser.parseInto(kb, stream, parserConfiguration, prefixDeclarations.getBase());
 				} catch (ParsingException e) {
 					throw new RuntimeException(e);
 				}

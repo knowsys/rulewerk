@@ -11,9 +11,9 @@ import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,10 +25,10 @@ import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 /**
  * Registry that manages prefixes and base namespace declarations as used for
  * parsing and serialising inputs.
- * 
+ *
  * @author Markus Kroetzsch
  */
-public interface PrefixDeclarations {
+public interface PrefixDeclarations extends Iterable<String> {
 
 	static final String XSD = "http://www.w3.org/2001/XMLSchema#";
 	static final String XSD_STRING = "http://www.w3.org/2001/XMLSchema#string";
@@ -42,7 +42,7 @@ public interface PrefixDeclarations {
 	/**
 	 * Returns the relevant base namespace. This should always return a result,
 	 * possibly using a local default value if no base was declared.
-	 * 
+	 *
 	 * @return string of an absolute base IRI
 	 */
 	String getBase();
@@ -50,7 +50,7 @@ public interface PrefixDeclarations {
 	/**
 	 * Sets the base namespace to the given value. This should only be done once,
 	 * and not after the base namespace was assumed to be an implicit default value.
-	 * 
+	 *
 	 * @param base the new base namespace
 	 * @throws PrefixDeclarationException if base was already defined
 	 */
@@ -63,5 +63,4 @@ public interface PrefixDeclarations {
 	String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException;
 
 	String absolutize(String prefixedName) throws PrefixDeclarationException;
-
 }

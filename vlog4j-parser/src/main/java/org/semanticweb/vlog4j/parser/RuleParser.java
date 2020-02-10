@@ -262,7 +262,9 @@ public class RuleParser {
 			LOGGER.error("Exception while parsing Knowledge Base!", e);
 			throw new ParsingException("Exception while parsing Knowledge Base.", e);
 		}
-		return parser.getKnowledgeBase();
+
+		KnowledgeBase knowledgeBase = parser.getKnowledgeBase();
+		return knowledgeBase.mergePrefixDeclarations(parser.getPrefixDeclarations());
 	}
 
 	protected static DataSourceDeclaration parseAndExtractDatasourceDeclaration(final JavaCCParser parser)

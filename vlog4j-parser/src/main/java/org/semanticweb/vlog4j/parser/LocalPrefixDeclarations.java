@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,7 @@ package org.semanticweb.vlog4j.parser;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
@@ -31,7 +32,7 @@ import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
  * Implementation of {@link PrefixDeclarations} that is used when parsing data
  * from a single source. In this case, attempts to re-declare prefixes or the
  * base IRI will lead to errors.
- * 
+ *
  * @author Markus Kroetzsch
  *
  */
@@ -90,6 +91,11 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 		} else {
 			return getBase() + iri;
 		}
+	}
+
+	@Override
+	public Iterator<String> iterator() {
+		return this.prefixes.keySet().iterator();
 	}
 
 }
