@@ -48,8 +48,10 @@ public class InMemoryDataSource implements DataSource {
 	 * efficiency, the actual number of facts should exactly correspond to this
 	 * capacity.
 	 * 
-	 * @param arity           the number of parameters in a fact from this source
-	 * @param initialCapacity the planned number of facts
+	 * @param arity
+	 *            the number of parameters in a fact from this source
+	 * @param initialCapacity
+	 *            the planned number of facts
 	 */
 	public InMemoryDataSource(final int arity, final int initialCapacity) {
 		this.capacity = initialCapacity;
@@ -61,7 +63,8 @@ public class InMemoryDataSource implements DataSource {
 	 * Adds a fact to this data source. The number of constant names must agree with
 	 * the arity of this data source.
 	 * 
-	 * @param constantNames the string names of the constants in this fact
+	 * @param constantNames
+	 *            the string names of the constants in this fact
 	 */
 	public void addTuple(final String... constantNames) {
 		if (constantNames.length != this.arity) {
@@ -97,23 +100,13 @@ public class InMemoryDataSource implements DataSource {
 	public String getSyntacticRepresentation() {
 		final StringBuilder sb = new StringBuilder(
 				"This InMemoryDataSource holds the following tuples of constant names, one tuple per line:");
-		for (int i = 0; i < this.getData().length; i++) {
+		for (int i = 0; i < getData().length; i++) {
 			for (int j = 0; j < this.data[i].length; j++) {
 				sb.append(this.data[i][j] + " ");
 			}
 			sb.append("\n");
 		}
 		return sb.toString();
-	}
-
-	/**
-	 * Returns null to indicate that this {@link DataSource} cannot be passed to
-	 * VLog in a configuration string.
-	 */
-
-	@Override
-	public String toConfigString() {
-		return null;
 	}
 
 }

@@ -33,4 +33,12 @@ public abstract class VLogDataSource implements DataSource {
 	public static final String PREDICATE_NAME_CONFIG_LINE = "EDB%1$d_predname=%2$s\n";
 	public static final String DATASOURCE_TYPE_CONFIG_PARAM = "EDB%1$d_type";
 
+	/**
+	 * Constructs a String representation of the data source.
+	 *
+	 * @return a String representation of the data source configuration for a
+	 *         certain predicate.
+	 */
+	public abstract String toConfigString();
+
 }
