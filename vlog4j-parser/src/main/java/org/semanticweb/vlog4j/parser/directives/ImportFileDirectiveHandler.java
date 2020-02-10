@@ -21,8 +21,8 @@ package org.semanticweb.vlog4j.parser.directives;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -39,25 +39,26 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  * @author Maximilian Marx
  */
 public class ImportFileDirectiveHandler implements DirectiveHandler<KnowledgeBase> {
+
 	@Override
 	public KnowledgeBase handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
 		DirectiveHandler.validateNumberOfArguments(arguments, 1);
 		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "rules file");
-		FileInputStream stream;
-
-		// @todo(mx): should we try to prevent cyclic imports?
-		try {
-			stream = new FileInputStream(file);
-		} catch (IOException e) {
-			throw new ParsingException("Failed to read rules from \"" + file.getName() + "\"", e);
-		}
-
 		KnowledgeBase knowledgeBase = getKnowledgeBase(subParserFactory);
 		ParserConfiguration parserConfiguration = getParserConfiguration(subParserFactory);
 
-		RuleParser.parseInto(knowledgeBase, stream, parserConfiguration);
-
-		return knowledgeBase;
+		try {
+			return knowledgeBase.importRulesFile(file, (InputStream stream, KnowledgeBase kb) -> {
+				try {
+					RuleParser.parseInto(kb, stream, parserConfiguration);
+				} catch (ParsingException e) {
+					throw new RuntimeException(e);
+				}
+				return kb;
+			});
+		} catch (RuntimeException | IOException e) {
+			throw new ParsingException("Failed while trying to import rules file \"" + file.getName() + "\"", e);
+		}
 	}
 }
