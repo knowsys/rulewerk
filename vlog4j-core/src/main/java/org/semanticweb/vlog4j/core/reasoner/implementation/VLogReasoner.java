@@ -22,6 +22,7 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
@@ -815,6 +816,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void writeInferences(OutputStream stream) throws IOException {
+		QueryResult queryAnswer;
 		Set<Predicate> toBeQueriedHeadPredicates = new HashSet<Predicate>();
 		for (Rule rule : this.knowledgeBase.getRules()) {
 			for (Literal literal : rule.getHead()) {
@@ -829,19 +831,20 @@ public class VLogReasoner implements Reasoner {
 		}
 
 		for (Predicate predicate : toBeQueriedHeadPredicates) {
-			List<Term> tobeGroundedVariables = new ArrayList<Term>();
+			List<Term> toBeGroundedVariables = new ArrayList<Term>();
 			for (int i = 0; i < predicate.getArity(); i++) {
-				tobeGroundedVariables.add(Expressions.makeUniversalVariable("X" + i));
+				toBeGroundedVariables.add(Expressions.makeUniversalVariable("X" + i));
 			}
 			try (final QueryResultIterator answers = this
-					.answerQuery(Expressions.makePositiveLiteral(predicate, tobeGroundedVariables), true)) {
-				answers.forEachRemaining(queryAnswer -> {
+					.answerQuery(Expressions.makePositiveLiteral(predicate, toBeGroundedVariables), true)) {
+				while (answers.hasNext()) {
+					queryAnswer = answers.next();
 					try {
 						stream.write(Serializer.getFactString(predicate, queryAnswer.getTerms()).getBytes());
 					} catch (IOException e) {
 						throw new RuntimeException(e);
 					}
-				});
+				}
 
 			}
 

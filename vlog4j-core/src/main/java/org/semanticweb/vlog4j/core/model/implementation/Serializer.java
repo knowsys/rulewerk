@@ -132,7 +132,8 @@ public final class Serializer {
 		if (literal.isNegated()) {
 			stringBuilder.append(NEGATIVE_IDENTIFIER);
 		}
-		return getTermsString(literal.getArguments(), stringBuilder, literal.getPredicate());
+		stringBuilder.append(getString(literal.getPredicate(), literal.getArguments()));
+		return stringBuilder.toString();
 	}
 
 	/**
@@ -379,12 +380,12 @@ public final class Serializer {
 	}
 
 	public static String getFactString(Predicate predicate, List<Term> terms) {
-		StringBuilder stringBuilder = new StringBuilder("");
-		return getTermsString(terms, stringBuilder, predicate) + STATEMENT_SEPARATOR + "\n";
+		return getString(predicate, terms) + STATEMENT_SEPARATOR + "\n";
 
 	}
 
-	public static String getTermsString(List<Term> terms, StringBuilder stringBuilder, Predicate predicate) {
+	public static String getString(Predicate predicate, List<Term> terms) {
+		StringBuilder stringBuilder = new StringBuilder("");
 		stringBuilder.append(getIRIString(predicate.getName())).append(OPENING_PARENTHESIS);
 		boolean first = true;
 		for (Term term : terms) {

@@ -68,7 +68,7 @@ public class RuleParserTest {
 	private final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
 	private final PositiveLiteral atom3 = Expressions.makePositiveLiteral("http://example.org/q", x, y);
 	private final PositiveLiteral atom4 = Expressions.makePositiveLiteral("http://example.org/r", x, d);
-	private final PositiveLiteral fact = Expressions.makePositiveLiteral("http://example.org/s", c);
+	private final Fact fact = Expressions.makeFact("http://example.org/s", c);
 	private final PositiveLiteral fact2 = Expressions.makePositiveLiteral("p", abc);
 	private final Conjunction<Literal> body1 = Expressions.makeConjunction(atom1, atom2);
 	private final Conjunction<Literal> body2 = Expressions.makeConjunction(negAtom1, atom2);
@@ -454,7 +454,7 @@ public class RuleParserTest {
 		KnowledgeBase kb = new KnowledgeBase();
 		final InMemoryDataSource locations = new InMemoryDataSource(2, 1);
 		locations.addTuple("dresden", "germany");
-		RuleParser.parseInto(kb, fact.toString() + ".");
+		kb.addStatement(fact);
 		final String rules = "locatedIn(Egypt,Africa). \n" //
 				+ "address(TSH, \"Pragerstraße 13\", \"01069\", dresden). \n" //
 				+ "city(dresden). \n" //
