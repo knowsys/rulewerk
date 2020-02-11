@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.syntax.parser;
+package org.semanticweb.vlog4j.parser;
 
 /*-
  * #%L
