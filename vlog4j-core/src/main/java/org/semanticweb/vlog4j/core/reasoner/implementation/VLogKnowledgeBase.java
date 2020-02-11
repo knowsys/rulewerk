@@ -150,7 +150,6 @@ public class VLogKnowledgeBase {
 	}
 
 	/**
-	 *
 	 * Local visitor implementation for processing statements upon loading. Internal
 	 * index structures are updated based on the statements that are detected.
 	 *
