@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.graal;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -93,8 +93,8 @@ public final class GraalToVLog4JModelConverter {
 	 * Atoms} into a {@link List} of {@link PositiveLiteral VLog4J
 	 * PositiveLiterals}.
 	 *
-	 * @param literals list of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
-	 *                 Atoms}.
+	 * @param atoms list of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
+	 *              Atoms}.
 	 * @return A {@link List} of {@link PositiveLiteral VLog4J PositiveLiterals}.
 	 */
 	public static List<PositiveLiteral> convertAtoms(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
@@ -109,8 +109,8 @@ public final class GraalToVLog4JModelConverter {
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
 	 * Atoms} into a {@link List} of {@link Fact VLog4j facts}.
 	 *
-	 * @param literals list of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
-	 *                 Atoms}.
+	 * @param atoms list of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
+	 *              Atoms}.
 	 * @return A {@link List} of {@link Fact VLog4j facts}.
 	 */
 	public static List<Fact> convertAtomsToFacts(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
@@ -254,7 +254,7 @@ public final class GraalToVLog4JModelConverter {
 	 *         vlog4j Variable with name <b>"a"</b>. Graal Constant with identifier
 	 *         <b>"c"</b> will be transformed to vlog4j Constant with name
 	 *         <b>"&lt;c&gt;"</b>.
-	 * 
+	 *
 	 * @throws GraalConvertException If the term is neither variable nor constant.
 	 */
 	private static Term convertTerm(final fr.lirmm.graphik.graal.api.core.Term term,
