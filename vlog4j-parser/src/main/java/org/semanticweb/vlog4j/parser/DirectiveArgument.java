@@ -20,7 +20,7 @@ package org.semanticweb.vlog4j.parser;
  * #L%
  */
 
-import java.net.URL;
+import java.net.URI;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -46,7 +46,7 @@ public abstract class DirectiveArgument {
 	 * @return the value returned by the appropriate handler function
 	 */
 	public abstract <V> V apply(Function<? super String, ? extends V> stringHandler,
-			Function<? super URL, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler);
+			Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler);
 
 	/**
 	 * Partially compare two arguments, without comparing the actual values.
@@ -85,7 +85,7 @@ public abstract class DirectiveArgument {
 		return new DirectiveArgument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URL, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler) {
+					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler) {
 				return stringHandler.apply(value);
 			}
 
@@ -115,11 +115,11 @@ public abstract class DirectiveArgument {
 	 *
 	 * @return An argument containing the given IRI value
 	 */
-	public static DirectiveArgument iri(URL value) {
+	public static DirectiveArgument iri(URI value) {
 		return new DirectiveArgument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URL, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler) {
+					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler) {
 				return iriHandler.apply(value);
 			}
 
@@ -153,7 +153,7 @@ public abstract class DirectiveArgument {
 		return new DirectiveArgument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URL, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler) {
+					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler) {
 				return termHandler.apply(value);
 			}
 
@@ -192,7 +192,7 @@ public abstract class DirectiveArgument {
 	 * @return An optional containing the contained IRI, or an empty Optional if the
 	 *         argument doesn't contain a IRI.
 	 */
-	public Optional<URL> fromIri() {
+	public Optional<URI> fromIri() {
 		return this.apply(value -> Optional.empty(), Optional::of, value -> Optional.empty());
 	}
 

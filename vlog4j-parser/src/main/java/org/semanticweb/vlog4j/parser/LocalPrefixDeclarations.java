@@ -21,6 +21,7 @@ package org.semanticweb.vlog4j.parser;
  */
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -85,7 +86,14 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 	}
 
 	public String absolutize(String iri) throws PrefixDeclarationException {
-		URI relative = URI.create(iri);
+		URI relative;
+
+		try {
+			relative = new URI(iri);
+		} catch (URISyntaxException e) {
+			throw new PrefixDeclarationException("Failed to parse IRI", e);
+		}
+
 		if (relative.isAbsolute()) {
 			return iri;
 		} else {

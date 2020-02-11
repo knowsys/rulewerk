@@ -461,4 +461,11 @@ public class RuleParserTest {
 		KnowledgeBase knowledgeBase = RuleParser.parse(input);
 		RuleParser.parseInto(knowledgeBase, input);
 	}
+
+	@Test(expected = ParsingException.class)
+	public void parseInto_duplicateRelativeImportStatements_throws() throws ParsingException {
+		String input = "@import \"src/test/resources/facts.rls\" . @import-relative \"src/test/resources/facts.rls\" .";
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		RuleParser.parseInto(knowledgeBase, input);
+	}
 }

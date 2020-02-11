@@ -22,7 +22,7 @@ package org.semanticweb.vlog4j.parser;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -128,7 +128,7 @@ public interface DirectiveHandler<T> {
 	 *
 	 * @return the contained IRI.
 	 */
-	public static URL validateIriArgument(final DirectiveArgument argument, final String description)
+	public static URI validateIriArgument(final DirectiveArgument argument, final String description)
 			throws ParsingException {
 		try {
 			return argument.fromIri().get();

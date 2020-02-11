@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.parser.datasources;
 
+import java.net.MalformedURLException;
+
 /*-
  * #%L
  * VLog4j Parser
@@ -20,6 +22,7 @@ package org.semanticweb.vlog4j.parser.datasources;
  * #L%
  */
 
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -41,10 +44,16 @@ public class SparqlQueryResultDataSourceDeclarationHandler implements DataSource
 	public DataSource handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
 		DirectiveHandler.validateNumberOfArguments(arguments, 3);
-		URL endpoint = DirectiveHandler.validateIriArgument(arguments.get(0), "SPARQL endpoint");
+		URI endpoint = DirectiveHandler.validateIriArgument(arguments.get(0), "SPARQL endpoint");
 		String variables = DirectiveHandler.validateStringArgument(arguments.get(1), "variables list");
 		String query = DirectiveHandler.validateStringArgument(arguments.get(2), "query fragment");
 
-		return new SparqlQueryResultDataSource(endpoint, variables, query);
+		URL endpointURL;
+		try {
+			endpointURL = endpoint.toURL();
+		} catch (MalformedURLException e) {
+			throw new ParsingException("URI \"" + endpoint + "\" is not a valid URL", e);
+		}
+		return new SparqlQueryResultDataSource(endpointURL, variables, query);
 	}
 }

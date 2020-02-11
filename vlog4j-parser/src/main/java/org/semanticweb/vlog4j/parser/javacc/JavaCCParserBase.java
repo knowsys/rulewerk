@@ -151,8 +151,8 @@ public class JavaCCParserBase {
 	/**
 	 * Creates a suitable {@link Constant} from the parsed data.
 	 *
-	 * @param string      the string data (unescaped)
-	 * @param datatype    the datatype, or null if not provided
+	 * @param string   the string data (unescaped)
+	 * @param datatype the datatype, or null if not provided
 	 * @return suitable constant
 	 */
 	Constant createConstant(String lexicalForm, String datatype) throws ParseException {
@@ -181,10 +181,10 @@ public class JavaCCParserBase {
 	}
 
 	static String unescapeStr(String s, int line, int column) throws ParseException {
-		return unescape(s, '\\', false, line, column);
+		return unescape(s, '\\', line, column);
 	}
 
-	static String unescape(String s, char escape, boolean pointCodeOnly, int line, int column) throws ParseException {
+	static String unescape(String s, char escape, int line, int column) throws ParseException {
 		int i = s.indexOf(escape);
 
 		if (i == -1)
@@ -264,7 +264,6 @@ public class JavaCCParserBase {
 					break;
 
 			default:
-
 				throw new ParseException("Unknown escape: \\" + ch2 + ", line: " + line + ", column: " + column);
 			}
 			sb.append(ch3);
@@ -273,7 +272,7 @@ public class JavaCCParserBase {
 	}
 
 	/**
-	 *	Remove the first and last {@code n} characters from string {@code s}
+	 * Remove the first and last {@code n} characters from string {@code s}
 	 *
 	 * @param s string to strip delimiters from
 	 * @param n number of characters to strip from both ends
@@ -352,7 +351,8 @@ public class JavaCCParserBase {
 		return parserConfiguration.parseConfigurableLiteral(delimiter, syntacticForm, subParserFactory);
 	}
 
-	KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments, SubParserFactory subParserFactory) throws ParseException {
+	KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments,
+			SubParserFactory subParserFactory) throws ParseException {
 		try {
 			return parserConfiguration.parseDirectiveStatement(name, arguments, subParserFactory);
 		} catch (ParsingException e) {

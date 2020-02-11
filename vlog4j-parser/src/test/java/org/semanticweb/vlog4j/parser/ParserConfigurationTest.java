@@ -20,47 +20,109 @@ package org.semanticweb.vlog4j.parser;
  * #L%
  */
 
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
 import org.semanticweb.vlog4j.parser.DatatypeConstantHandler;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
-import org.semanticweb.vlog4j.parser.ParsingException;
+import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
+import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.ConfigurableLiteralDelimiter;
 
 public class ParserConfigurationTest {
 	private static final String TYPE_NAME = "test-type";
 	private static final String SOURCE_NAME = "test-source";
+	private static final String DIRECTIVE_NAME = "test-directive";
 
-	private final DatatypeConstantHandler datatypeConstantHandler = mock(DatatypeConstantHandler.class);
-	private final DataSourceDeclarationHandler dataSourceDeclarationHandler = mock(DataSourceDeclarationHandler.class);
+	private ParserConfiguration parserConfiguration;
+
+	@Mock
+	private DatatypeConstantHandler datatypeConstantHandler;
+	@Mock
+	private DataSourceDeclarationHandler dataSourceDeclarationHandler;
+	@Mock
+	private SubParserFactory subParserFactory;
+	@Mock
+	private DirectiveHandler<KnowledgeBase> directiveHandler;
+
+	@Before
+	public void init() {
+		parserConfiguration = new ParserConfiguration();
+	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void registerDataSource_duplicateName_throws() {
-		ParserConfiguration parserConfiguration = new ParserConfiguration();
-
 		parserConfiguration.registerDataSource(SOURCE_NAME, dataSourceDeclarationHandler)
 				.registerDataSource(SOURCE_NAME, dataSourceDeclarationHandler);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void registerDatatype_duplicateName_throws() {
-		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerDatatype(TYPE_NAME, datatypeConstantHandler).registerDatatype(TYPE_NAME,
 				datatypeConstantHandler);
 	}
 
 	@Test
 	public void registerDataSource_datatypeName_succeeds() {
-		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerDatatype(TYPE_NAME, datatypeConstantHandler).registerDataSource(TYPE_NAME,
 				dataSourceDeclarationHandler);
 	}
 
 	@Test
 	public void registerDatatype_dataSourceName_succeeds() {
-		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerDataSource(SOURCE_NAME, dataSourceDeclarationHandler).registerDatatype(SOURCE_NAME,
 				datatypeConstantHandler);
 	}
+
+	@Test
+	public void isParsingOfNamedNullsAllowed_default_returnsFalse() {
+		assertFalse("named nulls are disallowed by default", parserConfiguration.isParsingOfNamedNullsAllowed());
+	}
+
+	@Test
+	public void isParsingOfNamedNullsAllowed_enabled_returnsTrue() {
+		parserConfiguration.allowNamedNulls();
+		assertTrue("named nulls are allowed after allowing them", parserConfiguration.isParsingOfNamedNullsAllowed());
+	}
+
+	@Test
+	public void isParsingOfNamedNullsAllowed_enabledAndDisabled_returnsFalse() {
+		parserConfiguration.allowNamedNulls();
+		assertTrue("named nulls are allowed after allowing them", parserConfiguration.isParsingOfNamedNullsAllowed());
+		parserConfiguration.disallowNamedNulls();
+		assertFalse("named nulls are disallowed after disallowing them",
+				parserConfiguration.isParsingOfNamedNullsAllowed());
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseConfigurableLiteral_unregisteredLiteral_throws() throws ParsingException {
+		parserConfiguration.parseConfigurableLiteral(ConfigurableLiteralDelimiter.BRACE, "test", subParserFactory);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerDirective_reservedName_throws() throws IllegalArgumentException {
+		parserConfiguration.registerDirective("base", directiveHandler);
+	}
+
+	@Test
+	public void registerDirective_unreserverdName_succeeds() throws IllegalArgumentException {
+		parserConfiguration.registerDirective(DIRECTIVE_NAME, directiveHandler);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerDirective_duplicateName_throws() throws IllegalArgumentException {
+		parserConfiguration.registerDirective(DIRECTIVE_NAME, directiveHandler);
+		parserConfiguration.registerDirective(DIRECTIVE_NAME, directiveHandler);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseDirectiveStatement_unregisteredDirective_throws() throws ParsingException {
+		parserConfiguration.parseDirectiveStatement(DIRECTIVE_NAME, new ArrayList<>(), subParserFactory);
+	}
+
 }
