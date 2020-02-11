@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
@@ -126,7 +125,7 @@ final public class MergeablePrefixDeclarations implements PrefixDeclarations {
 	}
 
 	@Override
-	public String absolutize(String iri) throws PrefixDeclarationException {
+	public String absolutize(String iri) {
 		URI relative = URI.create(iri);
 
 		if (relative.isAbsolute()) {
@@ -167,7 +166,7 @@ final public class MergeablePrefixDeclarations implements PrefixDeclarations {
 
 	private String getFreshPrefix() {
 		for (long idx = nextIndex; true; ++idx) {
-			String freshPrefix = GENERATED_PREFIX_PREFIX + idx;
+			String freshPrefix = GENERATED_PREFIX_PREFIX + idx + ":";
 
 			if (!prefixes.containsKey(freshPrefix)) {
 				this.nextIndex = idx + 1;
