@@ -19,9 +19,8 @@ package org.semanticweb.vlog4j.syntax.parser;
  * limitations under the License.
  * #L%
  */
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,10 +41,6 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.parser.DatatypeConstantHandler;
-import org.semanticweb.vlog4j.parser.ParserConfiguration;
-import org.semanticweb.vlog4j.parser.ParsingException;
-import org.semanticweb.vlog4j.parser.RuleParser;
 
 public class RuleParserTest {
 

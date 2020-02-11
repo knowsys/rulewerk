@@ -20,8 +20,8 @@ package org.semanticweb.vlog4j.parser;
  * #L%
  */
 
-import java.util.HashMap;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.Validate;
@@ -127,8 +127,7 @@ public class ParserConfiguration {
 	 * Parse a constant with optional data type.
 	 *
 	 * @param lexicalForm the (unescaped) lexical form of the constant.
-	 * @param languageTag the language tag, or null if not present.
-	 * @param the         datatype, or null if not present.
+	 * @param datatype    the datatype, or null if not present.
 	 *
 	 * @throws ParsingException when the lexical form is invalid for the given data
 	 *                          type.
@@ -203,8 +202,8 @@ public class ParserConfiguration {
 	/**
 	 * Register a custom literal handler.
 	 *
-	 * @argument delimiter the delimiter to handle.
-	 * @argument handler the handler for this literal type.
+	 * @param delimiter the delimiter to handle.
+	 * @param handler   the handler for this literal type.
 	 *
 	 * @throws IllegalArgumentException when the literal delimiter has already been
 	 *                                  registered.
@@ -223,8 +222,8 @@ public class ParserConfiguration {
 	/**
 	 * Register a directive.
 	 *
-	 * @argument name the name of the directive.
-	 * @argument handler the handler for this directive.
+	 * @param name    the name of the directive.
+	 * @param handler the handler for this directive.
 	 *
 	 * @throws IllegalArgumentException when the directive name has already been
 	 *                                  registered, or is a reserved name (i.e., one
@@ -246,16 +245,16 @@ public class ParserConfiguration {
 	/**
 	 * Parse a directive statement.
 	 *
-	 * @argument name the name of the directive.
-	 * @argument arguments the arguments given in the statement.
+	 * @param name      the name of the directive.
+	 * @param arguments the arguments given in the statement.
 	 *
 	 * @throws ParsingException when the directive is not known, or the arguments
 	 *                          are invalid for the directive.
 	 *
 	 * @return the (possibly updated) KnowledgeBase
 	 */
-	public KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments, SubParserFactory subParserFactory)
-			throws ParsingException {
+	public KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments,
+			SubParserFactory subParserFactory) throws ParsingException {
 		final DirectiveHandler<KnowledgeBase> handler = this.directives.get(name);
 
 		if (handler == null) {
@@ -267,9 +266,9 @@ public class ParserConfiguration {
 
 	/**
 	 * Set whether to allow parsing of
-	 * {@link semanticweb.vlog4j.core.model.api.NamedNull}.
+	 * {@link org.semanticweb.vlog4j.core.model.api.NamedNull}.
 	 *
-	 * @argument allow true allows parsing of named nulls.
+	 * @param allow true allows parsing of named nulls.
 	 *
 	 * @return this
 	 */

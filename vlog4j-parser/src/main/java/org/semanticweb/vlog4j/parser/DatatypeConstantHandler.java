@@ -34,8 +34,9 @@ public interface DatatypeConstantHandler {
 	 *
 	 * @param lexicalForm lexical representation of the constant.
 	 *
-	 * @throws ParsingException when the given representation is invalid for this datatype.
-
+	 * @throws ParsingException when the given representation is invalid for this
+	 *                          datatype.
+	 *
 	 * @return
 	 */
 	public DatatypeConstant createConstant(String lexicalForm) throws ParsingException;

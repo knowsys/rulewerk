@@ -19,7 +19,8 @@ package org.semanticweb.vlog4j.syntax.parser;
  * limitations under the License.
  * #L%
  */
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
@@ -36,8 +37,6 @@ import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.RuleImpl;
-import org.semanticweb.vlog4j.parser.ParsingException;
-import org.semanticweb.vlog4j.parser.RuleParser;
 
 public class EntityTest {
 

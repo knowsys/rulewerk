@@ -26,8 +26,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
-import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.DirectiveArgument;
 import org.semanticweb.vlog4j.parser.DirectiveHandler;

@@ -39,9 +39,9 @@ public abstract class DirectiveArgument {
 	/**
 	 * Apply a function to the contained value.
 	 *
-	 * @argument stringHandler the function to apply to a string argument
-	 * @argument iriHandler the function to apply to an IRI
-	 * @argument termHandler the function to apply to a Term
+	 * @param stringHandler the function to apply to a string argument
+	 * @param iriHandler    the function to apply to an IRI
+	 * @param termHandler   the function to apply to a Term
 	 *
 	 * @return the value returned by the appropriate handler function
 	 */
@@ -51,7 +51,7 @@ public abstract class DirectiveArgument {
 	/**
 	 * Partially compare two arguments, without comparing the actual values.
 	 *
-	 * @argument other the Object to compare to.
+	 * @param other the Object to compare to.
 	 *
 	 * @return An {@link Optional} containing true if the arguments are surely
 	 *         equal, containing false if the arguments are not equal, or an empty
@@ -77,7 +77,7 @@ public abstract class DirectiveArgument {
 	/**
 	 * Create an argument containing a String.
 	 *
-	 * @argument value the string value
+	 * @param value the string value
 	 *
 	 * @return An argument containing the given string value
 	 */
@@ -111,7 +111,7 @@ public abstract class DirectiveArgument {
 	/**
 	 * Create an argument containing a IRI.
 	 *
-	 * @argument value the IRI value
+	 * @param value the IRI value
 	 *
 	 * @return An argument containing the given IRI value
 	 */
@@ -145,7 +145,7 @@ public abstract class DirectiveArgument {
 	/**
 	 * Create an argument containing a Term.
 	 *
-	 * @argument value the Term value
+	 * @param value the Term value
 	 *
 	 * @return An argument containing the given Term value
 	 */

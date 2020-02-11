@@ -19,11 +19,9 @@ package org.semanticweb.vlog4j.syntax.parser;
  * limitations under the License.
  * #L%
  */
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -150,7 +148,8 @@ public class RuleParserDataSourceTest {
 				DirectiveArgument.string("world"));
 		RuleParser.parseDataSourceDeclaration(input, parserConfiguration);
 
-		verify(handler).handleDirective(eq(expectedArguments), ArgumentMatchers.<SubParserFactory>any());
+		verify(handler).handleDirective(ArgumentMatchers.eq(expectedArguments),
+				ArgumentMatchers.<SubParserFactory>any());
 	}
 
 	@Test

@@ -160,7 +160,7 @@ public interface DirectiveHandler<T> {
 	/**
 	 * Obtain a {@link KnowledgeBase} from a {@link SubParserFactory}.
 	 *
-	 * @argument subParserFactory the SubParserFactory.
+	 * @param subParserFactory the SubParserFactory.
 	 *
 	 * @return the knowledge base.
 	 */
@@ -173,7 +173,7 @@ public interface DirectiveHandler<T> {
 	/**
 	 * Obtain a {@link ParserConfiguration} from a {@link SubParserFactory}.
 	 *
-	 * @argument subParserFactory the SubParserFactory.
+	 * @param subParserFactory the SubParserFactory.
 	 *
 	 * @return the parser configuration.
 	 */
@@ -186,7 +186,7 @@ public interface DirectiveHandler<T> {
 	/**
 	 * Obtain {@link PrefixDeclarations} from a {@link SubParserFactory}.
 	 *
-	 * @argument subParserFactory the SubParserFactory.
+	 * @param subParserFactory the SubParserFactory.
 	 *
 	 * @return the prefix declarations.
 	 */

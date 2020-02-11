@@ -248,7 +248,7 @@ public class RuleParserConfigurableLiteralTest {
 		Literal result = RuleParser.parseLiteral(input, parserConfiguration);
 		List<Constant> constants = result.getConstants().collect(Collectors.toList());
 		List<Constant> expected = new ArrayList<>(
-				 Arrays.asList(makeReversedConstant("[test]"), makeReversedConstant("[tset], [tst]")));
+				Arrays.asList(makeReversedConstant("[test]"), makeReversedConstant("[tset], [tst]")));
 		assertEquals(expected, constants);
 	}
 
@@ -256,11 +256,12 @@ public class RuleParserConfigurableLiteralTest {
 	public void parseLiteral_mixedAndNestedLiterals_succeeds() throws ParsingException {
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerLiteral(ConfigurableLiteralDelimiter.PIPE, pipeHandler)
-			.registerLiteral(ConfigurableLiteralDelimiter.HASH, hashHandler)
-			.registerLiteral(ConfigurableLiteralDelimiter.PAREN, parenHandler)
-			.registerLiteral(ConfigurableLiteralDelimiter.BRACE, braceHandler)
-			.registerLiteral(ConfigurableLiteralDelimiter.BRACKET, bracketHandler);
-		Literal result = RuleParser.parseLiteral("p(|{}|, #test#, [|test, #test#, test|], ([], {}, [{[{}]}]))", parserConfiguration);
+				.registerLiteral(ConfigurableLiteralDelimiter.HASH, hashHandler)
+				.registerLiteral(ConfigurableLiteralDelimiter.PAREN, parenHandler)
+				.registerLiteral(ConfigurableLiteralDelimiter.BRACE, braceHandler)
+				.registerLiteral(ConfigurableLiteralDelimiter.BRACKET, bracketHandler);
+		Literal result = RuleParser.parseLiteral("p(|{}|, #test#, [|test, #test#, test|], ([], {}, [{[{}]}]))",
+				parserConfiguration);
 		List<Constant> constants = result.getConstants().collect(Collectors.toList());
 		List<Constant> expected = new ArrayList<>(
 				Arrays.asList(pipeConstant, hashConstant, bracketConstant, parenConstant));
@@ -272,8 +273,8 @@ public class RuleParserConfigurableLiteralTest {
 		return Expressions.makeAbstractConstant(builder.reverse().toString());
 	}
 
-	static ConfigurableLiteralHandler reversingHandler =
-			(String syntacticForm, SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm);
+	static ConfigurableLiteralHandler reversingHandler = (String syntacticForm,
+			SubParserFactory subParserFactory) -> makeReversedConstant(syntacticForm);
 
 	static ConfigurableLiteralHandler getMockLiteralHandler(ConfigurableLiteralDelimiter delimiter, Constant constant) {
 		ConfigurableLiteralHandler handler = mock(ConfigurableLiteralHandler.class);
