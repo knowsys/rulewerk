@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.reasoner;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,8 +29,10 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.MergeablePrefixDeclarations;
 
 public class KnowledgeBaseTest {
 
@@ -93,4 +95,22 @@ public class KnowledgeBaseTest {
 
 	}
 
+	@Test
+	public void getPrefixDeclarations_default_hasEmptyBase() {
+		assertEquals(this.kb.getPrefixDeclarations().getBase(), "");
+	}
+
+	@Test(expected = PrefixDeclarationException.class)
+	public void getPrefixDeclarations_defaultUndeclaredPrefix_throws() throws PrefixDeclarationException {
+		this.kb.getPrefixDeclarations().getPrefix("ex");
+	}
+
+	@Test
+	public void mergePrefixDeclarations_merge_succeeds() throws PrefixDeclarationException {
+		String iri = "https://example.org";
+		MergeablePrefixDeclarations prefixDeclarations = new MergeablePrefixDeclarations();
+		prefixDeclarations.setPrefix("ex", iri);
+		this.kb.mergePrefixDeclarations(prefixDeclarations);
+		assertEquals(this.kb.getPrefixDeclarations().getPrefix("ex"), iri);
+	}
 }
