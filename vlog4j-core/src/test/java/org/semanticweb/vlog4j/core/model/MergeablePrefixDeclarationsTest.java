@@ -89,6 +89,14 @@ public class MergeablePrefixDeclarationsTest {
 	}
 
 	@Test
+	public void resolvePrefixedName_unresolveAbsoluteIri_doesRoundTrip() throws PrefixDeclarationException {
+		prefixDeclarations.setPrefix("eg:", BASE);
+		String resolved = prefixDeclarations.resolvePrefixedName("eg:" + RELATIVE);
+		String unresolved = prefixDeclarations.unresolveAbsoluteIri(resolved);
+		assertEquals(prefixDeclarations.resolvePrefixedName(unresolved), resolved);
+	}
+
+	@Test
 	public void setPrefix_redeclarePrefix_succeeds() {
 		prefixDeclarations.setPrefix("eg:", BASE);
 		prefixDeclarations.setPrefix("eg:", MORE_SPECIFIC);
@@ -159,5 +167,13 @@ public class MergeablePrefixDeclarationsTest {
 	public void unresolveAbsoluteIri_exactPrefixMatch_identical() {
 		prefixDeclarations.setPrefix("eg:", BASE);
 		assertEquals(prefixDeclarations.unresolveAbsoluteIri(BASE), BASE);
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_resolvePrefixedName_doesRoundTrip() throws PrefixDeclarationException {
+		prefixDeclarations.setPrefix("eg:", BASE);
+		String unresolved = prefixDeclarations.unresolveAbsoluteIri(BASE + RELATIVE);
+		String resolved = prefixDeclarations.resolvePrefixedName(unresolved);
+		assertEquals(prefixDeclarations.unresolveAbsoluteIri(resolved), unresolved);
 	}
 }
