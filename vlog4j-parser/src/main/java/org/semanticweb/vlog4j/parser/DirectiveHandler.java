@@ -22,7 +22,9 @@ package org.semanticweb.vlog4j.parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -134,6 +136,27 @@ public interface DirectiveHandler<T> {
 			return argument.fromIri().get();
 		} catch (NoSuchElementException e) {
 			throw new ParsingException(description + "\"" + argument + "\" is not an IRI.", e);
+		}
+	}
+
+	/**
+	 * Validate that the provided argument is a {@link URL}.
+	 *
+	 * @param argument    the argument to validate
+	 * @param description a description of the argument, used in constructing the
+	 *                    error message.
+	 *
+	 * @throws ParsingException when the given argument is not a valid {@link URL}.
+	 *
+	 * @return the {@link URL} corresponding to the contained IRI.
+	 */
+	public static URL validateUrlArgument(final DirectiveArgument argument, final String description)
+			throws ParsingException {
+		URI iri = DirectiveHandler.validateIriArgument(argument, description);
+		try {
+			return iri.toURL();
+		} catch (MalformedURLException e) {
+			throw new ParsingException(description + "\"" + argument + "\" is not a valid URL.", e);
 		}
 	}
 

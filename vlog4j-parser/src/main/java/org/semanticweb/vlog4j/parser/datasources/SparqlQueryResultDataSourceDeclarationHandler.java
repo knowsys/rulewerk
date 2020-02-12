@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.parser.datasources;
 
-import java.net.MalformedURLException;
-
 /*-
  * #%L
  * VLog4j Parser
@@ -11,9 +9,9 @@ import java.net.MalformedURLException;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +20,6 @@ import java.net.MalformedURLException;
  * #L%
  */
 
-import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -44,16 +41,10 @@ public class SparqlQueryResultDataSourceDeclarationHandler implements DataSource
 	public DataSource handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
 		DirectiveHandler.validateNumberOfArguments(arguments, 3);
-		URI endpoint = DirectiveHandler.validateIriArgument(arguments.get(0), "SPARQL endpoint");
+		URL endpoint = DirectiveHandler.validateUrlArgument(arguments.get(0), "SPARQL endpoint");
 		String variables = DirectiveHandler.validateStringArgument(arguments.get(1), "variables list");
 		String query = DirectiveHandler.validateStringArgument(arguments.get(2), "query fragment");
 
-		URL endpointURL;
-		try {
-			endpointURL = endpoint.toURL();
-		} catch (MalformedURLException e) {
-			throw new ParsingException("URI \"" + endpoint + "\" is not a valid URL", e);
-		}
-		return new SparqlQueryResultDataSource(endpointURL, variables, query);
+		return new SparqlQueryResultDataSource(endpoint, variables, query);
 	}
 }

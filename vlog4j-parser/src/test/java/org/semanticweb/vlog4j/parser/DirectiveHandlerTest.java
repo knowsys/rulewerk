@@ -19,9 +19,9 @@ package org.semanticweb.vlog4j.parser;
  * limitations under the License.
  * #L%
  */
-
 import static org.junit.Assert.*;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 
 import org.junit.Test;
@@ -91,6 +91,16 @@ public class DirectiveHandlerTest {
 	public void validateFilenameArgument_invalidFilename_throws() throws ParsingException {
 		DirectiveHandler.validateFilenameArgument(DirectiveArgument.string(STRING + "-nonexistant"),
 				"filename argument");
+	}
+
+	@Test
+	public void validateUrlArgument_url_succeeds() throws ParsingException, MalformedURLException {
+		assertEquals(DirectiveHandler.validateUrlArgument(IRI_ARGUMENT, "urls argument"), IRI.toURL());
+	}
+
+	@Test(expected = ParsingException.class)
+	public void validateUrlArgument_invalidUrl_throws() throws ParsingException {
+		DirectiveHandler.validateUrlArgument(DirectiveArgument.iri(URI.create("example://test")), "url argument");
 	}
 
 }
