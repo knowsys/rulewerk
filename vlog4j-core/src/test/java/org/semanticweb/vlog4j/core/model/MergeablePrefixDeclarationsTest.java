@@ -23,16 +23,21 @@ package org.semanticweb.vlog4j.core.model;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.implementation.MergeablePrefixDeclarations;
 
 public class MergeablePrefixDeclarationsTest {
 	private MergeablePrefixDeclarations prefixDeclarations;
 
 	private static final String BASE = "https://example.org/";
+	private static final String UNRELATED = "https://example.com/";
 	private static final String MORE_SPECIFIC = BASE + "example/";
+	private static final String EVEN_MORE_SPECIFIC = MORE_SPECIFIC + "relative/";
 	private static final String RELATIVE = "relative/test";
 
 
@@ -100,5 +105,60 @@ public class MergeablePrefixDeclarationsTest {
 		assertEquals(prefixDeclarations.getPrefix(prefix + "1:"), MORE_SPECIFIC);
 	}
 
+	@Test
+	public void mergeablePrefixDeclarations_constructor_succeeds() throws PrefixDeclarationException {
+		this.prefixDeclarations.setPrefix("eg:", MORE_SPECIFIC);
+		MergeablePrefixDeclarations prefixDeclarations = new MergeablePrefixDeclarations(this.prefixDeclarations);
+		assertEquals(prefixDeclarations.getPrefix("eg:"), MORE_SPECIFIC);
+	}
 
+	@Test(expected = RuntimeException.class)
+	public void mergePrefixDeclarations_getPrefixUnexpectedlyThrows_throws() throws PrefixDeclarationException {
+		PrefixDeclarations prefixDeclarations = mock(PrefixDeclarations.class);
+
+		when(prefixDeclarations.iterator()).thenReturn(Arrays.asList("eg:", "ex:").iterator());
+		when(prefixDeclarations.getPrefix(anyString())).thenThrow(PrefixDeclarationException.class);
+
+		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_default_identical() {
+		assertEquals(prefixDeclarations.unresolveAbsoluteIri(BASE), BASE);
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_declaredPrefix_succeeds() {
+		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC), MORE_SPECIFIC);
+		prefixDeclarations.setPrefix("eg:", BASE);
+		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC), "eg:example/");
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_unrelatedPrefix_identical() {
+		prefixDeclarations.setPrefix("eg:", UNRELATED);
+		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC), MORE_SPECIFIC);
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_unrelatedAndRelatedPrefixes_succeeds() {
+		prefixDeclarations.setPrefix("ex:", UNRELATED);
+		prefixDeclarations.setPrefix("eg:", BASE);
+		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC), "eg:example/");
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_multipleMatchingPrefixes_longestMatchWins() {
+		prefixDeclarations.setPrefix("eg:", BASE);
+		prefixDeclarations.setPrefix("ex:", MORE_SPECIFIC);
+		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE), "ex:" + RELATIVE);
+		prefixDeclarations.setPrefix("er:", EVEN_MORE_SPECIFIC);
+		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE), "er:test");
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_exactPrefixMatch_identical() {
+		prefixDeclarations.setPrefix("eg:", BASE);
+		assertEquals(prefixDeclarations.unresolveAbsoluteIri(BASE), BASE);
+	}
 }

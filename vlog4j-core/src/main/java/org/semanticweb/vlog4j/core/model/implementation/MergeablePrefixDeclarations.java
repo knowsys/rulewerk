@@ -105,7 +105,8 @@ final public class MergeablePrefixDeclarations implements PrefixDeclarations {
 		Map<String, Integer> matches = new HashMap<>();
 
 		prefixes.forEach((prefixName, baseIri) -> {
-			if (iri.startsWith(baseIri)) {
+				// only select proper prefixes here, since `eg:` is not a valid prefixed name.
+			if (iri.startsWith(baseIri) && !iri.equals(baseIri)) {
 				matches.put(iri.replaceFirst(baseIri, prefixName), baseIri.length());
 			}
 		});
