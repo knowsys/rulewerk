@@ -187,8 +187,9 @@ public class JavaCCParserBase {
 	static String unescape(String s, char escape, int line, int column) throws ParseException {
 		int i = s.indexOf(escape);
 
-		if (i == -1)
+		if (i == -1) {
 			return s;
+		}
 
 		// Dump the initial part straight into the string buffer
 		StringBuilder sb = new StringBuilder(s.substring(0, i));
@@ -197,17 +198,14 @@ public class JavaCCParserBase {
 			char ch = s.charAt(i);
 			// Keep line and column numbers.
 			switch (ch) {
-				case '\n':
-				case '\r':
-					line++;
-
+			case '\n':
+			case '\r':
+				line++;
 				column = 1;
-					break;
+				break;
 
 			default:
-
 				column++;
-
 				break;
 			}
 
@@ -217,8 +215,9 @@ public class JavaCCParserBase {
 			}
 
 			// Escape
-			if (i >= s.length() - 1)
+			if (i >= s.length() - 1) {
 				throw new ParseException("Illegal escape at end of string, line: " + line + ", column: " + column);
+			}
 			char ch2 = s.charAt(i + 1);
 			column = column + 1;
 			i = i + 1;
@@ -226,43 +225,30 @@ public class JavaCCParserBase {
 			// Not just codepoints. Must be a legal escape.
 			char ch3 = 0;
 			switch (ch2) {
-				case 'n':
-
+			case 'n':
 				ch3 = '\n';
-					break;
-
+				break;
 			case 't':
-
 				ch3 = '\t';
-					break;
-
+				break;
 			case 'r':
-
 				ch3 = '\r';
-					break;
-
+				break;
 			case 'b':
-
 				ch3 = '\b';
-					break;
-
+				break;
 			case 'f':
-
 				ch3 = '\f';
-					break;
-
+				break;
 			case '\'':
-					ch3 = '\'';
-					break;
-
+				ch3 = '\'';
+				break;
 			case '\"':
-					ch3 = '\"';
-					break;
-
+				ch3 = '\"';
+				break;
 			case '\\':
-					ch3 = '\\';
-					break;
-
+				ch3 = '\\';
+				break;
 			default:
 				throw new ParseException("Unknown escape: \\" + ch2 + ", line: " + line + ", column: " + column);
 			}

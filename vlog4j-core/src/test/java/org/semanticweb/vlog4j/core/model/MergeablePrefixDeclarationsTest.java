@@ -40,7 +40,6 @@ public class MergeablePrefixDeclarationsTest {
 	private static final String EVEN_MORE_SPECIFIC = MORE_SPECIFIC + "relative/";
 	private static final String RELATIVE = "relative/test";
 
-
 	@Before
 	public void init() {
 		prefixDeclarations = new MergeablePrefixDeclarations();
