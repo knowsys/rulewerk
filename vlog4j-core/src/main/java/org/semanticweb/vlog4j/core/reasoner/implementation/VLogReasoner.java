@@ -57,9 +57,9 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,9 +70,9 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
 
 /**
  * Reasoner implementation using the VLog backend.
- * 
- * 
- * 
+ *
+ *
+ *
  * @author Markus Kroetzsch
  *
  */
@@ -159,18 +159,18 @@ public class VLogReasoner implements Reasoner {
 		validateNotClosed();
 
 		switch (this.reasonerState) {
-		case KB_NOT_LOADED:
-			loadKnowledgeBase();
-			break;
-		case KB_LOADED:
-		case MATERIALISED:
-			// do nothing, all KB is already loaded
-			break;
-		case KB_CHANGED:
-			resetReasoner();
-			loadKnowledgeBase();
-		default:
-			break;
+			case KB_NOT_LOADED:
+				loadKnowledgeBase();
+				break;
+			case KB_LOADED:
+			case MATERIALISED:
+				// do nothing, all KB is already loaded
+				break;
+			case KB_CHANGED:
+				resetReasoner();
+				loadKnowledgeBase();
+			default:
+				break;
 		}
 	}
 
@@ -328,23 +328,23 @@ public class VLogReasoner implements Reasoner {
 		validateNotClosed();
 
 		switch (this.reasonerState) {
-		case KB_NOT_LOADED:
-			load();
-			runChase();
-			break;
-		case KB_LOADED:
-			runChase();
-			break;
-		case KB_CHANGED:
-			resetReasoner();
-			load();
-			runChase();
-			break;
-		case MATERIALISED:
-			runChase();
-			break;
-		default:
-			break;
+			case KB_NOT_LOADED:
+				load();
+				runChase();
+				break;
+			case KB_LOADED:
+				runChase();
+				break;
+			case KB_CHANGED:
+				resetReasoner();
+				load();
+				runChase();
+				break;
+			case MATERIALISED:
+				runChase();
+				break;
+			default:
+				break;
 		}
 
 		return this.reasoningCompleted;
@@ -428,6 +428,7 @@ public class VLogReasoner implements Reasoner {
 	public Correctness exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws IOException {
 		validateBeforeQuerying(query);
+
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
 		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
 
@@ -685,7 +686,7 @@ public class VLogReasoner implements Reasoner {
 
 	/**
 	 * Check if reasoner is closed and throw an exception if it is.
-	 * 
+	 *
 	 * @throws ReasonerStateException
 	 */
 	void validateNotClosed() throws ReasonerStateException {
