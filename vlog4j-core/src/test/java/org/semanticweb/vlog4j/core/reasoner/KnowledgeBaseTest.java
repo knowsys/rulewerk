@@ -20,9 +20,7 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
@@ -92,25 +90,31 @@ public class KnowledgeBaseTest {
 		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact1.getPredicate()));
 		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact2.getPredicate()));
 		assertEquals(Sets.newSet(this.fact3), this.kb.getFactsByPredicate().get(this.fact3.getPredicate()));
-
 	}
 
 	@Test
-	public void getPrefixDeclarations_default_hasEmptyBase() {
-		assertEquals(this.kb.getPrefixDeclarations().getBase(), "");
+	public void getBase_default_hasEmptyBase() {
+		assertEquals(this.kb.getBase(), "");
 	}
 
 	@Test(expected = PrefixDeclarationException.class)
-	public void getPrefixDeclarations_defaultUndeclaredPrefix_throws() throws PrefixDeclarationException {
-		this.kb.getPrefixDeclarations().getPrefix("ex");
+	public void getPrefix_defaultUndeclaredPrefix_throws() throws PrefixDeclarationException {
+		this.kb.getPrefix("ex:");
+	}
+
+	@Test(expected = PrefixDeclarationException.class)
+	public void resolvePrefixedName_defaultUndeclaredPrefix_throws() throws PrefixDeclarationException {
+		this.kb.resolvePrefixedName("ex:test");
 	}
 
 	@Test
 	public void mergePrefixDeclarations_merge_succeeds() throws PrefixDeclarationException {
-		String iri = "https://example.org";
+		String iri = "https://example.org/";
 		MergeablePrefixDeclarations prefixDeclarations = new MergeablePrefixDeclarations();
-		prefixDeclarations.setPrefix("ex", iri);
+		prefixDeclarations.setPrefix("ex:", iri);
 		this.kb.mergePrefixDeclarations(prefixDeclarations);
-		assertEquals(this.kb.getPrefixDeclarations().getPrefix("ex"), iri);
+		assertEquals(this.kb.getPrefix("ex:"), iri);
+		assertEquals(this.kb.resolvePrefixedName("ex:test"), iri + "test");
+		assertEquals(this.kb.unresolveAbsoluteIri(iri + "test"), "ex:test");
 	}
 }

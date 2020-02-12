@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 import org.apache.commons.lang3.Validate;
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
@@ -472,6 +473,11 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Merge {@link PrefixDeclarations} into this knowledge base.
 	 *
+	 * @param prefixDeclarations the prefix declarations to merge. Conflicting
+	 *                           prefix names in {@code prefixDeclarations} will be
+	 *                           renamed.
+	 *
+	 * @return this
 	 */
 	public KnowledgeBase mergePrefixDeclarations(PrefixDeclarations prefixDeclarations) {
 		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
@@ -479,7 +485,52 @@ public class KnowledgeBase implements Iterable<Statement> {
 		return this;
 	}
 
-	public PrefixDeclarations getPrefixDeclarations() {
-		return this.prefixDeclarations;
+	/**
+	 * Return the base IRI.
+	 *
+	 * @return the base IRI, if declared, or {@code ""} otherwise.
+	 */
+	public String getBase() {
+		return this.prefixDeclarations.getBase();
+	}
+
+	/**
+	 * Resolve {@code prefixName} into the declared IRI.
+	 *
+	 * @param prefixName the prefix name to resolve, including the terminating
+	 *                   colon.
+	 *
+	 * @throws PrefixDeclarationException when the prefix has not been declared.
+	 *
+	 * @return the declared IRI for {@code prefixName}.
+	 */
+	public String getPrefix(String prefixName) throws PrefixDeclarationException {
+		return this.prefixDeclarations.getPrefix(prefixName);
+	}
+
+	/*
+	 * Resolve a prefixed name into an absolute IRI. Dual to unresolveAbsoluteIri.
+	 *
+	 * @param prefixedName the prefixed name to resolve.
+	 *
+	 * @throws PrefixDeclarationException when the prefix has not been declared.
+	 *
+	 * @return an absolute IRI corresponding to the prefixed name.
+	 */
+	public String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException {
+		return this.prefixDeclarations.resolvePrefixedName(prefixedName);
+	}
+
+	/**
+	 * Potentially abbreviate an absolute IRI using the declared prefixes. Dual to
+	 * resolvePrefixedName.
+	 *
+	 * @param iri the absolute IRI to abbreviate.
+	 *
+	 * @return either a prefixed name corresponding to {@code iri} under the
+	 *         declared prefixes, or {@code iri} if no suitable prefix is declared.
+	 */
+	public String unresolveAbsoluteIri(String iri) {
+		return this.prefixDeclarations.unresolveAbsoluteIri(iri);
 	}
 }
