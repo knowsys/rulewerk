@@ -22,7 +22,6 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
@@ -816,10 +815,11 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public Correctness writeInferences(OutputStream stream) throws IOException {
-		QueryResult queryAnswer;
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
+		}
 		Set<Predicate> toBeQueriedHeadPredicates = new HashSet<Predicate>();
-		TermQueryResultIterator stringQueryResultIterator;
-		QueryResultIterator answers;
 		for (Rule rule : this.knowledgeBase.getRules()) {
 			for (Literal literal : rule.getHead()) {
 				toBeQueriedHeadPredicates.add(literal.getPredicate());
@@ -840,12 +840,12 @@ public class VLogReasoner implements Reasoner {
 			final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter
 					.toVLogAtom(Expressions.makePositiveLiteral(predicate, toBeGroundedVariables));
 			try {
-				stringQueryResultIterator = this.vLog.query(vLogAtom, true, false);
-				answers = new VLogQueryResultIterator(stringQueryResultIterator, this.correctness);
+				final TermQueryResultIterator answers = this.vLog.query(vLogAtom, true, false);
 				while (answers.hasNext()) {
-					queryAnswer = answers.next();
+					final karmaresearch.vlog.Term[] vlogTerms = answers.next();
+					final List<Term> termList = VLogToModelConverter.toTermList(vlogTerms);
 					try {
-						stream.write(Serializer.getFactString(predicate, queryAnswer.getTerms()).getBytes());
+						stream.write(Serializer.getFactString(predicate, termList).getBytes());
 					} catch (IOException e) {
 						throw new RuntimeException(e);
 					}
@@ -855,17 +855,22 @@ public class VLogReasoner implements Reasoner {
 			} catch (final NonExistingPredicateException e1) {
 				LOGGER.warn("Query uses predicate " + predicate
 						+ " that does not occur in the knowledge base. Answer must be empty!");
+				throw new RuntimeException("Inconsistent knowledge base state.", e1);
 			}
 
 		}
+		logWarningOnCorrectness();
 		return this.correctness;
 
 	}
 
 	@Override
-	public void writeInferences(String filePath) throws IOException {
+	public Correctness writeInferences(String filePath) throws IOException {
 		try (OutputStream stream = new FileOutputStream(filePath)) {
 			writeInferences(stream);
 		}
+		logWarningOnCorrectness();
+		return this.correctness;
 	}
+
 }

@@ -88,22 +88,24 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	KnowledgeBase getKnowledgeBase();
 
 	/**
-	 * @return the correctness of the query answers, depending on the state of the
-	 *         reasoning (materialisation) and its {@link KnowledgeBase} Exports all
-	 *         the (explicit and implicit) facts of the knowledge base to an
-	 *         OutputStream.
+	 * Exports all the (explicit and implicit) facts of the knowledge base to an
+	 * OutputStream.
 	 * 
 	 * @param an OutputStream for the facts to be written to.
+	 * @return the correctness of the query answers, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 */
 	Correctness writeInferences(OutputStream stream) throws IOException;
 
 	/**
 	 * Exports all the (explicit and implicit) facts of the knowledge base to a
 	 * desired file.
-	 * 
+	 *
 	 * @param a String of the file path for the facts to be written to.
+	 * @return the correctness of the query answers, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 */
-	void writeInferences(String filePath) throws IOException;
+	Correctness writeInferences(String filePath) throws IOException;
 
 	/**
 	 * Sets the algorithm that will be used for reasoning over the knowledge base.
