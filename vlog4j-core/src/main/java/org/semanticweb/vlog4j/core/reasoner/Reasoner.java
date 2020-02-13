@@ -88,12 +88,14 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	KnowledgeBase getKnowledgeBase();
 
 	/**
-	 * Exports all the (explicit and implicit) facts of the knowledge base to an
-	 * OutputStream.
+	 * @return the correctness of the query answers, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase} Exports all
+	 *         the (explicit and implicit) facts of the knowledge base to an
+	 *         OutputStream.
 	 * 
 	 * @param an OutputStream for the facts to be written to.
 	 */
-	void writeInferences(OutputStream stream) throws IOException;
+	Correctness writeInferences(OutputStream stream) throws IOException;
 
 	/**
 	 * Exports all the (explicit and implicit) facts of the knowledge base to a

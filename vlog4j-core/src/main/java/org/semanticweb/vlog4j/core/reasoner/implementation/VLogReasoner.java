@@ -815,9 +815,11 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void writeInferences(OutputStream stream) throws IOException {
+	public Correctness writeInferences(OutputStream stream) throws IOException {
 		QueryResult queryAnswer;
 		Set<Predicate> toBeQueriedHeadPredicates = new HashSet<Predicate>();
+		TermQueryResultIterator stringQueryResultIterator;
+		QueryResultIterator answers;
 		for (Rule rule : this.knowledgeBase.getRules()) {
 			for (Literal literal : rule.getHead()) {
 				toBeQueriedHeadPredicates.add(literal.getPredicate());
@@ -835,8 +837,11 @@ public class VLogReasoner implements Reasoner {
 			for (int i = 0; i < predicate.getArity(); i++) {
 				toBeGroundedVariables.add(Expressions.makeUniversalVariable("X" + i));
 			}
-			try (final QueryResultIterator answers = this
-					.answerQuery(Expressions.makePositiveLiteral(predicate, toBeGroundedVariables), true)) {
+			final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter
+					.toVLogAtom(Expressions.makePositiveLiteral(predicate, toBeGroundedVariables));
+			try {
+				stringQueryResultIterator = this.vLog.query(vLogAtom, true, false);
+				answers = new VLogQueryResultIterator(stringQueryResultIterator, this.correctness);
 				while (answers.hasNext()) {
 					queryAnswer = answers.next();
 					try {
@@ -845,10 +850,16 @@ public class VLogReasoner implements Reasoner {
 						throw new RuntimeException(e);
 					}
 				}
-
+			} catch (final NotStartedException e) {
+				throw new RuntimeException("Inconsistent reasoner state.", e);
+			} catch (final NonExistingPredicateException e1) {
+				LOGGER.warn("Query uses predicate " + predicate
+						+ " that does not occur in the knowledge base. Answer must be empty!");
 			}
 
 		}
+		return this.correctness;
+
 	}
 
 	@Override
