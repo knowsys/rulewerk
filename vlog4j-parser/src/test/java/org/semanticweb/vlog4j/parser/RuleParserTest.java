@@ -447,7 +447,7 @@ public class RuleParserTest {
 	}
 
 	@Test
-	public void parse_relativeImportStatement_suceeds() throws ParsingException {
+	public void parse_relativeImportStatement_succeeds() throws ParsingException {
 		String input = "@base <http://example.org/> . @import-relative \"src/test/resources/facts.rls\" .";
 		KnowledgeBase knowledgeBase = RuleParser.parse(input);
 		List<PositiveLiteral> expected = Arrays.asList(fact1, fact3);
@@ -467,5 +467,13 @@ public class RuleParserTest {
 		String input = "@import \"src/test/resources/facts.rls\" . @import-relative \"src/test/resources/facts.rls\" .";
 		KnowledgeBase knowledgeBase = RuleParser.parse(input);
 		RuleParser.parseInto(knowledgeBase, input);
+	}
+
+	public void parseInto_relativeImportRedeclaringBase_succeeds() throws ParsingException {
+		String input = "@base <http://example.com/> . @import-relative \"src/test/resources/base.rls\" .";
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		List<PositiveLiteral> expected = Arrays.asList(fact1, fact2);
+		List<Fact> result = knowledgeBase.getFacts();
+		assertEquals(expected, result);
 	}
 }

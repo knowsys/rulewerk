@@ -21,7 +21,6 @@ package org.semanticweb.vlog4j.parser.directives;
  */
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -50,14 +49,10 @@ public class ImportFileDirectiveHandler implements DirectiveHandler<KnowledgeBas
 
 		try {
 			return knowledgeBase.importRulesFile(file, (InputStream stream, KnowledgeBase kb) -> {
-				try {
-					RuleParser.parseInto(kb, stream, parserConfiguration);
-				} catch (ParsingException e) {
-					throw new RuntimeException(e);
-				}
+				RuleParser.parseInto(kb, stream, parserConfiguration);
 				return kb;
 			});
-		} catch (RuntimeException | IOException e) {
+		} catch (Exception e) {
 			throw new ParsingException("Failed while trying to import rules file \"" + file.getName() + "\"", e);
 		}
 	}

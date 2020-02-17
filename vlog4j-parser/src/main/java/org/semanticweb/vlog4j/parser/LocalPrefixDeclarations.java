@@ -41,10 +41,19 @@ final public class LocalPrefixDeclarations implements PrefixDeclarations {
 
 	Map<String, String> prefixes = new HashMap<>();
 	String baseUri;
+	String fallbackUri;
+
+	public LocalPrefixDeclarations() {
+		this(""); // empty string encodes: "no base" (use relative IRIs)
+	}
+
+	public LocalPrefixDeclarations(String fallbackUri) {
+		this.fallbackUri = fallbackUri;
+	}
 
 	public String getBase() {
 		if (this.baseUri == null) {
-			this.baseUri = ""; // empty string encodes: "no base" (use relative IRIs)
+			this.baseUri = this.fallbackUri;
 		}
 		return baseUri.toString();
 	}

@@ -14,7 +14,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
@@ -445,6 +444,21 @@ public class KnowledgeBase implements Iterable<Statement> {
 	}
 
 	/**
+	 * Interface for a method that parses the contents of a stream into a
+	 * KnowledgeBase.
+	 *
+	 * This is essentially
+	 * {@link org.semanticweb.vlog4j.parser.RuleParser#parseInto}, but we need to
+	 * avoid a circular dependency here -- this is also why we throw
+	 * {@link Exception} instead of
+	 * {@link org.semanticweb.vlog4j.parser.ParsingException}.
+	 */
+	@FunctionalInterface
+	public interface AdditionalInputParser {
+		KnowledgeBase parseInto(InputStream stream, KnowledgeBase kb) throws IOException, Exception;
+	}
+
+	/**
 	 * Import rules from a file.
 	 *
 	 * @param file          the file to import
@@ -458,15 +472,15 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 *
 	 * @return this
 	 */
-	public KnowledgeBase importRulesFile(File file, BiFunction<InputStream, KnowledgeBase, KnowledgeBase> parseFunction)
-			throws RuntimeException, IOException, IllegalArgumentException {
+	public KnowledgeBase importRulesFile(File file, AdditionalInputParser parseFunction)
+			throws Exception, IOException, IllegalArgumentException {
 		Validate.notNull(file, "file must not be null");
 
 		boolean isNewFile = importedFilePaths.add(file.getCanonicalPath());
 		Validate.isTrue(isNewFile, "file \"" + file.getName() + "\" was already imported.");
 
 		try (InputStream stream = new FileInputStream(file)) {
-			return parseFunction.apply(stream, this);
+			return parseFunction.parseInto(stream, this);
 		}
 	}
 

@@ -58,13 +58,7 @@ public class RuleParser {
 		final JavaCCParser parser = new JavaCCParser(stream, encoding);
 
 		if (baseIri != null) {
-			PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations();
-
-			try {
-				prefixDeclarations.setBase(baseIri);
-			} catch (PrefixDeclarationException e) {
-				throw new ParsingException("Invalid base IRI \"" + baseIri + "\"", e);
-			}
+			PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations(baseIri);
 			parser.setPrefixDeclarations(prefixDeclarations);
 		}
 
