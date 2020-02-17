@@ -42,7 +42,7 @@ import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
-public class RuleParserTest {
+public class RuleParserTest implements ParserTestUtils {
 
 	private final Variable x = Expressions.makeUniversalVariable("X");
 	private final Variable y = Expressions.makeExistentialVariable("Y");
@@ -373,10 +373,14 @@ public class RuleParserTest {
 		RuleParser.parse(input);
 	}
 
-	@Test(expected = ParsingException.class)
+	@Test
 	public void testBlankNodeTerm() throws ParsingException {
 		String input = "<http://example.org/p>(_:blank) .";
-		RuleParser.parse(input);
+		KnowledgeBase result = RuleParser.parse(input);
+		List<Fact> facts = result.getFacts();
+
+		assertEquals(1, facts.size());
+		assertArgumentIsNamedNull(facts.get(0), 1);
 	}
 
 	@Test(expected = ParsingException.class)
@@ -453,6 +457,38 @@ public class RuleParserTest {
 		List<PositiveLiteral> expected = Arrays.asList(fact1, fact3);
 		List<Fact> result = knowledgeBase.getFacts();
 		assertEquals(expected, result);
+	}
+
+	@Test
+	public void parse_import_renamesNamedNulls() throws ParsingException {
+		String input = "p(_:blank) . @import \"src/test/resources/blank.rls\" .";
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		List<Fact> facts = knowledgeBase.getFacts();
+		assertEquals(2, facts.size());
+		Fact fact1 = facts.get(0);
+		Fact fact2 = facts.get(1);
+
+		assertNotEquals(fact1, fact2);
+		assertArgumentIsNamedNull(fact1, 1);
+		assertArgumentIsNamedNull(fact2, 1);
+	}
+
+	@Test
+	public void parse_reusedNamedNulls_identical() throws ParsingException {
+		String input = "p(_:blank) . q(_:blank) . p(_:other) .";
+
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		List<Fact> facts = knowledgeBase.getFacts();
+		assertEquals(3, facts.size());
+		Fact fact1 = facts.get(0);
+		Fact fact2 = facts.get(1);
+		Fact fact3 = facts.get(2);
+
+		assertEquals(fact1.getArguments().get(0), fact2.getArguments().get(0));
+		assertNotEquals(fact1.getArguments().get(0), fact3.getArguments().get(0));
+		assertArgumentIsNamedNull(fact1, 1);
+		assertArgumentIsNamedNull(fact2, 1);
+		assertArgumentIsNamedNull(fact3, 1);
 	}
 
 	@Test(expected = ParsingException.class)

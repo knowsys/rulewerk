@@ -41,6 +41,7 @@ public class SubParserFactory {
 	private final KnowledgeBase knowledgeBase;
 	private final ParserConfiguration parserConfiguration;
 	private final PrefixDeclarations prefixDeclarations;
+	private final byte[] namedNullNamespace;
 
 	/**
 	 * Construct a SubParserFactory.
@@ -51,6 +52,7 @@ public class SubParserFactory {
 		this.knowledgeBase = parser.getKnowledgeBase();
 		this.prefixDeclarations = parser.getPrefixDeclarations();
 		this.parserConfiguration = parser.getParserConfiguration();
+		this.namedNullNamespace = parser.getNamedNullNamespace();
 	}
 
 	/**
@@ -67,6 +69,7 @@ public class SubParserFactory {
 		subParser.setKnowledgeBase(this.knowledgeBase);
 		subParser.setPrefixDeclarations(this.prefixDeclarations);
 		subParser.setParserConfiguration(this.parserConfiguration);
+		subParser.setNamedNullNamespace(this.namedNullNamespace);
 
 		return subParser;
 	}

@@ -80,23 +80,24 @@ public class ParserConfigurationTest {
 	}
 
 	@Test
-	public void isParsingOfNamedNullsAllowed_default_returnsFalse() {
-		assertFalse("named nulls are disallowed by default", parserConfiguration.isParsingOfNamedNullsAllowed());
+	public void isParsingOfNamedNullsAllowed_default_returnsTrue() {
+		assertTrue("named nulls are allowed by default", parserConfiguration.isParsingOfNamedNullsAllowed());
 	}
 
 	@Test
-	public void isParsingOfNamedNullsAllowed_enabled_returnsTrue() {
-		parserConfiguration.allowNamedNulls();
-		assertTrue("named nulls are allowed after allowing them", parserConfiguration.isParsingOfNamedNullsAllowed());
-	}
-
-	@Test
-	public void isParsingOfNamedNullsAllowed_enabledAndDisabled_returnsFalse() {
-		parserConfiguration.allowNamedNulls();
-		assertTrue("named nulls are allowed after allowing them", parserConfiguration.isParsingOfNamedNullsAllowed());
+	public void isParsingOfNamedNullsAllowed_disabled_returnsFalse() {
 		parserConfiguration.disallowNamedNulls();
 		assertFalse("named nulls are disallowed after disallowing them",
 				parserConfiguration.isParsingOfNamedNullsAllowed());
+	}
+
+	@Test
+	public void isParsingOfNamedNullsAllowed_disabledAndEnabled_returnsTrue() {
+		parserConfiguration.disallowNamedNulls();
+		assertFalse("named nulls are disallowed after disallowing them",
+				parserConfiguration.isParsingOfNamedNullsAllowed());
+		parserConfiguration.allowNamedNulls();
+		assertTrue("named nulls are allowed after allowing them", parserConfiguration.isParsingOfNamedNullsAllowed());
 	}
 
 	@Test(expected = ParsingException.class)

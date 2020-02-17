@@ -326,6 +326,14 @@ public class JavaCCParserBase {
 		return parserConfiguration;
 	}
 
+	byte[] getNamedNullNamespace() {
+		return namedNullNamespace;
+	}
+
+	void setNamedNullNamespace(byte[] namedNullNamespace) {
+		this.namedNullNamespace = namedNullNamespace;
+	}
+
 	public void setPrefixDeclarations(PrefixDeclarations prefixDeclarations) {
 		this.prefixDeclarations = prefixDeclarations;
 	}

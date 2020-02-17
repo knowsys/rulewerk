@@ -25,23 +25,23 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
+import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
-public class RuleParserParseFactTest {
+public class RuleParserParseFactTest implements ParserTestUtils {
 
 	private final Constant a = Expressions.makeDatatypeConstant("a", PrefixDeclarations.XSD_STRING);
 	private final Constant b = Expressions.makeDatatypeConstant("b", PrefixDeclarations.XSD_STRING);
-	private final NamedNull null1 = new NamedNullImpl("1");
 
 	private final Fact factA = Expressions.makeFact("p", a);
 	private final Fact factAB = Expressions.makeFact("p", a, b);
-	private final Fact fact1 = Expressions.makeFact("p", null1);
 
 	@Test
 	public void parseFact_string_succeeds() throws ParsingException {
@@ -66,22 +66,36 @@ public class RuleParserParseFactTest {
 	}
 
 	@Test(expected = ParsingException.class)
-	public void parseFact_namedNull_throws() throws ParsingException {
+	public void parseFact_namedNullDisallowed_throws() throws ParsingException {
 		String input = "p(_:1) .";
-		RuleParser.parseFact(input);
+		ParserConfiguration parserConfiguration = new ParserConfiguration().disallowNamedNulls();
+		RuleParser.parseFact(input, parserConfiguration);
 	}
 
 	@Test
-	public void parseFact_namedNullAllowed_succeeds() throws ParsingException {
+	public void parseFact_namedNull_succeeds() throws ParsingException {
 		String input = "p(_:1) .";
-		ParserConfiguration parserConfiguration = new ParserConfiguration().allowNamedNulls();
-		assertEquals(fact1, RuleParser.parseFact(input, parserConfiguration));
+		Fact result = RuleParser.parseFact(input);
+		assertArgumentIsNamedNull(result, 1);
 	}
 
 	@Test(expected = ParsingException.class)
 	public void parseFact_namedNullAsPredicateName_throws() throws ParsingException {
 		String input = "_:p(\"a\") .";
-		ParserConfiguration parserConfiguration = new ParserConfiguration().allowNamedNulls();
-		RuleParser.parseFact(input, parserConfiguration);
+		RuleParser.parseFact(input);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseRule_namedNullInBody_throws() throws ParsingException {
+		String input = "q(_:head) :- p(_:body) .";
+		RuleParser.parseRule(input);
+	}
+
+	@Test
+	public void parseRule_namedNullInHead_succeeds() throws ParsingException {
+		String input = "q(_:head) :- p(\"a\") .";
+		Rule result = RuleParser.parseRule(input);
+		Literal literal = result.getHead().getLiterals().get(0);
+		assertArgumentIsNamedNull(literal, 1);
 	}
 }
