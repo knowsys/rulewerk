@@ -1,5 +1,6 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -118,19 +119,22 @@ public class VLogReasoner implements Reasoner {
 
 		@Override
 		public int hashCode() {
-			return predicate.hashCode();
+			return this.predicate.hashCode();
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+			if (obj == null) {
 				return false;
-			if (getClass() != obj.getClass())
+			}
+			if (getClass() != obj.getClass()) {
 				return false;
+			}
 			final LocalFactsDataSourceDeclaration other = (LocalFactsDataSourceDeclaration) obj;
-			return predicate.equals(other.predicate);
+			return this.predicate.equals(other.predicate);
 		}
 
 	}
@@ -145,39 +149,39 @@ public class VLogReasoner implements Reasoner {
 	class LoadKbVisitor implements StatementVisitor<Void> {
 
 		public void clearIndexes() {
-			edbPredicates.clear();
-			idbPredicates.clear();
-			aliasedEdbPredicates.clear();
-			aliasesForEdbPredicates.clear();
-			directEdbFacts.clear();
-			rules.clear();
+			VLogReasoner.this.edbPredicates.clear();
+			VLogReasoner.this.idbPredicates.clear();
+			VLogReasoner.this.aliasedEdbPredicates.clear();
+			VLogReasoner.this.aliasesForEdbPredicates.clear();
+			VLogReasoner.this.directEdbFacts.clear();
+			VLogReasoner.this.rules.clear();
 		}
 
 		@Override
 		public Void visit(Fact statement) {
 			final Predicate predicate = statement.getPredicate();
 			registerEdbDeclaration(new LocalFactsDataSourceDeclaration(predicate));
-			if (!directEdbFacts.containsKey(predicate)) {
-				final List<Fact> facts = new ArrayList<Fact>();
+			if (!VLogReasoner.this.directEdbFacts.containsKey(predicate)) {
+				final List<Fact> facts = new ArrayList<>();
 				facts.add(statement);
-				directEdbFacts.put(predicate, facts);
+				VLogReasoner.this.directEdbFacts.put(predicate, facts);
 			} else {
-				directEdbFacts.get(predicate).add(statement);
+				VLogReasoner.this.directEdbFacts.get(predicate).add(statement);
 			}
 			return null;
 		}
 
 		@Override
 		public Void visit(Rule statement) {
-			rules.add(statement);
+			VLogReasoner.this.rules.add(statement);
 			for (final PositiveLiteral positiveLiteral : statement.getHead()) {
 				final Predicate predicate = positiveLiteral.getPredicate();
-				if (!idbPredicates.contains(predicate)) {
-					if (edbPredicates.containsKey(predicate)) {
-						addEdbAlias(edbPredicates.get(predicate));
-						edbPredicates.remove(predicate);
+				if (!VLogReasoner.this.idbPredicates.contains(predicate)) {
+					if (VLogReasoner.this.edbPredicates.containsKey(predicate)) {
+						addEdbAlias(VLogReasoner.this.edbPredicates.get(predicate));
+						VLogReasoner.this.edbPredicates.remove(predicate);
 					}
-					idbPredicates.add(predicate);
+					VLogReasoner.this.idbPredicates.add(predicate);
 				}
 			}
 			return null;
@@ -191,18 +195,19 @@ public class VLogReasoner implements Reasoner {
 
 		void registerEdbDeclaration(DataSourceDeclaration dataSourceDeclaration) {
 			final Predicate predicate = dataSourceDeclaration.getPredicate();
-			if (idbPredicates.contains(predicate) || aliasedEdbPredicates.contains(predicate)) {
-				if (!aliasesForEdbPredicates.containsKey(dataSourceDeclaration)) {
+			if (VLogReasoner.this.idbPredicates.contains(predicate)
+					|| VLogReasoner.this.aliasedEdbPredicates.contains(predicate)) {
+				if (!VLogReasoner.this.aliasesForEdbPredicates.containsKey(dataSourceDeclaration)) {
 					addEdbAlias(dataSourceDeclaration);
 				}
 			} else {
-				final DataSourceDeclaration currentMainDeclaration = edbPredicates.get(predicate);
+				final DataSourceDeclaration currentMainDeclaration = VLogReasoner.this.edbPredicates.get(predicate);
 				if (currentMainDeclaration == null) {
-					edbPredicates.put(predicate, dataSourceDeclaration);
-				} else if (!(currentMainDeclaration.equals(dataSourceDeclaration))) {
+					VLogReasoner.this.edbPredicates.put(predicate, dataSourceDeclaration);
+				} else if (!currentMainDeclaration.equals(dataSourceDeclaration)) {
 					addEdbAlias(currentMainDeclaration);
 					addEdbAlias(dataSourceDeclaration);
-					edbPredicates.remove(predicate);
+					VLogReasoner.this.edbPredicates.remove(predicate);
 				} // else: predicate already known to have local facts (only)
 			}
 		}
@@ -216,8 +221,8 @@ public class VLogReasoner implements Reasoner {
 				aliasPredicate = new PredicateImpl(predicate.getName() + "##" + dataSourceDeclaration.hashCode(),
 						predicate.getArity());
 			}
-			aliasesForEdbPredicates.put(dataSourceDeclaration, aliasPredicate);
-			aliasedEdbPredicates.add(predicate);
+			VLogReasoner.this.aliasesForEdbPredicates.put(dataSourceDeclaration, aliasPredicate);
+			VLogReasoner.this.aliasedEdbPredicates.add(predicate);
 
 			final List<Term> terms = new ArrayList<>();
 			for (int i = 1; i <= predicate.getArity(); i++) {
@@ -225,9 +230,9 @@ public class VLogReasoner implements Reasoner {
 			}
 			final Literal body = new PositiveLiteralImpl(aliasPredicate, terms);
 			final PositiveLiteral head = new PositiveLiteralImpl(predicate, terms);
-			final Rule rule = new RuleImpl(new ConjunctionImpl<PositiveLiteral>(Arrays.asList(head)),
-					new ConjunctionImpl<Literal>(Arrays.asList(body)));
-			rules.add(rule);
+			final Rule rule = new RuleImpl(new ConjunctionImpl<>(Arrays.asList(head)),
+					new ConjunctionImpl<>(Arrays.asList(body)));
+			VLogReasoner.this.rules.add(rule);
 		}
 
 	}
@@ -338,11 +343,11 @@ public class VLogReasoner implements Reasoner {
 		LOGGER.info("Started loading knowledge base ...");
 		final LoadKbVisitor visitor = new LoadKbVisitor();
 		visitor.clearIndexes();
-		for (final Statement statement : knowledgeBase) {
+		for (final Statement statement : this.knowledgeBase) {
 			statement.accept(visitor);
 		}
 
-		if (edbPredicates.isEmpty() && aliasedEdbPredicates.isEmpty()) {
+		if (this.edbPredicates.isEmpty() && this.aliasedEdbPredicates.isEmpty()) {
 			LOGGER.warn("No facts have been provided.");
 		}
 
@@ -363,7 +368,7 @@ public class VLogReasoner implements Reasoner {
 		this.reasonerState = ReasonerState.KB_LOADED;
 
 		// if there are no rules, then materialisation state is complete
-		this.correctness = rules.isEmpty() ? Correctness.SOUND_AND_COMPLETE : Correctness.SOUND_BUT_INCOMPLETE;
+		this.correctness = this.rules.isEmpty() ? Correctness.SOUND_AND_COMPLETE : Correctness.SOUND_BUT_INCOMPLETE;
 
 		LOGGER.info("Finished loading knowledge base.");
 	}
@@ -403,15 +408,15 @@ public class VLogReasoner implements Reasoner {
 	 * Checks if the loaded external data sources do in fact contain data of the
 	 * correct arity.
 	 * 
-	 * @throws IncompatiblePredicateArityException to indicate a problem
-	 *                                             (non-checked exception)
+	 * @throws IncompatiblePredicateArityException
+	 *             to indicate a problem (non-checked exception)
 	 */
 	void validateDataSourcePredicateArities() throws IncompatiblePredicateArityException {
-		for (final Predicate predicate : edbPredicates.keySet()) {
-			validateDataSourcePredicateArity(predicate, edbPredicates.get(predicate).getDataSource());
+		for (final Predicate predicate : this.edbPredicates.keySet()) {
+			validateDataSourcePredicateArity(predicate, this.edbPredicates.get(predicate).getDataSource());
 		}
-		for (final DataSourceDeclaration dataSourceDeclaration : aliasesForEdbPredicates.keySet()) {
-			validateDataSourcePredicateArity(aliasesForEdbPredicates.get(dataSourceDeclaration),
+		for (final DataSourceDeclaration dataSourceDeclaration : this.aliasesForEdbPredicates.keySet()) {
+			validateDataSourcePredicateArity(this.aliasesForEdbPredicates.get(dataSourceDeclaration),
 					dataSourceDeclaration.getDataSource());
 		}
 	}
@@ -451,16 +456,19 @@ public class VLogReasoner implements Reasoner {
 	 * Checks if the loaded external data for a given source does in fact contain
 	 * data of the correct arity for the given predidate.
 	 * 
-	 * @param predicate  the predicate for which data is loaded
-	 * @param dataSource the data source used
+	 * @param predicate
+	 *            the predicate for which data is loaded
+	 * @param dataSource
+	 *            the data source used
 	 * 
-	 * @throws IncompatiblePredicateArityException to indicate a problem
-	 *                                             (non-checked exception)
+	 * @throws IncompatiblePredicateArityException
+	 *             to indicate a problem (non-checked exception)
 	 */
 	void validateDataSourcePredicateArity(Predicate predicate, DataSource dataSource)
 			throws IncompatiblePredicateArityException {
-		if (dataSource == null)
+		if (dataSource == null) {
 			return;
+		}
 		try {
 			final int dataSourcePredicateArity = this.vLog
 					.getPredicateArity(ModelToVLogConverter.toVLogPredicate(predicate));
@@ -475,17 +483,17 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	void loadFacts() {
-		for (final Predicate predicate : directEdbFacts.keySet()) {
+		for (final Predicate predicate : this.directEdbFacts.keySet()) {
 			Predicate aliasPredicate;
-			if (edbPredicates.containsKey(predicate)) {
+			if (this.edbPredicates.containsKey(predicate)) {
 				aliasPredicate = predicate;
 			} else {
-				aliasPredicate = aliasesForEdbPredicates.get(new LocalFactsDataSourceDeclaration(predicate));
+				aliasPredicate = this.aliasesForEdbPredicates.get(new LocalFactsDataSourceDeclaration(predicate));
 			}
 			try {
 				final String vLogPredicateName = ModelToVLogConverter.toVLogPredicate(aliasPredicate);
 				final String[][] vLogPredicateTuples = ModelToVLogConverter
-						.toVLogFactTuples(directEdbFacts.get(predicate));
+						.toVLogFactTuples(this.directEdbFacts.get(predicate));
 				this.vLog.addData(vLogPredicateName, vLogPredicateTuples);
 				if (LOGGER.isDebugEnabled()) {
 					for (final String[] tuple : vLogPredicateTuples) {
@@ -499,7 +507,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	void loadRules() {
-		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(rules);
+		final karmaresearch.vlog.Rule[] vLogRuleArray = ModelToVLogConverter.toVLogRuleArray(this.rules);
 		final karmaresearch.vlog.VLog.RuleRewriteStrategy vLogRuleRewriteStrategy = ModelToVLogConverter
 				.toVLogRuleRewriteStrategy(this.ruleRewriteStrategy);
 		try {
@@ -616,12 +624,50 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state!", e);
 		} catch (final NonExistingPredicateException e1) {
+			LOGGER.warn("Query uses predicate " + query.getPredicate()
+					+ " that does not occur in the knowledge base. Answer must be empty!");
 			throw new IllegalArgumentException(MessageFormat.format(
 					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
 		}
 
 		logWarningOnCorrectness();
 		return this.correctness;
+	}
+
+	@Override
+	public Correctness writeInferences(OutputStream stream) throws IOException {
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+			throw new ReasonerStateException(this.reasonerState,
+					"Obtaining inferences is not alowed before reasoner is loaded!");
+		}
+		final Set<Predicate> toBeQueriedHeadPredicates = getKnolwedgeBasePredicates();
+
+		for (final Predicate predicate : toBeQueriedHeadPredicates) {
+			final PositiveLiteral queryAtom = getQueryAtom(predicate);
+			final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
+			try (final TermQueryResultIterator answers = this.vLog.query(vLogAtom, true, false)) {
+				while (answers.hasNext()) {
+					final karmaresearch.vlog.Term[] vlogTerms = answers.next();
+					final List<Term> termList = VLogToModelConverter.toTermList(vlogTerms);
+					stream.write(Serializer.getFactString(predicate, termList).getBytes());
+				}
+			} catch (final NotStartedException e) {
+				throw new RuntimeException("Inconsistent reasoner state.", e);
+			} catch (final NonExistingPredicateException e1) {
+				throw new RuntimeException("Inconsistent knowledge base state.", e1);
+			}
+		}
+
+		logWarningOnCorrectness();
+		return this.correctness;
+	}
+
+	@Override
+	public Correctness writeInferences(String filePath) throws FileNotFoundException, IOException {
+		try (OutputStream stream = new FileOutputStream(filePath)) {
+			return writeInferences(stream);
+		}
 	}
 
 	private void logWarningOnCorrectness() {
@@ -706,25 +752,6 @@ public class VLogReasoner implements Reasoner {
 		return checkCyclic.equals(CyclicCheckResult.CYCLIC);
 	}
 
-	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
-		validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			try {
-				load();
-			} catch (IOException e) { // FIXME: quick fix for https://github.com/knowsys/vlog4j/issues/128
-				throw new RuntimeException(e);
-			}
-		}
-
-		CyclicCheckResult checkCyclic;
-		try {
-			checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
-		} catch (final NotStartedException e) {
-			throw new RuntimeException(e.getMessage(), e); // should be impossible
-		}
-		return checkCyclic.equals(CyclicCheckResult.NON_CYCLIC);
-	}
-
 	@Override
 	public CyclicityResult checkForCycles() {
 		final boolean acyclic = isJA() || isRJA() || isMFA() || isRMFA();
@@ -771,6 +798,49 @@ public class VLogReasoner implements Reasoner {
 		updateCorrectnessOnStatementsRemoved();
 	}
 
+	Set<Predicate> getKnolwedgeBasePredicates() {
+		final Set<Predicate> toBeQueriedHeadPredicates = new HashSet<>();
+		for (final Rule rule : this.knowledgeBase.getRules()) {
+			for (final Literal literal : rule.getHead()) {
+				toBeQueriedHeadPredicates.add(literal.getPredicate());
+			}
+		}
+		for (final DataSourceDeclaration dataSourceDeclaration : this.knowledgeBase.getDataSourceDeclarations()) {
+			toBeQueriedHeadPredicates.add(dataSourceDeclaration.getPredicate());
+		}
+		for (final Fact fact : this.knowledgeBase.getFacts()) {
+			toBeQueriedHeadPredicates.add(fact.getPredicate());
+		}
+		return toBeQueriedHeadPredicates;
+	}
+
+	private PositiveLiteral getQueryAtom(final Predicate predicate) {
+		final List<Term> toBeGroundedVariables = new ArrayList<>(predicate.getArity());
+		for (int i = 0; i < predicate.getArity(); i++) {
+			toBeGroundedVariables.add(Expressions.makeUniversalVariable("X" + i));
+		}
+		return Expressions.makePositiveLiteral(predicate, toBeGroundedVariables);
+	}
+
+	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+			try {
+				load();
+			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/vlog4j/issues/128
+				throw new RuntimeException(e);
+			}
+		}
+
+		CyclicCheckResult checkCyclic;
+		try {
+			checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
+		} catch (final NotStartedException e) {
+			throw new RuntimeException(e.getMessage(), e); // should be impossible
+		}
+		return checkCyclic.equals(CyclicCheckResult.NON_CYCLIC);
+	}
+
 	private void updateReasonerToKnowledgeBaseChanged() {
 		if (this.reasonerState.equals(ReasonerState.KB_LOADED)
 				|| this.reasonerState.equals(ReasonerState.MATERIALISED)) {
@@ -811,66 +881,6 @@ public class VLogReasoner implements Reasoner {
 
 	void setReasonerState(ReasonerState reasonerState) {
 		this.reasonerState = reasonerState;
-	}
-
-	@Override
-	public Correctness writeInferences(OutputStream stream) throws IOException {
-		validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		}
-		Set<Predicate> toBeQueriedHeadPredicates = new HashSet<Predicate>();
-		for (Rule rule : this.knowledgeBase.getRules()) {
-			for (Literal literal : rule.getHead()) {
-				toBeQueriedHeadPredicates.add(literal.getPredicate());
-			}
-		}
-		for (DataSourceDeclaration dataSourceDeclaration : this.knowledgeBase.getDataSourceDeclarations()) {
-			toBeQueriedHeadPredicates.add(dataSourceDeclaration.getPredicate());
-		}
-		for (Fact fact : this.knowledgeBase.getFacts()) {
-			toBeQueriedHeadPredicates.add(fact.getPredicate());
-		}
-
-		for (Predicate predicate : toBeQueriedHeadPredicates) {
-			List<Term> toBeGroundedVariables = new ArrayList<Term>();
-			for (int i = 0; i < predicate.getArity(); i++) {
-				toBeGroundedVariables.add(Expressions.makeUniversalVariable("X" + i));
-			}
-			final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter
-					.toVLogAtom(Expressions.makePositiveLiteral(predicate, toBeGroundedVariables));
-			try {
-				final TermQueryResultIterator answers = this.vLog.query(vLogAtom, true, false);
-				while (answers.hasNext()) {
-					final karmaresearch.vlog.Term[] vlogTerms = answers.next();
-					final List<Term> termList = VLogToModelConverter.toTermList(vlogTerms);
-					try {
-						stream.write(Serializer.getFactString(predicate, termList).getBytes());
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				}
-			} catch (final NotStartedException e) {
-				throw new RuntimeException("Inconsistent reasoner state.", e);
-			} catch (final NonExistingPredicateException e1) {
-				LOGGER.warn("Query uses predicate " + predicate
-						+ " that does not occur in the knowledge base. Answer must be empty!");
-				throw new RuntimeException("Inconsistent knowledge base state.", e1);
-			}
-
-		}
-		logWarningOnCorrectness();
-		return this.correctness;
-
-	}
-
-	@Override
-	public Correctness writeInferences(String filePath) throws IOException {
-		try (OutputStream stream = new FileOutputStream(filePath)) {
-			writeInferences(stream);
-		}
-		logWarningOnCorrectness();
-		return this.correctness;
 	}
 
 }
