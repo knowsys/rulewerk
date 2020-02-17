@@ -37,10 +37,12 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.parser.javacc.JavaCCParserBase.FormulaContext;
 
 public class RuleParserTest implements ParserTestUtils {
 
@@ -374,7 +376,7 @@ public class RuleParserTest implements ParserTestUtils {
 	}
 
 	@Test
-	public void testBlankNodeTerm() throws ParsingException {
+	public void parse_NamedNullInFact_succeeds() throws ParsingException {
 		String input = "<http://example.org/p>(_:blank) .";
 		KnowledgeBase result = RuleParser.parse(input);
 		List<Fact> facts = result.getFacts();
@@ -383,8 +385,28 @@ public class RuleParserTest implements ParserTestUtils {
 		assertArgumentIsNamedNull(facts.get(0), 1);
 	}
 
+	@Test
+	public void parseTerm_NamedNull_succeeds() throws ParsingException {
+		String input = "_:blank";
+		Term result = RuleParser.parseTerm(input);
+		assertUuid(result.getName());
+	}
+
+	@Test
+	public void parseTerm_NamedNullInHead_succeeds() throws ParsingException {
+		String input = "_:blank";
+		Term result = RuleParser.parseTerm(input, FormulaContext.HEAD);
+		assertUuid(result.getName());
+	}
+
 	@Test(expected = ParsingException.class)
-	public void testBlankPredicateName() throws ParsingException {
+	public void parseTerm_NamedNullInBodyContext_throws() throws ParsingException {
+		String input = "_:blank";
+		RuleParser.parseTerm(input, FormulaContext.BODY);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testBParsingExceptione() throws ParsingException {
 		String input = "_:(a) .";
 		RuleParser.parse(input);
 	}
@@ -505,10 +527,11 @@ public class RuleParserTest implements ParserTestUtils {
 		RuleParser.parseInto(knowledgeBase, input);
 	}
 
+	@Test
 	public void parseInto_relativeImportRedeclaringBase_succeeds() throws ParsingException {
 		String input = "@base <http://example.com/> . @import-relative \"src/test/resources/base.rls\" .";
 		KnowledgeBase knowledgeBase = RuleParser.parse(input);
-		List<PositiveLiteral> expected = Arrays.asList(fact1, fact2);
+		List<PositiveLiteral> expected = Arrays.asList(fact1, fact3);
 		List<Fact> result = knowledgeBase.getFacts();
 		assertEquals(expected, result);
 	}

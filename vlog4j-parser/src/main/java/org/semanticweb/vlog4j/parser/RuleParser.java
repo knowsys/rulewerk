@@ -53,6 +53,9 @@ public class RuleParser {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(RuleParser.class);
 
+	private RuleParser() {
+	}
+
 	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final String encoding,
 			final ParserConfiguration parserConfiguration, final String baseIri) throws ParsingException {
 		final JavaCCParser parser = new JavaCCParser(stream, encoding);
@@ -85,13 +88,13 @@ public class RuleParser {
 	public static void parseInto(final KnowledgeBase knowledgeBase, final String input,
 			final ParserConfiguration parserConfiguration, final String baseIri) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		parseInto(knowledgeBase, inputStream, DEFAULT_STRING_ENCODING, parserConfiguration, baseIri);
+		parseInto(knowledgeBase, inputStream, parserConfiguration, baseIri);
 	}
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final String input,
 			final ParserConfiguration parserConfiguration) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		parseInto(knowledgeBase, inputStream, DEFAULT_STRING_ENCODING, parserConfiguration);
+		parseInto(knowledgeBase, inputStream, parserConfiguration);
 	}
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final InputStream stream, final String encoding)
@@ -107,7 +110,7 @@ public class RuleParser {
 
 	public static void parseInto(final KnowledgeBase knowledgeBase, final String input) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		parseInto(knowledgeBase, inputStream, DEFAULT_STRING_ENCODING);
+		parseInto(knowledgeBase, inputStream);
 	}
 
 	public static KnowledgeBase parse(final InputStream stream, final String encoding,
@@ -125,7 +128,7 @@ public class RuleParser {
 	public static KnowledgeBase parse(final String input, final ParserConfiguration parserConfiguration)
 			throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		return parse(inputStream, DEFAULT_STRING_ENCODING, parserConfiguration);
+		return parse(inputStream, parserConfiguration);
 	}
 
 	public static KnowledgeBase parse(final InputStream stream, final String encoding) throws ParsingException {
@@ -138,7 +141,7 @@ public class RuleParser {
 
 	public static KnowledgeBase parse(final String input) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		return parse(inputStream, DEFAULT_STRING_ENCODING);
+		return parse(inputStream);
 	}
 
 	/**

@@ -1,4 +1,4 @@
 @base <http://example.org/> .
 
-s(ex:c) .
+s(c) .
 p("abc") .
