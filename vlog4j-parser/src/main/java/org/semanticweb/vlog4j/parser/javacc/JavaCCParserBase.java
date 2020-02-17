@@ -144,10 +144,6 @@ public class JavaCCParserBase {
 		return Expressions.makeAbstractConstant(absoluteIri);
 	}
 
-	NamedNull createNamedNull(String lexicalForm) {
-		return new NamedNullImpl(lexicalForm);
-	}
-
 	/**
 	 * Creates a suitable {@link Constant} from the parsed data.
 	 *
@@ -161,6 +157,11 @@ public class JavaCCParserBase {
 		} catch (ParsingException e) {
 			throw makeParseExceptionWithCause("Failed to parse Constant", e);
 		}
+	}
+
+	NamedNull createNamedNull(String lexicalForm) {
+		// @todo(mx): rename into uuid
+		return new NamedNullImpl(lexicalForm);
 	}
 
 	void addStatement(Statement statement) {
