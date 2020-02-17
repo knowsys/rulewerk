@@ -23,13 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -44,12 +39,7 @@ import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
-import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
-import org.semanticweb.vlog4j.core.reasoner.Reasoner;
-import org.semanticweb.vlog4j.core.reasoner.implementation.InMemoryDataSource;
-import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.vlog4j.parser.DatatypeConstantHandler;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
@@ -449,36 +439,4 @@ public class RuleParserTest {
 		assertEquals(constant, result);
 	}
 
-	@Test
-	public void testWriteInferences() throws ParsingException, IOException {
-		KnowledgeBase kb = new KnowledgeBase();
-		final InMemoryDataSource locations = new InMemoryDataSource(2, 1);
-		locations.addTuple("dresden", "germany");
-		kb.addStatement(fact);
-		final String rules = "locatedIn(Egypt,Africa). \n" //
-				+ "address(TSH, \"Pragerstraße 13\", \"01069\", dresden). \n" //
-				+ "city(dresden). \n" //
-				+ "country(germany). \n" //
-				+ "university(tudresden, germany). \n" //
-				+ "locatedIn(?X,?Y) :- location(?X,?Y) . \n" //
-				+ "address(?Uni, !Street, !ZIP, !City), locatedIn(!City, ?Country) :- university(?Uni, ?Country) . \n";
-		RuleParser.parseInto(kb, rules);
-		kb.addStatement(new DataSourceDeclarationImpl(Expressions.makePredicate("location", 2), locations));
-		List<String> inferences = new ArrayList<String>();
-		try (final Reasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.reason();
-			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			reasoner.writeInferences(stream);
-			stream.flush();
-			try (BufferedReader input = new BufferedReader(new StringReader(stream.toString()))) {
-				String factString = "";
-				while ((factString = input.readLine()) != null) {
-					inferences.add(factString);
-				}
-
-			}
-			assertEquals(10, inferences.size());
-		}
-
-	}
 }
