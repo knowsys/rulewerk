@@ -1,19 +1,31 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.vlog4j.core.exceptions.ReasonerStateException;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Fact;
+import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 import org.semanticweb.vlog4j.core.reasoner.AcyclicityNotion;
 import org.semanticweb.vlog4j.core.reasoner.Algorithm;
 import org.semanticweb.vlog4j.core.reasoner.Correctness;
@@ -176,7 +188,6 @@ public class VLogReasoner implements Reasoner {
 
 		// 2. in-memory data is loaded
 		loadInMemoryDataSources(vLogKB);
-
 		validateDataSourcePredicateArities(vLogKB);
 
 		loadFacts(vLogKB);
@@ -187,8 +198,7 @@ public class VLogReasoner implements Reasoner {
 		this.reasonerState = ReasonerState.KB_LOADED;
 
 		// if there are no rules, then materialisation state is complete
-		this.correctness = !vLogKB.hasRules() ? Correctness.SOUND_AND_COMPLETE
-				: Correctness.SOUND_BUT_INCOMPLETE;
+		this.correctness = !vLogKB.hasRules() ? Correctness.SOUND_AND_COMPLETE : Correctness.SOUND_BUT_INCOMPLETE;
 
 		LOGGER.info("Finished loading knowledge base.");
 	}
@@ -240,13 +250,11 @@ public class VLogReasoner implements Reasoner {
 	 * @throws IncompatiblePredicateArityException
 	 *             to indicate a problem (non-checked exception)
 	 */
-	void validateDataSourcePredicateArities(final VLogKnowledgeBase vLogKB)
-			throws IncompatiblePredicateArityException {
+	void validateDataSourcePredicateArities(final VLogKnowledgeBase vLogKB) throws IncompatiblePredicateArityException {
 
 		vLogKB.getEdbPredicates().forEach((k, v) -> validateDataSourcePredicateArity(k, v.getDataSource()));
 
-		vLogKB.getAliasesForEdbPredicates()
-				.forEach((k, v) -> validateDataSourcePredicateArity(v, k.getDataSource()));
+		vLogKB.getAliasesForEdbPredicates().forEach((k, v) -> validateDataSourcePredicateArity(v, k.getDataSource()));
 	}
 
 	/**
@@ -419,12 +427,50 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RuntimeException("Inconsistent reasoner state!", e);
 		} catch (final NonExistingPredicateException e1) {
+			LOGGER.warn("Query uses predicate " + query.getPredicate()
+					+ " that does not occur in the knowledge base. Answer must be empty!");
 			throw new IllegalArgumentException(MessageFormat.format(
 					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
 		}
 
 		logWarningOnCorrectness();
 		return this.correctness;
+	}
+
+	@Override
+	public Correctness writeInferences(OutputStream stream) throws IOException {
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+			throw new ReasonerStateException(this.reasonerState,
+					"Obtaining inferences is not alowed before reasoner is loaded!");
+		}
+		final Set<Predicate> toBeQueriedHeadPredicates = getKnolwedgeBasePredicates();
+
+		for (final Predicate predicate : toBeQueriedHeadPredicates) {
+			final PositiveLiteral queryAtom = getQueryAtom(predicate);
+			final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
+			try (final TermQueryResultIterator answers = this.vLog.query(vLogAtom, true, false)) {
+				while (answers.hasNext()) {
+					final karmaresearch.vlog.Term[] vlogTerms = answers.next();
+					final List<Term> termList = VLogToModelConverter.toTermList(vlogTerms);
+					stream.write(Serializer.getFactString(predicate, termList).getBytes());
+				}
+			} catch (final NotStartedException e) {
+				throw new RuntimeException("Inconsistent reasoner state.", e);
+			} catch (final NonExistingPredicateException e1) {
+				throw new RuntimeException("Inconsistent knowledge base state.", e1);
+			}
+		}
+
+		logWarningOnCorrectness();
+		return this.correctness;
+	}
+
+	@Override
+	public Correctness writeInferences(String filePath) throws FileNotFoundException, IOException {
+		try (OutputStream stream = new FileOutputStream(filePath)) {
+			return writeInferences(stream);
+		}
 	}
 
 	private void logWarningOnCorrectness() {
@@ -509,25 +555,6 @@ public class VLogReasoner implements Reasoner {
 		return checkCyclic.equals(CyclicCheckResult.CYCLIC);
 	}
 
-	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
-		validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			try {
-				load();
-			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/vlog4j/issues/128
-				throw new RuntimeException(e);
-			}
-		}
-
-		CyclicCheckResult checkCyclic;
-		try {
-			checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
-		} catch (final NotStartedException e) {
-			throw new RuntimeException(e.getMessage(), e); // should be impossible
-		}
-		return checkCyclic.equals(CyclicCheckResult.NON_CYCLIC);
-	}
-
 	@Override
 	public CyclicityResult checkForCycles() {
 		final boolean acyclic = isJA() || isRJA() || isMFA() || isRMFA();
@@ -574,6 +601,49 @@ public class VLogReasoner implements Reasoner {
 		updateCorrectnessOnStatementsRemoved();
 	}
 
+	Set<Predicate> getKnolwedgeBasePredicates() {
+		final Set<Predicate> toBeQueriedHeadPredicates = new HashSet<>();
+		for (final Rule rule : this.knowledgeBase.getRules()) {
+			for (final Literal literal : rule.getHead()) {
+				toBeQueriedHeadPredicates.add(literal.getPredicate());
+			}
+		}
+		for (final DataSourceDeclaration dataSourceDeclaration : this.knowledgeBase.getDataSourceDeclarations()) {
+			toBeQueriedHeadPredicates.add(dataSourceDeclaration.getPredicate());
+		}
+		for (final Fact fact : this.knowledgeBase.getFacts()) {
+			toBeQueriedHeadPredicates.add(fact.getPredicate());
+		}
+		return toBeQueriedHeadPredicates;
+	}
+
+	private PositiveLiteral getQueryAtom(final Predicate predicate) {
+		final List<Term> toBeGroundedVariables = new ArrayList<>(predicate.getArity());
+		for (int i = 0; i < predicate.getArity(); i++) {
+			toBeGroundedVariables.add(Expressions.makeUniversalVariable("X" + i));
+		}
+		return Expressions.makePositiveLiteral(predicate, toBeGroundedVariables);
+	}
+
+	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+			try {
+				load();
+			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/vlog4j/issues/128
+				throw new RuntimeException(e);
+			}
+		}
+
+		CyclicCheckResult checkCyclic;
+		try {
+			checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
+		} catch (final NotStartedException e) {
+			throw new RuntimeException(e.getMessage(), e); // should be impossible
+		}
+		return checkCyclic.equals(CyclicCheckResult.NON_CYCLIC);
+	}
+
 	private void updateReasonerToKnowledgeBaseChanged() {
 		if (this.reasonerState.equals(ReasonerState.KB_LOADED)
 				|| this.reasonerState.equals(ReasonerState.MATERIALISED)) {
@@ -615,4 +685,5 @@ public class VLogReasoner implements Reasoner {
 	void setReasonerState(ReasonerState reasonerState) {
 		this.reasonerState = reasonerState;
 	}
+
 }

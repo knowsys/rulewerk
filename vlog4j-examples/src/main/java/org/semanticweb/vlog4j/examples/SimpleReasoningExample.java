@@ -78,7 +78,6 @@ public class SimpleReasoningExample {
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-
 			/* Execute some queries */
 			ExamplesUtils.printOutQueryAnswers("address(?Org, ?Street, ?ZIP, ?City)", reasoner);
 			ExamplesUtils.printOutQueryAnswers("locatedIn(?place, europe)", reasoner);

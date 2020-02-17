@@ -1,5 +1,7 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
+import java.util.List;
+
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 
 /*-
@@ -130,18 +132,7 @@ public final class Serializer {
 		if (literal.isNegated()) {
 			stringBuilder.append(NEGATIVE_IDENTIFIER);
 		}
-		stringBuilder.append(getIRIString(literal.getPredicate().getName())).append(OPENING_PARENTHESIS);
-		boolean first = true;
-		for (final Term term : literal.getArguments()) {
-			if (first) {
-				first = false;
-			} else {
-				stringBuilder.append(COMMA);
-			}
-			final String string = term.getSyntacticRepresentation();
-			stringBuilder.append(string);
-		}
-		stringBuilder.append(CLOSING_PARENTHESIS);
+		stringBuilder.append(getString(literal.getPredicate(), literal.getArguments()));
 		return stringBuilder.toString();
 	}
 
@@ -384,9 +375,31 @@ public final class Serializer {
 		return QUOTE + string + QUOTE;
 	}
 
-
 	private static String addAngleBrackets(final String string) {
 		return LESS_THAN + string + MORE_THAN;
+	}
+
+	public static String getFactString(Predicate predicate, List<Term> terms) {
+		return getString(predicate, terms) + STATEMENT_SEPARATOR + "\n";
+
+	}
+
+	public static String getString(Predicate predicate, List<Term> terms) {
+		StringBuilder stringBuilder = new StringBuilder("");
+		stringBuilder.append(getIRIString(predicate.getName())).append(OPENING_PARENTHESIS);
+		boolean first = true;
+		for (Term term : terms) {
+			if (first) {
+				first = false;
+			} else {
+				stringBuilder.append(COMMA);
+			}
+			final String string = term.getSyntacticRepresentation();
+			stringBuilder.append(string);
+		}
+		stringBuilder.append(CLOSING_PARENTHESIS);
+		return stringBuilder.toString();
+
 	}
 
 }

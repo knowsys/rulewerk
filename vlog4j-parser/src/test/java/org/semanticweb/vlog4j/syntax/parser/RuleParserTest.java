@@ -19,9 +19,9 @@ package org.semanticweb.vlog4j.syntax.parser;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,8 +30,8 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
 import org.semanticweb.vlog4j.core.model.api.Constant;
-import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
+import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
@@ -58,7 +58,7 @@ public class RuleParserTest {
 	private final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
 	private final PositiveLiteral atom3 = Expressions.makePositiveLiteral("http://example.org/q", x, y);
 	private final PositiveLiteral atom4 = Expressions.makePositiveLiteral("http://example.org/r", x, d);
-	private final PositiveLiteral fact = Expressions.makePositiveLiteral("http://example.org/s", c);
+	private final Fact fact = Expressions.makeFact("http://example.org/s", c);
 	private final PositiveLiteral fact2 = Expressions.makePositiveLiteral("p", abc);
 	private final Conjunction<Literal> body1 = Expressions.makeConjunction(atom1, atom2);
 	private final Conjunction<Literal> body2 = Expressions.makeConjunction(negAtom1, atom2);
@@ -438,4 +438,5 @@ public class RuleParserTest {
 		DatatypeConstant result = (DatatypeConstant) literal.getConstants().toArray()[0];
 		assertEquals(constant, result);
 	}
+
 }
