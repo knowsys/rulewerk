@@ -45,12 +45,12 @@ public class RuleParserParseFactTest {
 
 	@Test
 	public void parseFact_string_succeeds() throws ParsingException {
-		assertEquals(RuleParser.parseFact("p(\"a\") ."), factA);
+		assertEquals(factA, RuleParser.parseFact("p(\"a\") ."));
 	}
 
 	@Test
 	public void parseFact_twoStrings_succeeds() throws ParsingException {
-		assertEquals(RuleParser.parseFact("p(\"a\",\"b\") ."), factAB);
+		assertEquals(factAB, RuleParser.parseFact("p(\"a\",\"b\") ."));
 	}
 
 	@Test(expected = ParsingException.class)
@@ -75,7 +75,7 @@ public class RuleParserParseFactTest {
 	public void parseFact_namedNullAllowed_succeeds() throws ParsingException {
 		String input = "p(_:1) .";
 		ParserConfiguration parserConfiguration = new ParserConfiguration().allowNamedNulls();
-		assertEquals(RuleParser.parseFact(input, parserConfiguration), fact1);
+		assertEquals(fact1, RuleParser.parseFact(input, parserConfiguration));
 	}
 
 	@Test(expected = ParsingException.class)

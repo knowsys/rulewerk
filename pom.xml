@@ -136,9 +136,6 @@
 									<root>src/test/java</root>
 								</roots>
 								<ignoreNoFileToScan>true</ignoreNoFileToScan>
-								<!-- this is safe to activate, since it will only fail on
-									 dry runs, not on real builds -->
-								<failOnMissingHeader>true</failOnMissingHeader>
 								<extraFiles>
 									<JavaCCParser.jj>java</JavaCCParser.jj>
 								</extraFiles>

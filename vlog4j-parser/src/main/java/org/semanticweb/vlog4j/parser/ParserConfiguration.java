@@ -49,7 +49,7 @@ public class ParserConfiguration {
 	/**
 	 * Whether parsing Named Nulls is allowed.
 	 */
-	private boolean allowNamedNulls = false;
+	private boolean allowNamedNulls = true;
 
 	/**
 	 * The registered data sources.
