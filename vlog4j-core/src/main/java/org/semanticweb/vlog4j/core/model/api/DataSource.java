@@ -31,14 +31,6 @@ import java.util.Optional;
 public interface DataSource extends Entity {
 
 	/**
-	 * Constructs a String representation of the data source.
-	 *
-	 * @return a String representation of the data source configuration for a
-	 *         certain predicate.
-	 */
-	public String toConfigString();
-
-	/**
 	 * Retrieve the required arity of target predicates for the data source.
 	 *
 	 * @return the required arity for the data source, or Optional.empty() if there
