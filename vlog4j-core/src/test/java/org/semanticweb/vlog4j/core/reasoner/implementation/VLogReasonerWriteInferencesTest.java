@@ -125,7 +125,7 @@ public class VLogReasonerWriteInferencesTest {
 			reasoner.writeInferences(stream);
 			stream.flush();
 
-			Stream<String> inferences = Arrays.stream(stream.toString().split("(?<=[>)]\\s*)\\.\\s*"));
+			Stream<String> inferences = Arrays.stream(stream.toString().split("(?<=[>)]\\s?)\\.\\s*"));
 
 			return inferences.map((String inference) -> inference + ".").collect(Collectors.toList());
 		}
