@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -428,9 +427,7 @@ public class VLogReasoner implements Reasoner {
 			throw new RuntimeException("Inconsistent reasoner state!", e);
 		} catch (final NonExistingPredicateException e1) {
 			LOGGER.warn("Query uses predicate " + query.getPredicate()
-					+ " that does not occur in the knowledge base. Answer must be empty!");
-			throw new IllegalArgumentException(MessageFormat.format(
-					"The query predicate does not occur in the loaded Knowledge Base: {0}!", query.getPredicate()), e1);
+					+ " that does not occur in the knowledge base. Answers are therefore empty.");
 		}
 
 		logWarningOnCorrectness();

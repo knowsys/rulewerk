@@ -21,9 +21,12 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,6 +39,8 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 public class VLogReasonerCsvOutput {
+
+	private final static String nonExistingFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
 
 	@Test
 	public void testEDBQuerySameConstantSubstitutesSameVariableName() throws IOException {
@@ -85,9 +90,8 @@ public class VLogReasonerCsvOutput {
 
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningIncludeBlanks() throws IOException {
-
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("?x"),
 				Expressions.makeUniversalVariable("?y"));
 
@@ -95,14 +99,13 @@ public class VLogReasonerCsvOutput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
-			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, true);
+			reasoner.exportQueryAnswersToCsv(queryAtom, nonExistingFilePath, true);
 		}
+		assertFalse(Files.exists(Paths.get(nonExistingFilePath)));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testExportQueryEmptyKnowledgeBaseBeforeReasoningExcludeBlanks() throws IOException {
-
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("?x"),
 				Expressions.makeUniversalVariable("?y"));
 
@@ -110,15 +113,14 @@ public class VLogReasonerCsvOutput {
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
-			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
 
-			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, false);
+			reasoner.exportQueryAnswersToCsv(queryAtom, nonExistingFilePath, false);
 		}
+		assertFalse(Files.exists(Paths.get(nonExistingFilePath)));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testExportQueryEmptyKnowledgeBaseAfterReasoningIncludeBlanks() throws IOException {
-
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("?x"),
 				Expressions.makeUniversalVariable("?y"));
 
@@ -128,26 +130,24 @@ public class VLogReasonerCsvOutput {
 			reasoner.load();
 			reasoner.reason();
 
-			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
-			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, true);
+			reasoner.exportQueryAnswersToCsv(queryAtom, nonExistingFilePath, true);
 		}
+		assertFalse(Files.exists(Paths.get(nonExistingFilePath)));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
 	public void testExportQueryEmptyKnowledgeBaseAfterReasoningExcludeBlanks() throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
 
 		final PositiveLiteral queryAtom = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("?x"),
 				Expressions.makeUniversalVariable("?y"));
-
-		final KnowledgeBase kb = new KnowledgeBase();
 
 		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.load();
 			reasoner.reason();
 
-			final String emptyFilePath = FileDataSourceTestUtils.OUTPUT_FOLDER + "empty.csv";
-			reasoner.exportQueryAnswersToCsv(queryAtom, emptyFilePath, false);
+			reasoner.exportQueryAnswersToCsv(queryAtom, nonExistingFilePath, false);
 		}
+		assertFalse(Files.exists(Paths.get(nonExistingFilePath)));
 	}
 
 }
