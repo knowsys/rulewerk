@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
@@ -464,6 +465,8 @@ public class VLogReasoner implements Reasoner {
 		}
 		final Set<Predicate> toBeQueriedHeadPredicates = getKnowledgeBasePredicates();
 
+		stream.write(Serializer.getBaseAndPrefixDeclarations(knowledgeBase).getBytes());
+
 		for (final Predicate predicate : toBeQueriedHeadPredicates) {
 			final PositiveLiteral queryAtom = getQueryAtom(predicate);
 			final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
@@ -471,7 +474,8 @@ public class VLogReasoner implements Reasoner {
 				while (answers.hasNext()) {
 					final karmaresearch.vlog.Term[] vlogTerms = answers.next();
 					final List<Term> termList = VLogToModelConverter.toTermList(vlogTerms);
-					stream.write(Serializer.getFactString(predicate, termList).getBytes());
+					stream.write(Serializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri)
+							.getBytes());
 				}
 			} catch (final NotStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
@@ -482,13 +486,6 @@ public class VLogReasoner implements Reasoner {
 
 		logWarningOnCorrectness();
 		return this.correctness;
-	}
-
-	@Override
-	public Correctness writeInferences(String filePath) throws FileNotFoundException, IOException {
-		try (OutputStream stream = new FileOutputStream(filePath)) {
-			return writeInferences(stream);
-		}
 	}
 
 	private void logWarningOnCorrectness() {

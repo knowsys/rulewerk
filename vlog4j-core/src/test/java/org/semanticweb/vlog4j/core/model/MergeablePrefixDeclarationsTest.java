@@ -48,33 +48,33 @@ public class MergeablePrefixDeclarationsTest {
 	@Test
 	public void setBase_changingBase_succeeds() {
 		prefixDeclarations.setBase(BASE);
-		assertEquals(prefixDeclarations.getBase(), BASE);
+		assertEquals(BASE, prefixDeclarations.getBase());
 		prefixDeclarations.setBase(MORE_SPECIFIC);
-		assertEquals(prefixDeclarations.getBase(), MORE_SPECIFIC);
+		assertEquals(MORE_SPECIFIC, prefixDeclarations.getBase());
 	}
 
 	@Test
 	public void setBase_redeclareSameBase_succeeds() {
 		prefixDeclarations.setBase(BASE);
-		assertEquals(prefixDeclarations.getBase(), BASE);
+		assertEquals(BASE, prefixDeclarations.getBase());
 		prefixDeclarations.setBase(BASE);
-		assertEquals(prefixDeclarations.getBase(), BASE);
+		assertEquals(BASE, prefixDeclarations.getBase());
 	}
 
 	@Test
 	public void absolutize_noBase_identical() {
-		assertEquals(prefixDeclarations.absolutize(RELATIVE), RELATIVE);
+		assertEquals(RELATIVE, prefixDeclarations.absolutize(RELATIVE));
 	}
 
 	@Test
 	public void absolutize_base_absoluteIri() {
 		prefixDeclarations.setBase(BASE);
-		assertEquals(prefixDeclarations.absolutize(RELATIVE), BASE + RELATIVE);
+		assertEquals(BASE + RELATIVE, prefixDeclarations.absolutize(RELATIVE));
 	}
 
 	@Test
 	public void absolutize_absoluteIri_identical() {
-		assertEquals(prefixDeclarations.absolutize(BASE), BASE);
+		assertEquals(BASE, prefixDeclarations.absolutize(BASE));
 	}
 
 	@Test(expected = PrefixDeclarationException.class)
@@ -85,7 +85,7 @@ public class MergeablePrefixDeclarationsTest {
 	@Test
 	public void resolvePrefixedName_knownPrefix_succeeds() throws PrefixDeclarationException {
 		prefixDeclarations.setPrefix("eg:", BASE);
-		assertEquals(prefixDeclarations.resolvePrefixedName("eg:" + RELATIVE), BASE + RELATIVE);
+		assertEquals(BASE + RELATIVE, prefixDeclarations.resolvePrefixedName("eg:" + RELATIVE));
 	}
 
 	@Test
@@ -94,13 +94,14 @@ public class MergeablePrefixDeclarationsTest {
 		prefixDeclarations.setPrefix(prefix, BASE);
 		String resolved = BASE + RELATIVE;
 		String unresolved = prefixDeclarations.unresolveAbsoluteIri(resolved);
-		assertEquals(prefixDeclarations.resolvePrefixedName(unresolved), resolved);
+		assertEquals(resolved, prefixDeclarations.resolvePrefixedName(unresolved));
 	}
 
 	@Test
-	public void setPrefix_redeclarePrefix_succeeds() {
+	public void setPrefix_redeclarePrefix_succeeds() throws PrefixDeclarationException {
 		prefixDeclarations.setPrefix("eg:", BASE);
 		prefixDeclarations.setPrefix("eg:", MORE_SPECIFIC);
+		assertEquals(BASE, prefixDeclarations.getPrefix("eg:"));
 	}
 
 	@Test
@@ -110,14 +111,14 @@ public class MergeablePrefixDeclarationsTest {
 		prefixDeclarations.setPrefix("eg:", BASE);
 		prefixDeclarations.setPrefix("eg:", MORE_SPECIFIC);
 
-		assertEquals(prefixDeclarations.getPrefix(prefix + "1:"), MORE_SPECIFIC);
+		assertEquals(MORE_SPECIFIC, prefixDeclarations.getPrefix(prefix + "1:"));
 	}
 
 	@Test
 	public void mergeablePrefixDeclarations_constructor_succeeds() throws PrefixDeclarationException {
 		this.prefixDeclarations.setPrefix("eg:", MORE_SPECIFIC);
 		MergeablePrefixDeclarations prefixDeclarations = new MergeablePrefixDeclarations(this.prefixDeclarations);
-		assertEquals(prefixDeclarations.getPrefix("eg:"), MORE_SPECIFIC);
+		assertEquals(MORE_SPECIFIC, prefixDeclarations.getPrefix("eg:"));
 	}
 
 	@Test(expected = RuntimeException.class)
@@ -132,42 +133,49 @@ public class MergeablePrefixDeclarationsTest {
 
 	@Test
 	public void unresolveAbsoluteIri_default_identical() {
-		assertEquals(prefixDeclarations.unresolveAbsoluteIri(BASE), BASE);
+		assertEquals(BASE, prefixDeclarations.unresolveAbsoluteIri(BASE));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_declaredPrefix_succeeds() {
-		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC), MORE_SPECIFIC);
+		assertEquals(MORE_SPECIFIC, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
 		prefixDeclarations.setPrefix("eg:", BASE);
-		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC), "eg:example/");
+		assertEquals("eg:example/", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_unrelatedPrefix_identical() {
 		prefixDeclarations.setPrefix("eg:", UNRELATED);
-		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC), MORE_SPECIFIC);
+		assertEquals(MORE_SPECIFIC, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_unrelatedAndRelatedPrefixes_succeeds() {
 		prefixDeclarations.setPrefix("ex:", UNRELATED);
 		prefixDeclarations.setPrefix("eg:", BASE);
-		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC), "eg:example/");
+		assertEquals("eg:example/", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_multipleMatchingPrefixes_longestMatchWins() {
 		prefixDeclarations.setPrefix("eg:", BASE);
 		prefixDeclarations.setPrefix("ex:", MORE_SPECIFIC);
-		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE), "ex:" + RELATIVE);
+		assertEquals("ex:" + RELATIVE, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE));
 		prefixDeclarations.setPrefix("er:", EVEN_MORE_SPECIFIC);
-		assertEquals(prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE), "er:test");
+		assertEquals("er:test", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_exactPrefixMatch_identical() {
 		prefixDeclarations.setPrefix("eg:", BASE);
-		assertEquals(prefixDeclarations.unresolveAbsoluteIri(BASE), BASE);
+		assertEquals(BASE, prefixDeclarations.unresolveAbsoluteIri(BASE));
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_baseIsMoreSpecific_baseWins() {
+		prefixDeclarations.setBase(MORE_SPECIFIC);
+		prefixDeclarations.setPrefix("eg:", BASE);
+		assertEquals(RELATIVE, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE));
 	}
 
 	@Test
@@ -176,6 +184,6 @@ public class MergeablePrefixDeclarationsTest {
 		prefixDeclarations.setPrefix(prefix, BASE);
 		String unresolved = prefix + RELATIVE;
 		String resolved = prefixDeclarations.resolvePrefixedName(unresolved);
-		assertEquals(prefixDeclarations.unresolveAbsoluteIri(resolved), unresolved);
+		assertEquals(unresolved, prefixDeclarations.unresolveAbsoluteIri(resolved));
 	}
 }

@@ -1,7 +1,9 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
 import java.util.List;
+import java.util.function.Function;
 
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 
 /*-
@@ -38,6 +40,7 @@ import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
@@ -65,6 +68,8 @@ public final class Serializer {
 	public static final String RULE_SEPARATOR = " :- ";
 	public static final char AT = '@';
 	public static final String DATA_SOURCE = "@source ";
+	public static final String BASE = "@base ";
+	public static final String PREFIX = "@prefix ";
 	public static final String CSV_FILE_DATA_SOURCE = "load-csv";
 	public static final String RDF_FILE_DATA_SOURCE = "load-rdf";
 	public static final String SPARQL_QUERY_RESULT_DATA_SOURCE = "sparql";
@@ -153,6 +158,18 @@ public final class Serializer {
 	 *
 	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param constant a {@link Constant}
+	 * @param iriTransformer a function to transform IRIs with.
+	 * @return String representation corresponding to a given {@link Constant}.
+	 */
+	public static String getString(final AbstractConstant constant, Function<String, String> iriTransformer) {
+		return getIRIString(constant.getName(), iriTransformer);
+	}
+
+	/**
+	 * Creates a String representation of a given {@link Constant}.
+	 *
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
+	 * @param constant a {@link Constant}
 	 * @return String representation corresponding to a given {@link Constant}.
 	 */
 	public static String getString(final AbstractConstant constant) {
@@ -178,21 +195,47 @@ public final class Serializer {
 	 *
 	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param datatypeConstant a {@link DatatypeConstant}
+	 * @param iriTransformer a function to transform IRIs with.
+	 * @return String representation corresponding to a given
+	 *         {@link DatatypeConstant}.
+	 */
+	public static String getString(final DatatypeConstant datatypeConstant, Function<String, String> iriTransformer) {
+		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
+			return getString(datatypeConstant.getLexicalValue());
+		} else if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
+				   || datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
+				   || datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DOUBLE)) {
+			return datatypeConstant.getLexicalValue();
+		} else {
+			return getConstantName(datatypeConstant, iriTransformer);
+		}
+	}
+
+	/**
+	 * Creates a String representation corresponding to the name of a given
+	 * {@link DatatypeConstant} without an IRI.
+	 *
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
+	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
 	 */
 	public static String getString(final DatatypeConstant datatypeConstant) {
-		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
-			return getString(datatypeConstant.getLexicalValue());
-		} else {
-			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
-					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
-					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DOUBLE)) {
-				return datatypeConstant.getLexicalValue();
-			} else {
-				return getConstantName(datatypeConstant);
-			}
-		}
+		return getString(datatypeConstant, Function.identity());
+	}
+
+	/**
+	 * Creates a String representation corresponding to the name of a given
+	 * {@link DatatypeConstant} including an IRI.
+	 *
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
+	 * @param datatypeConstant a {@link DatatypeConstant}
+	 * @return String representation corresponding to a given
+	 *         {@link DatatypeConstant}.
+	 */
+	public static String getConstantName(final DatatypeConstant datatypeConstant, Function<String, String> iriTransformer) {
+		return getString(datatypeConstant.getLexicalValue()) + DOUBLE_CARET
+			+ getIRIString(datatypeConstant.getDatatype(), iriTransformer);
 	}
 
 	/**
@@ -318,6 +361,16 @@ public final class Serializer {
 	}
 
 	private static String getIRIString(final String string) {
+		return getIRIString(string, Function.identity());
+	}
+
+	private static String getIRIString(final String string, Function<String, String> iriTransformer) {
+		String transformed = iriTransformer.apply(string);
+
+		if (!transformed.equals(string)) {
+			return transformed;
+		}
+
 		if (string.contains(COLON) || string.matches(REGEX_INTEGER) || string.matches(REGEX_DOUBLE)
 				|| string.matches(REGEX_DECIMAL) || string.equals(REGEX_TRUE) || string.equals(REGEX_FALSE)) {
 			return addAngleBrackets(string);
@@ -382,12 +435,20 @@ public final class Serializer {
 
 	public static String getFactString(Predicate predicate, List<Term> terms) {
 		return getString(predicate, terms) + STATEMENT_SEPARATOR + NEW_LINE;
+	}
 
+	public static String getFactString(Predicate predicate, List<Term> terms, Function<String, String> iriTransformer) {
+		return getString(predicate, terms, iriTransformer) + STATEMENT_SEPARATOR + "\n";
 	}
 
 	public static String getString(Predicate predicate, List<Term> terms) {
-		final StringBuilder stringBuilder = new StringBuilder(getIRIString(predicate.getName()));
+		return getString(predicate, terms, Function.identity());
+	}
+
+	public static String getString(Predicate predicate, List<Term> terms, Function<String, String> iriTransformer) {
+		final StringBuilder stringBuilder = new StringBuilder(getIRIString(predicate.getName(), iriTransformer));
 		stringBuilder.append(OPENING_PARENTHESIS);
+
 		boolean first = true;
 		for (final Term term : terms) {
 			if (first) {
@@ -395,12 +456,41 @@ public final class Serializer {
 			} else {
 				stringBuilder.append(COMMA);
 			}
-			final String string = term.getSyntacticRepresentation();
+			final String string = term.getSyntacticRepresentation(iriTransformer);
 			stringBuilder.append(string);
 		}
 		stringBuilder.append(CLOSING_PARENTHESIS);
 		return stringBuilder.toString();
-
 	}
 
+	public static String getBaseString(KnowledgeBase knowledgeBase) {
+		String baseIri = knowledgeBase.getBase();
+
+		if (baseIri.equals("")) {
+			return "";
+		}
+
+		return BASE + addAngleBrackets(baseIri) + STATEMENT_SEPARATOR + "\n";
+	}
+
+	public static String getPrefixString(String prefixName, String prefixIri) {
+		return PREFIX + prefixName + " " + addAngleBrackets(prefixIri) + STATEMENT_SEPARATOR + "\n";
+	}
+
+	public static String getBaseAndPrefixDeclarations(KnowledgeBase knowledgeBase) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(getBaseString(knowledgeBase));
+
+		knowledgeBase.getPrefixes().forEachRemaining((String prefixName) -> {
+				try {
+					sb.append(getPrefixString(prefixName, knowledgeBase.getPrefix(prefixName)));
+				} catch (PrefixDeclarationException e) {
+					// this shouldn't throw, since we're iterating over known prefixes.
+					throw new RuntimeException(e);
+				}
+			});
+
+		return sb.toString();
+	}
 }

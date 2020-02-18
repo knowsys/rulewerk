@@ -104,10 +104,14 @@ final public class MergeablePrefixDeclarations implements PrefixDeclarations {
 	public String unresolveAbsoluteIri(String iri) {
 		Map<String, Integer> matches = new HashMap<>();
 
-		prefixes.forEach((prefixName, baseIri) -> {
+		if (baseUri != EMPTY_BASE_PREFIX && iri.startsWith(baseUri) && !iri.equals(baseUri)) {
+			matches.put(iri.replaceFirst(baseUri, ""), baseUri.length());
+		}
+
+		prefixes.forEach((prefixName, prefixIri) -> {
 			// only select proper prefixes here, since `eg:` is not a valid prefixed name.
-			if (iri.startsWith(baseIri) && !iri.equals(baseIri)) {
-				matches.put(iri.replaceFirst(baseIri, prefixName), baseIri.length());
+			if (iri.startsWith(prefixIri) && !iri.equals(prefixIri)) {
+				matches.put(iri.replaceFirst(prefixIri, prefixName), prefixIri.length());
 			}
 		});
 
@@ -150,6 +154,8 @@ final public class MergeablePrefixDeclarations implements PrefixDeclarations {
 	 * @return this
 	 */
 	public MergeablePrefixDeclarations mergePrefixDeclarations(final PrefixDeclarations other) {
+		this.setBase(other.getBase());
+
 		for (String prefixName : other) {
 			String iri;
 			try {

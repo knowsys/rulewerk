@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.core.model.api;
 
-import org.semanticweb.vlog4j.core.model.implementation.Serializer;
-
 /*-
  * #%L
  * VLog4j Core Components
@@ -11,9 +9,9 @@ import org.semanticweb.vlog4j.core.model.implementation.Serializer;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,16 +20,20 @@ import org.semanticweb.vlog4j.core.model.implementation.Serializer;
  * #L%
  */
 
+import java.util.function.Function;
+
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
+
 /**
  * Interface for datatype constants, i.e. for constants that represent a
  * specific value of a concrete datatype). Such terms are of type
  * {@link TermType#DATATYPE_CONSTANT}.
- * 
+ *
  * Note that <i>datatype literal</i> is a common name of the representation of
  * specific values for a datatype. We mostly avoid this meaning of
  * <i>literal</i> since a literal in logic is typically a negated or non-negated
  * atom.
- * 
+ *
  * @author Markus Kroetzsch
  */
 public interface DatatypeConstant extends Constant {
@@ -44,7 +46,7 @@ public interface DatatypeConstant extends Constant {
 	/**
 	 * Returns the datatype of this term, which is typically an IRI that defines how
 	 * to interpret the lexical value.
-	 * 
+	 *
 	 * @return a non-blank String (not null, nor empty or whitespace).
 	 */
 	String getDatatype();
@@ -55,7 +57,7 @@ public interface DatatypeConstant extends Constant {
 	 * strings that represent the same value, depending on the rules of the
 	 * datatype, and that there the value used here does not have to be a canonical
 	 * representation.
-	 * 
+	 *
 	 * @return a non-null string
 	 */
 	String getLexicalValue();
@@ -63,5 +65,10 @@ public interface DatatypeConstant extends Constant {
 	@Override
 	default String getSyntacticRepresentation() {
 		return Serializer.getString(this);
+	}
+
+	@Override
+	default String getSyntacticRepresentation(Function<String, String> iriTransformer) {
+		return Serializer.getString(this, iriTransformer);
 	}
 }

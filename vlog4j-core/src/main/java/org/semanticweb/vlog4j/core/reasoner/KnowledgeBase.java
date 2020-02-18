@@ -508,6 +508,15 @@ public class KnowledgeBase implements Iterable<Statement> {
 		return this.prefixDeclarations.getBase();
 	}
 
+	/*
+	 * Return the declared prefixes.
+	 *
+	 * @return an iterator over all known prefixes.
+	 */
+	public Iterator<String> getPrefixes() {
+		return this.prefixDeclarations.iterator();
+	}
+
 	/**
 	 * Resolve {@code prefixName} into the declared IRI.
 	 *

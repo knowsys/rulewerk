@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.model.api;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,10 @@ package org.semanticweb.vlog4j.core.model.api;
  * limitations under the License.
  * #L%
  */
+
+import java.util.function.Function;
+
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
 /**
  * Interface for terms. A term is characterized by a string name and a
@@ -32,21 +36,21 @@ public interface Term extends Entity {
 	/**
 	 * Returns the name this term. The name uniquely identifies terms of the same
 	 * {@link TermType}.
-	 * 
+	 *
 	 * @return a non-blank String (not null, nor empty or whitespace).
 	 */
 	String getName();
 
 	/**
 	 * Return the type of this term.
-	 * 
+	 *
 	 * @return the type of this term
 	 */
 	TermType getType();
 
 	/**
 	 * Returns true if the term represents some kind of constant.
-	 * 
+	 *
 	 * @return true if term is constant
 	 */
 	default boolean isConstant() {
@@ -56,7 +60,7 @@ public interface Term extends Entity {
 
 	/**
 	 * Returns true if the term represents some kind of variable.
-	 * 
+	 *
 	 * @return true if term is variable
 	 */
 	default boolean isVariable() {
@@ -71,4 +75,13 @@ public interface Term extends Entity {
 	 */
 	<T> T accept(TermVisitor<T> termVisitor);
 
+	/**
+	 * Return the parseable string representation of this Term, transforming IRIs.
+	 *
+	 * @param iriTransformer a function that is applied to transform any IRIs
+	 *                       occurring in the output.
+	 *
+	 * @return non-empty String containing the representation.
+	 */
+	String getSyntacticRepresentation(Function<String, String> iriTransformer);
 }

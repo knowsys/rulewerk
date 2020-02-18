@@ -1,6 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -83,7 +84,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
 	 * Getter for the knowledge base to reason on.
-	 * 
+	 *
 	 * @return the reasoner's knowledge base
 	 */
 	KnowledgeBase getKnowledgeBase();
@@ -91,7 +92,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
 	 * the knowledge base to an OutputStream.
-	 * 
+	 *
 	 * @param an OutputStream for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
@@ -103,13 +104,17 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
 	 * the knowledge base to a desired file.
 	 *
-	 * @param a String of the file path for the facts to be written to.
+	 * @param filePath a String of the file path for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	Correctness writeInferences(String filePath) throws FileNotFoundException, IOException;
+	default Correctness writeInferences(String filePath) throws FileNotFoundException, IOException {
+		try (OutputStream stream = new FileOutputStream(filePath)) {
+			return writeInferences(stream);
+		}
+	}
 
 	/**
 	 * Sets the algorithm that will be used for reasoning over the knowledge base.
@@ -203,7 +208,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic,
 	 * Cyclic, or cyclicity cannot be determined.
-	 * 
+	 *
 	 * @return the appropriate CyclicityResult.
 	 */
 	CyclicityResult checkForCycles();
@@ -215,7 +220,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * predicates, reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and,
 	 * implicitly, the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will
 	 * always terminate.
-	 * 
+	 *
 	 * @return {@code true}, if the loaded set of rules is Joint Acyclic with
 	 *         respect to the EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
@@ -228,7 +233,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * <b>RJA</b>, then, for the given set of rules and any facts over the given EDB
 	 * predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE Restricted chase}
 	 * will always terminate
-	 * 
+	 *
 	 * @return {@code true}, if the loaded set of rules is Restricted Joint Acyclic
 	 *         with respect to the EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
@@ -242,7 +247,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * predicates, reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and,
 	 * implicitly, the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will
 	 * always terminate
-	 * 
+	 *
 	 * @return {@code true}, if the loaded set of rules is Model-Faithful Acyclic
 	 *         with respect to the EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
@@ -256,7 +261,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * over the given EDB predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE
 	 * Restricted chase} will always terminate. If a set of rules and EDB predicates
 	 * is MFA, then it is also JA.
-	 * 
+	 *
 	 * @return {@code true}, if the loaded set of rules is Restricted Model-Faithful
 	 *         Acyclic with respect to the EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
@@ -271,7 +276,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * is guaranteed not to terminate for the loaded rules. If a set of rules and
 	 * EDB predicates is RMFA, then it is also RJA. Therefore, if a set or rules and
 	 * EDB predicates is MFC, it is not MFA, nor JA.
-	 * 
+	 *
 	 * @return {@code true}, if the loaded set of rules is Model-Faithful Cyclic
 	 *         with respect to the EDB predicates of loaded facts.<br>
 	 *         {@code false}, otherwise
@@ -290,7 +295,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * more cases. <br>
 	 * To avoid non-termination, a reasoning timeout can be set
 	 * ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
-	 * 
+	 *
 	 * @return
 	 *         <ul>
 	 *         <li>{@code true}, if materialisation reached completion.</li>
@@ -315,7 +320,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * A query answer is represented by a {@link QueryResult}. A query can have
 	 * multiple, distinct query answers. This method returns an Iterator over these
 	 * answers. <br>
-	 * 
+	 *
 	 * Depending on the state of the reasoning (materialisation) and its
 	 * {@link KnowledgeBase}, the answers can have a different {@link Correctness}
 	 * ({@link QueryResultIterator#getCorrectness()}):
@@ -340,7 +345,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * knowledge base. Re-materialisation ({@link Reasoner#reason()}) is required,
 	 * in order to obtain correct query answers.
 	 * </ul>
-	 * 
+	 *
 	 *
 	 * @param query        a {@link PositiveLiteral} representing the query to be
 	 *                     answered.
@@ -360,7 +365,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * * Evaluates an atomic ({@code query}), and counts the number of query answer
 	 * implicit facts loaded into the reasoner and the number of query answer
 	 * explicit facts materialised by the reasoner.
-	 * 
+	 *
 	 * @param query a {@link PositiveLiteral} representing the query to be answered.
 	 *
 	 * @return a {@link QueryAnswerCount} object that contains the query answers
@@ -387,7 +392,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * the {@code query} are matched by terms in the fact, either named
 	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The
 	 * same variable name identifies the same term in the answer fact. <br>
-	 * 
+	 *
 	 * Depending on the state of the reasoning (materialisation) and its
 	 * {@link KnowledgeBase}, the answers can have a different {@link Correctness}
 	 * ({@link QueryResultIterator#getCorrectness()}):
@@ -412,14 +417,14 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * knowledge base. Re-materialisation ({@link Reasoner#reason()}) is required,
 	 * in order to obtain correct query answers.
 	 * </ul>
-	 * 
+	 *
 	 *
 	 * @param query        a {@link PositiveLiteral} representing the query to be
 	 *                     answered.
 	 * @param includeNulls if {@code true}, facts with {@link TermType#NAMED_NULL}
 	 *                     terms will be counted. Otherwise, facts with
 	 *                     {@link TermType#NAMED_NULL} terms will be ignored.
-	 * 
+	 *
 	 * @return a {@link QueryAnswerCount} object that contains the query answers
 	 *         Correctness and the number query answers, i.e. the number of facts in
 	 *         the extension of the query.
@@ -482,7 +487,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         ({@link Reasoner#reason()}) is required, in order to obtain correct
 	 *         query answers.
 	 *         </ul>
-	 * 
+	 *
 	 */
 	Correctness exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeNulls)
 			throws IOException;
