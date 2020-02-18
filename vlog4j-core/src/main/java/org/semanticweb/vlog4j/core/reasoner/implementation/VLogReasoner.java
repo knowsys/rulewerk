@@ -462,7 +462,7 @@ public class VLogReasoner implements Reasoner {
 			throw new ReasonerStateException(this.reasonerState,
 					"Obtaining inferences is not alowed before reasoner is loaded!");
 		}
-		final Set<Predicate> toBeQueriedHeadPredicates = getKnolwedgeBasePredicates();
+		final Set<Predicate> toBeQueriedHeadPredicates = getKnowledgeBasePredicates();
 
 		for (final Predicate predicate : toBeQueriedHeadPredicates) {
 			final PositiveLiteral queryAtom = getQueryAtom(predicate);
@@ -619,7 +619,7 @@ public class VLogReasoner implements Reasoner {
 		updateCorrectnessOnStatementsRemoved();
 	}
 
-	Set<Predicate> getKnolwedgeBasePredicates() {
+	Set<Predicate> getKnowledgeBasePredicates() {
 		final Set<Predicate> toBeQueriedHeadPredicates = new HashSet<>();
 		for (final Rule rule : this.knowledgeBase.getRules()) {
 			for (final Literal literal : rule.getHead()) {
