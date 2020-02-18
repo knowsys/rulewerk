@@ -1,0 +1,4 @@
+strategic(?X1) | strategic(?X2) | strategic(?X3) | strategic(?X4) :- producedby(?X,?X1,?X2,?X3,?X4).
+strategic(?W) :- controlledby(?W,?X1,?X2,?X3,?X4), strategic(?X1), strategic(?X2), strategic(?X3), strategic(?X4).
+:- strategicpair(?X,?Y), ~strategic(?X).
+:- strategicpair(?X,?Y), ~strategic(?Y).
