@@ -22,6 +22,7 @@ package org.semanticweb.vlog4j.core.model.implementation;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -116,10 +117,8 @@ final public class MergeablePrefixDeclarations implements PrefixDeclarations {
 		});
 
 		List<String> matchesByLength = new ArrayList<>(matches.keySet());
-		matchesByLength.sort((left, right) -> {
-			// inverse order, so we get the longest match first
-			return matches.get(right).compareTo(matches.get(left));
-		});
+		// reverse order, so we get the longest match first
+		matchesByLength.sort(Comparator.comparing(matches::get).reversed());
 
 		if (matchesByLength.size() > 0) {
 			return matchesByLength.get(0);
