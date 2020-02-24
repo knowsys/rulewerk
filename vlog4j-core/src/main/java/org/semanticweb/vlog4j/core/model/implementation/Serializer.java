@@ -51,6 +51,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultData
  *
  */
 public final class Serializer {
+	private static final String NEW_LINE = "\n";
 	public static final String STATEMENT_SEPARATOR = " .";
 	public static final String COMMA = ", ";
 	public static final String NEGATIVE_IDENTIFIER = "~";
@@ -62,7 +63,7 @@ public final class Serializer {
 	public static final String OPENING_BRACKET = "[";
 	public static final String CLOSING_BRACKET = "]";
 	public static final String RULE_SEPARATOR = " :- ";
-	public static final String AT = "@";
+	public static final char AT = '@';
 	public static final String DATA_SOURCE = "@source ";
 	public static final String CSV_FILE_DATA_SOURCE = "load-csv";
 	public static final String RDF_FILE_DATA_SOURCE = "load-rdf";
@@ -70,9 +71,9 @@ public final class Serializer {
 	public static final String DATA_SOURCE_SEPARATOR = ": ";
 	public static final String COLON = ":";
 	public static final String DOUBLE_CARET = "^^";
-	public static final String LESS_THAN = "<";
-	public static final String MORE_THAN = ">";
-	public static final String QUOTE = "\"";
+	public static final char LESS_THAN = '<';
+	public static final char MORE_THAN = '>';
+	public static final char QUOTE = '"';
 
 	public static final String REGEX_DOUBLE = "^[-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?$";
 	public static final String REGEX_INTEGER = "^[-+]?\\d+$";
@@ -367,7 +368,7 @@ public final class Serializer {
 	 */
 	private static String escape(final String string) {
 		return string.replace("\\", "\\\\").replace("\"", "\\\"").replace("\t", "\\t").replace("\b", "\\b")
-				.replace("\n", "\\n").replace("\r", "\\r").replace("\f", "\\f");
+				.replace(NEW_LINE, "\\n").replace("\r", "\\r").replace("\f", "\\f");
 		// don't touch single quotes here since we only construct double-quoted strings
 	}
 
@@ -380,15 +381,15 @@ public final class Serializer {
 	}
 
 	public static String getFactString(Predicate predicate, List<Term> terms) {
-		return getString(predicate, terms) + STATEMENT_SEPARATOR + "\n";
+		return getString(predicate, terms) + STATEMENT_SEPARATOR + NEW_LINE;
 
 	}
 
 	public static String getString(Predicate predicate, List<Term> terms) {
-		StringBuilder stringBuilder = new StringBuilder("");
-		stringBuilder.append(getIRIString(predicate.getName())).append(OPENING_PARENTHESIS);
+		final StringBuilder stringBuilder = new StringBuilder(getIRIString(predicate.getName()));
+		stringBuilder.append(OPENING_PARENTHESIS);
 		boolean first = true;
-		for (Term term : terms) {
+		for (final Term term : terms) {
 			if (first) {
 				first = false;
 			} else {
