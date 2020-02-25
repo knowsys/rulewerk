@@ -35,6 +35,7 @@ import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
+import org.semanticweb.vlog4j.core.reasoner.QueryAnswersSize;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
@@ -595,19 +596,22 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public long queryAnswerSize(PositiveLiteral query) {
+	public QueryAnswersSize queryAnswerSize(PositiveLiteral query) {
 		return queryAnswerSize(query, true);
 	}
 
 	@Override
-	public long queryAnswerSize(PositiveLiteral query, boolean includeNulls) {
+	public QueryAnswersSize queryAnswerSize(PositiveLiteral query, boolean includeNulls) {
 		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
+		}
 		Validate.notNull(query, "Query atom must not be null!");
 
 		final boolean filterBlanks = !includeNulls;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 
-		long result = -1;
+		long result;
 		try {
 			result = this.vLog.querySize(vLogAtom, true, filterBlanks);
 		} catch (NotStartedException e) {
@@ -615,9 +619,9 @@ public class VLogReasoner implements Reasoner {
 		} catch (NonExistingPredicateException e) {
 			LOGGER.warn("Query uses predicate " + query.getPredicate()
 					+ " that does not occur in the knowledge base. Answer must be empty!");
-			return 0;
+			result = 0;
 		}
-		return result;
+		return new QueryAnswersSize(this.correctness, result);
 	}
 
 	@Override

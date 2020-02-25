@@ -337,14 +337,13 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return queryAnswerSize(query, true), the number of facts in the extension of
 	 * the query.
 	 */
-	long queryAnswerSize(PositiveLiteral query);
+	QueryAnswersSize queryAnswerSize(PositiveLiteral query);
 
 	// TODO add examples to query javadoc
 	/**
 	 * Evaluates an atomic ({@code query}), and returns the number of implicit facts
-	 * loaded into the reasoner and the number of  explicit facts materialised by
-	 * the reasoner.
-	 * <br>
+	 * loaded into the reasoner and the number of explicit facts materialised by the
+	 * reasoner. <br>
 	 * An answer to the query is the terms a fact that matches the {@code query}:
 	 * the fact predicate is the same as the {@code query} predicate, the
 	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
@@ -390,7 +389,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *                     named individuals).
 	 * @return number of facts in the extension of the query.
 	 */
-	long queryAnswerSize(PositiveLiteral query, boolean includeNulls);
+	QueryAnswersSize queryAnswerSize(PositiveLiteral query, boolean includeNulls);
 
 	// TODO add examples to query javadoc
 	/**
