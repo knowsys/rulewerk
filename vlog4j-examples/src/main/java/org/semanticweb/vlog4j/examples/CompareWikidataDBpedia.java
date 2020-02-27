@@ -88,9 +88,9 @@ public class CompareWikidataDBpedia {
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 
-			final double resultCount = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("result(?X)"));
-			final double wdCount = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("inWd(?X)"));
-			final double dbpCount = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("inDbp(?X)"));
+			final double resultCount = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("result(?X)")).getSize();
+			final double wdCount = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("inWd(?X)")).getSize();
+			final double dbpCount = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("inDbp(?X)")).getSize();
 
 			System.out.println("Found " + resultCount + " matching entities overall, of which " + wdCount
 					+ " were in Wikidata and " + dbpCount + " were in DBPedia");

@@ -230,7 +230,7 @@ public class VLog4jClientMaterialize implements Runnable {
 	}
 
 	private void doPrintResults(final Reasoner reasoner, final PositiveLiteral query) {
-		System.out.println("Number of query answers in " + query + ": " + reasoner.queryAnswerSize(query));
+		System.out.println("Number of query answers in " + query + ": " + reasoner.queryAnswerSize(query).getSize());
 	}
 
 	private String queryOputputPath(final PositiveLiteral query) {

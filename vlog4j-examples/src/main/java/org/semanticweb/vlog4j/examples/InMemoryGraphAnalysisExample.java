@@ -87,8 +87,10 @@ public class InMemoryGraphAnalysisExample {
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 
-			final double unreachable = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("unreachable(?X)"));
-			final double triangles = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)"));
+			final double unreachable = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("unreachable(?X)"))
+					.getSize();
+			final double triangles = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)"))
+					.getSize();
 
 			System.out
 					.println("Number of vertices not reachable from vertex 1 by a bi-directional path: " + unreachable);
