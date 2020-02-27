@@ -35,7 +35,7 @@ import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
-import org.semanticweb.vlog4j.core.reasoner.QueryAnswersSize;
+import org.semanticweb.vlog4j.core.reasoner.QueryAnswerSize;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
@@ -596,12 +596,12 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public QueryAnswersSize queryAnswerSize(PositiveLiteral query) {
+	public QueryAnswerSizeImpl queryAnswerSize(PositiveLiteral query) {
 		return queryAnswerSize(query, true);
 	}
 
 	@Override
-	public QueryAnswersSize queryAnswerSize(PositiveLiteral query, boolean includeNulls) {
+	public QueryAnswerSizeImpl queryAnswerSize(PositiveLiteral query, boolean includeNulls) {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
@@ -622,7 +622,7 @@ public class VLogReasoner implements Reasoner {
 			result = 0;
 		}
 		logWarningOnCorrectness();
-		return new QueryAnswersSize(this.correctness, result);
+		return new QueryAnswerSizeImpl(this.correctness, result);
 	}
 
 	@Override

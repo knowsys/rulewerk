@@ -11,6 +11,7 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
+import org.semanticweb.vlog4j.core.reasoner.implementation.QueryAnswerSizeImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 /*
@@ -337,7 +338,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return queryAnswerSize(query, true), the number of facts in the extension of
 	 * the query.
 	 */
-	QueryAnswersSize queryAnswerSize(PositiveLiteral query);
+	QueryAnswerSizeImpl queryAnswerSize(PositiveLiteral query);
 
 	// TODO add examples to query javadoc
 	/**
@@ -380,17 +381,15 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *
 	 * @param query        a {@link PositiveLiteral} representing the query to be
 	 *                     answered.
-	 * @param includeNulls if {@code true}, {@link QueryResult}s containing terms of
-	 *                     type {@link TermType#NAMED_NULL} (representing anonymous
-	 *                     individuals introduced to satisfy rule existentially
-	 *                     quantified variables) will be included. Otherwise, the
-	 *                     answers will only contain the {@link QueryResult}s with
-	 *                     terms of type {@link TermType#CONSTANT} (representing
-	 *                     named individuals).
+	 * @param includeNulls if {@code true}, facts with {@link TermType#NAMED_NULL}
+	 *                     terms will be included in the {@link QueryAnswerSizeImpl}.
+	 *                     Otherwise, facts with {@link TermType#NAMED_NULL} terms
+	 *                     will be ignored.
+	 * 
 	 * @return QueryAnswersSize that contains the Correctness and the number of
 	 *         facts in the extension of the query.
 	 */
-	QueryAnswersSize queryAnswerSize(PositiveLiteral query, boolean includeNulls);
+	QueryAnswerSizeImpl queryAnswerSize(PositiveLiteral query, boolean includeNulls);
 
 	// TODO add examples to query javadoc
 	/**
