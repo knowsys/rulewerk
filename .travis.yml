@@ -32,8 +32,7 @@ jobs:
 
 
 ## Uncomment section below and the packages above to build unreleased snapshots of karmaresearch/vlog into vlog4j-base jar
-# before_install:
-  - sh ./build-vlog-library.sh
+before_install:  - sh ./build-vlog-library.sh
 
 install: mvn install $OPTIONS -DskipTests=true
 
