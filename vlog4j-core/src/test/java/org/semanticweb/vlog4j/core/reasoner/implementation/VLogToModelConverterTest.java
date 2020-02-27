@@ -19,10 +19,11 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * limitations under the License.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
@@ -33,51 +34,61 @@ public class VLogToModelConverterTest {
 
 	@Test
 	public void testAbstractConstantConversion() {
-		karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, "c");
-		Term vLog4jTerm = new AbstractConstantImpl("c");
-		Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
+		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, "c");
+		final Term vLog4jTerm = new AbstractConstantImpl("c");
+		final Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
 		assertEquals(vLog4jTerm, convertedTerm);
 	}
 
 	@Test
 	public void testAbstractConstantIriConversion() {
-		karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
+		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
 				"<http://example.org/test>");
-		Term vLog4jTerm = new AbstractConstantImpl("http://example.org/test");
-		Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
+		final Term vLog4jTerm = new AbstractConstantImpl("http://example.org/test");
+		final Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
 		assertEquals(vLog4jTerm, convertedTerm);
 	}
 
 	@Test
 	public void testDatatypeConstantConversion() {
-		karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
+		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
 				"\"a\"^^<http://example.org/test>");
-		Term vLog4jTerm = new DatatypeConstantImpl("a", "http://example.org/test");
-		Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
+		final Term vLog4jTerm = new DatatypeConstantImpl("a", "http://example.org/test");
+		final Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
 		assertEquals(vLog4jTerm, convertedTerm);
 	}
 
 	@Test
 	public void testLanguageStringConversion() {
-		karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
+		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
 				"\"Test\"@en");
-		Term vLog4jTerm = new LanguageStringConstantImpl("Test", "en");
-		Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
+		final Term vLog4jTerm = new LanguageStringConstantImpl("Test", "en");
+		final Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
 		assertEquals(vLog4jTerm, convertedTerm);
 	}
 
 	@Test
 	public void testNamedNullConversion() {
-		karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK, "_123");
-		Term vLog4jTerm = new NamedNullImpl("_123");
-		Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
+		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK, "_123");
+		final Term vLog4jTerm = new NamedNullImpl("_123");
+		final Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
 		assertEquals(vLog4jTerm, convertedTerm);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testVariableConversion() {
-		karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X");
+		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "X");
 		VLogToModelConverter.toTerm(vLogTerm);
+	}
+
+	@Test
+	public void testAbstractConstantContainingQuoteExpression() {
+		final String constName = "\"";
+		final Term convertedTerm = VLogToModelConverter
+				.toTerm(new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, constName));
+		assertTrue(convertedTerm.isConstant());
+		assertTrue(convertedTerm instanceof AbstractConstant);
+		assertEquals(constName, convertedTerm.getName());
 	}
 
 }

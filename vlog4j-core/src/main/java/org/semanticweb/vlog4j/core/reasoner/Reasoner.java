@@ -1,6 +1,8 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
@@ -86,6 +88,31 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return the reasoner's knowledge base
 	 */
 	KnowledgeBase getKnowledgeBase();
+
+	/**
+	 * Exports all the (explicit and implicit) facts inferred during reasoning of
+	 * the knowledge base to an OutputStream.
+	 * 
+	 * @param an
+	 *            OutputStream for the facts to be written to.
+	 * @return the correctness of the query answers, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
+	 * @throws IOException
+	 */
+	Correctness writeInferences(OutputStream stream) throws IOException;
+
+	/**
+	 * Exports all the (explicit and implicit) facts inferred during reasoning of
+	 * the knowledge base to a desired file.
+	 *
+	 * @param a
+	 *            String of the file path for the facts to be written to.
+	 * @return the correctness of the query answers, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	Correctness writeInferences(String filePath) throws FileNotFoundException, IOException;
 
 	/**
 	 * Sets the algorithm that will be used for reasoning over the knowledge base.

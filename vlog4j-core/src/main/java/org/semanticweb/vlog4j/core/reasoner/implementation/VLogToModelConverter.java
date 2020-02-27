@@ -26,10 +26,11 @@ import java.util.List;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Term;
-import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.vlog4j.core.model.implementation.LanguageStringConstantImpl;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
+import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
 /**
  * Utility class with static methods for converting from VLog internal model
@@ -63,8 +64,8 @@ class VLogToModelConverter {
 	 *         in given {@code vLogTerms} at the same position.
 	 */
 	static List<Term> toTermList(karmaresearch.vlog.Term[] vLogTerms) {
-		List<Term> terms = new ArrayList<>(vLogTerms.length);
-		for (karmaresearch.vlog.Term vLogTerm : vLogTerms) {
+		final List<Term> terms = new ArrayList<>(vLogTerms.length);
+		for (final karmaresearch.vlog.Term vLogTerm : vLogTerms) {
 			terms.add(toTerm(vLogTerm));
 		}
 		return terms;
@@ -79,7 +80,7 @@ class VLogToModelConverter {
 	 *         {@code vLogTerm} and of the corresponding type.
 	 */
 	static Term toTerm(karmaresearch.vlog.Term vLogTerm) {
-		String name = vLogTerm.getName();
+		final String name = vLogTerm.getName();
 		switch (vLogTerm.getTermType()) {
 		case CONSTANT:
 			return toConstant(name);
@@ -100,24 +101,32 @@ class VLogToModelConverter {
 	 * @return {@link Constant} object
 	 */
 	private static Constant toConstant(String vLogConstantName) {
-		if (vLogConstantName.charAt(0) == '<' && vLogConstantName.charAt(vLogConstantName.length() - 1) == '>') {
+		final Constant constant;
+		if (vLogConstantName.charAt(0) == Serializer.LESS_THAN
+				&& vLogConstantName.charAt(vLogConstantName.length() - 1) == Serializer.MORE_THAN) {
 			// strip <> off of IRIs
-			return new AbstractConstantImpl(vLogConstantName.substring(1, vLogConstantName.length() - 1));
-		} else if (vLogConstantName.charAt(0) == '"') {
-			if (vLogConstantName.charAt(vLogConstantName.length() - 1) == '>') {
-				int startTypeIdx = vLogConstantName.lastIndexOf('<', vLogConstantName.length() - 2);
-				String datatype = vLogConstantName.substring(startTypeIdx + 1, vLogConstantName.length() - 1);
-				String lexicalValue = vLogConstantName.substring(1, startTypeIdx - 3);
-				return new DatatypeConstantImpl(lexicalValue, datatype);
+			constant = new AbstractConstantImpl(vLogConstantName.substring(1, vLogConstantName.length() - 1));
+		} else if (vLogConstantName.charAt(0) == Serializer.QUOTE) {
+			if (vLogConstantName.charAt(vLogConstantName.length() - 1) == Serializer.MORE_THAN) {
+				final int startTypeIdx = vLogConstantName.lastIndexOf(Serializer.LESS_THAN,
+						vLogConstantName.length() - 2);
+				final String datatype = vLogConstantName.substring(startTypeIdx + 1, vLogConstantName.length() - 1);
+				final String lexicalValue = vLogConstantName.substring(1, startTypeIdx - 3);
+				constant = new DatatypeConstantImpl(lexicalValue, datatype);
 			} else {
-				int startTypeIdx = vLogConstantName.lastIndexOf('@', vLogConstantName.length() - 2);
-				String languageTag = vLogConstantName.substring(startTypeIdx + 1, vLogConstantName.length());
-				String string = vLogConstantName.substring(1, startTypeIdx - 1);
-				return new LanguageStringConstantImpl(string, languageTag);
+				final int startTypeIdx = vLogConstantName.lastIndexOf(Serializer.AT, vLogConstantName.length() - 2);
+				if (startTypeIdx > -1) {
+					final String languageTag = vLogConstantName.substring(startTypeIdx + 1, vLogConstantName.length());
+					final String string = vLogConstantName.substring(1, startTypeIdx - 1);
+					constant = new LanguageStringConstantImpl(string, languageTag);
+				} else {
+					constant = new AbstractConstantImpl(vLogConstantName);
+				}
 			}
 		} else {
-			return new AbstractConstantImpl(vLogConstantName);
+			constant = new AbstractConstantImpl(vLogConstantName);
 		}
+		return constant;
 	}
 
 }
