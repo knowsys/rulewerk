@@ -135,10 +135,15 @@ public class QueryAnswerSizeTest {
 			assertEquals(2, reasoner.queryAnswerSize(Qx, false).getSize());
 			assertEquals(0, reasoner.queryAnswerSize(Rxy, true).getSize());
 			assertEquals(0, reasoner.queryAnswerSize(Rxy, false).getSize());
+			assertEquals(1, reasoner.queryAnswerSize(factPc, true).getSize());
+			assertEquals(1, reasoner.queryAnswerSize(factPd, true).getSize());
+			assertEquals(1, reasoner.queryAnswerSize(factQc, true).getSize());
+			assertEquals(1, reasoner.queryAnswerSize(factQd, true).getSize());
 			assertEquals(1, reasoner.queryAnswerSize(factPc, false).getSize());
 			assertEquals(1, reasoner.queryAnswerSize(factPd, false).getSize());
 			assertEquals(1, reasoner.queryAnswerSize(factQc, false).getSize());
 			assertEquals(1, reasoner.queryAnswerSize(factQd, false).getSize());
+
 		}
 	}
 
