@@ -387,7 +387,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *                     answers will only contain the {@link QueryResult}s with
 	 *                     terms of type {@link TermType#CONSTANT} (representing
 	 *                     named individuals).
-	 * @return number of facts in the extension of the query.
+	 * @return QueryAnswersSize that contains the Correctness and the number of
+	 *         facts in the extension of the query.
 	 */
 	QueryAnswersSize queryAnswerSize(PositiveLiteral query, boolean includeNulls);
 
