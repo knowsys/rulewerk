@@ -1,10 +1,10 @@
 language: java
-matrix:
+os: linux
+jobs:
     include:
         - os: linux
           dist: bionic
-          jdk:
-              - openjdk11
+          jdk: openjdk11
           after_success:
               - mvn clean test jacoco:report coveralls:report
 
@@ -19,17 +19,12 @@ matrix:
                       - g++-6
                       - libstdc++6
           env: CC=gcc-6 CXX=g++-6
-          jdk:
-              - openjdk8
+          jdk: openjdk8
 
         - os: osx
           osx_image: xcode10.2
-
-
-jobs:
     allow_failures:
         - dist: trusty
-
 
 ## Uncomment section below and the packages above to build unreleased snapshots of karmaresearch/vlog into vlog4j-base jar
 before_install:
@@ -38,8 +33,6 @@ before_install:
     - "[ -x /bin/dash ] && /bin/dash ./build-vlog-library.sh || /bin/sh ./build-vlog-library.sh"
 
 install: mvn install $OPTIONS -DskipTests=true
-
-sudo: false
 
 cache:
   directories:
