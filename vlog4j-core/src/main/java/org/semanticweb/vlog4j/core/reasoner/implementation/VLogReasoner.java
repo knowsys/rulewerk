@@ -621,6 +621,7 @@ public class VLogReasoner implements Reasoner {
 					+ " that does not occur in the knowledge base. Answer must be empty!");
 			result = 0;
 		}
+		logWarningOnCorrectness();
 		return new QueryAnswersSize(this.correctness, result);
 	}
 
