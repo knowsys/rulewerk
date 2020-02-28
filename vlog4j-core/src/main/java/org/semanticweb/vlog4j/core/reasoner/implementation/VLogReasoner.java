@@ -246,8 +246,8 @@ public class VLogReasoner implements Reasoner {
 	 * Checks if the loaded external data sources do in fact contain data of the
 	 * correct arity.
 	 *
-	 * @throws IncompatiblePredicateArityException
-	 *             to indicate a problem (non-checked exception)
+	 * @throws IncompatiblePredicateArityException to indicate a problem
+	 *                                             (non-checked exception)
 	 */
 	void validateDataSourcePredicateArities(final VLogKnowledgeBase vLogKB) throws IncompatiblePredicateArityException {
 
@@ -260,13 +260,11 @@ public class VLogReasoner implements Reasoner {
 	 * Checks if the loaded external data for a given source does in fact contain
 	 * data of the correct arity for the given predidate.
 	 *
-	 * @param predicate
-	 *            the predicate for which data is loaded
-	 * @param dataSource
-	 *            the data source used
+	 * @param predicate  the predicate for which data is loaded
+	 * @param dataSource the data source used
 	 *
-	 * @throws IncompatiblePredicateArityException
-	 *             to indicate a problem (non-checked exception)
+	 * @throws IncompatiblePredicateArityException to indicate a problem
+	 *                                             (non-checked exception)
 	 */
 	void validateDataSourcePredicateArity(Predicate predicate, DataSource dataSource)
 			throws IncompatiblePredicateArityException {
@@ -409,12 +407,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public QueryAnswerSizeImpl queryAnswerSize(PositiveLiteral query) {
-		return queryAnswerSize(query, true);
-	}
-
-	@Override
-	public QueryAnswerSizeImpl queryAnswerSize(PositiveLiteral query, boolean includeNulls) {
+	public QueryAnswerSizeImpl countQueryAnswers(PositiveLiteral query, boolean includeNulls) {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");

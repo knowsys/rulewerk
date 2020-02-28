@@ -81,9 +81,9 @@ public class QueryAnswerSizeTest {
 		final KnowledgeBase kb = new KnowledgeBase();
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(0, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getSize());
 		}
 	}
 
@@ -93,9 +93,9 @@ public class QueryAnswerSizeTest {
 		kb.addStatement(QxPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(0, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getSize());
 		}
 	}
 
@@ -105,9 +105,9 @@ public class QueryAnswerSizeTest {
 		kb.addStatement(RxyQyPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(0, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getSize());
 		}
 	}
 
@@ -117,9 +117,9 @@ public class QueryAnswerSizeTest {
 		kb.addStatements(factPc, factPd);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(2, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getSize());
 		}
 	}
 
@@ -129,20 +129,20 @@ public class QueryAnswerSizeTest {
 		kb.addStatements(factPc, factPd, QxPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(2, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Px, false).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx, false).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, false).getSize());
-			assertEquals(1, reasoner.queryAnswerSize(factPc, true).getSize());
-			assertEquals(1, reasoner.queryAnswerSize(factPd, true).getSize());
-			assertEquals(1, reasoner.queryAnswerSize(factQc, true).getSize());
-			assertEquals(1, reasoner.queryAnswerSize(factQd, true).getSize());
-			assertEquals(1, reasoner.queryAnswerSize(factPc, false).getSize());
-			assertEquals(1, reasoner.queryAnswerSize(factPd, false).getSize());
-			assertEquals(1, reasoner.queryAnswerSize(factQc, false).getSize());
-			assertEquals(1, reasoner.queryAnswerSize(factQd, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, false).getSize());
+			assertEquals(1, reasoner.countQueryAnswers(factPc, true).getSize());
+			assertEquals(1, reasoner.countQueryAnswers(factPd, true).getSize());
+			assertEquals(1, reasoner.countQueryAnswers(factQc, true).getSize());
+			assertEquals(1, reasoner.countQueryAnswers(factQd, true).getSize());
+			assertEquals(1, reasoner.countQueryAnswers(factPc, false).getSize());
+			assertEquals(1, reasoner.countQueryAnswers(factPd, false).getSize());
+			assertEquals(1, reasoner.countQueryAnswers(factQc, false).getSize());
+			assertEquals(1, reasoner.countQueryAnswers(factQd, false).getSize());
 
 		}
 	}
@@ -153,15 +153,15 @@ public class QueryAnswerSizeTest {
 		kb.addStatements(factPc, factPd, RxyQyPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(2, reasoner.queryAnswerSize(Px).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Px, false).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Qx, false).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Rxy).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Rxy, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Qx, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Rxy).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Rxy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, false).getSize());
 		}
 	}
 
@@ -171,15 +171,15 @@ public class QueryAnswerSizeTest {
 		kb.addStatements(factQe, factQf, RxyQyPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(0, reasoner.queryAnswerSize(Px).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Px, false).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx, false).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Px).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Px, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, false).getSize());
 		}
 	}
 
@@ -189,15 +189,15 @@ public class QueryAnswerSizeTest {
 		kb.addStatements(factQe, factQf, RxyQyPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(0, reasoner.queryAnswerSize(Px).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Px, false).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx, false).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Px).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Px, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, false).getSize());
 		}
 	}
 
@@ -207,15 +207,15 @@ public class QueryAnswerSizeTest {
 		kb.addStatements(factPc, factPd, factQe, factQf, QxPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(2, reasoner.queryAnswerSize(Px).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Px, false).getSize());
-			assertEquals(4, reasoner.queryAnswerSize(Qx).getSize());
-			assertEquals(4, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(4, reasoner.queryAnswerSize(Qx, false).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, false).getSize());
+			assertEquals(4, reasoner.countQueryAnswers(Qx).getSize());
+			assertEquals(4, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(4, reasoner.countQueryAnswers(Qx, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, false).getSize());
 		}
 	}
 
@@ -225,25 +225,25 @@ public class QueryAnswerSizeTest {
 		kb.addStatements(factPc, factPd, factQe, factQf, RxyQyPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(2, reasoner.queryAnswerSize(Px).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Px, false).getSize());
-			assertEquals(4, reasoner.queryAnswerSize(Qx).getSize());
-			assertEquals(4, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Qx, false).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Rxy).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Rxy, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, false).getSize());
+			assertEquals(4, reasoner.countQueryAnswers(Qx).getSize());
+			assertEquals(4, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Qx, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Rxy).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Rxy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, false).getSize());
 
-			assertEquals(1, reasoner.queryAnswerSize(Rdy, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rey, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxd, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxe, true).getSize());
+			assertEquals(1, reasoner.countQueryAnswers(Rdy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rey, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxd, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxe, true).getSize());
 
-			assertEquals(0, reasoner.queryAnswerSize(Rdy, false).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rey, false).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxd, false).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxe, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rdy, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rey, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxd, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxe, false).getSize());
 		}
 	}
 
@@ -253,25 +253,25 @@ public class QueryAnswerSizeTest {
 		kb.addStatements(factPc, factPd, factQe, factQf, QxPx, RxyQyPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(2, reasoner.queryAnswerSize(Px).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Px, false).getSize());
-			assertEquals(6, reasoner.queryAnswerSize(Qx).getSize());
-			assertEquals(6, reasoner.queryAnswerSize(Qx, true).getSize());
-			assertEquals(4, reasoner.queryAnswerSize(Qx, false).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Rxy).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Rxy, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxy, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, false).getSize());
+			assertEquals(6, reasoner.countQueryAnswers(Qx).getSize());
+			assertEquals(6, reasoner.countQueryAnswers(Qx, true).getSize());
+			assertEquals(4, reasoner.countQueryAnswers(Qx, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Rxy).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Rxy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxy, false).getSize());
 
-			assertEquals(1, reasoner.queryAnswerSize(Rdy, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rey, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxd, true).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxe, true).getSize());
+			assertEquals(1, reasoner.countQueryAnswers(Rdy, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rey, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxd, true).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxe, true).getSize());
 
-			assertEquals(0, reasoner.queryAnswerSize(Rdy, false).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rey, false).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxd, false).getSize());
-			assertEquals(0, reasoner.queryAnswerSize(Rxe, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rdy, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rey, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxd, false).getSize());
+			assertEquals(0, reasoner.countQueryAnswers(Rxe, false).getSize());
 		}
 	}
 
@@ -281,17 +281,17 @@ public class QueryAnswerSizeTest {
 		kb.addStatements(factPc, factPd, RxxRxyRyyPx);
 		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			assertEquals(2, reasoner.queryAnswerSize(Px, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Px, false).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Px, false).getSize());
 
-			assertEquals(4, reasoner.queryAnswerSize(Rxx, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Rxx, false).getSize());
+			assertEquals(4, reasoner.countQueryAnswers(Rxx, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Rxx, false).getSize());
 
-			assertEquals(6, reasoner.queryAnswerSize(Rxy, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Rxy, false).getSize());
+			assertEquals(6, reasoner.countQueryAnswers(Rxy, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Rxy, false).getSize());
 
-			assertEquals(4, reasoner.queryAnswerSize(Ryy, true).getSize());
-			assertEquals(2, reasoner.queryAnswerSize(Ryy, false).getSize());
+			assertEquals(4, reasoner.countQueryAnswers(Ryy, true).getSize());
+			assertEquals(2, reasoner.countQueryAnswers(Ryy, false).getSize());
 
 		}
 	}

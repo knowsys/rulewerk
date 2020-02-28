@@ -93,8 +93,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
 	 * the knowledge base to an OutputStream.
 	 * 
-	 * @param an
-	 *            OutputStream for the facts to be written to.
+	 * @param an OutputStream for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
@@ -105,8 +104,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
 	 * the knowledge base to a desired file.
 	 *
-	 * @param a
-	 *            String of the file path for the facts to be written to.
+	 * @param a String of the file path for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
@@ -359,13 +357,16 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 */
 	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeNulls);
 
-	/*
+	/**
 	 * @param query a {@link PositiveLiteral} representing the query to be answered.
 	 *
 	 * @return queryAnswerSize(query, true), the number of facts in the extension of
-	 * the query.
+	 *         the query.
 	 */
-	QueryAnswerSizeImpl queryAnswerSize(PositiveLiteral query);
+
+	default QueryAnswerSizeImpl countQueryAnswers(PositiveLiteral query) {
+		return countQueryAnswers(query, true);
+	}
 
 	// TODO add examples to query javadoc
 	/**
@@ -409,14 +410,14 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @param query        a {@link PositiveLiteral} representing the query to be
 	 *                     answered.
 	 * @param includeNulls if {@code true}, facts with {@link TermType#NAMED_NULL}
-	 *                     terms will be included in the {@link QueryAnswerSizeImpl}.
-	 *                     Otherwise, facts with {@link TermType#NAMED_NULL} terms
-	 *                     will be ignored.
+	 *                     terms will be included in the
+	 *                     {@link QueryAnswerSizeImpl}. Otherwise, facts with
+	 *                     {@link TermType#NAMED_NULL} terms will be ignored.
 	 * 
 	 * @return QueryAnswersSize that contains the Correctness and the number of
 	 *         facts in the extension of the query.
 	 */
-	QueryAnswerSizeImpl queryAnswerSize(PositiveLiteral query, boolean includeNulls);
+	QueryAnswerSizeImpl countQueryAnswers(PositiveLiteral query, boolean includeNulls);
 
 	// TODO add examples to query javadoc
 	/**

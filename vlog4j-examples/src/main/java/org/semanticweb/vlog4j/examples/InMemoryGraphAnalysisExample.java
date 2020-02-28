@@ -87,9 +87,9 @@ public class InMemoryGraphAnalysisExample {
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 
-			final double unreachable = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("unreachable(?X)"))
+			final double unreachable = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("unreachable(?X)"))
 					.getSize();
-			final double triangles = reasoner.queryAnswerSize(RuleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)"))
+			final double triangles = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)"))
 					.getSize();
 
 			System.out
