@@ -13,7 +13,6 @@ import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.QueryResult;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Variable;
-import org.semanticweb.vlog4j.core.reasoner.implementation.QueryAnswerSizeImpl;
 import org.semanticweb.vlog4j.core.reasoner.implementation.VLogReasoner;
 
 /*
@@ -360,11 +359,13 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * @param query a {@link PositiveLiteral} representing the query to be answered.
 	 *
-	 * @return queryAnswerSize(query, true), the number of facts in the extension of
-	 *         the query.
+	 * @return countQueryAnswers(query, true), i.e., the number of facts in the
+	 *         extension of the query, including answers with NamedNull terms that
+	 *         have been introduced during reasoning. See also
+	 *         {@link Reasoner#countQueryAnswers(PositiveLiteral, boolean)}
 	 */
 
-	default QueryAnswerSizeImpl countQueryAnswers(PositiveLiteral query) {
+	default QueryAnswerSize countQueryAnswers(PositiveLiteral query) {
 		return countQueryAnswers(query, true);
 	}
 
@@ -417,7 +418,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return QueryAnswersSize that contains the Correctness and the number of
 	 *         facts in the extension of the query.
 	 */
-	QueryAnswerSizeImpl countQueryAnswers(PositiveLiteral query, boolean includeNulls);
+	QueryAnswerSize countQueryAnswers(PositiveLiteral query, boolean includeNulls);
 
 	// TODO add examples to query javadoc
 	/**
