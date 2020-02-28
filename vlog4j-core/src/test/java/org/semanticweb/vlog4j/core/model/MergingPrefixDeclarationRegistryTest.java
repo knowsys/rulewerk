@@ -20,19 +20,15 @@ package org.semanticweb.vlog4j.core.model;
  * #L%
  */
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.util.Arrays;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
-import org.semanticweb.vlog4j.core.model.implementation.MergeablePrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.implementation.MergingPrefixDeclarationRegistry;
 
-public class MergeablePrefixDeclarationsTest {
-	private MergeablePrefixDeclarations prefixDeclarations;
+public class MergingPrefixDeclarationRegistryTest {
+	private MergingPrefixDeclarationRegistry prefixDeclarations;
 
 	private static final String BASE = "https://example.org/";
 	private static final String UNRELATED = "https://example.com/";
@@ -42,39 +38,39 @@ public class MergeablePrefixDeclarationsTest {
 
 	@Before
 	public void init() {
-		prefixDeclarations = new MergeablePrefixDeclarations();
+		prefixDeclarations = new MergingPrefixDeclarationRegistry();
 	}
 
 	@Test
-	public void setBase_changingBase_succeeds() {
-		prefixDeclarations.setBase(BASE);
-		assertEquals(BASE, prefixDeclarations.getBase());
-		prefixDeclarations.setBase(MORE_SPECIFIC);
-		assertEquals(MORE_SPECIFIC, prefixDeclarations.getBase());
+	public void setBaseIri_changingBase_succeeds() {
+		prefixDeclarations.setBaseIri(BASE);
+		assertEquals(BASE, prefixDeclarations.getBaseIri());
+		prefixDeclarations.setBaseIri(MORE_SPECIFIC);
+		assertEquals(MORE_SPECIFIC, prefixDeclarations.getBaseIri());
 	}
 
 	@Test
-	public void setBase_redeclareSameBase_succeeds() {
-		prefixDeclarations.setBase(BASE);
-		assertEquals(BASE, prefixDeclarations.getBase());
-		prefixDeclarations.setBase(BASE);
-		assertEquals(BASE, prefixDeclarations.getBase());
+	public void setBaseIri_redeclareSameBase_succeeds() {
+		prefixDeclarations.setBaseIri(BASE);
+		assertEquals(BASE, prefixDeclarations.getBaseIri());
+		prefixDeclarations.setBaseIri(BASE);
+		assertEquals(BASE, prefixDeclarations.getBaseIri());
 	}
 
 	@Test
-	public void absolutize_noBase_identical() {
-		assertEquals(RELATIVE, prefixDeclarations.absolutize(RELATIVE));
+	public void absolutizeIri_noBase_identical() throws PrefixDeclarationException {
+		assertEquals(RELATIVE, prefixDeclarations.absolutizeIri(RELATIVE));
 	}
 
 	@Test
-	public void absolutize_base_absoluteIri() {
-		prefixDeclarations.setBase(BASE);
-		assertEquals(BASE + RELATIVE, prefixDeclarations.absolutize(RELATIVE));
+	public void absolutizeIri_base_absoluteIri() throws PrefixDeclarationException {
+		prefixDeclarations.setBaseIri(BASE);
+		assertEquals(BASE + RELATIVE, prefixDeclarations.absolutizeIri(RELATIVE));
 	}
 
 	@Test
-	public void absolutize_absoluteIri_identical() {
-		assertEquals(BASE, prefixDeclarations.absolutize(BASE));
+	public void absolutizeIri_absoluteIri_identical() throws PrefixDeclarationException {
+		assertEquals(BASE, prefixDeclarations.absolutizeIri(BASE));
 	}
 
 	@Test(expected = PrefixDeclarationException.class)
@@ -84,51 +80,42 @@ public class MergeablePrefixDeclarationsTest {
 
 	@Test
 	public void resolvePrefixedName_knownPrefix_succeeds() throws PrefixDeclarationException {
-		prefixDeclarations.setPrefix("eg:", BASE);
+		prefixDeclarations.setPrefixIri("eg:", BASE);
 		assertEquals(BASE + RELATIVE, prefixDeclarations.resolvePrefixedName("eg:" + RELATIVE));
 	}
 
 	@Test
 	public void resolvePrefixedName_unresolveAbsoluteIri_doesRoundTrip() throws PrefixDeclarationException {
 		String prefix = "eg:";
-		prefixDeclarations.setPrefix(prefix, BASE);
+		prefixDeclarations.setPrefixIri(prefix, BASE);
 		String resolved = BASE + RELATIVE;
 		String unresolved = prefixDeclarations.unresolveAbsoluteIri(resolved);
 		assertEquals(resolved, prefixDeclarations.resolvePrefixedName(unresolved));
 	}
 
 	@Test
-	public void setPrefix_redeclarePrefix_succeeds() throws PrefixDeclarationException {
-		prefixDeclarations.setPrefix("eg:", BASE);
-		prefixDeclarations.setPrefix("eg:", MORE_SPECIFIC);
-		assertEquals(BASE, prefixDeclarations.getPrefix("eg:"));
+	public void setPrefixIri_redeclarePrefix_succeeds() throws PrefixDeclarationException {
+		prefixDeclarations.setPrefixIri("eg:", BASE);
+		prefixDeclarations.setPrefixIri("eg:", MORE_SPECIFIC);
+		assertEquals(BASE, prefixDeclarations.getPrefixIri("eg:"));
 	}
 
 	@Test
 	public void getFreshPrefix_registeredPrefix_returnsFreshPrefix() throws PrefixDeclarationException {
 		String prefix = "vlog4j_generated_";
-		prefixDeclarations.setPrefix(prefix + "0:", BASE + "generated/");
-		prefixDeclarations.setPrefix("eg:", BASE);
-		prefixDeclarations.setPrefix("eg:", MORE_SPECIFIC);
+		prefixDeclarations.setPrefixIri(prefix + "0:", BASE + "generated/");
+		prefixDeclarations.setPrefixIri("eg:", BASE);
+		prefixDeclarations.setPrefixIri("eg:", MORE_SPECIFIC);
 
-		assertEquals(MORE_SPECIFIC, prefixDeclarations.getPrefix(prefix + "1:"));
+		assertEquals(MORE_SPECIFIC, prefixDeclarations.getPrefixIri(prefix + "1:"));
 	}
 
 	@Test
-	public void mergeablePrefixDeclarations_constructor_succeeds() throws PrefixDeclarationException {
-		this.prefixDeclarations.setPrefix("eg:", MORE_SPECIFIC);
-		MergeablePrefixDeclarations prefixDeclarations = new MergeablePrefixDeclarations(this.prefixDeclarations);
-		assertEquals(MORE_SPECIFIC, prefixDeclarations.getPrefix("eg:"));
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void mergePrefixDeclarations_getPrefixUnexpectedlyThrows_throws() throws PrefixDeclarationException {
-		PrefixDeclarations prefixDeclarations = mock(PrefixDeclarations.class);
-
-		when(prefixDeclarations.iterator()).thenReturn(Arrays.asList("eg:", "ex:").iterator());
-		when(prefixDeclarations.getPrefix(anyString())).thenThrow(PrefixDeclarationException.class);
-
-		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
+	public void mergingPrefixDeclarationRegistry_constructor_succeeds() throws PrefixDeclarationException {
+		this.prefixDeclarations.setPrefixIri("eg:", MORE_SPECIFIC);
+		MergingPrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry(
+				this.prefixDeclarations);
+		assertEquals(MORE_SPECIFIC, prefixDeclarations.getPrefixIri("eg:"));
 	}
 
 	@Test
@@ -139,49 +126,49 @@ public class MergeablePrefixDeclarationsTest {
 	@Test
 	public void unresolveAbsoluteIri_declaredPrefix_succeeds() {
 		assertEquals(MORE_SPECIFIC, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
-		prefixDeclarations.setPrefix("eg:", BASE);
+		prefixDeclarations.setPrefixIri("eg:", BASE);
 		assertEquals("eg:example/", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_unrelatedPrefix_identical() {
-		prefixDeclarations.setPrefix("eg:", UNRELATED);
+		prefixDeclarations.setPrefixIri("eg:", UNRELATED);
 		assertEquals(MORE_SPECIFIC, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_unrelatedAndRelatedPrefixes_succeeds() {
-		prefixDeclarations.setPrefix("ex:", UNRELATED);
-		prefixDeclarations.setPrefix("eg:", BASE);
+		prefixDeclarations.setPrefixIri("ex:", UNRELATED);
+		prefixDeclarations.setPrefixIri("eg:", BASE);
 		assertEquals("eg:example/", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_multipleMatchingPrefixes_longestMatchWins() {
-		prefixDeclarations.setPrefix("eg:", BASE);
-		prefixDeclarations.setPrefix("ex:", MORE_SPECIFIC);
+		prefixDeclarations.setPrefixIri("eg:", BASE);
+		prefixDeclarations.setPrefixIri("ex:", MORE_SPECIFIC);
 		assertEquals("ex:" + RELATIVE, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE));
-		prefixDeclarations.setPrefix("er:", EVEN_MORE_SPECIFIC);
+		prefixDeclarations.setPrefixIri("er:", EVEN_MORE_SPECIFIC);
 		assertEquals("er:test", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_exactPrefixMatch_identical() {
-		prefixDeclarations.setPrefix("eg:", BASE);
+		prefixDeclarations.setPrefixIri("eg:", BASE);
 		assertEquals(BASE, prefixDeclarations.unresolveAbsoluteIri(BASE));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_baseIsMoreSpecific_baseWins() {
-		prefixDeclarations.setBase(MORE_SPECIFIC);
-		prefixDeclarations.setPrefix("eg:", BASE);
+		prefixDeclarations.setBaseIri(MORE_SPECIFIC);
+		prefixDeclarations.setPrefixIri("eg:", BASE);
 		assertEquals(RELATIVE, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_resolvePrefixedName_doesRoundTrip() throws PrefixDeclarationException {
 		String prefix = "eg:";
-		prefixDeclarations.setPrefix(prefix, BASE);
+		prefixDeclarations.setPrefixIri(prefix, BASE);
 		String unresolved = prefix + RELATIVE;
 		String resolved = prefixDeclarations.resolvePrefixedName(unresolved);
 		assertEquals(unresolved, prefixDeclarations.unresolveAbsoluteIri(resolved));

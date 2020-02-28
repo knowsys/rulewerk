@@ -33,7 +33,7 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
@@ -42,7 +42,7 @@ import org.semanticweb.vlog4j.core.model.implementation.RenamedNamedNull;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.DefaultParserConfiguration;
 import org.semanticweb.vlog4j.parser.DirectiveArgument;
-import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
+import org.semanticweb.vlog4j.parser.LocalPrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
 
@@ -62,7 +62,7 @@ import org.semanticweb.vlog4j.parser.ParsingException;
  *
  */
 public class JavaCCParserBase {
-	private PrefixDeclarations prefixDeclarations;
+	private PrefixDeclarationRegistry prefixDeclarationRegistry;
 
 	private KnowledgeBase knowledgeBase;
 	private ParserConfiguration parserConfiguration;
@@ -135,14 +135,14 @@ public class JavaCCParserBase {
 
 	public JavaCCParserBase() {
 		this.knowledgeBase = new KnowledgeBase();
-		this.prefixDeclarations = new LocalPrefixDeclarations();
+		this.prefixDeclarationRegistry = new LocalPrefixDeclarationRegistry();
 		this.parserConfiguration = new DefaultParserConfiguration();
 	}
 
 	AbstractConstant createConstant(String lexicalForm) throws ParseException {
 		String absoluteIri;
 		try {
-			absoluteIri = prefixDeclarations.absolutize(lexicalForm);
+			absoluteIri = absolutizeIri(lexicalForm);
 		} catch (PrefixDeclarationException e) {
 			throw makeParseExceptionWithCause("Failed to parse IRI", e);
 		}
@@ -334,12 +334,12 @@ public class JavaCCParserBase {
 		this.namedNullNamespace = namedNullNamespace;
 	}
 
-	public void setPrefixDeclarations(PrefixDeclarations prefixDeclarations) {
-		this.prefixDeclarations = prefixDeclarations;
+	public void setPrefixDeclarationRegistry(PrefixDeclarationRegistry prefixDeclarationRegistry) {
+		this.prefixDeclarationRegistry = prefixDeclarationRegistry;
 	}
 
-	public PrefixDeclarations getPrefixDeclarations() {
-		return prefixDeclarations;
+	public PrefixDeclarationRegistry getPrefixDeclarationRegistry() {
+		return this.prefixDeclarationRegistry;
 	}
 
 	DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(String syntacticForm,
@@ -376,18 +376,18 @@ public class JavaCCParserBase {
 	}
 
 	void setBase(String baseIri) throws PrefixDeclarationException {
-		prefixDeclarations.setBase(baseIri);
+		prefixDeclarationRegistry.setBaseIri(baseIri);
 	}
 
 	void setPrefix(String prefixName, String baseIri) throws PrefixDeclarationException {
-		prefixDeclarations.setPrefix(prefixName, baseIri);
+		prefixDeclarationRegistry.setPrefixIri(prefixName, baseIri);
 	}
 
 	String absolutizeIri(String iri) throws PrefixDeclarationException {
-		return prefixDeclarations.absolutize(iri);
+		return prefixDeclarationRegistry.absolutizeIri(iri);
 	}
 
 	String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException {
-		return prefixDeclarations.resolvePrefixedName(prefixedName);
+		return prefixDeclarationRegistry.resolvePrefixedName(prefixedName);
 	}
 }

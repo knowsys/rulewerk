@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
@@ -97,7 +97,7 @@ public class TermImplTest {
 
 	@Test
 	public void datatypeConstantGetterTest() {
-		DatatypeConstant c = new DatatypeConstantImpl("c", PrefixDeclarations.XSD_STRING);
+		DatatypeConstant c = new DatatypeConstantImpl("c", PrefixDeclarationRegistry.XSD_STRING);
 		assertEquals("c", c.getLexicalValue());
 		assertEquals("http://www.w3.org/2001/XMLSchema#string", c.getDatatype());
 		assertEquals("\"c\"^^<http://www.w3.org/2001/XMLSchema#string>", c.getName());
@@ -142,7 +142,7 @@ public class TermImplTest {
 
 	@Test
 	public void datatypeConstantToStringTest() {
-		DatatypeConstantImpl c = new DatatypeConstantImpl("c", PrefixDeclarations.XSD_STRING);
+		DatatypeConstantImpl c = new DatatypeConstantImpl("c", PrefixDeclarationRegistry.XSD_STRING);
 		assertEquals("\"c\"", c.toString());
 	}
 

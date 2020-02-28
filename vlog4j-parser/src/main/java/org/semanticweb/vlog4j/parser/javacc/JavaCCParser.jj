@@ -60,7 +60,7 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
@@ -318,9 +318,9 @@ Term term(FormulaContext context) throws PrefixDeclarationException : {
 Constant NumericLiteral() : {
     Token t;
 } {
-    t = < INTEGER > { return createConstant(t.image, PrefixDeclarations.XSD_INTEGER); }
-  | t = < DECIMAL > { return createConstant(t.image, PrefixDeclarations.XSD_DECIMAL); }
-  | t = < DOUBLE > { return createConstant(t.image, PrefixDeclarations.XSD_DOUBLE); }
+    t = < INTEGER > { return createConstant(t.image, PrefixDeclarationRegistry.XSD_INTEGER); }
+  | t = < DECIMAL > { return createConstant(t.image, PrefixDeclarationRegistry.XSD_DECIMAL); }
+  | t = < DOUBLE > { return createConstant(t.image, PrefixDeclarationRegistry.XSD_DOUBLE); }
 }
 
 Constant RDFLiteral() throws PrefixDeclarationException : {

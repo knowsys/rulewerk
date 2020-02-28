@@ -28,7 +28,7 @@ import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -134,7 +134,7 @@ public class ParserConfiguration {
 	 * @return the {@link Constant} corresponding to the given arguments.
 	 */
 	public Constant parseDatatypeConstant(final String lexicalForm, final String datatype) throws ParsingException {
-		final String type = ((datatype != null) ? datatype : PrefixDeclarations.XSD_STRING);
+		final String type = ((datatype != null) ? datatype : PrefixDeclarationRegistry.XSD_STRING);
 		final DatatypeConstantHandler handler = this.datatypes.get(type);
 
 		if (handler != null) {

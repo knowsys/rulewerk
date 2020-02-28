@@ -34,7 +34,7 @@ import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -51,7 +51,7 @@ public class RuleParserTest implements ParserTestUtils {
 	private final Variable z = Expressions.makeUniversalVariable("Z");
 	private final Constant c = Expressions.makeAbstractConstant("http://example.org/c");
 	private final Constant d = Expressions.makeAbstractConstant("http://example.org/d");
-	private final Constant abc = Expressions.makeDatatypeConstant("abc", PrefixDeclarations.XSD_STRING);
+	private final Constant abc = Expressions.makeDatatypeConstant("abc", PrefixDeclarationRegistry.XSD_STRING);
 	private final Literal atom1 = Expressions.makePositiveLiteral("http://example.org/p", x, c);
 	private final Literal negAtom1 = Expressions.makeNegativeLiteral("http://example.org/p", x, c);
 	private final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
@@ -188,24 +188,24 @@ public class RuleParserTest implements ParserTestUtils {
 	public void testIntegerLiteral() throws ParsingException {
 		String input = "p(42)";
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("42", PrefixDeclarations.XSD_INTEGER));
+				Expressions.makeDatatypeConstant("42", PrefixDeclarationRegistry.XSD_INTEGER));
 		assertEquals(integerLiteral, RuleParser.parseLiteral(input));
 	}
 
 	@Test
 	public void testAbbreviatedIntegerLiteral() throws ParsingException {
-		String input = "@prefix xsd: <" + PrefixDeclarations.XSD + "> . " + "p(\"42\"^^xsd:integer) .";
+		String input = "@prefix xsd: <" + PrefixDeclarationRegistry.XSD + "> . " + "p(\"42\"^^xsd:integer) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("42", PrefixDeclarations.XSD_INTEGER));
+				Expressions.makeDatatypeConstant("42", PrefixDeclarationRegistry.XSD_INTEGER));
 		assertEquals(Arrays.asList(integerLiteral), statements);
 	}
 
 	@Test
 	public void testFullIntegerLiteral() throws ParsingException {
-		String input = "p(\"42\"^^<" + PrefixDeclarations.XSD_INTEGER + "> )";
+		String input = "p(\"42\"^^<" + PrefixDeclarationRegistry.XSD_INTEGER + "> )";
 		PositiveLiteral integerLiteral = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("42", PrefixDeclarations.XSD_INTEGER));
+				Expressions.makeDatatypeConstant("42", PrefixDeclarationRegistry.XSD_INTEGER));
 		assertEquals(integerLiteral, RuleParser.parseLiteral(input));
 	}
 
@@ -213,7 +213,7 @@ public class RuleParserTest implements ParserTestUtils {
 	public void testDecimalLiteral() throws ParsingException {
 		String input = "p(-5.0)";
 		PositiveLiteral decimalLiteral = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("-5.0", PrefixDeclarations.XSD_DECIMAL));
+				Expressions.makeDatatypeConstant("-5.0", PrefixDeclarationRegistry.XSD_DECIMAL));
 		assertEquals(decimalLiteral, RuleParser.parseLiteral(input));
 	}
 
@@ -221,7 +221,7 @@ public class RuleParserTest implements ParserTestUtils {
 	public void testDoubleLiteral() throws ParsingException {
 		String input = "p(4.2E9)";
 		PositiveLiteral doubleLiteral = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("4.2E9", PrefixDeclarations.XSD_DOUBLE));
+				Expressions.makeDatatypeConstant("4.2E9", PrefixDeclarationRegistry.XSD_DOUBLE));
 		assertEquals(doubleLiteral, RuleParser.parseLiteral(input));
 	}
 
@@ -241,14 +241,14 @@ public class RuleParserTest implements ParserTestUtils {
 	public void parseLiteral_escapeSequences_succeeds() throws ParsingException {
 		String input = "p(\"_\\\"_\\\\_\\n_\\t_\")"; // User input: p("_\"_\\_\n_\t_")
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("_\"_\\_\n_\t_", PrefixDeclarations.XSD_STRING));
+				Expressions.makeDatatypeConstant("_\"_\\_\n_\t_", PrefixDeclarationRegistry.XSD_STRING));
 		assertEquals(fact, RuleParser.parseLiteral(input));
 	}
 
 	@Test
 	public void parseLiteral_escapeSequences_roundTrips() throws ParsingException {
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("_\"_\\_\n_\t_", PrefixDeclarations.XSD_STRING));
+				Expressions.makeDatatypeConstant("_\"_\\_\n_\t_", PrefixDeclarationRegistry.XSD_STRING));
 		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
 	}
 
@@ -257,14 +257,14 @@ public class RuleParserTest implements ParserTestUtils {
 		// User input: p("_\n_\t_\r_\b_\f_\'_\"_\\_")
 		String input = "p(\"_\\n_\\t_\\r_\\b_\\f_\\'_\\\"_\\\\_\")";
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("_\n_\t_\r_\b_\f_\'_\"_\\_", PrefixDeclarations.XSD_STRING));
+				Expressions.makeDatatypeConstant("_\n_\t_\r_\b_\f_\'_\"_\\_", PrefixDeclarationRegistry.XSD_STRING));
 		assertEquals(fact, RuleParser.parseLiteral(input));
 	}
 
 	@Test
 	public void parseLiteral_allEscapeSequences_roundTrips() throws ParsingException {
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("_\n_\t_\r_\b_\f_\'_\"_\\_", PrefixDeclarations.XSD_STRING));
+				Expressions.makeDatatypeConstant("_\n_\t_\r_\b_\f_\'_\"_\\_", PrefixDeclarationRegistry.XSD_STRING));
 		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
 	}
 
@@ -284,14 +284,14 @@ public class RuleParserTest implements ParserTestUtils {
 	public void parseLiteral_multiLineLiteral_succeeds() throws ParsingException {
 		String input = "p('''line 1\n\n" + "line 2\n" + "line 3''')"; // User input: p("a\"b\\c")
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("line 1\n\nline 2\nline 3", PrefixDeclarations.XSD_STRING));
+				Expressions.makeDatatypeConstant("line 1\n\nline 2\nline 3", PrefixDeclarationRegistry.XSD_STRING));
 		assertEquals(fact, RuleParser.parseLiteral(input));
 	}
 
 	@Test
 	public void parseLiteral_multiLineLiteral_roundTrips() throws ParsingException {
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
-				Expressions.makeDatatypeConstant("line 1\n\nline 2\nline 3", PrefixDeclarations.XSD_STRING));
+				Expressions.makeDatatypeConstant("line 1\n\nline 2\nline 3", PrefixDeclarationRegistry.XSD_STRING));
 		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
 	}
 
@@ -322,7 +322,7 @@ public class RuleParserTest implements ParserTestUtils {
 
 	@Test
 	public void testPrefixedLiteral() throws ParsingException {
-		String input = "@prefix xsd: <" + PrefixDeclarations.XSD + "> . " + "p(\"abc\"^^xsd:string) .";
+		String input = "@prefix xsd: <" + PrefixDeclarationRegistry.XSD + "> . " + "p(\"abc\"^^xsd:string) .";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		assertEquals(Arrays.asList(fact2), statements);
 	}

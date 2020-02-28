@@ -46,7 +46,7 @@ public interface LanguageStringConstant extends Constant {
 	 * @return a IRI of RDF langString datatype
 	 */
 	default String getDatatype() {
-		return PrefixDeclarations.RDF_LANGSTRING;
+		return PrefixDeclarationRegistry.RDF_LANGSTRING;
 	}
 
 	/**

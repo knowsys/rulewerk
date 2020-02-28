@@ -1,6 +1,7 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
@@ -36,7 +37,7 @@ import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
@@ -157,7 +158,7 @@ public final class Serializer {
 	 * Creates a String representation of a given {@link Constant}.
 	 *
 	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
-	 * @param constant a {@link Constant}
+	 * @param constant       a {@link Constant}
 	 * @param iriTransformer a function to transform IRIs with.
 	 * @return String representation corresponding to a given {@link Constant}.
 	 */
@@ -195,16 +196,16 @@ public final class Serializer {
 	 *
 	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param datatypeConstant a {@link DatatypeConstant}
-	 * @param iriTransformer a function to transform IRIs with.
+	 * @param iriTransformer   a function to transform IRIs with.
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
 	 */
 	public static String getString(final DatatypeConstant datatypeConstant, Function<String, String> iriTransformer) {
-		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
+		if (datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_STRING)) {
 			return getString(datatypeConstant.getLexicalValue());
-		} else if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
-				   || datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
-				   || datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DOUBLE)) {
+		} else if (datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_DECIMAL)
+				|| datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_INTEGER)
+				|| datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_DOUBLE)) {
 			return datatypeConstant.getLexicalValue();
 		} else {
 			return getConstantName(datatypeConstant, iriTransformer);
@@ -233,9 +234,10 @@ public final class Serializer {
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
 	 */
-	public static String getConstantName(final DatatypeConstant datatypeConstant, Function<String, String> iriTransformer) {
+	public static String getConstantName(final DatatypeConstant datatypeConstant,
+			Function<String, String> iriTransformer) {
 		return getString(datatypeConstant.getLexicalValue()) + DOUBLE_CARET
-			+ getIRIString(datatypeConstant.getDatatype(), iriTransformer);
+				+ getIRIString(datatypeConstant.getDatatype(), iriTransformer);
 	}
 
 	/**
@@ -470,26 +472,18 @@ public final class Serializer {
 			return "";
 		}
 
-		return BASE + addAngleBrackets(baseIri) + STATEMENT_SEPARATOR + "\n";
+		return BASE + addAngleBrackets(baseIri) + STATEMENT_SEPARATOR + NEW_LINE;
 	}
 
-	public static String getPrefixString(String prefixName, String prefixIri) {
-		return PREFIX + prefixName + " " + addAngleBrackets(prefixIri) + STATEMENT_SEPARATOR + "\n";
+	public static String getPrefixString(Entry<String, String> prefix) {
+		return PREFIX + prefix.getKey() + " " + addAngleBrackets(prefix.getValue()) + STATEMENT_SEPARATOR + NEW_LINE;
 	}
 
 	public static String getBaseAndPrefixDeclarations(KnowledgeBase knowledgeBase) {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append(getBaseString(knowledgeBase));
-
-		knowledgeBase.getPrefixes().forEachRemaining((String prefixName) -> {
-				try {
-					sb.append(getPrefixString(prefixName, knowledgeBase.getPrefix(prefixName)));
-				} catch (PrefixDeclarationException e) {
-					// this shouldn't throw, since we're iterating over known prefixes.
-					throw new RuntimeException(e);
-				}
-			});
+		knowledgeBase.getPrefixes().forEachRemaining(prefix -> sb.append(getPrefixString(prefix)));
 
 		return sb.toString();
 	}

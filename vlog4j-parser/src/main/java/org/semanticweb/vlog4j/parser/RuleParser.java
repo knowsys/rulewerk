@@ -30,7 +30,7 @@ import org.semanticweb.vlog4j.core.model.api.Entity;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
@@ -61,8 +61,8 @@ public class RuleParser {
 		final JavaCCParser parser = new JavaCCParser(stream, encoding);
 
 		if (baseIri != null) {
-			PrefixDeclarations prefixDeclarations = new LocalPrefixDeclarations(baseIri);
-			parser.setPrefixDeclarations(prefixDeclarations);
+			PrefixDeclarationRegistry prefixDeclarationRegistry = new LocalPrefixDeclarationRegistry(baseIri);
+			parser.setPrefixDeclarationRegistry(prefixDeclarationRegistry);
 		}
 
 		parser.setKnowledgeBase(knowledgeBase);
@@ -261,7 +261,7 @@ public class RuleParser {
 		}
 
 		KnowledgeBase knowledgeBase = parser.getKnowledgeBase();
-		return knowledgeBase.mergePrefixDeclarations(parser.getPrefixDeclarations());
+		return knowledgeBase.mergePrefixDeclarations(parser.getPrefixDeclarationRegistry());
 	}
 
 	protected static DataSourceDeclaration parseAndExtractDatasourceDeclaration(final JavaCCParser parser)

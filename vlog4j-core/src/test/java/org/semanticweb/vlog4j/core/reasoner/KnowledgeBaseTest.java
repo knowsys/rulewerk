@@ -30,7 +30,7 @@ import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.model.implementation.MergeablePrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.implementation.MergingPrefixDeclarationRegistry;
 
 public class KnowledgeBaseTest {
 
@@ -94,7 +94,7 @@ public class KnowledgeBaseTest {
 
 	@Test
 	public void getBase_default_hasEmptyBase() {
-		assertEquals(this.kb.getBase(), "");
+		assertEquals("", this.kb.getBase());
 	}
 
 	@Test(expected = PrefixDeclarationException.class)
@@ -110,8 +110,8 @@ public class KnowledgeBaseTest {
 	@Test
 	public void mergePrefixDeclarations_merge_succeeds() throws PrefixDeclarationException {
 		String iri = "https://example.org/";
-		MergeablePrefixDeclarations prefixDeclarations = new MergeablePrefixDeclarations();
-		prefixDeclarations.setPrefix("ex:", iri);
+		MergingPrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
+		prefixDeclarations.setPrefixIri("ex:", iri);
 		this.kb.mergePrefixDeclarations(prefixDeclarations);
 		assertEquals(this.kb.getPrefix("ex:"), iri);
 		assertEquals(this.kb.resolvePrefixedName("ex:test"), iri + "test");

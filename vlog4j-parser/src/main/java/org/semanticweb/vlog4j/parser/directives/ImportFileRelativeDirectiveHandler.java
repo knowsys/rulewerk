@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.DirectiveArgument;
 import org.semanticweb.vlog4j.parser.DirectiveHandler;
@@ -40,17 +40,17 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  */
 public class ImportFileRelativeDirectiveHandler implements DirectiveHandler<KnowledgeBase> {
 	@Override
-	public KnowledgeBase handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
+	public KnowledgeBase handleDirective(List<DirectiveArgument> arguments, SubParserFactory subParserFactory)
 			throws ParsingException {
 		DirectiveHandler.validateNumberOfArguments(arguments, 1);
-		PrefixDeclarations prefixDeclarations = getPrefixDeclarations(subParserFactory);
+		PrefixDeclarationRegistry prefixDeclarationRegistry = getPrefixDeclarationRegistry(subParserFactory);
 		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "rules file");
 		KnowledgeBase knowledgeBase = getKnowledgeBase(subParserFactory);
 		ParserConfiguration parserConfiguration = getParserConfiguration(subParserFactory);
 
 		try {
 			return knowledgeBase.importRulesFile(file, (InputStream stream, KnowledgeBase kb) -> {
-				RuleParser.parseInto(kb, stream, parserConfiguration, prefixDeclarations.getBase());
+				RuleParser.parseInto(kb, stream, parserConfiguration, prefixDeclarationRegistry.getBaseIri());
 				return kb;
 			});
 		} catch (Exception e) {

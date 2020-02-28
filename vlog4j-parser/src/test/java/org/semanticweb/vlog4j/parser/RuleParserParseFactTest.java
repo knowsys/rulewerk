@@ -27,7 +27,7 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NamedNull;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
@@ -37,8 +37,8 @@ import org.semanticweb.vlog4j.parser.RuleParser;
 
 public class RuleParserParseFactTest implements ParserTestUtils {
 
-	private final Constant a = Expressions.makeDatatypeConstant("a", PrefixDeclarations.XSD_STRING);
-	private final Constant b = Expressions.makeDatatypeConstant("b", PrefixDeclarations.XSD_STRING);
+	private final Constant a = Expressions.makeDatatypeConstant("a", PrefixDeclarationRegistry.XSD_STRING);
+	private final Constant b = Expressions.makeDatatypeConstant("b", PrefixDeclarationRegistry.XSD_STRING);
 
 	private final Fact factA = Expressions.makeFact("p", a);
 	private final Fact factAB = Expressions.makeFact("p", a, b);

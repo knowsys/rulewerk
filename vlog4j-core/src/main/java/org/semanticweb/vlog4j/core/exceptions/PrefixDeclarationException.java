@@ -21,9 +21,6 @@ package org.semanticweb.vlog4j.core.exceptions;
  */
 
 public class PrefixDeclarationException extends VLog4jException {
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public PrefixDeclarationException(String errorMessage) {

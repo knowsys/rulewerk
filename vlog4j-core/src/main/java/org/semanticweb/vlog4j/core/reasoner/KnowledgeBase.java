@@ -14,18 +14,20 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
-import org.semanticweb.vlog4j.core.model.implementation.MergeablePrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.implementation.MergingPrefixDeclarationRegistry;
 
 /*-
  * #%L
@@ -174,7 +176,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * base. We try to preserve user-provided prefixes found in files when loading
 	 * data.
 	 */
-	private MergeablePrefixDeclarations prefixDeclarations = new MergeablePrefixDeclarations();
+	private MergingPrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
 
 	/**
 	 * Index structure that organises all facts by their predicate.
@@ -450,12 +452,12 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * This is essentially
 	 * {@link org.semanticweb.vlog4j.parser.RuleParser#parseInto}, but we need to
 	 * avoid a circular dependency here -- this is also why we throw
-	 * {@link Exception} instead of
+	 * {@link VLog4jException} instead of
 	 * {@link org.semanticweb.vlog4j.parser.ParsingException}.
 	 */
 	@FunctionalInterface
 	public interface AdditionalInputParser {
-		KnowledgeBase parseInto(InputStream stream, KnowledgeBase kb) throws IOException, Exception;
+		KnowledgeBase parseInto(InputStream stream, KnowledgeBase kb) throws IOException, VLog4jException;
 	}
 
 	/**
@@ -468,12 +470,12 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @throws IOException              when reading {@code file} fails
 	 * @throws IllegalArgumentException when {@code file} is null or has already
 	 *                                  been imported
-	 * @throws RuntimeException         when parseFunction throws
+	 * @throws VLog4jException          when parseFunction throws VLog4jException
 	 *
 	 * @return this
 	 */
 	public KnowledgeBase importRulesFile(File file, AdditionalInputParser parseFunction)
-			throws Exception, IOException, IllegalArgumentException {
+			throws VLog4jException, IOException, IllegalArgumentException {
 		Validate.notNull(file, "file must not be null");
 
 		boolean isNewFile = importedFilePaths.add(file.getCanonicalPath());
@@ -485,7 +487,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	}
 
 	/**
-	 * Merge {@link PrefixDeclarations} into this knowledge base.
+	 * Merge {@link PrefixDeclarationRegistry} into this knowledge base.
 	 *
 	 * @param prefixDeclarations the prefix declarations to merge. Conflicting
 	 *                           prefix names in {@code prefixDeclarations} will be
@@ -493,7 +495,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 *
 	 * @return this
 	 */
-	public KnowledgeBase mergePrefixDeclarations(PrefixDeclarations prefixDeclarations) {
+	public KnowledgeBase mergePrefixDeclarations(PrefixDeclarationRegistry prefixDeclarations) {
 		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
 
 		return this;
@@ -505,7 +507,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @return the base IRI, if declared, or {@code ""} otherwise.
 	 */
 	public String getBase() {
-		return this.prefixDeclarations.getBase();
+		return this.prefixDeclarations.getBaseIri();
 	}
 
 	/*
@@ -513,7 +515,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 *
 	 * @return an iterator over all known prefixes.
 	 */
-	public Iterator<String> getPrefixes() {
+	public Iterator<Entry<String, String>> getPrefixes() {
 		return this.prefixDeclarations.iterator();
 	}
 
@@ -528,7 +530,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @return the declared IRI for {@code prefixName}.
 	 */
 	public String getPrefix(String prefixName) throws PrefixDeclarationException {
-		return this.prefixDeclarations.getPrefix(prefixName);
+		return this.prefixDeclarations.getPrefixIri(prefixName);
 	}
 
 	/*

@@ -24,7 +24,7 @@ import java.io.ByteArrayInputStream;
 
 import java.io.InputStream;
 
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.RuleParser;
@@ -40,7 +40,7 @@ import org.semanticweb.vlog4j.parser.RuleParser;
 public class SubParserFactory {
 	private final KnowledgeBase knowledgeBase;
 	private final ParserConfiguration parserConfiguration;
-	private final PrefixDeclarations prefixDeclarations;
+	private final PrefixDeclarationRegistry prefixDeclarationRegistry;
 	private final byte[] namedNullNamespace;
 
 	/**
@@ -50,7 +50,7 @@ public class SubParserFactory {
 	 */
 	SubParserFactory(final JavaCCParser parser) {
 		this.knowledgeBase = parser.getKnowledgeBase();
-		this.prefixDeclarations = parser.getPrefixDeclarations();
+		this.prefixDeclarationRegistry = parser.getPrefixDeclarationRegistry();
 		this.parserConfiguration = parser.getParserConfiguration();
 		this.namedNullNamespace = parser.getNamedNullNamespace();
 	}
@@ -67,7 +67,7 @@ public class SubParserFactory {
 	public JavaCCParser makeSubParser(final InputStream inputStream, final String encoding) {
 		final JavaCCParser subParser = new JavaCCParser(inputStream, encoding);
 		subParser.setKnowledgeBase(this.knowledgeBase);
-		subParser.setPrefixDeclarations(this.prefixDeclarations);
+		subParser.setPrefixDeclarationRegistry(this.prefixDeclarationRegistry);
 		subParser.setParserConfiguration(this.parserConfiguration);
 		subParser.setNamedNullNamespace(this.namedNullNamespace);
 

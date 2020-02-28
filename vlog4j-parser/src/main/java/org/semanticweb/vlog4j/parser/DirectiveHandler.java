@@ -28,7 +28,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.parser.javacc.JavaCCParser;
@@ -207,15 +207,15 @@ public interface DirectiveHandler<T> {
 	}
 
 	/**
-	 * Obtain {@link PrefixDeclarations} from a {@link SubParserFactory}.
+	 * Obtain {@link PrefixDeclarationRegistry} from a {@link SubParserFactory}.
 	 *
 	 * @param subParserFactory the SubParserFactory.
 	 *
 	 * @return the prefix declarations.
 	 */
-	default PrefixDeclarations getPrefixDeclarations(SubParserFactory subParserFactory) {
+	default PrefixDeclarationRegistry getPrefixDeclarationRegistry(SubParserFactory subParserFactory) {
 		JavaCCParser subParser = subParserFactory.makeSubParser("");
 
-		return subParser.getPrefixDeclarations();
+		return subParser.getPrefixDeclarationRegistry();
 	}
 }

@@ -6,12 +6,17 @@ import static org.mockito.Mockito.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 import org.semanticweb.vlog4j.core.model.api.Conjunction;
@@ -19,7 +24,7 @@ import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
@@ -97,10 +102,12 @@ public class VLogReasonerWriteInferencesTest {
 	@Test
 	public void writeInferences_withPrefixDeclarations_abbreviatesIris()
 			throws IOException, PrefixDeclarationException {
-		PrefixDeclarations prefixDeclarations = mock(PrefixDeclarations.class);
-		when(prefixDeclarations.getBase()).thenReturn("");
-		when(prefixDeclarations.getPrefix(eq("eg:"))).thenReturn("http://example.org/");
-		when(prefixDeclarations.iterator()).thenReturn(Arrays.asList("eg:").iterator());
+		PrefixDeclarationRegistry prefixDeclarations = mock(PrefixDeclarationRegistry.class);
+		Map<String, String> prefixMap = new HashMap<>();
+		prefixMap.put("eg:", "http://example.org/");
+		when(prefixDeclarations.getBaseIri()).thenReturn("");
+		when(prefixDeclarations.getPrefixIri(eq("eg:"))).thenReturn("http://example.org/");
+		when(prefixDeclarations.iterator()).thenReturn(prefixMap.entrySet().iterator());
 		kb.mergePrefixDeclarations(prefixDeclarations);
 
 		assertEquals(11, getInferences().size());
@@ -109,9 +116,9 @@ public class VLogReasonerWriteInferencesTest {
 
 	@Test
 	public void writeInferences_withBase_writesBase() throws IOException, PrefixDeclarationException {
-		PrefixDeclarations prefixDeclarations = mock(PrefixDeclarations.class);
-		when(prefixDeclarations.getBase()).thenReturn("http://example.org/");
-		when(prefixDeclarations.iterator()).thenReturn(Arrays.<String>asList().iterator());
+		PrefixDeclarationRegistry prefixDeclarations = mock(PrefixDeclarationRegistry.class);
+		when(prefixDeclarations.getBaseIri()).thenReturn("http://example.org/");
+		when(prefixDeclarations.iterator()).thenReturn(new HashMap<String, String>().entrySet().iterator());
 		kb.mergePrefixDeclarations(prefixDeclarations);
 
 		assertEquals(11, getInferences().size());
