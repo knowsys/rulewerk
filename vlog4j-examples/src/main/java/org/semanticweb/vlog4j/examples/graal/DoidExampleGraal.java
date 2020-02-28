@@ -131,10 +131,10 @@ public class DoidExampleGraal {
 
 			final PositiveLiteral humansWhoDiedOfCancer = Expressions.makePositiveLiteral("humansWhoDiedOfCancer", x);
 			System.out.println("Humans in Wikidata who died in 2018 due to cancer: "
-					+ reasoner.countQueryAnswers(humansWhoDiedOfCancer).getSize());
+					+ reasoner.countQueryAnswers(humansWhoDiedOfCancer).getCount());
 
 			System.out.println("Humans in Wikidata who died in 2018 due to some other cause: "
-					+ reasoner.countQueryAnswers(humansWhoDiedOfNoncancer).getSize());
+					+ reasoner.countQueryAnswers(humansWhoDiedOfNoncancer).getCount());
 			System.out.println("Done.");
 		}
 

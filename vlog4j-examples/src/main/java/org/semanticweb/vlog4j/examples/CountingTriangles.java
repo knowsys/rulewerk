@@ -62,11 +62,11 @@ public class CountingTriangles {
 			reasoner.reason();
 
 			final double countries = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("country(?X)"))
-					.getSize();
+					.getCount();
 			final double shareBorder = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("shareBorder(?X,?Y)"))
-					.getSize();
+					.getCount();
 			final double triangles = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)"))
-					.getSize();
+					.getCount();
 
 			System.out.print("Found " + countries + " countries in Wikidata");
 			// Due to symmetry, each joint border is found twice, hence we divide by 2:

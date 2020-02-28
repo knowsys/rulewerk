@@ -31,7 +31,7 @@ import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
-import org.semanticweb.vlog4j.core.reasoner.QueryAnswerSize;
+import org.semanticweb.vlog4j.core.reasoner.QueryAnswerCount;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
@@ -383,11 +383,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeNulls) {
-		validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		}
-		Validate.notNull(query, "Query atom must not be null!");
+		validateBeforeQuerying(query);
 
 		final boolean filterBlanks = !includeNulls;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
@@ -408,12 +404,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public QueryAnswerSize countQueryAnswers(PositiveLiteral query, boolean includeNulls) {
-		validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		}
-		Validate.notNull(query, "Query atom must not be null!");
+	public QueryAnswerCount countQueryAnswers(PositiveLiteral query, boolean includeNulls) {
+		validateBeforeQuerying(query);
 
 		final boolean filterBlanks = !includeNulls;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
@@ -429,17 +421,13 @@ public class VLogReasoner implements Reasoner {
 			result = 0;
 		}
 		logWarningOnCorrectness();
-		return new QueryAnswerSizeImpl(this.correctness, result);
+		return new QueryAnswerCountImpl(this.correctness, result);
 	}
 
 	@Override
 	public Correctness exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws IOException {
-		validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		}
-		Validate.notNull(query, "Query atom must not be null!");
+		validateBeforeQuerying(query);
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
 		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
 
@@ -456,6 +444,14 @@ public class VLogReasoner implements Reasoner {
 
 		logWarningOnCorrectness();
 		return this.correctness;
+	}
+
+	private void validateBeforeQuerying(final PositiveLiteral query) {
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
+		}
+		Validate.notNull(query, "Query atom must not be null!");
 	}
 
 	@Override

@@ -51,7 +51,7 @@ package org.semanticweb.vlog4j.core.reasoner;
  * @author Larry González
  *
  */
-public interface QueryAnswerSize {
+public interface QueryAnswerCount {
 
 	/**
 	 * Returns the correctness of the query result.
@@ -73,6 +73,6 @@ public interface QueryAnswerSize {
 	 * @return number of query answers, i.e., the number of facts that the query
 	 *         maps to.
 	 */
-	long getSize();
+	long getCount();
 
 }

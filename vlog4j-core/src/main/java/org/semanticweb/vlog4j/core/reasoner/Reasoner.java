@@ -357,26 +357,32 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeNulls);
 
 	/**
+	 * * Evaluates an atomic ({@code query}), and counts the number of query answer
+	 * implicit facts loaded into the reasoner and the number of query answer
+	 * explicit facts materialised by the reasoner.
+	 * 
 	 * @param query a {@link PositiveLiteral} representing the query to be answered.
 	 *
-	 * @return countQueryAnswers(query, true), i.e., the number of facts in the
-	 *         extension of the query, including answers with NamedNull terms that
-	 *         have been introduced during reasoning. See also
-	 *         {@link Reasoner#countQueryAnswers(PositiveLiteral, boolean)}
+	 * @return a {@link QueryAnswerCount} object that contains the query answers
+	 *         {@link Correctness} and the number of query answers (i.e. the number
+	 *         of facts in the extension of the query), including answers with
+	 *         {@link NamedNull} terms that have been introduced during reasoning.
+	 *         See also
+	 *         {@link Reasoner#countQueryAnswers(PositiveLiteral, boolean)}.
 	 */
 
-	default QueryAnswerSize countQueryAnswers(PositiveLiteral query) {
-		return countQueryAnswers(query, true);
+	default QueryAnswerCount countQueryAnswers(final PositiveLiteral query) {
+		return this.countQueryAnswers(query, true);
 	}
 
 	// TODO add examples to query javadoc
 	/**
-	 * Evaluates an atomic ({@code query}), and returns the number of implicit facts
-	 * loaded into the reasoner and the number of explicit facts materialised by the
-	 * reasoner. <br>
-	 * An answer to the query is the terms a fact that matches the {@code query}:
-	 * the fact predicate is the same as the {@code query} predicate, the
-	 * {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
+	 * Evaluates an atomic ({@code query}), and counts the number of query answer
+	 * implicit facts loaded into the reasoner and the number of query answer
+	 * explicit facts materialised by the reasoner. <br>
+	 * An answer to the query is the term set of a fact that matches the
+	 * {@code query}: the fact predicate is the same as the {@code query} predicate,
+	 * the {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
 	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
 	 * the {@code query} are matched by terms in the fact, either named
 	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The
@@ -411,14 +417,14 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @param query        a {@link PositiveLiteral} representing the query to be
 	 *                     answered.
 	 * @param includeNulls if {@code true}, facts with {@link TermType#NAMED_NULL}
-	 *                     terms will be included in the
-	 *                     {@link QueryAnswerSizeImpl}. Otherwise, facts with
+	 *                     terms will be counted. Otherwise, facts with
 	 *                     {@link TermType#NAMED_NULL} terms will be ignored.
 	 * 
-	 * @return QueryAnswersSize that contains the Correctness and the number of
-	 *         facts in the extension of the query.
+	 * @return a {@link QueryAnswerCount} object that contains the query answers
+	 *         Correctness and the number query answers, i.e. the number of facts in
+	 *         the extension of the query.
 	 */
-	QueryAnswerSize countQueryAnswers(PositiveLiteral query, boolean includeNulls);
+	QueryAnswerCount countQueryAnswers(PositiveLiteral query, boolean includeNulls);
 
 	// TODO add examples to query javadoc
 	/**

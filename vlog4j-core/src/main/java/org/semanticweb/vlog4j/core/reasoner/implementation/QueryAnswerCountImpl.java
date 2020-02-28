@@ -1,7 +1,7 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
 import org.semanticweb.vlog4j.core.reasoner.Correctness;
-import org.semanticweb.vlog4j.core.reasoner.QueryAnswerSize;
+import org.semanticweb.vlog4j.core.reasoner.QueryAnswerCount;
 
 /*-
  * #%L
@@ -23,10 +23,10 @@ import org.semanticweb.vlog4j.core.reasoner.QueryAnswerSize;
  * #L%
  */
 
-public class QueryAnswerSizeImpl implements QueryAnswerSize {
+public class QueryAnswerCountImpl implements QueryAnswerCount {
 
 	final private Correctness correctness;
-	final private long size;
+	final private long count;
 
 	/**
 	 * Constructor of QueryAnswerSize
@@ -37,9 +37,9 @@ public class QueryAnswerSizeImpl implements QueryAnswerSize {
 	 *                    extension of the query.
 	 */
 
-	QueryAnswerSizeImpl(Correctness correctness, long size) {
+	QueryAnswerCountImpl(Correctness correctness, long size) {
 		this.correctness = correctness;
-		this.size = size;
+		this.count = size;
 	}
 
 	@Override
@@ -48,13 +48,13 @@ public class QueryAnswerSizeImpl implements QueryAnswerSize {
 	}
 
 	@Override
-	public long getSize() {
-		return this.size;
+	public long getCount() {
+		return this.count;
 	}
 
 	@Override
 	public String toString() {
-		return this.size + " (" + this.correctness.toString() + ")";
+		return this.count + " (" + this.correctness.toString() + ")";
 	}
 
 }
