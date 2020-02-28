@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -10,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.vlog4j.core.exceptions.IncompatiblePredicateArityException;
