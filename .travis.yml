@@ -30,7 +30,7 @@ jobs:
 before_install:
 #    # explicitly avoid bash as travis screws with .bashrc,
 #    # cf. https://travis-ci.community/t/travis-functions-no-such-file-or-directory/2286/12
-#    - "[ -x /bin/dash ] && /bin/dash ./build-vlog-library.sh || /bin/sh ./build-vlog-library.sh"
+    - "[ -x /bin/dash ] && /bin/dash ./build-vlog-library.sh || /bin/sh ./build-vlog-library.sh"
 
 install: mvn install $OPTIONS -DskipTests=true
 
