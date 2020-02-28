@@ -44,7 +44,7 @@ import org.semanticweb.vlog4j.parser.RuleParser;
  */
 public class DoidExample {
 
-	public static void main(final String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException, ParsingException {
 		ExamplesUtils.configureLogging();
 
 		/* Configure rules */
@@ -72,7 +72,8 @@ public class DoidExample {
 			final List<String> queries = Arrays.asList("humansWhoDiedOfCancer(?X)", "humansWhoDiedOfNoncancer(?X)");
 			System.out.println("\nNumber of inferred tuples for selected query atoms:");
 			for (final String queryString : queries) {
-				System.out.println("  " + queryString + ": " + ExamplesUtils.getQueryAnswerCount(queryString, reasoner));
+				double answersCount = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString)).getCount();
+				System.out.println("  " + queryString + ": " + answersCount);
 			}
 		}
 	}

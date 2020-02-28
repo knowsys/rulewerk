@@ -22,7 +22,6 @@ package org.semanticweb.vlog4j.examples;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.ConsoleAppender;
@@ -110,51 +109,6 @@ public final class ExamplesUtils {
 		} catch (final ParsingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
-	}
-
-	/**
-	 * Returns the number of answers returned by {@code reasoner} to the query
-	 * ({@code queryAtom}).
-	 *
-	 * @param queryAtom query to be answered
-	 * @param reasoner  reasoner to query on
-	 */
-	public static int getQueryAnswerCount(final PositiveLiteral queryAtom, final Reasoner reasoner) {
-		try (final QueryResultIterator answers = reasoner.answerQuery(queryAtom, true)) {
-			return iteratorSize(answers);
-		}
-	}
-
-	/**
-	 * Returns the number of answers returned by {@code reasoner} to the query
-	 * ({@code queryAtom}).
-	 *
-	 * @param queryString query to be answered
-	 * @param reasoner    reasoner to query on
-	 */
-	public static int getQueryAnswerCount(final String queryString, final Reasoner reasoner) {
-		try {
-			final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
-			return getQueryAnswerCount(query, reasoner);
-		} catch (final ParsingException e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * Returns the size of an iterator.
-	 *
-	 * @FIXME This is an inefficient way of counting results. It should be done at a
-	 *        lower level instead
-	 * @param Iterator<T> to iterate over
-	 * @return number of elements in iterator
-	 */
-	private static <T> int iteratorSize(final Iterator<T> iterator) {
-		int size = 0;
-		for (; iterator.hasNext(); ++size) {
-			iterator.next();
-		}
-		return size;
 	}
 
 	/**

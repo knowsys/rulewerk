@@ -92,8 +92,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
 	 * the knowledge base to an OutputStream.
 	 * 
-	 * @param an
-	 *            OutputStream for the facts to be written to.
+	 * @param an OutputStream for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
@@ -104,8 +103,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
 	 * the knowledge base to a desired file.
 	 *
-	 * @param a
-	 *            String of the file path for the facts to be written to.
+	 * @param a String of the file path for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
@@ -357,6 +355,76 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         It also contains the {@link Correctness} of the query answers.
 	 */
 	QueryResultIterator answerQuery(PositiveLiteral query, boolean includeNulls);
+
+	/**
+	 * * Evaluates an atomic ({@code query}), and counts the number of query answer
+	 * implicit facts loaded into the reasoner and the number of query answer
+	 * explicit facts materialised by the reasoner.
+	 * 
+	 * @param query a {@link PositiveLiteral} representing the query to be answered.
+	 *
+	 * @return a {@link QueryAnswerCount} object that contains the query answers
+	 *         {@link Correctness} and the number of query answers (i.e. the number
+	 *         of facts in the extension of the query), including answers with
+	 *         {@link NamedNull} terms that have been introduced during reasoning.
+	 *         See also
+	 *         {@link Reasoner#countQueryAnswers(PositiveLiteral, boolean)}.
+	 */
+
+	default QueryAnswerCount countQueryAnswers(final PositiveLiteral query) {
+		return this.countQueryAnswers(query, true);
+	}
+
+	// TODO add examples to query javadoc
+	/**
+	 * Evaluates an atomic ({@code query}), and counts the number of query answer
+	 * implicit facts loaded into the reasoner and the number of query answer
+	 * explicit facts materialised by the reasoner. <br>
+	 * An answer to the query is the term set of a fact that matches the
+	 * {@code query}: the fact predicate is the same as the {@code query} predicate,
+	 * the {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
+	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
+	 * the {@code query} are matched by terms in the fact, either named
+	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The
+	 * same variable name identifies the same term in the answer fact. <br>
+	 * 
+	 * Depending on the state of the reasoning (materialisation) and its
+	 * {@link KnowledgeBase}, the answers can have a different {@link Correctness}
+	 * ({@link QueryResultIterator#getCorrectness()}):
+	 * <ul>
+	 * <li>If {@link Correctness#SOUND_AND_COMPLETE}, materialisation over current
+	 * knowledge base has completed, and the query answers are guaranteed to be
+	 * correct.</li>
+	 * <li>If {@link Correctness#SOUND_BUT_INCOMPLETE}, the results are guaranteed
+	 * to be sound, but may be incomplete. This can happen
+	 * <ul>
+	 * <li>when materialisation has not completed ({@link Reasoner#reason()} returns
+	 * {@code false}),</li>
+	 * <li>or when the knowledge base was modified after reasoning, and the
+	 * materialisation does not reflect the current knowledge base.
+	 * Re-materialisation ({@link Reasoner#reason()}) is required in order to obtain
+	 * complete query answers with respect to the current knowledge base.</li>
+	 * </ul>
+	 * </li>
+	 * <li>If {@link Correctness#INCORRECT}, the results may be incomplete, and some
+	 * results may be unsound. This can happen when the knowledge base was modified
+	 * and the reasoner materialisation is no longer consistent with the current
+	 * knowledge base. Re-materialisation ({@link Reasoner#reason()}) is required,
+	 * in order to obtain correct query answers.
+	 * </ul>
+	 * 
+	 *
+	 * @param query        a {@link PositiveLiteral} representing the query to be
+	 *                     answered.
+	 * @param includeNulls if {@code true}, facts with {@link TermType#NAMED_NULL}
+	 *                     terms will be counted. Otherwise, facts with
+	 *                     {@link TermType#NAMED_NULL} terms will be ignored.
+	 * 
+	 * @return a {@link QueryAnswerCount} object that contains the query answers
+	 *         Correctness and the number query answers, i.e. the number of facts in
+	 *         the extension of the query.
+	 */
+	QueryAnswerCount countQueryAnswers(PositiveLiteral query, boolean includeNulls);
 
 	// TODO add examples to query javadoc
 	/**

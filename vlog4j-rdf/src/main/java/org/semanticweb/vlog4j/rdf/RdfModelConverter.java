@@ -52,8 +52,8 @@ import org.semanticweb.vlog4j.core.model.implementation.Expressions;
  * String as name.</li>
  * <li>{@link Literal}s are converted to {@link Constant}s with names containing
  * the canonical form of the literal label, the data type and the language.</li>
- * <li>{@link BNode}s are converted to {@link NamedNull}s with the generated blank
- * ID as name. {@link BNode}s have unique generated IDs in the context a
+ * <li>{@link BNode}s are converted to {@link NamedNull}s with the generated
+ * blank ID as name. {@link BNode}s have unique generated IDs in the context a
  * {@link Model}s. Blanks with the same name loaded from different models will
  * have different ids.</li>
  * </ul>

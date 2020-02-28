@@ -31,6 +31,7 @@ import org.semanticweb.vlog4j.core.reasoner.Correctness;
 import org.semanticweb.vlog4j.core.reasoner.CyclicityResult;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.LogLevel;
+import org.semanticweb.vlog4j.core.reasoner.QueryAnswerCount;
 import org.semanticweb.vlog4j.core.reasoner.QueryResultIterator;
 import org.semanticweb.vlog4j.core.reasoner.Reasoner;
 import org.semanticweb.vlog4j.core.reasoner.ReasonerState;
@@ -246,8 +247,8 @@ public class VLogReasoner implements Reasoner {
 	 * Checks if the loaded external data sources do in fact contain data of the
 	 * correct arity.
 	 *
-	 * @throws IncompatiblePredicateArityException
-	 *             to indicate a problem (non-checked exception)
+	 * @throws IncompatiblePredicateArityException to indicate a problem
+	 *                                             (non-checked exception)
 	 */
 	void validateDataSourcePredicateArities(final VLogKnowledgeBase vLogKB) throws IncompatiblePredicateArityException {
 
@@ -260,13 +261,11 @@ public class VLogReasoner implements Reasoner {
 	 * Checks if the loaded external data for a given source does in fact contain
 	 * data of the correct arity for the given predidate.
 	 *
-	 * @param predicate
-	 *            the predicate for which data is loaded
-	 * @param dataSource
-	 *            the data source used
+	 * @param predicate  the predicate for which data is loaded
+	 * @param dataSource the data source used
 	 *
-	 * @throws IncompatiblePredicateArityException
-	 *             to indicate a problem (non-checked exception)
+	 * @throws IncompatiblePredicateArityException to indicate a problem
+	 *                                             (non-checked exception)
 	 */
 	void validateDataSourcePredicateArity(Predicate predicate, DataSource dataSource)
 			throws IncompatiblePredicateArityException {
@@ -383,14 +382,10 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeBlanks) {
-		validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		}
-		Validate.notNull(query, "Query atom must not be null!");
+	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeNulls) {
+		validateBeforeQuerying(query);
 
-		final boolean filterBlanks = !includeBlanks;
+		final boolean filterBlanks = !includeNulls;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 
 		TermQueryResultIterator stringQueryResultIterator;
@@ -409,13 +404,30 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
+	public QueryAnswerCount countQueryAnswers(PositiveLiteral query, boolean includeNulls) {
+		validateBeforeQuerying(query);
+
+		final boolean filterBlanks = !includeNulls;
+		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
+
+		long result;
+		try {
+			result = this.vLog.querySize(vLogAtom, true, filterBlanks);
+		} catch (NotStartedException e) {
+			throw new RuntimeException("Inconsistent reasoner state.", e);
+		} catch (NonExistingPredicateException e) {
+			LOGGER.warn("Query uses predicate " + query.getPredicate()
+					+ " that does not occur in the knowledge base. Answer must be empty!");
+			result = 0;
+		}
+		logWarningOnCorrectness();
+		return new QueryAnswerCountImpl(this.correctness, result);
+	}
+
+	@Override
 	public Correctness exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws IOException {
-		validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
-		}
-		Validate.notNull(query, "Query atom must not be null!");
+		validateBeforeQuerying(query);
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
 		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
 
@@ -432,6 +444,14 @@ public class VLogReasoner implements Reasoner {
 
 		logWarningOnCorrectness();
 		return this.correctness;
+	}
+
+	private void validateBeforeQuerying(final PositiveLiteral query) {
+		validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
+		}
+		Validate.notNull(query, "Query atom must not be null!");
 	}
 
 	@Override
@@ -682,5 +702,4 @@ public class VLogReasoner implements Reasoner {
 	void setReasonerState(ReasonerState reasonerState) {
 		this.reasonerState = reasonerState;
 	}
-
 }
