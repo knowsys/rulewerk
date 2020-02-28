@@ -36,7 +36,7 @@ import org.semanticweb.vlog4j.core.model.api.Variable;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
-public class QueryAnswerSizeTest {
+public class QueryAnswerCountTest {
 
 	private static final Predicate predP = Expressions.makePredicate("P", 1);
 	private static final Predicate predQ = Expressions.makePredicate("Q", 1);
