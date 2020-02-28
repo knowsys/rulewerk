@@ -65,6 +65,7 @@ public class QueryAnswerCountTest {
 
 	private static final Fact factPc = Expressions.makeFact(predP, c);
 	private static final Fact factPd = Expressions.makeFact(predP, d);
+	private static final Fact factPe = Expressions.makeFact(predP, e);
 
 	private static final Fact factQc = Expressions.makeFact(predQ, c);
 	private static final Fact factQd = Expressions.makeFact(predQ, d);
@@ -84,6 +85,9 @@ public class QueryAnswerCountTest {
 			assertEquals(0, reasoner.countQueryAnswers(Px, true).getCount());
 			assertEquals(0, reasoner.countQueryAnswers(Qx, true).getCount());
 			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factPc, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factPd, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factQe, true).getCount());
 		}
 	}
 
@@ -96,6 +100,9 @@ public class QueryAnswerCountTest {
 			assertEquals(0, reasoner.countQueryAnswers(Px, true).getCount());
 			assertEquals(0, reasoner.countQueryAnswers(Qx, true).getCount());
 			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factPc, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factPd, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factQe, true).getCount());
 		}
 	}
 
@@ -108,6 +115,9 @@ public class QueryAnswerCountTest {
 			assertEquals(0, reasoner.countQueryAnswers(Px, true).getCount());
 			assertEquals(0, reasoner.countQueryAnswers(Qx, true).getCount());
 			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factPc, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factPd, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factQe, true).getCount());
 		}
 	}
 
@@ -120,6 +130,12 @@ public class QueryAnswerCountTest {
 			assertEquals(2, reasoner.countQueryAnswers(Px, true).getCount());
 			assertEquals(0, reasoner.countQueryAnswers(Qx, true).getCount());
 			assertEquals(0, reasoner.countQueryAnswers(Rxy, true).getCount());
+
+			assertEquals(0, reasoner.countQueryAnswers(factQe, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factQc, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factQd, true).getCount());
+			assertEquals(0, reasoner.countQueryAnswers(factPe, true).getCount());
+
 		}
 	}
 
