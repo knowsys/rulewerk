@@ -89,7 +89,7 @@ public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String
 	/**
 	 * Turn a prefixed name or a potentially relative IRI into an absolute IRI.
 	 *
-	 * @param prefixedNameOrIri either a prefixedName or an IRI.
+	 * @param potentiallyRelativeIri either a prefixedName or an IRI.
 	 * @throws PrefixDeclarationException when called on a prefixedName using an
 	 *                                    unknown prefixName.
 	 */

@@ -22,8 +22,6 @@ package org.semanticweb.vlog4j.core.model.api;
 
 import java.util.function.Function;
 
-import org.semanticweb.vlog4j.core.model.implementation.Serializer;
-
 /**
  * Interface for terms. A term is characterized by a string name and a
  * {@link TermType}.

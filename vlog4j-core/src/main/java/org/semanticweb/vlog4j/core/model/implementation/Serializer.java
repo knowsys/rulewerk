@@ -155,23 +155,25 @@ public final class Serializer {
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Constant}.
+	 * Creates a String representation of a given {@link AbstractConstant}.
 	 *
 	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
-	 * @param constant       a {@link Constant}
+	 * @param constant       a {@link AbstractConstant}
 	 * @param iriTransformer a function to transform IRIs with.
-	 * @return String representation corresponding to a given {@link Constant}.
+	 * @return String representation corresponding to a given
+	 *         {@link AbstractConstant}.
 	 */
 	public static String getString(final AbstractConstant constant, Function<String, String> iriTransformer) {
 		return getIRIString(constant.getName(), iriTransformer);
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Constant}.
+	 * Creates a String representation of a given {@link AbstractConstant}.
 	 *
 	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
-	 * @param constant a {@link Constant}
-	 * @return String representation corresponding to a given {@link Constant}.
+	 * @param constant a {@link AbstractConstant}
+	 * @return String representation corresponding to a given
+	 *         {@link AbstractConstant}.
 	 */
 	public static String getString(final AbstractConstant constant) {
 		return getIRIString(constant.getName());
@@ -191,8 +193,20 @@ public final class Serializer {
 	}
 
 	/**
-	 * Creates a String representation corresponding to the name of a given
-	 * {@link DatatypeConstant} without an IRI.
+	 * Creates a String representation corresponding to the given
+	 * {@link DatatypeConstant}. For datatypes that have specialised lexical
+	 * representations (i.e., xsd:String, xsd:Decimal, xsd:Integer, and xsd:Double),
+	 * this representation is returned, otherwise the result is a generic literal
+	 * with full datatype IRI.
+	 *
+	 * examples:
+	 * <ul>
+	 * <li>{@code "string"^^xsd:String} results in {@code "string"},</li>
+	 * <li>{@code "23.0"^^xsd:Decimal} results in {@code 23.0},</li>
+	 * <li>{@code "42"^^xsd:Integer} results in {@code 42},</li>
+	 * <li>{@code "23.42"^^xsd:Double} results in {@code 23.42E0}, and</li>
+	 * <li>{@code "test"^^<http://example.org>} results in {@code "test"^^<http://example.org>}, modulo transformation of the datatype IRI.</li>
+	 * </ul>
 	 *
 	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param datatypeConstant a {@link DatatypeConstant}
@@ -207,16 +221,26 @@ public final class Serializer {
 				|| datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_INTEGER)
 				|| datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_DOUBLE)) {
 			return datatypeConstant.getLexicalValue();
-		} else {
-			return getConstantName(datatypeConstant, iriTransformer);
 		}
+
+		return getConstantName(datatypeConstant, iriTransformer);
 	}
 
 	/**
-	 * Creates a String representation corresponding to the name of a given
-	 * {@link DatatypeConstant} without an IRI.
+	 * Creates a String representation corresponding to the given
+	 * {@link DatatypeConstant}. For datatypes that have specialised lexical
+	 * representations (i.e., xsd:String, xsd:Decimal, xsd:Integer, and xsd:Double),
+	 * this representation is returned, otherwise the result is a generic literal
+	 * with full datatype IRI.
 	 *
-	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
+	 * examples:
+	 * <ul>
+	 * <li>{@code "string"^^xsd:String} results in {@code "string"},</li>
+	 * <li>{@code "23.0"^^xsd:Decimal} results in {@code 23.0},</li>
+	 * <li>{@code "42"^^xsd:Integer} results in {@code 42},</li>
+	 * <li>{@code "23.42"^^xsd:Double} results in {@code 23.42E0}, and</li>
+	 * <li>{@code "test"^^<http://example.org>} results in {@code "test"^^<http://example.org>}.</li>
+	 * </ul>
 	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
@@ -376,9 +400,9 @@ public final class Serializer {
 		if (string.contains(COLON) || string.matches(REGEX_INTEGER) || string.matches(REGEX_DOUBLE)
 				|| string.matches(REGEX_DECIMAL) || string.equals(REGEX_TRUE) || string.equals(REGEX_FALSE)) {
 			return addAngleBrackets(string);
-		} else {
-			return string;
 		}
+
+		return string;
 	}
 
 	/**
@@ -394,7 +418,7 @@ public final class Serializer {
 	 * <li>{@code \n}</li>
 	 * <li>{@code \r}</li>
 	 * <li>{@code \f}</li>
-	 * <ul>
+	 * </ul>
 	 * Example for {@code string = "\\a"}, the returned value is
 	 * {@code string = "\"\\\\a\""}
 	 *
@@ -416,7 +440,7 @@ public final class Serializer {
 	 * <li>{@code \n}</li>
 	 * <li>{@code \r}</li>
 	 * <li>{@code \f}</li>
-	 * <ul>
+	 * </ul>
 	 *
 	 * @param string
 	 * @return an escaped string
@@ -466,12 +490,12 @@ public final class Serializer {
 	}
 
 	public static String getBaseString(KnowledgeBase knowledgeBase) {
-		String baseIri = knowledgeBase.getBase();
+		String baseIri = knowledgeBase.getBaseIri();
 
-		if (baseIri.equals("")) {
-			return "";
-		}
+		return baseIri.equals(PrefixDeclarationRegistry.EMPTY_BASE) ? baseIri : getBaseDeclarationString(baseIri);
+	}
 
+	private static String getBaseDeclarationString(String baseIri) {
 		return BASE + addAngleBrackets(baseIri) + STATEMENT_SEPARATOR + NEW_LINE;
 	}
 

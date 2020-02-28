@@ -20,8 +20,6 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
-import java.util.function.Function;
-
 import org.semanticweb.vlog4j.core.model.implementation.Serializer;
 
 /**
@@ -40,10 +38,5 @@ public interface ExistentialVariable extends Variable {
 	@Override
 	default String getSyntacticRepresentation() {
 		return Serializer.getString(this);
-	}
-
-	@Override
-	default String getSyntacticRepresentation(Function<String, String> iriTransformer) {
-		return getSyntacticRepresentation();
 	}
 }

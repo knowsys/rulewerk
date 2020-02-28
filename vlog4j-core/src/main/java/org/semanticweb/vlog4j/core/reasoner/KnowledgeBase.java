@@ -1,34 +1,5 @@
 package org.semanticweb.vlog4j.core.reasoner;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang3.Validate;
-import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
-import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
-import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
-import org.semanticweb.vlog4j.core.model.api.Fact;
-import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
-import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
-import org.semanticweb.vlog4j.core.model.api.Rule;
-import org.semanticweb.vlog4j.core.model.api.Statement;
-import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
-import org.semanticweb.vlog4j.core.model.implementation.MergingPrefixDeclarationRegistry;
-
 /*-
  * #%L
  * VLog4j Core Components
@@ -49,6 +20,35 @@ import org.semanticweb.vlog4j.core.model.implementation.MergingPrefixDeclaration
  * #L%
  */
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.commons.lang3.Validate;
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.exceptions.VLog4jException;
+import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
+import org.semanticweb.vlog4j.core.model.api.Fact;
+import org.semanticweb.vlog4j.core.model.api.PositiveLiteral;
+import org.semanticweb.vlog4j.core.model.api.Predicate;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
+import org.semanticweb.vlog4j.core.model.api.Rule;
+import org.semanticweb.vlog4j.core.model.api.Statement;
+import org.semanticweb.vlog4j.core.model.api.StatementVisitor;
+import org.semanticweb.vlog4j.core.model.implementation.MergingPrefixDeclarationRegistry;
+
 /**
  * A knowledge base with rules, facts, and declarations for loading data from
  * further sources. This is a "syntactic" object in that it represents some
@@ -64,7 +64,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	private final Set<KnowledgeBaseListener> listeners = new HashSet<>();
 
 	/**
-	 * all (canonical) file paths imported so far, used to prevent cyclic imports.
+	 * All (canonical) file paths imported so far, used to prevent cyclic imports.
 	 */
 	private final Set<String> importedFilePaths = new HashSet<>();
 
@@ -176,7 +176,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * base. We try to preserve user-provided prefixes found in files when loading
 	 * data.
 	 */
-	private MergingPrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
+	private MergingPrefixDeclarationRegistry prefixDeclarationRegistry = new MergingPrefixDeclarationRegistry();
 
 	/**
 	 * Index structure that organises all facts by their predicate.
@@ -205,7 +205,6 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	public void deleteListener(final KnowledgeBaseListener listener) {
 		this.listeners.remove(listener);
-
 	}
 
 	/**
@@ -457,7 +456,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	@FunctionalInterface
 	public interface AdditionalInputParser {
-		KnowledgeBase parseInto(InputStream stream, KnowledgeBase kb) throws IOException, VLog4jException;
+		void parseInto(InputStream stream, KnowledgeBase kb) throws IOException, VLog4jException;
 	}
 
 	/**
@@ -471,10 +470,8 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @throws IllegalArgumentException when {@code file} is null or has already
 	 *                                  been imported
 	 * @throws VLog4jException          when parseFunction throws VLog4jException
-	 *
-	 * @return this
 	 */
-	public KnowledgeBase importRulesFile(File file, AdditionalInputParser parseFunction)
+	public void importRulesFile(File file, AdditionalInputParser parseFunction)
 			throws VLog4jException, IOException, IllegalArgumentException {
 		Validate.notNull(file, "file must not be null");
 
@@ -482,41 +479,40 @@ public class KnowledgeBase implements Iterable<Statement> {
 		Validate.isTrue(isNewFile, "file \"" + file.getName() + "\" was already imported.");
 
 		try (InputStream stream = new FileInputStream(file)) {
-			return parseFunction.parseInto(stream, this);
+			parseFunction.parseInto(stream, this);
 		}
 	}
 
 	/**
 	 * Merge {@link PrefixDeclarationRegistry} into this knowledge base.
 	 *
-	 * @param prefixDeclarations the prefix declarations to merge. Conflicting
-	 *                           prefix names in {@code prefixDeclarations} will be
-	 *                           renamed.
-	 *
-	 * @return this
+	 * @param prefixDeclarationRegistry the prefix declarations to merge.
+	 *                                  Conflicting prefix names in
+	 *                                  {@code prefixDeclarationRegistry} will be
+	 *                                  renamed to some implementation-specific,
+	 *                                  fresh prefix name.
 	 */
-	public KnowledgeBase mergePrefixDeclarations(PrefixDeclarationRegistry prefixDeclarations) {
-		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
-
-		return this;
+	public void mergePrefixDeclarations(PrefixDeclarationRegistry prefixDeclarationRegistry) {
+		this.prefixDeclarationRegistry.mergePrefixDeclarations(prefixDeclarationRegistry);
 	}
 
 	/**
 	 * Return the base IRI.
 	 *
-	 * @return the base IRI, if declared, or {@code ""} otherwise.
+	 * @return the base IRI, if declared, or
+	 *         {@link PrefixDeclarationRegistry#EMPTY_BASE} otherwise.
 	 */
-	public String getBase() {
-		return this.prefixDeclarations.getBaseIri();
+	public String getBaseIri() {
+		return this.prefixDeclarationRegistry.getBaseIri();
 	}
 
-	/*
+	/**
 	 * Return the declared prefixes.
 	 *
 	 * @return an iterator over all known prefixes.
 	 */
 	public Iterator<Entry<String, String>> getPrefixes() {
-		return this.prefixDeclarations.iterator();
+		return this.prefixDeclarationRegistry.iterator();
 	}
 
 	/**
@@ -529,12 +525,13 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 *
 	 * @return the declared IRI for {@code prefixName}.
 	 */
-	public String getPrefix(String prefixName) throws PrefixDeclarationException {
-		return this.prefixDeclarations.getPrefixIri(prefixName);
+	public String getPrefixIri(String prefixName) throws PrefixDeclarationException {
+		return this.prefixDeclarationRegistry.getPrefixIri(prefixName);
 	}
 
-	/*
-	 * Resolve a prefixed name into an absolute IRI. Dual to unresolveAbsoluteIri.
+	/**
+	 * Resolve a prefixed name into an absolute IRI. Dual to
+	 * {@link unresolveAbsoluteIri}.
 	 *
 	 * @param prefixedName the prefixed name to resolve.
 	 *
@@ -543,12 +540,12 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @return an absolute IRI corresponding to the prefixed name.
 	 */
 	public String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException {
-		return this.prefixDeclarations.resolvePrefixedName(prefixedName);
+		return this.prefixDeclarationRegistry.resolvePrefixedName(prefixedName);
 	}
 
 	/**
 	 * Potentially abbreviate an absolute IRI using the declared prefixes. Dual to
-	 * resolvePrefixedName.
+	 * {@link resolvePrefixedName}.
 	 *
 	 * @param iri the absolute IRI to abbreviate.
 	 *
@@ -556,6 +553,6 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 *         declared prefixes, or {@code iri} if no suitable prefix is declared.
 	 */
 	public String unresolveAbsoluteIri(String iri) {
-		return this.prefixDeclarations.unresolveAbsoluteIri(iri);
+		return this.prefixDeclarationRegistry.unresolveAbsoluteIri(iri);
 	}
 }

@@ -125,17 +125,13 @@ final public class MergingPrefixDeclarationRegistry extends AbstractPrefixDeclar
 	 *
 	 * @param other the set of prefix declarations to merge. Conflicting prefixes
 	 *              from {@code other} will be renamed.
-	 *
-	 * @return this
 	 */
-	public MergingPrefixDeclarationRegistry mergePrefixDeclarations(final PrefixDeclarationRegistry other) {
+	public void mergePrefixDeclarations(final PrefixDeclarationRegistry other) {
 		this.setBaseIri(other.getBaseIri());
 
 		for (Entry<String, String> prefix : other) {
-			setPrefixIri(prefix.getKey(), prefix.getValue());
+			this.setPrefixIri(prefix.getKey(), prefix.getValue());
 		}
-
-		return this;
 	}
 
 	private String getFreshPrefix() {

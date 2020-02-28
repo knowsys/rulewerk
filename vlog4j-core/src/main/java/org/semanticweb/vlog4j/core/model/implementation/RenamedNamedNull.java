@@ -31,11 +31,12 @@ import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
  * @author Maximilian Marx
  */
 public class RenamedNamedNull extends NamedNullImpl {
-	private RenamedNamedNull(String name) {
-		super(name);
-	}
-
+	/**
+	 * Construct a new renamed named null, with the given UUID as a name.
+	 *
+	 * @param name the name of the named null.
+	 */
 	public RenamedNamedNull(UUID name) {
-		this(name.toString());
+		super(name.toString());
 	}
 }

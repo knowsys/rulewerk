@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.implementation.MergingPrefixDeclarationRegistry;
 
 public class MergingPrefixDeclarationRegistryTest {
@@ -116,6 +117,17 @@ public class MergingPrefixDeclarationRegistryTest {
 		MergingPrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry(
 				this.prefixDeclarations);
 		assertEquals(MORE_SPECIFIC, prefixDeclarations.getPrefixIri("eg:"));
+	}
+
+	@Test
+	public void mergePrefixDeclarations_conflictingPrefixName_renamesConflictingPrefixName()
+			throws PrefixDeclarationException {
+		this.prefixDeclarations.setPrefixIri("eg:", BASE);
+		PrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
+		prefixDeclarations.setPrefixIri("eg:", MORE_SPECIFIC);
+		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
+		assertEquals(BASE, this.prefixDeclarations.getPrefixIri("eg:"));
+		assertEquals(MORE_SPECIFIC, this.prefixDeclarations.getPrefixIri("vlog4j_generated_0:"));
 	}
 
 	@Test

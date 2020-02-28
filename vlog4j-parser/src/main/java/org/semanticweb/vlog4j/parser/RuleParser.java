@@ -261,7 +261,9 @@ public class RuleParser {
 		}
 
 		KnowledgeBase knowledgeBase = parser.getKnowledgeBase();
-		return knowledgeBase.mergePrefixDeclarations(parser.getPrefixDeclarationRegistry());
+		knowledgeBase.mergePrefixDeclarations(parser.getPrefixDeclarationRegistry());
+
+		return knowledgeBase;
 	}
 
 	protected static DataSourceDeclaration parseAndExtractDatasourceDeclaration(final JavaCCParser parser)

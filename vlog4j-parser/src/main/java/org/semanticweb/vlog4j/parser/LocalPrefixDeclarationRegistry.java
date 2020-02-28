@@ -80,7 +80,7 @@ final public class LocalPrefixDeclarationRegistry extends AbstractPrefixDeclarat
 	 * Sets the base namespace to the given value. This should only be done once,
 	 * and not after the base namespace was assumed to be an implicit default value.
 	 *
-	 * @param baseIri the new base namespace
+	 * @param baseUri the new base namespace
 	 * @throws PrefixDeclarationException if base was already defined
 	 */
 

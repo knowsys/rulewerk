@@ -93,7 +93,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
 	 * the knowledge base to an OutputStream.
 	 *
-	 * @param an OutputStream for the facts to be written to.
+	 * @param stream an OutputStream for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException

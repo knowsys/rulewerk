@@ -94,12 +94,12 @@ public class KnowledgeBaseTest {
 
 	@Test
 	public void getBase_default_hasEmptyBase() {
-		assertEquals("", this.kb.getBase());
+		assertEquals("", this.kb.getBaseIri());
 	}
 
 	@Test(expected = PrefixDeclarationException.class)
 	public void getPrefix_defaultUndeclaredPrefix_throws() throws PrefixDeclarationException {
-		this.kb.getPrefix("ex:");
+		this.kb.getPrefixIri("ex:");
 	}
 
 	@Test(expected = PrefixDeclarationException.class)
@@ -113,7 +113,7 @@ public class KnowledgeBaseTest {
 		MergingPrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
 		prefixDeclarations.setPrefixIri("ex:", iri);
 		this.kb.mergePrefixDeclarations(prefixDeclarations);
-		assertEquals(this.kb.getPrefix("ex:"), iri);
+		assertEquals(this.kb.getPrefixIri("ex:"), iri);
 		assertEquals(this.kb.resolvePrefixedName("ex:test"), iri + "test");
 		assertEquals(this.kb.unresolveAbsoluteIri(iri + "test"), "ex:test");
 	}
