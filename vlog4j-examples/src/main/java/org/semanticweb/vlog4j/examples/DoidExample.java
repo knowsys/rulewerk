@@ -72,8 +72,8 @@ public class DoidExample {
 			final List<String> queries = Arrays.asList("humansWhoDiedOfCancer(?X)", "humansWhoDiedOfNoncancer(?X)");
 			System.out.println("\nNumber of inferred tuples for selected query atoms:");
 			for (final String queryString : queries) {
-				double querySize = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString)).getCount();
-				System.out.println("  " + queryString + ": " + querySize);
+				double answersCount = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString)).getCount();
+				System.out.println("  " + queryString + ": " + answersCount);
 			}
 		}
 	}
