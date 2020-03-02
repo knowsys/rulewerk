@@ -4,9 +4,9 @@ import java.io.FileInputStream;
 
 /*-
  * #%L
- * VLog4j Examples
+ * Rulewerk Examples
  * %%
- * Copyright (C) 2018 - 2019 VLog4j Developers
+ * Copyright (C) 2018 - 2020 Rulewerk Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

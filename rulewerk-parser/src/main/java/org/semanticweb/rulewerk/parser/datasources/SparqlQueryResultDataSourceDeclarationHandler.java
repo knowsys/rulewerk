@@ -2,9 +2,9 @@ package org.semanticweb.rulewerk.parser.datasources;
 
 /*-
  * #%L
- * VLog4j Parser
+ * Rulewerk Parser
  * %%
- * Copyright (C) 2018 - 2020 VLog4j Developers
+ * Copyright (C) 2018 - 2020 Rulewerk Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
