@@ -40,10 +40,10 @@ public class OwlToRulesConverter {
 	 * Converts the given OWL ontology to rules and facts, and adds the result to
 	 * the internal buffer of rules and facts for later retrieval.
 	 *
-	 * @param owlOntology
-	 *            the ontology
+	 * @param owlOntology the ontology
 	 */
 	public void addOntology(final OWLOntology owlOntology) {
+		this.owlAxiomToRulesConverter.startNewBlankNodeContext();
 		owlOntology.axioms().forEach(owlAxiom -> owlAxiom.accept(this.owlAxiomToRulesConverter));
 	}
 

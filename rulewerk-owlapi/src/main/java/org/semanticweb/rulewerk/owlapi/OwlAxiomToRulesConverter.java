@@ -82,6 +82,7 @@ import org.semanticweb.rulewerk.core.model.implementation.FactImpl;
 import org.semanticweb.rulewerk.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.rulewerk.core.model.implementation.RuleImpl;
 import org.semanticweb.rulewerk.core.model.implementation.UniversalVariableImpl;
+import org.semanticweb.rulewerk.core.reasoner.implementation.Skolemization;
 
 /**
  * Class for converting OWL axioms to rules.
@@ -91,12 +92,23 @@ import org.semanticweb.rulewerk.core.model.implementation.UniversalVariableImpl;
  */
 public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
+	Skolemization skolemization = new Skolemization();
+
 	static OWLDataFactory owlDataFactory = OWLManager.getOWLDataFactory();
 
 	final Set<Rule> rules = new HashSet<>();
 	final Set<Fact> facts = new HashSet<>();
 	final Variable frontierVariable = new UniversalVariableImpl("X");
 	int freshVariableCounter = 0;
+
+	/**
+	 * Changes the renaming function for blank node IDs. Blank nodes with the same
+	 * local ID will be represented differently before and after this function is
+	 * called, but will retain a constant interpretation otherwise.
+	 */
+	public void startNewBlankNodeContext() {
+		skolemization = new Skolemization();
+	}
 
 	/**
 	 * Returns a fresh universal variable, which can be used as auxiliary variable
@@ -166,7 +178,8 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	PositiveLiteralImpl makeTermReplacedLiteral(Literal literal, Term oldTerm, Term newTerm) {
 		if (literal.isNegated()) {
-			throw new OwlFeatureNotSupportedException("Nonmonotonic negation of literals is not handled in OWL conversion.");
+			throw new OwlFeatureNotSupportedException(
+					"Nonmonotonic negation of literals is not handled in OWL conversion.");
 		}
 		return new PositiveLiteralImpl(literal.getPredicate(),
 				literal.getTerms().map(term -> replaceTerm(term, oldTerm, newTerm)).collect(Collectors.toList()));
@@ -242,8 +255,8 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLNegativeObjectPropertyAssertionAxiom axiom) {
-		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject());
-		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject());
+		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject(), skolemization);
+		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject(), skolemization);
 		final Literal atom = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), subject, object);
 		final PositiveLiteral bot = OwlToRulesConversionHelper.getBottom(subject);
 		this.rules.add(Expressions.makeRule(bot, atom));
@@ -346,8 +359,8 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLObjectPropertyAssertionAxiom axiom) {
-		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject());
-		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject());
+		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject(), skolemization);
+		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject(), skolemization);
 		this.facts.add(OwlToRulesConversionHelper.getObjectPropertyFact(axiom.getProperty(), subject, object));
 	}
 
@@ -409,7 +422,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	void visitClassAssertionAxiom(final OWLIndividual individual, final OWLClassExpression classExpression) {
 		this.startAxiomConversion();
-		final Term term = OwlToRulesConversionHelper.getIndividualTerm(individual);
+		final Term term = OwlToRulesConversionHelper.getIndividualTerm(individual, skolemization);
 		final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(term, this);
 		classExpression.accept(headConverter);
 		this.addRule(headConverter);
