@@ -33,11 +33,19 @@ public class RulewerkRuntimeException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = -6574826887294416900L;
 
+	public RulewerkRuntimeException(Throwable cause) {
+		super(cause);
+	}
+
 	public RulewerkRuntimeException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
 	public RulewerkRuntimeException(String message) {
 		super(message);
+	}
+
+	public RulewerkRuntimeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }

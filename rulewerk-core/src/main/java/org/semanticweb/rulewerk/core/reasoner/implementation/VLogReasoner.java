@@ -1,5 +1,25 @@
 package org.semanticweb.rulewerk.core.reasoner.implementation;
 
+/*
+ * #%L
+ * Rulewerk Core Components
+ * %%
+ * Copyright (C) 2018 - 2020 Rulewerk Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -12,6 +32,7 @@ import java.util.Set;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.rulewerk.core.exceptions.ReasonerStateException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Fact;
@@ -45,26 +66,6 @@ import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
 import karmaresearch.vlog.VLog.CyclicCheckResult;
-
-/*
- * #%L
- * Rulewerk Core Components
- * %%
- * Copyright (C) 2018 - 2020 Rulewerk Developers
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 
 /**
  * Reasoner implementation using the VLog backend.
@@ -205,9 +206,9 @@ public class VLogReasoner implements Reasoner {
 		try {
 			this.vLog.start(vLogKB.getVLogDataSourcesConfigurationString(), false);
 		} catch (final AlreadyStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
 		} catch (final EDBConfigurationException e) {
-			throw new RuntimeException("Invalid data sources configuration.", e);
+			throw new RulewerkRuntimeException("Invalid data sources configuration.", e);
 		}
 	}
 
@@ -224,7 +225,7 @@ public class VLogReasoner implements Reasoner {
 			try {
 				load(predicate, inMemoryDataSource);
 			} catch (final EDBConfigurationException e) {
-				throw new RuntimeException("Invalid data sources configuration!", e);
+				throw new RulewerkRuntimeException("Invalid data sources configuration!", e);
 			}
 		}
 	}
@@ -279,7 +280,7 @@ public class VLogReasoner implements Reasoner {
 				throw new IncompatiblePredicateArityException(predicate, dataSourcePredicateArity, dataSource);
 			}
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state!", e);
+			throw new RulewerkRuntimeException("Inconsistent reasoner state!", e);
 		}
 	}
 
@@ -299,7 +300,7 @@ public class VLogReasoner implements Reasoner {
 					}
 				}
 			} catch (final EDBConfigurationException e) {
-				throw new RuntimeException("Invalid data sources configuration!", e);
+				throw new RulewerkRuntimeException("Invalid data sources configuration!", e);
 			}
 
 		});
@@ -317,7 +318,7 @@ public class VLogReasoner implements Reasoner {
 				}
 			}
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state!", e);
+			throw new RulewerkRuntimeException("Inconsistent reasoner state!", e);
 		}
 	}
 
@@ -361,11 +362,11 @@ public class VLogReasoner implements Reasoner {
 				this.reasoningCompleted = this.vLog.materialize(skolemChase, this.timeoutAfterSeconds);
 			}
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
 		} catch (final MaterializationException e) {
 			// FIXME: the message generated here is not guaranteed to be the correct
 			// interpretation of the exception that is caught
-			throw new RuntimeException(
+			throw new RulewerkRuntimeException(
 					"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
 					e);
 		}
@@ -390,7 +391,7 @@ public class VLogReasoner implements Reasoner {
 		try {
 			stringQueryResultIterator = this.vLog.query(vLogAtom, true, filterBlanks);
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
 		} catch (final NonExistingPredicateException e1) {
 			LOGGER.warn("Query uses predicate " + query.getPredicate()
 					+ " that does not occur in the knowledge base. Answer must be empty!");
@@ -412,7 +413,7 @@ public class VLogReasoner implements Reasoner {
 		try {
 			result = this.vLog.querySize(vLogAtom, true, filterBlanks);
 		} catch (NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state.", e);
+			throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
 		} catch (NonExistingPredicateException e) {
 			LOGGER.warn("Query uses predicate " + query.getPredicate()
 					+ " that does not occur in the knowledge base. Answer must be empty!");
@@ -435,7 +436,7 @@ public class VLogReasoner implements Reasoner {
 		try {
 			this.vLog.writeQueryResultsToCsv(vLogAtom, csvFilePath, filterBlanks);
 		} catch (final NotStartedException e) {
-			throw new RuntimeException("Inconsistent reasoner state!", e);
+			throw new RulewerkRuntimeException("Inconsistent reasoner state!", e);
 		} catch (final NonExistingPredicateException e1) {
 			LOGGER.warn("Query uses predicate " + query.getPredicate()
 					+ " that does not occur in the knowledge base. Answers are therefore empty.");
@@ -475,9 +476,9 @@ public class VLogReasoner implements Reasoner {
 							.getBytes());
 				}
 			} catch (final NotStartedException e) {
-				throw new RuntimeException("Inconsistent reasoner state.", e);
+				throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
 			} catch (final NonExistingPredicateException e1) {
-				throw new RuntimeException("Inconsistent knowledge base state.", e1);
+				throw new RulewerkRuntimeException("Inconsistent knowledge base state.", e1);
 			}
 		}
 
@@ -562,7 +563,7 @@ public class VLogReasoner implements Reasoner {
 		try {
 			checkCyclic = this.vLog.checkCyclic("MFC");
 		} catch (final NotStartedException e) {
-			throw new RuntimeException(e.getMessage(), e); // should be impossible
+			throw new RulewerkRuntimeException(e.getMessage(), e); // should be impossible
 		}
 		return checkCyclic.equals(CyclicCheckResult.CYCLIC);
 	}
@@ -643,7 +644,7 @@ public class VLogReasoner implements Reasoner {
 			try {
 				load();
 			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/rulewerk/issues/128
-				throw new RuntimeException(e);
+				throw new RulewerkRuntimeException(e);
 			}
 		}
 
@@ -651,7 +652,7 @@ public class VLogReasoner implements Reasoner {
 		try {
 			checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
 		} catch (final NotStartedException e) {
-			throw new RuntimeException(e.getMessage(), e); // should be impossible
+			throw new RulewerkRuntimeException(e.getMessage(), e); // should be impossible
 		}
 		return checkCyclic.equals(CyclicCheckResult.NON_CYCLIC);
 	}

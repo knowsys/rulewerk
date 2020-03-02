@@ -1,8 +1,5 @@
 package org.semanticweb.rulewerk.core.reasoner.implementation;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -12,9 +9,9 @@ import static org.junit.Assert.assertTrue;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +19,9 @@ import static org.junit.Assert.assertTrue;
  * limitations under the License.
  * #L%
  */
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,6 +31,7 @@ import java.util.LinkedHashSet;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.exceptions.IncompatiblePredicateArityException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.QueryResult;
 import org.semanticweb.rulewerk.core.model.api.Variable;
@@ -43,7 +44,7 @@ public class VLogReasonerSparqlInput {
 
 	/**
 	 * Tests the query "SELECT ?b ?a WHERE {?a p:P22 ?b}"
-	 * 
+	 *
 	 * @throws ReasonerStateException
 	 * @throws EdbIdbSeparationException
 	 * @throws IOException
@@ -104,7 +105,7 @@ public class VLogReasonerSparqlInput {
 
 	/**
 	 * Tests the query "SELECT ?b ?a WHERE {?a p:P22 ?b .}"
-	 * 
+	 *
 	 * @throws ReasonerStateException
 	 * @throws EdbIdbSeparationException
 	 * @throws IOException
@@ -136,7 +137,7 @@ public class VLogReasonerSparqlInput {
 	}
 
 	@Ignore // Ignored during CI because it makes lengthy calls to remote servers
-	@Test(expected = RuntimeException.class)
+	@Test(expected = RulewerkRuntimeException.class)
 	public void testConjunctiveQueryNewLineCharacterInQueryBody() throws IOException {
 		final URL endpoint = new URL("https://query.wikidata.org/sparql");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(

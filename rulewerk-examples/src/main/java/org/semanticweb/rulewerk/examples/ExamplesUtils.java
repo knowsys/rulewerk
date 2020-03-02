@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.examples;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.semanticweb.rulewerk.core.exceptions.ReasonerStateException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
@@ -58,7 +59,7 @@ public final class ExamplesUtils {
 	 * restrict the logging messages that are shown on the console or to change
 	 * their formatting. See the documentation of Log4J for details on how to do
 	 * this.
-	 * 
+	 *
 	 * Note: The VLog C++ backend performs its own logging. The log-level for this
 	 * can be configured using
 	 * {@link Reasoner#setLogLevel(org.semanticweb.rulewerk.core.reasoner.LogLevel)}.
@@ -107,7 +108,7 @@ public final class ExamplesUtils {
 			final PositiveLiteral query = RuleParser.parsePositiveLiteral(queryString);
 			printOutQueryAnswers(query, reasoner);
 		} catch (final ParsingException e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new RulewerkRuntimeException(e.getMessage(), e);
 		}
 	}
 

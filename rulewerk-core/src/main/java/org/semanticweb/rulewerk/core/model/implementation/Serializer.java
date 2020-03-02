@@ -1,12 +1,5 @@
 package org.semanticweb.rulewerk.core.model.implementation;
 
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.function.Function;
-
-import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
-import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -27,8 +20,12 @@ import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
  * #L%
  */
 
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.function.Function;
+
+import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
-import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.DatatypeConstant;
 import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;

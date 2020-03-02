@@ -1,14 +1,5 @@
 package org.semanticweb.rulewerk.owlapi;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.semanticweb.owlapi.apibinding.OWLManager;
-
 /*-
  * #%L
  * Rulewerk OWL API Support
@@ -18,9 +9,9 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,6 +20,14 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
  * #L%
  */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLAxiomVisitor;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
@@ -127,7 +126,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 * simply dropped. Formulas that have only positive atoms (empty body) are
 	 * transformed into one or more facts. All other cases lead to a single rule
 	 * being added.
-	 * 
+	 *
 	 * @param converter
 	 */
 	void addRule(final AbstractClassToRuleConverter converter) {
@@ -167,7 +166,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	PositiveLiteralImpl makeTermReplacedLiteral(Literal literal, Term oldTerm, Term newTerm) {
 		if (literal.isNegated()) {
-			throw new RuntimeException("Nonmonotonic negation of literals is not handled in OWL conversion.");
+			throw new OwlFeatureNotSupportedException("Nonmonotonic negation of literals is not handled in OWL conversion.");
 		}
 		return new PositiveLiteralImpl(literal.getPredicate(),
 				literal.getTerms().map(term -> replaceTerm(term, oldTerm, newTerm)).collect(Collectors.toList()));
@@ -178,12 +177,12 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 * rules are renamings of class expressions, based on auxiliary class names
 	 * (unary predicates). The given term is the term used in this auxiliary
 	 * predicate.
-	 * 
+	 *
 	 * Variables used in auxiliary atoms can be existentially quantified, but the
 	 * corresponding variable in auxiliary rules must always be universally
 	 * quantified. Therefore, if the given term is an existential variable, the
 	 * method will replace it by a universal one of the same name.
-	 * 
+	 *
 	 * @param head
 	 * @param body
 	 * @param auxTerm
@@ -216,7 +215,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 * buffers, and finally creating a rule from the collected body and head. The
 	 * conversions may lead to auxiliary rules being created during processing, so
 	 * additional rules besides the one that is added here might be created.
-	 * 
+	 *
 	 * @param subClass
 	 * @param superClass
 	 */

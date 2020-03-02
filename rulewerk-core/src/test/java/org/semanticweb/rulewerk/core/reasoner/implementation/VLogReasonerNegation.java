@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.Fact;
@@ -59,7 +60,7 @@ public class VLogReasonerNegation {
 	private final Fact pEF = Expressions.makeFact("P", Arrays.asList(e, f));
 	private final Fact qCD = Expressions.makeFact("Q", Arrays.asList(c, d));
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = RulewerkRuntimeException.class)
 	public void testNotStratifiable() throws IOException {
 
 		final PositiveLiteral qXY = Expressions.makePositiveLiteral("Q", x, y);
