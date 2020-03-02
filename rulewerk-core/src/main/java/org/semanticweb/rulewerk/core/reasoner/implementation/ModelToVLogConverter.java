@@ -23,6 +23,7 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 import java.util.Collection;
 import java.util.List;
 
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.Fact;
@@ -86,8 +87,8 @@ final class ModelToVLogConverter {
 			} else if (term instanceof NamedNull) {
 				vLogFactTuple[i] = TermToVLogConverter.getVLogNameForNamedNull((NamedNull) term);
 			} else {
-				throw new RuntimeException("Terms in facts must be constants of named nulls. Encountered " + term
-						+ " of type " + term.getType() + ".");
+				throw new RulewerkRuntimeException("Terms in facts must be constants or named nulls. Encountered "
+						+ term + " of type " + term.getType() + ".");
 			}
 			i++;
 		}
