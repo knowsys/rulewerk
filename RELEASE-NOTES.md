@@ -1,6 +1,18 @@
 VLog4j Release Notes
 ====================
 
+VLog4j v0.6.0
+-------------
+
+Breaking changes:
+* In the example package, `ExamplesUtils.getQueryAnswerCount(queryString, reasoner)` does no
+  longer exist. It can be replaced by 
+  `reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString)).getCount()`
+
+New features:
+* Counting query answers is more efficient now, using `Reasoner.countQueryAnswers()`
+
+
 VLog4j v0.5.0
 -------------
 
