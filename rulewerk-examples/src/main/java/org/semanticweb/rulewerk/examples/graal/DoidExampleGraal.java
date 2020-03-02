@@ -67,8 +67,7 @@ public class DoidExampleGraal {
 
 			/* Configure RDF data source */
 			final Predicate doidTriplePredicate = Expressions.makePredicate("doidTriple", 3);
-			final DataSource doidDataSource = new RdfFileDataSource(
-					new File(ExamplesUtils.INPUT_FOLDER + "doid.nt.gz"));
+			final DataSource doidDataSource = new RdfFileDataSource(ExamplesUtils.INPUT_FOLDER + "doid.nt.gz");
 			kb.addStatement(new DataSourceDeclarationImpl(doidTriplePredicate, doidDataSource));
 
 			/* Configure SPARQL data sources */
@@ -99,8 +98,8 @@ public class DoidExampleGraal {
 				while (parser.hasNext()) {
 					final Object object = parser.next();
 					if (object instanceof fr.lirmm.graphik.graal.api.core.Rule) {
-						kb.addStatement(
-								GraalToRulewerkModelConverter.convertRule((fr.lirmm.graphik.graal.api.core.Rule) object));
+						kb.addStatement(GraalToRulewerkModelConverter
+								.convertRule((fr.lirmm.graphik.graal.api.core.Rule) object));
 					}
 				}
 			}

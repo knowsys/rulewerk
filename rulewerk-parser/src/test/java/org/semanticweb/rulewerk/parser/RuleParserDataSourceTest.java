@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,6 @@ package org.semanticweb.rulewerk.parser;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -56,14 +55,14 @@ public class RuleParserDataSourceTest {
 	@Test
 	public void testCsvSource() throws ParsingException, IOException {
 		String input = "@source p[2] : load-csv(\"" + EXAMPLE_CSV_FILE_PATH + "\") .";
-		CsvFileDataSource csvds = new CsvFileDataSource(new File(EXAMPLE_CSV_FILE_PATH));
+		CsvFileDataSource csvds = new CsvFileDataSource(EXAMPLE_CSV_FILE_PATH);
 		assertEquals(csvds, RuleParser.parseDataSourceDeclaration(input).getDataSource());
 	}
 
 	@Test
 	public void testRdfSource() throws ParsingException, IOException {
 		String input = "@source p[3] : load-rdf(\"" + EXAMPLE_RDF_FILE_PATH + "\") .";
-		RdfFileDataSource rdfds = new RdfFileDataSource(new File(EXAMPLE_RDF_FILE_PATH));
+		RdfFileDataSource rdfds = new RdfFileDataSource(EXAMPLE_RDF_FILE_PATH);
 		assertEquals(rdfds, RuleParser.parseDataSourceDeclaration(input).getDataSource());
 	}
 
@@ -168,7 +167,7 @@ public class RuleParserDataSourceTest {
 	public void rdfDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
 		KnowledgeBase kb = new KnowledgeBase();
 		Predicate predicate1 = Expressions.makePredicate("p", 3);
-		RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(new File(EXAMPLE_RDF_FILE_PATH));
+		RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(EXAMPLE_RDF_FILE_PATH);
 		DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1,
 				unzippedRdfFileDataSource);
 		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
@@ -179,7 +178,7 @@ public class RuleParserDataSourceTest {
 	public void csvDataSourceDeclarationToStringParsingTest() throws ParsingException, IOException {
 		KnowledgeBase kb = new KnowledgeBase();
 		Predicate predicate1 = Expressions.makePredicate("q", 1);
-		CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(EXAMPLE_CSV_FILE_PATH));
+		CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(EXAMPLE_CSV_FILE_PATH);
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1,
 				unzippedCsvFileDataSource);
 		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
@@ -201,7 +200,7 @@ public class RuleParserDataSourceTest {
 				throws ParsingException {
 			CsvFileDataSource source;
 			try {
-				source = new CsvFileDataSource(new File(EXAMPLE_CSV_FILE_PATH));
+				source = new CsvFileDataSource(EXAMPLE_CSV_FILE_PATH);
 			} catch (IOException e) {
 				throw new ParsingException(e);
 			}

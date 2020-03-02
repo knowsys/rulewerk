@@ -11,9 +11,9 @@ import static org.junit.Assert.assertEquals;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,8 +30,8 @@ import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSourceTestU
 
 public class RdfFileDataSourceTest {
 
-	private final File unzippedRdfFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt");
-	private final File zippedRdfFile = new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.nt.gz");
+	private final String unzippedRdfFile = FileDataSourceTestUtils.INPUT_FOLDER + "file.nt";
+	private final String zippedRdfFile = FileDataSourceTestUtils.INPUT_FOLDER + "file.nt.gz";
 
 	@Test(expected = NullPointerException.class)
 	public void testConstructorNullFile() throws IOException {
@@ -40,7 +40,7 @@ public class RdfFileDataSourceTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorFalseExtension() throws IOException {
-		new RdfFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "file.csv"));
+		new RdfFileDataSource(FileDataSourceTestUtils.INPUT_FOLDER + "file.csv");
 	}
 
 	@Test
@@ -50,8 +50,8 @@ public class RdfFileDataSourceTest {
 		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
 		final RdfFileDataSource zippedRdfFileDataSource = new RdfFileDataSource(zippedRdfFile);
 
-		FileDataSourceTestUtils.testConstructor(unzippedRdfFileDataSource, unzippedRdfFile, dirCanonicalPath, "file");
-		FileDataSourceTestUtils.testConstructor(zippedRdfFileDataSource, zippedRdfFile, dirCanonicalPath, "file");
+		FileDataSourceTestUtils.testConstructor(unzippedRdfFileDataSource, new File(unzippedRdfFile).getName(), dirCanonicalPath, "file");
+		FileDataSourceTestUtils.testConstructor(zippedRdfFileDataSource, new File(zippedRdfFile).getName(), dirCanonicalPath, "file");
 	}
 
 	@Test

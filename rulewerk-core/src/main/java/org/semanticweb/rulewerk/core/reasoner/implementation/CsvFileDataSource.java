@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 /**
@@ -57,15 +56,15 @@ public class CsvFileDataSource extends FileDataSource {
 	/**
 	 * Constructor.
 	 *
-	 * @param csvFile a file of a {@code .csv} or {@code .csv.gz} extension and a
-	 *                valid CSV format.
+	 * @param csvFile path to a file of a {@code .csv} or {@code .csv.gz} extension
+	 *                and a valid CSV format.
 	 * @throws IOException              if the path of the given {@code csvFile} is
 	 *                                  invalid.
 	 * @throws IllegalArgumentException if the extension of the given
 	 *                                  {@code csvFile} does not occur in
 	 *                                  {@link #possibleExtensions}.
 	 */
-	public CsvFileDataSource(@NonNull final File csvFile) throws IOException {
+	public CsvFileDataSource(final String csvFile) throws IOException {
 		super(csvFile, possibleExtensions);
 	}
 

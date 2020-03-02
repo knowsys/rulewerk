@@ -380,7 +380,7 @@ public final class Serializer {
 	}
 
 	private static String getFileString(final FileDataSource fileDataSource) {
-		return getString(fileDataSource.getFile().toString());
+		return getString(fileDataSource.getPath().toString());
 	}
 
 	private static String getIRIString(final String string) {

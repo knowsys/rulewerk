@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,7 +62,7 @@ public class VLogReasonerRdfInput {
 	@Test
 	public void testLoadEmptyRdfFile() throws IOException {
 		FileDataSourceTestUtils.testLoadEmptyFile(ternaryPredicate, queryAtom,
-				new RdfFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.nt")));
+				new RdfFileDataSource(FileDataSourceTestUtils.INPUT_FOLDER + "empty.nt"));
 	}
 
 	@Ignore
@@ -71,19 +71,19 @@ public class VLogReasonerRdfInput {
 	@Test
 	public void testLoadEmptyRdfFileGz() throws IOException {
 		FileDataSourceTestUtils.testLoadEmptyFile(ternaryPredicate, queryAtom,
-				new RdfFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "empty.nt.gz")));
+				new RdfFileDataSource(FileDataSourceTestUtils.INPUT_FOLDER + "empty.nt.gz"));
 	}
 
 	@Test
 	public void testLoadTernaryFactsFromRdfFile() throws IOException {
 		testLoadTernaryFactsFromSingleRdfDataSource(new RdfFileDataSource(
-				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.unzippedNtFileRoot + ".nt")));
+				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.unzippedNtFileRoot + ".nt"));
 	}
 
 	@Test
 	public void testLoadTernaryFactsFromRdfFileGz() throws IOException {
 		testLoadTernaryFactsFromSingleRdfDataSource(new RdfFileDataSource(
-				new File(FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.zippedNtFileRoot + ".nt.gz")));
+				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.zippedNtFileRoot + ".nt.gz"));
 	}
 
 	public void testLoadTernaryFactsFromSingleRdfDataSource(final FileDataSource fileDataSource) throws IOException {
@@ -104,7 +104,7 @@ public class VLogReasonerRdfInput {
 	public void testLoadNonexistingRdfFile() throws IOException {
 		final File nonexistingFile = new File("nonexistingFile.nt");
 		assertFalse(nonexistingFile.exists());
-		final FileDataSource fileDataSource = new RdfFileDataSource(nonexistingFile);
+		final FileDataSource fileDataSource = new RdfFileDataSource(nonexistingFile.getName());
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(new DataSourceDeclarationImpl(ternaryPredicate, fileDataSource));
 
@@ -115,8 +115,8 @@ public class VLogReasonerRdfInput {
 
 	@Test
 	public void testLoadRdfInvalidFormat() throws IOException {
-		final FileDataSource fileDataSource = new RdfFileDataSource(new File(
-				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.invalidFormatNtFileNameRoot + ".nt"));
+		final FileDataSource fileDataSource = new RdfFileDataSource(
+				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.invalidFormatNtFileNameRoot + ".nt");
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(new DataSourceDeclarationImpl(ternaryPredicate, fileDataSource));
 

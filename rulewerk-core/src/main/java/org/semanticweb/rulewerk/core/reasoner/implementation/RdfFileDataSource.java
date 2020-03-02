@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,7 +55,7 @@ public class RdfFileDataSource extends FileDataSource {
 	/**
 	 * Constructor.
 	 *
-	 * @param rdfFile a file of a {@code .nt} or {@code .nt.gz} extension and a
+	 * @param rdfFile path to a file of a {@code .nt} or {@code .nt.gz} extension and a
 	 *                valid N-Triples format.
 	 * @throws IOException              if the path of the given {@code rdfFile} is
 	 *                                  invalid.
@@ -63,7 +63,7 @@ public class RdfFileDataSource extends FileDataSource {
 	 *                                  {@code rdfFile} does not occur in
 	 *                                  {@link #possibleExtensions}.
 	 */
-	public RdfFileDataSource(final File rdfFile) throws IOException {
+	public RdfFileDataSource(final String rdfFile) throws IOException {
 		super(rdfFile, possibleExtensions);
 	}
 

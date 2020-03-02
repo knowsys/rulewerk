@@ -2,8 +2,6 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -13,9 +11,9 @@ import java.io.File;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -69,10 +67,10 @@ public class VLogReasonerCombinedInputs {
 	final DataSourceDeclaration qCDFromCsv;
 
 	public VLogReasonerCombinedInputs() throws IOException {
-		qFromCsv = new DataSourceDeclarationImpl(q, new CsvFileDataSource(new File(
-				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + ".csv")));
+		qFromCsv = new DataSourceDeclarationImpl(q, new CsvFileDataSource(
+				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + ".csv"));
 		qCDFromCsv = new DataSourceDeclarationImpl(q,
-				new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER + "unaryFactsCD.csv")));
+				new CsvFileDataSource(FileDataSourceTestUtils.INPUT_FOLDER + "unaryFactsCD.csv"));
 	}
 
 	@Test
