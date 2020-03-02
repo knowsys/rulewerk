@@ -24,7 +24,7 @@
 		<dependency>
 			<!-- Useful for integrating the jar containing the JNI to VLog -->
 			<groupId>${project.groupId}</groupId>
-			<artifactId>rulewerk-base</artifactId>
+			<artifactId>vlog-base</artifactId>
 			<version>${karmaresearch.vlog.version}</version>
 		</dependency>
 	</dependencies>
@@ -50,7 +50,7 @@
 								</goals>
 								<configuration>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>rulewerk-base</artifactId>
+									<artifactId>vlog-base</artifactId>
 									<version>${karmaresearch.vlog.version}</version>
 									<packaging>jar</packaging>
 									<file>./lib/jvlog-local.jar</file>
