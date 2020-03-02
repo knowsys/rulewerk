@@ -32,7 +32,7 @@ target/
 # Don't apply the above to src/ where Java requires
 # subdirectories named according to package names.
 # We do not want to forbid things like "dumpfiles" in
-# package names. 
+# package names.
 !src/
 
 # Use as directory for local testing code
@@ -49,9 +49,9 @@ Thumbs.db
 
 # Output of tests and examples
 *.log
-vlog4j-core/src/test/data/output/*
-vlog4j-examples/src/main/data/output/*
-vlog4j-examples/src/main/data/logs/*
-vlog4j-rdf/src/main/data/output/*
+rulewerk-core/src/test/data/output/*
+rulewerk-examples/src/main/data/output/*
+rulewerk-examples/src/main/data/logs/*
+rulewerk-rdf/src/main/data/output/*
 /build-vlog/vlog/
 /TAGS

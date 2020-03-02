@@ -5,25 +5,25 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.semanticweb.vlog4j</groupId>
-	<artifactId>vlog4j-parent</artifactId>
+	<groupId>org.semanticweb.rulewerk</groupId>
+	<artifactId>rulewerk-parent</artifactId>
 	<version>0.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>VLog4j</name>
+	<name>Rulewerk</name>
 	<description>A Java library for working with the VLog rule engine</description>
-	<url>https://github.com/knowsys/vlog4j</url>
+	<url>https://github.com/knowsys/rulewerk</url>
 
 	<modules>
-		<!-- when adding a module, make sure to also add it as a dependency in 
+		<!-- when adding a module, make sure to also add it as a dependency in
 			the coverage module, otherwise it will not be included in the coverage report -->
-		<module>vlog4j-core</module>
-		<module>vlog4j-rdf</module>
-		<module>vlog4j-examples</module>
-		<module>vlog4j-owlapi</module>
-		<module>vlog4j-graal</module>
-		<module>vlog4j-parser</module>
-		<module>vlog4j-client</module>
+		<module>rulewerk-core</module>
+		<module>rulewerk-rdf</module>
+		<module>rulewerk-examples</module>
+		<module>rulewerk-owlapi</module>
+		<module>rulewerk-graal</module>
+		<module>rulewerk-parser</module>
+		<module>rulewerk-client</module>
 		<module>coverage</module>
 	</modules>
 
@@ -38,7 +38,7 @@
 
 
 	<organization>
-		<name>VLog4j Developers</name>
+		<name>Rulewerk Developers</name>
 	</organization>
 
 	<developers>
@@ -56,6 +56,11 @@
 			<id>david</id>
 			<name>David Carral</name>
 			<email>david.carral@tu-dresden.de</email>
+		</developer>
+		<developer>
+			<id>maximilian</id>
+			<name>Maximilian Marx</name>
+			<email>maximilian.marx@tu-dresden.de</email>
 		</developer>
 	</developers>
 
@@ -144,7 +149,7 @@
 					</executions>
 				</plugin>
 				<plugin>
-					<!-- This plugin's configuration is used to store Eclipse m2e settings 
+					<!-- This plugin's configuration is used to store Eclipse m2e settings
 						only. It has no influence on the Maven build. -->
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -220,7 +225,7 @@
 				<artifactId>license-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<!-- Used to set JRE version; will be used by IDEs like Eclipse as the 
+				<!-- Used to set JRE version; will be used by IDEs like Eclipse as the
 					target JRE (default is 1.5) -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -280,8 +285,8 @@
 						</goals>
 						<phase>test</phase>
 						<configuration>
-							<!-- use a non-standard output directory so the coveralls plugin will 
-								not try to aggregate this into the final coverage report, since we want to 
+							<!-- use a non-standard output directory so the coveralls plugin will
+								not try to aggregate this into the final coverage report, since we want to
 								control aggregation ourselves. -->
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
 						</configuration>
@@ -289,7 +294,7 @@
 				</executions>
 				<configuration>
 					<excludes>
-						<!-- Do not consider generated source code. Plugin fails for these 
+						<!-- Do not consider generated source code. Plugin fails for these
 							files. -->
 						<exclude>**/javacc/JavaCCParser.class</exclude>
 						<exclude>**/javacc/JavaCCParserConstants.class</exclude>
@@ -303,14 +308,14 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- Plugin for creating Javadocs; goal for preparing docs for upload 
+				<!-- Plugin for creating Javadocs; goal for preparing docs for upload
 					to github: javadoc:aggregate -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven.javadoc.version}</version>
 				<configuration>
 					<source>1.8</source>
-					<bottom><![CDATA[Copyright &#169; {inceptionYear}&#x2018;{currentYear} {organizationName}. Generated from source code published under the Apache License 2.0. For more information, see the <a href="https://github.com/knowsys/vlog4j">VLog4j homepage</a>]]></bottom>
+					<bottom><![CDATA[Copyright &#169; {inceptionYear}&#x2013;{currentYear} {organizationName}. Generated from source code published under the Apache License 2.0. For more information, see the <a href="https://github.com/knowsys/rulewerk">Rulewerk homepage</a>]]></bottom>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -323,7 +328,7 @@
 					<checkinComment>Publishing javadoc for
 						${project.artifactId}:${project.version}</checkinComment>
 					<content>${project.reporting.outputDirectory}/apidocs</content>
-					<pubScmUrl>scm:git:https://github.com/knowsys/vlog4j.git</pubScmUrl>
+					<pubScmUrl>scm:git:https://github.com/knowsys/rulewerk.git</pubScmUrl>
 					<scmBranch>gh-pages</scmBranch>
 				</configuration>
 			</plugin>
@@ -411,9 +416,9 @@
 	</profiles>
 
 	<scm>
-		<url>https://github.com/knowsys/vlog4j.git</url>
-		<connection>scm:git:https://github.com/knowsys/vlog4j.git</connection>
-		<developerConnection>scm:git:https://github.com/knowsys/vlog4j.git</developerConnection>
+		<url>https://github.com/knowsys/rulewerk.git</url>
+		<connection>scm:git:https://github.com/knowsys/rulewerk.git</connection>
+		<developerConnection>scm:git:https://github.com/knowsys/rulewerk.git</developerConnection>
 	</scm>
 
 </project>

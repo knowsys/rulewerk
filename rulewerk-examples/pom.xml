@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.semanticweb.rulewerk</groupId>
+		<artifactId>rulewerk-parent</artifactId>
+		<version>0.6.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>rulewerk-examples</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Rulewerk Examples</name>
+	<description>Contains examples and usage instructions describing the basic functionality of Rulewerk</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rulewerk-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rulewerk-owlapi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rulewerk-rdf</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rulewerk-graal</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>rulewerk-parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<!-- Rio parser and writer implementation for the Turtle file format. -->
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-turtle</artifactId>
+			<!-- version compatible with the org.openrdf.model version, as imported by rulewerk-rdf dependency -->
+			<version>${openrdf.sesame.version}</version>
+		</dependency>
+
+		<dependency>
+			<!-- Rio parser and writer implementation for the RDF/XML file format. -->
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-rdfxml</artifactId>
+			<!-- version compatible with the org.openrdf.model version, as imported by rulewerk-rdf dependency -->
+			<version>${openrdf.sesame.version}</version>
+		</dependency>
+
+	    	<dependency>
+      			<groupId>fr.lirmm.graphik</groupId>
+      			<artifactId>graal-io-dlgp</artifactId>
+	      		<version>${graal.version}</version>
+    		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- Disable code coverage computation for this module: -->
+				<!-- example/benchmark code needs no testing. -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.7</version>
+				<configuration combine.self="override">
+					<skip>true</skip>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

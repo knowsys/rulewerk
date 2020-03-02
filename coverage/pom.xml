@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.semanticweb.vlog4j</groupId>
-		<artifactId>vlog4j-parent</artifactId>
+		<groupId>org.semanticweb.rulewerk</groupId>
+		<artifactId>rulewerk-parent</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	</parent>
 
@@ -14,33 +14,33 @@
 	<name>coverage</name>
 	<dependencies>
 	  <dependency>
-		<groupId>org.semanticweb.vlog4j</groupId>
-		<artifactId>vlog4j-core</artifactId>
+		<groupId>org.semanticweb.rulewerk</groupId>
+		<artifactId>rulewerk-core</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	  </dependency>
 	  <dependency>
-		<groupId>org.semanticweb.vlog4j</groupId>
-		<artifactId>vlog4j-rdf</artifactId>
+		<groupId>org.semanticweb.rulewerk</groupId>
+		<artifactId>rulewerk-rdf</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	  </dependency>
 	  <dependency>
-		<groupId>org.semanticweb.vlog4j</groupId>
-		<artifactId>vlog4j-owlapi</artifactId>
+		<groupId>org.semanticweb.rulewerk</groupId>
+		<artifactId>rulewerk-owlapi</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	  </dependency>
 	  <dependency>
-		<groupId>org.semanticweb.vlog4j</groupId>
-		<artifactId>vlog4j-graal</artifactId>
+		<groupId>org.semanticweb.rulewerk</groupId>
+		<artifactId>rulewerk-graal</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	  </dependency>
 	  <dependency>
-		<groupId>org.semanticweb.vlog4j</groupId>
-		<artifactId>vlog4j-parser</artifactId>
+		<groupId>org.semanticweb.rulewerk</groupId>
+		<artifactId>rulewerk-parser</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	  </dependency>
 	  <dependency>
-		<groupId>org.semanticweb.vlog4j</groupId>
-		<artifactId>vlog4j-client</artifactId>
+		<groupId>org.semanticweb.rulewerk</groupId>
+		<artifactId>rulewerk-client</artifactId>
 		<version>0.6.0-SNAPSHOT</version>
 	  </dependency>
 	</dependencies>
