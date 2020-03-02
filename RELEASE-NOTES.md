@@ -1,10 +1,11 @@
-VLog4j Release Notes
+Rulewerk Release Notes
 ====================
 
-VLog4j v0.6.0
+Rulewerk v0.6.0
 -------------
 
 Breaking changes:
+* VLog4j is now called Rulewerk.
 * In the example package, `ExamplesUtils.getQueryAnswerCount(queryString, reasoner)` does no
   longer exist. It can be replaced by
   `reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString)).getCount()`
