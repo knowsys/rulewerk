@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.api;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -87,9 +87,9 @@ public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String
 	String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException;
 
 	/**
-	 * Turn a prefixed name or a potentially relative IRI into an absolute IRI.
+	 * Turn a potentially relative IRI into an absolute IRI.
 	 *
-	 * @param potentiallyRelativeIri either a prefixedName or an IRI.
+	 * @param potentiallyRelativeIri an IRI.
 	 * @throws PrefixDeclarationException when called on a prefixedName using an
 	 *                                    unknown prefixName.
 	 */

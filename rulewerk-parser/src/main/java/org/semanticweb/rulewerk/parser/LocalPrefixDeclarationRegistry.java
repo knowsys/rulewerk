@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,12 +39,20 @@ final public class LocalPrefixDeclarationRegistry extends AbstractPrefixDeclarat
 	 */
 	private String fallbackIri;
 
+	/**
+	 * Construct a Prefix declaration registry without an inherited base IRI. In
+	 * this case, we default to {@value PrefixDeclarationRegistry#EMPTY_BASE}.
+	 */
 	public LocalPrefixDeclarationRegistry() {
 		this(PrefixDeclarationRegistry.EMPTY_BASE); // empty string encodes: "no base" (use relative IRIs)
 	}
 
 	/**
+	 * Construct a Prefix declaration registry with a base IRI inherited from the
+	 * importing file.
 	 *
+	 * @param fallbackIri the IRI to use as a base if none is set by the imported
+	 *                    file itself (i.e., if {@link #setBaseIri} is not called).
 	 */
 	public LocalPrefixDeclarationRegistry(String fallbackIri) {
 		super();

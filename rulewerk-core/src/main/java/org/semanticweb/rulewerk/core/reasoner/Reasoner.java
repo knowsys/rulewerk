@@ -1,5 +1,25 @@
 package org.semanticweb.rulewerk.core.reasoner;
 
+/*
+ * #%L
+ * Rulewerk Core Components
+ * %%
+ * Copyright (C) 2018 - 2020 Rulewerk Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,28 +33,9 @@ import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.QueryResult;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.reasoner.implementation.VLogReasoner;
-
-/*
- * #%L
- * Rulewerk Core Components
- * %%
- * Copyright (C) 2018 - 2020 Rulewerk Developers
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 
 /**
  * Interface that exposes the existential rule reasoning capabilities of VLog.
@@ -387,11 +388,13 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * explicit facts materialised by the reasoner. <br>
 	 * An answer to the query is the term set of a fact that matches the
 	 * {@code query}: the fact predicate is the same as the {@code query} predicate,
-	 * the {@link TermType#CONSTANT} terms of the {@code query} appear in the answer
-	 * fact at the same term position, and the {@link TermType#VARIABLE} terms of
-	 * the {@code query} are matched by terms in the fact, either named
-	 * ({@link TermType#CONSTANT}) or anonymous ({@link TermType#NAMED_NULL}). The
-	 * same variable name identifies the same term in the answer fact. <br>
+	 * the {@link TermType#ABSTRACT_CONSTANT}, {@link TermType#DATATYPE_CONSTANT}
+	 * and {@link TermType#LANGSTRING_CONSTANT} terms of the {@code query} appear in
+	 * the answer fact at the same term position, and the
+	 * {@link TermType#UNIVERSAL_VARIABLE} terms of the {@code query} are matched by
+	 * terms in the fact, either named (any of the three constant types) or
+	 * anonymous ({@link TermType#NAMED_NULL}). The same variable name identifies
+	 * the same term in the answer fact. <br>
 	 *
 	 * Depending on the state of the reasoning (materialisation) and its
 	 * {@link KnowledgeBase}, the answers can have a different {@link Correctness}
