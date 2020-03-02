@@ -85,9 +85,9 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 			return constant.getName();
 		}
 	}
-	
+
 	/**
-	 * Converts the given named null to the name of a constant in VLog.
+	 * Converts the given named null to the name of a (skolem) constant in VLog.
 	 *
 	 * @param named null
 	 * @return VLog constant string
@@ -132,8 +132,8 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	}
 
 	/**
-	 * Transforms a named null to a {@link karmaresearch.vlog.Term} with the same name
-	 * and type {@link karmaresearch.vlog.Term.TermType#BLANK}.
+	 * Transforms a named null to a {@link karmaresearch.vlog.Term} with the same
+	 * name and type {@link karmaresearch.vlog.Term.TermType#BLANK}.
 	 */
 	@Override
 	public karmaresearch.vlog.Term visit(NamedNull term) {
