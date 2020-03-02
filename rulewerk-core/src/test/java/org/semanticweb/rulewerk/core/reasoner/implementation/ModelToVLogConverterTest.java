@@ -22,23 +22,29 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.api.StatementVisitor;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.NamedNullImpl;
+import org.semanticweb.rulewerk.core.model.implementation.PositiveLiteralImpl;
+import org.semanticweb.rulewerk.core.model.implementation.RenamedNamedNull;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.RuleRewriteStrategy;
 
@@ -118,6 +124,26 @@ public class ModelToVLogConverterTest {
 	}
 
 	@Test
+	public void testToVLogTermBlankSkolemization() {
+		final NamedNull blank = new NamedNullImpl("blank");
+
+		final String vLogSkolemConstant = TermToVLogConverter.getVLogNameForNamedNull(blank);
+
+		assertNotEquals("blank", vLogSkolemConstant);
+		assertEquals(36, vLogSkolemConstant.length()); // length of a UUID
+	}
+
+	@Test
+	public void testToVLogTermBlankRenamedSkolemization() {
+		final UUID uuid = UUID.randomUUID();
+		final NamedNull blank = new RenamedNamedNull(uuid);
+
+		final String vLogSkolemConstant = TermToVLogConverter.getVLogNameForNamedNull(blank);
+
+		assertEquals(uuid.toString(), vLogSkolemConstant);
+	}
+
+	@Test
 	public void testToVLogTermArray() {
 		final Variable vx = Expressions.makeUniversalVariable("x");
 		final Variable vxToo = Expressions.makeUniversalVariable("x");
@@ -162,6 +188,41 @@ public class ModelToVLogConverterTest {
 
 		final String[][] expectedTuples = { { "1" }, { "2", "3" } };
 		assertArrayEquals(expectedTuples, vLogTuples);
+	}
+
+	@Test
+	public void testToVLogFactTupleNulls() {
+		final UUID uuid = UUID.randomUUID();
+		final NamedNull n = new RenamedNamedNull(uuid);
+		final Fact atom1 = Expressions.makeFact("p1", Arrays.asList(n));
+
+		final String[] expectedTuple = { uuid.toString() };
+
+		final String[] actualTuple = ModelToVLogConverter.toVLogFactTuple(atom1);
+
+		assertArrayEquals(expectedTuple, actualTuple);
+	}
+
+	@Test(expected = RulewerkRuntimeException.class)
+	public void testToVLogFactTupleUnsupported() {
+		// We need a fact that accepts exception-causing terms in the first place:
+		class NonValidatingFact extends PositiveLiteralImpl implements Fact {
+
+			public NonValidatingFact(Predicate predicate, List<Term> terms) {
+				super(predicate, terms);
+			}
+
+			@Override
+			public <T> T accept(StatementVisitor<T> statementVisitor) {
+				return statementVisitor.visit(this);
+			}
+
+		}
+
+		final Variable x = Expressions.makeUniversalVariable("X");
+		final Fact atom1 = new NonValidatingFact(Expressions.makePredicate("p1", 1), Arrays.asList(x));
+
+		ModelToVLogConverter.toVLogFactTuple(atom1);
 	}
 
 	@Test

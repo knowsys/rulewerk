@@ -23,10 +23,12 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 import java.util.Collection;
 import java.util.List;
 
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
@@ -80,7 +82,14 @@ final class ModelToVLogConverter {
 		int i = 0;
 		for (final Term term : terms) {
 			// No checks for type of term -- only constants allowed in facts!
-			vLogFactTuple[i] = TermToVLogConverter.getVLogNameForConstant((Constant)term);
+			if (term instanceof Constant) {
+				vLogFactTuple[i] = TermToVLogConverter.getVLogNameForConstant((Constant) term);
+			} else if (term instanceof NamedNull) {
+				vLogFactTuple[i] = TermToVLogConverter.getVLogNameForNamedNull((NamedNull) term);
+			} else {
+				throw new RulewerkRuntimeException("Terms in facts must be constants or named nulls. Encountered "
+						+ term + " of type " + term.getType() + ".");
+			}
 			i++;
 		}
 		return vLogFactTuple;

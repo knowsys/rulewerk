@@ -29,6 +29,7 @@ import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
 import org.semanticweb.rulewerk.core.model.api.LanguageStringConstant;
 import org.semanticweb.rulewerk.core.model.api.TermVisitor;
 import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
+import org.semanticweb.rulewerk.core.model.implementation.RenamedNamedNull;
 
 /**
  * A visitor that converts {@link Term}s of different types to corresponding
@@ -38,6 +39,8 @@ import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
  *
  */
 class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
+
+	static final Skolemization skolemization = new Skolemization();
 
 	/**
 	 * Transforms an abstract constant to a {@link karmaresearch.vlog.Term} with the
@@ -87,6 +90,20 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	}
 
 	/**
+	 * Converts the given named null to the name of a (skolem) constant in VLog.
+	 *
+	 * @param named null
+	 * @return VLog constant string
+	 */
+	public static String getVLogNameForNamedNull(NamedNull namedNull) {
+		if (namedNull instanceof RenamedNamedNull) {
+			return namedNull.getName();
+		} else {
+			return skolemization.skolemizeNamedNull(namedNull.getName()).getName();
+		}
+	}
+
+	/**
 	 * Converts the string representation of a constant in Rulewerk directly to the
 	 * name of a constant in VLog, without parsing it into a {@link Constant} first.
 	 *
@@ -122,8 +139,8 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	}
 
 	/**
-	 * Transforms a named null to a {@link karmaresearch.vlog.Term} with the same name
-	 * and type {@link karmaresearch.vlog.Term.TermType#BLANK}.
+	 * Transforms a named null to a {@link karmaresearch.vlog.Term} with the same
+	 * name and type {@link karmaresearch.vlog.Term.TermType#BLANK}.
 	 */
 	@Override
 	public karmaresearch.vlog.Term visit(NamedNull term) {

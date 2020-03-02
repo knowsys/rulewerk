@@ -634,16 +634,16 @@ public class OwlAxiomToRulesConverterTest {
 
 		assertEquals(Collections.singleton(rule), converter.rules);
 	}
-	
+
 	/*
 	 * A \sqsubseteq <1 .R
 	 */
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testSubClassOfMaxCardinality() {
-		
+
 		OWLClassExpression maxCard = df.getOWLObjectMaxCardinality(1, pR);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, maxCard );
-		
+		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, maxCard);
+
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 	}
@@ -695,7 +695,7 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 	}
-	
+
 	/*
 	 * (B \sqcap {a,b}) \sqsubseteq A
 	 */
@@ -710,9 +710,8 @@ public class OwlAxiomToRulesConverterTest {
 		axiom.accept(converter);
 	}
 
-	
 	/*
-	 * A \sqsubseteq (B \sqcap {a,b}) 
+	 * A \sqsubseteq (B \sqcap {a,b})
 	 */
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testClassSubClassOfNominalsInConjunctionRight() {
@@ -723,7 +722,6 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 	}
-
 
 	/*
 	 * A \sqsubseteq {a}
