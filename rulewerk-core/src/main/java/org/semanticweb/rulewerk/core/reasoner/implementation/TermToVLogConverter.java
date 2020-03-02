@@ -89,7 +89,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	/**
 	 * Converts the given named null to the name of a constant in VLog.
 	 *
-	 * @param named nul
+	 * @param named null
 	 * @return VLog constant string
 	 */
 	public static String getVLogNameForNamedNull(NamedNull namedNull) {
