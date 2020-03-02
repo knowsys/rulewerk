@@ -1,8 +1,5 @@
 package org.semanticweb.vlog4j.parser.javacc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 /*-
  * #%L
  * vlog4j-parser
@@ -23,9 +20,9 @@ import java.io.IOException;
  * #L%
  */
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
@@ -38,8 +35,8 @@ import org.semanticweb.vlog4j.core.model.api.Statement;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
-import org.semanticweb.vlog4j.core.model.implementation.RenamedNamedNull;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.Skolemization;
 import org.semanticweb.vlog4j.parser.DefaultParserConfiguration;
 import org.semanticweb.vlog4j.parser.DirectiveArgument;
 import org.semanticweb.vlog4j.parser.LocalPrefixDeclarationRegistry;
@@ -66,7 +63,7 @@ public class JavaCCParserBase {
 
 	private KnowledgeBase knowledgeBase;
 	private ParserConfiguration parserConfiguration;
-	private byte[] namedNullNamespace = UUID.randomUUID().toString().getBytes();
+	private Skolemization skolemization = new Skolemization();
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -165,15 +162,11 @@ public class JavaCCParserBase {
 	}
 
 	NamedNull createNamedNull(String lexicalForm) throws ParseException {
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		try {
-			stream.write(namedNullNamespace);
-			stream.write(lexicalForm.getBytes());
+			return this.skolemization.skolemizeNamedNull(lexicalForm);
 		} catch (IOException e) {
 			throw makeParseExceptionWithCause("Failed to generate a unique name for named null", e);
 		}
-
-		return new RenamedNamedNull(UUID.nameUUIDFromBytes(stream.toByteArray()));
 	}
 
 	void addStatement(Statement statement) {
@@ -326,12 +319,12 @@ public class JavaCCParserBase {
 		return parserConfiguration;
 	}
 
-	byte[] getNamedNullNamespace() {
-		return namedNullNamespace;
+	Skolemization getSkolemization() {
+		return skolemization;
 	}
 
-	void setNamedNullNamespace(byte[] namedNullNamespace) {
-		this.namedNullNamespace = namedNullNamespace;
+	void setSkolemization(Skolemization skolemization) {
+		this.skolemization = skolemization;
 	}
 
 	public void setPrefixDeclarationRegistry(PrefixDeclarationRegistry prefixDeclarationRegistry) {

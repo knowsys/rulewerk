@@ -26,6 +26,7 @@ import java.io.InputStream;
 
 import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.Skolemization;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
@@ -41,7 +42,7 @@ public class SubParserFactory {
 	private final KnowledgeBase knowledgeBase;
 	private final ParserConfiguration parserConfiguration;
 	private final PrefixDeclarationRegistry prefixDeclarationRegistry;
-	private final byte[] namedNullNamespace;
+	private final Skolemization skolemization;
 
 	/**
 	 * Construct a SubParserFactory.
@@ -52,7 +53,7 @@ public class SubParserFactory {
 		this.knowledgeBase = parser.getKnowledgeBase();
 		this.prefixDeclarationRegistry = parser.getPrefixDeclarationRegistry();
 		this.parserConfiguration = parser.getParserConfiguration();
-		this.namedNullNamespace = parser.getNamedNullNamespace();
+		this.skolemization = parser.getSkolemization();
 	}
 
 	/**
@@ -69,7 +70,7 @@ public class SubParserFactory {
 		subParser.setKnowledgeBase(this.knowledgeBase);
 		subParser.setPrefixDeclarationRegistry(this.prefixDeclarationRegistry);
 		subParser.setParserConfiguration(this.parserConfiguration);
-		subParser.setNamedNullNamespace(this.namedNullNamespace);
+		subParser.setSkolemization(this.skolemization);
 
 		return subParser;
 	}
