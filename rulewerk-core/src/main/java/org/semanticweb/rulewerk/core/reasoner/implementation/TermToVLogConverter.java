@@ -85,6 +85,16 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 			return constant.getName();
 		}
 	}
+	
+	/**
+	 * Converts the given named null to the name of a constant in VLog.
+	 *
+	 * @param named nul
+	 * @return VLog constant string
+	 */
+	public static String getVLogNameForNamedNull(NamedNull namedNull) {
+		return "skolem__" + namedNull.getName();
+	}
 
 	/**
 	 * Converts the string representation of a constant in Rulewerk directly to the
