@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,7 @@ import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
 /**
  * A visitor that converts {@link Term}s of different types to corresponding
  * internal VLog model {@link karmaresearch.vlog.Term}s.
- * 
+ *
  * @author Irina Dragoste
  *
  */
@@ -69,17 +69,17 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 
 	/**
 	 * Converts the given constant to the name of a constant in VLog.
-	 * 
+	 *
 	 * @param constant
 	 * @return VLog constant string
 	 */
 	public static String getVLogNameForConstant(Constant constant) {
 		if (constant.getType() == TermType.ABSTRACT_CONSTANT) {
-			String vLog4jConstantName = constant.getName();
-			if (vLog4jConstantName.contains(":")) { // enclose IRIs with < >
-				return "<" + vLog4jConstantName + ">";
+			String rulewerkConstantName = constant.getName();
+			if (rulewerkConstantName.contains(":")) { // enclose IRIs with < >
+				return "<" + rulewerkConstantName + ">";
 			} else { // keep relative IRIs unchanged
-				return vLog4jConstantName;
+				return rulewerkConstantName;
 			}
 		} else { // datatype literal
 			return constant.getName();
@@ -87,19 +87,19 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	}
 
 	/**
-	 * Converts the string representation of a constant in VLog4j directly to the
+	 * Converts the string representation of a constant in Rulewerk directly to the
 	 * name of a constant in VLog, without parsing it into a {@link Constant} first.
-	 * 
-	 * @param vLog4jConstantName
+	 *
+	 * @param rulewerkConstantName
 	 * @return VLog constant string
 	 */
-	public static String getVLogNameForConstantName(String vLog4jConstantName) {
-		if (vLog4jConstantName.startsWith("\"")) { // keep datatype literal strings unchanged
-			return vLog4jConstantName;
-		} else if (vLog4jConstantName.contains(":")) { // enclose IRIs with < >
-			return "<" + vLog4jConstantName + ">";
+	public static String getVLogNameForConstantName(String rulewerkConstantName) {
+		if (rulewerkConstantName.startsWith("\"")) { // keep datatype literal strings unchanged
+			return rulewerkConstantName;
+		} else if (rulewerkConstantName.contains(":")) { // enclose IRIs with < >
+			return "<" + rulewerkConstantName + ">";
 		} else { // keep relative IRIs unchanged
-			return vLog4jConstantName;
+			return rulewerkConstantName;
 		}
 	}
 

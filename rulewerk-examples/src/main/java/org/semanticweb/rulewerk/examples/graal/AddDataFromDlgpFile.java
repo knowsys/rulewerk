@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.examples.graal;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.examples.ExamplesUtils;
 import org.semanticweb.rulewerk.graal.GraalConjunctiveQueryToRule;
-import org.semanticweb.rulewerk.graal.GraalToVLog4JModelConverter;
+import org.semanticweb.rulewerk.graal.GraalToRulewerkModelConverter;
 
 import fr.lirmm.graphik.graal.api.core.Atom;
 import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
@@ -41,14 +41,14 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
 /**
  * This example shows how facts can be imported from files in the
  * <a href="http://graphik-team.github.io/graal/doc/dlgp">DLGP/DLP</a> format.
- * 
+ *
  * The <a href="http://graphik-team.github.io/graal/">Graal</a>
  * {@link DlgpParser} is used to parse the program. This step requires a
  * {@link File}, {@link InputStream}, {@link Reader}, or {@link String}
  * containing or pointing to the program.
- * 
+ *
  * The {@link Atom Atoms}, {@link Rule Rules}, and {@link ConjunctiveQuery
- * ConjunctiveQueries} are then converted for use by VLog4J. Take care to add
+ * ConjunctiveQueries} are then converted for use by Rulewerk. Take care to add
  * the rules resulting from the {@link ConjunctiveQuery ConjunctiveQueries} as
  * well as the {@link Rule Rules} to the {@link Reasoner}; see
  * {@link GraalConjunctiveQueryToRule} for details.
@@ -66,7 +66,7 @@ public class AddDataFromDlgpFile {
 
 		/*
 		 * 1. Parse the DLGP/DLP file using the DlgpParser.
-		 * 
+		 *
 		 * DlgpParser supports Files, InputStreams, Readers, and Strings. While other
 		 * objects such as prefixes can also be part of the iterator, they are
 		 * automatically resolved and do not need to be handled here.
@@ -86,14 +86,14 @@ public class AddDataFromDlgpFile {
 
 		/*
 		 * 2. ConjunctiveQueries consist of a conjunction of literals and a set of
-		 * answer variables. To query this with VLog4J, an additional rule needs to be
+		 * answer variables. To query this with Rulewerk, an additional rule needs to be
 		 * added for each ConjunctiveQuery. See GraalConjunctiveQueryToRule for details.
 		 */
 		final List<GraalConjunctiveQueryToRule> convertedConjunctiveQueries = new ArrayList<>();
 
 		for (final ConjunctiveQuery conjunctiveQuery : graalConjunctiveQueries) {
 			final String queryUniqueId = "query" + convertedConjunctiveQueries.size();
-			convertedConjunctiveQueries.add(GraalToVLog4JModelConverter.convertQuery(queryUniqueId, conjunctiveQuery));
+			convertedConjunctiveQueries.add(GraalToRulewerkModelConverter.convertQuery(queryUniqueId, conjunctiveQuery));
 		}
 
 		/*
@@ -107,7 +107,7 @@ public class AddDataFromDlgpFile {
 			/*
 			 * Add facts to the reasoner knowledge base
 			 */
-			kb.addStatements(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
+			kb.addStatements(GraalToRulewerkModelConverter.convertAtomsToFacts(graalAtoms));
 			/*
 			 * Load the knowledge base into the reasoner
 			 */
@@ -120,7 +120,7 @@ public class AddDataFromDlgpFile {
 			/*
 			 * Add rules to the reasoner knowledge base
 			 */
-			kb.addStatements(GraalToVLog4JModelConverter.convertRules(graalRules));
+			kb.addStatements(GraalToRulewerkModelConverter.convertRules(graalRules));
 			for (final GraalConjunctiveQueryToRule graalConjunctiveQueryToRule : convertedConjunctiveQueries) {
 				kb.addStatement(graalConjunctiveQueryToRule.getRule());
 			}

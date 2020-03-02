@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
-import org.semanticweb.rulewerk.core.exceptions.VLog4jException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkException;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
@@ -451,12 +451,12 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * This is essentially
 	 * {@link org.semanticweb.rulewerk.parser.RuleParser#parseInto}, but we need to
 	 * avoid a circular dependency here -- this is also why we throw
-	 * {@link VLog4jException} instead of
+	 * {@link RulewerkException} instead of
 	 * {@link org.semanticweb.rulewerk.parser.ParsingException}.
 	 */
 	@FunctionalInterface
 	public interface AdditionalInputParser {
-		void parseInto(InputStream stream, KnowledgeBase kb) throws IOException, VLog4jException;
+		void parseInto(InputStream stream, KnowledgeBase kb) throws IOException, RulewerkException;
 	}
 
 	/**
@@ -469,10 +469,10 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @throws IOException              when reading {@code file} fails
 	 * @throws IllegalArgumentException when {@code file} is null or has already
 	 *                                  been imported
-	 * @throws VLog4jException          when parseFunction throws VLog4jException
+	 * @throws RulewerkException          when parseFunction throws RulewerkException
 	 */
 	public void importRulesFile(File file, AdditionalInputParser parseFunction)
-			throws VLog4jException, IOException, IllegalArgumentException {
+			throws RulewerkException, IOException, IllegalArgumentException {
 		Validate.notNull(file, "file must not be null");
 
 		boolean isNewFile = importedFilePaths.add(file.getCanonicalPath());

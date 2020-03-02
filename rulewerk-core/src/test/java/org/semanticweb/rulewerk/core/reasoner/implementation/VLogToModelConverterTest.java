@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,44 +35,44 @@ public class VLogToModelConverterTest {
 	@Test
 	public void testAbstractConstantConversion() {
 		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, "c");
-		final Term vLog4jTerm = new AbstractConstantImpl("c");
+		final Term rulewerkTerm = new AbstractConstantImpl("c");
 		final Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
-		assertEquals(vLog4jTerm, convertedTerm);
+		assertEquals(rulewerkTerm, convertedTerm);
 	}
 
 	@Test
 	public void testAbstractConstantIriConversion() {
 		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
 				"<http://example.org/test>");
-		final Term vLog4jTerm = new AbstractConstantImpl("http://example.org/test");
+		final Term rulewerkTerm = new AbstractConstantImpl("http://example.org/test");
 		final Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
-		assertEquals(vLog4jTerm, convertedTerm);
+		assertEquals(rulewerkTerm, convertedTerm);
 	}
 
 	@Test
 	public void testDatatypeConstantConversion() {
 		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
 				"\"a\"^^<http://example.org/test>");
-		final Term vLog4jTerm = new DatatypeConstantImpl("a", "http://example.org/test");
+		final Term rulewerkTerm = new DatatypeConstantImpl("a", "http://example.org/test");
 		final Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
-		assertEquals(vLog4jTerm, convertedTerm);
+		assertEquals(rulewerkTerm, convertedTerm);
 	}
 
 	@Test
 	public void testLanguageStringConversion() {
 		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT,
 				"\"Test\"@en");
-		final Term vLog4jTerm = new LanguageStringConstantImpl("Test", "en");
+		final Term rulewerkTerm = new LanguageStringConstantImpl("Test", "en");
 		final Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
-		assertEquals(vLog4jTerm, convertedTerm);
+		assertEquals(rulewerkTerm, convertedTerm);
 	}
 
 	@Test
 	public void testNamedNullConversion() {
 		final karmaresearch.vlog.Term vLogTerm = new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK, "_123");
-		final Term vLog4jTerm = new NamedNullImpl("_123");
+		final Term rulewerkTerm = new NamedNullImpl("_123");
 		final Term convertedTerm = VLogToModelConverter.toTerm(vLogTerm);
-		assertEquals(vLog4jTerm, convertedTerm);
+		assertEquals(rulewerkTerm, convertedTerm);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

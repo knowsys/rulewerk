@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.graal;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,28 +43,28 @@ import fr.lirmm.graphik.util.stream.IteratorException;
 /**
  * Utility class to convert
  * <a href="http://graphik-team.github.io/graal/">Graal</a> data structures into
- * VLog4J data structures. Labels ({@link ConjunctiveQuery#getLabel()},
+ * Rulewerk data structures. Labels ({@link ConjunctiveQuery#getLabel()},
  * {@link fr.lirmm.graphik.graal.api.core.Rule#getLabel() Rule.getLabel()}, or
  * {@link fr.lirmm.graphik.graal.api.core.Term#getLabel() Term.getLabel()}) are
- * not converted since VLog4J does not support them.
+ * not converted since Rulewerk does not support them.
  *
  * @author Adrian Bielefeldt
  *
  */
-public final class GraalToVLog4JModelConverter {
+public final class GraalToRulewerkModelConverter {
 
-	private GraalToVLog4JModelConverter() {
+	private GraalToRulewerkModelConverter() {
 	}
 
 	/**
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom} into a
-	 * {@link PositiveLiteral VLog4J PositiveLiteral}.
+	 * {@link PositiveLiteral Rulewerk PositiveLiteral}.
 	 *
 	 * @param atom                 A {@link fr.lirmm.graphik.graal.api.core.Atom
 	 *                             Graal Atom}
 	 * @param existentialVariables set of variables that are existentially
 	 *                             quantified
-	 * @return A {@link PositiveLiteral VLog4J PositiveLiteral}
+	 * @return A {@link PositiveLiteral Rulewerk PositiveLiteral}
 	 */
 	public static PositiveLiteral convertAtom(final fr.lirmm.graphik.graal.api.core.Atom atom,
 			final Set<fr.lirmm.graphik.graal.api.core.Variable> existentialVariables) {
@@ -75,10 +75,10 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom} into a
-	 * {@link Fact VLog4J fact}.
+	 * {@link Fact Rulewerk fact}.
 	 *
 	 * @param atom A {@link fr.lirmm.graphik.graal.api.core.Atom Graal Atom}
-	 * @return A {@link Fact VLog4J fact}
+	 * @return A {@link Fact Rulewerk fact}
 	 * @throws IllegalArgumentException if the converted atom contains terms that
 	 *                                  cannot occur in facts
 	 */
@@ -90,12 +90,12 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
-	 * Atoms} into a {@link List} of {@link PositiveLiteral VLog4J
+	 * Atoms} into a {@link List} of {@link PositiveLiteral Rulewerk
 	 * PositiveLiterals}.
 	 *
 	 * @param atoms list of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
 	 *              Atoms}.
-	 * @return A {@link List} of {@link PositiveLiteral VLog4J PositiveLiterals}.
+	 * @return A {@link List} of {@link PositiveLiteral Rulewerk PositiveLiterals}.
 	 */
 	public static List<PositiveLiteral> convertAtoms(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
 		final List<PositiveLiteral> result = new ArrayList<>();
@@ -107,11 +107,11 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
-	 * Atoms} into a {@link List} of {@link Fact VLog4j facts}.
+	 * Atoms} into a {@link List} of {@link Fact Rulewerk facts}.
 	 *
 	 * @param atoms list of {@link fr.lirmm.graphik.graal.api.core.Atom Graal
 	 *              Atoms}.
-	 * @return A {@link List} of {@link Fact VLog4j facts}.
+	 * @return A {@link List} of {@link Fact Rulewerk facts}.
 	 */
 	public static List<Fact> convertAtomsToFacts(final List<fr.lirmm.graphik.graal.api.core.Atom> atoms) {
 		final List<Fact> result = new ArrayList<>();
@@ -122,13 +122,13 @@ public final class GraalToVLog4JModelConverter {
 	}
 
 	/**
-	 * Converts a {@link AtomSet Graal AtomSet} into a {@link Conjunction VLog4J
+	 * Converts a {@link AtomSet Graal AtomSet} into a {@link Conjunction Rulewerk
 	 * Conjunction} of {@link PositiveLiteral}s.
 	 *
 	 * @param atomSet              A {@link AtomSet Graal AtomSet}
 	 * @param existentialVariables set of variables that are existentially
 	 *                             quantified
-	 * @return A {@link Conjunction VLog4J Conjunction}
+	 * @return A {@link Conjunction Rulewerk Conjunction}
 	 */
 	private static Conjunction<PositiveLiteral> convertAtomSet(final AtomSet atomSet,
 			final Set<fr.lirmm.graphik.graal.api.core.Variable> existentialVariables) {
@@ -146,11 +146,11 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Predicate Graal Predicate}
-	 * into a {@link Predicate VLog4J Predicate}.
+	 * into a {@link Predicate Rulewerk Predicate}.
 	 *
 	 * @param predicate A {@link fr.lirmm.graphik.graal.api.core.Predicate Graal
 	 *                  Predicate}
-	 * @return A {@link Predicate VLog4J Predicate}
+	 * @return A {@link Predicate Rulewerk Predicate}
 	 */
 	private static Predicate convertPredicate(final fr.lirmm.graphik.graal.api.core.Predicate predicate) {
 		return Expressions.makePredicate(predicate.getIdentifier().toString(), predicate.getArity());
@@ -190,12 +190,12 @@ public final class GraalToVLog4JModelConverter {
 
 		if (conjunctiveQuery.getAtomSet().isEmpty()) {
 			throw new GraalConvertException(MessageFormat.format(
-					"Graal ConjunctiveQuery {0} with empty body is not supported in VLog4j.", conjunctiveQuery));
+					"Graal ConjunctiveQuery {0} with empty body is not supported in Rulewerk.", conjunctiveQuery));
 		}
 
 		if (conjunctiveQuery.getAnswerVariables().isEmpty()) {
 			throw new GraalConvertException(MessageFormat.format(
-					"Graal ConjunctiveQuery {0} with no answer variables is not supported in VLog4J.",
+					"Graal ConjunctiveQuery {0} with no answer variables is not supported in Rulewerk.",
 					conjunctiveQuery));
 		}
 
@@ -208,10 +208,10 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule} into a
-	 * {@link Rule Vlog4J Rule}.
+	 * {@link Rule Rulewerk Rule}.
 	 *
 	 * @param rule A {@link fr.lirmm.graphik.graal.api.core.Rule Graal Rule}.
-	 * @return A {@link Rule Vlog4J Rule}.
+	 * @return A {@link Rule Rulewerk Rule}.
 	 */
 	public static Rule convertRule(final fr.lirmm.graphik.graal.api.core.Rule rule) {
 		final Conjunction<PositiveLiteral> head = convertAtomSet(rule.getHead(), rule.getExistentials());
@@ -221,11 +221,11 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Rule Graal
-	 * Rules} into a {@link List} of {@link Rule VLog4J Rules}.
+	 * Rules} into a {@link List} of {@link Rule Rulewerk Rules}.
 	 *
 	 * @param rules A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Rule
 	 *              Graal Rules}.
-	 * @return A {@link List} of {@link Rule VLog4J Rules}.
+	 * @return A {@link List} of {@link Rule Rulewerk Rules}.
 	 */
 	public static List<Rule> convertRules(final List<fr.lirmm.graphik.graal.api.core.Rule> rules) {
 		final List<Rule> result = new ArrayList<>();
@@ -237,7 +237,7 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link fr.lirmm.graphik.graal.api.core.Term Graal Term} into a
-	 * {@link Term VLog4J Term}. If the {@code term} is neither
+	 * {@link Term Rulewerk Term}. If the {@code term} is neither
 	 * {@link fr.lirmm.graphik.graal.api.core.Term#isVariable() Variable} nor
 	 * {@link fr.lirmm.graphik.graal.api.core.Term#isConstant() Constant}, a
 	 * {@link GraalConvertException} is thrown.
@@ -245,14 +245,14 @@ public final class GraalToVLog4JModelConverter {
 	 * @param term                 A {@link fr.lirmm.graphik.graal.api.core.Term}
 	 * @param existentialVariables set of variables that are existentially
 	 *                             quantified
-	 * @return A {@link Term VLog4J Term}, with {@link Term#getName()} equal to
+	 * @return A {@link Term Rulewerk Term}, with {@link Term#getName()} equal to
 	 *         {@link fr.lirmm.graphik.graal.api.core.Term#getIdentifier()}, if it
 	 *         is a Variable, and {@link Term#getName()} equal to
 	 *         <{@link fr.lirmm.graphik.graal.api.core.Term#getIdentifier()}>, if it
 	 *         is a Constant. <br>
 	 *         Graal Variable with identifier <b>"a"</b> will be transformed to
-	 *         vlog4j Variable with name <b>"a"</b>. Graal Constant with identifier
-	 *         <b>"c"</b> will be transformed to vlog4j Constant with name
+	 *         rulewerk Variable with name <b>"a"</b>. Graal Constant with identifier
+	 *         <b>"c"</b> will be transformed to rulewerk Constant with name
 	 *         <b>"&lt;c&gt;"</b>.
 	 *
 	 * @throws GraalConvertException If the term is neither variable nor constant.
@@ -277,11 +277,11 @@ public final class GraalToVLog4JModelConverter {
 
 	/**
 	 * Converts a {@link List} of {@link fr.lirmm.graphik.graal.api.core.Term Graal
-	 * Terms} into a {@link List} of {@link Term VLog4J Terms}.
+	 * Terms} into a {@link List} of {@link Term Rulewerk Terms}.
 	 *
 	 * @param terms A {@link List} of {@link fr.lirmm.graphik.graal.api.core.Term
 	 *              Graal Terms}
-	 * @return A {@link List} of {@link Term VLog4J Terms}
+	 * @return A {@link List} of {@link Term Rulewerk Terms}
 	 */
 	private static List<Term> convertTerms(final List<fr.lirmm.graphik.graal.api.core.Term> terms,
 			final Set<fr.lirmm.graphik.graal.api.core.Variable> existentialVariables) {

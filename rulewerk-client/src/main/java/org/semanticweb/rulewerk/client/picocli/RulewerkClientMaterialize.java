@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.client.picocli;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,12 +45,12 @@ import picocli.CommandLine.Option;
  *
  */
 @Command(name = "materialize", description = "Execute the chase and store the literal's extensions")
-public class VLog4jClientMaterialize implements Runnable {
+public class RulewerkClientMaterialize implements Runnable {
 
 	private final KnowledgeBase kb = new KnowledgeBase();
 	private final List<PositiveLiteral> queries = new ArrayList<>();
 
-	@Option(names = "--rule-file", description = "Rule file(s) in {@link https://github.com/knowsys/vlog4j/wiki/Rule-syntax-grammar} syntax", required = true)
+	@Option(names = "--rule-file", description = "Rule file(s) in {@link https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar} syntax", required = true)
 	private final List<String> ruleFiles = new ArrayList<>();
 
 //  TODO
@@ -70,7 +70,7 @@ public class VLog4jClientMaterialize implements Runnable {
 	@Option(names = "--timeout", description = "Timeout in seconds. Infinite by default", required = false)
 	private int timeout = 0;
 
-	@Option(names = "--query", description = "Positive not-ground Literals to query after materialization in rls syntax. Vlog4jClient will print the size of its extension", required = true)
+	@Option(names = "--query", description = "Positive not-ground Literals to query after materialization in rls syntax. RulewerkClient will print the size of its extension", required = true)
 	private List<String> queryStrings = new ArrayList<>();
 
 	@ArgGroup(exclusive = false)

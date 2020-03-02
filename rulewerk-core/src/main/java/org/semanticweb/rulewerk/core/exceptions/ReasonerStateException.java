@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,11 +27,11 @@ import org.semanticweb.rulewerk.core.reasoner.ReasonerState;
 /**
  * Thrown when an operation that is invalid in current reasoner state is
  * attempted.
- * 
+ *
  * @author Irina Dragoste
  *
  */
-public class ReasonerStateException extends VLog4jRuntimeException {
+public class ReasonerStateException extends RulewerkRuntimeException {
 
 	/**
 	 * generated serial version UID
@@ -42,7 +42,7 @@ public class ReasonerStateException extends VLog4jRuntimeException {
 
 	/**
 	 * Creates an exception with a logging message for current reasoner state.
-	 * 
+	 *
 	 * @param state
 	 *            the current Reasoner state.
 	 * @param message

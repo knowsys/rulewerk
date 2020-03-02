@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.client.picocli;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,11 +38,11 @@ public class SaveModel {
 	static final String wrongDirectoryErrorMessage = "Configuration Error: wrong @code{--output-model-directory}. Please check the path.";
 
 	/**
-	 * If true, Vlog4jClient will save the model in {@code --output-model-directory}
+	 * If true, RulewerkClient will save the model in {@code --output-model-directory}
 	 *
 	 * @default false
 	 */
-	@Option(names = "--save-model", description = "Boolean. If true, Vlog4jClient will save the model into --output-model-directory. False by default.")
+	@Option(names = "--save-model", description = "Boolean. If true, RulewerkClient will save the model into --output-model-directory. False by default.")
 	private boolean saveModel = false;
 
 	/**

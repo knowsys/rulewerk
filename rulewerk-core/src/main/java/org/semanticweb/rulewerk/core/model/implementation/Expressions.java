@@ -1,7 +1,5 @@
 package org.semanticweb.rulewerk.core.model.implementation;
 
-import java.util.ArrayList;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -11,9 +9,9 @@ import java.util.ArrayList;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +20,7 @@ import java.util.ArrayList;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,8 +40,8 @@ import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
 
 /**
  * This utilities class provides static methods for creating terms and formulas
- * in vlog4j.
- * 
+ * in Rulewerk.
+ *
  * @author Markus Krötzsch
  *
  */
@@ -57,7 +56,7 @@ public final class Expressions {
 
 	/**
 	 * Creates a {@link UniversalVariable}.
-	 * 
+	 *
 	 * @param name name of the variable
 	 * @return a {@link UniversalVariable} corresponding to the input.
 	 */
@@ -67,7 +66,7 @@ public final class Expressions {
 
 	/**
 	 * Creates an {@link ExistentialVariable}.
-	 * 
+	 *
 	 * @param name name of the variable
 	 * @return a {@link ExistentialVariable} corresponding to the input.
 	 */
@@ -77,7 +76,7 @@ public final class Expressions {
 
 	/**
 	 * Creates an {@link AbstractConstant}.
-	 * 
+	 *
 	 * @param name name of the constant
 	 * @return an {@link AbstractConstant} corresponding to the input.
 	 */
@@ -87,7 +86,7 @@ public final class Expressions {
 
 	/**
 	 * Creates a {@link DatatypeConstant} from the given input.
-	 * 
+	 *
 	 * @param lexicalValue the lexical representation of the data value
 	 * @param datatypeIri  the full absolute IRI of the datatype of this literal
 	 * @return a {@link DatatypeConstant} corresponding to the input.
@@ -98,7 +97,7 @@ public final class Expressions {
 
 	/**
 	 * Creates a {@link LanguageStringConstant} from the given input.
-	 * 
+	 *
 	 * @param string      the string value of the constant
 	 * @param languageTag the BCP 47 language tag of the constant; should be in
 	 *                    lower case
@@ -110,7 +109,7 @@ public final class Expressions {
 
 	/**
 	 * Creates a {@link Predicate}.
-	 * 
+	 *
 	 * @param name  non-blank predicate name
 	 * @param arity predicate arity, strictly greater than 0
 	 * @return a {@link Predicate} corresponding to the input.
@@ -137,7 +136,7 @@ public final class Expressions {
 
 	/**
 	 * Creates a {@code Fact}.
-	 * 
+	 *
 	 * @param predicateName on-blank {@link Predicate} name
 	 * @param terms         non-empty, non-null array of non-null terms
 	 * @return a {@link Fact} with given {@code terms} and {@link Predicate}

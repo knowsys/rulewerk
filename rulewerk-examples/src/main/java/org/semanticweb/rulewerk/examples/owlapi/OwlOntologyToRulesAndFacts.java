@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.examples.owlapi;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,10 +43,10 @@ import org.semanticweb.rulewerk.examples.ExamplesUtils;
 import org.semanticweb.rulewerk.owlapi.OwlToRulesConverter;
 
 /**
- * This example shows how <b>vlog4j-owlapi</b> library (class
+ * This example shows how <b>rulewerk-owlapi</b> library (class
  * {@link OwlToRulesConverter}) can be used to transform an OWL ontology into
- * <b>vlog4j-core</b> {@link Rule}s and {@link Fact}s.
- * 
+ * <b>rulewerk-core</b> {@link Rule}s and {@link Fact}s.
+ *
  * @author Irina Dragoste
  *
  */
@@ -60,7 +60,7 @@ public class OwlOntologyToRulesAndFacts {
 				.loadOntologyFromOntologyDocument(new File(ExamplesUtils.INPUT_FOLDER + "owl/bike.owl"));
 
 		/*
-		 * vlog4j.owlapi.OwlToRulesConverter can be used to convert the OWL axiom in
+		 * rulewerk.owlapi.OwlToRulesConverter can be used to convert the OWL axiom in
 		 * source ontology to target Rule and Atom objects
 		 */
 		final OwlToRulesConverter owlToRulesConverter = new OwlToRulesConverter();
@@ -105,7 +105,7 @@ public class OwlOntologyToRulesAndFacts {
 			/*
 			 * See that an unnamed individual has been introduced to satisfy
 			 * owl:someValuesFrom restriction:
-			 * 
+			 *
 			 * :Bike rdf:type owl:Class ; rdfs:subClassOf [ rdf:type owl:Restriction ;
 			 * owl:onProperty :hasPart ; owl:someValuesFrom :Wheel ] .
 			 */

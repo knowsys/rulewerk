@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -103,7 +103,7 @@ public class MergingPrefixDeclarationRegistryTest {
 
 	@Test
 	public void getFreshPrefix_registeredPrefix_returnsFreshPrefix() throws PrefixDeclarationException {
-		String prefix = "vlog4j_generated_";
+		String prefix = "rulewerk_generated_";
 		prefixDeclarations.setPrefixIri(prefix + "0:", BASE + "generated/");
 		prefixDeclarations.setPrefixIri("eg:", BASE);
 		prefixDeclarations.setPrefixIri("eg:", MORE_SPECIFIC);
@@ -127,7 +127,7 @@ public class MergingPrefixDeclarationRegistryTest {
 		prefixDeclarations.setPrefixIri("eg:", MORE_SPECIFIC);
 		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
 		assertEquals(BASE, this.prefixDeclarations.getPrefixIri("eg:"));
-		assertEquals(MORE_SPECIFIC, this.prefixDeclarations.getPrefixIri("vlog4j_generated_0:"));
+		assertEquals(MORE_SPECIFIC, this.prefixDeclarations.getPrefixIri("rulewerk_generated_0:"));
 	}
 
 	@Test

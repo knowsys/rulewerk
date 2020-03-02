@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.examples.graal;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.implementation.VLogReasoner;
 import org.semanticweb.rulewerk.examples.ExamplesUtils;
 import org.semanticweb.rulewerk.graal.GraalConjunctiveQueryToRule;
-import org.semanticweb.rulewerk.graal.GraalToVLog4JModelConverter;
+import org.semanticweb.rulewerk.graal.GraalToRulewerkModelConverter;
 
 import fr.lirmm.graphik.graal.api.core.ConjunctiveQuery;
 import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
@@ -39,10 +39,10 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  * This example shows how facts and rules can be imported from objects of the
  * <a href="http://graphik-team.github.io/graal/">Graal</a> library. Special
  * care must be taken with the import of Graal {@link ConjunctiveQuery}-objects,
- * since unlike with VLog4J, they represent both the query atom and the
+ * since unlike with Rulewerk, they represent both the query atom and the
  * corresponding rule.
  * <p>
- * In VLog4J, the reasoner is queried by a query Atom and the results are all
+ * In Rulewerk, the reasoner is queried by a query Atom and the results are all
  * facts matching this query Atom.<br>
  * Answering a Graal {@link ConjunctiveQuery} over a certain knowledge base is
  * equivalent to adding a {@link Rule} to the knowledge base, <em> prior to
@@ -53,7 +53,7 @@ import fr.lirmm.graphik.graal.io.dlp.DlgpParser;
  * as a a query Atom to obtain the results of the Graal
  * {@link ConjunctiveQuery}.
  * </p>
- * 
+ *
  * @author Adrian Bielefeldt
  *
  */
@@ -67,7 +67,7 @@ public class AddDataFromGraal {
 
 		/*
 		 * 1.1 Rules to map external database (EDB) predicates to internal database
-		 * predicates (IDB). Necessary because VLog4J requires separation between input
+		 * predicates (IDB). Necessary because Rulewerk requires separation between input
 		 * predicates and predicates for which additional facts can be derived.
 		 */
 		graalRules.add(DlgpParser.parseRule("bicycleIDB(X) :- bicycleEDB(X)."));
@@ -114,7 +114,7 @@ public class AddDataFromGraal {
 		 * then querying with query(?b, ?w) The rule from convertedGraalConjunctiveQuery
 		 * needs to be added to the reasoner.
 		 */
-		final GraalConjunctiveQueryToRule convertedGraalConjunctiveQuery = GraalToVLog4JModelConverter.convertQuery(
+		final GraalConjunctiveQueryToRule convertedGraalConjunctiveQuery = GraalToRulewerkModelConverter.convertQuery(
 				"graalQuery", DlgpParser.parseQuery("?(B, W) :- bicycleIDB(B), wheelIDB(W), isPartOfIDB(W, B)."));
 
 		/*
@@ -128,7 +128,7 @@ public class AddDataFromGraal {
 			/*
 			 * Add facts to the reasoner knowledge base
 			 */
-			kb.addStatements(GraalToVLog4JModelConverter.convertAtomsToFacts(graalAtoms));
+			kb.addStatements(GraalToRulewerkModelConverter.convertAtomsToFacts(graalAtoms));
 			/*
 			 * Load the knowledge base into the reasoner
 			 */
@@ -143,7 +143,7 @@ public class AddDataFromGraal {
 			/*
 			 * Add rules to the reasoner knowledge base
 			 */
-			kb.addStatements(GraalToVLog4JModelConverter.convertRules(graalRules));
+			kb.addStatements(GraalToRulewerkModelConverter.convertRules(graalRules));
 			kb.addStatements(convertedGraalConjunctiveQuery.getRule());
 
 			/*

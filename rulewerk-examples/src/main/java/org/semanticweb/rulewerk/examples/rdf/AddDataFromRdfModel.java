@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.examples.rdf;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,10 +52,10 @@ import org.semanticweb.rulewerk.parser.RuleParser;
 import org.semanticweb.rulewerk.rdf.RdfModelConverter;
 
 /**
- * This example shows how <b>vlog4j-rdf</b> library's utility class
+ * This example shows how <b>rulewerk-rdf</b> library's utility class
  * {@link RdfModelConverter} can be used to convert RDF {@link Model}s from
- * various types of RDF resources to <b>vlog4j-core</b> {@code Atom} sets.
- * 
+ * various types of RDF resources to <b>rulewerk-core</b> {@code Atom} sets.
+ *
  * @author Irina Dragoste
  *
  */
@@ -77,7 +77,7 @@ public class AddDataFromRdfModel {
 				RDFFormat.RDFXML);
 
 		/*
-		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
+		 * Using rulewerk-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
 		final Set<Fact> tripleFactsISWC2016 = RdfModelConverter.rdfModelToFacts(rdfModelISWC2016);
@@ -96,7 +96,7 @@ public class AddDataFromRdfModel {
 				RDFFormat.TURTLE);
 
 		/*
-		 * Using vlog4j-rdf library, we convert RDF Model triples to facts, each having
+		 * Using rulewerk-rdf library, we convert RDF Model triples to facts, each having
 		 * the ternary predicate "TRIPLE".
 		 */
 		final Set<Fact> tripleFactsISWC2017 = RdfModelConverter.rdfModelToFacts(rdfModelISWC2017);
@@ -156,7 +156,7 @@ public class AddDataFromRdfModel {
 	/**
 	 * Parses the data from the supplied InputStream, using the supplied baseURI to
 	 * resolve any relative URI references.
-	 * 
+	 *
 	 * @param inputStream The content to be parsed, expected to be in the given
 	 *                    {@code rdfFormat}.
 	 * @param baseURI     The URI associated with the data in the InputStream.

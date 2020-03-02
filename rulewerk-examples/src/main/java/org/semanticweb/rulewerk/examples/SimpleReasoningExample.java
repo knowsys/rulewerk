@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.examples;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,10 +29,10 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
 
 /**
- * This example demonstrates the basic usage of VLog4j for rule reasoning. We
+ * This example demonstrates the basic usage of Rulewerk for rule reasoning. We
  * are using a fixed set of rules and facts defined in Java without any external
  * sources, and we query for some of the results.
- * 
+ *
  * @author Markus Kroetzsch
  *
  */
