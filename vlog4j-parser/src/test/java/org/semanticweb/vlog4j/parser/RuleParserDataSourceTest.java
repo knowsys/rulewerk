@@ -1,4 +1,4 @@
-package org.semanticweb.vlog4j.syntax.parser;
+package org.semanticweb.vlog4j.parser;
 
 /*-
  * #%L
@@ -19,11 +19,9 @@ package org.semanticweb.vlog4j.syntax.parser;
  * limitations under the License.
  * #L%
  */
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +32,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.model.api.DataSourceDeclaration;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
@@ -43,6 +42,7 @@ import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.SparqlQueryResultDataSource;
 import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
+import org.semanticweb.vlog4j.parser.DirectiveArgument;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.RuleParser;
@@ -141,14 +141,16 @@ public class RuleParserDataSourceTest {
 		DataSourceDeclarationHandler handler = mock(DataSourceDeclarationHandler.class);
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerDataSource("mock-source", handler);
-		doReturn(source).when(handler).handleDeclaration(ArgumentMatchers.<List<String>>any(),
+		doReturn(source).when(handler).handleDirective(ArgumentMatchers.<List<DirectiveArgument>>any(),
 				ArgumentMatchers.<SubParserFactory>any());
 
 		String input = "@source p[2] : mock-source(\"hello\", \"world\") .";
-		List<String> expectedArguments = Arrays.asList("hello", "world");
-		RuleParser.parseDataSourceDeclaration(input, parserConfiguration);
+		List<DirectiveArgument> expectedArguments = Arrays.asList(DirectiveArgument.string("hello"),
+				DirectiveArgument.string("world"));
+		RuleParser.parse(input, parserConfiguration);
 
-		verify(handler).handleDeclaration(eq(expectedArguments), ArgumentMatchers.<SubParserFactory>any());
+		verify(handler).handleDirective(ArgumentMatchers.eq(expectedArguments),
+				ArgumentMatchers.<SubParserFactory>any());
 	}
 
 	@Test
@@ -190,7 +192,44 @@ public class RuleParserDataSourceTest {
 	}
 
 	@Test
-	public void parseDataSourceDeclaration_windowsStylePathName_success() throws ParsingException, IOException {
+	public void parseDataSourceDeclaration_windowsStylePathName_succeeds() throws ParsingException, IOException {
 		RuleParser.parseDataSourceDeclaration("@source p[1] : load-csv(\"\\\\test\\\\with\\\\backslashes.csv\") .");
+	}
+
+	class DuplicatingDataSourceDeclarationHandler implements DataSourceDeclarationHandler {
+		public DataSource handleDirective(List<DirectiveArgument> arguments, SubParserFactory subParserFactory)
+				throws ParsingException {
+			CsvFileDataSource source;
+			try {
+				source = new CsvFileDataSource(new File(EXAMPLE_CSV_FILE_PATH));
+			} catch (IOException e) {
+				throw new ParsingException(e);
+			}
+
+			KnowledgeBase knowledgeBase = getKnowledgeBase(subParserFactory);
+			ParserConfiguration parserConfiguration = getParserConfiguration(subParserFactory);
+			RuleParser.parseInto(knowledgeBase, "@source q[2] : load-csv(\"" + EXAMPLE_CSV_FILE_PATH + "\") .",
+					parserConfiguration);
+
+			return source;
+		}
+	}
+
+	@Test
+	public void parseInto_mockDataSourceWithBase_succeeds() throws ParsingException {
+		ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
+		parserConfiguration.registerDataSource("mock-source", new DuplicatingDataSourceDeclarationHandler());
+		String input = "@source p[2] : mock-source(\"hello\", \"world\") .";
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		RuleParser.parseInto(knowledgeBase, input, parserConfiguration, "https://example.org");
+		assertEquals(2, knowledgeBase.getStatements().size());
+	}
+
+	@Test(expected = ParsingException.class)
+	public void parseDataSourceDeclaration_unexpectedlyAddsTwoDatasources_throws() throws ParsingException {
+		ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
+		parserConfiguration.registerDataSource("mock-source", new DuplicatingDataSourceDeclarationHandler());
+		String input = "@source p[2] : mock-source(\"hello\", \"world\") .";
+		RuleParser.parseDataSourceDeclaration(input, parserConfiguration);
 	}
 }

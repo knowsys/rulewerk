@@ -1,0 +1,4 @@
+@base <http://example.org/> .
+
+s(c) .
+p("abc") .

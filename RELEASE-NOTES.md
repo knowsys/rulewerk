@@ -6,11 +6,25 @@ VLog4j v0.6.0
 
 Breaking changes:
 * In the example package, `ExamplesUtils.getQueryAnswerCount(queryString, reasoner)` does no
-  longer exist. It can be replaced by 
+  longer exist. It can be replaced by
   `reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString)).getCount()`
 
 New features:
 * Counting query answers is more efficient now, using `Reasoner.countQueryAnswers()`
+* All inferred facts can be serialized to a file using `Reasoner.writeInferences()`
+* Rules files may import other rules files using `@import` and
+  `@import-relative`, where the latter resolves relative IRIs using
+  the current base IRI, unless the imported file explicitly specifies
+  a different one.
+* Named nulls of the form `_:name` are now allowed during parsing (but
+  may not occur in rule bodies). They are renamed to assure that they
+  are distinct on a per-file level.
+* The parser allows custom directives to be implemented, and a certain
+  set of delimiters allows for custom literal expressions.
+
+Other improvements:
+* Prefix declarations are now kept as part of the Knowledge Base and
+  are used to abbreviate names when exporting inferences.
 
 
 VLog4j v0.5.0

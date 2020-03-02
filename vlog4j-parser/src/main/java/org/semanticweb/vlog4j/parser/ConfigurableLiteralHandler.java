@@ -20,24 +20,25 @@ package org.semanticweb.vlog4j.parser;
  * #L%
  */
 
-import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
+import org.semanticweb.vlog4j.core.model.api.Term;
+import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
 /**
- * Handler for parsing a custom Datatype constant.
+ * Handler for parsing a configurable literal expression.
  *
  * @author Maximilian Marx
  */
 @FunctionalInterface
-public interface DatatypeConstantHandler {
+public interface ConfigurableLiteralHandler {
 	/**
-	 * Parse a datatype constant.
+	 * Parse a Data Source Declaration.
 	 *
-	 * @param lexicalForm lexical representation of the constant.
+	 * @param syntacticForm    syntactic form of the literal expression.
+	 * @param subParserFactory a factory for obtaining a SubParser, sharing the
+	 *                         parser's state, but bound to new input.
 	 *
-	 * @throws ParsingException when the given representation is invalid for this
-	 *                          datatype.
-	 *
-	 * @return
+	 * @throws ParsingException when the given syntactic form is invalid.
+	 * @return an appropriate @{link Constant} instance.
 	 */
-	public DatatypeConstant createConstant(String lexicalForm) throws ParsingException;
+	public Term parseLiteral(String syntacticForm, final SubParserFactory subParserFactory) throws ParsingException;
 }

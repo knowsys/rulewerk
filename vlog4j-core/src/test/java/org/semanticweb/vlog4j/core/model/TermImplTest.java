@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 import org.semanticweb.vlog4j.core.model.api.DatatypeConstant;
 import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.TermType;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
@@ -97,7 +97,7 @@ public class TermImplTest {
 
 	@Test
 	public void datatypeConstantGetterTest() {
-		DatatypeConstant c = new DatatypeConstantImpl("c", PrefixDeclarations.XSD_STRING);
+		DatatypeConstant c = new DatatypeConstantImpl("c", PrefixDeclarationRegistry.XSD_STRING);
 		assertEquals("c", c.getLexicalValue());
 		assertEquals("http://www.w3.org/2001/XMLSchema#string", c.getDatatype());
 		assertEquals("\"c\"^^<http://www.w3.org/2001/XMLSchema#string>", c.getName());
@@ -142,7 +142,7 @@ public class TermImplTest {
 
 	@Test
 	public void datatypeConstantToStringTest() {
-		DatatypeConstantImpl c = new DatatypeConstantImpl("c", PrefixDeclarations.XSD_STRING);
+		DatatypeConstantImpl c = new DatatypeConstantImpl("c", PrefixDeclarationRegistry.XSD_STRING);
 		assertEquals("\"c\"", c.toString());
 	}
 
@@ -167,7 +167,7 @@ public class TermImplTest {
 	@Test
 	public void namedNullToStringTest() {
 		NamedNullImpl n = new NamedNullImpl("123");
-		assertEquals("_123", n.toString());
+		assertEquals("_:123", n.toString());
 	}
 
 	@Test(expected = NullPointerException.class)

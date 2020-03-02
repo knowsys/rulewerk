@@ -20,19 +20,26 @@ package org.semanticweb.vlog4j.parser.javacc;
  * #L%
  */
 
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 
 import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
+import org.semanticweb.vlog4j.core.model.api.Statement;
+import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.Skolemization;
 import org.semanticweb.vlog4j.parser.DefaultParserConfiguration;
-import org.semanticweb.vlog4j.parser.LocalPrefixDeclarations;
+import org.semanticweb.vlog4j.parser.DirectiveArgument;
+import org.semanticweb.vlog4j.parser.LocalPrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.ParsingException;
 
@@ -47,14 +54,16 @@ import org.semanticweb.vlog4j.parser.ParsingException;
  *
  * @author Markus Kroetzsch
  * @author Larry Gonzalez
+ * @author Maximilian Marx
  * @author Jena developers, Apache Software Foundation (ASF)
  *
  */
 public class JavaCCParserBase {
-	protected PrefixDeclarations prefixDeclarations;
+	private PrefixDeclarationRegistry prefixDeclarationRegistry;
 
-	protected KnowledgeBase knowledgeBase;
-	protected ParserConfiguration parserConfiguration;
+	private KnowledgeBase knowledgeBase;
+	private ParserConfiguration parserConfiguration;
+	private Skolemization skolemization = new Skolemization();
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -88,40 +97,80 @@ public class JavaCCParserBase {
 		BODY
 	}
 
+	/**
+	 * Defines delimiters for configurable literals.
+	 *
+	 * Since the parser is generated from a fixed grammar, we need to provide
+	 * productions for these literals, even if they are not part of the syntax. With
+	 * the {@link DefaultParserConfiguration}, any occurence of these literals will
+	 * result in a {@link ParseException}.
+	 *
+	 * @author Maximilian Marx
+	 */
+	public enum ConfigurableLiteralDelimiter {
+		/**
+		 * Literals of the form {@code |…|}
+		 */
+		PIPE,
+		/**
+		 * Literals of the form {@code #…#}
+		 */
+		HASH,
+		/**
+		 * Literals of the form {@code (…)}
+		 */
+		PAREN,
+		/**
+		 * Literals of the form {@code {…}}
+		 */
+		BRACE,
+		/**
+		 * Literals of the form {@code […]}
+		 */
+		BRACKET,
+	}
+
 	public JavaCCParserBase() {
 		this.knowledgeBase = new KnowledgeBase();
-		this.prefixDeclarations = new LocalPrefixDeclarations();
+		this.prefixDeclarationRegistry = new LocalPrefixDeclarationRegistry();
 		this.parserConfiguration = new DefaultParserConfiguration();
 	}
 
 	AbstractConstant createConstant(String lexicalForm) throws ParseException {
 		String absoluteIri;
 		try {
-			absoluteIri = prefixDeclarations.absolutize(lexicalForm);
+			absoluteIri = absolutizeIri(lexicalForm);
 		} catch (PrefixDeclarationException e) {
 			throw makeParseExceptionWithCause("Failed to parse IRI", e);
 		}
 		return Expressions.makeAbstractConstant(absoluteIri);
 	}
 
-	Constant createConstant(String lexicalForm, String datatype) throws ParseException {
-		return createConstant(lexicalForm, null, datatype);
-	}
-
 	/**
 	 * Creates a suitable {@link Constant} from the parsed data.
 	 *
-	 * @param string      the string data (unescaped)
-	 * @param languageTag the language tag, or null if not present
-	 * @param datatype    the datatype, or null if not provided
+	 * @param string   the string data (unescaped)
+	 * @param datatype the datatype, or null if not provided
 	 * @return suitable constant
 	 */
-	Constant createConstant(String lexicalForm, String languageTag, String datatype) throws ParseException {
+	Constant createConstant(String lexicalForm, String datatype) throws ParseException {
 		try {
-			return parserConfiguration.parseConstant(lexicalForm, languageTag, datatype);
+			return parserConfiguration.parseDatatypeConstant(lexicalForm, datatype);
 		} catch (ParsingException e) {
 			throw makeParseExceptionWithCause("Failed to parse Constant", e);
 		}
+	}
+
+	NamedNull createNamedNull(String lexicalForm) throws ParseException {
+		try {
+			return this.skolemization.skolemizeNamedNull(lexicalForm);
+		} catch (IOException e) {
+			throw makeParseExceptionWithCause("Failed to generate a unique name for named null", e);
+		}
+	}
+
+	void addStatement(Statement statement) {
+		knowledgeBase.addStatement(statement);
 	}
 
 	void addDataSource(String predicateName, int arity, DataSource dataSource) throws ParseException {
@@ -134,18 +183,19 @@ public class JavaCCParserBase {
 		}
 
 		Predicate predicate = Expressions.makePredicate(predicateName, arity);
-		knowledgeBase.addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
+		addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
 	}
 
 	static String unescapeStr(String s, int line, int column) throws ParseException {
-		return unescape(s, '\\', false, line, column);
+		return unescape(s, '\\', line, column);
 	}
 
-	static String unescape(String s, char escape, boolean pointCodeOnly, int line, int column) throws ParseException {
+	static String unescape(String s, char escape, int line, int column) throws ParseException {
 		int i = s.indexOf(escape);
 
-		if (i == -1)
+		if (i == -1) {
 			return s;
+		}
 
 		// Dump the initial part straight into the string buffer
 		StringBuilder sb = new StringBuilder(s.substring(0, i));
@@ -159,6 +209,7 @@ public class JavaCCParserBase {
 				line++;
 				column = 1;
 				break;
+
 			default:
 				column++;
 				break;
@@ -170,8 +221,9 @@ public class JavaCCParserBase {
 			}
 
 			// Escape
-			if (i >= s.length() - 1)
-				throw new ParseException("Illegal escape at end of string, line:" + line + ", column: " + column);
+			if (i >= s.length() - 1) {
+				throw new ParseException("Illegal escape at end of string, line: " + line + ", column: " + column);
+			}
 			char ch2 = s.charAt(i + 1);
 			column = column + 1;
 			i = i + 1;
@@ -204,21 +256,23 @@ public class JavaCCParserBase {
 				ch3 = '\\';
 				break;
 			default:
-				throw new ParseException("Unknown escape: \\" + ch2 + ", line:" + line + ", column: " + column);
+				throw new ParseException("Unknown escape: \\" + ch2 + ", line: " + line + ", column: " + column);
 			}
 			sb.append(ch3);
 		}
 		return sb.toString();
 	}
 
-	/** Remove first and last characters (e.g. ' or "") from a string */
-	static String stripQuotes(String s) {
-		return s.substring(1, s.length() - 1);
-	}
-
-	/** Remove first 3 and last 3 characters (e.g. ''' or """) from a string */
-	static String stripQuotes3(String s) {
-		return s.substring(3, s.length() - 3);
+	/**
+	 * Remove the first and last {@code n} characters from string {@code s}
+	 *
+	 * @param s string to strip delimiters from
+	 * @param n number of characters to strip from both ends
+	 *
+	 * @return the stripped string.
+	 */
+	static String stripDelimiters(String s, int n) {
+		return s.substring(n, s.length() - n);
 	}
 
 	/** remove the first n charcacters from the string */
@@ -265,11 +319,68 @@ public class JavaCCParserBase {
 		return parserConfiguration;
 	}
 
-	protected void setPrefixDeclarations(PrefixDeclarations prefixDeclarations) {
-		this.prefixDeclarations = prefixDeclarations;
+	Skolemization getSkolemization() {
+		return skolemization;
 	}
 
-	protected PrefixDeclarations getPrefixDeclarations() {
-		return prefixDeclarations;
+	void setSkolemization(Skolemization skolemization) {
+		this.skolemization = skolemization;
+	}
+
+	public void setPrefixDeclarationRegistry(PrefixDeclarationRegistry prefixDeclarationRegistry) {
+		this.prefixDeclarationRegistry = prefixDeclarationRegistry;
+	}
+
+	public PrefixDeclarationRegistry getPrefixDeclarationRegistry() {
+		return this.prefixDeclarationRegistry;
+	}
+
+	DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(String syntacticForm,
+			List<DirectiveArgument> arguments, SubParserFactory subParserFactory) throws ParseException {
+		try {
+			return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(syntacticForm, arguments,
+					subParserFactory);
+		} catch (ParsingException e) {
+			throw makeParseExceptionWithCause(
+					"Failed while trying to parse the source-specific part of a data source declaration", e);
+		}
+	}
+
+	Term parseConfigurableLiteral(ConfigurableLiteralDelimiter delimiter, String syntacticForm,
+			SubParserFactory subParserFactory) throws ParsingException {
+		return parserConfiguration.parseConfigurableLiteral(delimiter, syntacticForm, subParserFactory);
+	}
+
+	KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments,
+			SubParserFactory subParserFactory) throws ParseException {
+		try {
+			return parserConfiguration.parseDirectiveStatement(name, arguments, subParserFactory);
+		} catch (ParsingException e) {
+			throw makeParseExceptionWithCause("Failed while trying to parse directive statement", e);
+		}
+	}
+
+	boolean isConfigurableLiteralRegistered(ConfigurableLiteralDelimiter delimiter) {
+		return parserConfiguration.isConfigurableLiteralRegistered(delimiter);
+	}
+
+	boolean isParsingOfNamedNullsAllowed() {
+		return parserConfiguration.isParsingOfNamedNullsAllowed();
+	}
+
+	void setBase(String baseIri) throws PrefixDeclarationException {
+		prefixDeclarationRegistry.setBaseIri(baseIri);
+	}
+
+	void setPrefix(String prefixName, String baseIri) throws PrefixDeclarationException {
+		prefixDeclarationRegistry.setPrefixIri(prefixName, baseIri);
+	}
+
+	String absolutizeIri(String iri) throws PrefixDeclarationException {
+		return prefixDeclarationRegistry.absolutizeIri(iri);
+	}
+
+	String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException {
+		return prefixDeclarationRegistry.resolvePrefixedName(prefixedName);
 	}
 }

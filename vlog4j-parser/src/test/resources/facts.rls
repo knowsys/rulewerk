@@ -1,0 +1,4 @@
+@prefix ex: <http://example.org/> .
+
+ex:s(ex:c) .
+p("abc") .

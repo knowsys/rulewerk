@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ import org.semanticweb.vlog4j.core.model.api.Fact;
  * the object will directly accept tuples of constant names that are internally
  * stored in a form that can be passed to the reasoner directly, thereby saving
  * memory and loading time.
- * 
+ *
  * @author Markus Kroetzsch
  *
  */
@@ -47,11 +47,9 @@ public class InMemoryDataSource implements DataSource {
 	 * given capacity is the initial size of the space allocated. For best
 	 * efficiency, the actual number of facts should exactly correspond to this
 	 * capacity.
-	 * 
-	 * @param arity
-	 *            the number of parameters in a fact from this source
-	 * @param initialCapacity
-	 *            the planned number of facts
+	 *
+	 * @param arity           the number of parameters in a fact from this source
+	 * @param initialCapacity the planned number of facts
 	 */
 	public InMemoryDataSource(final int arity, final int initialCapacity) {
 		this.capacity = initialCapacity;
@@ -62,9 +60,8 @@ public class InMemoryDataSource implements DataSource {
 	/**
 	 * Adds a fact to this data source. The number of constant names must agree with
 	 * the arity of this data source.
-	 * 
-	 * @param constantNames
-	 *            the string names of the constants in this fact
+	 *
+	 * @param constantNames the string names of the constants in this fact
 	 */
 	public void addTuple(final String... constantNames) {
 		if (constantNames.length != this.arity) {
@@ -85,7 +82,7 @@ public class InMemoryDataSource implements DataSource {
 	/**
 	 * Returns the data stored in this data source, in the format expected by the
 	 * VLog reasoner backend.
-	 * 
+	 *
 	 * @return the data
 	 */
 	public String[][] getData() {
@@ -108,5 +105,4 @@ public class InMemoryDataSource implements DataSource {
 		}
 		return sb.toString();
 	}
-
 }

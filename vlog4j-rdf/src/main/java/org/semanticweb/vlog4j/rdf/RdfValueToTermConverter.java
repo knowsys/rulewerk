@@ -26,7 +26,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.datatypes.XMLDatatypeUtil;
 import org.openrdf.rio.ntriples.NTriplesUtil;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
 import org.semanticweb.vlog4j.core.model.implementation.AbstractConstantImpl;
@@ -68,7 +68,7 @@ final class RdfValueToTermConverter {
 		} else if (literal.getLanguage() != null) {
 			return new LanguageStringConstantImpl(literal.getLabel(), literal.getLanguage());
 		} else {
-			return new DatatypeConstantImpl(literal.getLabel(), PrefixDeclarations.XSD_STRING);
+			return new DatatypeConstantImpl(literal.getLabel(), PrefixDeclarationRegistry.XSD_STRING);
 		}
 	}
 

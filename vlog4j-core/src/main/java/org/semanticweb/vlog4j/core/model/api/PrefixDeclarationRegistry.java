@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.core.model.api;
 
-import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
-
 /*-
  * #%L
  * vlog4j-syntax
@@ -11,9 +9,9 @@ import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,13 +20,17 @@ import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
  * #L%
  */
 
+import java.util.Map.Entry;
+
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
+
 /**
  * Registry that manages prefixes and base namespace declarations as used for
  * parsing and serialising inputs.
- * 
+ *
  * @author Markus Kroetzsch
  */
-public interface PrefixDeclarations {
+public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String>> {
 
 	static final String XSD = "http://www.w3.org/2001/XMLSchema#";
 	static final String XSD_STRING = "http://www.w3.org/2001/XMLSchema#string";
@@ -39,29 +41,57 @@ public interface PrefixDeclarations {
 	static final String XSD_BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
 	static final String RDF_LANGSTRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
 
+	static final String EMPTY_BASE = "";
+	static final String PREFIX_NAME_SEPARATOR = ":";
+
 	/**
 	 * Returns the relevant base namespace. This should always return a result,
 	 * possibly using a local default value if no base was declared.
-	 * 
+	 *
 	 * @return string of an absolute base IRI
 	 */
-	String getBase();
+	String getBaseIri();
 
 	/**
 	 * Sets the base namespace to the given value. This should only be done once,
 	 * and not after the base namespace was assumed to be an implicit default value.
-	 * 
-	 * @param base the new base namespace
+	 *
+	 * @param baseIri the new base namespace
 	 * @throws PrefixDeclarationException if base was already defined
 	 */
-	void setBase(String base) throws PrefixDeclarationException;
+	void setBaseIri(String baseIri) throws PrefixDeclarationException;
 
-	String getPrefix(String prefix) throws PrefixDeclarationException;
+	/**
+	 * Returns the IRI associated with a given prefix name.
+	 *
+	 * @param prefixName the name of the prefix.
+	 * @throws PrefixDeclarationException if prefixName was not defined.
+	 */
+	String getPrefixIri(String prefixName) throws PrefixDeclarationException;
 
-	void setPrefix(String prefix, String iri) throws PrefixDeclarationException;
+	/**
+	 * Registers a prefix declaration. Behaviour is implementation-defined if
+	 * prefixName has already been registered.
+	 *
+	 * @param prefixName the name of the prefix.
+	 * @param prefixIri  the IRI of the prefix.
+	 *
+	 * @throws PrefixDeclarationException when prefixName is already registered, at
+	 *                                    the discretion of the implementation.
+	 */
+	void setPrefixIri(String prefixName, String prefixIri) throws PrefixDeclarationException;
 
+	/**
+	 * Turn a prefixed name into an absolute IRIna.
+	 */
 	String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException;
 
-	String absolutize(String prefixedName) throws PrefixDeclarationException;
-
+	/**
+	 * Turn a prefixed name or a potentially relative IRI into an absolute IRI.
+	 *
+	 * @param potentiallyRelativeIri either a prefixedName or an IRI.
+	 * @throws PrefixDeclarationException when called on a prefixedName using an
+	 *                                    unknown prefixName.
+	 */
+	String absolutizeIri(String potentiallyRelativeIri) throws PrefixDeclarationException;
 }

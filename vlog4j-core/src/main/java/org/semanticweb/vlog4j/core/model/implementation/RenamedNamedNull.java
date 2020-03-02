@@ -1,4 +1,6 @@
-package org.semanticweb.vlog4j.core.model.api;
+package org.semanticweb.vlog4j.core.model.implementation;
+
+import java.util.UUID;
 
 /*
  * #%L
@@ -20,20 +22,21 @@ package org.semanticweb.vlog4j.core.model.api;
  * #L%
  */
 
-import java.util.function.Function;
+import org.semanticweb.vlog4j.core.model.api.NamedNull;
+import org.semanticweb.vlog4j.core.model.implementation.NamedNullImpl;
 
 /**
- * Interface for variables, i.e., terms of type
- * {@link TermType#UNIVERSAL_VARIABLE} and
- * {@link TermType#EXISTENTIAL_VARIABLE}. Variables are terms that can be
- * quantified to create formulas that refer to some or all values of the domain.
+ * A {@link NamedNull} term that has been renamed during parsing.
  *
- * @author david.carral@tu-dresden.de
- * @author Markus Krötzsch
+ * @author Maximilian Marx
  */
-public interface Variable extends Term {
-	@Override
-	default String getSyntacticRepresentation(Function<String, String> iriTransformer) {
-		return getSyntacticRepresentation();
+public class RenamedNamedNull extends NamedNullImpl {
+	/**
+	 * Construct a new renamed named null, with the given UUID as a name.
+	 *
+	 * @param name the name of the named null.
+	 */
+	public RenamedNamedNull(UUID name) {
+		super(name.toString());
 	}
 }

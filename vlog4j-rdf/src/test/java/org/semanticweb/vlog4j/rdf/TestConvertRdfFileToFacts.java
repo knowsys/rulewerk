@@ -41,7 +41,7 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.semanticweb.vlog4j.core.model.api.NamedNull;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Constant;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.api.Term;
@@ -178,7 +178,7 @@ public class TestConvertRdfFileToFacts {
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file2, fileA, blank1)),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,
 								Arrays.asList(blank1, RDF_FIRST,
-										Expressions.makeDatatypeConstant("1", PrefixDeclarations.XSD_INTEGER))),
+										Expressions.makeDatatypeConstant("1", PrefixDeclarationRegistry.XSD_INTEGER))),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(blank1, RDF_REST, RDF_NIL)),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME, Arrays.asList(file3, fileA, blank2)),
 						Expressions.makeFact(RDF_TRIPLE_PREDICATE_NAME,

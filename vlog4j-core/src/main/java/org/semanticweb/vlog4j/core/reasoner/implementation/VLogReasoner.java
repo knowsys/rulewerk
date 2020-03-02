@@ -1,7 +1,5 @@
 package org.semanticweb.vlog4j.core.reasoner.implementation;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -57,9 +55,9 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,9 +68,9 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
 
 /**
  * Reasoner implementation using the VLog backend.
- * 
- * 
- * 
+ *
+ *
+ *
  * @author Markus Kroetzsch
  *
  */
@@ -159,18 +157,18 @@ public class VLogReasoner implements Reasoner {
 		validateNotClosed();
 
 		switch (this.reasonerState) {
-		case KB_NOT_LOADED:
-			loadKnowledgeBase();
-			break;
-		case KB_LOADED:
-		case MATERIALISED:
-			// do nothing, all KB is already loaded
-			break;
-		case KB_CHANGED:
-			resetReasoner();
-			loadKnowledgeBase();
-		default:
-			break;
+			case KB_NOT_LOADED:
+				loadKnowledgeBase();
+				break;
+			case KB_LOADED:
+			case MATERIALISED:
+				// do nothing, all KB is already loaded
+				break;
+			case KB_CHANGED:
+				resetReasoner();
+				loadKnowledgeBase();
+			default:
+				break;
 		}
 	}
 
@@ -328,23 +326,23 @@ public class VLogReasoner implements Reasoner {
 		validateNotClosed();
 
 		switch (this.reasonerState) {
-		case KB_NOT_LOADED:
-			load();
-			runChase();
-			break;
-		case KB_LOADED:
-			runChase();
-			break;
-		case KB_CHANGED:
-			resetReasoner();
-			load();
-			runChase();
-			break;
-		case MATERIALISED:
-			runChase();
-			break;
-		default:
-			break;
+			case KB_NOT_LOADED:
+				load();
+				runChase();
+				break;
+			case KB_LOADED:
+				runChase();
+				break;
+			case KB_CHANGED:
+				resetReasoner();
+				load();
+				runChase();
+				break;
+			case MATERIALISED:
+				runChase();
+				break;
+			default:
+				break;
 		}
 
 		return this.reasoningCompleted;
@@ -428,6 +426,7 @@ public class VLogReasoner implements Reasoner {
 	public Correctness exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws IOException {
 		validateBeforeQuerying(query);
+
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
 		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
 
@@ -461,7 +460,9 @@ public class VLogReasoner implements Reasoner {
 			throw new ReasonerStateException(this.reasonerState,
 					"Obtaining inferences is not alowed before reasoner is loaded!");
 		}
-		final Set<Predicate> toBeQueriedHeadPredicates = getKnolwedgeBasePredicates();
+		final Set<Predicate> toBeQueriedHeadPredicates = getKnowledgeBasePredicates();
+
+		stream.write(Serializer.getBaseAndPrefixDeclarations(knowledgeBase).getBytes());
 
 		for (final Predicate predicate : toBeQueriedHeadPredicates) {
 			final PositiveLiteral queryAtom = getQueryAtom(predicate);
@@ -470,7 +471,8 @@ public class VLogReasoner implements Reasoner {
 				while (answers.hasNext()) {
 					final karmaresearch.vlog.Term[] vlogTerms = answers.next();
 					final List<Term> termList = VLogToModelConverter.toTermList(vlogTerms);
-					stream.write(Serializer.getFactString(predicate, termList).getBytes());
+					stream.write(Serializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri)
+							.getBytes());
 				}
 			} catch (final NotStartedException e) {
 				throw new RuntimeException("Inconsistent reasoner state.", e);
@@ -481,13 +483,6 @@ public class VLogReasoner implements Reasoner {
 
 		logWarningOnCorrectness();
 		return this.correctness;
-	}
-
-	@Override
-	public Correctness writeInferences(String filePath) throws FileNotFoundException, IOException {
-		try (OutputStream stream = new FileOutputStream(filePath)) {
-			return writeInferences(stream);
-		}
 	}
 
 	private void logWarningOnCorrectness() {
@@ -618,7 +613,7 @@ public class VLogReasoner implements Reasoner {
 		updateCorrectnessOnStatementsRemoved();
 	}
 
-	Set<Predicate> getKnolwedgeBasePredicates() {
+	Set<Predicate> getKnowledgeBasePredicates() {
 		final Set<Predicate> toBeQueriedHeadPredicates = new HashSet<>();
 		for (final Rule rule : this.knowledgeBase.getRules()) {
 			for (final Literal literal : rule.getHead()) {
@@ -685,7 +680,7 @@ public class VLogReasoner implements Reasoner {
 
 	/**
 	 * Check if reasoner is closed and throw an exception if it is.
-	 * 
+	 *
 	 * @throws ReasonerStateException
 	 */
 	void validateNotClosed() throws ReasonerStateException {

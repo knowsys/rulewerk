@@ -24,36 +24,40 @@ import java.io.ByteArrayInputStream;
 
 import java.io.InputStream;
 
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
+import org.semanticweb.vlog4j.core.reasoner.implementation.Skolemization;
 import org.semanticweb.vlog4j.parser.ParserConfiguration;
 import org.semanticweb.vlog4j.parser.RuleParser;
 
 /**
- * Factory for creating a SubParser sharing configuration, state, and prefixes,
- * but with an independent input stream, to be used, e.g., for parsing arguments
- * in data source declarations.
+ * Factory for creating a SubParser sharing configuration, (semantic) state, and
+ * prefixes, but with an independent input stream, to be used, e.g., for parsing
+ * arguments in data source declarations. The parser will start in the
+ * {@code DEFAULT} lexical state.
  *
  * @author Maximilian Marx
  */
 public class SubParserFactory {
 	private final KnowledgeBase knowledgeBase;
 	private final ParserConfiguration parserConfiguration;
-	private final PrefixDeclarations prefixDeclarations;
+	private final PrefixDeclarationRegistry prefixDeclarationRegistry;
+	private final Skolemization skolemization;
 
 	/**
 	 * Construct a SubParserFactory.
 	 *
-	 * @param parser the parser instance to get the state from.
+	 * @param parser the parser instance to get the (semantic) state from.
 	 */
 	SubParserFactory(final JavaCCParser parser) {
 		this.knowledgeBase = parser.getKnowledgeBase();
-		this.prefixDeclarations = parser.getPrefixDeclarations();
+		this.prefixDeclarationRegistry = parser.getPrefixDeclarationRegistry();
 		this.parserConfiguration = parser.getParserConfiguration();
+		this.skolemization = parser.getSkolemization();
 	}
 
 	/**
-	 * Create a new parser with the specified state and given input.
+	 * Create a new parser with the specified (semantic) state and given input.
 	 *
 	 * @param inputStream the input stream to parse.
 	 * @param encoding    encoding of the input stream.
@@ -64,8 +68,9 @@ public class SubParserFactory {
 	public JavaCCParser makeSubParser(final InputStream inputStream, final String encoding) {
 		final JavaCCParser subParser = new JavaCCParser(inputStream, encoding);
 		subParser.setKnowledgeBase(this.knowledgeBase);
-		subParser.setPrefixDeclarations(this.prefixDeclarations);
+		subParser.setPrefixDeclarationRegistry(this.prefixDeclarationRegistry);
 		subParser.setParserConfiguration(this.parserConfiguration);
+		subParser.setSkolemization(this.skolemization);
 
 		return subParser;
 	}

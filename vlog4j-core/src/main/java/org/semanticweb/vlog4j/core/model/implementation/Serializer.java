@@ -1,7 +1,10 @@
 package org.semanticweb.vlog4j.core.model.implementation;
 
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.function.Function;
 
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.AbstractConstant;
 
 /*-
@@ -34,10 +37,11 @@ import org.semanticweb.vlog4j.core.model.api.LanguageStringConstant;
 import org.semanticweb.vlog4j.core.model.api.Literal;
 import org.semanticweb.vlog4j.core.model.api.NamedNull;
 import org.semanticweb.vlog4j.core.model.api.Predicate;
-import org.semanticweb.vlog4j.core.model.api.PrefixDeclarations;
+import org.semanticweb.vlog4j.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.vlog4j.core.model.api.Rule;
 import org.semanticweb.vlog4j.core.model.api.Term;
 import org.semanticweb.vlog4j.core.model.api.UniversalVariable;
+import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.FileDataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.RdfFileDataSource;
@@ -57,7 +61,7 @@ public final class Serializer {
 	public static final String NEGATIVE_IDENTIFIER = "~";
 	public static final String EXISTENTIAL_IDENTIFIER = "!";
 	public static final String UNIVERSAL_IDENTIFIER = "?";
-	public static final String NAMEDNULL_IDENTIFIER = "_";
+	public static final String NAMEDNULL_IDENTIFIER = "_:";
 	public static final String OPENING_PARENTHESIS = "(";
 	public static final String CLOSING_PARENTHESIS = ")";
 	public static final String OPENING_BRACKET = "[";
@@ -65,6 +69,8 @@ public final class Serializer {
 	public static final String RULE_SEPARATOR = " :- ";
 	public static final char AT = '@';
 	public static final String DATA_SOURCE = "@source ";
+	public static final String BASE = "@base ";
+	public static final String PREFIX = "@prefix ";
 	public static final String CSV_FILE_DATA_SOURCE = "load-csv";
 	public static final String RDF_FILE_DATA_SOURCE = "load-rdf";
 	public static final String SPARQL_QUERY_RESULT_DATA_SOURCE = "sparql";
@@ -149,11 +155,25 @@ public final class Serializer {
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Constant}.
+	 * Creates a String representation of a given {@link AbstractConstant}.
 	 *
 	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
-	 * @param constant a {@link Constant}
-	 * @return String representation corresponding to a given {@link Constant}.
+	 * @param constant       a {@link AbstractConstant}
+	 * @param iriTransformer a function to transform IRIs with.
+	 * @return String representation corresponding to a given
+	 *         {@link AbstractConstant}.
+	 */
+	public static String getString(final AbstractConstant constant, Function<String, String> iriTransformer) {
+		return getIRIString(constant.getName(), iriTransformer);
+	}
+
+	/**
+	 * Creates a String representation of a given {@link AbstractConstant}.
+	 *
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
+	 * @param constant a {@link AbstractConstant}
+	 * @return String representation corresponding to a given
+	 *         {@link AbstractConstant}.
 	 */
 	public static String getString(final AbstractConstant constant) {
 		return getIRIString(constant.getName());
@@ -173,26 +193,75 @@ public final class Serializer {
 	}
 
 	/**
+	 * Creates a String representation corresponding to the given
+	 * {@link DatatypeConstant}. For datatypes that have specialised lexical
+	 * representations (i.e., xsd:String, xsd:Decimal, xsd:Integer, and xsd:Double),
+	 * this representation is returned, otherwise the result is a generic literal
+	 * with full datatype IRI.
+	 *
+	 * examples:
+	 * <ul>
+	 * <li>{@code "string"^^xsd:String} results in {@code "string"},</li>
+	 * <li>{@code "23.0"^^xsd:Decimal} results in {@code 23.0},</li>
+	 * <li>{@code "42"^^xsd:Integer} results in {@code 42},</li>
+	 * <li>{@code "23.42"^^xsd:Double} results in {@code 23.42E0}, and</li>
+	 * <li>{@code "test"^^<http://example.org>} results in {@code "test"^^<http://example.org>}, modulo transformation of the datatype IRI.</li>
+	 * </ul>
+	 *
+	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
+	 * @param datatypeConstant a {@link DatatypeConstant}
+	 * @param iriTransformer   a function to transform IRIs with.
+	 * @return String representation corresponding to a given
+	 *         {@link DatatypeConstant}.
+	 */
+	public static String getString(final DatatypeConstant datatypeConstant, Function<String, String> iriTransformer) {
+		if (datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_STRING)) {
+			return getString(datatypeConstant.getLexicalValue());
+		} else if (datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_DECIMAL)
+				|| datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_INTEGER)
+				|| datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_DOUBLE)) {
+			return datatypeConstant.getLexicalValue();
+		}
+
+		return getConstantName(datatypeConstant, iriTransformer);
+	}
+
+	/**
+	 * Creates a String representation corresponding to the given
+	 * {@link DatatypeConstant}. For datatypes that have specialised lexical
+	 * representations (i.e., xsd:String, xsd:Decimal, xsd:Integer, and xsd:Double),
+	 * this representation is returned, otherwise the result is a generic literal
+	 * with full datatype IRI.
+	 *
+	 * examples:
+	 * <ul>
+	 * <li>{@code "string"^^xsd:String} results in {@code "string"},</li>
+	 * <li>{@code "23.0"^^xsd:Decimal} results in {@code 23.0},</li>
+	 * <li>{@code "42"^^xsd:Integer} results in {@code 42},</li>
+	 * <li>{@code "23.42"^^xsd:Double} results in {@code 23.42E0}, and</li>
+	 * <li>{@code "test"^^<http://example.org>} results in {@code "test"^^<http://example.org>}.</li>
+	 * </ul>
+	 * @param datatypeConstant a {@link DatatypeConstant}
+	 * @return String representation corresponding to a given
+	 *         {@link DatatypeConstant}.
+	 */
+	public static String getString(final DatatypeConstant datatypeConstant) {
+		return getString(datatypeConstant, Function.identity());
+	}
+
+	/**
 	 * Creates a String representation corresponding to the name of a given
-	 * {@link DatatypeConstant} without an IRI.
+	 * {@link DatatypeConstant} including an IRI.
 	 *
 	 * @see <a href="https://github.com/knowsys/vlog4j/wiki">Rule syntax</a> .
 	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
 	 */
-	public static String getString(final DatatypeConstant datatypeConstant) {
-		if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_STRING)) {
-			return getString(datatypeConstant.getLexicalValue());
-		} else {
-			if (datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DECIMAL)
-					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_INTEGER)
-					|| datatypeConstant.getDatatype().equals(PrefixDeclarations.XSD_DOUBLE)) {
-				return datatypeConstant.getLexicalValue();
-			} else {
-				return getConstantName(datatypeConstant);
-			}
-		}
+	public static String getConstantName(final DatatypeConstant datatypeConstant,
+			Function<String, String> iriTransformer) {
+		return getString(datatypeConstant.getLexicalValue()) + DOUBLE_CARET
+				+ getIRIString(datatypeConstant.getDatatype(), iriTransformer);
 	}
 
 	/**
@@ -318,12 +387,22 @@ public final class Serializer {
 	}
 
 	private static String getIRIString(final String string) {
+		return getIRIString(string, Function.identity());
+	}
+
+	private static String getIRIString(final String string, Function<String, String> iriTransformer) {
+		String transformed = iriTransformer.apply(string);
+
+		if (!transformed.equals(string)) {
+			return transformed;
+		}
+
 		if (string.contains(COLON) || string.matches(REGEX_INTEGER) || string.matches(REGEX_DOUBLE)
 				|| string.matches(REGEX_DECIMAL) || string.equals(REGEX_TRUE) || string.equals(REGEX_FALSE)) {
 			return addAngleBrackets(string);
-		} else {
-			return string;
 		}
+
+		return string;
 	}
 
 	/**
@@ -339,10 +418,10 @@ public final class Serializer {
 	 * <li>{@code \n}</li>
 	 * <li>{@code \r}</li>
 	 * <li>{@code \f}</li>
-	 * <ul>
+	 * </ul>
 	 * Example for {@code string = "\\a"}, the returned value is
 	 * {@code string = "\"\\\\a\""}
-	 * 
+	 *
 	 * @param string
 	 * @return an escaped string surrounded by {@code "}.
 	 */
@@ -361,8 +440,8 @@ public final class Serializer {
 	 * <li>{@code \n}</li>
 	 * <li>{@code \r}</li>
 	 * <li>{@code \f}</li>
-	 * <ul>
-	 * 
+	 * </ul>
+	 *
 	 * @param string
 	 * @return an escaped string
 	 */
@@ -382,12 +461,20 @@ public final class Serializer {
 
 	public static String getFactString(Predicate predicate, List<Term> terms) {
 		return getString(predicate, terms) + STATEMENT_SEPARATOR + NEW_LINE;
+	}
 
+	public static String getFactString(Predicate predicate, List<Term> terms, Function<String, String> iriTransformer) {
+		return getString(predicate, terms, iriTransformer) + STATEMENT_SEPARATOR + "\n";
 	}
 
 	public static String getString(Predicate predicate, List<Term> terms) {
-		final StringBuilder stringBuilder = new StringBuilder(getIRIString(predicate.getName()));
+		return getString(predicate, terms, Function.identity());
+	}
+
+	public static String getString(Predicate predicate, List<Term> terms, Function<String, String> iriTransformer) {
+		final StringBuilder stringBuilder = new StringBuilder(getIRIString(predicate.getName(), iriTransformer));
 		stringBuilder.append(OPENING_PARENTHESIS);
+
 		boolean first = true;
 		for (final Term term : terms) {
 			if (first) {
@@ -395,12 +482,33 @@ public final class Serializer {
 			} else {
 				stringBuilder.append(COMMA);
 			}
-			final String string = term.getSyntacticRepresentation();
+			final String string = term.getSyntacticRepresentation(iriTransformer);
 			stringBuilder.append(string);
 		}
 		stringBuilder.append(CLOSING_PARENTHESIS);
 		return stringBuilder.toString();
-
 	}
 
+	public static String getBaseString(KnowledgeBase knowledgeBase) {
+		String baseIri = knowledgeBase.getBaseIri();
+
+		return baseIri.equals(PrefixDeclarationRegistry.EMPTY_BASE) ? baseIri : getBaseDeclarationString(baseIri);
+	}
+
+	private static String getBaseDeclarationString(String baseIri) {
+		return BASE + addAngleBrackets(baseIri) + STATEMENT_SEPARATOR + NEW_LINE;
+	}
+
+	public static String getPrefixString(Entry<String, String> prefix) {
+		return PREFIX + prefix.getKey() + " " + addAngleBrackets(prefix.getValue()) + STATEMENT_SEPARATOR + NEW_LINE;
+	}
+
+	public static String getBaseAndPrefixDeclarations(KnowledgeBase knowledgeBase) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(getBaseString(knowledgeBase));
+		knowledgeBase.getPrefixes().forEachRemaining(prefix -> sb.append(getPrefixString(prefix)));
+
+		return sb.toString();
+	}
 }

@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.reasoner;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,17 +20,17 @@ package org.semanticweb.vlog4j.core.reasoner;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
+import org.semanticweb.vlog4j.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.vlog4j.core.model.api.Fact;
 import org.semanticweb.vlog4j.core.model.implementation.Expressions;
+import org.semanticweb.vlog4j.core.model.implementation.MergingPrefixDeclarationRegistry;
 
 public class KnowledgeBaseTest {
 
@@ -90,7 +90,31 @@ public class KnowledgeBaseTest {
 		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact1.getPredicate()));
 		assertEquals(Sets.newSet(this.fact1, this.fact2), this.kb.getFactsByPredicate().get(this.fact2.getPredicate()));
 		assertEquals(Sets.newSet(this.fact3), this.kb.getFactsByPredicate().get(this.fact3.getPredicate()));
-
 	}
 
+	@Test
+	public void getBase_default_hasEmptyBase() {
+		assertEquals("", this.kb.getBaseIri());
+	}
+
+	@Test(expected = PrefixDeclarationException.class)
+	public void getPrefix_defaultUndeclaredPrefix_throws() throws PrefixDeclarationException {
+		this.kb.getPrefixIri("ex:");
+	}
+
+	@Test(expected = PrefixDeclarationException.class)
+	public void resolvePrefixedName_defaultUndeclaredPrefix_throws() throws PrefixDeclarationException {
+		this.kb.resolvePrefixedName("ex:test");
+	}
+
+	@Test
+	public void mergePrefixDeclarations_merge_succeeds() throws PrefixDeclarationException {
+		String iri = "https://example.org/";
+		MergingPrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
+		prefixDeclarations.setPrefixIri("ex:", iri);
+		this.kb.mergePrefixDeclarations(prefixDeclarations);
+		assertEquals(this.kb.getPrefixIri("ex:"), iri);
+		assertEquals(this.kb.resolvePrefixedName("ex:test"), iri + "test");
+		assertEquals(this.kb.unresolveAbsoluteIri(iri + "test"), "ex:test");
+	}
 }

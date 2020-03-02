@@ -135,6 +135,10 @@
 									<root>src/main/java</root>
 									<root>src/test/java</root>
 								</roots>
+								<ignoreNoFileToScan>true</ignoreNoFileToScan>
+								<extraFiles>
+									<JavaCCParser.jj>java</JavaCCParser.jj>
+								</extraFiles>
 							</configuration>
 						</execution>
 					</executions>
@@ -305,6 +309,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven.javadoc.version}</version>
 				<configuration>
+					<source>1.8</source>
 					<bottom><![CDATA[Copyright &#169; {inceptionYear}&#x2018;{currentYear} {organizationName}. Generated from source code published under the Apache License 2.0. For more information, see the <a href="https://github.com/knowsys/vlog4j">VLog4j homepage</a>]]></bottom>
 				</configuration>
 			</plugin>

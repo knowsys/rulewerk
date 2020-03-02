@@ -9,9 +9,9 @@ package org.semanticweb.vlog4j.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,7 +49,7 @@ import org.semanticweb.vlog4j.core.reasoner.KnowledgeBase;
 
 /**
  * Class for organizing a Knowledge Base using vLog-specific data structures.
- * 
+ *
  * @author Irina Dragoste
  *
  */
@@ -69,7 +69,7 @@ public class VLogKnowledgeBase {
 	/**
 	 * Package-protected constructor, that organizes given {@code knowledgeBase} in
 	 * vLog-specific data structures.
-	 * 
+	 *
 	 * @param knowledgeBase
 	 */
 	VLogKnowledgeBase(final KnowledgeBase knowledgeBase) {
@@ -150,10 +150,9 @@ public class VLogKnowledgeBase {
 	}
 
 	/**
-	 * 
 	 * Local visitor implementation for processing statements upon loading. Internal
 	 * index structures are updated based on the statements that are detected.
-	 * 
+	 *
 	 * @author Markus Kroetzsch
 	 */
 
@@ -212,7 +211,8 @@ public class VLogKnowledgeBase {
 					addEdbAlias(dataSourceDeclaration);
 				}
 			} else {
-				final DataSourceDeclaration currentMainDeclaration = VLogKnowledgeBase.this.edbPredicates.get(predicate);
+				final DataSourceDeclaration currentMainDeclaration = VLogKnowledgeBase.this.edbPredicates
+						.get(predicate);
 				if (currentMainDeclaration == null) {
 					VLogKnowledgeBase.this.edbPredicates.put(predicate, dataSourceDeclaration);
 				} else if (!currentMainDeclaration.equals(dataSourceDeclaration)) {
@@ -251,7 +251,7 @@ public class VLogKnowledgeBase {
 	/**
 	 * Dummy data source declaration for predicates for which we have explicit local
 	 * facts in the input.
-	 * 
+	 *
 	 * @author Markus Kroetzsch
 	 *
 	 */
@@ -298,5 +298,4 @@ public class VLogKnowledgeBase {
 			return this.predicate.equals(other.predicate);
 		}
 	}
-
 }

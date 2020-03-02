@@ -27,6 +27,8 @@ import java.util.List;
 import org.semanticweb.vlog4j.core.model.api.DataSource;
 import org.semanticweb.vlog4j.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.vlog4j.parser.DataSourceDeclarationHandler;
+import org.semanticweb.vlog4j.parser.DirectiveArgument;
+import org.semanticweb.vlog4j.parser.DirectiveHandler;
 import org.semanticweb.vlog4j.parser.ParsingException;
 import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
 
@@ -37,16 +39,15 @@ import org.semanticweb.vlog4j.parser.javacc.SubParserFactory;
  */
 public class CsvFileDataSourceDeclarationHandler implements DataSourceDeclarationHandler {
 	@Override
-	public DataSource handleDeclaration(List<String> arguments, final SubParserFactory subParserFactory)
+	public DataSource handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
-		DataSourceDeclarationHandler.validateNumberOfArguments(arguments, 1);
-		String fileName = arguments.get(0);
-		File file = new File(fileName);
+		DirectiveHandler.validateNumberOfArguments(arguments, 1);
+		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "source file");
 
 		try {
 			return new CsvFileDataSource(file);
 		} catch (IOException e) {
-			throw new ParsingException("Could not use source file \"" + fileName + "\": " + e.getMessage(), e);
+			throw new ParsingException("Could not use source file \"" + file.getName() + "\": " + e.getMessage(), e);
 		}
 	}
 }
