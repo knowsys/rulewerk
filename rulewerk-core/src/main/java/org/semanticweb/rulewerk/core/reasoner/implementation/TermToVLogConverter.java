@@ -89,6 +89,9 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	/**
 	 * Converts the given named null to the name of a (skolem) constant in VLog.
 	 *
+	 * @fixme This skolemisation approach might lead to constants that clash with
+	 *        existing constant names.
+	 *
 	 * @param named null
 	 * @return VLog constant string
 	 */
