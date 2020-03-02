@@ -29,6 +29,7 @@ import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
 import org.semanticweb.rulewerk.core.model.api.LanguageStringConstant;
 import org.semanticweb.rulewerk.core.model.api.TermVisitor;
 import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
+import org.semanticweb.rulewerk.core.model.implementation.RenamedNamedNull;
 
 /**
  * A visitor that converts {@link Term}s of different types to corresponding
@@ -38,6 +39,8 @@ import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
  *
  */
 class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
+
+	static final Skolemization skolemization = new Skolemization();
 
 	/**
 	 * Transforms an abstract constant to a {@link karmaresearch.vlog.Term} with the
@@ -89,14 +92,15 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	/**
 	 * Converts the given named null to the name of a (skolem) constant in VLog.
 	 *
-	 * @fixme This skolemisation approach might lead to constants that clash with
-	 *        existing constant names.
-	 *
 	 * @param named null
 	 * @return VLog constant string
 	 */
 	public static String getVLogNameForNamedNull(NamedNull namedNull) {
-		return "skolem__" + namedNull.getName();
+		if (namedNull instanceof RenamedNamedNull) {
+			return namedNull.getName();
+		} else {
+			return skolemization.skolemizeNamedNull(namedNull.getName()).getName();
+		}
 	}
 
 	/**

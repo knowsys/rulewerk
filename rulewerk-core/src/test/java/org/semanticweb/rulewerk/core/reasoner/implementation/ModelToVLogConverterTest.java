@@ -22,12 +22,14 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
@@ -39,6 +41,7 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.NamedNullImpl;
+import org.semanticweb.rulewerk.core.model.implementation.RenamedNamedNull;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.RuleRewriteStrategy;
 
@@ -123,7 +126,18 @@ public class ModelToVLogConverterTest {
 
 		final String vLogSkolemConstant = TermToVLogConverter.getVLogNameForNamedNull(blank);
 
-		assertEquals("skolem__blank", vLogSkolemConstant);
+		assertNotEquals("blank", vLogSkolemConstant);
+		assertEquals(36,vLogSkolemConstant.length()); // length of a UUID
+	}
+	
+	@Test
+	public void testToVLogTermBlankRenamedSkolemization() {
+		final UUID uuid = UUID.randomUUID();
+		final NamedNull blank = new RenamedNamedNull(uuid);
+
+		final String vLogSkolemConstant = TermToVLogConverter.getVLogNameForNamedNull(blank);
+
+		assertEquals(uuid.toString(), vLogSkolemConstant);
 	}
 
 	@Test
