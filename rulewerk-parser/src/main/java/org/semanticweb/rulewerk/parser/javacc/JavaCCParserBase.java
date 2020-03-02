@@ -162,11 +162,7 @@ public class JavaCCParserBase {
 	}
 
 	NamedNull createNamedNull(String lexicalForm) throws ParseException {
-		try {
-			return this.skolemization.skolemizeNamedNull(lexicalForm);
-		} catch (IOException e) {
-			throw makeParseExceptionWithCause("Failed to generate a unique name for named null", e);
-		}
+		return this.skolemization.skolemizeNamedNull(lexicalForm);
 	}
 
 	void addStatement(Statement statement) {
