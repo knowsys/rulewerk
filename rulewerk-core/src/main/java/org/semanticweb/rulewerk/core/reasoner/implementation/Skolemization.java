@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.implementation.RenamedNamedNull;
 
@@ -47,15 +48,17 @@ public class Skolemization {
 	 * a {@link RenamedNamedNull} instance with the same name when
 	 * called on the same instance.
 	 *
-	 * @throws IOException when ByteArrayOutputStream throws.
 	 * @return a {@link RenamedNamedNull} instance with a new name
 	 *         that is specific to this instance and {@code name}.
 	 */
-	public RenamedNamedNull skolemizeNamedNull(String name) throws IOException {
+	public RenamedNamedNull skolemizeNamedNull(String name) {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		stream.write(namedNullNamespace);
-		stream.write(name.getBytes());
-
-		return new RenamedNamedNull(UUID.nameUUIDFromBytes(stream.toByteArray()));
+		try {
+			stream.write(namedNullNamespace);
+			stream.write(name.getBytes());
+			return new RenamedNamedNull(UUID.nameUUIDFromBytes(stream.toByteArray()));
+		} catch (IOException e) {
+			throw new RulewerkRuntimeException(e.getMessage(), e);
+		}
 	}
 }
