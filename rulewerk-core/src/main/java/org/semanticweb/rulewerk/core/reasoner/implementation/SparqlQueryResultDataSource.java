@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ import java.util.LinkedHashSet;
 import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
-import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
@@ -83,8 +82,8 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 	 */
 	// TODO add examples to javadoc
 	// TODO add illegal argument exceptions to javadoc
-	public SparqlQueryResultDataSource(@NonNull final URL endpoint,
-			@NonNull final LinkedHashSet<Variable> queryVariables, @NonNull final String queryBody) {
+	public SparqlQueryResultDataSource(final URL endpoint,
+			final LinkedHashSet<Variable> queryVariables, final String queryBody) {
 		Validate.notNull(endpoint, "Endpoint cannot be null.");
 		Validate.notNull(queryVariables, "Query variables ordered set cannot be null.");
 		Validate.noNullElements(queryVariables, "Query variables cannot be null or contain null elements.");

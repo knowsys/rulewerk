@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Validate;
-import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Term;
@@ -52,7 +51,7 @@ public abstract class AbstractLiteralImpl implements Literal {
 	 * @param terms     non-empty list of non-null terms. List size must be the same
 	 *                  as the <b>predicate</b> arity.
 	 */
-	public AbstractLiteralImpl(@NonNull final Predicate predicate, @NonNull final List<Term> terms) {
+	public AbstractLiteralImpl(final Predicate predicate, final List<Term> terms) {
 		Validate.notNull(predicate, "Literal predicates cannot be null.");
 		Validate.noNullElements(terms,
 				"Null terms cannot appear in literals. The list contains a null at position [%d].");

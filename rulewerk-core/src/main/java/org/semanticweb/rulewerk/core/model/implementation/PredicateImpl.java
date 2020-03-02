@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,13 +21,12 @@ package org.semanticweb.rulewerk.core.model.implementation;
  */
 
 import org.apache.commons.lang3.Validate;
-import org.eclipse.jdt.annotation.NonNull;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 
 /**
  * Implementation for {@link Predicate}. Supports predicates of arity 1 or
  * higher.
- * 
+ *
  * @author Irina Dragoste
  *
  */
@@ -39,11 +38,11 @@ public class PredicateImpl implements Predicate {
 
 	/**
 	 * Constructor for {@link Predicate}s of arity 1 or higher.
-	 * 
+	 *
 	 * @param name  a non-blank String (not null, nor empty or whitespace).
 	 * @param arity an int value strictly greater than 0.
 	 */
-	public PredicateImpl(@NonNull String name, int arity) {
+	public PredicateImpl(final String name, int arity) {
 		Validate.notBlank(name, "Predicates cannot be named by blank Strings.");
 		Validate.isTrue(arity > 0, "Predicate arity must be greater than zero: %d", arity);
 
