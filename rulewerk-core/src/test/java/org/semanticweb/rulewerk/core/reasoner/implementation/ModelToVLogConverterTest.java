@@ -118,6 +118,15 @@ public class ModelToVLogConverterTest {
 	}
 
 	@Test
+	public void testToVLogTermBlankSkolemization() {
+		final NamedNull blank = new NamedNullImpl("blank");
+
+		final String vLogSkolemConstant = TermToVLogConverter.getVLogNameForNamedNull(blank);
+
+		assertEquals("skolem__blank", vLogSkolemConstant);
+	}
+
+	@Test
 	public void testToVLogTermArray() {
 		final Variable vx = Expressions.makeUniversalVariable("x");
 		final Variable vxToo = Expressions.makeUniversalVariable("x");
