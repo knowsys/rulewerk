@@ -65,11 +65,21 @@ final public class MergingPrefixDeclarationRegistry extends AbstractPrefixDeclar
 	 */
 	@Override
 	public void setBaseIri(String baseIri) {
-		if (baseIri != this.baseUri && this.baseUri != PrefixDeclarationRegistry.EMPTY_BASE) {
-			prefixes.put(getFreshPrefix(), this.baseUri);
+		if (baseIri == this.baseUri) {
+			return;
 		}
 
-		this.baseUri = baseIri;
+		if (this.baseUri == null) {
+			this.baseUri = baseIri;
+		} else if (this.baseUri == PrefixDeclarationRegistry.EMPTY_BASE) {
+			// we need to keep the empty base, so that we don't
+			// accidentally relativise absolute Iris to
+			// baseIri. Hence, introduce baseIri as a fresh prefix.
+			prefixes.put(getFreshPrefix(), baseIri);
+		} else {
+			prefixes.put(getFreshPrefix(), this.baseUri);
+			this.baseUri = baseIri;
+		}
 	}
 
 	/**
@@ -96,8 +106,9 @@ final public class MergingPrefixDeclarationRegistry extends AbstractPrefixDeclar
 	 */
 	public String unresolveAbsoluteIri(String iri) {
 		Map<String, Integer> matches = new HashMap<>();
+		String baseIri = getBaseIri();
 
-		if (baseUri != PrefixDeclarationRegistry.EMPTY_BASE && iri.startsWith(baseUri) && !iri.equals(baseUri)) {
+		if (baseIri != PrefixDeclarationRegistry.EMPTY_BASE && iri.startsWith(baseIri) && !iri.equals(baseIri)) {
 			matches.put(iri.replaceFirst(baseUri, PrefixDeclarationRegistry.EMPTY_BASE), baseUri.length());
 		}
 

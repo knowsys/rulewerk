@@ -21,6 +21,7 @@ package org.semanticweb.rulewerk.core.model;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -184,5 +185,26 @@ public class MergingPrefixDeclarationRegistryTest {
 		String unresolved = prefix + RELATIVE;
 		String resolved = prefixDeclarations.resolvePrefixedName(unresolved);
 		assertEquals(unresolved, prefixDeclarations.unresolveAbsoluteIri(resolved));
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_relativeIriAfterMergeWithNewBase_staysRelative() throws PrefixDeclarationException {
+		String relativeIri = this.prefixDeclarations.absolutizeIri(RELATIVE);
+		PrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
+		prefixDeclarations.setBaseIri(BASE);
+		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
+		assertEquals(relativeIri, this.prefixDeclarations.unresolveAbsoluteIri(relativeIri));
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_absoluteIriMergedOntoEmptyBase_staysAbsolute() throws PrefixDeclarationException {
+		assertEquals("", this.prefixDeclarations.getBaseIri());
+		PrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
+		prefixDeclarations.setBaseIri(BASE);
+		String absoluteIri = prefixDeclarations.absolutizeIri(RELATIVE);
+		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
+		String resolvedIri = this.prefixDeclarations.unresolveAbsoluteIri(absoluteIri);
+		assertNotEquals(RELATIVE, resolvedIri);
+		assertEquals("rulewerk_generated_0:" + RELATIVE, resolvedIri);
 	}
 }

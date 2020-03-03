@@ -57,7 +57,6 @@ final public class LocalPrefixDeclarationRegistry extends AbstractPrefixDeclarat
 	public LocalPrefixDeclarationRegistry(String fallbackIri) {
 		super();
 		this.fallbackIri = fallbackIri;
-		this.baseUri = null;
 	}
 
 	/**
