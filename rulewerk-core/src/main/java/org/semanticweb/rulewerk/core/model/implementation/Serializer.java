@@ -526,15 +526,6 @@ public final class Serializer {
 		return stringBuilder.toString();
 	}
 
-	public static String getString(KnowledgeBase knowledgeBase) {
-		StringBuilder sb = new StringBuilder(getBaseAndPrefixDeclarations(knowledgeBase));
-		knowledgeBase.getDataSourceDeclarations().forEach(dataSource -> sb.append(getString(dataSource) + NEW_LINE));
-		knowledgeBase.getRules().forEach(rule -> sb.append(getString(rule) + NEW_LINE));
-		knowledgeBase.getFacts().forEach(fact -> sb.append(getFactString(fact) + NEW_LINE));
-
-		return sb.toString();
-	}
-
 	public static String getBaseString(KnowledgeBase knowledgeBase) {
 		String baseIri = knowledgeBase.getBaseIri();
 
