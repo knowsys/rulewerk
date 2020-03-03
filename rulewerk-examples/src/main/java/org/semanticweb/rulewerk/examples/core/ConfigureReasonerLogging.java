@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.examples.core;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,6 @@ package org.semanticweb.rulewerk.examples.core;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.LogLevel;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
@@ -52,17 +51,17 @@ public class ConfigureReasonerLogging {
 	 * Path to the file where the default WARNING level reasoner logs will be
 	 * exported.
 	 */
-	private static @Nullable String reasonerWarningLogFilePath = logsFolder + "ReasonerWarningLogFile.log";
+	private static String reasonerWarningLogFilePath = logsFolder + "ReasonerWarningLogFile.log";
 
 	/**
 	 * Path to the file where INFO level reasoner logs will be exported.
 	 */
-	private static @Nullable String reasonerInfoLogFilePath = logsFolder + "ReasonerInfoLogFile.log";
+	private static String reasonerInfoLogFilePath = logsFolder + "ReasonerInfoLogFile.log";
 
 	/**
 	 * Path to the file where DEBUG level reasoner logs will be exported.
 	 */
-	private static @Nullable String reasonerDebugLogFilePath = logsFolder + "ReasonerDebugLogFile.log";
+	private static String reasonerDebugLogFilePath = logsFolder + "ReasonerDebugLogFile.log";
 
 	public static void main(final String[] args) throws IOException, ParsingException {
 

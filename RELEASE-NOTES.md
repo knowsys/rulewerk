@@ -15,6 +15,7 @@ Breaking changes:
 New features:
 * Counting query answers is more efficient now, using `Reasoner.countQueryAnswers()`
 * All inferred facts can be serialized to a file using `Reasoner.writeInferences()`
+* Knowledge bases can be serialized to a file using `KnowlegdeBase.writeKnowledgeBase()`
 * Rules files may import other rules files using `@import` and
   `@import-relative`, where the latter resolves relative IRIs using
   the current base IRI, unless the imported file explicitly specifies

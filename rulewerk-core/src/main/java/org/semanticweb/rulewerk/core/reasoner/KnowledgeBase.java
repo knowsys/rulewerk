@@ -22,8 +22,10 @@ package org.semanticweb.rulewerk.core.reasoner;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +42,7 @@ import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkException;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
+import org.semanticweb.rulewerk.core.model.api.Entity;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
@@ -48,6 +51,7 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Statement;
 import org.semanticweb.rulewerk.core.model.api.StatementVisitor;
 import org.semanticweb.rulewerk.core.model.implementation.MergingPrefixDeclarationRegistry;
+import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 /**
  * A knowledge base with rules, facts, and declarations for loading data from
@@ -59,7 +63,7 @@ import org.semanticweb.rulewerk.core.model.implementation.MergingPrefixDeclarati
  * @author Markus Kroetzsch
  *
  */
-public class KnowledgeBase implements Iterable<Statement> {
+public class KnowledgeBase implements Entity, Iterable<Statement> {
 
 	private final Set<KnowledgeBaseListener> listeners = new HashSet<>();
 
@@ -554,5 +558,34 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	public String unresolveAbsoluteIri(String iri) {
 		return this.prefixDeclarationRegistry.unresolveAbsoluteIri(iri);
+	}
+
+	@Override
+	public String getSyntacticRepresentation() {
+		return Serializer.getString(this);
+	}
+
+	/**
+	 * Serialise the KnowledgeBase to the {@link OutputStream}.
+	 *
+	 * @param stream the {@link OutputStream} to serialise to.
+	 *
+	 * @throws IOException
+	 */
+	public void writeKnowledgeBase(OutputStream stream) throws IOException {
+		stream.write(getSyntacticRepresentation().getBytes());
+	}
+
+	/**
+	 * Serialise the KnowledgeBase to the given {@link File}.
+	 *
+	 * @param filePath path to the file to serialise into.
+	 *
+	 * @throws IOException
+	 */
+	public void writeKnowledgeBase(String filePath) throws IOException {
+		try (OutputStream stream = new FileOutputStream(filePath)) {
+			writeKnowledgeBase(stream);
+		}
 	}
 }
