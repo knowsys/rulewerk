@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,25 +41,23 @@ public class CsvFileDataSourceTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorFalseExtension() throws IOException {
-		new CsvFileDataSource(new File(ntFile));
+		new CsvFileDataSource(ntFile);
 	}
 
 	@Test
 	public void testConstructor() throws IOException {
-		final File unzippedCsvFile = new File(csvFile);
-		final File zippedCsvFile = new File(gzFile);
 		final String dirCanonicalPath = new File(FileDataSourceTestUtils.INPUT_FOLDER).getCanonicalPath();
-		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(unzippedCsvFile);
-		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(zippedCsvFile);
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(csvFile);
+		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(gzFile);
 
-		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, unzippedCsvFile, dirCanonicalPath, "file");
-		FileDataSourceTestUtils.testConstructor(zippedCsvFileDataSource, zippedCsvFile, dirCanonicalPath, "file");
+		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, new File(csvFile).getName(), dirCanonicalPath, "file");
+		FileDataSourceTestUtils.testConstructor(zippedCsvFileDataSource, new File(gzFile).getName(), dirCanonicalPath, "file");
 	}
 
 	@Test
 	public void testToConfigString() throws IOException {
-		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(csvFile));
-		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(new File(gzFile));
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(csvFile);
+		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(gzFile);
 
 		final String expectedDirCanonicalPath = new File(FileDataSourceTestUtils.INPUT_FOLDER).getCanonicalPath();
 		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
@@ -71,8 +69,7 @@ public class CsvFileDataSourceTest {
 
 	@Test
 	public void testNoParentDir() throws IOException {
-		final File file = new File("file.csv");
-		final FileDataSource fileDataSource = new CsvFileDataSource(file);
+		final FileDataSource fileDataSource = new CsvFileDataSource("file.csv");
 		final String dirCanonicalPath = fileDataSource.getDirCanonicalPath();
 		final String currentFolder = new File(".").getCanonicalPath();
 		assertEquals(currentFolder, dirCanonicalPath);
@@ -80,8 +77,7 @@ public class CsvFileDataSourceTest {
 
 	@Test
 	public void testNotNormalisedParentDir() throws IOException {
-		final File file = new File("./././file.csv");
-		final FileDataSource fileDataSource = new CsvFileDataSource(file);
+		final FileDataSource fileDataSource = new CsvFileDataSource("./././file.csv");
 		final String dirCanonicalPath = fileDataSource.getDirCanonicalPath();
 		final String currentFolder = new File(".").getCanonicalPath();
 		assertEquals(currentFolder, dirCanonicalPath);

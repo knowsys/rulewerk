@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.Validate;
-import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * A {@code FileDataSource} is an abstract implementation of a storage for fact
@@ -44,6 +43,8 @@ public abstract class FileDataSource extends VLogDataSource {
 	private final static String DATASOURCE_TYPE_CONFIG_VALUE = "INMEMORY";
 
 	private final File file;
+	private final String filePath;
+	private final String fileName;
 	private final String extension;
 	/**
 	 * The canonical path to the parent directory where the file resides.
@@ -54,7 +55,8 @@ public abstract class FileDataSource extends VLogDataSource {
 	/**
 	 * Constructor.
 	 *
-	 * @param file               a file that will serve as storage for fact terms.
+	 * @param filePath           path to a file that will serve as storage for fact
+	 *                           terms.
 	 * @param possibleExtensions a list of extensions that the files could have
 	 * @throws IOException              if the path of the given {@code file} is
 	 *                                  invalid.
@@ -62,24 +64,24 @@ public abstract class FileDataSource extends VLogDataSource {
 	 *                                  does not occur in
 	 *                                  {@code possibleExtensions}.
 	 */
-	public FileDataSource(@NonNull final File file, final Iterable<String> possibleExtensions) throws IOException {
-		Validate.notNull(file, "Data source file cannot be null!");
-		final String fileName = file.getName();
+	public FileDataSource(final String filePath, final Iterable<String> possibleExtensions) throws IOException {
+		Validate.notBlank(filePath, "Data source file name cannot be null!");
 
-		this.file = file;
+		this.file = new File(filePath);
+		this.filePath = filePath.replaceAll("\\\\", "/"); // canonicalise windows-style path separators
+		this.fileName = this.filePath.substring(this.filePath.lastIndexOf("/") + 1); // just the file name
+		this.extension = getValidExtension(this.fileName, possibleExtensions);
+		this.fileNameWithoutExtension = this.fileName.substring(0, this.fileName.lastIndexOf(this.extension));
 		this.dirCanonicalPath = Paths.get(file.getCanonicalPath()).getParent().toString();
-		this.extension = getValidExtension(file, possibleExtensions);
-		this.fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf(this.extension));
 	}
 
-	private String getValidExtension(final File file, final Iterable<String> possibleExtensions) {
-		final String fileName = file.getName();
+	private String getValidExtension(final String fileName, final Iterable<String> possibleExtensions) {
 		final Stream<String> extensionsStream = StreamSupport.stream(possibleExtensions.spliterator(), true);
-		final Optional<String> potentialExtension = extensionsStream.filter(ex -> fileName.endsWith(ex)).findFirst();
+		final Optional<String> potentialExtension = extensionsStream.filter(fileName::endsWith).findFirst();
 
 		if (!potentialExtension.isPresent()) {
 			throw new IllegalArgumentException("Expected one of the following extensions for the data source file "
-					+ file + ": " + String.join(", ", possibleExtensions) + ".");
+					+ fileName + ": " + String.join(", ", possibleExtensions) + ".");
 		}
 
 		return potentialExtension.get();
@@ -104,7 +106,16 @@ public abstract class FileDataSource extends VLogDataSource {
 		return this.file;
 	}
 
+	public String getPath() {
+		return this.filePath;
+	}
+
+	public String getName() {
+		return this.fileName;
+	}
+
 	/**
+	 * Canonicalise the file path
 	 *
 	 * @return The canonical path to the parent directory where the file resides.
 	 */
@@ -112,6 +123,11 @@ public abstract class FileDataSource extends VLogDataSource {
 		return this.dirCanonicalPath;
 	}
 
+	/**
+	 * Get the base name of the file, without an extension.
+	 *
+	 * @return the file basename without any extension.
+	 */
 	String getFileNameWithoutExtension() {
 		return this.fileNameWithoutExtension;
 	}

@@ -12,9 +12,9 @@ import static org.junit.Assert.assertFalse;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -64,7 +64,7 @@ public class AddDataSourceTest {
 		final Fact factPredicatePArity2 = Expressions.makeFact("p", Arrays.asList(constantA, constantA));
 		final Fact factPredicateQArity1 = Expressions.makeFact("q", Arrays.asList(constantA));
 		final Predicate predicateLArity1 = Expressions.makePredicate("l", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
+		final DataSource dataSource = new CsvFileDataSource(CSV_FILE_c1_c2_PATH);
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(factPredicatePArity2);
@@ -93,7 +93,7 @@ public class AddDataSourceTest {
 	public void testAddDataSourceBeforeLoading() throws IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
+		final DataSource dataSource = new CsvFileDataSource(CSV_FILE_c1_c2_PATH);
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -119,7 +119,7 @@ public class AddDataSourceTest {
 	public void testAddDataSourceAfterLoading() throws IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
+		final DataSource dataSource = new CsvFileDataSource(CSV_FILE_c1_c2_PATH);
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -150,7 +150,7 @@ public class AddDataSourceTest {
 	public void testAddDataSourceAfterReasoning() throws IOException {
 		final Predicate predicateP = Expressions.makePredicate("p", 1);
 		final Predicate predicateQ = Expressions.makePredicate("q", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
+		final DataSource dataSource = new CsvFileDataSource(CSV_FILE_c1_c2_PATH);
 
 		final KnowledgeBase kb = new KnowledgeBase();
 
@@ -181,8 +181,8 @@ public class AddDataSourceTest {
 	@Test
 	public void testAddDataSourceNoMultipleDataSourcesForPredicate() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
-		final DataSource dataSource1 = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
-		final DataSource dataSource2 = new CsvFileDataSource(new File(CSV_FILE_c_d_PATH));
+		final DataSource dataSource1 = new CsvFileDataSource(CSV_FILE_c1_c2_PATH);
+		final DataSource dataSource2 = new CsvFileDataSource(CSV_FILE_c_d_PATH);
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource1));
@@ -202,7 +202,7 @@ public class AddDataSourceTest {
 	@Test
 	public void testAddDataSourceNoFactsForPredicate() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
+		final DataSource dataSource = new CsvFileDataSource(CSV_FILE_c1_c2_PATH);
 		final Fact fact = Expressions.makeFact(Expressions.makePredicate("p", 1),
 				Arrays.asList(Expressions.makeAbstractConstant("a")));
 
@@ -222,9 +222,9 @@ public class AddDataSourceTest {
 	@Test
 	public void testAddMultipleDataSourcesForPredicateAfterReasoning() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
-		final DataSource dataSource1 = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
+		final DataSource dataSource1 = new CsvFileDataSource(CSV_FILE_c1_c2_PATH);
 		final DataSource dataSource2 = new CsvFileDataSource(
-				new File(FileDataSourceTestUtils.INPUT_FOLDER + "unaryFactsCD.csv"));
+				FileDataSourceTestUtils.INPUT_FOLDER + "unaryFactsCD.csv");
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource1));
@@ -247,7 +247,7 @@ public class AddDataSourceTest {
 	@Test
 	public void testAddDataSourceAndFactsForPredicateAfterReasoning() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
-		final DataSource dataSource = new CsvFileDataSource(new File(CSV_FILE_c1_c2_PATH));
+		final DataSource dataSource = new CsvFileDataSource(CSV_FILE_c1_c2_PATH);
 		final Fact fact = Expressions.makeFact(Expressions.makePredicate("p", 1),
 				Arrays.asList(Expressions.makeAbstractConstant("a")));
 

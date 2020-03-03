@@ -9,6 +9,8 @@ Breaking changes:
 * In the example package, `ExamplesUtils.getQueryAnswerCount(queryString, reasoner)` does no
   longer exist. It can be replaced by
   `reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString)).getCount()`
+* The `FileDataSource` constructor and those of derived classes now
+  take the path to a file instead of `File` object.
 
 New features:
 * Counting query answers is more efficient now, using `Reasoner.countQueryAnswers()`

@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
@@ -84,25 +83,23 @@ public class DataSourceDeclarationTest {
 	@Test
 	public void toString_CsvFileDataSource() throws IOException {
 		final Predicate predicate2 = Expressions.makePredicate("q", 1);
-		final String relativeDirName = "dir";
+		final String relativeDirName = "dir/";
 		final String fileName = "file.csv";
 
-		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(relativeDirName, fileName));
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(relativeDirName + fileName);
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate2,
 				unzippedCsvFileDataSource);
 
-		final String expectedFilePath = Serializer.getString(relativeDirName + File.separator + fileName);
+		final String expectedFilePath = Serializer.getString(relativeDirName + fileName);
 		assertEquals("@source q[1]: load-csv(" + expectedFilePath + ") .",
 				dataSourceDeclaration.toString());
 	}
 
-	// FIXME: have String representation of files OS independent
-	@Ignore
 	@Test
 	public void toString_CsvFileDataSource_absolutePath_windowsPathSeparator() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("q", 1);
 		final String absoluteFilePathWindows = "D:\\input\\file.csv";
-		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(new File(absoluteFilePathWindows));
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(absoluteFilePathWindows);
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
 				unzippedCsvFileDataSource);
 		assertEquals("@source q[1]: load-csv(\"D:/input/file.csv\") .", dataSourceDeclaration.toString());
@@ -111,14 +108,14 @@ public class DataSourceDeclarationTest {
 	@Test
 	public void toString_RdfFileDataSource_relativePath() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("q", 1);
-		final String relativeDirName = "dir";
+		final String relativeDirName = "dir/";
 		final String fileName = "file.nt";
-		final File unzippedRdfFile = new File(relativeDirName, fileName);
+		final String unzippedRdfFile = relativeDirName + fileName;
 		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
 				unzippedRdfFileDataSource);
 
-		final String expectedFilePath = Serializer.getString(relativeDirName + File.separator + fileName);
+		final String expectedFilePath = Serializer.getString(relativeDirName + fileName);
 		assertEquals("@source q[1]: load-rdf(" + expectedFilePath + ") .", dataSourceDeclaration.toString());
 	}
 }
