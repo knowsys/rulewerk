@@ -42,7 +42,6 @@ import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkException;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
-import org.semanticweb.rulewerk.core.model.api.Entity;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
@@ -63,7 +62,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
  * @author Markus Kroetzsch
  *
  */
-public class KnowledgeBase implements Entity, Iterable<Statement> {
+public class KnowledgeBase implements Iterable<Statement> {
 
 	private final Set<KnowledgeBaseListener> listeners = new HashSet<>();
 
@@ -473,7 +472,7 @@ public class KnowledgeBase implements Entity, Iterable<Statement> {
 	 * @throws IOException              when reading {@code file} fails
 	 * @throws IllegalArgumentException when {@code file} is null or has already
 	 *                                  been imported
-	 * @throws RulewerkException          when parseFunction throws RulewerkException
+	 * @throws RulewerkException        when parseFunction throws RulewerkException
 	 */
 	public void importRulesFile(File file, AdditionalInputParser parseFunction)
 			throws RulewerkException, IOException, IllegalArgumentException {
@@ -560,11 +559,6 @@ public class KnowledgeBase implements Entity, Iterable<Statement> {
 		return this.prefixDeclarationRegistry.unresolveAbsoluteIri(iri);
 	}
 
-	@Override
-	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
-
 	/**
 	 * Serialise the KnowledgeBase to the {@link OutputStream}.
 	 *
@@ -573,7 +567,22 @@ public class KnowledgeBase implements Entity, Iterable<Statement> {
 	 * @throws IOException
 	 */
 	public void writeKnowledgeBase(OutputStream stream) throws IOException {
-		stream.write(getSyntacticRepresentation().getBytes());
+		stream.write(Serializer.getBaseAndPrefixDeclarations(this).getBytes());
+
+		for (DataSourceDeclaration dataSource : getDataSourceDeclarations()) {
+			stream.write(Serializer.getString(dataSource).getBytes());
+			stream.write('\n');
+		}
+
+		for (Rule rule : getRules()) {
+			stream.write(Serializer.getString(rule).getBytes());
+			stream.write('\n');
+		}
+
+		for (Fact fact : getFacts()) {
+			stream.write(Serializer.getFactString(fact).getBytes());
+			stream.write('\n');
+		}
 	}
 
 	/**

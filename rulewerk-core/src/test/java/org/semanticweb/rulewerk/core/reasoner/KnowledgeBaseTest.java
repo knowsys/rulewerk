@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -32,8 +33,12 @@ import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Fact;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.model.implementation.MergingPrefixDeclarationRegistry;
+import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 public class KnowledgeBaseTest {
 
@@ -41,6 +46,11 @@ public class KnowledgeBaseTest {
 	private final Fact fact1 = Expressions.makeFact("P", Expressions.makeAbstractConstant("c"));
 	private final Fact fact2 = Expressions.makeFact("P", Expressions.makeAbstractConstant("d"));
 	private final Fact fact3 = Expressions.makeFact("Q", Expressions.makeAbstractConstant("c"));
+	private final PositiveLiteral literal1 = Expressions.makePositiveLiteral("P",
+			Expressions.makeUniversalVariable("X"));
+	private final PositiveLiteral literal2 = Expressions.makePositiveLiteral("Q",
+			Expressions.makeUniversalVariable("X"));
+	private final Rule rule = Expressions.makeRule(literal1, literal2);
 
 	@Before
 	public void initKB() {
@@ -126,5 +136,30 @@ public class KnowledgeBaseTest {
 		OutputStream stream = new ByteArrayOutputStream();
 		this.kb.writeKnowledgeBase(stream);
 		assertEquals("P(c) .\nP(d) .\nQ(c) .\n", stream.toString());
+	}
+
+	@Test
+	public void writeKnowledgeBase_withBase_succeeds() throws IOException {
+		String baseIri = "https://example.org/";
+		MergingPrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
+		prefixDeclarations.setBaseIri(baseIri);
+		this.kb.mergePrefixDeclarations(prefixDeclarations);
+		OutputStream stream = new ByteArrayOutputStream();
+		this.kb.writeKnowledgeBase(stream);
+		assertEquals("@base <" + baseIri + "> .\nP(c) .\nP(d) .\nQ(c) .\n", stream.toString());
+	}
+
+	@Test
+	public void writeKnowledgeBase_alsoRuleAndDataSource_succeeds() throws IOException {
+		String sparqlIri = "https://example.org/sparql";
+		String sparqlBgp = "?X ?p []";
+		this.kb.addStatement(rule);
+		this.kb.addStatement(new DataSourceDeclarationImpl(Expressions.makePredicate("S", 1),
+				new SparqlQueryResultDataSource(new URL(sparqlIri), "?X", sparqlBgp)));
+
+		OutputStream stream = new ByteArrayOutputStream();
+		this.kb.writeKnowledgeBase(stream);
+		assertEquals("@source S[1]: sparql(<" + sparqlIri + ">, \"?X\", \"" + sparqlBgp
+				+ "\") .\nP(?X) :- Q(?X) .\nP(c) .\nP(d) .\nQ(c) .\n", stream.toString());
 	}
 }
