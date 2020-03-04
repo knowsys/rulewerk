@@ -99,10 +99,11 @@ public class DataSourceDeclarationTest {
 	public void toString_CsvFileDataSource_absolutePath_windowsPathSeparator() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("q", 1);
 		final String absoluteFilePathWindows = "D:\\input\\file.csv";
+		final String escapedPath = absoluteFilePathWindows.replace("\\", "\\\\");
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(absoluteFilePathWindows);
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
 				unzippedCsvFileDataSource);
-		assertEquals("@source q[1]: load-csv(\"D:/input/file.csv\") .", dataSourceDeclaration.toString());
+		assertEquals("@source q[1]: load-csv(\"" + escapedPath + "\") .", dataSourceDeclaration.toString());
 	}
 
 	@Test

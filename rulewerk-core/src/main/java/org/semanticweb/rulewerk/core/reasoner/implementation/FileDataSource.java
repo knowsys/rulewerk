@@ -68,8 +68,8 @@ public abstract class FileDataSource extends VLogDataSource {
 		Validate.notBlank(filePath, "Data source file name cannot be null!");
 
 		this.file = new File(filePath);
-		this.filePath = filePath.replaceAll("\\\\", "/"); // canonicalise windows-style path separators
-		this.fileName = this.filePath.substring(this.filePath.lastIndexOf("/") + 1); // just the file name
+		this.filePath = filePath; // unmodified file path, necessary for correct serialisation
+		this.fileName = this.file.getName();
 		this.extension = getValidExtension(this.fileName, possibleExtensions);
 		this.fileNameWithoutExtension = this.fileName.substring(0, this.fileName.lastIndexOf(this.extension));
 		this.dirCanonicalPath = Paths.get(file.getCanonicalPath()).getParent().toString();
