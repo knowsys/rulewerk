@@ -65,7 +65,7 @@ public abstract class FileDataSource extends VLogDataSource {
 	 *                                  {@code possibleExtensions}.
 	 */
 	public FileDataSource(final String filePath, final Iterable<String> possibleExtensions) throws IOException {
-		Validate.notBlank(filePath, "Data source file name cannot be null!");
+		Validate.notBlank(filePath, "Data source file path cannot be blank!");
 
 		this.file = new File(filePath);
 		this.filePath = filePath; // unmodified file path, necessary for correct serialisation
