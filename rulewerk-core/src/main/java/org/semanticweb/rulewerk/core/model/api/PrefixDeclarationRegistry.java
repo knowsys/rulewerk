@@ -82,16 +82,25 @@ public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String
 	void setPrefixIri(String prefixName, String prefixIri) throws PrefixDeclarationException;
 
 	/**
-	 * Turn a prefixed name into an absolute IRIna.
+	 * Turn a <a href="https://www.w3.org/TR/turtle/#prefixed-name">prefixed
+	 * name</a> into an absolute IRI.
+	 *
+	 * @param prefixedName a prefixed name of the form prefixName:localName.
+	 *
+	 * @throws PrefixDeclarationException when the prefixName has not been declared.
+	 * @return an absolute IRI corresponding to prefixedName.
 	 */
 	String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException;
 
 	/**
 	 * Turn a potentially relative IRI into an absolute IRI.
 	 *
-	 * @param potentiallyRelativeIri an IRI.
-	 * @throws PrefixDeclarationException when called on a prefixedName using an
-	 *                                    unknown prefixName.
+	 * @param relativeOrAbsoluteIri an IRI that may be relative or absolute.
+	 * @throws PrefixDeclarationException when relativeOrAbsoluteIri is not a valid
+	 *                                    IRI.
+	 *
+	 * @return when relativeOrAbsoluteIri is an absolute IRI, it is returned as-is.
+	 *         Otherwise, the current base IRI is prepended.
 	 */
-	String absolutizeIri(String potentiallyRelativeIri) throws PrefixDeclarationException;
+	String absolutizeIri(String relativeOrAbsoluteIri) throws PrefixDeclarationException;
 }

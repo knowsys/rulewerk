@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 
 /**
@@ -41,12 +42,13 @@ final public class MergingPrefixDeclarationRegistry extends AbstractPrefixDeclar
 	/**
 	 * Next index to use for generated prefix names.
 	 */
-	private long nextIndex = 0;
+	private Integer nextIndex = 0;
 
 	/**
-	 * Prefix string to use for generated prefix name
+	 * Template string to use for generated prefix name
 	 */
-	private static final String GENERATED_PREFIX_PREFIX_STRING = "rulewerk_generated_";
+	private static final String GENERATED_PREFIX_TEMPLATE = "rulewerk_generated_%d"
+			+ PrefixDeclarationRegistry.PREFIX_NAME_SEPARATOR;
 
 	public MergingPrefixDeclarationRegistry() {
 		super();
@@ -59,26 +61,28 @@ final public class MergingPrefixDeclarationRegistry extends AbstractPrefixDeclar
 
 	/**
 	 * Sets the base namespace to the given value. If a base Iri has already been
-	 * set, it will be added as a prefix declaration with a fresh prefixName.
+	 * set, one of them will be added as a prefix declaration with a fresh
+	 * prefixName.
 	 *
 	 * @param baseIri the new base namespace.
 	 */
 	@Override
 	public void setBaseIri(String baseIri) {
-		if (baseIri == this.baseUri) {
+		Validate.notNull(baseIri, "baseIri must not be null");
+		if (baseIri == this.baseIri) {
 			return;
 		}
 
-		if (this.baseUri == null) {
-			this.baseUri = baseIri;
-		} else if (this.baseUri == PrefixDeclarationRegistry.EMPTY_BASE) {
+		if (this.baseIri == null) {
+			this.baseIri = baseIri;
+		} else if (this.baseIri == PrefixDeclarationRegistry.EMPTY_BASE) {
 			// we need to keep the empty base, so that we don't
 			// accidentally relativise absolute Iris to
 			// baseIri. Hence, introduce baseIri as a fresh prefix.
 			prefixes.put(getFreshPrefix(), baseIri);
 		} else {
-			prefixes.put(getFreshPrefix(), this.baseUri);
-			this.baseUri = baseIri;
+			prefixes.put(getFreshPrefix(), this.baseIri);
+			this.baseIri = baseIri;
 		}
 	}
 
@@ -109,7 +113,7 @@ final public class MergingPrefixDeclarationRegistry extends AbstractPrefixDeclar
 		String baseIri = getBaseIri();
 
 		if (baseIri != PrefixDeclarationRegistry.EMPTY_BASE && iri.startsWith(baseIri) && !iri.equals(baseIri)) {
-			matches.put(iri.replaceFirst(baseUri, PrefixDeclarationRegistry.EMPTY_BASE), baseUri.length());
+			matches.put(iri.replaceFirst(baseIri, PrefixDeclarationRegistry.EMPTY_BASE), baseIri.length());
 		}
 
 		prefixes.forEach((prefixName, prefixIri) -> {
@@ -145,13 +149,16 @@ final public class MergingPrefixDeclarationRegistry extends AbstractPrefixDeclar
 		}
 	}
 
-	private String getFreshPrefix() {
-		for (long idx = nextIndex; true; ++idx) {
-			String freshPrefix = GENERATED_PREFIX_PREFIX_STRING + idx + PrefixDeclarationRegistry.PREFIX_NAME_SEPARATOR;
+	private String getNextFreshPrefixCandidate() {
+		return String.format(GENERATED_PREFIX_TEMPLATE, this.nextIndex++);
+	}
 
-			if (!prefixes.containsKey(freshPrefix)) {
-				this.nextIndex = idx + 1;
-				return freshPrefix;
+	private String getFreshPrefix() {
+		while (true) {
+			String candidate = getNextFreshPrefixCandidate();
+
+			if (!prefixes.containsKey(candidate)) {
+				return candidate;
 			}
 		}
 	}

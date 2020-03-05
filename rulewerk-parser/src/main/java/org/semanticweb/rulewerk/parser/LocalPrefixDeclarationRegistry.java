@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.parser;
 
+import org.apache.commons.lang3.Validate;
+
 /*-
  * #%L
  * Rulewerk Parser
@@ -56,21 +58,22 @@ final public class LocalPrefixDeclarationRegistry extends AbstractPrefixDeclarat
 	 */
 	public LocalPrefixDeclarationRegistry(String fallbackIri) {
 		super();
+		Validate.notNull(fallbackIri, "fallbackIri must not be null");
 		this.fallbackIri = fallbackIri;
 	}
 
 	/**
 	 * Returns the relevant base namespace. Returns the fallback IRI if no base
-	 * namespace has been set yet.
+	 * namespace has been set yet, and sets that as the base IRI.
 	 *
 	 * @return string of an absolute base IRI
 	 */
 	@Override
 	public String getBaseIri() {
-		if (this.baseUri == null) {
-			this.baseUri = this.fallbackIri;
+		if (this.baseIri == null) {
+			this.baseIri = this.fallbackIri;
 		}
-		return baseUri.toString();
+		return baseIri;
 	}
 
 	@Override
@@ -87,15 +90,16 @@ final public class LocalPrefixDeclarationRegistry extends AbstractPrefixDeclarat
 	 * Sets the base namespace to the given value. This should only be done once,
 	 * and not after the base namespace was assumed to be an implicit default value.
 	 *
-	 * @param baseUri the new base namespace
+	 * @param baseIri the new base namespace
 	 * @throws PrefixDeclarationException if base was already defined
 	 */
 
 	@Override
-	public void setBaseIri(String baseUri) throws PrefixDeclarationException {
-		if (this.baseUri != null)
+	public void setBaseIri(String baseIri) throws PrefixDeclarationException {
+		Validate.notNull(baseIri, "baseIri must not be null");
+		if (this.baseIri != null)
 			throw new PrefixDeclarationException(
-					"Base is already defined as <" + this.baseUri + "> and cannot be re-defined as " + baseUri);
-		this.baseUri = baseUri;
+					"Base is already defined as <" + this.baseIri + "> and cannot be re-defined as " + baseIri);
+		this.baseIri = baseIri;
 	}
 }

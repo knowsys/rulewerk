@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.parser.directives;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,12 @@ package org.semanticweb.rulewerk.parser.directives;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.semanticweb.rulewerk.core.exceptions.RulewerkException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.parser.DirectiveArgument;
@@ -52,7 +55,7 @@ public class ImportFileRelativeDirectiveHandler implements DirectiveHandler<Know
 			knowledgeBase.importRulesFile(file, (InputStream stream, KnowledgeBase kb) -> {
 				RuleParser.parseInto(kb, stream, parserConfiguration, prefixDeclarationRegistry.getBaseIri());
 			});
-		} catch (Exception e) {
+		} catch (RulewerkException | IOException | IllegalArgumentException e) {
 			throw new ParsingException("Failed while trying to import rules file \"" + file.getName() + "\"", e);
 		}
 

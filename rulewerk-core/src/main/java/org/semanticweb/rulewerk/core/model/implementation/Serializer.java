@@ -277,7 +277,7 @@ public final class Serializer {
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
 	 */
-	public static String getConstantName(final DatatypeConstant datatypeConstant,
+	private static String getConstantName(final DatatypeConstant datatypeConstant,
 			Function<String, String> iriTransformer) {
 		return getString(datatypeConstant.getLexicalValue()) + DOUBLE_CARET
 				+ getIRIString(datatypeConstant.getDatatype(), iriTransformer);

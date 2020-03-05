@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.InvalidPathException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -58,7 +59,7 @@ public interface DirectiveHandler<T> {
 			throws ParsingException;
 
 	/**
-	 * Validate the provided number of arguments to the data source.
+	 * Validate the provided number of arguments to the directive statement.
 	 *
 	 * @param arguments Arguments given to the Directive statement.
 	 * @param number    expected number of arguments
@@ -87,23 +88,20 @@ public interface DirectiveHandler<T> {
 	 */
 	public static String validateStringArgument(final DirectiveArgument argument, final String description)
 			throws ParsingException {
-		try {
-			return argument.fromString().get();
-		} catch (NoSuchElementException e) {
-			throw new ParsingException(description + "\"" + argument + "\" is not a string.", e);
-		}
+		return argument.fromString()
+				.orElseThrow(() -> new ParsingException("description \"" + argument + "\" is not a string."));
 	}
 
 	/**
-	 * Validate that the provided argument is a file name.
+	 * Validate that the provided argument is a file path.
 	 *
 	 * @param argument    the argument to validate
 	 * @param description a description of the argument, used in constructing the
 	 *                    error message.
 	 *
-	 * @throws ParsingException when the given argument is not a valid file name.
+	 * @throws ParsingException when the given argument is not a valid file path.
 	 *
-	 * @return the File corresponding to the contained file name.
+	 * @return the File corresponding to the contained file path.
 	 */
 	public static File validateFilenameArgument(final DirectiveArgument argument, final String description)
 			throws ParsingException {
@@ -111,8 +109,8 @@ public interface DirectiveHandler<T> {
 		File file = new File(fileName);
 		try {
 			// we don't care about the actual path, just that there is one.
-			file.getCanonicalPath();
-		} catch (IOException e) {
+			file.toPath();
+		} catch (InvalidPathException e) {
 			throw new ParsingException(description + "\"" + argument + "\" is not a valid file path.", e);
 		}
 
@@ -132,11 +130,8 @@ public interface DirectiveHandler<T> {
 	 */
 	public static URI validateIriArgument(final DirectiveArgument argument, final String description)
 			throws ParsingException {
-		try {
-			return argument.fromIri().get();
-		} catch (NoSuchElementException e) {
-			throw new ParsingException(description + "\"" + argument + "\" is not an IRI.", e);
-		}
+		return argument.fromIri()
+				.orElseThrow(() -> new ParsingException(description + "\"" + argument + "\" is not an IRI."));
 	}
 
 	/**
@@ -173,11 +168,8 @@ public interface DirectiveHandler<T> {
 	 */
 	public static Term validateTermArgument(final DirectiveArgument argument, final String description)
 			throws ParsingException {
-		try {
-			return argument.fromTerm().get();
-		} catch (NoSuchElementException e) {
-			throw new ParsingException(description + "\"" + argument + "\" is not a string.", e);
-		}
+		return argument.fromTerm()
+				.orElseThrow(() -> new ParsingException(description + "\"" + argument + "\" is not a Term."));
 	}
 
 	/**

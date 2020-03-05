@@ -299,7 +299,7 @@ public class ParserConfiguration {
 	 * Whether parsing of {@link org.semanticweb.rulewerk.core.model.api.NamedNull} is
 	 * allowed.
 	 *
-	 * @return this
+	 * @return true iff parsing of NamedNulls is allowed.
 	 */
 	public boolean isParsingOfNamedNullsAllowed() {
 		return this.allowNamedNulls;

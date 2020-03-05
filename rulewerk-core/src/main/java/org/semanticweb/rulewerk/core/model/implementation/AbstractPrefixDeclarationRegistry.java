@@ -44,15 +44,15 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 	/**
 	 * Iri holding the base namespace.
 	 */
-	protected String baseUri = null;
+	protected String baseIri = null;
 
 	@Override
 	public String getBaseIri() {
-		if (baseUri == null) {
-			baseUri = PrefixDeclarationRegistry.EMPTY_BASE;
+		if (baseIri == null) {
+			baseIri = PrefixDeclarationRegistry.EMPTY_BASE;
 		}
 
-		return baseUri;
+		return baseIri;
 	}
 
 	@Override
