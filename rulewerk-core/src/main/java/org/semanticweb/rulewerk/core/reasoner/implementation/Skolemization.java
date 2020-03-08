@@ -29,7 +29,7 @@ import org.semanticweb.rulewerk.core.model.implementation.RenamedNamedNull;
 /**
  * A class that implements skolemization of named null names. The same name
  * should be skolemized to the same {@link NamedNull} when skolemized using the
- * same instance, but two different instances of {@link NamedNull} when
+ * same instance, but to two different instances of {@link NamedNull} when
  * skolemized using different instances of {@link Skolemization}.
  *
  * @author Maximilian Marx
