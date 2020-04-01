@@ -35,7 +35,7 @@ import org.semanticweb.rulewerk.core.model.api.Fact;
  * @author Markus Kroetzsch
  *
  */
-public class InMemoryDataSource implements DataSource {
+public class InMemoryDataSource implements ReasonerDataSource {
 
 	String[][] data;
 	int nextEmptyTuple = 0;
@@ -58,6 +58,22 @@ public class InMemoryDataSource implements DataSource {
 	}
 
 	/**
+	 * Transforms a constant name in a format suitable for the
+	 * reasoner. The default implementation assumes the VLog backend.
+	 * @param constantName the name of the constant
+	 *
+	 * @return a transformed version of constantName that is suitable for the Reasoner.
+	 */
+	protected String transformConstantName(String constantName) {
+		if (!constantName.startsWith("\"") && constantName.contains(":")) {
+			// enclose IRIs with brackets
+			return "<" + constantName + ">";
+		}
+		// it's either a datatype literal, or a relative IRI, leave it unchanged
+		return constantName;
+	}
+
+	/**
 	 * Adds a fact to this data source. The number of constant names must agree with
 	 * the arity of this data source.
 	 *
@@ -74,7 +90,7 @@ public class InMemoryDataSource implements DataSource {
 		}
 		this.data[this.nextEmptyTuple] = new String[this.arity];
 		for (int i = 0; i < this.arity; i++) {
-			this.data[this.nextEmptyTuple][i] = TermToVLogConverter.getVLogNameForConstantName(constantNames[i]);
+			this.data[this.nextEmptyTuple][i] = transformConstantName(constantNames[i]);
 		}
 		this.nextEmptyTuple++;
 	}
@@ -104,5 +120,10 @@ public class InMemoryDataSource implements DataSource {
 			sb.append("\n");
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public void accept(DataSourceConfigurationVisitor visitor) {
+		visitor.visit(this);
 	}
 }

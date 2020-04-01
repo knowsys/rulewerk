@@ -18,6 +18,7 @@
 		<!-- when adding a module, make sure to also add it as a dependency in
 			the coverage module, otherwise it will not be included in the coverage report -->
 		<module>rulewerk-core</module>
+		<module>rulewerk-vlog</module>
 		<module>rulewerk-rdf</module>
 		<module>rulewerk-examples</module>
 		<module>rulewerk-owlapi</module>

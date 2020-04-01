@@ -27,7 +27,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.VLogReasoner;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
 

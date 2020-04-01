@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,9 +36,9 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
  * @author Irina Dragoste
  *
  */
-public class SparqlQueryResultDataSource extends VLogDataSource {
+public class SparqlQueryResultDataSource implements ReasonerDataSource {
 
-	private static final String DATASOURCE_TYPE_CONFIG_VALUE = "SPARQL";
+
 
 	private final URL endpoint;
 	private final String queryVariables;
@@ -108,20 +108,20 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 		return this.queryVariables;
 	}
 
-	@Override
-	public final String toConfigString() {
-		final String configStringPattern =
+	// @Override
+	// public final String toConfigString() {
+	// 	final String configStringPattern =
 
-				PREDICATE_NAME_CONFIG_LINE +
+	// 			PREDICATE_NAME_CONFIG_LINE +
 
-						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
+	// 					DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
 
-						"EDB%1$d_param0=" + this.endpoint + "\n" + "EDB%1$d_param1=" + this.queryVariables + "\n" +
+	// 					"EDB%1$d_param0=" + this.endpoint + "\n" + "EDB%1$d_param1=" + this.queryVariables + "\n" +
 
-						"EDB%1$d_param2=" + this.queryBody + "\n";
+	// 					"EDB%1$d_param2=" + this.queryBody + "\n";
 
-		return configStringPattern;
-	}
+	// 	return configStringPattern;
+	// }
 
 	static String getQueryVariablesList(LinkedHashSet<Variable> queryVariables) {
 		final StringBuilder sb = new StringBuilder();
@@ -175,6 +175,11 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 	@Override
 	public String getSyntacticRepresentation() {
 		return Serializer.getString(this);
+	}
+
+	@Override
+	public void accept(DataSourceConfigurationVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

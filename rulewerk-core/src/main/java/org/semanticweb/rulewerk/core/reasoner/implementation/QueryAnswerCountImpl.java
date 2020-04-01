@@ -1,8 +1,5 @@
 package org.semanticweb.rulewerk.core.reasoner.implementation;
 
-import org.semanticweb.rulewerk.core.reasoner.Correctness;
-import org.semanticweb.rulewerk.core.reasoner.QueryAnswerCount;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -23,6 +20,9 @@ import org.semanticweb.rulewerk.core.reasoner.QueryAnswerCount;
  * #L%
  */
 
+import org.semanticweb.rulewerk.core.reasoner.Correctness;
+import org.semanticweb.rulewerk.core.reasoner.QueryAnswerCount;
+
 public class QueryAnswerCountImpl implements QueryAnswerCount {
 
 	final private Correctness correctness;
@@ -30,14 +30,14 @@ public class QueryAnswerCountImpl implements QueryAnswerCount {
 
 	/**
 	 * Constructor of QueryAnswerSize
-	 * 
+	 *
 	 * @param correctness of the evaluated query. See {@link Correctness}.
-	 * 
+	 *
 	 * @param size        number of query answers, i.e. number of facts in the
 	 *                    extension of the query.
 	 */
 
-	QueryAnswerCountImpl(Correctness correctness, long size) {
+	public QueryAnswerCountImpl(Correctness correctness, long size) {
 		this.correctness = correctness;
 		this.count = size;
 	}

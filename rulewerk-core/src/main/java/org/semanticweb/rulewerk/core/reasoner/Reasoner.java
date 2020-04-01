@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
@@ -35,10 +37,9 @@ import org.semanticweb.rulewerk.core.model.api.QueryResult;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
-import org.semanticweb.rulewerk.core.reasoner.implementation.VLogReasoner;
 
 /**
- * Interface that exposes the existential rule reasoning capabilities of VLog.
+ * Interface that exposes the (existential) rule reasoning capabilities of a Reasoner.
  * <br>
  * The <b>knowledge base</b> of the reasoner can be loaded with explicit facts
  * and <b>existential rules</b> that would infer implicit <b>facts</b> trough
@@ -76,11 +77,15 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
 	 *
-	 * @return a {@link VLogReasoner} instance.
+	 * @return a {@link Reasoner} instance.
 	 */
-	static Reasoner getInstance() {
-		final KnowledgeBase knowledgeBase = new KnowledgeBase();
-		return new VLogReasoner(knowledgeBase);
+	static <R extends Reasoner> Reasoner getInstance(Function<KnowledgeBase, R> makeReasoner) {
+		return getInstance(makeReasoner, KnowledgeBase::new);
+	}
+
+	static <R extends Reasoner, K extends KnowledgeBase> Reasoner getInstance(Function<KnowledgeBase, R> makeReasoner, Supplier<K> makeKnowledgeBase) {
+		final KnowledgeBase knowledgeBase = makeKnowledgeBase.get();
+		return makeReasoner.apply(knowledgeBase);
 	}
 
 	/**

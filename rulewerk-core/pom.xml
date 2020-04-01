@@ -14,52 +14,5 @@
 	<packaging>jar</packaging>
 
 	<name>Rulewerk Core Components</name>
-	<description>Core components of Rulewerk: reasoner and model</description>
-
-	<properties>
-		<karmaresearch.vlog.version>1.3.3-snapshot</karmaresearch.vlog.version>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<!-- Useful for integrating the jar containing the JNI to VLog -->
-			<groupId>${project.groupId}</groupId>
-			<artifactId>vlog-base</artifactId>
-			<version>${karmaresearch.vlog.version}</version>
-		</dependency>
-	</dependencies>
-
-	<profiles>
-		<profile>
-			<id>development</id>
-			<!-- For development phase, using unreleased snapshots of karmaresearch
-				vlog jar, create a "lib" directory with the same parent dir as this pom (rulewerk-core
-				pom), and place jar dependency there. -->
-			<build>
-				<plugins>
-					<plugin>
-						<!-- Useful for integrating the jar containing the JNI to VLog -->
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-install-plugin</artifactId>
-						<version>2.4</version>
-						<executions>
-							<execution>
-								<phase>initialize</phase>
-								<goals>
-									<goal>install-file</goal>
-								</goals>
-								<configuration>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>vlog-base</artifactId>
-									<version>${karmaresearch.vlog.version}</version>
-									<packaging>jar</packaging>
-									<file>./lib/jvlog-local.jar</file>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+	<description>Core components of Rulewerk: reasoner interface and model</description>
 </project>

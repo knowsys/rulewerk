@@ -26,7 +26,7 @@ import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 
 /**
  * Iterator that represents an empty query result.
- * 
+ *
  * @author Markus Kroetzsch
  *
  */

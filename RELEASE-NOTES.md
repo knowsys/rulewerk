@@ -11,6 +11,11 @@ Breaking changes:
   `reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString)).getCount()`
 * The `FileDataSource` constructor and those of derived classes now
   take the path to a file instead of `File` object.
+* The VLog backend has been moved to a new `rulewerk-vlog` module,
+  changing several import paths. `Reasoner.getInstance()` now takes a
+  mandatory argument, a function taking a `KnowledgeBase` and
+  returning a `Reasoner` instance. Previous behaviour can be obtained
+  by using `Reasoner.getInstance(VLogReasoner::new)`.
 
 New features:
 * Counting query answers is more efficient now, using `Reasoner.countQueryAnswers()`

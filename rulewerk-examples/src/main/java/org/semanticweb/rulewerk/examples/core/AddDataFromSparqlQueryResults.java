@@ -39,6 +39,7 @@ import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 import org.semanticweb.rulewerk.examples.ExamplesUtils;
 
 /**
@@ -46,7 +47,7 @@ import org.semanticweb.rulewerk.examples.ExamplesUtils;
  * a remote database endpoint, using {@link SparqlQueryResultDataSource}. In
  * this example, we will query Wikidata for titles of publications that have
  * authors who have children together.
- * 
+ *
  * @author Irina Dragoste
  *
  */
@@ -120,7 +121,7 @@ public class AddDataFromSparqlQueryResults {
 		 */
 		final Predicate queryPredicate = Expressions.makePredicate("publicationParents", 3);
 
-		try (Reasoner reasoner = Reasoner.getInstance()) {
+		try (Reasoner reasoner = Reasoner.getInstance(VLogReasoner::new)) {
 
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
 			/*
