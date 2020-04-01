@@ -458,15 +458,13 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public Correctness writeInferences(OutputStream stream) throws IOException {
+	public Correctness forEachInference(InferenceAction action) throws IOException {
 		validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
 					"Obtaining inferences is not alowed before reasoner is loaded!");
 		}
 		final Set<Predicate> toBeQueriedHeadPredicates = getKnowledgeBasePredicates();
-
-		stream.write(Serializer.getBaseAndPrefixDeclarations(knowledgeBase).getBytes());
 
 		for (final Predicate predicate : toBeQueriedHeadPredicates) {
 			final PositiveLiteral queryAtom = getQueryAtom(predicate);
@@ -475,8 +473,7 @@ public class VLogReasoner implements Reasoner {
 				while (answers.hasNext()) {
 					final karmaresearch.vlog.Term[] vlogTerms = answers.next();
 					final List<Term> termList = VLogToModelConverter.toTermList(vlogTerms);
-					stream.write(Serializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri)
-							.getBytes());
+					action.accept(predicate, termList);
 				}
 			} catch (final NotStartedException e) {
 				throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);

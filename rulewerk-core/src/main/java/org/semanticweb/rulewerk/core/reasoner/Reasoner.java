@@ -24,6 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -33,14 +35,17 @@ import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.QueryResult;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
+import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 /**
- * Interface that exposes the (existential) rule reasoning capabilities of a Reasoner.
- * <br>
+ * Interface that exposes the (existential) rule reasoning capabilities of a
+ * Reasoner. <br>
  * The <b>knowledge base</b> of the reasoner can be loaded with explicit facts
  * and <b>existential rules</b> that would infer implicit <b>facts</b> trough
  * reasoning. <br>
@@ -77,13 +82,27 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
 	 *
+	 * @param makeReasoner a function that creates a Reasoner instances given a
+	 *                     {@link KnowledgeBase}.
+	 *
 	 * @return a {@link Reasoner} instance.
 	 */
 	static <R extends Reasoner> Reasoner getInstance(Function<KnowledgeBase, R> makeReasoner) {
 		return getInstance(makeReasoner, KnowledgeBase::new);
 	}
 
-	static <R extends Reasoner, K extends KnowledgeBase> Reasoner getInstance(Function<KnowledgeBase, R> makeReasoner, Supplier<K> makeKnowledgeBase) {
+	/**
+	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
+	 *
+	 * @param makeReasoner      a function that creates a Reasoner instances given a
+	 *                          {@link KnowledgeBase}.
+	 * @param makeKnowledgeBase a function that creates a {@link KnowledgeBase}
+	 *                          instance.
+	 *
+	 * @return a {@link Reasoner} instance.
+	 */
+	static <R extends Reasoner, K extends KnowledgeBase> Reasoner getInstance(Function<KnowledgeBase, R> makeReasoner,
+			Supplier<K> makeKnowledgeBase) {
 		final KnowledgeBase knowledgeBase = makeKnowledgeBase.get();
 		return makeReasoner.apply(knowledgeBase);
 	}
@@ -96,6 +115,27 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	KnowledgeBase getKnowledgeBase();
 
 	/**
+	 * Interface for actions to perform on inferences.
+	 *
+	 * Essentially a {@link java.util.function.BiConsumer}, but with a more
+	 * permissive Exception spec.
+	 */
+	@FunctionalInterface
+	public interface InferenceAction {
+		void accept(Predicate predicate, List<Term> termList) throws IOException;
+	}
+
+	/**
+	 * Performs the given action for each inference.
+	 *
+	 * @param action The action to be performed for each inference.
+	 * @return the correctness of the inferences, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
+	 * @throws IOException
+	 */
+	Correctness forEachInference(InferenceAction action) throws IOException;
+
+	/**
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
 	 * the knowledge base to an OutputStream.
 	 *
@@ -104,7 +144,12 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
 	 */
-	Correctness writeInferences(OutputStream stream) throws IOException;
+	default Correctness writeInferences(OutputStream stream) throws IOException {
+		final KnowledgeBase knowledgeBase = getKnowledgeBase();
+		stream.write(Serializer.getBaseAndPrefixDeclarations(knowledgeBase).getBytes());
+		return forEachInference((predicate, termList) -> stream
+				.write(Serializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri).getBytes()));
+	}
 
 	/**
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
