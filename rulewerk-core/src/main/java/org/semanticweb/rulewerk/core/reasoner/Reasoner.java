@@ -25,10 +25,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
@@ -41,6 +42,7 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
+import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 /**
@@ -151,9 +153,42 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 				.write(Serializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri).getBytes()));
 	}
 
+	public class CorrectnessAndInferences {
+		private Correctness correctness;
+		private Stream<Fact> inferences;
+
+		CorrectnessAndInferences(Correctness correctness, Stream<Fact> inferences) {
+			this.correctness = correctness;
+			this.inferences = inferences;
+		}
+
+		public Correctness getCorrectness() {
+			return this.correctness;
+		}
+
+		public Stream<Fact> getInferences() {
+			return this.inferences;
+		}
+	}
+
+	default CorrectnessAndInferences getInferences() {
+		Stream.Builder<Fact> builder = Stream.builder();
+		Correctness correctness;
+		try {
+			correctness = forEachInference(
+					(predicate, termList) -> builder.accept(Expressions.makeFact(predicate, termList)));
+		} catch (IOException e) {
+			// this will never throw.
+			throw new RulewerkRuntimeException("unexpected IOException", e);
+		}
+
+		return new CorrectnessAndInferences(correctness, builder.build());
+	}
+
 	/**
-	 * Exports all the (explicit and implicit) facts inferred during reasoning of
-	 * the knowledge base to a desired file.
+	 * Exports all the (explicit and
+	 * {@link org.omg.PortableServer.IMPLICIT_ACTIVATION_POLICY_ID}) facts inferred
+	 * during reasoning of the knowledge base to a desired file.
 	 *
 	 * @param filePath a String of the file path for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the
