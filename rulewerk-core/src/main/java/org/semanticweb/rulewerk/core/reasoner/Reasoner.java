@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -82,7 +83,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 
 	/**
-	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
+	 * Factory method to instantiate a Reasoner with an empty knowledge base.
 	 *
 	 * @param makeReasoner a function that creates a Reasoner instances given a
 	 *                     {@link KnowledgeBase}.
@@ -138,6 +139,23 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	Correctness forEachInference(InferenceAction action) throws IOException;
 
 	/**
+	 * Performs the given action for each inference, swallowing
+	 * checked exceptions.
+	 *
+	 * @param action The action to be performed for ecah inference.
+	 * @return the correctness of the inferences, depending on the
+	 * state of the reasoning (materialisation) and its {@link
+	 * KnowledgeBase}.
+	 */
+	default Correctness unsafeForEachInference(BiConsumer<Predicate, List<Term>> action) {
+		try {
+			return forEachInference(action::accept);
+		} catch (IOException e) {
+			throw new RulewerkRuntimeException(e);
+		}
+	}
+
+	/**
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
 	 * the knowledge base to an OutputStream.
 	 *
@@ -153,37 +171,27 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 				.write(Serializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri).getBytes()));
 	}
 
-	public class CorrectnessAndInferences {
-		private Correctness correctness;
-		private Stream<Fact> inferences;
-
-		CorrectnessAndInferences(Correctness correctness, Stream<Fact> inferences) {
-			this.correctness = correctness;
-			this.inferences = inferences;
-		}
-
-		public Correctness getCorrectness() {
-			return this.correctness;
-		}
-
-		public Stream<Fact> getInferences() {
-			return this.inferences;
-		}
-	}
-
-	default CorrectnessAndInferences getInferences() {
+	/**
+	 * Return a stream of all inferences.
+	 *
+	 * @return a {@link Stream} of {@link Fact} objects corresponding
+	 * to all inferences.
+	 */
+	default Stream<Fact> getInferences() {
 		Stream.Builder<Fact> builder = Stream.builder();
-		Correctness correctness;
-		try {
-			correctness = forEachInference(
-					(predicate, termList) -> builder.accept(Expressions.makeFact(predicate, termList)));
-		} catch (IOException e) {
-			// this will never throw.
-			throw new RulewerkRuntimeException("unexpected IOException", e);
-		}
+		unsafeForEachInference((predicate, termList) -> builder.accept(Expressions.makeFact(predicate, termList)));
 
-		return new CorrectnessAndInferences(correctness, builder.build());
+		return builder.build();
 	}
+
+	/**
+	* Return the {@link Correctness} status of query answers.
+	*
+	* @return the correctnes of query answers, depending on the state
+	* of the reasoning (materialisation) and aits {@link
+	* KnowledgeBase}.
+	*/
+	Correctness getCorrectness();
 
 	/**
 	 * Exports all the (explicit and
