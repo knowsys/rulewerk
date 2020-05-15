@@ -75,4 +75,35 @@ public class VLogRegressionTest {
 			assertEquals(expectedTerms, terms.getTerms());
 		}
 	}
+
+	@Test
+	public void test_vlog_issue_44() throws IOException {
+		final KnowledgeBase knowledgeBase = new KnowledgeBase();
+
+		final Predicate P = Expressions.makePredicate("P", 1);
+		final Predicate Q = Expressions.makePredicate("Q", 1);
+		final Predicate R = Expressions.makePredicate("R", 1);
+
+		final AbstractConstant c = Expressions.makeAbstractConstant("c");
+		final AbstractConstant d = Expressions.makeAbstractConstant("d");
+		final UniversalVariable x = Expressions.makeUniversalVariable("x");
+
+		knowledgeBase.addStatement(Expressions.makeFact(P, c));
+		knowledgeBase.addStatement(Expressions.makeFact(Q, d));
+		knowledgeBase.addStatement(Expressions.makeRule(Expressions.makePositiveLiteral(R, x),
+														Expressions.makePositiveLiteral(P, x),
+														Expressions.makeNegativeLiteral(Q, x)));
+
+		try (final Reasoner reasoner = new VLogReasoner(knowledgeBase)) {
+			reasoner.reason();
+			final QueryResultIterator result = reasoner.answerQuery(Expressions.makePositiveLiteral(R, x), false);
+			assertTrue(result.hasNext());
+			final QueryResult terms = result.next();
+			assertFalse(result.hasNext());
+			final List<Term> expectedTerms = new ArrayList<Term>();
+			expectedTerms.add(c);
+			assertEquals(expectedTerms, terms.getTerms());
+			assertFalse(result.hasNext());
+		}
+	}
 }
