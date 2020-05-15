@@ -15,11 +15,14 @@ Breaking changes:
   changing several import paths. `Reasoner.getInstance()` now takes a
   mandatory argument, a function taking a `KnowledgeBase` and
   returning a `Reasoner` instance. Previous behaviour can be obtained
-  by using `Reasoner.getInstance(VLogReasoner::new)`.
+  by using `Reasoner.getInstance(VLogReasoner::new)`. As a result,
+  InMemoryDataSource has become an abstract class, use
+  VLogInMemoryDataSource where applicable.
 
 New features:
 * Counting query answers is more efficient now, using `Reasoner.countQueryAnswers()`
 * All inferred facts can be serialized to a file using `Reasoner.writeInferences()`
+* All inferred facts can be obtained as a Stream using `Reasoner.getInferences()`
 * Knowledge bases can be serialized to a file using `KnowlegdeBase.writeKnowledgeBase()`
 * Rules files may import other rules files using `@import` and
   `@import-relative`, where the latter resolves relative IRIs using
