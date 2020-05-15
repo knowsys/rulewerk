@@ -534,7 +534,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 
 	/**
 	 * Resolve a prefixed name into an absolute IRI. Dual to
-	 * {@link unresolveAbsoluteIri}.
+	 * {@link KnowledgeBase#unresolveAbsoluteIri}.
 	 *
 	 * @param prefixedName the prefixed name to resolve.
 	 *
@@ -548,7 +548,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 
 	/**
 	 * Potentially abbreviate an absolute IRI using the declared prefixes. Dual to
-	 * {@link resolvePrefixedName}.
+	 * {@link KnowledgeBase#resolvePrefixedName}.
 	 *
 	 * @param iri the absolute IRI to abbreviate.
 	 *

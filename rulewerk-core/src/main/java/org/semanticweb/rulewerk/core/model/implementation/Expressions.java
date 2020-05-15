@@ -302,7 +302,7 @@ public final class Expressions {
 	}
 
 	/**
-	 * Creates a {@code Conjunction} of {@link T} ({@link PositiveLiteral} type)
+	 * Creates a {@code Conjunction} of {@code T} ({@link PositiveLiteral} type)
 	 * objects.
 	 *
 	 * @param literals list of non-null positive literals

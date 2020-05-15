@@ -43,7 +43,7 @@ final public class LocalPrefixDeclarationRegistry extends AbstractPrefixDeclarat
 
 	/**
 	 * Construct a Prefix declaration registry without an inherited base IRI. In
-	 * this case, we default to {@value PrefixDeclarationRegistry#EMPTY_BASE}.
+	 * this case, we default to {@value org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry#EMPTY_BASE}.
 	 */
 	public LocalPrefixDeclarationRegistry() {
 		this(PrefixDeclarationRegistry.EMPTY_BASE); // empty string encodes: "no base" (use relative IRIs)
