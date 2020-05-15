@@ -78,8 +78,7 @@ public class ParserConfiguration {
 	 * production of the rules grammar, corresponding to some {@link DataSource}
 	 * type.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">
-	 *      the grammar</a>.
+	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar"> the grammar</a>
 	 *
 	 * @param name    Name of the data source, as it appears in the declaring
 	 *                directive.
