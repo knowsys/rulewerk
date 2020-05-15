@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.examples;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,19 +27,20 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
-import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogInMemoryDataSource;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
 /**
  * This example shows how to reason efficiently with data sets generated in
  * Java. We generate a random graph with several million edges, check
  * connectivity, and count triangles.
- * 
+ *
  * Parameters can be modified to obtain graphs of different sizes and density.
  * It should be noted, however, that the number of triangles in reasonably dense
  * graphs tends to be huge, and it is easy to exhaust memory in this way.
- * 
+ *
  * @author Markus Kroetzsch
  *
  */
@@ -53,7 +54,7 @@ public class InMemoryGraphAnalysisExample {
 		final int vertexCount = 10000;
 		final double density = 0.03;
 		// initialise data source for storing edges (estimate how many we'll need)
-		final InMemoryDataSource edges = new InMemoryDataSource(2, (int) (vertexCount * vertexCount * density) + 1000);
+		final InMemoryDataSource edges = new VLogInMemoryDataSource(2, (int) (vertexCount * vertexCount * density) + 1000);
 		int edgeCount = 0;
 		for (int i = 1; i <= vertexCount; i++) {
 			for (int j = 1; j <= vertexCount; j++) {
@@ -64,7 +65,7 @@ public class InMemoryGraphAnalysisExample {
 			}
 		}
 		// also make a unary data source to mark vertices:
-		final InMemoryDataSource vertices = new InMemoryDataSource(1, vertexCount);
+		final InMemoryDataSource vertices = new VLogInMemoryDataSource(1, vertexCount);
 		for (int i = 1; i <= vertexCount; i++) {
 			vertices.addTuple("v" + i);
 		}

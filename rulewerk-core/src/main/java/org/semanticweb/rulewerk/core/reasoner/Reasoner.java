@@ -45,6 +45,7 @@ import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
 
 /**
  * Interface that exposes the (existential) rule reasoning capabilities of a
@@ -95,6 +96,17 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	}
 
 	/**
+	 * Factory method to create a suitable {@link InMemoryDataSource} with given
+	 * arity and initial capacity.
+	 *
+	 * @param arity           the arity for the data source.
+	 * @param initialCapacity the initial capacity of the data source.
+	 *
+	 * @return an instance of an implementation of InMemoryDataSource.
+	 */
+	InMemoryDataSource makeInMemoryDataSource(final int arity, final int initialCapacity);
+
+	/**
 	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
 	 *
 	 * @param makeReasoner      a function that creates a Reasoner instances given a
@@ -139,13 +151,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	Correctness forEachInference(InferenceAction action) throws IOException;
 
 	/**
-	 * Performs the given action for each inference, swallowing
-	 * checked exceptions.
+	 * Performs the given action for each inference, swallowing checked exceptions.
 	 *
 	 * @param action The action to be performed for ecah inference.
-	 * @return the correctness of the inferences, depending on the
-	 * state of the reasoning (materialisation) and its {@link
-	 * KnowledgeBase}.
+	 * @return the correctness of the inferences, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 */
 	default Correctness unsafeForEachInference(BiConsumer<Predicate, List<Term>> action) {
 		try {
@@ -174,8 +184,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Return a stream of all inferences.
 	 *
-	 * @return a {@link Stream} of {@link Fact} objects corresponding
-	 * to all inferences.
+	 * @return a {@link Stream} of {@link Fact} objects corresponding to all
+	 *         inferences.
 	 */
 	default Stream<Fact> getInferences() {
 		Stream.Builder<Fact> builder = Stream.builder();
@@ -185,12 +195,11 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	}
 
 	/**
-	* Return the {@link Correctness} status of query answers.
-	*
-	* @return the correctnes of query answers, depending on the state
-	* of the reasoning (materialisation) and aits {@link
-	* KnowledgeBase}.
-	*/
+	 * Return the {@link Correctness} status of query answers.
+	 *
+	 * @return the correctnes of query answers, depending on the state of the
+	 *         reasoning (materialisation) and aits {@link KnowledgeBase}.
+	 */
 	Correctness getCorrectness();
 
 	/**

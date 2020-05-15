@@ -112,6 +112,11 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
+	public InMemoryDataSource makeInMemoryDataSource(final int arity, final int initialCapacity) {
+		return new VLogInMemoryDataSource(arity, initialCapacity);
+	}
+
+	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm, "Algorithm cannot be null!");
 		validateNotClosed();
@@ -222,9 +227,9 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	void loadInMemoryDataSource(final DataSource dataSource, final Predicate predicate) {
-		if (dataSource instanceof InMemoryDataSource) {
+		if (dataSource instanceof VLogInMemoryDataSource) {
 
-			final InMemoryDataSource inMemoryDataSource = (InMemoryDataSource) dataSource;
+			final VLogInMemoryDataSource inMemoryDataSource = (VLogInMemoryDataSource) dataSource;
 			try {
 				load(predicate, inMemoryDataSource);
 			} catch (final EDBConfigurationException e) {
@@ -233,7 +238,7 @@ public class VLogReasoner implements Reasoner {
 		}
 	}
 
-	void load(final Predicate predicate, final InMemoryDataSource inMemoryDataSource) throws EDBConfigurationException {
+	void load(final Predicate predicate, final VLogInMemoryDataSource inMemoryDataSource) throws EDBConfigurationException {
 		final String vLogPredicateName = ModelToVLogConverter.toVLogPredicate(predicate);
 
 		this.vLog.addData(vLogPredicateName, inMemoryDataSource.getData());
