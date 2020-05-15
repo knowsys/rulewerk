@@ -21,7 +21,6 @@ package org.semanticweb.rulewerk.reasoner.vlog;
  */
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -43,7 +42,6 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Statement;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 import org.semanticweb.rulewerk.core.reasoner.AcyclicityNotion;
 import org.semanticweb.rulewerk.core.reasoner.Algorithm;
 import org.semanticweb.rulewerk.core.reasoner.Correctness;
@@ -56,8 +54,8 @@ import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.ReasonerState;
 import org.semanticweb.rulewerk.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.rulewerk.core.reasoner.implementation.EmptyQueryResultIterator;
-import org.semanticweb.rulewerk.core.reasoner.implementation.QueryAnswerCountImpl;
 import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.QueryAnswerCountImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
