@@ -1,8 +1,5 @@
 package org.semanticweb.rulewerk.reasoner.vlog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 /*
  * #%L
  * Rulewerk VLog Reasoner Support
@@ -24,6 +21,8 @@ import static org.junit.Assert.assertFalse;
  */
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.util.ArrayList;
