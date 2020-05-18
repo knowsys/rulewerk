@@ -23,7 +23,6 @@ import static org.junit.Assert.assertFalse;
  * #L%
  */
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -223,8 +222,7 @@ public class AddDataSourceTest {
 	public void testAddMultipleDataSourcesForPredicateAfterReasoning() throws IOException {
 		final Predicate predicate = Expressions.makePredicate("p", 1);
 		final DataSource dataSource1 = new CsvFileDataSource(CSV_FILE_c1_c2_PATH);
-		final DataSource dataSource2 = new CsvFileDataSource(
-				FileDataSourceTestUtils.INPUT_FOLDER + "unaryFactsCD.csv");
+		final DataSource dataSource2 = new CsvFileDataSource(FileDataSourceTestUtils.INPUT_FOLDER + "unaryFactsCD.csv");
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatement(new DataSourceDeclarationImpl(predicate, dataSource1));

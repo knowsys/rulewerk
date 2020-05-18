@@ -3,8 +3,6 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.io.File;
-
 /*-
  * #%L
  * Rulewerk Core Components

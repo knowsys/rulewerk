@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -91,8 +90,7 @@ public class DataSourceDeclarationTest {
 				unzippedCsvFileDataSource);
 
 		final String expectedFilePath = Serializer.getString(relativeDirName + fileName);
-		assertEquals("@source q[1]: load-csv(" + expectedFilePath + ") .",
-				dataSourceDeclaration.toString());
+		assertEquals("@source q[1]: load-csv(" + expectedFilePath + ") .", dataSourceDeclaration.toString());
 	}
 
 	@Test

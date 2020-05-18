@@ -20,7 +20,6 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * #L%
  */
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
@@ -55,8 +54,8 @@ public class RdfFileDataSource extends FileDataSource {
 	/**
 	 * Constructor.
 	 *
-	 * @param rdfFile path to a file of a {@code .nt} or {@code .nt.gz} extension and a
-	 *                valid N-Triples format.
+	 * @param rdfFile path to a file of a {@code .nt} or {@code .nt.gz} extension
+	 *                and a valid N-Triples format.
 	 * @throws IOException              if the path of the given {@code rdfFile} is
 	 *                                  invalid.
 	 * @throws IllegalArgumentException if the extension of the given

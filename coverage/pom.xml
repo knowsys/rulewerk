@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -13,58 +14,58 @@
 
 	<name>coverage</name>
 	<dependencies>
-	  <dependency>
-		<groupId>org.semanticweb.rulewerk</groupId>
-		<artifactId>rulewerk-core</artifactId>
-		<version>0.6.0-SNAPSHOT</version>
-	  </dependency>
-	  <dependency>
-		<groupId>org.semanticweb.rulewerk</groupId>
-		<artifactId>rulewerk-rdf</artifactId>
-		<version>0.6.0-SNAPSHOT</version>
-	  </dependency>
-	  <dependency>
-		<groupId>org.semanticweb.rulewerk</groupId>
-		<artifactId>rulewerk-owlapi</artifactId>
-		<version>0.6.0-SNAPSHOT</version>
-	  </dependency>
-	  <dependency>
-		<groupId>org.semanticweb.rulewerk</groupId>
-		<artifactId>rulewerk-graal</artifactId>
-		<version>0.6.0-SNAPSHOT</version>
-	  </dependency>
-	  <dependency>
-		<groupId>org.semanticweb.rulewerk</groupId>
-		<artifactId>rulewerk-parser</artifactId>
-		<version>0.6.0-SNAPSHOT</version>
-	  </dependency>
-	  <dependency>
-		<groupId>org.semanticweb.rulewerk</groupId>
-		<artifactId>rulewerk-client</artifactId>
-		<version>0.6.0-SNAPSHOT</version>
-	  </dependency>
+		<dependency>
+			<groupId>org.semanticweb.rulewerk</groupId>
+			<artifactId>rulewerk-core</artifactId>
+			<version>0.6.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.semanticweb.rulewerk</groupId>
+			<artifactId>rulewerk-rdf</artifactId>
+			<version>0.6.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.semanticweb.rulewerk</groupId>
+			<artifactId>rulewerk-owlapi</artifactId>
+			<version>0.6.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.semanticweb.rulewerk</groupId>
+			<artifactId>rulewerk-graal</artifactId>
+			<version>0.6.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.semanticweb.rulewerk</groupId>
+			<artifactId>rulewerk-parser</artifactId>
+			<version>0.6.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.semanticweb.rulewerk</groupId>
+			<artifactId>rulewerk-client</artifactId>
+			<version>0.6.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
-	  <plugins>
-		<plugin>
-		  <!-- Create code coverage reports and submit them to coveralls.io. -->
-		  <groupId>org.eluder.coveralls</groupId>
-		  <artifactId>coveralls-maven-plugin</artifactId>
-		</plugin>
-		<plugin>
-		  <groupId>org.jacoco</groupId>
-		  <artifactId>jacoco-maven-plugin</artifactId>
-		  <executions>
-			<execution>
-			  <id>aggregate-reports-ut</id>
-			  <phase>test</phase>
-			  <goals>
-				<goal>report-aggregate</goal>
-			  </goals>
-			</execution>
-		  </executions>
-		</plugin>
-	  </plugins>
+		<plugins>
+			<plugin>
+				<!-- Create code coverage reports and submit them to coveralls.io. -->
+				<groupId>org.eluder.coveralls</groupId>
+				<artifactId>coveralls-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>aggregate-reports-ut</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report-aggregate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 </project>
