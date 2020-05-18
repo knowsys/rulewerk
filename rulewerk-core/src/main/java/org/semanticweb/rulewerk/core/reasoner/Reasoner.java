@@ -82,46 +82,6 @@ import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
  */
 
 public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
-
-	/**
-	 * Factory method to instantiate a Reasoner with an empty knowledge base.
-	 *
-	 * @param makeReasoner a function that creates a Reasoner instances given a
-	 *                     {@link KnowledgeBase}.
-	 *
-	 * @return a {@link Reasoner} instance.
-	 */
-	static <R extends Reasoner> Reasoner getInstance(Function<KnowledgeBase, R> makeReasoner) {
-		return getInstance(makeReasoner, KnowledgeBase::new);
-	}
-
-	/**
-	 * Factory method to create a suitable {@link InMemoryDataSource} with given
-	 * arity and initial capacity.
-	 *
-	 * @param arity           the arity for the data source.
-	 * @param initialCapacity the initial capacity of the data source.
-	 *
-	 * @return an instance of an implementation of InMemoryDataSource.
-	 */
-	InMemoryDataSource makeInMemoryDataSource(final int arity, final int initialCapacity);
-
-	/**
-	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
-	 *
-	 * @param makeReasoner      a function that creates a Reasoner instances given a
-	 *                          {@link KnowledgeBase}.
-	 * @param makeKnowledgeBase a function that creates a {@link KnowledgeBase}
-	 *                          instance.
-	 *
-	 * @return a {@link Reasoner} instance.
-	 */
-	static <R extends Reasoner, K extends KnowledgeBase> Reasoner getInstance(Function<KnowledgeBase, R> makeReasoner,
-			Supplier<K> makeKnowledgeBase) {
-		final KnowledgeBase knowledgeBase = makeKnowledgeBase.get();
-		return makeReasoner.apply(knowledgeBase);
-	}
-
 	/**
 	 * Getter for the knowledge base to reason on.
 	 *
@@ -153,7 +113,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	/**
 	 * Performs the given action for each inference, swallowing checked exceptions.
 	 *
-	 * @param action The action to be performed for ecah inference.
+	 * @param action The action to be performed for each inference.
 	 * @return the correctness of the inferences, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 */
@@ -198,14 +158,13 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * Return the {@link Correctness} status of query answers.
 	 *
 	 * @return the correctnes of query answers, depending on the state of the
-	 *         reasoning (materialisation) and aits {@link KnowledgeBase}.
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 */
 	Correctness getCorrectness();
 
 	/**
-	 * Exports all the (explicit and
-	 * {@link org.omg.PortableServer.IMPLICIT_ACTIVATION_POLICY_ID}) facts inferred
-	 * during reasoning of the knowledge base to a desired file.
+	 * Exports all the (explicit and implicit) facts inferred during
+	 * reasoning of the knowledge base to a desired file.
 	 *
 	 * @param filePath a String of the file path for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the

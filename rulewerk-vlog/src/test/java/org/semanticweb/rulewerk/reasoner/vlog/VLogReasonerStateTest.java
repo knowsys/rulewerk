@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.reasoner.vlog;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,21 +68,21 @@ public class VLogReasonerStateTest {
 
 	@Test(expected = ReasonerStateException.class)
 	public void testFailAnswerQueryBeforeLoad() {
-		try (final Reasoner reasoner = Reasoner.getInstance(VLogReasoner::new)) {
+		try (final Reasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.answerQuery(exampleQueryAtom, true);
 		}
 	}
 
 	@Test(expected = ReasonerStateException.class)
 	public void testFailExportQueryAnswersBeforeLoad() throws IOException {
-		try (final Reasoner reasoner = Reasoner.getInstance(VLogReasoner::new)) {
+		try (final Reasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, "", true);
 		}
 	}
 
 	@Test(expected = ReasonerStateException.class)
 	public void testFailAnswerQueryAfterReset() throws IOException {
-		try (final Reasoner reasoner = Reasoner.getInstance(VLogReasoner::new)) {
+		try (final Reasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.reason();
 			reasoner.resetReasoner();
 			reasoner.answerQuery(exampleQueryAtom, true);
@@ -91,7 +91,7 @@ public class VLogReasonerStateTest {
 
 	@Test(expected = ReasonerStateException.class)
 	public void testFailExportQueryAnswersAfterReset() throws IOException {
-		try (final Reasoner reasoner = Reasoner.getInstance(VLogReasoner::new)) {
+		try (final Reasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.reason();
 			reasoner.resetReasoner();
 			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, "", true);
@@ -172,7 +172,7 @@ public class VLogReasonerStateTest {
 
 	@Test
 	public void testResetBeforeLoad() {
-		try (final Reasoner reasoner = Reasoner.getInstance(VLogReasoner::new)) {
+		try (final Reasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.resetReasoner();
 		}
 	}
@@ -280,7 +280,7 @@ public class VLogReasonerStateTest {
 
 	@Test(expected = ReasonerStateException.class)
 	public void testFailExportQueryAnswerToCsvBeforeLoad() throws IOException {
-		try (final Reasoner reasoner = Reasoner.getInstance(VLogReasoner::new)) {
+		try (final Reasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			reasoner.exportQueryAnswersToCsv(exampleQueryAtom, FileDataSourceTestUtils.OUTPUT_FOLDER + "output.csv",
 					true);
 		}

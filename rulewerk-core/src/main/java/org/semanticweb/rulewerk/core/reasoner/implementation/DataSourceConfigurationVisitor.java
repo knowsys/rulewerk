@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,12 +20,42 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * #L%
  */
 
+import java.io.IOException;
+
+/**
+ * A visitor to generate (reasoner-specific) configuration for the various data
+ * sources.
+ *
+ * @author Maximilian Marx
+ */
 public interface DataSourceConfigurationVisitor {
-	public void visit(CsvFileDataSource dataSource);
+	/**
+	 * Configure the reasoner for a {@link CsvFileDataSource}.
+	 *
+	 * @param dataSource the data source to configure.
+	 * @throws IOexception when an IO error occurs during configuration.
+	 */
+	public void visit(CsvFileDataSource dataSource) throws IOException;
 
-	public void visit(RdfFileDataSource dataSource);
+	/**
+	 * Configure the reasoner for a {@link RdfFileDataSource}.
+	 *
+	 * @param dataSource the data source to configure.
+	 * @throws IOexception when an IO error occurs during configuration.
+	 */
+	public void visit(RdfFileDataSource dataSource) throws IOException;
 
+	/**
+	 * Configure the reasoner for a {@link SparqlQueryResultDataSource}.
+	 *
+	 * @param dataSource the data source to configure.
+	 */
 	public void visit(SparqlQueryResultDataSource dataSource);
 
+	/**
+	 * Configure the reasoner for a {@link InMemoryDataSource}.
+	 *
+	 * @param dataSource the data source to configure.
+	 */
 	public void visit(InMemoryDataSource dataSource);
 }

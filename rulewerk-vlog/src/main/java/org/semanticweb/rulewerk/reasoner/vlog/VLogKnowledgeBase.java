@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.reasoner.vlog;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ package org.semanticweb.rulewerk.reasoner.vlog;
  * #L%
  */
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Formatter;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Fact;
@@ -124,7 +126,11 @@ public class VLogKnowledgeBase {
 			if (dataSource instanceof ReasonerDataSource) {
 				final ReasonerDataSource reasonerDataSource = (ReasonerDataSource) dataSource;
 				final VLogDataSourceConfigurationVisitor visitor = new VLogDataSourceConfigurationVisitor();
-				reasonerDataSource.accept(visitor);
+				try {
+					reasonerDataSource.accept(visitor);
+				} catch (IOException e) {
+					throw new RulewerkRuntimeException("Error while building VLog data source configuration", e);
+				}
 				final String configString = visitor.getConfigString();
 				if (configString != null) {
 					formatter.format(configString, dataSourceIndex, ModelToVLogConverter.toVLogPredicate(predicate));

@@ -91,11 +91,8 @@ public final class FileDataSourceTestUtils {
 		return content;
 	}
 
-	public static void testConstructor(final FileDataSource fileDataSource, final String expectedFileName,
-			final String expectedDirCanonicalPath, final String expectedFileNameWithoutExtension) throws IOException {
+	public static void testConstructor(final FileDataSource fileDataSource, final String expectedFileName) throws IOException {
 		assertEquals(expectedFileName, fileDataSource.getName());
-		assertEquals(expectedDirCanonicalPath, fileDataSource.getDirCanonicalPath());
-		assertEquals(expectedFileNameWithoutExtension, fileDataSource.getFileNameWithoutExtension());
 	}
 
 	public static void testLoadEmptyFile(final Predicate predicate, final PositiveLiteral queryAtom,

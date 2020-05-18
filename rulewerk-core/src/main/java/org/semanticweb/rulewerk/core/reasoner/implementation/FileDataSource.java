@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,6 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -43,11 +42,6 @@ public abstract class FileDataSource implements ReasonerDataSource {
 	private final String filePath;
 	private final String fileName;
 	private final String extension;
-	/**
-	 * The canonical path to the parent directory where the file resides.
-	 */
-	private final String dirCanonicalPath;
-	private final String fileNameWithoutExtension;
 
 	/**
 	 * Constructor.
@@ -68,8 +62,7 @@ public abstract class FileDataSource implements ReasonerDataSource {
 		this.filePath = filePath; // unmodified file path, necessary for correct serialisation
 		this.fileName = this.file.getName();
 		this.extension = getValidExtension(this.fileName, possibleExtensions);
-		this.fileNameWithoutExtension = this.fileName.substring(0, this.fileName.lastIndexOf(this.extension));
-		this.dirCanonicalPath = Paths.get(file.getCanonicalPath()).getParent().toString();
+		file.getCanonicalPath(); // make sure that the path is valid.
 	}
 
 	private String getValidExtension(final String fileName, final Iterable<String> possibleExtensions) {
@@ -96,22 +89,8 @@ public abstract class FileDataSource implements ReasonerDataSource {
 		return this.fileName;
 	}
 
-	/**
-	 * Canonicalise the file path
-	 *
-	 * @return The canonical path to the parent directory where the file resides.
-	 */
-	public String getDirCanonicalPath() {
-		return this.dirCanonicalPath;
-	}
-
-	/**
-	 * Get the base name of the file, without an extension.
-	 *
-	 * @return the file basename without any extension.
-	 */
-	public String getFileNameWithoutExtension() {
-		return this.fileNameWithoutExtension;
+	public String getExtension() {
+		return this.extension;
 	}
 
 	@Override

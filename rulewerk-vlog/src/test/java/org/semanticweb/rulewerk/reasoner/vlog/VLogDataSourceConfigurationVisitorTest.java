@@ -30,14 +30,13 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 import org.junit.Test;
-
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.ReasonerDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 public class VLogDataSourceConfigurationVisitorTest {
@@ -77,7 +76,7 @@ public class VLogDataSourceConfigurationVisitorTest {
 	}
 
 	@Test
-	public void visit_SparqlQueryResultDataSource_succeeds() throws MalformedURLException {
+	public void visit_SparqlQueryResultDataSource_succeeds() throws IOException, MalformedURLException {
 		final SparqlQueryResultDataSource simpleDataSource = new SparqlQueryResultDataSource(endpoint, "b,a",
 																							 "?a wdt:P22 ?b");
 		final LinkedHashSet<Variable> queryVariables = new LinkedHashSet<>(
@@ -92,12 +91,28 @@ public class VLogDataSourceConfigurationVisitorTest {
 	}
 
 	@Test
-	public void visit_InMemoryDataSource_returnsNull() {
+	public void visit_InMemoryDataSource_returnsNull() throws IOException {
 		final InMemoryDataSource inMemoryDataSource = new VLogInMemoryDataSource(1, 1);
 		assertEquals(null, toConfigString(inMemoryDataSource));
 	}
 
-	private String toConfigString(ReasonerDataSource dataSource) {
+	@Test
+	public void getDirCanonicalPath_relativePath_succeeds() throws IOException {
+		final VLogDataSourceConfigurationVisitor visitor = new VLogDataSourceConfigurationVisitor();
+		final FileDataSource fileDataSource = new CsvFileDataSource("file.csv");
+		final String currentFolder = new File(".").getCanonicalPath();
+		assertEquals(currentFolder, visitor.getDirCanonicalPath(fileDataSource));
+	}
+
+	@Test
+	public void getDirCanonicalPath_nonNormalisedPath_succeeds() throws IOException {
+		final VLogDataSourceConfigurationVisitor visitor = new VLogDataSourceConfigurationVisitor();
+		final FileDataSource fileDataSource = new CsvFileDataSource("./././file.csv");
+		final String currentFolder = new File(".").getCanonicalPath();
+		assertEquals(currentFolder, visitor.getDirCanonicalPath(fileDataSource));
+	}
+
+	private String toConfigString(ReasonerDataSource dataSource) throws IOException {
 		VLogDataSourceConfigurationVisitor visitor = new VLogDataSourceConfigurationVisitor();
 		dataSource.accept(visitor);
 		return visitor.getConfigString();

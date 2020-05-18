@@ -110,11 +110,6 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public InMemoryDataSource makeInMemoryDataSource(final int arity, final int initialCapacity) {
-		return new VLogInMemoryDataSource(arity, initialCapacity);
-	}
-
-	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm, "Algorithm cannot be null!");
 		validateNotClosed();

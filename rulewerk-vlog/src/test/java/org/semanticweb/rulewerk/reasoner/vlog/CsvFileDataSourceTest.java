@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.reasoner.vlog;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,24 +52,7 @@ public class CsvFileDataSourceTest {
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(csvFile);
 		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(gzFile);
 
-		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, new File(csvFile).getName(), dirCanonicalPath, "file");
-		FileDataSourceTestUtils.testConstructor(zippedCsvFileDataSource, new File(gzFile).getName(), dirCanonicalPath, "file");
+		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, new File(csvFile).getName());
+		FileDataSourceTestUtils.testConstructor(zippedCsvFileDataSource, new File(gzFile).getName());
 	}
-
-	@Test
-	public void testNoParentDir() throws IOException {
-		final FileDataSource fileDataSource = new CsvFileDataSource("file.csv");
-		final String dirCanonicalPath = fileDataSource.getDirCanonicalPath();
-		final String currentFolder = new File(".").getCanonicalPath();
-		assertEquals(currentFolder, dirCanonicalPath);
-	}
-
-	@Test
-	public void testNotNormalisedParentDir() throws IOException {
-		final FileDataSource fileDataSource = new CsvFileDataSource("./././file.csv");
-		final String dirCanonicalPath = fileDataSource.getDirCanonicalPath();
-		final String currentFolder = new File(".").getCanonicalPath();
-		assertEquals(currentFolder, dirCanonicalPath);
-	}
-
 }

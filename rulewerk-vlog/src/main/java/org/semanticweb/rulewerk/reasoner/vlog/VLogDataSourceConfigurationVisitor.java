@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.reasoner.vlog;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,8 +20,12 @@ package org.semanticweb.rulewerk.reasoner.vlog;
  * #L%
  */
 
+import java.io.IOException;
+import java.nio.file.Paths;
+
 import org.semanticweb.rulewerk.core.reasoner.implementation.DataSourceConfigurationVisitor;
 import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSource;
+
 import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
@@ -39,21 +43,30 @@ public class VLogDataSourceConfigurationVisitor implements DataSourceConfigurati
 		return configString;
 	}
 
-	protected void setFileConfigString(FileDataSource dataSource) {
+	protected void setFileConfigString(FileDataSource dataSource) throws IOException {
 		this.configString =
 			PREDICATE_NAME_CONFIG_LINE +
 			DATASOURCE_TYPE_CONFIG_PARAM + "=" + FILE_DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
-			"EDB%1$d_param0=" + dataSource.getDirCanonicalPath() + "\n" +
-			"EDB%1$d_param1=" + dataSource.getFileNameWithoutExtension() + "\n";
+			"EDB%1$d_param0=" + getDirCanonicalPath(dataSource) + "\n" +
+			"EDB%1$d_param1=" + getFileNameWithoutExtension(dataSource) + "\n";
+	}
+
+	String getDirCanonicalPath(FileDataSource dataSource) throws IOException {
+		return Paths.get(dataSource.getFile().getCanonicalPath()).getParent().toString();
+	}
+
+	String getFileNameWithoutExtension(FileDataSource dataSource) {
+		final String fileName = dataSource.getName();
+		return fileName.substring(0, fileName.lastIndexOf(dataSource.getExtension()));
 	}
 
 	@Override
-	public void visit(CsvFileDataSource dataSource) {
+	public void visit(CsvFileDataSource dataSource) throws IOException {
 		setFileConfigString(dataSource);
 	}
 
 	@Override
-	public void visit(RdfFileDataSource dataSource) {
+	public void visit(RdfFileDataSource dataSource) throws IOException {
 		setFileConfigString(dataSource);
 	}
 

@@ -11,9 +11,9 @@ import static org.junit.Assert.assertEquals;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,12 +47,10 @@ public class RdfFileDataSourceTest {
 
 	@Test
 	public void testConstructor() throws IOException {
-
-		final String dirCanonicalPath = new File(FileDataSourceTestUtils.INPUT_FOLDER).getCanonicalPath();
 		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
 		final RdfFileDataSource zippedRdfFileDataSource = new RdfFileDataSource(zippedRdfFile);
 
-		FileDataSourceTestUtils.testConstructor(unzippedRdfFileDataSource, new File(unzippedRdfFile).getName(), dirCanonicalPath, "file");
-		FileDataSourceTestUtils.testConstructor(zippedRdfFileDataSource, new File(zippedRdfFile).getName(), dirCanonicalPath, "file");
+		FileDataSourceTestUtils.testConstructor(unzippedRdfFileDataSource, new File(unzippedRdfFile).getName());
+		FileDataSourceTestUtils.testConstructor(zippedRdfFileDataSource, new File(zippedRdfFile).getName());
 	}
 }
