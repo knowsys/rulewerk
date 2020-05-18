@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package org.semanticweb.rulewerk.parser;
  */
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 
@@ -39,7 +40,7 @@ public class DirectiveHandlerTest {
 
 	@Test
 	public void validateStringArgument_stringArgument_succeeds() throws ParsingException {
-		assertEquals(DirectiveHandler.validateStringArgument(STRING_ARGUMENT, "string argument"), STRING);
+		assertEquals(STRING, DirectiveHandler.validateStringArgument(STRING_ARGUMENT, "string argument"));
 	}
 
 	@Test(expected = ParsingException.class)
@@ -54,7 +55,7 @@ public class DirectiveHandlerTest {
 
 	@Test
 	public void validateIriArgument_iriArgument_succeeds() throws ParsingException {
-		assertEquals(DirectiveHandler.validateIriArgument(IRI_ARGUMENT, "iri argument"), IRI);
+		assertEquals(IRI, DirectiveHandler.validateIriArgument(IRI_ARGUMENT, "iri argument"));
 	}
 
 	@Test(expected = ParsingException.class)
@@ -69,7 +70,7 @@ public class DirectiveHandlerTest {
 
 	@Test
 	public void validateTermArgument_termArgument_succeeds() throws ParsingException {
-		assertEquals(DirectiveHandler.validateTermArgument(TERM_ARGUMENT, "term argument"), TERM);
+		assertEquals(TERM, DirectiveHandler.validateTermArgument(TERM_ARGUMENT, "term argument"));
 	}
 
 	@Test(expected = ParsingException.class)
@@ -84,7 +85,7 @@ public class DirectiveHandlerTest {
 
 	@Test
 	public void validateFilenameArgument_filename_succeeds() throws ParsingException {
-		assertEquals(DirectiveHandler.validateFilenameArgument(STRING_ARGUMENT, "filename argument").getPath(), STRING);
+		assertEquals(new File(STRING), DirectiveHandler.validateFilenameArgument(STRING_ARGUMENT, "filename argument"));
 	}
 
 	@Test
@@ -95,7 +96,7 @@ public class DirectiveHandlerTest {
 
 	@Test
 	public void validateUrlArgument_url_succeeds() throws ParsingException, MalformedURLException {
-		assertEquals(DirectiveHandler.validateUrlArgument(IRI_ARGUMENT, "urls argument"), IRI.toURL());
+		assertEquals(IRI.toURL(), DirectiveHandler.validateUrlArgument(IRI_ARGUMENT, "urls argument"));
 	}
 
 	@Test(expected = ParsingException.class)
