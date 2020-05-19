@@ -2,7 +2,7 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 
 /*-
  * #%L
- * Rulewerk Core Components
+ * Rulewerk VLog Reasoner Support
  * %%
  * Copyright (C) 2018 - 2020 Rulewerk Developers
  * %%
@@ -20,13 +20,10 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSourceTestUtils;
 
 public class CsvFileDataSourceTest {
 
@@ -46,41 +43,10 @@ public class CsvFileDataSourceTest {
 
 	@Test
 	public void testConstructor() throws IOException {
-		final String dirCanonicalPath = new File(FileDataSourceTestUtils.INPUT_FOLDER).getCanonicalPath();
 		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(csvFile);
 		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(gzFile);
 
-		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, new File(csvFile).getName(), dirCanonicalPath, "file");
-		FileDataSourceTestUtils.testConstructor(zippedCsvFileDataSource, new File(gzFile).getName(), dirCanonicalPath, "file");
+		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, new File(csvFile).getName());
+		FileDataSourceTestUtils.testConstructor(zippedCsvFileDataSource, new File(gzFile).getName());
 	}
-
-	@Test
-	public void testToConfigString() throws IOException {
-		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(csvFile);
-		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(gzFile);
-
-		final String expectedDirCanonicalPath = new File(FileDataSourceTestUtils.INPUT_FOLDER).getCanonicalPath();
-		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
-				+ expectedDirCanonicalPath + "\n" + "EDB%1$d_param1=file\n";
-
-		assertEquals(expectedConfigString, unzippedCsvFileDataSource.toConfigString());
-		assertEquals(expectedConfigString, zippedCsvFileDataSource.toConfigString());
-	}
-
-	@Test
-	public void testNoParentDir() throws IOException {
-		final FileDataSource fileDataSource = new CsvFileDataSource("file.csv");
-		final String dirCanonicalPath = fileDataSource.getDirCanonicalPath();
-		final String currentFolder = new File(".").getCanonicalPath();
-		assertEquals(currentFolder, dirCanonicalPath);
-	}
-
-	@Test
-	public void testNotNormalisedParentDir() throws IOException {
-		final FileDataSource fileDataSource = new CsvFileDataSource("./././file.csv");
-		final String dirCanonicalPath = fileDataSource.getDirCanonicalPath();
-		final String currentFolder = new File(".").getCanonicalPath();
-		assertEquals(currentFolder, dirCanonicalPath);
-	}
-
 }

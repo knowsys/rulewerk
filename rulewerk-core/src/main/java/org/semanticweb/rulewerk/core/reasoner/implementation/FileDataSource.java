@@ -22,7 +22,6 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -38,19 +37,11 @@ import org.apache.commons.lang3.Validate;
  * @author Irina Dragoste
  *
  */
-public abstract class FileDataSource extends VLogDataSource {
-
-	private final static String DATASOURCE_TYPE_CONFIG_VALUE = "INMEMORY";
-
+public abstract class FileDataSource implements ReasonerDataSource {
 	private final File file;
 	private final String filePath;
 	private final String fileName;
 	private final String extension;
-	/**
-	 * The canonical path to the parent directory where the file resides.
-	 */
-	private final String dirCanonicalPath;
-	private final String fileNameWithoutExtension;
 
 	/**
 	 * Constructor.
@@ -71,8 +62,7 @@ public abstract class FileDataSource extends VLogDataSource {
 		this.filePath = filePath; // unmodified file path, necessary for correct serialisation
 		this.fileName = this.file.getName();
 		this.extension = getValidExtension(this.fileName, possibleExtensions);
-		this.fileNameWithoutExtension = this.fileName.substring(0, this.fileName.lastIndexOf(this.extension));
-		this.dirCanonicalPath = Paths.get(file.getCanonicalPath()).getParent().toString();
+		file.getCanonicalPath(); // make sure that the path is valid.
 	}
 
 	private String getValidExtension(final String fileName, final Iterable<String> possibleExtensions) {
@@ -87,21 +77,6 @@ public abstract class FileDataSource extends VLogDataSource {
 		return potentialExtension.get();
 	}
 
-	@Override
-	public final String toConfigString() {
-		final String configStringPattern =
-
-				PREDICATE_NAME_CONFIG_LINE +
-
-						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
-
-						"EDB%1$d_param0=" + this.dirCanonicalPath + "\n" +
-
-						"EDB%1$d_param1=" + this.fileNameWithoutExtension + "\n";
-
-		return configStringPattern;
-	}
-
 	public File getFile() {
 		return this.file;
 	}
@@ -114,22 +89,8 @@ public abstract class FileDataSource extends VLogDataSource {
 		return this.fileName;
 	}
 
-	/**
-	 * Canonicalise the file path
-	 *
-	 * @return The canonical path to the parent directory where the file resides.
-	 */
-	String getDirCanonicalPath() {
-		return this.dirCanonicalPath;
-	}
-
-	/**
-	 * Get the base name of the file, without an extension.
-	 *
-	 * @return the file basename without any extension.
-	 */
-	String getFileNameWithoutExtension() {
-		return this.fileNameWithoutExtension;
+	public String getExtension() {
+		return this.extension;
 	}
 
 	@Override

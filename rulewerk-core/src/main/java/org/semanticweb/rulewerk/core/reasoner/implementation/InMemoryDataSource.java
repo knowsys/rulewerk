@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,6 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * limitations under the License.
  * #L%
  */
-
-import java.util.Arrays;
 
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.Fact;
@@ -35,12 +33,10 @@ import org.semanticweb.rulewerk.core.model.api.Fact;
  * @author Markus Kroetzsch
  *
  */
-public class InMemoryDataSource implements DataSource {
+public abstract class InMemoryDataSource implements ReasonerDataSource {
 
-	String[][] data;
-	int nextEmptyTuple = 0;
-	int capacity;
-	final int arity;
+	protected int capacity;
+	protected final int arity;
 
 	/**
 	 * Create a new in-memory data source for facts of the specified arity. The
@@ -54,7 +50,6 @@ public class InMemoryDataSource implements DataSource {
 	public InMemoryDataSource(final int arity, final int initialCapacity) {
 		this.capacity = initialCapacity;
 		this.arity = arity;
-		this.data = new String[initialCapacity][arity];
 	}
 
 	/**
@@ -63,46 +58,12 @@ public class InMemoryDataSource implements DataSource {
 	 *
 	 * @param constantNames the string names of the constants in this fact
 	 */
-	public void addTuple(final String... constantNames) {
+	public abstract void addTuple(final String... constantNames);
+
+	protected void validateArity(final String... constantNames) {
 		if (constantNames.length != this.arity) {
 			throw new IllegalArgumentException("This data source holds tuples of arity " + this.arity
 					+ ". Adding a tuple of size " + constantNames.length + " is not possible.");
 		}
-		if (this.nextEmptyTuple == this.capacity) {
-			this.capacity = this.capacity * 2;
-			this.data = Arrays.copyOf(this.data, this.capacity);
-		}
-		this.data[this.nextEmptyTuple] = new String[this.arity];
-		for (int i = 0; i < this.arity; i++) {
-			this.data[this.nextEmptyTuple][i] = TermToVLogConverter.getVLogNameForConstantName(constantNames[i]);
-		}
-		this.nextEmptyTuple++;
-	}
-
-	/**
-	 * Returns the data stored in this data source, in the format expected by the
-	 * VLog reasoner backend.
-	 *
-	 * @return the data
-	 */
-	public String[][] getData() {
-		if (this.nextEmptyTuple == this.capacity) {
-			return this.data;
-		} else {
-			return Arrays.copyOf(this.data, this.nextEmptyTuple);
-		}
-	}
-
-	@Override
-	public String getSyntacticRepresentation() {
-		final StringBuilder sb = new StringBuilder(
-				"This InMemoryDataSource holds the following tuples of constant names, one tuple per line:");
-		for (int i = 0; i < getData().length; i++) {
-			for (int j = 0; j < this.data[i].length; j++) {
-				sb.append(this.data[i][j] + " ");
-			}
-			sb.append("\n");
-		}
-		return sb.toString();
 	}
 }

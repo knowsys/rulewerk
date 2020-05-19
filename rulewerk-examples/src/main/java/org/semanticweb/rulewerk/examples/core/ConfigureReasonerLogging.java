@@ -25,6 +25,7 @@ import java.io.IOException;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.LogLevel;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
 
@@ -65,7 +66,7 @@ public class ConfigureReasonerLogging {
 
 	public static void main(final String[] args) throws IOException, ParsingException {
 
-		try (final Reasoner reasoner = Reasoner.getInstance()) {
+		try (final Reasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
 			/* exists z. B(?y, !z) :- A(?x, ?y) . */
 			kb.addStatements(RuleParser.parseRule("B(?Y, !Z) :- A(?X, ?Y) ."));

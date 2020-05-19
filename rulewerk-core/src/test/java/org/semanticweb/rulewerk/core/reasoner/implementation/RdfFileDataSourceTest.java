@@ -1,10 +1,8 @@
 package org.semanticweb.rulewerk.core.reasoner.implementation;
 
-import static org.junit.Assert.assertEquals;
-
 /*-
  * #%L
- * Rulewerk Core Components
+ * Rulewerk VLog Reasoner Support
  * %%
  * Copyright (C) 2018 - 2020 Rulewerk Developers
  * %%
@@ -26,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSourceTestUtils;
 
 public class RdfFileDataSourceTest {
 
@@ -45,26 +42,10 @@ public class RdfFileDataSourceTest {
 
 	@Test
 	public void testConstructor() throws IOException {
-
-		final String dirCanonicalPath = new File(FileDataSourceTestUtils.INPUT_FOLDER).getCanonicalPath();
 		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
 		final RdfFileDataSource zippedRdfFileDataSource = new RdfFileDataSource(zippedRdfFile);
 
-		FileDataSourceTestUtils.testConstructor(unzippedRdfFileDataSource, new File(unzippedRdfFile).getName(), dirCanonicalPath, "file");
-		FileDataSourceTestUtils.testConstructor(zippedRdfFileDataSource, new File(zippedRdfFile).getName(), dirCanonicalPath, "file");
+		FileDataSourceTestUtils.testConstructor(unzippedRdfFileDataSource, new File(unzippedRdfFile).getName());
+		FileDataSourceTestUtils.testConstructor(zippedRdfFileDataSource, new File(zippedRdfFile).getName());
 	}
-
-	@Test
-	public void testToConfigString() throws IOException {
-		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
-		final RdfFileDataSource zippedRdfFileDataSource = new RdfFileDataSource(zippedRdfFile);
-
-		final String expectedDirCanonicalPath = new File(FileDataSourceTestUtils.INPUT_FOLDER).getCanonicalPath();
-		final String expectedConfigString = "EDB%1$d_predname=%2$s\n" + "EDB%1$d_type=INMEMORY\n" + "EDB%1$d_param0="
-				+ expectedDirCanonicalPath + "\n" + "EDB%1$d_param1=file\n";
-
-		assertEquals(expectedConfigString, unzippedRdfFileDataSource.toConfigString());
-		assertEquals(expectedConfigString, zippedRdfFileDataSource.toConfigString());
-	}
-
 }

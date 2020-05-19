@@ -24,22 +24,29 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.QueryResult;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
-import org.semanticweb.rulewerk.core.reasoner.implementation.VLogReasoner;
+import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 /**
- * Interface that exposes the existential rule reasoning capabilities of VLog.
- * <br>
+ * Interface that exposes the (existential) rule reasoning capabilities of a
+ * Reasoner. <br>
  * The <b>knowledge base</b> of the reasoner can be loaded with explicit facts
  * and <b>existential rules</b> that would infer implicit <b>facts</b> trough
  * reasoning. <br>
@@ -72,23 +79,48 @@ import org.semanticweb.rulewerk.core.reasoner.implementation.VLogReasoner;
  */
 
 public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
-
-	/**
-	 * Factory method that to instantiate a Reasoner with an empty knowledge base.
-	 *
-	 * @return a {@link VLogReasoner} instance.
-	 */
-	static Reasoner getInstance() {
-		final KnowledgeBase knowledgeBase = new KnowledgeBase();
-		return new VLogReasoner(knowledgeBase);
-	}
-
 	/**
 	 * Getter for the knowledge base to reason on.
 	 *
 	 * @return the reasoner's knowledge base
 	 */
 	KnowledgeBase getKnowledgeBase();
+
+	/**
+	 * Interface for actions to perform on inferences.
+	 *
+	 * Essentially a {@link java.util.function.BiConsumer}, but with a more
+	 * permissive Exception spec.
+	 */
+	@FunctionalInterface
+	public interface InferenceAction {
+		void accept(Predicate predicate, List<Term> termList) throws IOException;
+	}
+
+	/**
+	 * Performs the given action for each inference.
+	 *
+	 * @param action The action to be performed for each inference.
+	 * @return the correctness of the inferences, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
+	 * @throws IOException
+	 */
+	Correctness forEachInference(InferenceAction action) throws IOException;
+
+	/**
+	 * Performs the given action for each inference, swallowing checked exceptions.
+	 *
+	 * @param action The action to be performed for each inference.
+	 * @return the correctness of the inferences, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
+	 */
+	default Correctness unsafeForEachInference(BiConsumer<Predicate, List<Term>> action) {
+		try {
+			return forEachInference(action::accept);
+		} catch (IOException e) {
+			throw new RulewerkRuntimeException(e);
+		}
+	}
 
 	/**
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
@@ -99,11 +131,37 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
 	 */
-	Correctness writeInferences(OutputStream stream) throws IOException;
+	default Correctness writeInferences(OutputStream stream) throws IOException {
+		final KnowledgeBase knowledgeBase = getKnowledgeBase();
+		stream.write(Serializer.getBaseAndPrefixDeclarations(knowledgeBase).getBytes());
+		return forEachInference((predicate, termList) -> stream
+				.write(Serializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri).getBytes()));
+	}
 
 	/**
-	 * Exports all the (explicit and implicit) facts inferred during reasoning of
-	 * the knowledge base to a desired file.
+	 * Return a stream of all inferences.
+	 *
+	 * @return a {@link Stream} of {@link Fact} objects corresponding to all
+	 *         inferences.
+	 */
+	default Stream<Fact> getInferences() {
+		Stream.Builder<Fact> builder = Stream.builder();
+		unsafeForEachInference((predicate, termList) -> builder.accept(Expressions.makeFact(predicate, termList)));
+
+		return builder.build();
+	}
+
+	/**
+	 * Return the {@link Correctness} status of query answers.
+	 *
+	 * @return the correctnes of query answers, depending on the state of the
+	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
+	 */
+	Correctness getCorrectness();
+
+	/**
+	 * Exports all the (explicit and implicit) facts inferred during
+	 * reasoning of the knowledge base to a desired file.
 	 *
 	 * @param filePath a String of the file path for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the

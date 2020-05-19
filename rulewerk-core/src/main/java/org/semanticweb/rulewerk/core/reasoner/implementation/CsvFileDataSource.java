@@ -77,4 +77,8 @@ public class CsvFileDataSource extends FileDataSource {
 		return Serializer.getString(this);
 	}
 
+	@Override
+	public void accept(DataSourceConfigurationVisitor visitor) throws IOException {
+		visitor.visit(this);
+	}
 }

@@ -36,9 +36,9 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
  * @author Irina Dragoste
  *
  */
-public class SparqlQueryResultDataSource extends VLogDataSource {
+public class SparqlQueryResultDataSource implements ReasonerDataSource {
 
-	private static final String DATASOURCE_TYPE_CONFIG_VALUE = "SPARQL";
+
 
 	private final URL endpoint;
 	private final String queryVariables;
@@ -108,21 +108,6 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 		return this.queryVariables;
 	}
 
-	@Override
-	public final String toConfigString() {
-		final String configStringPattern =
-
-				PREDICATE_NAME_CONFIG_LINE +
-
-						DATASOURCE_TYPE_CONFIG_PARAM + "=" + DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
-
-						"EDB%1$d_param0=" + this.endpoint + "\n" + "EDB%1$d_param1=" + this.queryVariables + "\n" +
-
-						"EDB%1$d_param2=" + this.queryBody + "\n";
-
-		return configStringPattern;
-	}
-
 	static String getQueryVariablesList(LinkedHashSet<Variable> queryVariables) {
 		final StringBuilder sb = new StringBuilder();
 		final Iterator<Variable> iterator = queryVariables.iterator();
@@ -175,6 +160,11 @@ public class SparqlQueryResultDataSource extends VLogDataSource {
 	@Override
 	public String getSyntacticRepresentation() {
 		return Serializer.getString(this);
+	}
+
+	@Override
+	public void accept(DataSourceConfigurationVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }
