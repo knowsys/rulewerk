@@ -25,16 +25,20 @@ import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.Constant;
@@ -43,11 +47,14 @@ import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
+import org.semanticweb.rulewerk.core.reasoner.Reasoner.InferenceAction;
 import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
 
 public class VLogReasonerWriteInferencesTest {
@@ -121,6 +128,58 @@ public class VLogReasonerWriteInferencesTest {
 
 		assertEquals(11, getInferences().size());
 		assertTrue("the base declaration is present", getInferences().contains("@base <http://example.org/> ."));
+	}
+
+	@Test
+	public void getInferences_example_succeeds() throws IOException {
+		final List<String> inferences = getInferences();
+		try (final Reasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			final List<String> fromStream = reasoner.getInferences()
+				.map(Fact::getSyntacticRepresentation)
+				.collect(Collectors.toList());
+			assertEquals(inferences, fromStream);
+		}
+	}
+
+	@Test
+	public void unsafeForEachInference_example_succeeds() throws IOException {
+		final List<String> inferences = getInferences();
+		try (final Reasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			final List<String> fromUnsafe = new ArrayList<>();
+
+			reasoner.unsafeForEachInference((Predicate, terms) -> {
+				fromUnsafe.add(Expressions.makeFact(Predicate, terms).getSyntacticRepresentation());
+			});
+
+			assertEquals(inferences, fromUnsafe);
+		}
+	}
+
+	@Test(expected = IOException.class)
+	public void forEachInference_throwingAction_throws() throws IOException {
+		InferenceAction action = mock(InferenceAction.class);
+		doThrow(IOException.class).when(action).accept(any(Predicate.class), anyList());
+		try (final Reasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			reasoner.forEachInference(action);
+		}
+	}
+
+	private class ThrowingConsumer implements BiConsumer<Predicate, List<Term>> {
+		@Override
+		public void accept(Predicate predicate, List<Term> terms) {
+			VLogQueryResultUtils.sneakilyThrowIOException();
+		}
+	}
+
+	@Test(expected = RulewerkRuntimeException.class)
+	public void unsafeForEachInference_throwingAction_throws() throws IOException {
+		try (final Reasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			reasoner.unsafeForEachInference(new ThrowingConsumer());
+		}
 	}
 
 	private List<String> getInferences() throws IOException {
