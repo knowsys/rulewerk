@@ -27,9 +27,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
-
-import org.semanticweb.rulewerk.core.model.api.Predicate;
 
 import karmaresearch.vlog.Term;
 import karmaresearch.vlog.TermQueryResultIterator;

@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
@@ -45,7 +43,6 @@ import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
 
 /**
  * Interface that exposes the (existential) rule reasoning capabilities of a

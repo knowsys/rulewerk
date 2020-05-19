@@ -1,6 +1,4 @@
-package org.semanticweb.rulewerk.reasoner.vlog;
-
-import static org.junit.Assert.assertEquals;
+package org.semanticweb.rulewerk.core.reasoner.implementation;
 
 /*-
  * #%L
@@ -27,30 +25,28 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
+public class CsvFileDataSourceTest {
 
-public class RdfFileDataSourceTest {
-
-	private final String unzippedRdfFile = FileDataSourceTestUtils.INPUT_FOLDER + "file.nt";
-	private final String zippedRdfFile = FileDataSourceTestUtils.INPUT_FOLDER + "file.nt.gz";
+	private final String ntFile = FileDataSourceTestUtils.INPUT_FOLDER + "file.nt";
+	private final String csvFile = FileDataSourceTestUtils.INPUT_FOLDER + "file.csv";
+	private final String gzFile = csvFile + ".gz";
 
 	@Test(expected = NullPointerException.class)
 	public void testConstructorNullFile() throws IOException {
-		new RdfFileDataSource(null);
+		new CsvFileDataSource(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorFalseExtension() throws IOException {
-		new RdfFileDataSource(FileDataSourceTestUtils.INPUT_FOLDER + "file.csv");
+		new CsvFileDataSource(ntFile);
 	}
 
 	@Test
 	public void testConstructor() throws IOException {
-		final RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(unzippedRdfFile);
-		final RdfFileDataSource zippedRdfFileDataSource = new RdfFileDataSource(zippedRdfFile);
+		final CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(csvFile);
+		final CsvFileDataSource zippedCsvFileDataSource = new CsvFileDataSource(gzFile);
 
-		FileDataSourceTestUtils.testConstructor(unzippedRdfFileDataSource, new File(unzippedRdfFile).getName());
-		FileDataSourceTestUtils.testConstructor(zippedRdfFileDataSource, new File(zippedRdfFile).getName());
+		FileDataSourceTestUtils.testConstructor(unzippedCsvFileDataSource, new File(csvFile).getName());
+		FileDataSourceTestUtils.testConstructor(zippedCsvFileDataSource, new File(gzFile).getName());
 	}
 }

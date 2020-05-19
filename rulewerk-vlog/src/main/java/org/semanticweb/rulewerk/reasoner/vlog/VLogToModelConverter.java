@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.reasoner.vlog;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,6 @@ import org.semanticweb.rulewerk.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.NamedNullImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-import org.semanticweb.rulewerk.core.reasoner.implementation.QueryAnswerCountImpl;
 import org.semanticweb.rulewerk.core.reasoner.implementation.QueryResultImpl;
 
 /**
@@ -84,15 +83,15 @@ class VLogToModelConverter {
 	static Term toTerm(karmaresearch.vlog.Term vLogTerm) {
 		final String name = vLogTerm.getName();
 		switch (vLogTerm.getTermType()) {
-		case CONSTANT:
-			return toConstant(name);
-		case BLANK:
-			return new NamedNullImpl(name);
-		case VARIABLE:
-			throw new IllegalArgumentException(
-					"VLog variables cannot be converted without knowing if they are universally or existentially quantified.");
-		default:
-			throw new IllegalArgumentException("Unexpected VLog term type: " + vLogTerm.getTermType());
+			case CONSTANT:
+				return toConstant(name);
+			case BLANK:
+				return new NamedNullImpl(name);
+			case VARIABLE:
+				throw new IllegalArgumentException(
+						"VLog variables cannot be converted without knowing if they are universally or existentially quantified.");
+			default:
+				throw new IllegalArgumentException("Unexpected VLog term type: " + vLogTerm.getTermType());
 		}
 	}
 

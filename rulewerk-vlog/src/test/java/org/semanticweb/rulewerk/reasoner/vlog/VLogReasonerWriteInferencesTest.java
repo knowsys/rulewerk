@@ -51,7 +51,6 @@ import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner.InferenceAction;
@@ -135,9 +134,8 @@ public class VLogReasonerWriteInferencesTest {
 		final List<String> inferences = getInferences();
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
-			final List<String> fromStream = reasoner.getInferences()
-				.map(Fact::getSyntacticRepresentation)
-				.collect(Collectors.toList());
+			final List<String> fromStream = reasoner.getInferences().map(Fact::getSyntacticRepresentation)
+					.collect(Collectors.toList());
 			assertEquals(inferences, fromStream);
 		}
 	}

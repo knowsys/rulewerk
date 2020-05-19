@@ -54,7 +54,6 @@ import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.ReasonerState;
 import org.semanticweb.rulewerk.core.reasoner.RuleRewriteStrategy;
 import org.semanticweb.rulewerk.core.reasoner.implementation.EmptyQueryResultIterator;
-import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.QueryAnswerCountImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -231,7 +230,8 @@ public class VLogReasoner implements Reasoner {
 		}
 	}
 
-	void load(final Predicate predicate, final VLogInMemoryDataSource inMemoryDataSource) throws EDBConfigurationException {
+	void load(final Predicate predicate, final VLogInMemoryDataSource inMemoryDataSource)
+			throws EDBConfigurationException {
 		final String vLogPredicateName = ModelToVLogConverter.toVLogPredicate(predicate);
 
 		this.vLog.addData(vLogPredicateName, inMemoryDataSource.getData());
