@@ -27,10 +27,11 @@ You need to use Java 1.8 or above. Available modules include:
 * **rulewerk-rdf**: support for reading from RDF files in Java (not required for loading RDF directly during reasoning)
 * **rulewerk-owlapi**: support for converting rules from OWL ontology, loaded with the OWL API
 * **rulewerk-client**: stand-alone application that builds a [command-line client](https://github.com/knowsys/rulewerk/wiki/Standalone-client) for Rulewerk.
+* **rulewerk-vlog**: support for using [VLog](https://github.com/karmaresearch/vlog) as a reasoning backend for Rulewerk.
 
-The released packages use rulewerk-base, which packages system-dependent binaries for Linux, macOS, and Windows, and should work out of the box with current versions of these systems (for linux, you will need at least libstdc++-v3.4.22; for macOS, you will need at least macOS 10.14). In case of problems, or if you are using the current development version, own binaries can be compiled as follows:
+The released packages use vlog-base, which packages system-dependent binaries for Linux, macOS, and Windows, and should work out of the box with current versions of these systems (for linux, you will need at least libstdc++-v3.4.22; for macOS, you will need at least macOS 10.14). In case of problems, or if you are using the current development version, own binaries can be compiled as follows:
 
-* Run [build-vlog-library.sh](https://github.com/knowsys/rulewerk/blob/master/build-vlog-library.sh) or execute the commands in this file manually. This will compile a local jar file on your system, copy it to ```./rulewerk-core/lib/jvlog-local.jar```, and install the new jar locally in Maven in place of the distributed version of rulewerk-base.
+* Run [build-vlog-library.sh](https://github.com/knowsys/rulewerk/blob/master/build-vlog-library.sh) or execute the commands in this file manually. This will compile a local jar file on your system, copy it to ```./rulewerk-vlog/lib/jvlog-local.jar```, and install the new jar locally in Maven in place of the distributed version of vlog-base.
 * Run ```mvn install``` to test if the setup works
 
 

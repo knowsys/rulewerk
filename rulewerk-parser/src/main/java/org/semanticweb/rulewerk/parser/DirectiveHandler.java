@@ -21,13 +21,11 @@ package org.semanticweb.rulewerk.parser;
  */
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;

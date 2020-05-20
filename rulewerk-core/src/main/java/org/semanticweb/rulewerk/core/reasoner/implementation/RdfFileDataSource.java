@@ -80,4 +80,9 @@ public class RdfFileDataSource extends FileDataSource {
 	public Optional<Integer> getRequiredArity() {
 		return Optional.of(3);
 	}
+
+	@Override
+	public void accept(DataSourceConfigurationVisitor visitor) throws IOException {
+		visitor.visit(this);
+	}
 }

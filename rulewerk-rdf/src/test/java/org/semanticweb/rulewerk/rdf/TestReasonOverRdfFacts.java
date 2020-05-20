@@ -44,7 +44,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
-import org.semanticweb.rulewerk.core.reasoner.implementation.VLogReasoner;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
 public class TestReasonOverRdfFacts {
 

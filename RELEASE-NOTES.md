@@ -11,10 +11,15 @@ Breaking changes:
   `reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString)).getCount()`
 * The `FileDataSource` constructor and those of derived classes now
   take the path to a file instead of `File` object.
+* The VLog backend has been moved to a new `rulewerk-vlog` module,
+  changing several import paths. `Reasoner.getInstance()` is
+  gone. Furthermore, InMemoryDataSource has become an abstract class,
+  use VLogInMemoryDataSource where applicable.
 
 New features:
 * Counting query answers is more efficient now, using `Reasoner.countQueryAnswers()`
 * All inferred facts can be serialized to a file using `Reasoner.writeInferences()`
+* All inferred facts can be obtained as a Stream using `Reasoner.getInferences()`
 * Knowledge bases can be serialized to a file using `KnowlegdeBase.writeKnowledgeBase()`
 * Rules files may import other rules files using `@import` and
   `@import-relative`, where the latter resolves relative IRIs using

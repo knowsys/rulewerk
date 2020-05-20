@@ -21,6 +21,6 @@ else
 	cd ../../..
 fi
 
-mkdir -p rulewerk-core/lib
-cp local_builds/jvlog.jar rulewerk-core/lib/jvlog-local.jar
+mkdir -p rulewerk-vlog/lib
+cp local_builds/jvlog.jar rulewerk-vlog/lib/jvlog-local.jar
 mvn initialize -Pdevelopment

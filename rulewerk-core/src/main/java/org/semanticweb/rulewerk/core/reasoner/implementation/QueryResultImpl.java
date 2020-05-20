@@ -26,15 +26,15 @@ import org.semanticweb.rulewerk.core.model.api.QueryResult;
 import org.semanticweb.rulewerk.core.model.api.Term;
 
 /**
- * Implements {@link QueryResult}s. 
+ * Implements {@link QueryResult}s.
  * @author Irina Dragoste
  *
  */
-final class QueryResultImpl implements QueryResult {
+public final class QueryResultImpl implements QueryResult {
 
 	private final List<Term> terms;
 
-	QueryResultImpl(List<Term> terms) {
+	public QueryResultImpl(List<Term> terms) {
 		this.terms = terms;
 	}
 

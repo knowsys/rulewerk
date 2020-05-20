@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 import org.semanticweb.rulewerk.examples.ExamplesUtils;
 import org.semanticweb.rulewerk.graal.GraalConjunctiveQueryToRule;
 import org.semanticweb.rulewerk.graal.GraalToRulewerkModelConverter;
@@ -101,7 +102,7 @@ public class AddDataFromDlgpFile {
 		 * the reasoner automatically.
 		 */
 
-		try (Reasoner reasoner = Reasoner.getInstance()) {
+		try (Reasoner reasoner = new VLogReasoner(new KnowledgeBase())) {
 			final KnowledgeBase kb = reasoner.getKnowledgeBase();
 
 			/*

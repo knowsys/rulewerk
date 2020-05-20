@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.semanticweb.rulewerk.core.exceptions.RulewerkException;
-import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.parser.DirectiveArgument;
