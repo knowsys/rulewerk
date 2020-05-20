@@ -25,6 +25,7 @@
 		<module>rulewerk-parser</module>
 		<module>rulewerk-client</module>
 		<module>coverage</module>
+		<module>rulewerk-reliances</module>
 	</modules>
 
 	<licenses>
