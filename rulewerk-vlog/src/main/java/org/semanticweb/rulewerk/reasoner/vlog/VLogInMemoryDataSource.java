@@ -38,22 +38,6 @@ public class VLogInMemoryDataSource extends InMemoryDataSource {
 	}
 
 	/**
-	 * Transforms a constant name in a format suitable for the
-	 * reasoner. The default implementation assumes the VLog backend.
-	 * @param constantName the name of the constant
-	 *
-	 * @return a transformed version of constantName that is suitable for the Reasoner.
-	 */
-	protected String transformConstantName(String constantName) {
-		if (!constantName.startsWith("\"") && constantName.contains(":")) {
-			// enclose IRIs with brackets
-			return "<" + constantName + ">";
-		}
-		// it's either a datatype literal, or a relative IRI, leave it unchanged
-		return constantName;
-	}
-
-	/**
 	 * Adds a fact to this data source. The number of constant names must agree with
 	 * the arity of this data source.
 	 *
@@ -68,7 +52,7 @@ public class VLogInMemoryDataSource extends InMemoryDataSource {
 		}
 		this.data[this.nextEmptyTuple] = new String[this.arity];
 		for (int i = 0; i < this.arity; i++) {
-			this.data[this.nextEmptyTuple][i] = transformConstantName(constantNames[i]);
+			this.data[this.nextEmptyTuple][i] = TermToVLogConverter.getVLogNameForConstantName(constantNames[i]);
 		}
 		this.nextEmptyTuple++;
 	}

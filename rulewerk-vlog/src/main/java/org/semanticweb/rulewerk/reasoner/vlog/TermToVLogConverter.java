@@ -1,5 +1,11 @@
 package org.semanticweb.rulewerk.reasoner.vlog;
 
+import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
+import org.semanticweb.rulewerk.core.model.api.Constant;
+import org.semanticweb.rulewerk.core.model.api.DatatypeConstant;
+import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
+import org.semanticweb.rulewerk.core.model.api.LanguageStringConstant;
+
 /*-
  * #%L
  * Rulewerk VLog Reasoner Support
@@ -22,11 +28,6 @@ package org.semanticweb.rulewerk.reasoner.vlog;
 
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.api.TermType;
-import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
-import org.semanticweb.rulewerk.core.model.api.Constant;
-import org.semanticweb.rulewerk.core.model.api.DatatypeConstant;
-import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
-import org.semanticweb.rulewerk.core.model.api.LanguageStringConstant;
 import org.semanticweb.rulewerk.core.model.api.TermVisitor;
 import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
 import org.semanticweb.rulewerk.core.model.implementation.RenamedNamedNull;
@@ -48,7 +49,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * same name and type {@link karmaresearch.vlog.Term.TermType#CONSTANT}.
 	 */
 	@Override
-	public karmaresearch.vlog.Term visit(AbstractConstant term) {
+	public karmaresearch.vlog.Term visit(final AbstractConstant term) {
 		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, getVLogNameForConstant(term));
 	}
 
@@ -57,7 +58,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * same name and type {@link karmaresearch.vlog.Term.TermType#CONSTANT}.
 	 */
 	@Override
-	public karmaresearch.vlog.Term visit(DatatypeConstant term) {
+	public karmaresearch.vlog.Term visit(final DatatypeConstant term) {
 		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
 	}
 
@@ -67,7 +68,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * {@link karmaresearch.vlog.Term.TermType#CONSTANT}.
 	 */
 	@Override
-	public karmaresearch.vlog.Term visit(LanguageStringConstant term) {
+	public karmaresearch.vlog.Term visit(final LanguageStringConstant term) {
 		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
 	}
 
@@ -77,16 +78,12 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * @param constant
 	 * @return VLog constant string
 	 */
-	public static String getVLogNameForConstant(Constant constant) {
+	public static String getVLogNameForConstant(final Constant constant) {
+		final String constantName = constant.getName();
 		if (constant.getType() == TermType.ABSTRACT_CONSTANT) {
-			String rulewerkConstantName = constant.getName();
-			if (rulewerkConstantName.contains(":")) { // enclose IRIs with < >
-				return "<" + rulewerkConstantName + ">";
-			} else { // keep relative IRIs unchanged
-				return rulewerkConstantName;
-			}
+			return getVLogNameForIRI(constantName);
 		} else { // datatype literal
-			return constant.getName();
+			return constantName;
 		}
 	}
 
@@ -96,7 +93,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * @param named null
 	 * @return VLog constant string
 	 */
-	public static String getVLogNameForNamedNull(NamedNull namedNull) {
+	public static String getVLogNameForNamedNull(final NamedNull namedNull) {
 		if (namedNull instanceof RenamedNamedNull) {
 			return namedNull.getName();
 		} else {
@@ -111,10 +108,15 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * @param rulewerkConstantName
 	 * @return VLog constant string
 	 */
-	public static String getVLogNameForConstantName(String rulewerkConstantName) {
+	public static String getVLogNameForConstantName(final String rulewerkConstantName) {
 		if (rulewerkConstantName.startsWith("\"")) { // keep datatype literal strings unchanged
 			return rulewerkConstantName;
-		} else if (rulewerkConstantName.contains(":")) { // enclose IRIs with < >
+		} else
+			return getVLogNameForIRI(rulewerkConstantName);
+	}
+
+	private static String getVLogNameForIRI(final String rulewerkConstantName) {
+		if (rulewerkConstantName.contains(":")) { // enclose absolute IRIs with < >
 			return "<" + rulewerkConstantName + ">";
 		} else { // keep relative IRIs unchanged
 			return rulewerkConstantName;
@@ -126,7 +128,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * same name and type {@link karmaresearch.vlog.Term.TermType#VARIABLE}.
 	 */
 	@Override
-	public karmaresearch.vlog.Term visit(UniversalVariable term) {
+	public karmaresearch.vlog.Term visit(final UniversalVariable term) {
 		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, term.getName());
 	}
 
@@ -135,7 +137,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * the same name and type {@link karmaresearch.vlog.Term.TermType#VARIABLE}.
 	 */
 	@Override
-	public karmaresearch.vlog.Term visit(ExistentialVariable term) {
+	public karmaresearch.vlog.Term visit(final ExistentialVariable term) {
 		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.VARIABLE, "!" + term.getName());
 	}
 
@@ -144,7 +146,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * name and type {@link karmaresearch.vlog.Term.TermType#BLANK}.
 	 */
 	@Override
-	public karmaresearch.vlog.Term visit(NamedNull term) {
+	public karmaresearch.vlog.Term visit(final NamedNull term) {
 		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.BLANK, term.getName());
 	}
 

@@ -5,21 +5,23 @@ Rulewerk v0.6.0
 -------------
 
 Breaking changes:
-* VLog4j is now called Rulewerk.
-* In the example package, `ExamplesUtils.getQueryAnswerCount(queryString, reasoner)` does no
+* VLog4j is now called Rulewerk. Consequently, the groupId, artifact Ids, and package names
+  of the project have changed.
+* In the examples package, `ExamplesUtils.getQueryAnswerCount(queryString, reasoner)` does no
   longer exist. It can be replaced by
   `reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString)).getCount()`
-* The `FileDataSource` constructor and those of derived classes now
-  take the path to a file instead of `File` object.
+* The `FileDataSource` constructor and those of child classes (`CsvFileDataSource`, `RdfFileDataSource`)
+  now take the String path to a file instead of `File` object.
 * The VLog backend has been moved to a new `rulewerk-vlog` module,
   changing several import paths. `Reasoner.getInstance()` is
-  gone. Furthermore, InMemoryDataSource has become an abstract class,
-  use VLogInMemoryDataSource where applicable.
+  gone. Furthermore, `InMemoryDataSource` has become an abstract class,
+  use `VLogInMemoryDataSource` where applicable.
 
 New features:
 * Counting query answers is more efficient now, using `Reasoner.countQueryAnswers()`
 * All inferred facts can be serialized to a file using `Reasoner.writeInferences()`
 * All inferred facts can be obtained as a Stream using `Reasoner.getInferences()`
+* `Reasoner.getCorrectness()` returns the correctness result of the last reasoning task.
 * Knowledge bases can be serialized to a file using `KnowlegdeBase.writeKnowledgeBase()`
 * Rules files may import other rules files using `@import` and
   `@import-relative`, where the latter resolves relative IRIs using
@@ -35,6 +37,8 @@ Other improvements:
 * Prefix declarations are now kept as part of the Knowledge Base and
   are used to abbreviate names when exporting inferences.
 
+Bugfixes:
+* Several reasoning errors in VLog (backend) have been discovered and fixed in the version used now
 
 VLog4j v0.5.0
 -------------

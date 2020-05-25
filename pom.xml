@@ -7,7 +7,7 @@
 
 	<groupId>org.semanticweb.rulewerk</groupId>
 	<artifactId>rulewerk-parent</artifactId>
-	<version>0.6.0-SNAPSHOT</version>
+	<version>0.7.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Rulewerk</name>
@@ -20,10 +20,10 @@
 		<module>rulewerk-core</module>
 		<module>rulewerk-vlog</module>
 		<module>rulewerk-rdf</module>
-		<module>rulewerk-examples</module>
 		<module>rulewerk-owlapi</module>
 		<module>rulewerk-graal</module>
 		<module>rulewerk-parser</module>
+		<module>rulewerk-examples</module>
 		<module>rulewerk-client</module>
 		<module>coverage</module>
 		<module>rulewerk-reliances</module>
@@ -63,6 +63,16 @@
 			<id>maximilian</id>
 			<name>Maximilian Marx</name>
 			<email>maximilian.marx@tu-dresden.de</email>
+		</developer>
+		<developer>
+			<id>larry</id>
+			<name>Larry González</name>
+			<email>larry.gonzalez@tu-dresden.de</email>
+		</developer>
+		<developer>
+			<id>ali</id>
+			<name>Ali Elhalawati</name>
+			<email>ali.elhalawati@tu-dresden.de</email>
 		</developer>
 	</developers>
 

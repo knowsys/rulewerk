@@ -84,7 +84,7 @@ public class VLogKnowledgeBase {
 	}
 
 	boolean hasData() {
-		return !this.edbPredicates.isEmpty() && !this.aliasedEdbPredicates.isEmpty();
+		return !this.edbPredicates.isEmpty() || !this.aliasedEdbPredicates.isEmpty();
 	}
 
 	public boolean hasRules() {

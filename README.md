@@ -9,15 +9,18 @@ A Java library based on the [VLog rule engine](https://github.com/karmaresearch/
 Installation
 ------------
 
-The current release of Rulewerk is version 0.5.0 and was released as *vlog4j* (all future releases will be published as *rulewerk*). The easiest way of using the library is with Maven. Maven users must add the following dependency to the dependencies in their pom.xml file:
+The current release of Rulewerk is version 0.6.0. The easiest way of using the library is with Maven. Maven users must add the following dependency to the dependencies in their pom.xml file:
 
 ```
 <dependency>
-	<groupId>org.semanticweb.vlog4j</groupId>
-	<artifactId>vlog4j-core</artifactId>
-	<version>0.5.0</version>
+	<groupId>org.semanticweb.rulewerk</groupId>
+	<artifactId>rulewerk-core</artifactId>
+	<version>0.6.0</version>
 </dependency>
 ```
+
+Previous to version `0.6.0`, *rulewerk* project name was *vlog4j*. Older versions released under name *vlog4j* have `<groupId>org.semanticweb.vlog4j</groupId>` and `<artifactId>vlog4j-core</artifactId>`, the latest version being version `0.5.0`.
+
 
 You need to use Java 1.8 or above. Available modules include:
 
