@@ -25,12 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.semanticweb.rulewerk.core.model.implementation.ConjunctionImpl;
-import org.semanticweb.rulewerk.core.model.implementation.ExistentialVariableImpl;
-import org.semanticweb.rulewerk.core.model.implementation.NegativeLiteralImpl;
-import org.semanticweb.rulewerk.core.model.implementation.PositiveLiteralImpl;
-import org.semanticweb.rulewerk.core.model.implementation.RuleImpl;
-import org.semanticweb.rulewerk.core.model.implementation.UniversalVariableImpl;
+import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
@@ -41,26 +36,24 @@ public class VariableRenamer {
 
 	static private Term renameVariables(Term term, int idx1) {
 		if (term.getType() == TermType.UNIVERSAL_VARIABLE) {
-			return new UniversalVariableImpl(term.getName() + "000" + idx1);
+			return Expressions.makeUniversalVariable(term.getName() + "000" + idx1);
 		} else if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
-			return new ExistentialVariableImpl(term.getName() + "000" + idx1 );
+			return Expressions.makeExistentialVariable(term.getName() + "000" + idx1);
 		} else {
 			return term;
 		}
 	}
 
 	static private Literal renameVariables(Literal literal, int idx1) {
-		Literal newLiteral;
 		List<Term> newTerms = new ArrayList<>();
 		for (Term term : literal.getArguments()) {
 			newTerms.add(renameVariables(term, idx1));
 		}
 		if (literal.isNegated()) {
-			newLiteral = new NegativeLiteralImpl(literal.getPredicate(), newTerms);
+			return Expressions.makeNegativeLiteral(literal.getPredicate(), newTerms);
 		} else {
-			newLiteral = new PositiveLiteralImpl(literal.getPredicate(), newTerms);
+			return Expressions.makePositiveLiteral(literal.getPredicate(), newTerms);
 		}
-		return newLiteral;
 	}
 
 	static public Rule renameVariables(Rule rule, int idx) {
@@ -68,33 +61,30 @@ public class VariableRenamer {
 		rule.getBody().forEach(literal -> newBody.add(renameVariables(literal, idx)));
 
 		List<PositiveLiteral> newHead = new ArrayList<>();
-		rule.getHead()
-				.forEach(literal -> newHead.add((PositiveLiteral) renameVariables(literal, idx)));
+		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) renameVariables(literal, idx)));
 
-		return new RuleImpl(new ConjunctionImpl<>(newHead), new ConjunctionImpl<>(newBody));
+		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
 	}
 
 	static private Term renameVariables(Term term, LiteralSetUnifier lsu) {
 		if (term.getType() == TermType.UNIVERSAL_VARIABLE && lsu.unifier.containsKey(term.getName())) {
-			return new UniversalVariableImpl(lsu.unifier.get(term.getName()));
+			return Expressions.makeUniversalVariable(lsu.unifier.get(term.getName()));
 		} else if (term.getType() == TermType.EXISTENTIAL_VARIABLE && lsu.unifier.containsKey(term.getName())) {
-			return new ExistentialVariableImpl(lsu.unifier.get(term.getName()));
+			return Expressions.makeExistentialVariable(lsu.unifier.get(term.getName()));
 		} else
 			return term;
 	}
 
 	static private Literal renameVariables(Literal literal, LiteralSetUnifier lsu) {
-		Literal newLiteral;
 		List<Term> newTerms = new ArrayList<>();
 		for (Term term : literal.getArguments()) {
 			newTerms.add(renameVariables(term, lsu));
 		}
 		if (literal.isNegated()) {
-			newLiteral = new NegativeLiteralImpl(literal.getPredicate(), newTerms);
+			return Expressions.makeNegativeLiteral(literal.getPredicate(), newTerms);
 		} else {
-			newLiteral = new PositiveLiteralImpl(literal.getPredicate(), newTerms);
+			return Expressions.makePositiveLiteral(literal.getPredicate(), newTerms);
 		}
-		return newLiteral;
 	}
 
 	static public Set<Literal> renameVariables(Set<Literal> set, LiteralSetUnifier lsu) {
@@ -110,6 +100,6 @@ public class VariableRenamer {
 		List<PositiveLiteral> newHead = new ArrayList<>();
 		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) renameVariables(literal, lsu)));
 
-		return new RuleImpl(new ConjunctionImpl<>(newHead), new ConjunctionImpl<>(newBody));
+		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
 	}
 }
