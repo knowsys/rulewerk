@@ -21,6 +21,7 @@ package org.semanticweb.rulewerk.reasoner.vlog;
  */
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -42,6 +43,7 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Statement;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 import org.semanticweb.rulewerk.core.reasoner.AcyclicityNotion;
 import org.semanticweb.rulewerk.core.reasoner.Algorithm;
 import org.semanticweb.rulewerk.core.reasoner.Correctness;
@@ -95,12 +97,12 @@ public class VLogReasoner implements Reasoner {
 	 */
 	private boolean reasoningCompleted;
 
-	public VLogReasoner(KnowledgeBase knowledgeBase) {
+	public VLogReasoner(final KnowledgeBase knowledgeBase) {
 		super();
 		this.knowledgeBase = knowledgeBase;
 		this.knowledgeBase.addListener(this);
 
-		setLogLevel(this.internalLogLevel);
+		this.setLogLevel(this.internalLogLevel);
 	}
 
 	@Override
@@ -111,7 +113,7 @@ public class VLogReasoner implements Reasoner {
 	@Override
 	public void setAlgorithm(final Algorithm algorithm) {
 		Validate.notNull(algorithm, "Algorithm cannot be null!");
-		validateNotClosed();
+		this.validateNotClosed();
 		this.algorithm = algorithm;
 	}
 
@@ -121,8 +123,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setReasoningTimeout(Integer seconds) {
-		validateNotClosed();
+	public void setReasoningTimeout(final Integer seconds) {
+		this.validateNotClosed();
 		if (seconds != null) {
 			Validate.isTrue(seconds > 0, "Only strictly positive timeout period allowed!", seconds);
 		}
@@ -135,8 +137,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) {
-		validateNotClosed();
+	public void setRuleRewriteStrategy(final RuleRewriteStrategy ruleRewritingStrategy) {
+		this.validateNotClosed();
 		Validate.notNull(ruleRewritingStrategy, "Rewrite strategy cannot be null!");
 		this.ruleRewriteStrategy = ruleRewritingStrategy;
 	}
@@ -155,19 +157,19 @@ public class VLogReasoner implements Reasoner {
 	 */
 	// @Override
 	void load() throws IOException {
-		validateNotClosed();
+		this.validateNotClosed();
 
 		switch (this.reasonerState) {
 			case KB_NOT_LOADED:
-				loadKnowledgeBase();
+				this.loadKnowledgeBase();
 				break;
 			case KB_LOADED:
 			case MATERIALISED:
 				// do nothing, all KB is already loaded
 				break;
 			case KB_CHANGED:
-				resetReasoner();
-				loadKnowledgeBase();
+				this.resetReasoner();
+				this.loadKnowledgeBase();
 			default:
 				break;
 		}
@@ -183,16 +185,16 @@ public class VLogReasoner implements Reasoner {
 		}
 
 		// 1. vLog is initialized by loading VLog data sources
-		loadVLogDataSources(vLogKB);
+		this.loadVLogDataSources(vLogKB);
 
 		// 2. in-memory data is loaded
-		loadInMemoryDataSources(vLogKB);
-		validateDataSourcePredicateArities(vLogKB);
+		this.loadInMemoryDataSources(vLogKB);
+		this.validateDataSourcePredicateArities(vLogKB);
 
-		loadFacts(vLogKB);
+		this.loadFacts(vLogKB);
 
 		// 3. rules are loaded
-		loadRules(vLogKB);
+		this.loadRules(vLogKB);
 
 		this.reasonerState = ReasonerState.KB_LOADED;
 
@@ -213,9 +215,9 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	void loadInMemoryDataSources(final VLogKnowledgeBase vLogKB) {
-		vLogKB.getEdbPredicates().forEach((k, v) -> loadInMemoryDataSource(v.getDataSource(), k));
+		vLogKB.getEdbPredicates().forEach((k, v) -> this.loadInMemoryDataSource(v.getDataSource(), k));
 
-		vLogKB.getAliasesForEdbPredicates().forEach((k, v) -> loadInMemoryDataSource(k.getDataSource(), v));
+		vLogKB.getAliasesForEdbPredicates().forEach((k, v) -> this.loadInMemoryDataSource(k.getDataSource(), v));
 	}
 
 	void loadInMemoryDataSource(final DataSource dataSource, final Predicate predicate) {
@@ -223,7 +225,7 @@ public class VLogReasoner implements Reasoner {
 
 			final VLogInMemoryDataSource inMemoryDataSource = (VLogInMemoryDataSource) dataSource;
 			try {
-				load(predicate, inMemoryDataSource);
+				this.load(predicate, inMemoryDataSource);
 			} catch (final EDBConfigurationException e) {
 				throw new RulewerkRuntimeException("Invalid data sources configuration!", e);
 			}
@@ -252,9 +254,9 @@ public class VLogReasoner implements Reasoner {
 	 */
 	void validateDataSourcePredicateArities(final VLogKnowledgeBase vLogKB) throws IncompatiblePredicateArityException {
 
-		vLogKB.getEdbPredicates().forEach((k, v) -> validateDataSourcePredicateArity(k, v.getDataSource()));
+		vLogKB.getEdbPredicates().forEach((k, v) -> this.validateDataSourcePredicateArity(k, v.getDataSource()));
 
-		vLogKB.getAliasesForEdbPredicates().forEach((k, v) -> validateDataSourcePredicateArity(v, k.getDataSource()));
+		vLogKB.getAliasesForEdbPredicates().forEach((k, v) -> this.validateDataSourcePredicateArity(v, k.getDataSource()));
 	}
 
 	/**
@@ -267,7 +269,7 @@ public class VLogReasoner implements Reasoner {
 	 * @throws IncompatiblePredicateArityException to indicate a problem
 	 *                                             (non-checked exception)
 	 */
-	void validateDataSourcePredicateArity(Predicate predicate, DataSource dataSource)
+	void validateDataSourcePredicateArity(final Predicate predicate, final DataSource dataSource)
 			throws IncompatiblePredicateArityException {
 		if (dataSource == null) {
 			return;
@@ -325,23 +327,23 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public boolean reason() throws IOException {
-		validateNotClosed();
+		this.validateNotClosed();
 
 		switch (this.reasonerState) {
 			case KB_NOT_LOADED:
-				load();
-				runChase();
+				this.load();
+				this.runChase();
 				break;
 			case KB_LOADED:
-				runChase();
+				this.runChase();
 				break;
 			case KB_CHANGED:
-				resetReasoner();
-				load();
-				runChase();
+				this.resetReasoner();
+				this.load();
+				this.runChase();
 				break;
 			case MATERIALISED:
-				runChase();
+				this.runChase();
 				break;
 			default:
 				break;
@@ -382,8 +384,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeNulls) {
-		validateBeforeQuerying(query);
+	public QueryResultIterator answerQuery(final PositiveLiteral query, final boolean includeNulls) {
+		this.validateBeforeQuerying(query);
 
 		final boolean filterBlanks = !includeNulls;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
@@ -399,13 +401,13 @@ public class VLogReasoner implements Reasoner {
 			return new EmptyQueryResultIterator(Correctness.SOUND_AND_COMPLETE);
 		}
 
-		logWarningOnCorrectness();
+		this.logWarningOnCorrectness();
 		return new VLogQueryResultIterator(stringQueryResultIterator, this.correctness);
 	}
 
 	@Override
-	public QueryAnswerCount countQueryAnswers(PositiveLiteral query, boolean includeNulls) {
-		validateBeforeQuerying(query);
+	public QueryAnswerCount countQueryAnswers(final PositiveLiteral query, final boolean includeNulls) {
+		this.validateBeforeQuerying(query);
 
 		final boolean filterBlanks = !includeNulls;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
@@ -413,21 +415,21 @@ public class VLogReasoner implements Reasoner {
 		long result;
 		try {
 			result = this.vLog.querySize(vLogAtom, true, filterBlanks);
-		} catch (NotStartedException e) {
+		} catch (final NotStartedException e) {
 			throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
-		} catch (NonExistingPredicateException e) {
+		} catch (final NonExistingPredicateException e) {
 			LOGGER.warn("Query uses predicate " + query.getPredicate()
 					+ " that does not occur in the knowledge base. Answer must be empty!");
 			result = 0;
 		}
-		logWarningOnCorrectness();
+		this.logWarningOnCorrectness();
 		return new QueryAnswerCountImpl(this.correctness, result);
 	}
 
 	@Override
 	public Correctness exportQueryAnswersToCsv(final PositiveLiteral query, final String csvFilePath,
 			final boolean includeBlanks) throws IOException {
-		validateBeforeQuerying(query);
+		this.validateBeforeQuerying(query);
 
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
 		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
@@ -443,12 +445,12 @@ public class VLogReasoner implements Reasoner {
 					+ " that does not occur in the knowledge base. Answers are therefore empty.");
 		}
 
-		logWarningOnCorrectness();
+		this.logWarningOnCorrectness();
 		return this.correctness;
 	}
 
 	private void validateBeforeQuerying(final PositiveLiteral query) {
-		validateNotClosed();
+		this.validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState, "Querying is not alowed before reasoner is loaded!");
 		}
@@ -456,16 +458,16 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public Correctness forEachInference(InferenceAction action) throws IOException {
-		validateNotClosed();
+	public Correctness forEachInference(final InferenceAction action) throws IOException {
+		this.validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
 					"Obtaining inferences is not alowed before reasoner is loaded!");
 		}
-		final Set<Predicate> toBeQueriedHeadPredicates = getKnowledgeBasePredicates();
+		final Set<Predicate> toBeQueriedHeadPredicates = this.getKnowledgeBasePredicates();
 
 		for (final Predicate predicate : toBeQueriedHeadPredicates) {
-			final PositiveLiteral queryAtom = getQueryAtom(predicate);
+			final PositiveLiteral queryAtom = this.getQueryAtom(predicate);
 			final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
 			try (final TermQueryResultIterator answers = this.vLog.query(vLogAtom, true, false)) {
 				while (answers.hasNext()) {
@@ -480,10 +482,11 @@ public class VLogReasoner implements Reasoner {
 			}
 		}
 
-		logWarningOnCorrectness();
+		this.logWarningOnCorrectness();
 		return this.correctness;
 	}
 
+	@Override
 	public Correctness getCorrectness() {
 		return this.correctness;
 	}
@@ -496,7 +499,7 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public void resetReasoner() {
-		validateNotClosed();
+		this.validateNotClosed();
 		this.reasonerState = ReasonerState.KB_NOT_LOADED;
 		this.vLog.stop();
 		LOGGER.info("Reasoner has been reset. All inferences computed during reasoning have been discarded.");
@@ -515,8 +518,8 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setLogLevel(LogLevel logLevel) {
-		validateNotClosed();
+	public void setLogLevel(final LogLevel logLevel) {
+		this.validateNotClosed();
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
 		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(this.internalLogLevel));
@@ -528,34 +531,34 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setLogFile(String filePath) {
-		validateNotClosed();
+	public void setLogFile(final String filePath) {
+		this.validateNotClosed();
 		this.vLog.setLogFile(filePath);
 	}
 
 	@Override
 	public boolean isJA() {
-		return checkAcyclicity(AcyclicityNotion.JA);
+		return this.checkAcyclicity(AcyclicityNotion.JA);
 	}
 
 	@Override
 	public boolean isRJA() {
-		return checkAcyclicity(AcyclicityNotion.RJA);
+		return this.checkAcyclicity(AcyclicityNotion.RJA);
 	}
 
 	@Override
 	public boolean isMFA() {
-		return checkAcyclicity(AcyclicityNotion.MFA);
+		return this.checkAcyclicity(AcyclicityNotion.MFA);
 	}
 
 	@Override
 	public boolean isRMFA() {
-		return checkAcyclicity(AcyclicityNotion.RMFA);
+		return this.checkAcyclicity(AcyclicityNotion.RMFA);
 	}
 
 	@Override
 	public boolean isMFC() {
-		validateNotClosed();
+		this.validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
 					"Checking rules acyclicity is not allowed before loading!");
@@ -572,11 +575,11 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public CyclicityResult checkForCycles() {
-		final boolean acyclic = isJA() || isRJA() || isMFA() || isRMFA();
+		final boolean acyclic = this.isJA() || this.isRJA() || this.isMFA() || this.isRMFA();
 		if (acyclic) {
 			return CyclicityResult.ACYCLIC;
 		} else {
-			final boolean cyclic = isMFC();
+			final boolean cyclic = this.isMFC();
 			if (cyclic) {
 				return CyclicityResult.CYCLIC;
 			}
@@ -585,35 +588,35 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void onStatementsAdded(List<Statement> statementsAdded) {
+	public void onStatementsAdded(final List<Statement> statementsAdded) {
 		// TODO more elaborate materialisation state handling
 
-		updateReasonerToKnowledgeBaseChanged();
+		this.updateReasonerToKnowledgeBaseChanged();
 
 		// updateCorrectnessOnStatementsAdded(statementsAdded);
-		updateCorrectnessOnStatementsAdded();
+		this.updateCorrectnessOnStatementsAdded();
 	}
 
 	@Override
-	public void onStatementAdded(Statement statementAdded) {
+	public void onStatementAdded(final Statement statementAdded) {
 		// TODO more elaborate materialisation state handling
 
-		updateReasonerToKnowledgeBaseChanged();
+		this.updateReasonerToKnowledgeBaseChanged();
 
 		// updateCorrectnessOnStatementAdded(statementAdded);
-		updateCorrectnessOnStatementsAdded();
+		this.updateCorrectnessOnStatementsAdded();
 	}
 
 	@Override
-	public void onStatementRemoved(Statement statementRemoved) {
-		updateReasonerToKnowledgeBaseChanged();
-		updateCorrectnessOnStatementsRemoved();
+	public void onStatementRemoved(final Statement statementRemoved) {
+		this.updateReasonerToKnowledgeBaseChanged();
+		this.updateCorrectnessOnStatementsRemoved();
 	}
 
 	@Override
-	public void onStatementsRemoved(List<Statement> statementsRemoved) {
-		updateReasonerToKnowledgeBaseChanged();
-		updateCorrectnessOnStatementsRemoved();
+	public void onStatementsRemoved(final List<Statement> statementsRemoved) {
+		this.updateReasonerToKnowledgeBaseChanged();
+		this.updateCorrectnessOnStatementsRemoved();
 	}
 
 	Set<Predicate> getKnowledgeBasePredicates() {
@@ -641,10 +644,10 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
-		validateNotClosed();
+		this.validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			try {
-				load();
+				this.load();
 			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/rulewerk/issues/128
 				throw new RulewerkRuntimeException(e);
 			}
@@ -697,7 +700,44 @@ public class VLogReasoner implements Reasoner {
 		return this.reasonerState;
 	}
 
-	void setReasonerState(ReasonerState reasonerState) {
+	void setReasonerState(final ReasonerState reasonerState) {
 		this.reasonerState = reasonerState;
+	}
+
+	@Override
+	public Correctness writeInferences(final OutputStream stream) throws IOException {
+		this.validateNotClosed();
+		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+			throw new ReasonerStateException(this.reasonerState,
+					"Obtaining inferences is not alowed before reasoner is loaded!");
+		}
+
+		stream.write(Serializer.getBaseAndPrefixDeclarations(this.knowledgeBase).getBytes());
+
+		final Set<Predicate> toBeQueriedHeadPredicates = this.getKnowledgeBasePredicates();
+
+		for (final Predicate predicate : toBeQueriedHeadPredicates) {
+			final PositiveLiteral queryAtom = this.getQueryAtom(predicate);
+			final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(queryAtom);
+			try (final TermQueryResultIterator answers = this.vLog.query(vLogAtom, true, false)) {
+				while (answers.hasNext()) {
+					final karmaresearch.vlog.Term[] vlogTerms = answers.next();
+//					TODO write to String from VLog facts
+
+//					final List<Term> termList = VLogToModelConverter.toTermList(vlogTerms);
+//					action.accept(predicate, termList);
+//					stream.write(
+//							Serializer.getFactString(predicate, termList, this.knowledgeBase::unresolveAbsoluteIri).getBytes()));
+				}
+			} catch (final NotStartedException e) {
+				throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
+			} catch (final NonExistingPredicateException e1) {
+				throw new RulewerkRuntimeException("Inconsistent knowledge base state.", e1);
+			}
+		}
+
+		this.logWarningOnCorrectness();
+		return this.correctness;
+
 	}
 }

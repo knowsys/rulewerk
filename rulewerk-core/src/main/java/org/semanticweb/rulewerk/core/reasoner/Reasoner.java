@@ -42,7 +42,6 @@ import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 /**
  * Interface that exposes the (existential) rule reasoning capabilities of a
@@ -114,29 +113,31 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return the correctness of the inferences, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 */
-	default Correctness unsafeForEachInference(BiConsumer<Predicate, List<Term>> action) {
+	default Correctness unsafeForEachInference(final BiConsumer<Predicate, List<Term>> action) {
 		try {
-			return forEachInference(action::accept);
-		} catch (IOException e) {
+			return this.forEachInference(action::accept);
+		} catch (final IOException e) {
 			throw new RulewerkRuntimeException(e);
 		}
 	}
 
-	/**
-	 * Exports all the (explicit and implicit) facts inferred during reasoning of
-	 * the knowledge base to an OutputStream.
-	 *
-	 * @param stream an OutputStream for the facts to be written to.
-	 * @return the correctness of the query answers, depending on the state of the
-	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
-	 * @throws IOException
-	 */
-	default Correctness writeInferences(OutputStream stream) throws IOException {
-		final KnowledgeBase knowledgeBase = getKnowledgeBase();
-		stream.write(Serializer.getBaseAndPrefixDeclarations(knowledgeBase).getBytes());
-		return forEachInference((predicate, termList) -> stream
-				.write(Serializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri).getBytes()));
-	}
+//	/**
+//	 * Exports all the (explicit and implicit) facts inferred during reasoning of
+//	 * the knowledge base to an OutputStream.
+//	 *
+//	 * @param stream an OutputStream for the facts to be written to.
+//	 * @return the correctness of the query answers, depending on the state of the
+//	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
+//	 * @throws IOException
+//	 */
+//	default Correctness writeInferences(OutputStream stream) throws IOException {
+//		final KnowledgeBase knowledgeBase = getKnowledgeBase();
+//		stream.write(Serializer.getBaseAndPrefixDeclarations(knowledgeBase).getBytes());
+//		return forEachInference((predicate, termList) -> stream
+//				.write(Serializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri).getBytes()));
+//	}
+
+	Correctness writeInferences(OutputStream stream) throws IOException;
 
 	/**
 	 * Return a stream of all inferences.
@@ -145,8 +146,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         inferences.
 	 */
 	default Stream<Fact> getInferences() {
-		Stream.Builder<Fact> builder = Stream.builder();
-		unsafeForEachInference((predicate, termList) -> builder.accept(Expressions.makeFact(predicate, termList)));
+		final Stream.Builder<Fact> builder = Stream.builder();
+		this.unsafeForEachInference((predicate, termList) -> builder.accept(Expressions.makeFact(predicate, termList)));
 
 		return builder.build();
 	}
@@ -169,9 +170,9 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	default Correctness writeInferences(String filePath) throws FileNotFoundException, IOException {
+	default Correctness writeInferences(final String filePath) throws FileNotFoundException, IOException {
 		try (OutputStream stream = new FileOutputStream(filePath)) {
-			return writeInferences(stream);
+			return this.writeInferences(stream);
 		}
 	}
 
