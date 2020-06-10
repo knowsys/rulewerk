@@ -1,8 +1,15 @@
 Rulewerk Release Notes
-====================
+======================
+
+Rulewerk v0.7.0
+---------------
+
+Other improvements:
+* InMemoryGraphAnalysisExample now counts proper triangles using negation to avoid "triangles" where
+  two or more edges are the same.
 
 Rulewerk v0.6.0
--------------
+---------------
 
 Breaking changes:
 * VLog4j is now called Rulewerk. Consequently, the groupId, artifact Ids, and package names
