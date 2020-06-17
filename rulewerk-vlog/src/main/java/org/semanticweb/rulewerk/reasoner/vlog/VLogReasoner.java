@@ -79,7 +79,7 @@ public class VLogReasoner implements Reasoner {
 	private static Logger LOGGER = LoggerFactory.getLogger(VLogReasoner.class);
 
 	final KnowledgeBase knowledgeBase;
-	public final VLog vLog = new VLog();
+	final VLog vLog = new VLog();
 
 	private ReasonerState reasonerState = ReasonerState.KB_NOT_LOADED;
 	private Correctness correctness = Correctness.SOUND_BUT_INCOMPLETE;
