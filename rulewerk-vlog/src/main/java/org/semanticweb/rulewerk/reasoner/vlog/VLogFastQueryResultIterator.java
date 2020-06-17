@@ -1,8 +1,7 @@
 package org.semanticweb.rulewerk.reasoner.vlog;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.HashMap;
 
 /*
  * #%L
@@ -43,27 +42,66 @@ import karmaresearch.vlog.VLog;
  */
 public class VLogFastQueryResultIterator implements QueryResultIterator {
 
+//	/**
+//	 * Use of Java's LinkedHashMap for implementing a simple LRU cache that is used
+//	 * here for mapping VLog ids to terms.
+//	 * 
+//	 * @author Markus Kroetzsch
+//	 *
+//	 * @param <K>
+//	 * @param <V>
+//	 */
+//	static class SimpleLruMap extends LinkedHashMap<Long, Term> {
+//		private static final long serialVersionUID = 7151535464938775359L;
+//		private int maxCapacity;
+//
+//		public SimpleLruMap(int initialCapacity, int maxCapacity) {
+//			super(initialCapacity, 0.75f, true);
+//			this.maxCapacity = maxCapacity;
+//		}
+//
+//		@Override
+//		protected boolean removeEldestEntry(Map.Entry<Long, Term> eldest) {
+//			return size() >= this.maxCapacity;
+//		}
+//	}
+
 	/**
-	 * Use of Java's LinkedHashMap for implementing a simple LRU cache that is used
-	 * here for mapping VLog ids to terms.
+	 * Simple cache for finding terms for VLog ids that is optimised for the case
+	 * where ids are inserted in a mostly ordered fashion. An LRU strategy is highly
+	 * ineffective for this as soon as the cache capacity is smaller than the number
+	 * of repeatedly used terms, since the cache entries there are always pushed out
+	 * before being needed again. This implementation will at least cache a maximal
+	 * initial fragment in such cases. It is also faster to write and requires less
+	 * memory.
 	 * 
 	 * @author Markus Kroetzsch
 	 *
-	 * @param <K>
-	 * @param <V>
 	 */
-	public static class SimpleLruMap<K, V> extends LinkedHashMap<K, V> {
-		private static final long serialVersionUID = 7151535464938775359L;
-		private int maxCapacity;
+	static class OrderedTermCache {
+		final private HashMap<Long, Term> terms = new HashMap<>();
+		final int maxCapacity;
+		private long maxId = -1;
 
-		public SimpleLruMap(int initialCapacity, int maxCapacity) {
-			super(initialCapacity, 0.75f, true);
-			this.maxCapacity = maxCapacity;
+		public OrderedTermCache(int capacity) {
+			this.maxCapacity = capacity;
 		}
 
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-			return size() >= this.maxCapacity;
+		public Term get(long id) {
+			if (id > maxId) {
+				return null;
+			} else {
+				return terms.get(id);
+			}
+		}
+
+		public void put(long id, Term term) {
+			if (terms.size() < maxCapacity) {
+				terms.put(id, term);
+				if (id > maxId) {
+					maxId = id;
+				}
+			}
 		}
 	}
 
@@ -94,9 +132,10 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 	 */
 	int resultSize = -1;
 	/**
-	 * LRU cache mapping ids to terms.
+	 * Cache mapping ids to terms.
 	 */
-	final SimpleLruMap<Long, Term> termCache;
+	// final SimpleLruMap termCache;
+	final OrderedTermCache termCache;
 
 	private final Correctness correctness;
 
@@ -112,7 +151,8 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 		this.vLogQueryResultIterator = queryResultIterator;
 		this.correctness = materialisationState;
 		this.vLog = vLog;
-		this.termCache = new SimpleLruMap<Long, Term>(256, 16384);
+		// this.termCache = new SimpleLruMap(256, 64000);
+		this.termCache = new OrderedTermCache(130000);
 	}
 
 	@Override
