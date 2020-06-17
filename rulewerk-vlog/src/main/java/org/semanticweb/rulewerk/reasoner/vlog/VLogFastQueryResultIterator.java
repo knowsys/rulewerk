@@ -1,7 +1,7 @@
 package org.semanticweb.rulewerk.reasoner.vlog;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /*
@@ -42,7 +42,7 @@ import karmaresearch.vlog.VLog;
  *
  */
 public class VLogFastQueryResultIterator implements QueryResultIterator {
-
+	
 	/**
 	 * Use of Java's LinkedHashMap for implementing a simple LRU cache that is used
 	 * here for mapping VLog ids to terms.
@@ -74,7 +74,7 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 	/**
 	 * The VLog instance. Used for resolving numeric ids to term names.
 	 */
-	private final VLog vlog;
+	private final VLog vLog;
 	/**
 	 * VLog ids of the previous tuple, with the last id omitted (since it is not
 	 * useful in caching).
@@ -111,7 +111,7 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 			final Correctness materialisationState, final VLog vLog) {
 		this.vLogQueryResultIterator = queryResultIterator;
 		this.correctness = materialisationState;
-		this.vlog = vLog;
+		this.vLog = vLog;
 		this.termCache = new SimpleLruMap<Long, Term>(256, 16384);
 	}
 
@@ -140,7 +140,7 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 				Term term = this.termCache.get(id);
 				if (term == null) {
 					try {
-						String s = vlog.getConstant(id);
+						String s = vLog.getConstant(id);
 						// This internal handling is copied from VLog's code in {@link
 						// karmaresearch.vlog.TermQueryResultIterator}.
 						// TODO: the string operation to make null names should possibly be provided by
@@ -167,7 +167,7 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 		}
 
 		firstResult = false;
-		return new QueryResultImpl(List.of(terms));
+		return new QueryResultImpl(Arrays.asList(terms));
 	}
 
 	@Override
