@@ -42,7 +42,7 @@ import karmaresearch.vlog.VLog;
  *
  */
 public class VLogFastQueryResultIterator implements QueryResultIterator {
-	
+
 	/**
 	 * Use of Java's LinkedHashMap for implementing a simple LRU cache that is used
 	 * here for mapping VLog ids to terms.
@@ -136,25 +136,12 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 		for (long id : idTuple) {
 			if (!firstResult && i < resultSize - 1 && prevIds[i] == id) {
 				terms[i] = prevTerms[i];
+			} else if (resultSize == 1) { // caching pointless for unary queries
+				terms[i] = computeTerm(id);
 			} else {
 				Term term = this.termCache.get(id);
 				if (term == null) {
-					try {
-						String s = vLog.getConstant(id);
-						// This internal handling is copied from VLog's code in {@link
-						// karmaresearch.vlog.TermQueryResultIterator}.
-						// TODO: the string operation to make null names should possibly be provided by
-						// VLog rather than being hardcoded here?
-						if (s == null) {
-							term = new NamedNullImpl(
-									"" + (id >> 40) + "_" + ((id >> 32) & 0377) + "_" + (id & 0xffffffffL));
-						} else {
-							term = VLogToModelConverter.toConstant(s);
-						}
-					} catch (NotStartedException e) {
-						// Should not happen, we just did a query ...
-						throw new RuntimeException(e);
-					}
+					term = computeTerm(id);
 					this.termCache.put(id, term);
 				}
 				terms[i] = term;
@@ -168,6 +155,30 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 
 		firstResult = false;
 		return new QueryResultImpl(Arrays.asList(terms));
+	}
+
+	/**
+	 * Compute the {@link Term} for a given VLog id.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	Term computeTerm(long id) {
+		try {
+			String s = vLog.getConstant(id);
+			// This internal handling is copied from VLog's code in {@link
+			// karmaresearch.vlog.TermQueryResultIterator}.
+			// TODO: the string operation to make null names should possibly be provided by
+			// VLog rather than being hardcoded here?
+			if (s == null) {
+				return new NamedNullImpl("" + (id >> 40) + "_" + ((id >> 32) & 0377) + "_" + (id & 0xffffffffL));
+			} else {
+				return VLogToModelConverter.toConstant(s);
+			}
+		} catch (NotStartedException e) {
+			// Should not happen, we just did a query ...
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
