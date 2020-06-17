@@ -4,6 +4,9 @@ Rulewerk Release Notes
 Rulewerk v0.7.0
 ---------------
 
+New features:
+* Significant speedup in iterating over query results
+
 Other improvements:
 * InMemoryGraphAnalysisExample now counts proper triangles using negation to avoid "triangles" where
   two or more edges are the same.
