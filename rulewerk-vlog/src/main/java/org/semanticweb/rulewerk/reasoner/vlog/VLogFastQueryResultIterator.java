@@ -1,6 +1,7 @@
 package org.semanticweb.rulewerk.reasoner.vlog;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -175,7 +176,7 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 		}
 
 		if (resultSize == 1) { // Caching is pointless for unary queries
-			return new QueryResultImpl(List.of(computeTerm(idTuple[0])));
+			return new QueryResultImpl(Collections.singletonList(computeTerm(idTuple[0])));
 		}
 
 		// (Array.copyOf was slightly faster than System.arraycopy in tests)
