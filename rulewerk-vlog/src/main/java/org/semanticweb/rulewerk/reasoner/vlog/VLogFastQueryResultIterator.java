@@ -3,6 +3,8 @@ package org.semanticweb.rulewerk.reasoner.vlog;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
+
 /*
  * #%L
  * Rulewerk VLog Reasoner Support
@@ -215,9 +217,8 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 			} else {
 				return VLogToModelConverter.toConstant(s);
 			}
-		} catch (NotStartedException e) {
-			// Should not happen, we just did a query ...
-			throw new RuntimeException(e);
+		} catch (NotStartedException e) { // Should never happen, we just did a query ...
+			throw new RulewerkRuntimeException(e);
 		}
 	}
 
