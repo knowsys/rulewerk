@@ -101,7 +101,7 @@ class VLogToModelConverter {
 	 * @param vLogConstantName the string name used by VLog
 	 * @return {@link Constant} object
 	 */
-	private static Constant toConstant(String vLogConstantName) {
+	static Constant toConstant(String vLogConstantName) {
 		final Constant constant;
 		if (vLogConstantName.charAt(0) == Serializer.LESS_THAN
 				&& vLogConstantName.charAt(vLogConstantName.length() - 1) == Serializer.MORE_THAN) {

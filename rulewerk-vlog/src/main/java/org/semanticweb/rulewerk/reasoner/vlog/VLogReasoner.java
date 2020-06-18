@@ -158,18 +158,18 @@ public class VLogReasoner implements Reasoner {
 		validateNotClosed();
 
 		switch (this.reasonerState) {
-			case KB_NOT_LOADED:
-				loadKnowledgeBase();
-				break;
-			case KB_LOADED:
-			case MATERIALISED:
-				// do nothing, all KB is already loaded
-				break;
-			case KB_CHANGED:
-				resetReasoner();
-				loadKnowledgeBase();
-			default:
-				break;
+		case KB_NOT_LOADED:
+			loadKnowledgeBase();
+			break;
+		case KB_LOADED:
+		case MATERIALISED:
+			// do nothing, all KB is already loaded
+			break;
+		case KB_CHANGED:
+			resetReasoner();
+			loadKnowledgeBase();
+		default:
+			break;
 		}
 	}
 
@@ -328,23 +328,23 @@ public class VLogReasoner implements Reasoner {
 		validateNotClosed();
 
 		switch (this.reasonerState) {
-			case KB_NOT_LOADED:
-				load();
-				runChase();
-				break;
-			case KB_LOADED:
-				runChase();
-				break;
-			case KB_CHANGED:
-				resetReasoner();
-				load();
-				runChase();
-				break;
-			case MATERIALISED:
-				runChase();
-				break;
-			default:
-				break;
+		case KB_NOT_LOADED:
+			load();
+			runChase();
+			break;
+		case KB_LOADED:
+			runChase();
+			break;
+		case KB_CHANGED:
+			resetReasoner();
+			load();
+			runChase();
+			break;
+		case MATERIALISED:
+			runChase();
+			break;
+		default:
+			break;
 		}
 
 		return this.reasoningCompleted;
@@ -388,9 +388,12 @@ public class VLogReasoner implements Reasoner {
 		final boolean filterBlanks = !includeNulls;
 		final karmaresearch.vlog.Atom vLogAtom = ModelToVLogConverter.toVLogAtom(query);
 
-		TermQueryResultIterator stringQueryResultIterator;
+		karmaresearch.vlog.QueryResultIterator queryResultIterator;
+
 		try {
-			stringQueryResultIterator = this.vLog.query(vLogAtom, true, filterBlanks);
+			final int predicateId = this.vLog.getPredicateId(vLogAtom.getPredicate());
+			final long[] terms = extractTerms(vLogAtom.getTerms());
+			queryResultIterator = this.vLog.query(predicateId, terms, true, filterBlanks);
 		} catch (final NotStartedException e) {
 			throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
 		} catch (final NonExistingPredicateException e1) {
@@ -400,7 +403,40 @@ public class VLogReasoner implements Reasoner {
 		}
 
 		logWarningOnCorrectness();
-		return new VLogQueryResultIterator(stringQueryResultIterator, this.correctness);
+		return new VLogFastQueryResultIterator(queryResultIterator, this.correctness, this.vLog);
+	}
+
+	/**
+	 * Utility method copied from {@link karmaresearch.vlog.VLog}.
+	 * 
+	 * @FIXME This should be provided by VLog and made visible to us rather than
+	 *        being copied here.
+	 * @param terms
+	 * @return
+	 * @throws NotStartedException
+	 */
+	private long[] extractTerms(karmaresearch.vlog.Term[] terms) throws NotStartedException {
+		ArrayList<String> variables = new ArrayList<>();
+		long[] longTerms = new long[terms.length];
+		for (int i = 0; i < terms.length; i++) {
+			if (terms[i].getTermType() == karmaresearch.vlog.Term.TermType.VARIABLE) {
+				boolean found = false;
+				for (int j = 0; j < variables.size(); j++) {
+					if (variables.get(j).equals(terms[i].getName())) {
+						found = true;
+						longTerms[i] = -j - 1;
+						break;
+					}
+				}
+				if (!found) {
+					variables.add(terms[i].getName());
+					longTerms[i] = -variables.size();
+				}
+			} else {
+				longTerms[i] = this.vLog.getOrAddConstantId(terms[i].getName());
+			}
+		}
+		return longTerms;
 	}
 
 	@Override
