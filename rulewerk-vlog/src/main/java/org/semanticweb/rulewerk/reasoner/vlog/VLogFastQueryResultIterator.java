@@ -2,6 +2,7 @@ package org.semanticweb.rulewerk.reasoner.vlog;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 
@@ -116,15 +117,10 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 	 */
 	private final VLog vLog;
 	/**
-	 * VLog ids of the previous tuple, with the last id omitted (since it is not
+	 * VLog ids of the previous tuple, with the last id fixed to -1 (since it is never
 	 * useful in caching).
 	 */
 	private long[] prevIds = null;
-	/**
-	 * RuleWerk terms corresponding to the previously fetched tuple, with the last
-	 * term omitted.
-	 */
-	private Term[] prevTerms = null;
 	/**
 	 * True if this is the first result that is returned.
 	 */
@@ -133,6 +129,10 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 	 * Size of the tuples returned in this result.
 	 */
 	int resultSize = -1;
+	/**
+	 * Previous tuple that was returned.
+	 */
+	Term[] prevTuple;
 	/**
 	 * Cache mapping ids to terms.
 	 */
@@ -164,23 +164,25 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 
 	@Override
 	public QueryResult next() {
-		final Term[] terms;
-		long[] idTuple = vLogQueryResultIterator.next();
-		terms = new Term[idTuple.length];
+		final long[] idTuple = vLogQueryResultIterator.next();
 
 		if (firstResult) {
-			resultSize = terms.length;
-			prevIds = new long[resultSize - 1];
-			prevTerms = new Term[resultSize - 1];
+			resultSize = idTuple.length;
+			prevTuple = new Term[resultSize];
+			prevIds = new long[resultSize];
+			Arrays.fill(prevIds, -1); // (practically) impossible id
+			firstResult = false;
 		}
 
+		if (resultSize == 1) { // Caching is pointless for unary queries
+			return new QueryResultImpl(List.of(computeTerm(idTuple[0])));
+		}
+
+		// (Array.copyOf was slightly faster than System.arraycopy in tests)
+		final Term[] terms = Arrays.copyOf(prevTuple, resultSize);
 		int i = 0;
 		for (long id : idTuple) {
-			if (!firstResult && i < resultSize - 1 && prevIds[i] == id) {
-				terms[i] = prevTerms[i];
-			} else if (resultSize == 1) { // caching pointless for unary queries
-				terms[i] = computeTerm(id);
-			} else {
+			if (prevIds[i] != id) {
 				Term term = this.termCache.get(id);
 				if (term == null) {
 					term = computeTerm(id);
@@ -188,14 +190,13 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 				}
 				terms[i] = term;
 				if (i < resultSize - 1) {
-					prevTerms[i] = term;
 					prevIds[i] = id;
 				}
 			}
 			i++;
 		}
 
-		firstResult = false;
+		prevTuple = terms;
 		return new QueryResultImpl(Arrays.asList(terms));
 	}
 
@@ -208,12 +209,11 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 	Term computeTerm(long id) {
 		try {
 			String s = vLog.getConstant(id);
-			// This internal handling is copied from VLog's code in {@link
-			// karmaresearch.vlog.TermQueryResultIterator}.
-			// TODO: the string operation to make null names should possibly be provided by
-			// VLog rather than being hardcoded here?
 			if (s == null) {
-				return new NamedNullImpl("" + (id >> 40) + "_" + ((id >> 32) & 0377) + "_" + (id & 0xffffffffL));
+				// This string operation extracts the internal rule number (val >> 40),
+				// the internal variable number ((val >> 32) & 0377), and
+				// a counter (val & 0xffffffffL)
+				return new NamedNullImpl("null" + (id >> 40) + "_" + ((id >> 32) & 0377) + "_" + (id & 0xffffffffL));
 			} else {
 				return VLogToModelConverter.toConstant(s);
 			}
