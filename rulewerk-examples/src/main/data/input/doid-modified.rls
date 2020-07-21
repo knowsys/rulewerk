@@ -1,0 +1,50 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wdqs: <https://query.wikidata.org/> .
+
+@source doidTriple[3]: load-rdf("src/main/data/input/doid.nt.gz") .
+
+%@source diseaseId[2]: sparql(wdqs:sparql, "disease,doid", "?disease wdt:P699 ?doid .") .
+@source diseaseId[2]: load-csv("src/main/data/input/diseaseId.csv") .
+
+%@source recentDeaths[1]: sparql(wdqs:sparql, "human",
+%   '''?human wdt:P31 wd:Q5;
+%      wdt:P570 ?deathDate .
+%      FILTER (YEAR(?deathDate) = 2018)''') .
+@source recentDeaths[1]: load-csv("src/main/data/input/recentDeaths.csv") .
+      
+%@source recentDeathsCause[2]: sparql(wdqs:sparql, "human,causeOfDeath",
+%   '''?human wdt:P31 wd:Q5;
+%      wdt:P570 ?deathDate ;
+%      wdt:P509 ?causeOfDeath .
+%      FILTER (YEAR(?deathDate) = 2018)''') .
+@source recentDeathsCause[2]: load-csv("src/main/data/input/recentDeathsCause.csv") .
+
+p1(1).
+p2(1).
+p3(1).
+p4(1).
+p5(1).
+p6(1).
+p7(1).
+
+% Combine recent death data (infer "unknown" cause if no cause given):
+deathCause(?X, ?Z), p1(1) :- recentDeathsCause(?X, ?Z) .
+deathCause(?X, !Z), p2(1) :- recentDeaths(?X) .
+
+% Mark Wikidata diseases that have a DOID:
+hasDoid(?X) :- diseaseId(?X, ?DoidId) .
+
+% Relate DOID string ID (used on Wikidata) to DOID IRI (used in DOID ontology)
+doid(?Iri, ?DoidId), p3(1) :- doidTriple(?Iri, <http://www.geneontology.org/formats/oboInOwl#id>,?DoidId) .
+
+% Compute transitive closure of DOID subclass hierarchy
+diseaseHierarchy(?X, ?Y), p4(1) :- doidTriple(?X, rdfs:subClassOf, ?Y) .
+diseaseHierarchy(?X, ?Z), p5(1) :- diseaseHierarchy(?X, ?Y), doidTriple(?Y, rdfs:subClassOf, ?Z), ~p4(2) .
+
+% Find DOID ids for all subclasses of cancer:
+cancerDisease(?Xdoid), p6(1) :- diseaseHierarchy(?X, ?Y), doid(?Y, "DOID:162"), doid(?X, ?Xdoid), ~p3(2), ~p4(2), ~p5(2) .
+
+% Compute who died of cancer and who died of something else (including diseases unknown to DOID):
+humansWhoDiedOfCancer(?X) :- deathCause(?X, ?Y), diseaseId(?Y, ?Z), cancerDisease(?Z), ~p1(2), ~p6(2) .
+humansWhoDiedOfNoncancer(?X) :- deathCause(?X, ?Y), diseaseId(?Y, ?Z), ~cancerDisease(?Z), ~p1(2) .
+humansWhoDiedOfNoncancer(?X) :- deathCause(?X, ?Y), ~hasDoid(?Y), ~p1(2), ~p2(2) .
