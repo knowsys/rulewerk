@@ -24,43 +24,65 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
 import org.semanticweb.rulewerk.core.model.api.Rule;
-import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
 
-public class PositiveDependencyTest {
+public class RelianceTest {
 
 	@Test
-	public void simpleDatalogRuleTest() throws ParsingException {
+	public void simpleDatalogRuleTest() throws Exception {
 		Rule rule1 = RuleParser.parseRule("q(?X) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("r(?X) :- q(?X) .");
 
-		assertFalse(PositiveDependency.reliesPositivelyOn(rule1, rule1));
-		assertTrue(PositiveDependency.reliesPositivelyOn(rule1, rule2));
-		assertFalse(PositiveDependency.reliesPositivelyOn(rule2, rule1));
-		assertFalse(PositiveDependency.reliesPositivelyOn(rule2, rule2));
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertTrue(Reliance.positively(rule1, rule2));
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
 	}
 
 	@Test
-	public void simpleExistentialRuleTest() throws ParsingException {
+	public void simpleExistentialRuleTest() throws Exception {
 		Rule rule1 = RuleParser.parseRule("q(?X,!Y) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("r(?X,?Y) :- q(?X,?Y) .");
 
-		assertFalse(PositiveDependency.reliesPositivelyOn(rule1, rule1));
-		assertTrue(PositiveDependency.reliesPositivelyOn(rule1, rule2));
-		assertFalse(PositiveDependency.reliesPositivelyOn(rule2, rule1));
-		assertFalse(PositiveDependency.reliesPositivelyOn(rule2, rule2));
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertTrue(Reliance.positively(rule1, rule2));
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
 	}
 
 	@Test
-	public void complexExistentialRuleTest() throws ParsingException {
-		Rule rule1 = RuleParser.parseRule("r(?X,!Y,!Z) :- a(?X) .");
-		Rule rule2 = RuleParser.parseRule("b(?X1,?X2) :- r(c,?X1, ?Y1), r(c,?X2, ?Y2) .");
+	public void complexExistentialRuleTest() throws Exception {
+		Rule rule1 = RuleParser.parseRule("r(?X1,!Y1,!Z1) :- a(?X1) .");
+		Rule rule2 = RuleParser.parseRule("b(?X2,?X3) :- r(c,?X2, ?Y2), r(c,?X3, ?Y3) .");
 
-		assertFalse(PositiveDependency.reliesPositivelyOn(rule1, rule1));
-		assertFalse(PositiveDependency.reliesPositivelyOn(rule1, rule2));
-		assertFalse(PositiveDependency.reliesPositivelyOn(rule2, rule1));
-		assertFalse(PositiveDependency.reliesPositivelyOn(rule2, rule2));
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertTrue(Reliance.positively(rule1, rule2));
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
 	}
+
+	@Test
+	public void testtest01() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(?X,?Y) :- p(?X,?Y) .");
+		Rule rule2 = RuleParser.parseRule("r(?X,!Z) :- q(?X,?Y), q(?Y,?X) .");
+
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertTrue(Reliance.positively(rule1, rule2));
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
+	}
+	
+	@Test
+	public void testtest02() throws Exception {
+		Rule rule1 = RuleParser.parseRule("cancerDisease(?Xdoid) :- diseaseHierarchy(?X, ?Y), doid(?Y, \"DOID:162\"), doid(?X, ?Xdoid) .");
+		Rule rule2 = RuleParser.parseRule("humansWhoDiedOfNoncancer(?X) :- deathCause(?X, ?Y), diseaseId(?Y, ?Z), ~cancerDisease(?Z) .");
+		
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertFalse(Reliance.positively(rule1, rule2));
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
+	}	
 
 }

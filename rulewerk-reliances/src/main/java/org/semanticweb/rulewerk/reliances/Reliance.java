@@ -1,5 +1,11 @@
 package org.semanticweb.rulewerk.reliances;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /*-
  * #%L
  * Rulewerk Reliances
@@ -20,63 +26,159 @@ package org.semanticweb.rulewerk.reliances;
  * #L%
  */
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.api.Variable;
 
-import com.google.common.collect.Sets;
+public class Reliance {
 
-public class PositiveDependency {
+	static private Set<String> getExistentialVariableNames(Set<Literal> literals) {
+		Set<String> result = new HashSet<>();
+		literals.forEach(literal -> literal.getExistentialVariables().forEach(extVar -> result.add(extVar.getName())));
+		return result;
+	}
 
-	static boolean reliesPositivelyOn(Rule rule1, Rule rule2) {
-		Rule renamedFirstRule = VariableRenamer.renameVariables(rule1, 1);
-		Rule renamedSecondRule = VariableRenamer.renameVariables(rule2, 2);
+	static private Set<String> getUniversalVariableNames(Set<Literal> literals) {
+		Set<String> result = new HashSet<>();
+		literals.forEach(literal -> literal.getUniversalVariables().forEach(uniVar -> result.add(uniVar.getName())));
+		return result;
+	}
 
-		Set<Literal> literalsInBody1 = new HashSet<>();
-		renamedFirstRule.getBody().getLiterals().forEach(literal -> literalsInBody1.add(literal));
+	static private boolean shareAnyExistentialVariable(Set<Literal> head11, Set<Literal> body22) {
+		Set<String> vars1 = getExistentialVariableNames(head11);
+		Set<String> vars2 = getUniversalVariableNames(body22);
+		Set<String> intersection = new HashSet<>(vars1); // copy constructor
+		intersection.retainAll(vars2);
+		return !intersection.isEmpty();
+	}
 
-		Set<Literal> literalsInHead1 = new HashSet<>();
-		renamedFirstRule.getHead().getLiterals().forEach(literal -> literalsInHead1.add(literal));
-		Set<Set<Literal>> powerSetLiteralsInHead1 = Sets.powerSet(literalsInHead1);
+	static private boolean universalVariableInPositionOfExistentialVariable(Set<Literal> head11, Set<Literal> body22) {
+		Set<Predicate> predicatesWithExistentialVariables = new HashSet<>();
+		for (Literal literal : head11) {
+			Set<Variable> existentialVariables = literal.getExistentialVariables().collect(Collectors.toSet());
+			if (!existentialVariables.isEmpty()) {
+				predicatesWithExistentialVariables.add(literal.getPredicate());
+			}
+		}
 
-		Set<Literal> literalsInBody2 = new HashSet<>();
-		renamedSecondRule.getBody().getLiterals().forEach(literal -> literalsInBody2.add(literal));
-		Set<Set<Literal>> powerSetLiteralsInBody2 = Sets.powerSet(literalsInBody2);
+		for (Literal literal : body22) {
+			if (predicatesWithExistentialVariables.contains(literal.getPredicate())) {
+				return true;
+			}
+		}
+		return false;
 
-		Set<Literal> literalsInHead2 = new HashSet<>();
-		renamedSecondRule.getHead().getLiterals().forEach(literal -> literalsInHead2.add(literal));
+	}
 
-		for (Set<Literal> litInHead1 : powerSetLiteralsInHead1) {
-			for (Set<Literal> litInBody2 : powerSetLiteralsInBody2) {
-				if (!litInHead1.isEmpty() && !litInBody2.isEmpty()) {
-					LiteralSetUnifier lsu = new LiteralSetUnifier(litInHead1, litInBody2);
-					lsu.print();
+//	static private void print(String name, ArrayList<Literal> literals) {
+//		String result = name + ": ";
+//		for (Literal literal : literals)
+//			result += literal + ", ";
+//		System.out.println(result);
+//	}
+//
+//	static private void print(String name, Set<Literal> literals) {
+//		String result = name + ": ";
+//		for (Literal literal : literals)
+//			result += literal + ", ";
+//		System.out.println(result);
+//	}
+//
+//	static private void print(String name, int[] intArray) {
+//		String base = name + ": [";
+//		for (int i = 0; i < intArray.length; i++) {
+//			base += intArray[i] + ",";
+//		}
+//		base += "]";
+//		System.out.println(base);
+//	}
+//
+//	static private void print(String name, List<Integer> list) {
+//		String base = name + ": [";
+//		for (int i = 0; i < list.size(); i++) {
+//			base += list.get(i) + ",";
+//		}
+//		base += "]";
+//		System.out.println(base);
+//	}
 
-					if (lsu.success && lsu.unifier.size() > 0) {
-//					HERE I HAVE four SETS
-//					litInHead1, litInHead1Complement 
-//					litInBody2, litInBody2Complement
-//					ALSO I HAVE THE UNIFIER
-						Set<Literal> litInHead1Prime = new HashSet<>(literalsInHead1);
-						litInHead1Prime.removeAll(litInHead1);
-						Set<Literal> litInBody2Prime = new HashSet<>(literalsInBody2);
-						litInBody2Prime.removeAll(litInBody2);
+	/*
+	 * @return True if rule2 positively relies in rule1 $\arule_1\rpos\arule_2$
+	 */
+	static public boolean positively(Rule rule1, Rule rule2) throws Exception {
+		Rule firstRuleRenamedVariables = VariableRenamer.renameVariables(rule1, 1);
+		Rule secondRuleRenamedVariables = VariableRenamer.renameVariables(rule2, 2);
 
-//					 now I rename variables following the unifier
-						Set<Literal> litInBody1 = VariableRenamer.renameVariables(literalsInBody1, lsu);
-						Set<Literal> litInHead2 = VariableRenamer.renameVariables(literalsInHead2, lsu);
-						litInHead1 = VariableRenamer.renameVariables(litInHead1, lsu);
-						litInBody2 = VariableRenamer.renameVariables(litInBody2, lsu);
-						litInHead1Prime = VariableRenamer.renameVariables(litInHead1Prime, lsu);
-						litInBody2Prime = VariableRenamer.renameVariables(litInBody2Prime, lsu);
-						// this is not correct
-						
-						return true;
-//					TODO
-//					Which are the conditions to check reliance?
-					}
+//		System.out.println("rule 1: " + rule1);
+//		System.out.println("rule 2: " + rule2);
+//		System.out.println(firstRuleRenamedVariables);
+//		System.out.println(secondRuleRenamedVariables);
+
+		ArrayList<Literal> literalsInHead1 = new ArrayList<>();
+		firstRuleRenamedVariables.getHead().getLiterals().forEach(literal -> literalsInHead1.add(literal));
+//		print("literalsInHead1", literalsInHead1);
+//
+		ArrayList<Literal> literalsInBody2 = new ArrayList<>();
+		for (Literal literal : secondRuleRenamedVariables.getBody().getLiterals()) {
+			if (!literal.isNegated()) {
+				literalsInBody2.add(literal);
+			}
+		}
+//		secondRuleRenamedVariables.getBody().getLiterals().forEach(literal -> literalsInBody2.add(literal));
+//		print("literalsInBody2", literalsInBody2);
+
+		int sizeHead1 = literalsInHead1.size();
+		int sizeBody2 = literalsInBody2.size();
+
+		Assignment assignment = new Assignment(sizeBody2, sizeHead1);
+
+		for (int[] match : assignment) {
+//			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+//			print("match", match);
+
+			List<Integer> head11Idx = Assignment.head11Idx(sizeHead1, match);
+			List<Integer> head12Idx = Assignment.head12Idx(sizeHead1, match);
+			List<Integer> body21Idx = Assignment.body21Idx(sizeBody2, match);
+			List<Integer> body22Idx = Assignment.body22Idx(sizeBody2, match);
+
+//			print("head11Idx: ", head11Idx);
+//			print("head12Idx: ", head12Idx);
+//			print("body21Idx: ", body21Idx);
+//			print("body22Idx: ", body22Idx);
+
+			Unifier unifier = new Unifier(literalsInBody2, literalsInHead1, match);
+
+			ArrayList<Literal> literalsInHead1RenamedWithUnifier = new ArrayList<>();
+			literalsInHead1.forEach(literal -> literalsInHead1RenamedWithUnifier
+					.add(VariableRenamer.renameVariables(literal, unifier)));
+			ArrayList<Literal> literalsInBody2RenamedWithUnifier = new ArrayList<>();
+			literalsInBody2.forEach(literal -> literalsInBody2RenamedWithUnifier
+					.add(VariableRenamer.renameVariables(literal, unifier)));
+
+//			System.out.println(unifier);
+			if (unifier.success) {
+
+				Set<Literal> head11 = new HashSet<>();
+				head11Idx.forEach(idx -> head11.add(literalsInHead1RenamedWithUnifier.get(idx)));
+
+				Set<Literal> head12 = new HashSet<>();
+				head12Idx.forEach(idx -> head12.add(literalsInHead1RenamedWithUnifier.get(idx)));
+
+				Set<Literal> body21 = new HashSet<>();
+				body21Idx.forEach(idx -> body21.add(literalsInBody2RenamedWithUnifier.get(idx)));
+
+				Set<Literal> body22 = new HashSet<>();
+				body22Idx.forEach(idx -> body22.add(literalsInBody2RenamedWithUnifier.get(idx)));
+
+//				print("head11: ", head11);
+//				print("head12: ", head12);
+//				print("body21: ", body21);
+//				print("body22: ", body22);
+
+				if (!shareAnyExistentialVariable(head11, body22)
+						&& !universalVariableInPositionOfExistentialVariable(head11, body22)) {
+					return true;
 				}
 			}
 		}

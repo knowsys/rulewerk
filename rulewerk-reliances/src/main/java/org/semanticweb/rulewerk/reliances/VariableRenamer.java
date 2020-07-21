@@ -21,9 +21,7 @@ package org.semanticweb.rulewerk.reliances;
  */
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.model.api.Literal;
@@ -66,19 +64,24 @@ public class VariableRenamer {
 		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
 	}
 
-	static private Term renameVariables(Term term, LiteralSetUnifier lsu) {
-		if (term.getType() == TermType.UNIVERSAL_VARIABLE && lsu.unifier.containsKey(term.getName())) {
-			return Expressions.makeUniversalVariable(lsu.unifier.get(term.getName()));
-		} else if (term.getType() == TermType.EXISTENTIAL_VARIABLE && lsu.unifier.containsKey(term.getName())) {
-			return Expressions.makeExistentialVariable(lsu.unifier.get(term.getName()));
-		} else
+	// this is wrong, I need to close it over
+	static private Term renameVariables(Term term, Unifier unifier) {
+		if (unifier.unifier.containsKey(term)) {
+			Term value = unifier.unifier.get(term);
+			if (unifier.unifier.containsKey(value)) {
+				return renameVariables(value, unifier);
+			} else {
+				return value;
+			}
+		} else {
 			return term;
+		}
 	}
 
-	static private Literal renameVariables(Literal literal, LiteralSetUnifier lsu) {
+	static public Literal renameVariables(Literal literal, Unifier unifier) {
 		List<Term> newTerms = new ArrayList<>();
 		for (Term term : literal.getArguments()) {
-			newTerms.add(renameVariables(term, lsu));
+			newTerms.add(renameVariables(term, unifier));
 		}
 		if (literal.isNegated()) {
 			return Expressions.makeNegativeLiteral(literal.getPredicate(), newTerms);
@@ -87,19 +90,22 @@ public class VariableRenamer {
 		}
 	}
 
-	static public Set<Literal> renameVariables(Set<Literal> set, LiteralSetUnifier lsu) {
-		Set<Literal> result = new HashSet<>();
-		set.forEach(literal -> result.add(renameVariables(literal, lsu)));
-		return result;
-	}
-
-	static public Rule renameVariables(Rule rule, LiteralSetUnifier lsu) {
+	static public Rule renameVariables(Rule rule, Unifier unifier) throws Exception {
+		if (!unifier.success) {
+			throw new Exception("unifier did not success");
+		}
 		List<Literal> newBody = new ArrayList<>();
-		rule.getBody().forEach(literal -> newBody.add(renameVariables(literal, lsu)));
+		rule.getBody().forEach(literal -> newBody.add(renameVariables(literal, unifier)));
 
 		List<PositiveLiteral> newHead = new ArrayList<>();
-		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) renameVariables(literal, lsu)));
+		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) renameVariables(literal, unifier)));
 
 		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
+	}
+
+	static public ArrayList<Literal> renameVariables(ArrayList<Literal> literals, Unifier unifier) {
+		ArrayList<Literal> result = new ArrayList<>();
+		literals.forEach(literal -> result.add(renameVariables(literal, unifier)));
+		return result;
 	}
 }
