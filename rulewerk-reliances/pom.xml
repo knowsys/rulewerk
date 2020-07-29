@@ -33,6 +33,10 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rulewerk-vlog</artifactId>
+			<version>${project.version}</version>
+		</dependency>		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>r05</version>

@@ -106,7 +106,7 @@ public class Reliance {
 	/*
 	 * @return True if rule2 positively relies in rule1 $\arule_1\rpos\arule_2$
 	 */
-	static public boolean positively(Rule rule1, Rule rule2) throws Exception {
+	static public boolean positively(Rule rule1, Rule rule2) {
 		Rule firstRuleRenamedVariables = VariableRenamer.renameVariables(rule1, 1);
 		Rule secondRuleRenamedVariables = VariableRenamer.renameVariables(rule2, 2);
 

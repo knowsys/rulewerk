@@ -94,8 +94,13 @@ public class Unifier {
 	}
 
 	private void unify(Term term1, Term term2) {
-		if (term1.isConstant() && term2.isConstant() && !term1.equals(term2)) {
-			success = false;
+		if (term1.isConstant() && term2.isConstant()) {
+			if (term1.equals(term2)) {
+				return;
+			}
+			else {
+				success = false;
+			}
 		} else if (term1.isConstant() && term2.isVariable()) {
 			unify((Variable) term2, (Constant) term1);
 		} else if (term1.isVariable() && term2.isConstant()) {
