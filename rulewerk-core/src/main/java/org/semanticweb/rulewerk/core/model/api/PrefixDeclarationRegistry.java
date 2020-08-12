@@ -38,6 +38,10 @@ public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String
 	static final String XSD_DOUBLE = "http://www.w3.org/2001/XMLSchema#double";
 	static final String XSD_FLOAT = "http://www.w3.org/2001/XMLSchema#float";
 	static final String XSD_INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
+	static final String XSD_INT = "http://www.w3.org/2001/XMLSchema#int";
+	static final String XSD_LONG = "http://www.w3.org/2001/XMLSchema#long";
+	static final String XSD_SHORT = "http://www.w3.org/2001/XMLSchema#short";
+	static final String XSD_BYTE = "http://www.w3.org/2001/XMLSchema#byte";
 	static final String XSD_BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
 	static final String RDF_LANGSTRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
 
