@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -23,10 +21,11 @@
 		<module>rulewerk-owlapi</module>
 		<module>rulewerk-graal</module>
 		<module>rulewerk-parser</module>
+		<module>rulewerk-commands</module>
 		<module>rulewerk-examples</module>
 		<module>rulewerk-client</module>
 		<module>coverage</module>
-	</modules>
+  </modules>
 
 	<licenses>
 		<license>
@@ -130,7 +129,7 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
 					<version>1.14</version>
-					<configuration />
+					<configuration/>
 					<executions>
 						<execution>
 							<id>first</id>
@@ -173,7 +172,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 
@@ -188,7 +187,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute />
+										<execute/>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
