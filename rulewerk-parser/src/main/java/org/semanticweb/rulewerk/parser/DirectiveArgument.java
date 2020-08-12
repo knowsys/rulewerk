@@ -24,6 +24,8 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 
 /**
@@ -39,14 +41,18 @@ public abstract class DirectiveArgument {
 	/**
 	 * Apply a function to the contained value.
 	 *
-	 * @param stringHandler the function to apply to a string argument
-	 * @param iriHandler    the function to apply to an IRI
-	 * @param termHandler   the function to apply to a Term
+	 * @param stringHandler          the function to apply to a string argument
+	 * @param iriHandler             the function to apply to an IRI
+	 * @param termHandler            the function to apply to a Term
+	 * @param ruleHandler            the function to apply to a Rule
+	 * @param positiveLiteralHandler the function to apply to a Literal
 	 *
 	 * @return the value returned by the appropriate handler function
 	 */
 	public abstract <V> V apply(Function<? super String, ? extends V> stringHandler,
-			Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler);
+			Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
+			Function<? super Rule, ? extends V> ruleHandler,
+			Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler);
 
 	/**
 	 * Partially compare two arguments, without comparing the actual values.
@@ -85,7 +91,9 @@ public abstract class DirectiveArgument {
 		return new DirectiveArgument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler) {
+					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
+					Function<? super Rule, ? extends V> ruleHandler,
+					Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler) {
 				return stringHandler.apply(value);
 			}
 
@@ -98,7 +106,8 @@ public abstract class DirectiveArgument {
 				}
 
 				DirectiveArgument otherArgument = (DirectiveArgument) other;
-				return otherArgument.apply(str -> str.equals(value), iri -> false, term -> false);
+				return otherArgument.apply(str -> str.equals(value), iri -> false, term -> false, rule -> false,
+						positiveLiteral -> false);
 			}
 
 			@Override
@@ -119,7 +128,9 @@ public abstract class DirectiveArgument {
 		return new DirectiveArgument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler) {
+					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
+					Function<? super Rule, ? extends V> ruleHandler,
+					Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler) {
 				return iriHandler.apply(value);
 			}
 
@@ -132,7 +143,8 @@ public abstract class DirectiveArgument {
 				}
 
 				DirectiveArgument otherArgument = (DirectiveArgument) other;
-				return otherArgument.apply(str -> false, iri -> iri.equals(value), term -> false);
+				return otherArgument.apply(str -> false, iri -> iri.equals(value), term -> false, rule -> false,
+						positiveLiteral -> false);
 			}
 
 			@Override
@@ -153,7 +165,9 @@ public abstract class DirectiveArgument {
 		return new DirectiveArgument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler) {
+					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
+					Function<? super Rule, ? extends V> ruleHandler,
+					Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler) {
 				return termHandler.apply(value);
 			}
 
@@ -166,12 +180,87 @@ public abstract class DirectiveArgument {
 				}
 
 				DirectiveArgument otherArgument = (DirectiveArgument) other;
-				return otherArgument.apply(str -> false, iri -> false, term -> term.equals(value));
+				return otherArgument.apply(str -> false, iri -> false, term -> term.equals(value), rule -> false,
+						positiveLiteral -> false);
 			}
 
 			@Override
 			public int hashCode() {
 				return 47 * value.hashCode();
+			}
+		};
+	}
+
+	/**
+	 * Create an argument containing a Rule.
+	 *
+	 * @param value the Rule value
+	 *
+	 * @return An argument containing the given Rule value
+	 */
+	public static DirectiveArgument rule(Rule value) {
+		return new DirectiveArgument() {
+			@Override
+			public <V> V apply(Function<? super String, ? extends V> stringHandler,
+					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
+					Function<? super Rule, ? extends V> ruleHandler,
+					Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler) {
+				return ruleHandler.apply(value);
+			}
+
+			@Override
+			public boolean equals(Object other) {
+				Optional<Boolean> maybeEquals = isEqual(other);
+
+				if (maybeEquals.isPresent()) {
+					return maybeEquals.get();
+				}
+
+				DirectiveArgument otherArgument = (DirectiveArgument) other;
+				return otherArgument.apply(str -> false, iri -> false, term -> false, rule -> rule.equals(value),
+						positiveLiteral -> false);
+			}
+
+			@Override
+			public int hashCode() {
+				return 53 * value.hashCode();
+			}
+		};
+	}
+
+	/**
+	 * Create an argument containing a PositiveLiteral.
+	 *
+	 * @param value the PositiveLiteral value
+	 *
+	 * @return An argument containing the given PositiveLiteral value
+	 */
+	public static DirectiveArgument positiveLiteral(PositiveLiteral value) {
+		return new DirectiveArgument() {
+			@Override
+			public <V> V apply(Function<? super String, ? extends V> stringHandler,
+					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
+					Function<? super Rule, ? extends V> ruleHandler,
+					Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler) {
+				return positiveLiteralHandler.apply(value);
+			}
+
+			@Override
+			public boolean equals(Object other) {
+				Optional<Boolean> maybeEquals = isEqual(other);
+
+				if (maybeEquals.isPresent()) {
+					return maybeEquals.get();
+				}
+
+				DirectiveArgument otherArgument = (DirectiveArgument) other;
+				return otherArgument.apply(str -> false, iri -> false, term -> false, rule -> false,
+						positiveLiteral -> positiveLiteral.equals(value));
+			}
+
+			@Override
+			public int hashCode() {
+				return 59 * value.hashCode();
 			}
 		};
 	}
@@ -183,7 +272,8 @@ public abstract class DirectiveArgument {
 	 *         the argument doesn't contain a string.
 	 */
 	public Optional<String> fromString() {
-		return this.apply(Optional::of, value -> Optional.empty(), value -> Optional.empty());
+		return this.apply(Optional::of, value -> Optional.empty(), value -> Optional.empty(), value -> Optional.empty(),
+				value -> Optional.empty());
 	}
 
 	/**
@@ -193,7 +283,8 @@ public abstract class DirectiveArgument {
 	 *         argument doesn't contain a IRI.
 	 */
 	public Optional<URI> fromIri() {
-		return this.apply(value -> Optional.empty(), Optional::of, value -> Optional.empty());
+		return this.apply(value -> Optional.empty(), Optional::of, value -> Optional.empty(), value -> Optional.empty(),
+				value -> Optional.empty());
 	}
 
 	/**
@@ -203,6 +294,29 @@ public abstract class DirectiveArgument {
 	 *         the argument doesn't contain a Term.
 	 */
 	public Optional<Term> fromTerm() {
-		return this.apply(value -> Optional.empty(), value -> Optional.empty(), Optional::of);
+		return this.apply(value -> Optional.empty(), value -> Optional.empty(), Optional::of, value -> Optional.empty(),
+				value -> Optional.empty());
+	}
+
+	/**
+	 * Create an optional from a (possible) Rule value.
+	 *
+	 * @return An optional containing the contained Rule, or an empty Optional if
+	 *         the argument doesn't contain a Rule.
+	 */
+	public Optional<Rule> fromRule() {
+		return this.apply(value -> Optional.empty(), value -> Optional.empty(), value -> Optional.empty(), Optional::of,
+				value -> Optional.empty());
+	}
+
+	/**
+	 * Create an optional from a (possible) PositiveLiteral value.
+	 *
+	 * @return An optional containing the contained PositiveLiteral, or an empty
+	 *         Optional if the argument doesn't contain a PositiveLitreal.
+	 */
+	public Optional<PositiveLiteral> fromPositiveLiteral() {
+		return this.apply(value -> Optional.empty(), value -> Optional.empty(), value -> Optional.empty(),
+				value -> Optional.empty(), Optional::of);
 	}
 }

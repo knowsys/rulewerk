@@ -28,6 +28,7 @@ import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Statement;
@@ -330,11 +331,9 @@ public class JavaCCParserBase {
 		return this.prefixDeclarationRegistry;
 	}
 
-	DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(String syntacticForm,
-			List<DirectiveArgument> arguments, SubParserFactory subParserFactory) throws ParseException {
+	DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(PositiveLiteral declaration) throws ParseException {
 		try {
-			return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(syntacticForm, arguments,
-					subParserFactory);
+			return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(declaration);
 		} catch (ParsingException e) {
 			throw makeParseExceptionWithCause(
 					"Failed while trying to parse the source-specific part of a data source declaration", e);

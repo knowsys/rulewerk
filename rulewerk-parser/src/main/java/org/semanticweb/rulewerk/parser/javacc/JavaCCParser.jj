@@ -34,17 +34,14 @@ options
 PARSER_BEGIN(JavaCCParser)
 package org.semanticweb.rulewerk.parser.javacc;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.List;
-import java.util.Deque;
 import java.util.ArrayList;
-import java.util.ArrayDeque;
 import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.DirectiveArgument;
@@ -62,9 +59,6 @@ import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
@@ -147,12 +141,11 @@ void source() throws PrefixDeclarationException : {
 }
 
 DataSource dataSource() throws PrefixDeclarationException : {
-	Token sourceName;
+	PositiveLiteral positiveLiteral;
 	List< DirectiveArgument > arguments;
 } {
-	( sourceName = < ARGUMENT_NAME >
-	| sourceName = < VARORPREDNAME > ) < LPAREN > arguments = Arguments() < RPAREN > {
-		return parseDataSourceSpecificPartOfDataSourceDeclaration(sourceName.image, arguments, getSubParserFactory());
+	positiveLiteral = positiveLiteral(FormulaContext.HEAD) {
+		return parseDataSourceSpecificPartOfDataSourceDeclaration(positiveLiteral);
     }
 }
 
@@ -164,6 +157,16 @@ KnowledgeBase directive() throws PrefixDeclarationException : {
 		return parseDirectiveStatement(name.image, arguments, getSubParserFactory());
 	}
 }
+
+/*TODO List< DirectiveArgument > command() throws PrefixDeclarationException : {
+	Token name;
+	List< DirectiveArgument > arguments;
+} {
+	name = < CUSTOM_DIRECTIVE > arguments = Arguments() < DOT > {
+	  	arguments.add(0, DirectiveArgument.string(name.image));
+		return arguments;
+	}
+}*/
 
 void statement() throws PrefixDeclarationException : {
     Statement statement;
@@ -432,10 +435,14 @@ String String() : {
 LinkedList< DirectiveArgument > Arguments() throws PrefixDeclarationException : {
 	DirectiveArgument argument;
     String str;
+    Rule rule;
+    PositiveLiteral positiveLiteral;
 	Term t;
     LinkedList< DirectiveArgument > rest = new LinkedList< DirectiveArgument >();
 } {
-    ( LOOKAHEAD(String()) str = String() { argument = DirectiveArgument.string(str); }
+    ( LOOKAHEAD(rule()) rule = rule() { argument = DirectiveArgument.rule(rule); }
+    | LOOKAHEAD(positiveLiteral(FormulaContext.HEAD)) positiveLiteral = positiveLiteral(FormulaContext.HEAD) { argument = DirectiveArgument.positiveLiteral(positiveLiteral); }
+    | LOOKAHEAD(String()) str = String() { argument = DirectiveArgument.string(str); }
 	| LOOKAHEAD(absoluteIri()) str = absoluteIri() {
 		URI url;
 		try {
@@ -479,9 +486,10 @@ MORE : {
 }
 
 < DEFAULT, BODY, TERM, DIRECTIVE_ARGUMENTS > TOKEN : {
-  < VARORPREDNAME : < A2Z> (< A2ZN >)* >
+  < VARORPREDNAME : < A2Z> (< A2ZND >)* >
   | < #A2Z : [ "a"-"z", "A"-"Z" ] >
   | < #A2ZN : [ "a"-"z", "A"-"Z", "0"-"9" ] >
+  | < #A2ZND : [ "a"-"z", "A"-"Z", "0"-"9", "-", "_" ] >
   | < PNAME_LN : (< PN_PREFIX >)? ":" < PN_LOCAL > >
   | < PNAME_NS : < PN_PREFIX > ":" >
   | < #PN_CHARS_BASE : [ "a"-"z", "A"-"Z", "\u00c0"-"\u00d6",
