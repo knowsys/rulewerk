@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.Validate;
+import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
@@ -253,7 +254,7 @@ public class ParserConfiguration {
 	 *
 	 * @return the (possibly updated) KnowledgeBase
 	 */
-	public KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments,
+	public KnowledgeBase parseDirectiveStatement(String name, List<Argument> arguments,
 			SubParserFactory subParserFactory) throws ParsingException {
 		final DirectiveHandler<KnowledgeBase> handler = this.directives.get(name);
 

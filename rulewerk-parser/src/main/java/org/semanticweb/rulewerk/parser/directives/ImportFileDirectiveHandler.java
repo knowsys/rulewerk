@@ -26,8 +26,8 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.semanticweb.rulewerk.core.exceptions.RulewerkException;
+import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-import org.semanticweb.rulewerk.parser.DirectiveArgument;
 import org.semanticweb.rulewerk.parser.DirectiveHandler;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -42,7 +42,7 @@ import org.semanticweb.rulewerk.parser.javacc.SubParserFactory;
 public class ImportFileDirectiveHandler implements DirectiveHandler<KnowledgeBase> {
 
 	@Override
-	public KnowledgeBase handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
+	public KnowledgeBase handleDirective(List<Argument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
 		DirectiveHandler.validateNumberOfArguments(arguments, 1);
 		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "rules file");

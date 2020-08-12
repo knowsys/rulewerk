@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 
 import org.junit.Test;
+import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
@@ -34,9 +35,9 @@ public class DirectiveHandlerTest {
 	private static final URI IRI = URI.create("https://example.org");
 	private static final Term TERM = Expressions.makeDatatypeConstant(STRING, IRI.toString());
 
-	private static final DirectiveArgument STRING_ARGUMENT = DirectiveArgument.string(STRING);
-	private static final DirectiveArgument IRI_ARGUMENT = DirectiveArgument.iri(IRI);
-	private static final DirectiveArgument TERM_ARGUMENT = DirectiveArgument.term(TERM);
+	private static final Argument STRING_ARGUMENT = Argument.string(STRING);
+	private static final Argument IRI_ARGUMENT = Argument.iri(IRI);
+	private static final Argument TERM_ARGUMENT = Argument.term(TERM);
 
 	@Test
 	public void validateStringArgument_stringArgument_succeeds() throws ParsingException {
@@ -90,7 +91,7 @@ public class DirectiveHandlerTest {
 
 	@Test
 	public void validateFilenameArgument_invalidFilename_throws() throws ParsingException {
-		DirectiveHandler.validateFilenameArgument(DirectiveArgument.string(STRING + "-nonexistant"),
+		DirectiveHandler.validateFilenameArgument(Argument.string(STRING + "-nonexistant"),
 				"filename argument");
 	}
 
@@ -101,7 +102,7 @@ public class DirectiveHandlerTest {
 
 	@Test(expected = ParsingException.class)
 	public void validateUrlArgument_invalidUrl_throws() throws ParsingException {
-		DirectiveHandler.validateUrlArgument(DirectiveArgument.iri(URI.create("example://test")), "url argument");
+		DirectiveHandler.validateUrlArgument(Argument.iri(URI.create("example://test")), "url argument");
 	}
 
 }

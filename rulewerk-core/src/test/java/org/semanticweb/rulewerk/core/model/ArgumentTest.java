@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.parser;
+package org.semanticweb.rulewerk.core.model;
 
 /*-
  * #%L
@@ -24,17 +24,18 @@ import static org.junit.Assert.*;
 import java.net.URI;
 
 import org.junit.Test;
+import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
-public class DirectiveArgumentTest {
+public class ArgumentTest {
 	private static final String STRING = "src/test/resources/facts.rls";
 	private static final URI IRI = URI.create("https://example.org");
 	private static final Term TERM = Expressions.makeDatatypeConstant(STRING, IRI.toString());
 
-	private static final DirectiveArgument STRING_ARGUMENT = DirectiveArgument.string(STRING);
-	private static final DirectiveArgument IRI_ARGUMENT = DirectiveArgument.iri(IRI);
-	private static final DirectiveArgument TERM_ARGUMENT = DirectiveArgument.term(TERM);
+	private static final Argument STRING_ARGUMENT = Argument.string(STRING);
+	private static final Argument IRI_ARGUMENT = Argument.iri(IRI);
+	private static final Argument TERM_ARGUMENT = Argument.term(TERM);
 
 	@Test
 	public void equals_null_returnsFalse() {
@@ -52,17 +53,17 @@ public class DirectiveArgumentTest {
 
 	@Test
 	public void equals_equal_returnsTrue() {
-		assertTrue(STRING_ARGUMENT.equals(DirectiveArgument.string(STRING)));
-		assertTrue(IRI_ARGUMENT.equals(DirectiveArgument.iri(IRI)));
-		assertTrue(TERM_ARGUMENT.equals(DirectiveArgument.term(TERM)));
+		assertTrue(STRING_ARGUMENT.equals(Argument.string(STRING)));
+		assertTrue(IRI_ARGUMENT.equals(Argument.iri(IRI)));
+		assertTrue(TERM_ARGUMENT.equals(Argument.term(TERM)));
 	}
 
 	@Test
 	public void equals_notEqualButSameType_returnsFalse() {
-		assertFalse(STRING_ARGUMENT.equals(DirectiveArgument.string(STRING + "test")));
-		assertFalse(IRI_ARGUMENT.equals(DirectiveArgument.iri(URI.create("https://example.com"))));
+		assertFalse(STRING_ARGUMENT.equals(Argument.string(STRING + "test")));
+		assertFalse(IRI_ARGUMENT.equals(Argument.iri(URI.create("https://example.com"))));
 		assertFalse(TERM_ARGUMENT
-				.equals(DirectiveArgument.term(Expressions.makeDatatypeConstant(STRING, "https://example.com"))));
+				.equals(Argument.term(Expressions.makeDatatypeConstant(STRING, "https://example.com"))));
 	}
 
 	@Test

@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.parser;
+package org.semanticweb.rulewerk.core.model.api;
 
 /*-
  * #%L
@@ -24,18 +24,14 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
-import org.semanticweb.rulewerk.core.model.api.Rule;
-import org.semanticweb.rulewerk.core.model.api.Term;
-
 /**
  * A tagged union representing the possible types allowed to appear as arguments
- * in directives.
+ * in commands and parser directives.
  *
  * @author Maximilian Marx
  */
-public abstract class DirectiveArgument {
-	private DirectiveArgument() {
+public abstract class Argument {
+	private Argument() {
 	}
 
 	/**
@@ -73,7 +69,7 @@ public abstract class DirectiveArgument {
 			return Optional.of(true);
 		}
 
-		if (!(other instanceof DirectiveArgument)) {
+		if (!(other instanceof Argument)) {
 			return Optional.of(false);
 		}
 
@@ -87,8 +83,8 @@ public abstract class DirectiveArgument {
 	 *
 	 * @return An argument containing the given string value
 	 */
-	public static DirectiveArgument string(String value) {
-		return new DirectiveArgument() {
+	public static Argument string(String value) {
+		return new Argument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
 					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
@@ -105,7 +101,7 @@ public abstract class DirectiveArgument {
 					return maybeEquals.get();
 				}
 
-				DirectiveArgument otherArgument = (DirectiveArgument) other;
+				Argument otherArgument = (Argument) other;
 				return otherArgument.apply(str -> str.equals(value), iri -> false, term -> false, rule -> false,
 						positiveLiteral -> false);
 			}
@@ -124,8 +120,8 @@ public abstract class DirectiveArgument {
 	 *
 	 * @return An argument containing the given IRI value
 	 */
-	public static DirectiveArgument iri(URI value) {
-		return new DirectiveArgument() {
+	public static Argument iri(URI value) {
+		return new Argument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
 					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
@@ -142,7 +138,7 @@ public abstract class DirectiveArgument {
 					return maybeEquals.get();
 				}
 
-				DirectiveArgument otherArgument = (DirectiveArgument) other;
+				Argument otherArgument = (Argument) other;
 				return otherArgument.apply(str -> false, iri -> iri.equals(value), term -> false, rule -> false,
 						positiveLiteral -> false);
 			}
@@ -161,8 +157,8 @@ public abstract class DirectiveArgument {
 	 *
 	 * @return An argument containing the given Term value
 	 */
-	public static DirectiveArgument term(Term value) {
-		return new DirectiveArgument() {
+	public static Argument term(Term value) {
+		return new Argument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
 					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
@@ -179,7 +175,7 @@ public abstract class DirectiveArgument {
 					return maybeEquals.get();
 				}
 
-				DirectiveArgument otherArgument = (DirectiveArgument) other;
+				Argument otherArgument = (Argument) other;
 				return otherArgument.apply(str -> false, iri -> false, term -> term.equals(value), rule -> false,
 						positiveLiteral -> false);
 			}
@@ -198,8 +194,8 @@ public abstract class DirectiveArgument {
 	 *
 	 * @return An argument containing the given Rule value
 	 */
-	public static DirectiveArgument rule(Rule value) {
-		return new DirectiveArgument() {
+	public static Argument rule(Rule value) {
+		return new Argument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
 					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
@@ -216,7 +212,7 @@ public abstract class DirectiveArgument {
 					return maybeEquals.get();
 				}
 
-				DirectiveArgument otherArgument = (DirectiveArgument) other;
+				Argument otherArgument = (Argument) other;
 				return otherArgument.apply(str -> false, iri -> false, term -> false, rule -> rule.equals(value),
 						positiveLiteral -> false);
 			}
@@ -235,8 +231,8 @@ public abstract class DirectiveArgument {
 	 *
 	 * @return An argument containing the given PositiveLiteral value
 	 */
-	public static DirectiveArgument positiveLiteral(PositiveLiteral value) {
-		return new DirectiveArgument() {
+	public static Argument positiveLiteral(PositiveLiteral value) {
+		return new Argument() {
 			@Override
 			public <V> V apply(Function<? super String, ? extends V> stringHandler,
 					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
@@ -253,7 +249,7 @@ public abstract class DirectiveArgument {
 					return maybeEquals.get();
 				}
 
-				DirectiveArgument otherArgument = (DirectiveArgument) other;
+				Argument otherArgument = (Argument) other;
 				return otherArgument.apply(str -> false, iri -> false, term -> false, rule -> false,
 						positiveLiteral -> positiveLiteral.equals(value));
 			}

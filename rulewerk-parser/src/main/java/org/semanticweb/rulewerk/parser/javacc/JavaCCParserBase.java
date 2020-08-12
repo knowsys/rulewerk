@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
+import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
@@ -38,7 +39,6 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.implementation.Skolemization;
 import org.semanticweb.rulewerk.parser.DefaultParserConfiguration;
-import org.semanticweb.rulewerk.parser.DirectiveArgument;
 import org.semanticweb.rulewerk.parser.LocalPrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -345,7 +345,7 @@ public class JavaCCParserBase {
 		return parserConfiguration.parseConfigurableLiteral(delimiter, syntacticForm, subParserFactory);
 	}
 
-	KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments,
+	KnowledgeBase parseDirectiveStatement(String name, List<Argument> arguments,
 			SubParserFactory subParserFactory) throws ParseException {
 		try {
 			return parserConfiguration.parseDirectiveStatement(name, arguments, subParserFactory);
