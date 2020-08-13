@@ -515,7 +515,7 @@ public class VLogReasoner implements Reasoner {
 	private void validateBeforeQuerying(final PositiveLiteral query) {
 		this.validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not allowed before reasoner is loaded!");
+			throw new ReasonerStateException(this.reasonerState, "Querying is not allowed before Reasoner#reason() was first called!");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
 	}
