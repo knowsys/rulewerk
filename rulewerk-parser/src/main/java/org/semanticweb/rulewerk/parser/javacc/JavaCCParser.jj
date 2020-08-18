@@ -57,10 +57,9 @@ import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
+import org.semanticweb.rulewerk.core.model.api.Argument;
+import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-
-import org.semanticweb.rulewerk.core.script.Argument;
-import org.semanticweb.rulewerk.core.script.Command;
 
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
@@ -455,16 +454,6 @@ LinkedList< Argument > Arguments() throws PrefixDeclarationException : {
 } {
     ( LOOKAHEAD(ruleNoDot()) rule = ruleNoDot() { argument = Argument.rule(rule); }
     | LOOKAHEAD(positiveLiteral(FormulaContext.HEAD)) positiveLiteral = positiveLiteral(FormulaContext.HEAD) { argument = Argument.positiveLiteral(positiveLiteral); }
-    | LOOKAHEAD(String()) str = String() { argument = Argument.string(str); }
-	| LOOKAHEAD(absoluteIri()) str = absoluteIri() {
-		URI url;
-		try {
-			url = new URI(str);
-		} catch (URISyntaxException e) {
-			throw makeParseExceptionWithCause("Error parsing IRIhandler: " + e.getMessage(), e);
-		}
-		argument = Argument.iri(url);
-	}
     | t = term(FormulaContext.HEAD) { argument = Argument.term(t); }
     ) [rest = Arguments()] {
 		rest.addFirst(argument);

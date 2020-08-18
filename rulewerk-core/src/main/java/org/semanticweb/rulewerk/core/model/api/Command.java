@@ -76,8 +76,6 @@ public class Command implements Entity {
 						.append(Serializer.getString(rule.getBody()));
 			} else if (argument.fromPositiveLiteral().isPresent()) {
 				result.append(argument.fromPositiveLiteral().get().getSyntacticRepresentation());
-			} else if (argument.fromString().isPresent()) {
-				result.append(Serializer.getString(argument.fromString().get()));
 			} else {
 				throw new UnsupportedOperationException("Serialisation of commands is not fully implemented yet.");
 			}

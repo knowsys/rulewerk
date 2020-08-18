@@ -21,65 +21,67 @@ package org.semanticweb.rulewerk.core.model;
  */
 import static org.junit.Assert.*;
 
-import java.net.URI;
-
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.Argument;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
+import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 public class ArgumentTest {
-	private static final String STRING = "src/test/resources/facts.rls";
-	private static final URI IRI = URI.create("https://example.org");
-	private static final Term TERM = Expressions.makeDatatypeConstant(STRING, IRI.toString());
+	private static final Term TERM = Expressions.makeDatatypeConstant("some string",
+			PrefixDeclarationRegistry.XSD_STRING);
+	private static final PositiveLiteral LITERAL = Expressions.makePositiveLiteral("p", TERM);
+	private static final Rule RULE = Expressions.makeRule(LITERAL, LITERAL);
 
-	private static final Argument STRING_ARGUMENT = Argument.string(STRING);
-	private static final Argument IRI_ARGUMENT = Argument.iri(IRI);
 	private static final Argument TERM_ARGUMENT = Argument.term(TERM);
+	private static final Argument LITERAL_ARGUMENT = Argument.positiveLiteral(LITERAL);
+	private static final Argument RULE_ARGUMENT = Argument.rule(RULE);
 
 	@Test
 	public void equals_null_returnsFalse() {
-		assertFalse(STRING_ARGUMENT.equals(null));
-		assertFalse(IRI_ARGUMENT.equals(null));
+		assertFalse(LITERAL_ARGUMENT.equals(null));
+		assertFalse(RULE_ARGUMENT.equals(null));
 		assertFalse(TERM_ARGUMENT.equals(null));
 	}
 
 	@Test
 	public void equals_self_returnsTrue() {
-		assertTrue(STRING_ARGUMENT.equals(STRING_ARGUMENT));
-		assertTrue(IRI_ARGUMENT.equals(IRI_ARGUMENT));
+		assertTrue(RULE_ARGUMENT.equals(RULE_ARGUMENT));
+		assertTrue(LITERAL_ARGUMENT.equals(LITERAL_ARGUMENT));
 		assertTrue(TERM_ARGUMENT.equals(TERM_ARGUMENT));
 	}
 
 	@Test
 	public void equals_equal_returnsTrue() {
-		assertTrue(STRING_ARGUMENT.equals(Argument.string(STRING)));
-		assertTrue(IRI_ARGUMENT.equals(Argument.iri(IRI)));
+		assertTrue(RULE_ARGUMENT.equals(Argument.rule(RULE)));
+		assertTrue(LITERAL_ARGUMENT.equals(Argument.positiveLiteral(LITERAL)));
 		assertTrue(TERM_ARGUMENT.equals(Argument.term(TERM)));
 	}
 
 	@Test
 	public void equals_notEqualButSameType_returnsFalse() {
-		assertFalse(STRING_ARGUMENT.equals(Argument.string(STRING + "test")));
-		assertFalse(IRI_ARGUMENT.equals(Argument.iri(URI.create("https://example.com"))));
+		assertFalse(RULE_ARGUMENT.equals(Argument.rule(Expressions.makeRule(LITERAL, LITERAL, LITERAL))));
+		assertFalse(LITERAL_ARGUMENT.equals(Argument.positiveLiteral(Expressions.makePositiveLiteral("q", TERM))));
 		assertFalse(TERM_ARGUMENT
-				.equals(Argument.term(Expressions.makeDatatypeConstant(STRING, "https://example.com"))));
+				.equals(Argument.term(Expressions.makeDatatypeConstant("another string", "https://example.com"))));
 	}
 
 	@Test
 	public void equals_differentType_returnsFalse() {
-		assertFalse(STRING_ARGUMENT.equals(IRI_ARGUMENT));
-		assertFalse(STRING_ARGUMENT.equals(TERM_ARGUMENT));
-		assertFalse(IRI_ARGUMENT.equals(STRING_ARGUMENT));
-		assertFalse(IRI_ARGUMENT.equals(TERM_ARGUMENT));
-		assertFalse(TERM_ARGUMENT.equals(STRING_ARGUMENT));
-		assertFalse(TERM_ARGUMENT.equals(IRI_ARGUMENT));
+		assertFalse(RULE_ARGUMENT.equals(LITERAL_ARGUMENT));
+		assertFalse(RULE_ARGUMENT.equals(TERM_ARGUMENT));
+		assertFalse(LITERAL_ARGUMENT.equals(RULE_ARGUMENT));
+		assertFalse(LITERAL_ARGUMENT.equals(TERM_ARGUMENT));
+		assertFalse(TERM_ARGUMENT.equals(RULE_ARGUMENT));
+		assertFalse(TERM_ARGUMENT.equals(LITERAL_ARGUMENT));
 	}
 
 	@Test
 	public void equals_String_returnsFalse() {
-		assertFalse(STRING_ARGUMENT.equals((Object) "test"));
-		assertFalse(IRI_ARGUMENT.equals((Object) "test"));
+		assertFalse(RULE_ARGUMENT.equals((Object) "test"));
+		assertFalse(LITERAL_ARGUMENT.equals((Object) "test"));
 		assertFalse(TERM_ARGUMENT.equals((Object) "test"));
 	}
 }

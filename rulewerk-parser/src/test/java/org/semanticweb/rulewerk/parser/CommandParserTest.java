@@ -23,6 +23,7 @@ package org.semanticweb.rulewerk.parser;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParser;
 
@@ -35,9 +36,19 @@ public class CommandParserTest {
 		assertEquals("query", command.getName());
 		assertEquals(5, command.getArguments().size());
 		assertTrue(command.getArguments().get(0).fromRule().isPresent());
-		assertTrue(command.getArguments().get(1).fromString().isPresent());
+		assertTrue(command.getArguments().get(1).fromTerm().isPresent());
 		assertTrue(command.getArguments().get(2).fromTerm().isPresent());
 		assertTrue(command.getArguments().get(3).fromPositiveLiteral().isPresent());
-		assertTrue(command.getArguments().get(4).fromIri().isPresent());
+		assertTrue(command.getArguments().get(4).fromTerm().isPresent());
 	}
+	
+//	@Test
+//	public void parseCommandTest() throws ParsingException {
+//		String input = "@myprefix wdqs: <https://query.wikidata.org/> .";
+////		String input = "@mysource diseaseId[2]: sparql(wdqs:sparql, \"disease,doid\", \"?disease wdt:P699 ?doid .\") .";
+//		Command command = RuleParser.parseSyntaxFragment(input, JavaCCParser::command, "command", null);
+//		for (Argument argument : command.getArguments()) {
+//			System.out.println("-");
+//		}
+//	}
 }

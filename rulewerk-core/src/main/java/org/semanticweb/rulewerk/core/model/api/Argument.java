@@ -20,7 +20,6 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import java.net.URI;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -37,16 +36,13 @@ public abstract class Argument {
 	/**
 	 * Apply a function to the contained value.
 	 *
-	 * @param stringHandler          the function to apply to a string argument
-	 * @param iriHandler             the function to apply to an IRI
 	 * @param termHandler            the function to apply to a Term
 	 * @param ruleHandler            the function to apply to a Rule
 	 * @param positiveLiteralHandler the function to apply to a Literal
 	 *
 	 * @return the value returned by the appropriate handler function
 	 */
-	public abstract <V> V apply(Function<? super String, ? extends V> stringHandler,
-			Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
+	public abstract <V> V apply(Function<? super Term, ? extends V> termHandler,
 			Function<? super Rule, ? extends V> ruleHandler,
 			Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler);
 
@@ -77,80 +73,6 @@ public abstract class Argument {
 	}
 
 	/**
-	 * Create an argument containing a String.
-	 *
-	 * @param value the string value
-	 *
-	 * @return An argument containing the given string value
-	 */
-	public static Argument string(String value) {
-		return new Argument() {
-			@Override
-			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
-					Function<? super Rule, ? extends V> ruleHandler,
-					Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler) {
-				return stringHandler.apply(value);
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				Optional<Boolean> maybeEquals = isEqual(other);
-
-				if (maybeEquals.isPresent()) {
-					return maybeEquals.get();
-				}
-
-				Argument otherArgument = (Argument) other;
-				return otherArgument.apply(str -> str.equals(value), iri -> false, term -> false, rule -> false,
-						positiveLiteral -> false);
-			}
-
-			@Override
-			public int hashCode() {
-				return 41 * value.hashCode();
-			}
-		};
-	}
-
-	/**
-	 * Create an argument containing a IRI.
-	 *
-	 * @param value the IRI value
-	 *
-	 * @return An argument containing the given IRI value
-	 */
-	public static Argument iri(URI value) {
-		return new Argument() {
-			@Override
-			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
-					Function<? super Rule, ? extends V> ruleHandler,
-					Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler) {
-				return iriHandler.apply(value);
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				Optional<Boolean> maybeEquals = isEqual(other);
-
-				if (maybeEquals.isPresent()) {
-					return maybeEquals.get();
-				}
-
-				Argument otherArgument = (Argument) other;
-				return otherArgument.apply(str -> false, iri -> iri.equals(value), term -> false, rule -> false,
-						positiveLiteral -> false);
-			}
-
-			@Override
-			public int hashCode() {
-				return 43 * value.hashCode();
-			}
-		};
-	}
-
-	/**
 	 * Create an argument containing a Term.
 	 *
 	 * @param value the Term value
@@ -160,8 +82,7 @@ public abstract class Argument {
 	public static Argument term(Term value) {
 		return new Argument() {
 			@Override
-			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
+			public <V> V apply(Function<? super Term, ? extends V> termHandler,
 					Function<? super Rule, ? extends V> ruleHandler,
 					Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler) {
 				return termHandler.apply(value);
@@ -176,8 +97,7 @@ public abstract class Argument {
 				}
 
 				Argument otherArgument = (Argument) other;
-				return otherArgument.apply(str -> false, iri -> false, term -> term.equals(value), rule -> false,
-						positiveLiteral -> false);
+				return otherArgument.apply(term -> term.equals(value), rule -> false, positiveLiteral -> false);
 			}
 
 			@Override
@@ -197,8 +117,7 @@ public abstract class Argument {
 	public static Argument rule(Rule value) {
 		return new Argument() {
 			@Override
-			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
+			public <V> V apply(Function<? super Term, ? extends V> termHandler,
 					Function<? super Rule, ? extends V> ruleHandler,
 					Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler) {
 				return ruleHandler.apply(value);
@@ -213,8 +132,7 @@ public abstract class Argument {
 				}
 
 				Argument otherArgument = (Argument) other;
-				return otherArgument.apply(str -> false, iri -> false, term -> false, rule -> rule.equals(value),
-						positiveLiteral -> false);
+				return otherArgument.apply(term -> false, rule -> rule.equals(value), positiveLiteral -> false);
 			}
 
 			@Override
@@ -234,8 +152,7 @@ public abstract class Argument {
 	public static Argument positiveLiteral(PositiveLiteral value) {
 		return new Argument() {
 			@Override
-			public <V> V apply(Function<? super String, ? extends V> stringHandler,
-					Function<? super URI, ? extends V> iriHandler, Function<? super Term, ? extends V> termHandler,
+			public <V> V apply(Function<? super Term, ? extends V> termHandler,
 					Function<? super Rule, ? extends V> ruleHandler,
 					Function<? super PositiveLiteral, ? extends V> positiveLiteralHandler) {
 				return positiveLiteralHandler.apply(value);
@@ -250,7 +167,7 @@ public abstract class Argument {
 				}
 
 				Argument otherArgument = (Argument) other;
-				return otherArgument.apply(str -> false, iri -> false, term -> false, rule -> false,
+				return otherArgument.apply(term -> false, rule -> false,
 						positiveLiteral -> positiveLiteral.equals(value));
 			}
 
@@ -262,36 +179,13 @@ public abstract class Argument {
 	}
 
 	/**
-	 * Create an optional from a (possible) string value.
-	 *
-	 * @return An optional containing the contained string, or an empty Optional if
-	 *         the argument doesn't contain a string.
-	 */
-	public Optional<String> fromString() {
-		return this.apply(Optional::of, value -> Optional.empty(), value -> Optional.empty(), value -> Optional.empty(),
-				value -> Optional.empty());
-	}
-
-	/**
-	 * Create an optional from a (possible) IRI value.
-	 *
-	 * @return An optional containing the contained IRI, or an empty Optional if the
-	 *         argument doesn't contain a IRI.
-	 */
-	public Optional<URI> fromIri() {
-		return this.apply(value -> Optional.empty(), Optional::of, value -> Optional.empty(), value -> Optional.empty(),
-				value -> Optional.empty());
-	}
-
-	/**
 	 * Create an optional from a (possible) Term value.
 	 *
 	 * @return An optional containing the contained Term, or an empty Optional if
 	 *         the argument doesn't contain a Term.
 	 */
 	public Optional<Term> fromTerm() {
-		return this.apply(value -> Optional.empty(), value -> Optional.empty(), Optional::of, value -> Optional.empty(),
-				value -> Optional.empty());
+		return this.apply(Optional::of, value -> Optional.empty(), value -> Optional.empty());
 	}
 
 	/**
@@ -301,8 +195,7 @@ public abstract class Argument {
 	 *         the argument doesn't contain a Rule.
 	 */
 	public Optional<Rule> fromRule() {
-		return this.apply(value -> Optional.empty(), value -> Optional.empty(), value -> Optional.empty(), Optional::of,
-				value -> Optional.empty());
+		return this.apply(value -> Optional.empty(), Optional::of, value -> Optional.empty());
 	}
 
 	/**
@@ -312,7 +205,6 @@ public abstract class Argument {
 	 *         Optional if the argument doesn't contain a PositiveLitreal.
 	 */
 	public Optional<PositiveLiteral> fromPositiveLiteral() {
-		return this.apply(value -> Optional.empty(), value -> Optional.empty(), value -> Optional.empty(),
-				value -> Optional.empty(), Optional::of);
+		return this.apply(value -> Optional.empty(), value -> Optional.empty(), Optional::of);
 	}
 }

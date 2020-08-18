@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import org.semanticweb.rulewerk.core.model.api.Command;
+import org.semanticweb.rulewerk.core.model.api.Terms;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
 
@@ -31,8 +32,15 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
-		if (command.getArguments().size() == 1 && command.getArguments().get(0).fromString().isPresent()) {
-			String fileName = command.getArguments().get(0).fromString().get();
+		if (command.getArguments().size() == 1) {
+			String fileName;
+			try {
+				fileName = Terms.extractString(
+						command.getArguments().get(0).fromTerm().orElseThrow(() -> new CommandExecutionException(
+								"Expected string for file name, but did not find a term.")));
+			} catch (IllegalArgumentException e) {
+				throw new CommandExecutionException("Failed to convert term given for file name to string.");
+			}
 			try {
 				FileInputStream fileInputStream = new FileInputStream(fileName);
 				RuleParser.parseInto(interpreter.getReasoner().getKnowledgeBase(), fileInputStream);
