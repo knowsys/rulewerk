@@ -34,6 +34,8 @@ public class ReasonCommandInterpreter implements CommandInterpreter {
 			throw new CommandExecutionException("This command supports no arguments.");
 		}
 
+		interpreter.getOut().println("Loading and materializing inferences ...");
+
 		Timer timer = new Timer("reasoning");
 		timer.start();
 		try {
@@ -42,8 +44,7 @@ public class ReasonCommandInterpreter implements CommandInterpreter {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}
 		timer.stop();
-		interpreter.getOut()
-				.println("Loading and materialization finished in " + timer.getTotalCpuTime() / 1000000 + "ms.");
+		interpreter.getOut().println("... finished in " + timer.getTotalCpuTime() / 1000000 + "ms.");
 	}
 
 	@Override
@@ -55,5 +56,5 @@ public class ReasonCommandInterpreter implements CommandInterpreter {
 	public String getSynopsis() {
 		return "load data and compute conclusions from knowledge base";
 	}
-	
+
 }
