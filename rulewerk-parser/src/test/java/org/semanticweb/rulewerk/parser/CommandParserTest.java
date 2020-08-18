@@ -22,9 +22,12 @@ package org.semanticweb.rulewerk.parser;
 
 import static org.junit.Assert.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.junit.Test;
-import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.Command;
+import org.semanticweb.rulewerk.core.model.api.Terms;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParser;
 
 public class CommandParserTest {
@@ -41,14 +44,26 @@ public class CommandParserTest {
 		assertTrue(command.getArguments().get(3).fromPositiveLiteral().isPresent());
 		assertTrue(command.getArguments().get(4).fromTerm().isPresent());
 	}
+
+	@Test
+	public void parsePrefix() throws ParsingException, URISyntaxException {
+		String input = "@myprefix wdqs: <https://query.wikidata.org/> .";
+		Command command = RuleParser.parseSyntaxFragment(input, JavaCCParser::command, "command", null);
+		assertEquals(2, command.getArguments().size());
+		assertTrue(command.getArguments().get(0).fromTerm().isPresent());
+		assertTrue(command.getArguments().get(1).fromTerm().isPresent());
+		assertEquals("wdqs:", Terms.extractString(command.getArguments().get(0).fromTerm().get()));
+		assertEquals(new URI("https://query.wikidata.org/"), Terms.extractIri(command.getArguments().get(1).fromTerm().get()));
+	}
 	
-//	@Test
-//	public void parseCommandTest() throws ParsingException {
-//		String input = "@myprefix wdqs: <https://query.wikidata.org/> .";
-////		String input = "@mysource diseaseId[2]: sparql(wdqs:sparql, \"disease,doid\", \"?disease wdt:P699 ?doid .\") .";
-//		Command command = RuleParser.parseSyntaxFragment(input, JavaCCParser::command, "command", null);
-//		for (Argument argument : command.getArguments()) {
-//			System.out.println("-");
-//		}
-//	}
+	@Test
+	public void parseSourceDeclaration() throws ParsingException, URISyntaxException {
+		String input = "@mysource diseaseId[2]: 123 .";
+		Command command = RuleParser.parseSyntaxFragment(input, JavaCCParser::command, "command", null);
+		assertEquals(2, command.getArguments().size());
+		assertTrue(command.getArguments().get(0).fromTerm().isPresent());
+		assertTrue(command.getArguments().get(1).fromTerm().isPresent());
+		assertEquals("diseaseId[2]:", Terms.extractString(command.getArguments().get(0).fromTerm().get()));
+		assertEquals(123, Terms.extractInt(command.getArguments().get(1).fromTerm().get()));
+	}
 }

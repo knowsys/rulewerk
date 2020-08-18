@@ -160,16 +160,23 @@ KnowledgeBase directive() throws PrefixDeclarationException : {
 }
 
 Command command() throws PrefixDeclarationException : {
-	Token name;
-	List< Argument > arguments;
+	Token name, pn, arity;
+	LinkedList< Argument > arguments;
+    String predicateName;
+
 } {
 	name = < CUSTOM_DIRECTIVE >
-	(	  arguments = Arguments() < DOT > {
-		return new Command(name.image,arguments);
-	} |
-	< DOT > {
-		return new Command(name.image, new LinkedList< Argument >());
-	} )
+	( LOOKAHEAD(predicateName() < ARITY >) predicateName = predicateName() arity = < ARITY > < COLON > arguments = Arguments() < DOT > {
+	  		arguments.addFirst(Argument.term(Expressions.makeDatatypeConstant(predicateName + "[" + arity.image + "]:", PrefixDeclarationRegistry.XSD_STRING)));
+	  		return new Command(name.image,arguments);
+	  	}
+    | arguments = Arguments() < DOT > { return new Command(name.image,arguments); }
+	| pn = < PNAME_NS > arguments = Arguments() < DOT > {
+	  		arguments.addFirst(Argument.term(Expressions.makeDatatypeConstant(pn.image, PrefixDeclarationRegistry.XSD_STRING)));
+	  		return new Command(name.image,arguments);
+	  	}
+	| < DOT > { return new Command(name.image, new LinkedList< Argument >()); }
+	)
 }
 
 void statement() throws PrefixDeclarationException : {

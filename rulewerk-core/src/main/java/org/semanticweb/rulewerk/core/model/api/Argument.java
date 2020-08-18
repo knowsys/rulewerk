@@ -23,6 +23,8 @@ package org.semanticweb.rulewerk.core.model.api;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+
 /**
  * A tagged union representing the possible types allowed to appear as arguments
  * in commands and parser directives.
@@ -104,6 +106,11 @@ public abstract class Argument {
 			public int hashCode() {
 				return 47 * value.hashCode();
 			}
+
+			@Override
+			public String toString() {
+				return value.toString();
+			}
 		};
 	}
 
@@ -138,6 +145,11 @@ public abstract class Argument {
 			@Override
 			public int hashCode() {
 				return 53 * value.hashCode();
+			}
+
+			@Override
+			public String toString() {
+				return value.toString();
 			}
 		};
 	}
@@ -174,6 +186,11 @@ public abstract class Argument {
 			@Override
 			public int hashCode() {
 				return 59 * value.hashCode();
+			}
+
+			@Override
+			public String toString() {
+				return value.toString();
 			}
 		};
 	}
