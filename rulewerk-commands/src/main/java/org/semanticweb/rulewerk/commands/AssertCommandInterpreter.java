@@ -30,8 +30,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 public class AssertCommandInterpreter implements CommandInterpreter {
 
 	@Override
-	public void run(Command command, Interpreter interpreter)
-			throws CommandExecutionException {
+	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
 
 		for (Argument argument : command.getArguments()) {
 			if (argument.fromPositiveLiteral().isPresent()) {
@@ -46,16 +45,17 @@ public class AssertCommandInterpreter implements CommandInterpreter {
 			} else if (argument.fromRule().isPresent()) {
 				interpreter.getReasoner().getKnowledgeBase().addStatement(argument.fromRule().get());
 			} else {
-				throw new CommandExecutionException("Only facts and rules can be asserted.");
+				throw new CommandExecutionException(
+						"Only facts and rules can be asserted. Encountered " + argument.toString());
 			}
 		}
 	}
-	
+
 	@Override
 	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " (<fact or rule>)+ .\n" +
-				" fact or rule: statement(s) to be added to the knowledge base\n" +
-				"Reasoning needs to be invoked after finishing addition of statements.";
+		return "Usage: @" + commandName + " (<fact or rule>)+ .\n"
+				+ " fact or rule: statement(s) to be added to the knowledge base\n"
+				+ "Reasoning needs to be invoked after finishing addition of statements.";
 	}
 
 	@Override
