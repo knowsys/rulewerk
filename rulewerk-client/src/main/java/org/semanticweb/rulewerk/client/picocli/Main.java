@@ -40,8 +40,7 @@ public class Main {
 
 	public static void main(final String[] args) throws IOException {
 		if (args.length == 0 || (args.length > 0 && args[0].equals("shell"))) {
-			final InteractiveShell interactiveShell = new InteractiveShell();
-			interactiveShell.run();
+			InteractiveShell.run();
 		} else {
 			if (args[0].equals("materialize")) {
 				final CommandLine commandline = new CommandLine(new RulewerkClientMaterialize());

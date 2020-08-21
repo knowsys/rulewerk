@@ -38,8 +38,12 @@ public class InteractiveShell
 //implements Runnable
 {
 
+	public static void main(final String[] args) throws IOException {
+		run();
+	}
+
 //	@Override
-	public void run() throws IOException {
+	public static void run() throws IOException {
 
 		final Terminal terminal = DefaultConfiguration.buildTerminal();
 		final Interpreter interpreter = initializeInterpreter(terminal);
