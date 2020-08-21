@@ -71,37 +71,37 @@ public class Reliance {
 
 	}
 
-//	static private void print(String name, ArrayList<Literal> literals) {
-//		String result = name + ": ";
-//		for (Literal literal : literals)
-//			result += literal + ", ";
-//		System.out.println(result);
-//	}
-//
-//	static private void print(String name, Set<Literal> literals) {
-//		String result = name + ": ";
-//		for (Literal literal : literals)
-//			result += literal + ", ";
-//		System.out.println(result);
-//	}
-//
-//	static private void print(String name, int[] intArray) {
-//		String base = name + ": [";
-//		for (int i = 0; i < intArray.length; i++) {
-//			base += intArray[i] + ",";
-//		}
-//		base += "]";
-//		System.out.println(base);
-//	}
-//
-//	static private void print(String name, List<Integer> list) {
-//		String base = name + ": [";
-//		for (int i = 0; i < list.size(); i++) {
-//			base += list.get(i) + ",";
-//		}
-//		base += "]";
-//		System.out.println(base);
-//	}
+	static private void print(String name, ArrayList<Literal> literals) {
+		String result = name + ": ";
+		for (Literal literal : literals)
+			result += literal + ", ";
+		System.out.println(result);
+	}
+
+	static private void print(String name, Set<Literal> literals) {
+		String result = name + ": ";
+		for (Literal literal : literals)
+			result += literal + ", ";
+		System.out.println(result);
+	}
+
+	static private void print(String name, int[] intArray) {
+		String base = name + ": [";
+		for (int i = 0; i < intArray.length; i++) {
+			base += intArray[i] + ",";
+		}
+		base += "]";
+		System.out.println(base);
+	}
+
+	static private void print(String name, List<Integer> list) {
+		String base = name + ": [";
+		for (int i = 0; i < list.size(); i++) {
+			base += list.get(i) + ",";
+		}
+		base += "]";
+		System.out.println(base);
+	}
 
 	/*
 	 * @return True if rule2 positively relies in rule1 $\arule_1\rpos\arule_2$
@@ -110,23 +110,22 @@ public class Reliance {
 		Rule firstRuleRenamedVariables = VariableRenamer.renameVariables(rule1, 1);
 		Rule secondRuleRenamedVariables = VariableRenamer.renameVariables(rule2, 2);
 
-//		System.out.println("rule 1: " + rule1);
-//		System.out.println("rule 2: " + rule2);
-//		System.out.println(firstRuleRenamedVariables);
-//		System.out.println(secondRuleRenamedVariables);
+		System.out.println("rule 1: " + rule1);
+		System.out.println("rule 2: " + rule2);
+		System.out.println("rule 1 renamed: " + firstRuleRenamedVariables);
+		System.out.println("rule 2 renamed: " + secondRuleRenamedVariables);
 
 		ArrayList<Literal> literalsInHead1 = new ArrayList<>();
 		firstRuleRenamedVariables.getHead().getLiterals().forEach(literal -> literalsInHead1.add(literal));
-//		print("literalsInHead1", literalsInHead1);
-//
+		print("literalsInHead1", literalsInHead1);
+
 		ArrayList<Literal> literalsInBody2 = new ArrayList<>();
 		for (Literal literal : secondRuleRenamedVariables.getBody().getLiterals()) {
 			if (!literal.isNegated()) {
 				literalsInBody2.add(literal);
 			}
 		}
-//		secondRuleRenamedVariables.getBody().getLiterals().forEach(literal -> literalsInBody2.add(literal));
-//		print("literalsInBody2", literalsInBody2);
+		print("literalsInBody2", literalsInBody2);
 
 		int sizeHead1 = literalsInHead1.size();
 		int sizeBody2 = literalsInBody2.size();
@@ -134,18 +133,18 @@ public class Reliance {
 		Assignment assignment = new Assignment(sizeBody2, sizeHead1);
 
 		for (int[] match : assignment) {
-//			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-//			print("match", match);
+			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+			print("match", match);
 
 			List<Integer> head11Idx = Assignment.head11Idx(sizeHead1, match);
 			List<Integer> head12Idx = Assignment.head12Idx(sizeHead1, match);
 			List<Integer> body21Idx = Assignment.body21Idx(sizeBody2, match);
 			List<Integer> body22Idx = Assignment.body22Idx(sizeBody2, match);
 
-//			print("head11Idx: ", head11Idx);
-//			print("head12Idx: ", head12Idx);
-//			print("body21Idx: ", body21Idx);
-//			print("body22Idx: ", body22Idx);
+			print("head11Idx: ", head11Idx);
+			print("head12Idx: ", head12Idx);
+			print("body21Idx: ", body21Idx);
+			print("body22Idx: ", body22Idx);
 
 			Unifier unifier = new Unifier(literalsInBody2, literalsInHead1, match);
 
@@ -156,7 +155,7 @@ public class Reliance {
 			literalsInBody2.forEach(literal -> literalsInBody2RenamedWithUnifier
 					.add(VariableRenamer.renameVariables(literal, unifier)));
 
-//			System.out.println(unifier);
+			System.out.println(unifier);
 			if (unifier.success) {
 
 				Set<Literal> head11 = new HashSet<>();
@@ -171,10 +170,10 @@ public class Reliance {
 				Set<Literal> body22 = new HashSet<>();
 				body22Idx.forEach(idx -> body22.add(literalsInBody2RenamedWithUnifier.get(idx)));
 
-//				print("head11: ", head11);
-//				print("head12: ", head12);
-//				print("body21: ", body21);
-//				print("body22: ", body22);
+				print("head11: ", head11);
+				print("head12: ", head12);
+				print("body21: ", body21);
+				print("body22: ", body22);
 
 				if (!shareAnyExistentialVariable(head11, body22)
 						&& !universalVariableInPositionOfExistentialVariable(head11, body22)) {
