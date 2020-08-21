@@ -22,10 +22,11 @@ package org.semanticweb.rulewerk.core.reasoner;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -617,7 +618,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	@Deprecated
 	public void writeKnowledgeBase(String filePath) throws IOException {
-		try (FileWriter writer = new FileWriter(filePath, StandardCharsets.UTF_8)) {
+		try (Writer writer = new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
 			this.writeKnowledgeBase(writer);
 		}
 	}
