@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.core.model.implementation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -117,7 +119,7 @@ public class RuleImpl implements Rule {
 	public Conjunction<Literal> getBody() {
 		return this.body;
 	}
-
+	
 	@Override
 	public <T> T accept(StatementVisitor<T> statementVisitor) {
 		return statementVisitor.visit(this);
@@ -128,4 +130,36 @@ public class RuleImpl implements Rule {
 		return Stream.concat(this.body.getTerms(), this.head.getTerms()).distinct();
 	}
 
+	List<Literal> getHeadLiterals(){
+		List<Literal> headLiterals = new ArrayList<>();
+		this.getHead().forEach(literal -> headLiterals.add(literal));
+		return headLiterals;
+	}
+
+	List<Literal> getBodyLiterals(){
+		List<Literal> bodyLiterals = new ArrayList<>();
+		this.getBody().forEach(literal -> bodyLiterals.add(literal));
+		return bodyLiterals;
+	}
+
+	List<Literal> getPositiveBodyLiterals(){
+		List<Literal> positiveBodyLiterals = new ArrayList<>();
+		for (Literal literal : this.getBody()) {
+			if (!literal.isNegated()) {
+				positiveBodyLiterals.add(literal);
+			}
+		}
+		return positiveBodyLiterals;
+	}
+	
+	List<Literal> getNegativeBodyLiterals(){
+		List<Literal> negativeBodyLiterals = new ArrayList<>();
+		for (Literal literal : this.getBody()) {
+			if (literal.isNegated()) {
+				negativeBodyLiterals.add(literal);
+			}
+		}
+		return negativeBodyLiterals;
+	}
+	
 }
