@@ -37,6 +37,8 @@ public class HelpCommandInterpreter implements CommandInterpreter {
 				&& command.getArguments().get(0).fromTerm().get().getType() == TermType.ABSTRACT_CONSTANT) {
 			String helpCommand = command.getArguments().get(0).fromTerm().get().getName();
 			if (interpreter.commandInterpreters.containsKey(helpCommand)) {
+				interpreter.getOut().println(
+						"@" + helpCommand + ": " + interpreter.commandInterpreters.get(helpCommand).getSynopsis());
 				interpreter.getOut().println(interpreter.commandInterpreters.get(helpCommand).getHelp(helpCommand));
 			} else {
 				interpreter.getOut().println("Command '" + helpCommand + "' not known.");
