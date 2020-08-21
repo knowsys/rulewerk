@@ -20,30 +20,20 @@ package org.semanticweb.rulewerk.commands;
  * #L%
  */
 
-import java.io.IOException;
+import java.io.PrintWriter;
 
-import org.semanticweb.rulewerk.core.model.api.Command;
-
-public class ShowKbCommandInterpreter implements CommandInterpreter {
-
-	@Override
-	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
-		Interpreter.validateArgumentCount(command, 0);
-		try {
-			interpreter.getKnowledgeBase().writeKnowledgeBase(interpreter.getWriter());
-		} catch (IOException e) {
-			throw new CommandExecutionException(e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + ".";
-	}
-
-	@Override
-	public String getSynopsis() {
-		return "displays the content of the knowledge base";
-	}
+public interface StyledPrinter {
+	
+	void printNormal(String string);
+	
+	void printSection(String string);
+	
+	void printEmph(String string);
+	
+	void printCode(String string);
+	
+	void printImportant(String string);
+	
+	PrintWriter getWriter();
 
 }

@@ -34,26 +34,25 @@ public class HelpCommandInterpreter implements CommandInterpreter {
 			}
 			final int padLength = maxLength + 1;
 
-			interpreter.getOut().println("Available commands:");
+			interpreter.printSection("Available commands:\n");
 			interpreter.commandInterpreters.forEach((commandName, commandForName) -> {
-				interpreter.getOut().println(" @" + String.format("%1$-" + padLength + "s", commandName) + ": "
-						+ commandForName.getSynopsis());
+				interpreter.printCode(" @" + String.format("%1$-" + padLength + "s", commandName));
+				interpreter.printNormal(": " + commandForName.getSynopsis() + "\n");
 			});
-			interpreter.getOut().println();
-			interpreter.getOut()
-					.println("For more information on any command, use @" + command.getName() + " [command name].");
+			interpreter.printNormal("\nFor more information on any command, use ");
+			interpreter.printCode("@" + command.getName() + " [command name].\n");
 		} else if (command.getArguments().size() == 1 && command.getArguments().get(0).fromTerm().isPresent()
 				&& command.getArguments().get(0).fromTerm().get().getType() == TermType.ABSTRACT_CONSTANT) {
 			String helpCommand = command.getArguments().get(0).fromTerm().get().getName();
 			if (interpreter.commandInterpreters.containsKey(helpCommand)) {
-				interpreter.getOut().println(
-						"@" + helpCommand + ": " + interpreter.commandInterpreters.get(helpCommand).getSynopsis());
-				interpreter.getOut().println(interpreter.commandInterpreters.get(helpCommand).getHelp(helpCommand));
+				interpreter.printCode("@" + helpCommand);
+				interpreter.printNormal(": " + interpreter.commandInterpreters.get(helpCommand).getSynopsis());
+				interpreter.printNormal(interpreter.commandInterpreters.get(helpCommand).getHelp(helpCommand));
 			} else {
-				interpreter.getOut().println("Command '" + helpCommand + "' not known.");
+				interpreter.printNormal("Command '" + helpCommand + "' not known.");
 			}
 		} else {
-			interpreter.getOut().println(getHelp(command.getName()));
+			interpreter.printNormal(getHelp(command.getName()));
 		}
 	}
 

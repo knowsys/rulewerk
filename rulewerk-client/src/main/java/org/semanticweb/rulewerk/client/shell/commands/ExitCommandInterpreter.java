@@ -33,7 +33,7 @@ public class ExitCommandInterpreter implements CommandInterpreter {
 
 	public static enum ExitCommandName
 	{
-		exit, quit;
+		exit;
 
 		public static boolean isExitCommand(final String commandName) {
 			for(final ExitCommandName name: values()) {

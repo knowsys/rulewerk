@@ -2,6 +2,7 @@ package org.semanticweb.rulewerk.commands;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.PrintWriter;
 
 /*-
  * #%L
@@ -23,7 +24,6 @@ import java.io.InputStream;
  * #L%
  */
 
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,14 +44,14 @@ import org.semanticweb.rulewerk.parser.javacc.TokenMgrError;
 public class Interpreter {
 
 	final Reasoner reasoner;
-	final PrintWriter out;
+	final StyledPrinter printer;
 	final ParserConfiguration parserConfiguration;
 
 	final LinkedHashMap<String, CommandInterpreter> commandInterpreters = new LinkedHashMap<>();
 
-	public Interpreter(Reasoner reasoner, PrintWriter out, ParserConfiguration parserConfiguration) {
+	public Interpreter(Reasoner reasoner, StyledPrinter printer, ParserConfiguration parserConfiguration) {
 		this.reasoner = reasoner;
-		this.out = out;
+		this.printer = printer;
 		this.parserConfiguration = parserConfiguration;
 		registerDefaultCommandInterpreters();
 	}
@@ -115,8 +115,28 @@ public class Interpreter {
 		return parserConfiguration;
 	}
 
-	public PrintWriter getOut() {
-		return out;
+	public PrintWriter getWriter() {
+		return printer.getWriter();
+	}
+
+	public void printNormal(String string) {
+		printer.printNormal(string);
+	}
+
+	public void printSection(String string) {
+		printer.printSection(string);
+	}
+
+	public void printEmph(String string) {
+		printer.printEmph(string);
+	}
+
+	public void printCode(String string) {
+		printer.printCode(string);
+	}
+
+	public void printImportant(String string) {
+		printer.printImportant(string);
 	}
 
 	private void registerDefaultCommandInterpreters() {

@@ -64,11 +64,11 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 		try (final QueryResultIterator answers = interpreter.getReasoner().answerQuery(literal, true)) {
 			int count = 0;
 			while (count != limit && answers.hasNext()) {
-				interpreter.getOut().println(" " + answers.next());
+				interpreter.getWriter().println(" " + answers.next());
 				count++;
 			}
 			timer.stop();
-			interpreter.getOut().println(count + " result(s) in " + timer.getTotalCpuTime() / 1000000
+			interpreter.getWriter().println(count + " result(s) in " + timer.getTotalCpuTime() / 1000000
 					+ "ms. Results are " + answers.getCorrectness() + ".");
 		}
 	}

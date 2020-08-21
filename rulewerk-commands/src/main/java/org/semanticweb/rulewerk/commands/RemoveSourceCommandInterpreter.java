@@ -47,9 +47,9 @@ public class RemoveSourceCommandInterpreter implements CommandInterpreter {
 		if (dataSource != null) {
 			DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate, dataSource);
 			if (interpreter.getKnowledgeBase().removeStatement(dataSourceDeclaration) > 0) {
-				interpreter.getOut().println("Removed specified data source declaration.");
+				interpreter.getWriter().println("Removed specified data source declaration.");
 			} else {
-				interpreter.getOut().println("Specified data source declaration not found in knowledge base.");
+				interpreter.getWriter().println("Specified data source declaration not found in knowledge base.");
 			}
 		} else {
 			int count = 0;
@@ -60,7 +60,7 @@ public class RemoveSourceCommandInterpreter implements CommandInterpreter {
 					count++;
 				}
 			}
-			interpreter.getOut().println("Removed " + count + " matching data source declaration(s).");
+			interpreter.getWriter().println("Removed " + count + " matching data source declaration(s).");
 		}
 
 	}

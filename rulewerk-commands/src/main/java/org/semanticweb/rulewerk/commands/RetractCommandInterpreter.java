@@ -50,7 +50,7 @@ public class RetractCommandInterpreter implements CommandInterpreter {
 			}
 		}
 
-		interpreter.getOut().println("Retracted " + factCount + " fact(s) and " + ruleCount + " rule(s).");
+		interpreter.getWriter().println("Retracted " + factCount + " fact(s) and " + ruleCount + " rule(s).");
 	}
 
 	@Override

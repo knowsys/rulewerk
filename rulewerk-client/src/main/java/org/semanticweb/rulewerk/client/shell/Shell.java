@@ -30,6 +30,7 @@ import org.semanticweb.rulewerk.core.model.api.Command;
 public class Shell {
 
 	private final Interpreter interpreter;
+
 	boolean running;
 
 	public Shell(final Interpreter interpreter) {
@@ -43,14 +44,14 @@ public class Shell {
 
 	public void run(final CommandReader commandReader) {
 		printWelcome();
-		
+
 		running = true;
 		while (running) {
 			final Command command;
 			try {
 				command = commandReader.readCommand();
 			} catch (final Exception e) {
-				interpreter.getOut().println("Unexpected error: " + e.getMessage());
+				interpreter.getWriter().println("Unexpected error: " + e.getMessage());
 				e.printStackTrace();
 				continue;
 			}
@@ -59,21 +60,26 @@ public class Shell {
 				try {
 					this.interpreter.runCommand(command);
 				} catch (final CommandExecutionException e) {
-					interpreter.getOut().println("Error: " + e.getMessage());
+					interpreter.getWriter().println("Error: " + e.getMessage());
 				}
 			}
 		}
-		interpreter.getOut().println("Rulewerk shell is stopped. Bye.");
-		interpreter.getOut().flush();
+		interpreter.printSection("Existing Rulewerk shell ... bye.\n\n");
+		interpreter.getWriter().flush();
 	}
 
 	public void exitShell() {
 		this.running = false;
 	}
-	
+
 	private void printWelcome() {
-		interpreter.getOut().println("Welcome to the Rulewerk interactive shell.");
-		interpreter.getOut().println("For further information, type @help.");
+		interpreter.printNormal("\n");
+		interpreter.printSection("Welcome to the Rulewerk interactive shell.\n");
+		interpreter.printNormal("For further information, type ");
+		interpreter.printCode("@help.");
+		interpreter.printNormal(" To quit, type ");
+		interpreter.printCode("@exit.\n");
+		interpreter.printNormal("\n");
 	}
 
 //	@Override
