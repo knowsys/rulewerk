@@ -20,7 +20,6 @@ package org.semanticweb.rulewerk.reliances;
  * #L%
  */
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
