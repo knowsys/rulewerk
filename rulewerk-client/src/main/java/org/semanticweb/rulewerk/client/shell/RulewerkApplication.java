@@ -21,7 +21,6 @@ package org.semanticweb.rulewerk.client.shell;
  */
 
 import java.io.IOException;
-import java.io.PrintStream;
 
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
