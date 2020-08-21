@@ -500,6 +500,15 @@ public class KnowledgeBase implements Iterable<Statement> {
 	}
 
 	/**
+	 * Returns the {@link PrefixDeclarationRegistry} used by this knowledge base.
+	 * 
+	 * @return registry for prefix declarations
+	 */
+	public PrefixDeclarationRegistry getPrefixDeclarationRegistry() {
+		return this.prefixDeclarationRegistry;
+	}
+
+	/**
 	 * Return the base IRI.
 	 *
 	 * @return the base IRI, if declared, or
@@ -564,7 +573,8 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 *
 	 * @param stream the {@link OutputStream} to serialise to.
 	 *
-	 * @throws IOException if an I/O error occurs while writing to given output stream
+	 * @throws IOException if an I/O error occurs while writing to given output
+	 *                     stream
 	 */
 	public void writeKnowledgeBase(OutputStream stream) throws IOException {
 		stream.write(Serializer.getBaseAndPrefixDeclarations(this).getBytes());

@@ -133,6 +133,23 @@ public class Terms {
 	}
 
 	/**
+	 * Returns the name of an abstract term, and throws an exception for all other
+	 * cases.
+	 * 
+	 * @param term the term from which the name is to be extracted
+	 * @return extracted name
+	 * @throws IllegalArgumentException if the given term is not an abstract
+	 *                                  constant
+	 */
+	public static String extractName(Term term) {
+		if (term.getType() == TermType.ABSTRACT_CONSTANT) {
+			return term.getName();
+		} else {
+			throw new IllegalArgumentException("Term " + term.toString() + " is not an abstract constant.");
+		}
+	}
+
+	/**
 	 * Returns the IRI representation of an abstract term, and throws an exception
 	 * for all other cases.
 	 * 
@@ -142,14 +159,11 @@ public class Terms {
 	 *                                  constant or cannot be parsed as an IRI
 	 */
 	public static URI extractIri(Term term) {
-		if (term.getType() == TermType.ABSTRACT_CONSTANT) {
-			try {
-				return new URI(term.getName());
-			} catch (URISyntaxException e) {
-				throw new IllegalArgumentException(e);
-			}
+		try {
+			return new URI(extractName(term));
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException(e);
 		}
-		throw new IllegalArgumentException("Term " + term.toString() + " is not an abstract constant.");
 	}
 
 	/**
@@ -162,14 +176,11 @@ public class Terms {
 	 *                                  constant or cannot be parsed as a URL
 	 */
 	public static URL extractUrl(Term term) {
-		if (term.getType() == TermType.ABSTRACT_CONSTANT) {
-			try {
-				return new URL(term.getName());
-			} catch (MalformedURLException e) {
-				throw new IllegalArgumentException(e);
-			}
+		try {
+			return new URL(extractName(term));
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException(e);
 		}
-		throw new IllegalArgumentException("Term " + term.toString() + " is not an abstract constant.");
 	}
 
 	/**

@@ -64,6 +64,11 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 
 		return prefixes.get(prefixName);
 	}
+	
+	@Override
+	public void unsetPrefix(String prefixName) {
+		prefixes.remove(prefixName);
+	}
 
 	@Override
 	public String resolvePrefixedName(String prefixedName) throws PrefixDeclarationException {

@@ -86,6 +86,13 @@ public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String
 	void setPrefixIri(String prefixName, String prefixIri) throws PrefixDeclarationException;
 
 	/**
+	 * Un-registers a prefix declaration if present.
+	 *
+	 * @param prefixName the name of the prefix.
+	 */
+	void unsetPrefix(String prefixName);
+	
+	/**
 	 * Turn a <a href="https://www.w3.org/TR/turtle/#prefixed-name">prefixed
 	 * name</a> into an absolute IRI.
 	 *
