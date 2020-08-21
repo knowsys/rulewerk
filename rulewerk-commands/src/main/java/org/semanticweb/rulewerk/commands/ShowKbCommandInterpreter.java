@@ -2,7 +2,7 @@ package org.semanticweb.rulewerk.commands;
 
 /*-
  * #%L
- * Rulewerk Core Components
+ * Rulewerk command execution support
  * %%
  * Copyright (C) 2018 - 2020 Rulewerk Developers
  * %%
@@ -23,39 +23,27 @@ package org.semanticweb.rulewerk.commands;
 import java.io.IOException;
 
 import org.semanticweb.rulewerk.core.model.api.Command;
-import org.semanticweb.rulewerk.core.reasoner.Timer;
 
-public class ReasonCommandInterpreter implements CommandInterpreter {
+public class ShowKbCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
-
-		if (command.getArguments().size() > 0) {
-			throw new CommandExecutionException("This command supports no arguments.");
-		}
-
-		interpreter.getOut().println("Loading and materializing inferences ...");
-		interpreter.getOut().flush();
-
-		Timer timer = new Timer("reasoning");
-		timer.start();
+		Interpreter.validateArgumentCount(command, 0);
 		try {
-			interpreter.getReasoner().reason();
+			interpreter.getKnowledgeBase().writeKnowledgeBase(interpreter.getOut());
 		} catch (IOException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}
-		timer.stop();
-		interpreter.getOut().println("... finished in " + timer.getTotalCpuTime() / 1000000 + "ms.");
 	}
 
 	@Override
 	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " .";
+		return "Usage: @" + commandName + ".";
 	}
 
 	@Override
 	public String getSynopsis() {
-		return "load data and compute conclusions from knowledge base";
+		return "displays the content of the knowledge base";
 	}
 
 }

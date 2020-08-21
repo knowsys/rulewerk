@@ -39,6 +39,7 @@ import java.net.URISyntaxException;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -166,10 +167,14 @@ Command command() throws PrefixDeclarationException : {
 
 } {
 	name = < CUSTOM_DIRECTIVE >
-	( LOOKAHEAD(predicateName() < ARITY >) predicateName = predicateName() arity = < ARITY > < COLON > arguments = Arguments() < DOT > {
+	( LOOKAHEAD(predicateName() < ARITY > <DOT >) predicateName = predicateName() arity = < ARITY > < DOT > {
+	        Argument argument = Argument.term(Expressions.makeDatatypeConstant(predicateName + "[" + arity.image + "]:", PrefixDeclarationRegistry.XSD_STRING));
+	  		return new Command(name.image, Arrays.asList(argument));
+	  	}
+    | LOOKAHEAD(predicateName() < ARITY >) predicateName = predicateName() arity = < ARITY > < COLON > arguments = Arguments() < DOT > {
 	  		arguments.addFirst(Argument.term(Expressions.makeDatatypeConstant(predicateName + "[" + arity.image + "]:", PrefixDeclarationRegistry.XSD_STRING)));
 	  		return new Command(name.image,arguments);
-	  	}
+	  	}  	
     | arguments = Arguments() < DOT > { return new Command(name.image,arguments); }
 	| pn = < PNAME_NS > arguments = Arguments() < DOT > {
 	  		arguments.addFirst(Argument.term(Expressions.makeDatatypeConstant(pn.image, PrefixDeclarationRegistry.XSD_STRING)));

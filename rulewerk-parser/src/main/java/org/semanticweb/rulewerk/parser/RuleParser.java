@@ -22,6 +22,7 @@ package org.semanticweb.rulewerk.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
@@ -169,8 +170,8 @@ public class RuleParser {
 	 */
 	static <T extends Entity> T parseSyntaxFragment(final String input, SyntaxFragmentParser<T> parserAction,
 			final String syntaxFragmentType, final ParserConfiguration parserConfiguration) throws ParsingException {
-		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		final JavaCCParser localParser = new JavaCCParser(inputStream, DEFAULT_STRING_ENCODING);
+		final InputStream inputStream = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
+		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 
 		if (parserConfiguration != null) {
 			localParser.setParserConfiguration(parserConfiguration);
@@ -180,7 +181,7 @@ public class RuleParser {
 		try {
 			result = parserAction.parse(localParser);
 			localParser.ensureEndOfInput();
-		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
+		} catch (ParseException | PrefixDeclarationException | TokenMgrError | RuntimeException e) {
 			LOGGER.error("Exception while parsing " + syntaxFragmentType + ": {}!", input);
 			throw new ParsingException("Exception while parsing " + syntaxFragmentType, e);
 		}

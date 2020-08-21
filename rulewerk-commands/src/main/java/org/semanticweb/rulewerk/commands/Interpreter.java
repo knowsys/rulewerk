@@ -23,7 +23,8 @@ import java.io.InputStream;
  * #L%
  */
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -32,6 +33,7 @@ import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Terms;
+import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -42,12 +44,12 @@ import org.semanticweb.rulewerk.parser.javacc.TokenMgrError;
 public class Interpreter {
 
 	final Reasoner reasoner;
-	final PrintStream out;
+	final PrintWriter out;
 	final ParserConfiguration parserConfiguration;
 
 	final HashMap<String, CommandInterpreter> commandInterpreters = new HashMap<>();
 
-	public Interpreter(Reasoner reasoner, PrintStream out, ParserConfiguration parserConfiguration) {
+	public Interpreter(Reasoner reasoner, PrintWriter out, ParserConfiguration parserConfiguration) {
 		this.reasoner = reasoner;
 		this.out = out;
 		this.parserConfiguration = parserConfiguration;
@@ -75,9 +77,9 @@ public class Interpreter {
 			throw new CommandExecutionException("Unknown command '" + command.getName() + "'");
 		}
 	}
-	
+
 	public Command parseCommand(String commandString) throws ParsingException {
-		final InputStream inputStream = new ByteArrayInputStream(commandString.getBytes());
+		final InputStream inputStream = new ByteArrayInputStream(commandString.getBytes(StandardCharsets.UTF_8));
 		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 		localParser.setParserConfiguration(parserConfiguration);
 
@@ -95,8 +97,8 @@ public class Interpreter {
 		try {
 			result = localParser.command();
 			localParser.ensureEndOfInput();
-		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
-			throw new ParsingException("Exception while parsing command.", e);
+		} catch (ParseException | PrefixDeclarationException | TokenMgrError | RuntimeException e) {
+			throw new ParsingException("failed to parse command \"\"\"" + commandString + "\"\"\"", e);
 		}
 		return result;
 	}
@@ -104,23 +106,30 @@ public class Interpreter {
 	public Reasoner getReasoner() {
 		return reasoner;
 	}
-	
+
+	public KnowledgeBase getKnowledgeBase() {
+		return reasoner.getKnowledgeBase();
+	}
+
 	public ParserConfiguration getParserConfiguration() {
 		return parserConfiguration;
 	}
 
-	public PrintStream getOut() {
+	public PrintWriter getOut() {
 		return out;
 	}
 
 	private void registerDefaultCommandInterpreters() {
 		registerCommandInterpreter("help", new HelpCommandInterpreter());
-		registerCommandInterpreter("assert", new AssertCommandInterpreter());
-		registerCommandInterpreter("query", new QueryCommandInterpreter());
-		registerCommandInterpreter("reason", new ReasonCommandInterpreter());
 		registerCommandInterpreter("load", new LoadCommandInterpreter());
+		registerCommandInterpreter("assert", new AssertCommandInterpreter());
+		registerCommandInterpreter("retract", new RetractCommandInterpreter());
+		registerCommandInterpreter("addsource", new AddSourceCommandInterpreter());
+		registerCommandInterpreter("delsource", new RemoveSourceCommandInterpreter());
 		registerCommandInterpreter("setprefix", new SetPrefixCommandInterpreter());
-		registerCommandInterpreter("setsource", new SetSourceCommandInterpreter());
+		registerCommandInterpreter("reason", new ReasonCommandInterpreter());
+		registerCommandInterpreter("query", new QueryCommandInterpreter());
+		registerCommandInterpreter("showkb", new ShowKbCommandInterpreter());
 	}
 
 	/**

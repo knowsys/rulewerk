@@ -43,7 +43,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 			}
 			try {
 				FileInputStream fileInputStream = new FileInputStream(fileName);
-				RuleParser.parseInto(interpreter.getReasoner().getKnowledgeBase(), fileInputStream);
+				RuleParser.parseInto(interpreter.getKnowledgeBase(), fileInputStream);
 			} catch (FileNotFoundException e) {
 				throw new CommandExecutionException(e.getMessage(), e);
 			} catch (ParsingException e) {

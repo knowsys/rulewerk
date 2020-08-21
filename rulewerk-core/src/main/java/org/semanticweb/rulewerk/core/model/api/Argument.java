@@ -23,8 +23,6 @@ package org.semanticweb.rulewerk.core.model.api;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-
 /**
  * A tagged union representing the possible types allowed to appear as arguments
  * in commands and parser directives.

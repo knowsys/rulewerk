@@ -49,6 +49,7 @@ public class Shell {
 				command = commandReader.readCommand();
 			} catch (final Exception e) {
 				interpreter.getOut().println("Unexpected error: " + e.getMessage());
+				e.printStackTrace();
 				continue;
 			}
 
@@ -61,6 +62,7 @@ public class Shell {
 			}
 		}
 		interpreter.getOut().println("Rulewerk shell is stopped. Bye.");
+		interpreter.getOut().flush();
 	}
 
 	public void exitShell() {
