@@ -30,8 +30,9 @@ import org.semanticweb.rulewerk.commands.Interpreter;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
+import org.semanticweb.rulewerk.parser.DefaultParserConfiguration;
+import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
-import org.slf4j.Logger;
 
 public class Shell {
 
@@ -49,12 +50,11 @@ public class Shell {
 //		final PrintStream out = this.terminal.writer().;
 		final PrintStream out = System.out;
 
-		// FIXME connect logger;
-		final Logger logger = null;
 		// TODO reasoner initial KB from args
 		final KnowledgeBase knowledgeBase = new KnowledgeBase();
 		final Reasoner reasoner = new VLogReasoner(knowledgeBase);
-		final Interpreter interpreter = new Interpreter(reasoner, out, logger);
+		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
+		final Interpreter interpreter = new Interpreter(reasoner, out, parserConfiguration);
 
 		for (final ExitCommandName exitCommandName : ExitCommandName.values()) {
 			interpreter.registerCommandInterpreter(exitCommandName.toString(), new ExitCommandInterpreter());
