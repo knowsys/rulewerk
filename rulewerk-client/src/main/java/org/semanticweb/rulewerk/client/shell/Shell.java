@@ -42,6 +42,8 @@ public class Shell {
 	}
 
 	public void run(final CommandReader commandReader) {
+		printWelcome();
+		
 		running = true;
 		while (running) {
 			final Command command;
@@ -67,6 +69,11 @@ public class Shell {
 
 	public void exitShell() {
 		this.running = false;
+	}
+	
+	private void printWelcome() {
+		interpreter.getOut().println("Welcome to the Rulewerk interactive shell.");
+		interpreter.getOut().println("For further information, type @help.");
 	}
 
 //	@Override
