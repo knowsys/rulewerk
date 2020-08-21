@@ -46,10 +46,10 @@ public class HelpCommandInterpreter implements CommandInterpreter {
 			String helpCommand = command.getArguments().get(0).fromTerm().get().getName();
 			if (interpreter.commandInterpreters.containsKey(helpCommand)) {
 				interpreter.printCode("@" + helpCommand);
-				interpreter.printNormal(": " + interpreter.commandInterpreters.get(helpCommand).getSynopsis());
-				interpreter.printNormal(interpreter.commandInterpreters.get(helpCommand).getHelp(helpCommand));
+				interpreter.printNormal(": " + interpreter.commandInterpreters.get(helpCommand).getSynopsis() + "\n");
+				interpreter.printNormal(interpreter.commandInterpreters.get(helpCommand).getHelp(helpCommand) + "\n");
 			} else {
-				interpreter.printNormal("Command '" + helpCommand + "' not known.");
+				interpreter.printNormal("Command '" + helpCommand + "' not known.\n");
 			}
 		} else {
 			interpreter.printNormal(getHelp(command.getName()));
