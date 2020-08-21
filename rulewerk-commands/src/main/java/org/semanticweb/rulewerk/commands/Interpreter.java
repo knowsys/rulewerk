@@ -121,13 +121,14 @@ public class Interpreter {
 
 	private void registerDefaultCommandInterpreters() {
 		registerCommandInterpreter("help", new HelpCommandInterpreter());
-		registerCommandInterpreter("assert", new AssertCommandInterpreter());
-		registerCommandInterpreter("query", new QueryCommandInterpreter());
-		registerCommandInterpreter("reason", new ReasonCommandInterpreter());
 		registerCommandInterpreter("load", new LoadCommandInterpreter());
-		registerCommandInterpreter("setprefix", new SetPrefixCommandInterpreter());
+		registerCommandInterpreter("assert", new AssertCommandInterpreter());
+		registerCommandInterpreter("retract", new RetractCommandInterpreter());
 		registerCommandInterpreter("addsource", new AddSourceCommandInterpreter());
 		registerCommandInterpreter("delsource", new RemoveSourceCommandInterpreter());
+		registerCommandInterpreter("setprefix", new SetPrefixCommandInterpreter());
+		registerCommandInterpreter("reason", new ReasonCommandInterpreter());
+		registerCommandInterpreter("query", new QueryCommandInterpreter());
 		registerCommandInterpreter("showkb", new ShowKbCommandInterpreter());
 	}
 
