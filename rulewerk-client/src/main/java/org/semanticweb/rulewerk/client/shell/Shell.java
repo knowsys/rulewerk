@@ -49,6 +49,7 @@ public class Shell {
 				command = commandReader.readCommand();
 			} catch (final Exception e) {
 				interpreter.getOut().println("Unexpected error: " + e.getMessage());
+				e.printStackTrace();
 				continue;
 			}
 

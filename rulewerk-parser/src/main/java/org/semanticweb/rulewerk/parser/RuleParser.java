@@ -181,7 +181,7 @@ public class RuleParser {
 		try {
 			result = parserAction.parse(localParser);
 			localParser.ensureEndOfInput();
-		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
+		} catch (ParseException | PrefixDeclarationException | TokenMgrError | RuntimeException e) {
 			LOGGER.error("Exception while parsing " + syntaxFragmentType + ": {}!", input);
 			throw new ParsingException("Exception while parsing " + syntaxFragmentType, e);
 		}
