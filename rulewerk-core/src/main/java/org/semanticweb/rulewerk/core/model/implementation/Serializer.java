@@ -94,7 +94,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Rule}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param rule a {@link Rule}.
 	 * @return String representation corresponding to a given {@link Rule}.
 	 *
@@ -106,7 +108,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Conjunction}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param conjunction a {@link Conjunction}
 	 * @return String representation corresponding to a given {@link Conjunction}.
 	 */
@@ -127,7 +131,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Literal}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param literal a {@link Literal}
 	 * @return String representation corresponding to a given {@link Literal}.
 	 */
@@ -143,7 +149,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Fact}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param fact a {@link Fact}
 	 * @return String representation corresponding to a given {@link Fact}.
 	 */
@@ -154,20 +162,24 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link AbstractConstant}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param constant       a {@link AbstractConstant}
 	 * @param iriTransformer a function to transform IRIs with.
 	 * @return String representation corresponding to a given
 	 *         {@link AbstractConstant}.
 	 */
-	public static String getString(final AbstractConstant constant, Function<String, String> iriTransformer) {
+	public static String getString(final AbstractConstant constant, final Function<String, String> iriTransformer) {
 		return getIRIString(constant.getName(), iriTransformer);
 	}
 
 	/**
 	 * Creates a String representation of a given {@link AbstractConstant}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param constant a {@link AbstractConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link AbstractConstant}.
@@ -180,7 +192,9 @@ public final class Serializer {
 	 * Creates a String representation corresponding to the name of a given
 	 * {@link LanguageStringConstant}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param languageStringConstant a {@link LanguageStringConstant}
 	 * @return String representation corresponding to the name of a given
 	 *         {@link LanguageStringConstant}.
@@ -207,13 +221,16 @@ public final class Serializer {
 	 * IRI.</li>
 	 * </ul>
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @param iriTransformer   a function to transform IRIs with.
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
 	 */
-	public static String getString(final DatatypeConstant datatypeConstant, Function<String, String> iriTransformer) {
+	public static String getString(final DatatypeConstant datatypeConstant,
+			final Function<String, String> iriTransformer) {
 		if (datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_STRING)) {
 			return getString(datatypeConstant.getLexicalValue());
 		} else if (datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_DECIMAL)
@@ -254,13 +271,15 @@ public final class Serializer {
 	 * Creates a String representation corresponding to the name of a given
 	 * {@link DatatypeConstant} including an IRI.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
 	 */
 	private static String getConstantName(final DatatypeConstant datatypeConstant,
-			Function<String, String> iriTransformer) {
+			final Function<String, String> iriTransformer) {
 		return getString(datatypeConstant.getLexicalValue()) + DOUBLE_CARET
 				+ getIRIString(datatypeConstant.getDatatype(), iriTransformer);
 	}
@@ -269,7 +288,9 @@ public final class Serializer {
 	 * Creates a String representation corresponding to the name of a given
 	 * {@link DatatypeConstant} including an IRI.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param datatypeConstant a {@link DatatypeConstant}
 	 * @return String representation corresponding to a given
 	 *         {@link DatatypeConstant}.
@@ -282,7 +303,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link ExistentialVariable}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param existentialVariable a {@link ExistentialVariable}
 	 * @return String representation corresponding to a given
 	 *         {@link ExistentialVariable}.
@@ -294,7 +317,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link UniversalVariable}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param universalVariable a {@link UniversalVariable}
 	 * @return String representation corresponding to a given
 	 *         {@link UniversalVariable}.
@@ -306,7 +331,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link NamedNull}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param namedNull a {@link NamedNull}
 	 * @return String representation corresponding to a given {@link NamedNull}.
 	 */
@@ -317,7 +344,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link Predicate}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param predicate a {@link Predicate}
 	 * @return String representation corresponding to a given {@link Predicate}.
 	 */
@@ -328,7 +357,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link DataSourceDeclaration}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 * @param dataSourceDeclaration a {@link DataSourceDeclaration}
 	 * @return String representation corresponding to a given
 	 *         {@link DataSourceDeclaration}.
@@ -341,7 +372,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link CsvFileDataSource}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 *
 	 * @param csvFileDataSource
 	 * @return String representation corresponding to a given
@@ -354,7 +387,9 @@ public final class Serializer {
 	/**
 	 * Creates a String representation of a given {@link RdfFileDataSource}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 *
 	 *
 	 * @param rdfFileDataSource
@@ -369,7 +404,9 @@ public final class Serializer {
 	 * Creates a String representation of a given
 	 * {@link SparqlQueryResultDataSource}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
+	 * @see <a href=
+	 *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule
+	 *      syntax</a>
 	 *
 	 *
 	 * @param dataSource
@@ -391,8 +428,8 @@ public final class Serializer {
 		return getIRIString(string, Function.identity());
 	}
 
-	private static String getIRIString(final String string, Function<String, String> iriTransformer) {
-		String transformed = iriTransformer.apply(string);
+	private static String getIRIString(final String string, final Function<String, String> iriTransformer) {
+		final String transformed = iriTransformer.apply(string);
 
 		if (!transformed.equals(string)) {
 			return transformed;
@@ -460,19 +497,21 @@ public final class Serializer {
 		return LESS_THAN + string + MORE_THAN;
 	}
 
-	public static String getFactString(Predicate predicate, List<Term> terms) {
+	public static String getFactString(final Predicate predicate, final List<Term> terms) {
 		return getString(predicate, terms) + STATEMENT_SEPARATOR + NEW_LINE;
 	}
 
-	public static String getFactString(Predicate predicate, List<Term> terms, Function<String, String> iriTransformer) {
+	public static String getFactString(final Predicate predicate, final List<Term> terms,
+			final Function<String, String> iriTransformer) {
 		return getString(predicate, terms, iriTransformer) + STATEMENT_SEPARATOR + NEW_LINE;
 	}
 
-	public static String getString(Predicate predicate, List<Term> terms) {
+	public static String getString(final Predicate predicate, final List<Term> terms) {
 		return getString(predicate, terms, Function.identity());
 	}
 
-	public static String getString(Predicate predicate, List<Term> terms, Function<String, String> iriTransformer) {
+	public static String getString(final Predicate predicate, final List<Term> terms,
+			final Function<String, String> iriTransformer) {
 		final StringBuilder stringBuilder = new StringBuilder(getIRIString(predicate.getName(), iriTransformer));
 		stringBuilder.append(OPENING_PARENTHESIS);
 
@@ -490,26 +529,30 @@ public final class Serializer {
 		return stringBuilder.toString();
 	}
 
-	public static String getBaseString(KnowledgeBase knowledgeBase) {
-		String baseIri = knowledgeBase.getBaseIri();
+	public static String getBaseString(final KnowledgeBase knowledgeBase) {
+		final String baseIri = knowledgeBase.getBaseIri();
 
 		return baseIri.equals(PrefixDeclarationRegistry.EMPTY_BASE) ? baseIri : getBaseDeclarationString(baseIri);
 	}
 
-	private static String getBaseDeclarationString(String baseIri) {
+	private static String getBaseDeclarationString(final String baseIri) {
 		return BASE + addAngleBrackets(baseIri) + STATEMENT_SEPARATOR + NEW_LINE;
 	}
 
-	public static String getPrefixString(Entry<String, String> prefix) {
+	public static String getPrefixString(final Entry<String, String> prefix) {
 		return PREFIX + prefix.getKey() + " " + addAngleBrackets(prefix.getValue()) + STATEMENT_SEPARATOR + NEW_LINE;
 	}
 
-	public static String getBaseAndPrefixDeclarations(KnowledgeBase knowledgeBase) {
-		StringBuilder sb = new StringBuilder();
+	public static String getBaseAndPrefixDeclarations(final KnowledgeBase knowledgeBase) {
+		final StringBuilder sb = new StringBuilder();
 
 		sb.append(getBaseString(knowledgeBase));
 		knowledgeBase.getPrefixes().forEachRemaining(prefix -> sb.append(getPrefixString(prefix)));
 
 		return sb.toString();
+	}
+
+	public static String getCommandName(final String commandName) {
+		return AT + commandName;
 	}
 }

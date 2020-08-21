@@ -36,7 +36,6 @@ public class CommandReader {
 
 	public CommandReader(final LineReader lineReader, final PromptProvider promptProvider,
 			final Interpreter interpreter) {
-		super(); // FIXME: there is no superclass?
 		this.lineReader = lineReader;
 		this.promptProvider = promptProvider;
 		this.interpreter = interpreter;
@@ -76,7 +75,7 @@ public class CommandReader {
 		}
 
 		try {
-			return interpreter.parseCommand(readLine);
+			return this.interpreter.parseCommand(readLine);
 		} catch (final ParsingException e) {
 			// FIXME do I need to flush terminal?
 			this.lineReader.getTerminal().writer()

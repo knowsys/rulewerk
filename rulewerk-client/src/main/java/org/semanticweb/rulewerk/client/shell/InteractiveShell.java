@@ -50,7 +50,7 @@ public class InteractiveShell
 
 		final Shell shell = new Shell(interpreter);
 
-		final LineReader lineReader = DefaultConfiguration.buildLineReader(terminal);
+		final LineReader lineReader = DefaultConfiguration.buildLineReader(terminal, interpreter);
 		final PromptProvider promptProvider = DefaultConfiguration.buildPromptProvider();
 		final CommandReader commandReader = new CommandReader(lineReader, promptProvider, interpreter);
 

@@ -21,13 +21,20 @@ package org.semanticweb.rulewerk.client.shell;
  */
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
+import org.semanticweb.rulewerk.commands.Interpreter;
+import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 public final class DefaultConfiguration {
 
@@ -38,11 +45,11 @@ public final class DefaultConfiguration {
 		return () -> new AttributedString("rulewerk>", AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
 	}
 
-	public static LineReader buildLineReader(final Terminal terminal) {
+	public static LineReader buildLineReader(final Terminal terminal, final Interpreter interpreter) {
 		final LineReaderBuilder lineReaderBuilder = LineReaderBuilder.builder().terminal(terminal)
 				.appName("Rulewerk Shell")
+				.completer(buildCompleter(interpreter))
 		// .expander(expander())
-		// .completer(buildCompleter())
 		// .history(buildHistory())
 		// .highlighter(buildHighlighter())
 		;
@@ -51,6 +58,14 @@ public final class DefaultConfiguration {
 		lineReader.unsetOpt(LineReader.Option.INSERT_TAB); // This allows completion on an empty buffer, rather than
 															// inserting a tab
 		return lineReader;
+	}
+
+	private static Completer buildCompleter(final Interpreter interpreter) {
+		final Set<String> registeredCommandNames = interpreter.getRegisteredCommands();
+		final List<String> serializedCommandNames = registeredCommandNames.stream()
+				.map(commandName -> Serializer.getCommandName(commandName))
+				.collect(Collectors.toList());
+		return new StringsCompleter(serializedCommandNames);
 	}
 
 	public static Terminal buildTerminal() throws IOException {

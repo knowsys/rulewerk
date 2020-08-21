@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Command;
@@ -49,28 +50,32 @@ public class Interpreter {
 
 	final LinkedHashMap<String, CommandInterpreter> commandInterpreters = new LinkedHashMap<>();
 
-	public Interpreter(Reasoner reasoner, StyledPrinter printer, ParserConfiguration parserConfiguration) {
+	public Interpreter(final Reasoner reasoner, final StyledPrinter printer, final ParserConfiguration parserConfiguration) {
 		this.reasoner = reasoner;
 		this.printer = printer;
 		this.parserConfiguration = parserConfiguration;
-		registerDefaultCommandInterpreters();
+		this.registerDefaultCommandInterpreters();
 	}
 
-	public void registerCommandInterpreter(String command, CommandInterpreter commandInterpreter) {
-		commandInterpreters.put(command, commandInterpreter);
+	public void registerCommandInterpreter(final String command, final CommandInterpreter commandInterpreter) {
+		this.commandInterpreters.put(command, commandInterpreter);
 	}
 
-	public void runCommands(List<Command> commands) throws CommandExecutionException {
-		for (Command command : commands) {
-			runCommand(command);
+	public Set<String> getRegisteredCommands() {
+		return this.commandInterpreters.keySet();
+	}
+
+	public void runCommands(final List<Command> commands) throws CommandExecutionException {
+		for (final Command command : commands) {
+			this.runCommand(command);
 		}
 	}
 
-	public void runCommand(Command command) throws CommandExecutionException {
-		if (commandInterpreters.containsKey(command.getName())) {
+	public void runCommand(final Command command) throws CommandExecutionException {
+		if (this.commandInterpreters.containsKey(command.getName())) {
 			try {
-				commandInterpreters.get(command.getName()).run(command, this);
-			} catch (Exception e) {
+				this.commandInterpreters.get(command.getName()).run(command, this);
+			} catch (final Exception e) {
 				throw new CommandExecutionException(e.getMessage(), e);
 			}
 		} else {
@@ -78,18 +83,18 @@ public class Interpreter {
 		}
 	}
 
-	public Command parseCommand(String commandString) throws ParsingException {
+	public Command parseCommand(final String commandString) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(commandString.getBytes(StandardCharsets.UTF_8));
 		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
-		localParser.setParserConfiguration(parserConfiguration);
+		localParser.setParserConfiguration(this.parserConfiguration);
 
 		// Copy prefixes from KB:
 		try {
-			localParser.getPrefixDeclarationRegistry().setBaseIri(reasoner.getKnowledgeBase().getBaseIri());
-			for (Entry<String, String> prefix : reasoner.getKnowledgeBase().getPrefixDeclarationRegistry()) {
+			localParser.getPrefixDeclarationRegistry().setBaseIri(this.reasoner.getKnowledgeBase().getBaseIri());
+			for (final Entry<String, String> prefix : this.reasoner.getKnowledgeBase().getPrefixDeclarationRegistry()) {
 				localParser.getPrefixDeclarationRegistry().setPrefixIri(prefix.getKey(), prefix.getValue());
 			}
-		} catch (PrefixDeclarationException e) { // unlikely!
+		} catch (final PrefixDeclarationException e) { // unlikely!
 			throw new RuntimeException(e);
 		}
 
@@ -104,52 +109,52 @@ public class Interpreter {
 	}
 
 	public Reasoner getReasoner() {
-		return reasoner;
+		return this.reasoner;
 	}
 
 	public KnowledgeBase getKnowledgeBase() {
-		return reasoner.getKnowledgeBase();
+		return this.reasoner.getKnowledgeBase();
 	}
 
 	public ParserConfiguration getParserConfiguration() {
-		return parserConfiguration;
+		return this.parserConfiguration;
 	}
 
 	public PrintWriter getWriter() {
-		return printer.getWriter();
+		return this.printer.getWriter();
 	}
 
-	public void printNormal(String string) {
-		printer.printNormal(string);
+	public void printNormal(final String string) {
+		this.printer.printNormal(string);
 	}
 
-	public void printSection(String string) {
-		printer.printSection(string);
+	public void printSection(final String string) {
+		this.printer.printSection(string);
 	}
 
-	public void printEmph(String string) {
-		printer.printEmph(string);
+	public void printEmph(final String string) {
+		this.printer.printEmph(string);
 	}
 
-	public void printCode(String string) {
-		printer.printCode(string);
+	public void printCode(final String string) {
+		this.printer.printCode(string);
 	}
 
-	public void printImportant(String string) {
-		printer.printImportant(string);
+	public void printImportant(final String string) {
+		this.printer.printImportant(string);
 	}
 
 	private void registerDefaultCommandInterpreters() {
-		registerCommandInterpreter("help", new HelpCommandInterpreter());
-		registerCommandInterpreter("load", new LoadCommandInterpreter());
-		registerCommandInterpreter("assert", new AssertCommandInterpreter());
-		registerCommandInterpreter("retract", new RetractCommandInterpreter());
-		registerCommandInterpreter("addsource", new AddSourceCommandInterpreter());
-		registerCommandInterpreter("delsource", new RemoveSourceCommandInterpreter());
-		registerCommandInterpreter("setprefix", new SetPrefixCommandInterpreter());
-		registerCommandInterpreter("reason", new ReasonCommandInterpreter());
-		registerCommandInterpreter("query", new QueryCommandInterpreter());
-		registerCommandInterpreter("showkb", new ShowKbCommandInterpreter());
+		this.registerCommandInterpreter("help", new HelpCommandInterpreter());
+		this.registerCommandInterpreter("load", new LoadCommandInterpreter());
+		this.registerCommandInterpreter("assert", new AssertCommandInterpreter());
+		this.registerCommandInterpreter("retract", new RetractCommandInterpreter());
+		this.registerCommandInterpreter("addsource", new AddSourceCommandInterpreter());
+		this.registerCommandInterpreter("delsource", new RemoveSourceCommandInterpreter());
+		this.registerCommandInterpreter("setprefix", new SetPrefixCommandInterpreter());
+		this.registerCommandInterpreter("reason", new ReasonCommandInterpreter());
+		this.registerCommandInterpreter("query", new QueryCommandInterpreter());
+		this.registerCommandInterpreter("showkb", new ShowKbCommandInterpreter());
 	}
 
 	/**
@@ -159,40 +164,40 @@ public class Interpreter {
 	 * @param number  expected number of parameters
 	 * @throws CommandExecutionException if the number is not correct
 	 */
-	public static void validateArgumentCount(Command command, int number) throws CommandExecutionException {
+	public static void validateArgumentCount(final Command command, final int number) throws CommandExecutionException {
 		if (command.getArguments().size() != number) {
 			throw new CommandExecutionException("This command requires exactly " + number + " argument(s), but "
 					+ command.getArguments().size() + " were given.");
 		}
 	}
 
-	private static CommandExecutionException getArgumentTypeError(int index, String expectedType,
-			String parameterName) {
+	private static CommandExecutionException getArgumentTypeError(final int index, final String expectedType,
+			final String parameterName) {
 		return new CommandExecutionException(
 				"Argument at position " + index + " needs to be of type " + expectedType + " (" + parameterName + ").");
 	}
 
-	public static String extractStringArgument(Command command, int index, String parameterName)
+	public static String extractStringArgument(final Command command, final int index, final String parameterName)
 			throws CommandExecutionException {
 		try {
 			return Terms.extractString(command.getArguments().get(index).fromTerm()
 					.orElseThrow(() -> getArgumentTypeError(index, "string", parameterName)));
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			throw getArgumentTypeError(index, "string", parameterName);
 		}
 	}
 
-	public static String extractNameArgument(Command command, int index, String parameterName)
+	public static String extractNameArgument(final Command command, final int index, final String parameterName)
 			throws CommandExecutionException {
 		try {
 			return Terms.extractName(command.getArguments().get(index).fromTerm()
 					.orElseThrow(() -> getArgumentTypeError(index, "constant", parameterName)));
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			throw getArgumentTypeError(index, "constant", parameterName);
 		}
 	}
 
-	public static PositiveLiteral extractPositiveLiteralArgument(Command command, int index, String parameterName)
+	public static PositiveLiteral extractPositiveLiteralArgument(final Command command, final int index, final String parameterName)
 			throws CommandExecutionException {
 		return command.getArguments().get(index).fromPositiveLiteral()
 				.orElseThrow(() -> getArgumentTypeError(index, "literal", parameterName));
