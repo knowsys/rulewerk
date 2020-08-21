@@ -15,7 +15,13 @@ else
 	# git pull
 	mkdir build
 	cd build
-	cmake -DJAVA=1 -DSPARQL=1 ..
+	if [ "x${CI}" = "xtrue" ]
+	then
+		# disable warnings when running in CI to keep travis logs short
+		cmake -DJAVA=1 -DSPARQL=1 -DCMAKE_CXX_FLAGS=-w ..
+	else
+		cmake -DJAVA=1 -DSPARQL=1 ..
+	fi
 	make
 	cp jvlog.jar ../../../local_builds/jvlog.jar
 	cd ../../..
