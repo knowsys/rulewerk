@@ -21,20 +21,44 @@ package org.semanticweb.rulewerk.client.shell;
  */
 
 import java.io.IOException;
+import java.io.PrintStream;
 
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
+import org.semanticweb.rulewerk.commands.Interpreter;
+import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.semanticweb.rulewerk.core.reasoner.Reasoner;
+import org.semanticweb.rulewerk.parser.DefaultParserConfiguration;
+import org.semanticweb.rulewerk.parser.ParserConfiguration;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
 public class RulewerkApplication {
 
 	public static void main(final String[] args) throws IOException {
 		final Terminal terminal = DefaultConfiguration.buildTerminal();
-		final Shell shell = new Shell(terminal);
+		final Interpreter interpreter = initializeInterpreter(terminal);
+
+		final Shell shell = new Shell(interpreter);
+
 		final LineReader lineReader = DefaultConfiguration.buildLineReader(terminal);
 		final PromptProvider promptProvider = DefaultConfiguration.buildPromptProvider();
-		final CommandReader commandReader = new CommandReader(lineReader, promptProvider);
+		final CommandReader commandReader = new CommandReader(lineReader, promptProvider, interpreter);
 
 		shell.run(commandReader);
+	}
+
+	private static Interpreter initializeInterpreter(Terminal terminal) {
+		// FIXME connect terminal writer
+//		final PrintStream out = terminal.writer().;
+		final PrintStream out = System.out;
+
+		// TODO reasoner initial KB from args
+		final KnowledgeBase knowledgeBase = new KnowledgeBase();
+		final Reasoner reasoner = new VLogReasoner(knowledgeBase);
+		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
+		final Interpreter interpreter = new Interpreter(reasoner, out, parserConfiguration);
+
+		return interpreter;
 	}
 
 }

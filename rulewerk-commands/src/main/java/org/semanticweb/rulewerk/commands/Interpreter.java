@@ -1,5 +1,8 @@
 package org.semanticweb.rulewerk.commands;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 /*-
  * #%L
  * Rulewerk Core Components
@@ -23,12 +26,18 @@ package org.semanticweb.rulewerk.commands;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
+import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Terms;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
+import org.semanticweb.rulewerk.parser.ParsingException;
+import org.semanticweb.rulewerk.parser.javacc.JavaCCParser;
+import org.semanticweb.rulewerk.parser.javacc.ParseException;
+import org.semanticweb.rulewerk.parser.javacc.TokenMgrError;
 
 public class Interpreter {
 
@@ -65,6 +74,31 @@ public class Interpreter {
 		} else {
 			throw new CommandExecutionException("Unknown command '" + command.getName() + "'");
 		}
+	}
+	
+	public Command parseCommand(String commandString) throws ParsingException {
+		final InputStream inputStream = new ByteArrayInputStream(commandString.getBytes());
+		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
+		localParser.setParserConfiguration(parserConfiguration);
+
+		// Copy prefixes from KB:
+		try {
+			localParser.getPrefixDeclarationRegistry().setBaseIri(reasoner.getKnowledgeBase().getBaseIri());
+			for (Entry<String, String> prefix : reasoner.getKnowledgeBase().getPrefixDeclarationRegistry()) {
+				localParser.getPrefixDeclarationRegistry().setPrefixIri(prefix.getKey(), prefix.getValue());
+			}
+		} catch (PrefixDeclarationException e) { // unlikely!
+			throw new RuntimeException(e);
+		}
+
+		Command result;
+		try {
+			result = localParser.command();
+			localParser.ensureEndOfInput();
+		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
+			throw new ParsingException("Exception while parsing command.", e);
+		}
+		return result;
 	}
 
 	public Reasoner getReasoner() {

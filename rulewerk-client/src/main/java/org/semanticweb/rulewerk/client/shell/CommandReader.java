@@ -24,53 +24,63 @@ import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
 import org.jline.utils.AttributedString;
 import org.semanticweb.rulewerk.client.shell.commands.ExitCommandInterpreter;
-import org.semanticweb.rulewerk.client.shell.commands.ExitCommandInterpreter.ExitCommandName;
+import org.semanticweb.rulewerk.commands.Interpreter;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.parser.ParsingException;
-import org.semanticweb.rulewerk.parser.RuleParser;
 
 public class CommandReader {
 
-	public CommandReader(final LineReader lineReader, final PromptProvider promptProvider) {
-		super();
+	private final LineReader lineReader;
+	private final PromptProvider promptProvider;
+	private final Interpreter interpreter;
+
+	public CommandReader(final LineReader lineReader, final PromptProvider promptProvider,
+			final Interpreter interpreter) {
+		super(); // FIXME: there is no superclass?
 		this.lineReader = lineReader;
 		this.promptProvider = promptProvider;
+		this.interpreter = interpreter;
 	}
 
-	private final LineReader lineReader;
-
-	private final PromptProvider promptProvider;
-
+	/**
+	 * Reads a command from the prompt and returns a corresponding {@link Command}
+	 * object. If no command should be executed, null is returned. Some effort is
+	 * made to interpret mistyped commands by adding @ and . before and after the
+	 * input, if forgotten.
+	 * 
+	 * @return command or null
+	 */
 	public Command readCommand() {
-		final String readLine;
+		String readLine;
 		try {
 			final AttributedString prompt = this.promptProvider.getPrompt();
 			readLine = this.lineReader.readLine(prompt.toAnsi(this.lineReader.getTerminal()));
-
 		} catch (final UserInterruptException e) {
 			if (e.getPartialLine().isEmpty()) {
 				// Exit request from user CTRL+C
 				return ExitCommandInterpreter.EXIT_COMMAND;
 			} else {
-				// TODO maybe create empty command
-				return null;
+				return null; // used as empty command
 			}
 		}
-		// TODO can readLIne be null?
 
-		// TODO does it trim trailing spaces?
-		if (ExitCommandName.isExitCommand(readLine)) {
-			return ExitCommandInterpreter.EXIT_COMMAND;
+		readLine = readLine.trim();
+		if ("".equals(readLine)) {
+			return null;
+		}
+		if (readLine.charAt(0) != '@') {
+			readLine = "@" + readLine;
+		}
+		if (readLine.charAt(readLine.length() - 1) != '.') {
+			readLine = readLine + ".";
 		}
 
 		try {
-			return RuleParser.parseCommand(readLine);
+			return interpreter.parseCommand(readLine);
 		} catch (final ParsingException e) {
 			// FIXME do I need to flush terminal?
-			// TODO improve error message
-			this.lineReader.getTerminal().writer().println("Command cannot be parsed: " + e.getMessage());
-			// return Input.EMPTY;
-			// TODO maybe create empty command
+			this.lineReader.getTerminal().writer()
+					.println("Error: " + e.getMessage() + "\n" + e.getCause().getMessage());
 			return null;
 		}
 	}

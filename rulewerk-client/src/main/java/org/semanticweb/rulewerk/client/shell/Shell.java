@@ -1,75 +1,34 @@
 package org.semanticweb.rulewerk.client.shell;
 
-/*-
- * #%L
- * Rulewerk Client
- * %%
- * Copyright (C) 2018 - 2020 Rulewerk Developers
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
-import java.io.PrintStream;
-
-import org.jline.terminal.Terminal;
 import org.semanticweb.rulewerk.client.shell.commands.ExitCommandInterpreter;
 import org.semanticweb.rulewerk.client.shell.commands.ExitCommandInterpreter.ExitCommandName;
 import org.semanticweb.rulewerk.commands.CommandExecutionException;
+import org.semanticweb.rulewerk.commands.CommandInterpreter;
 import org.semanticweb.rulewerk.commands.Interpreter;
 import org.semanticweb.rulewerk.core.model.api.Command;
-import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-import org.semanticweb.rulewerk.core.reasoner.Reasoner;
-import org.semanticweb.rulewerk.parser.DefaultParserConfiguration;
-import org.semanticweb.rulewerk.parser.ParserConfiguration;
-import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
 public class Shell {
 
-	private final Terminal terminal;
-
 	private final Interpreter interpreter;
+	boolean running;
 
-	public Shell(final Terminal terminal) {
-		this.terminal = terminal;
-		this.interpreter = this.initializeInterpreter();
-	}
+	public Shell(final Interpreter interpreter) {
+		this.interpreter = interpreter;
 
-	private Interpreter initializeInterpreter() {
-		// FIXME connect terminal writer
-//		final PrintStream out = this.terminal.writer().;
-		final PrintStream out = System.out;
-
-		// TODO reasoner initial KB from args
-		final KnowledgeBase knowledgeBase = new KnowledgeBase();
-		final Reasoner reasoner = new VLogReasoner(knowledgeBase);
-		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
-		final Interpreter interpreter = new Interpreter(reasoner, out, parserConfiguration);
-
+		CommandInterpreter exitCommandInterpreter = new ExitCommandInterpreter(this);
 		for (final ExitCommandName exitCommandName : ExitCommandName.values()) {
-			interpreter.registerCommandInterpreter(exitCommandName.toString(), new ExitCommandInterpreter());
+			interpreter.registerCommandInterpreter(exitCommandName.toString(), exitCommandInterpreter);
 		}
-
-		return interpreter;
 	}
 
 	public void run(final CommandReader commandReader) {
-		while (true) {
+		running = true;
+		while (running) {
 			final Command command;
 			try {
 				command = commandReader.readCommand();
 			} catch (final Exception e) {
-				// TODO: handle exception
+				interpreter.getOut().println("Unexpected error: " + e.getMessage());
 				continue;
 			}
 
@@ -77,15 +36,15 @@ public class Shell {
 				try {
 					this.interpreter.runCommand(command);
 				} catch (final CommandExecutionException e) {
-					// TODO: handle exception
-					continue;
-				}
-
-				if (ExitCommandName.isExitCommand(command.getName())) {
-					break;
+					interpreter.getOut().println("Error: " + e.getMessage());
 				}
 			}
 		}
+		interpreter.getOut().println("Rulewerk shell is stopped. Bye.");
+	}
+
+	public void exitShell() {
+		this.running = false;
 	}
 
 //	@Override

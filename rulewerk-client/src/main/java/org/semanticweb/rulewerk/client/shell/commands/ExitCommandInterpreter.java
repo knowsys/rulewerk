@@ -22,6 +22,7 @@ package org.semanticweb.rulewerk.client.shell.commands;
 
 import java.util.ArrayList;
 
+import org.semanticweb.rulewerk.client.shell.Shell;
 import org.semanticweb.rulewerk.commands.CommandExecutionException;
 import org.semanticweb.rulewerk.commands.CommandInterpreter;
 import org.semanticweb.rulewerk.core.model.api.Command;
@@ -43,24 +44,27 @@ public class ExitCommandInterpreter implements CommandInterpreter {
 			return false;
 		}
 	}
+	
+	final Shell shell;
+	
+	public ExitCommandInterpreter(Shell shell) {
+		this.shell = shell;
+	}
 
 	@Override
 	public String getHelp(final String commandName) {
-		// TODO Auto-generated method stub
-		return null;
+		return "Usage: " + commandName + ".";
 	}
 
 	@Override
 	public String getSynopsis() {
-		// TODO Auto-generated method stub
-		return null;
+		return "exit Rulewerk shell";
 	}
 
 	@Override
 	public void run(final Command command, final org.semanticweb.rulewerk.commands.Interpreter interpreter)
 			throws CommandExecutionException {
-		// TODO Auto-generated method stub
-		interpreter.getOut().println("Quiting rulewerk.");
+		this.shell.exitShell();
 	}
 
 }
