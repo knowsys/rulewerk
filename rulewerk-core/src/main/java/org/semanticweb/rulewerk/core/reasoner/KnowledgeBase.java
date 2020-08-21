@@ -22,10 +22,12 @@ package org.semanticweb.rulewerk.core.reasoner;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -571,27 +573,27 @@ public class KnowledgeBase implements Iterable<Statement> {
 	/**
 	 * Serialise the KnowledgeBase to the {@link OutputStream}.
 	 *
-	 * @param stream the {@link OutputStream} to serialise to.
+	 * @param writer the {@link OutputStream} to serialise to.
 	 *
 	 * @throws IOException if an I/O error occurs while writing to given output
 	 *                     stream
 	 */
-	public void writeKnowledgeBase(OutputStream stream) throws IOException {
-		stream.write(Serializer.getBaseAndPrefixDeclarations(this).getBytes());
+	public void writeKnowledgeBase(Writer writer) throws IOException {
+		writer.write(Serializer.getBaseAndPrefixDeclarations(this));
 
 		for (DataSourceDeclaration dataSource : this.getDataSourceDeclarations()) {
-			stream.write(Serializer.getString(dataSource).getBytes());
-			stream.write('\n');
-		}
-
-		for (Rule rule : this.getRules()) {
-			stream.write(Serializer.getString(rule).getBytes());
-			stream.write('\n');
+			writer.write(Serializer.getString(dataSource));
+			writer.write('\n');
 		}
 
 		for (Fact fact : this.getFacts()) {
-			stream.write(Serializer.getFactString(fact).getBytes());
-			stream.write('\n');
+			writer.write(Serializer.getFactString(fact));
+			writer.write('\n');
+		}
+
+		for (Rule rule : this.getRules()) {
+			writer.write(Serializer.getString(rule));
+			writer.write('\n');
 		}
 	}
 
@@ -601,10 +603,13 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @param filePath path to the file to serialise into.
 	 *
 	 * @throws IOException
+	 * @deprecated Use {@link KnowledgeBase#writeKnowledgeBase(Writer)} instead. The
+	 *             method will disappear.
 	 */
+	@Deprecated
 	public void writeKnowledgeBase(String filePath) throws IOException {
-		try (OutputStream stream = new FileOutputStream(filePath)) {
-			this.writeKnowledgeBase(stream);
+		try (FileWriter writer = new FileWriter(filePath, StandardCharsets.UTF_8)) {
+			this.writeKnowledgeBase(writer);
 		}
 	}
 }
