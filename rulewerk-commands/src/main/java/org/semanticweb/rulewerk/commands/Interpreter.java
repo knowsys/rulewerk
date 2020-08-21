@@ -24,6 +24,7 @@ import java.io.InputStream;
  */
 
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -77,7 +78,7 @@ public class Interpreter {
 	}
 	
 	public Command parseCommand(String commandString) throws ParsingException {
-		final InputStream inputStream = new ByteArrayInputStream(commandString.getBytes());
+		final InputStream inputStream = new ByteArrayInputStream(commandString.getBytes(StandardCharsets.UTF_8));
 		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
 		localParser.setParserConfiguration(parserConfiguration);
 
