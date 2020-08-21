@@ -45,6 +45,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.Algorithm;
 import org.semanticweb.rulewerk.core.reasoner.Correctness;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.semanticweb.rulewerk.core.reasoner.QueryAnswerCount;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
 
@@ -94,7 +95,7 @@ public class QueryAnsweringCorrectnessTest {
 			// there are no facts for Q-1 predicate
 			try (final QueryResultIterator resultIterator = reasoner.answerQuery(ruleHeadQx, true)) {
 				assertFalse(resultIterator.hasNext());
-				assertEquals(Correctness.SOUND_AND_COMPLETE, resultIterator.getCorrectness());
+				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, resultIterator.getCorrectness());
 			}
 			reasoner.reason();
 
@@ -408,6 +409,98 @@ public class QueryAnsweringCorrectnessTest {
 				assertEquals(expectedAnswers_c, queryAnswers);
 				assertEquals(Correctness.SOUND_AND_COMPLETE, resultIterator.getCorrectness());
 			}
+		}
+	}
+
+	@Test
+	public void answerQuery_PredicateNotLoaded_Materialized() throws IOException {
+		KnowledgeBase kb = new KnowledgeBase();
+
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
+			kb.addStatements(factPc);
+			reasoner.reason();
+
+			try (final QueryResultIterator resultIterator = reasoner.answerQuery(ruleHeadQx, true)) {
+				assertFalse(resultIterator.hasNext());
+				assertEquals(Correctness.SOUND_AND_COMPLETE, resultIterator.getCorrectness());
+			}
+		}
+	}
+
+	@Test
+	public void answerQuery_PredicateNotLoaded_KbChanged() throws IOException {
+		KnowledgeBase kb = new KnowledgeBase();
+
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.addStatements(factPc);
+
+			try (final QueryResultIterator resultIterator = reasoner.answerQuery(ruleBodyPx, true)) {
+				assertFalse(resultIterator.hasNext());
+				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, resultIterator.getCorrectness());
+			}
+		}
+	}
+
+	@Test
+	public void countQueryAnswers_PredicateNotLoaded_Materialized() throws IOException {
+		KnowledgeBase kb = new KnowledgeBase();
+
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
+			kb.addStatements(factPc);
+			reasoner.reason();
+
+			final QueryAnswerCount resultIterator = reasoner.countQueryAnswers(ruleHeadQx);
+			assertEquals(0, resultIterator.getCount());
+			assertEquals(Correctness.SOUND_AND_COMPLETE, resultIterator.getCorrectness());
+		}
+	}
+
+	@Test
+	public void countQueryAnswers_PredicateNotLoaded_KbChanged() throws IOException {
+		KnowledgeBase kb = new KnowledgeBase();
+
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.addStatements(factPc);
+
+			final QueryAnswerCount resultIterator = reasoner.countQueryAnswers(ruleBodyPx);
+			assertEquals(0, resultIterator.getCount());
+			assertEquals(Correctness.SOUND_BUT_INCOMPLETE, resultIterator.getCorrectness());
+		}
+
+	}
+
+	@Test
+	public void exportQueryAnswersToCsv_PredicateNotLoaded_Materialized() throws IOException {
+		KnowledgeBase kb = new KnowledgeBase();
+
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
+			kb.addStatements(factPc);
+			reasoner.reason();
+
+			// TODO mock file or something
+			String csvFilePath = ".csv";
+			Correctness correctness = reasoner.exportQueryAnswersToCsv(ruleHeadQx, csvFilePath, true);
+
+			assertEquals(Correctness.SOUND_AND_COMPLETE, correctness);
+		}
+
+	}
+
+	@Test
+	public void exportQueryAnswersToCsv_PredicateNotLoaded_KbChanged() throws IOException {
+		KnowledgeBase kb = new KnowledgeBase();
+
+		try (VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.reason();
+			kb.addStatements(factPc);
+
+			// TODO mock file or something
+			String csvFilePath = ".csv";
+			Correctness correctness = reasoner.exportQueryAnswersToCsv(ruleBodyPx, csvFilePath, true);
+
+			assertEquals(Correctness.SOUND_BUT_INCOMPLETE, correctness);
 		}
 	}
 
