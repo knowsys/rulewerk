@@ -23,7 +23,7 @@ import java.io.InputStream;
  * #L%
  */
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -43,12 +43,12 @@ import org.semanticweb.rulewerk.parser.javacc.TokenMgrError;
 public class Interpreter {
 
 	final Reasoner reasoner;
-	final PrintStream out;
+	final PrintWriter out;
 	final ParserConfiguration parserConfiguration;
 
 	final HashMap<String, CommandInterpreter> commandInterpreters = new HashMap<>();
 
-	public Interpreter(Reasoner reasoner, PrintStream out, ParserConfiguration parserConfiguration) {
+	public Interpreter(Reasoner reasoner, PrintWriter out, ParserConfiguration parserConfiguration) {
 		this.reasoner = reasoner;
 		this.out = out;
 		this.parserConfiguration = parserConfiguration;
@@ -76,7 +76,7 @@ public class Interpreter {
 			throw new CommandExecutionException("Unknown command '" + command.getName() + "'");
 		}
 	}
-	
+
 	public Command parseCommand(String commandString) throws ParsingException {
 		final InputStream inputStream = new ByteArrayInputStream(commandString.getBytes(StandardCharsets.UTF_8));
 		final JavaCCParser localParser = new JavaCCParser(inputStream, "UTF-8");
@@ -105,12 +105,12 @@ public class Interpreter {
 	public Reasoner getReasoner() {
 		return reasoner;
 	}
-	
+
 	public ParserConfiguration getParserConfiguration() {
 		return parserConfiguration;
 	}
 
-	public PrintStream getOut() {
+	public PrintWriter getOut() {
 		return out;
 	}
 

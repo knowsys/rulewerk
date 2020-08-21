@@ -50,13 +50,12 @@ public class RulewerkApplication {
 	private static Interpreter initializeInterpreter(Terminal terminal) {
 		// FIXME connect terminal writer
 //		final PrintStream out = terminal.writer().;
-		final PrintStream out = System.out;
 
 		// TODO reasoner initial KB from args
 		final KnowledgeBase knowledgeBase = new KnowledgeBase();
 		final Reasoner reasoner = new VLogReasoner(knowledgeBase);
 		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
-		final Interpreter interpreter = new Interpreter(reasoner, out, parserConfiguration);
+		final Interpreter interpreter = new Interpreter(reasoner, terminal.writer(), parserConfiguration);
 
 		return interpreter;
 	}
