@@ -28,11 +28,17 @@ public class HelpCommandInterpreter implements CommandInterpreter {
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
 		if (command.getArguments().size() == 0) {
-			interpreter.getOut().println("Available commands:");
+			int maxLength = 0;
 			for (String commandName : interpreter.commandInterpreters.keySet()) {
-				interpreter.getOut().println(
-						" @" + commandName + ": " + interpreter.commandInterpreters.get(commandName).getSynopsis());
+				maxLength = (commandName.length() > maxLength) ? commandName.length() : maxLength;
 			}
+			final int padLength = maxLength + 1;
+
+			interpreter.getOut().println("Available commands:");
+			interpreter.commandInterpreters.forEach((commandName, commandForName) -> {
+				interpreter.getOut().println(" @" + String.format("%1$-" + padLength + "s", commandName) + ": "
+						+ commandForName.getSynopsis());
+			});
 			interpreter.getOut().println();
 			interpreter.getOut()
 					.println("For more information on any command, use @" + command.getName() + " [command name].");
