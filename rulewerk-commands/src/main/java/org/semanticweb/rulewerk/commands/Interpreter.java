@@ -97,7 +97,7 @@ public class Interpreter {
 			result = localParser.command();
 			localParser.ensureEndOfInput();
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError | RuntimeException e) {
-			throw new ParsingException("Exception while parsing command.", e);
+			throw new ParsingException("failed to parse command \"\"\"" + commandString + "\"\"\"", e);
 		}
 		return result;
 	}
