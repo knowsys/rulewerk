@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.core.model.api;
 
+import java.util.List;
+
 import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 /*-
@@ -53,4 +55,11 @@ public interface Rule extends SyntaxObject, Statement, Entity {
 		return Serializer.getString(this);
 	}
 
+	List<Literal> getHeadLiterals();
+
+	List<Literal> getBodyLiterals();
+
+	List<Literal> getPositiveBodyLiterals();
+
+	List<Literal> getNegativeBodyLiterals();
 }
