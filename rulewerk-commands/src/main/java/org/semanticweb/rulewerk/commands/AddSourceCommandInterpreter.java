@@ -37,6 +37,34 @@ public class AddSourceCommandInterpreter implements CommandInterpreter {
 		PositiveLiteral sourceDeclaration = Interpreter.extractPositiveLiteralArgument(command, 1,
 				"source declaration");
 
+		Predicate predicate = extractPredicate(predicateDeclaration);
+		DataSource dataSource = extractDataSource(sourceDeclaration, interpreter);
+
+		if (dataSource.getRequiredArity().isPresent()) {
+			Integer requiredArity = dataSource.getRequiredArity().get();
+			if (predicate.getArity() != requiredArity) {
+				throw new CommandExecutionException("Invalid arity " + predicate.getArity() + " for data source, "
+						+ "expected " + requiredArity + ".");
+			}
+		}
+
+		interpreter.getKnowledgeBase().addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
+	}
+
+	@Override
+	public String getHelp(String commandName) {
+		return "Usage: @" + commandName + " <predicateName>[<arity>]: <source declartion>.\n"
+				+ " <predicateName>[<arity>] : the name of the predicate and its arity\n"
+				+ " <source declaration> : a fact specifying a source declaration\n\n"
+				+ "Note that every predicate can have multiple sources.";
+	}
+
+	@Override
+	public String getSynopsis() {
+		return "define a new external data source for a predicate";
+	}
+
+	static Predicate extractPredicate(String predicateDeclaration) throws CommandExecutionException {
 		String predicateName;
 		int arity;
 		try {
@@ -50,38 +78,17 @@ public class AddSourceCommandInterpreter implements CommandInterpreter {
 					"Predicate declaration must have the format \"predicateName[number]\" but was "
 							+ predicateDeclaration);
 		}
-		Predicate predicate = Expressions.makePredicate(predicateName, arity);
+		return Expressions.makePredicate(predicateName, arity);
+	}
 
-		DataSource dataSource;
+	static DataSource extractDataSource(PositiveLiteral sourceDeclaration, Interpreter interpreter)
+			throws CommandExecutionException {
 		try {
-			dataSource = interpreter.getParserConfiguration()
+			return interpreter.getParserConfiguration()
 					.parseDataSourceSpecificPartOfDataSourceDeclaration(sourceDeclaration);
 		} catch (ParsingException e) {
 			throw new CommandExecutionException("Could not parse source declartion: " + e.getMessage());
 		}
-
-		if (dataSource.getRequiredArity().isPresent()) {
-			Integer requiredArity = dataSource.getRequiredArity().get();
-			if (arity != requiredArity) {
-				throw new CommandExecutionException(
-						"Invalid arity " + arity + " for data source, " + "expected " + requiredArity + ".");
-			}
-		}
-
-		interpreter.getReasoner().getKnowledgeBase().addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
-	}
-
-	@Override
-	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " <predicateName>[<arity>]: <source declartion>.\n"
-				+ " <predicateName>[<arity>] : the name of the predicate and its arity\n"
-				+ " <source declartion> : a fact specifying a source declaration\n\n"
-				+ "Note that every predicate can have multiple sources.";
-	}
-
-	@Override
-	public String getSynopsis() {
-		return "define a new external data source for a predicate";
 	}
 
 }
