@@ -30,7 +30,7 @@ public class ShowKbCommandInterpreter implements CommandInterpreter {
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
 		Interpreter.validateArgumentCount(command, 0);
 		try {
-			interpreter.getReasoner().getKnowledgeBase().writeKnowledgeBase(interpreter.getOut());
+			interpreter.getKnowledgeBase().writeKnowledgeBase(interpreter.getOut());
 		} catch (IOException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}

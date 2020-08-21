@@ -43,17 +43,17 @@ public class AssertCommandInterpreter implements CommandInterpreter {
 				} catch (IllegalArgumentException e) {
 					throw new CommandExecutionException("Literal " + literal.toString() + " is not a fact.", e);
 				}
-				interpreter.getReasoner().getKnowledgeBase().addStatement(fact);
+				interpreter.getKnowledgeBase().addStatement(fact);
 				factCount++;
 			} else if (argument.fromRule().isPresent()) {
-				interpreter.getReasoner().getKnowledgeBase().addStatement(argument.fromRule().get());
+				interpreter.getKnowledgeBase().addStatement(argument.fromRule().get());
 				ruleCount++;
 			} else {
 				throw new CommandExecutionException(
 						"Only facts and rules can be asserted. Encountered " + argument.toString());
 			}
 		}
-		
+
 		interpreter.getOut().println("Asserted " + factCount + " fact(s) and " + ruleCount + " rules.");
 	}
 

@@ -31,10 +31,9 @@ public class SetPrefixCommandInterpreter implements CommandInterpreter {
 		String prefixName = Interpreter.extractStringArgument(command, 0, "prefix name");
 		String prefixIri = Interpreter.extractNameArgument(command, 1, "prefix IRI");
 
-		interpreter.getReasoner().getKnowledgeBase().getPrefixDeclarationRegistry().unsetPrefix(prefixName);
+		interpreter.getKnowledgeBase().getPrefixDeclarationRegistry().unsetPrefix(prefixName);
 		try {
-			interpreter.getReasoner().getKnowledgeBase().getPrefixDeclarationRegistry().setPrefixIri(prefixName,
-					prefixIri);
+			interpreter.getKnowledgeBase().getPrefixDeclarationRegistry().setPrefixIri(prefixName, prefixIri);
 		} catch (PrefixDeclarationException e) { // practically impossible
 			throw new CommandExecutionException("Setting prefix failed: " + e.getMessage());
 		}

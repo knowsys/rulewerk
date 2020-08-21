@@ -33,6 +33,7 @@ import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Terms;
+import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -104,6 +105,10 @@ public class Interpreter {
 
 	public Reasoner getReasoner() {
 		return reasoner;
+	}
+
+	public KnowledgeBase getKnowledgeBase() {
+		return reasoner.getKnowledgeBase();
 	}
 
 	public ParserConfiguration getParserConfiguration() {
