@@ -28,7 +28,7 @@ import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationI
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
-public class SetSourceCommandInterpreter implements CommandInterpreter {
+public class AddSourceCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
@@ -73,12 +73,15 @@ public class SetSourceCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " <predicateName>[<arity>]: <source declartion>.";
+		return "Usage: @" + commandName + " <predicateName>[<arity>]: <source declartion>.\n"
+				+ " <predicateName>[<arity>] : the name of the predicate and its arity\n"
+				+ " <source declartion> : a fact specifying a source declaration\n\n"
+				+ "Note that every predicate can have multiple sources.";
 	}
 
 	@Override
 	public String getSynopsis() {
-		return "define an external data source for a predicate";
+		return "define a new external data source for a predicate";
 	}
 
 }

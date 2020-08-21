@@ -121,7 +121,7 @@ public class Interpreter {
 		registerCommandInterpreter("reason", new ReasonCommandInterpreter());
 		registerCommandInterpreter("load", new LoadCommandInterpreter());
 		registerCommandInterpreter("setprefix", new SetPrefixCommandInterpreter());
-		registerCommandInterpreter("setsource", new SetSourceCommandInterpreter());
+		registerCommandInterpreter("addsource", new AddSourceCommandInterpreter());
 		registerCommandInterpreter("showkb", new ShowKbCommandInterpreter());
 	}
 
