@@ -77,12 +77,12 @@ public class AddDataSourceTest {
 			reasoner.reason();
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicateLArity1, Expressions.makeUniversalVariable("x")), false)) {
-				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(this.csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 			}
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicateParity1, Expressions.makeUniversalVariable("x")), false)) {
-				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(this.csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 			}
 
@@ -103,12 +103,12 @@ public class AddDataSourceTest {
 			reasoner.load();
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicateP, Expressions.makeUniversalVariable("x")), true)) {
-				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(this.csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 			}
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicateQ, Expressions.makeUniversalVariable("x")), true)) {
-				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(this.csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
 			}
 
@@ -133,7 +133,7 @@ public class AddDataSourceTest {
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicateP, Expressions.makeUniversalVariable("x")), true)) {
-				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(this.csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
 			}
 
@@ -141,7 +141,7 @@ public class AddDataSourceTest {
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicateQ, Expressions.makeUniversalVariable("x")), true)) {
 				assertFalse(queryResult.hasNext());
-				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
+				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, queryResult.getCorrectness());
 			}
 		}
 	}
@@ -164,14 +164,14 @@ public class AddDataSourceTest {
 
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicateP, Expressions.makeUniversalVariable("x")), true)) {
-				assertEquals(csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
+				assertEquals(this.csvFile_c1_c2_Content, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.INCORRECT, queryResult.getCorrectness());
 			}
 // there is no fact for predicate Q loaded in the reasoner
 			try (final QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicateQ, Expressions.makeUniversalVariable("x")), true)) {
 				assertFalse(queryResult.hasNext());
-				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
+				assertEquals(Correctness.SOUND_BUT_INCOMPLETE, queryResult.getCorrectness());
 			}
 		}
 	}
@@ -233,8 +233,8 @@ public class AddDataSourceTest {
 			reasoner.reason();
 			try (QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicate, Expressions.makeUniversalVariable("x")), true)) {
-				final Set<List<Term>> expectedAnswers = new HashSet<>(csvFile_c1_c2_Content);
-				expectedAnswers.addAll(csvFile_c_d_Content);
+				final Set<List<Term>> expectedAnswers = new HashSet<>(this.csvFile_c1_c2_Content);
+				expectedAnswers.addAll(this.csvFile_c_d_Content);
 
 				assertEquals(expectedAnswers, QueryResultsUtils.collectQueryResults(queryResult));
 				assertEquals(Correctness.SOUND_AND_COMPLETE, queryResult.getCorrectness());
@@ -258,7 +258,7 @@ public class AddDataSourceTest {
 			reasoner.reason();
 			try (QueryResultIterator queryResult = reasoner.answerQuery(
 					Expressions.makePositiveLiteral(predicate, Expressions.makeUniversalVariable("x")), true)) {
-				final Set<List<Term>> expectedAnswers = new HashSet<>(csvFile_c1_c2_Content);
+				final Set<List<Term>> expectedAnswers = new HashSet<>(this.csvFile_c1_c2_Content);
 				expectedAnswers.add(Arrays.asList(Expressions.makeAbstractConstant("a")));
 
 				assertEquals(expectedAnswers, QueryResultsUtils.collectQueryResults(queryResult));

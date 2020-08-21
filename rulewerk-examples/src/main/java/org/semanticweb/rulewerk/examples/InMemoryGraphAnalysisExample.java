@@ -78,7 +78,9 @@ public class InMemoryGraphAnalysisExample {
 				+ "connected(v1) ." //
 				+ "connected(?X) :- connected(?Y), biedge(?Y,?X) ." //
 				+ "unreachable(?X) :- vertex(?X), ~connected(?X) . " //
-				+ "triangle(?X, ?Y, ?Z) :- biedge(?X,?Y), biedge(?Y, ?Z), biedge(?Z,?X) .";
+				+ "triangle(?X, ?Y, ?Z) :- biedge(?X,?Y), biedge(?Y, ?Z), biedge(?Z,?X) ." //
+				+ "loop(?X,?X) :- edge(?X,?X) . " //
+				+ "properTriangle(?X, ?Y, ?Z) :- triangle(?X,?Y,?Z), ~loop(?X,?Y), ~loop(?Y, ?Z), ~loop(?Z, ?X) . ";
 
 		final KnowledgeBase kb = RuleParser.parse(rules);
 		kb.addStatement(new DataSourceDeclarationImpl(Expressions.makePredicate("vertex", 1), vertices));
@@ -88,14 +90,14 @@ public class InMemoryGraphAnalysisExample {
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 
-			final double unreachable = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("unreachable(?X)"))
+			final long unreachable = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("unreachable(?X)"))
 					.getCount();
-			final double triangles = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("triangle(?X,?Y,?Z)"))
+			final long triangles = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("properTriangle(?X,?Y,?Z)"))
 					.getCount();
 
 			System.out
 					.println("Number of vertices not reachable from vertex 1 by a bi-directional path: " + unreachable);
-			System.out.println("Number of bi-directional triangles: " + (triangles / 6));
+			System.out.println("Number of proper bi-directional triangles: " + (triangles / 6) + " (found in " + triangles + " matches due to symmetry.)");
 		}
 	}
 

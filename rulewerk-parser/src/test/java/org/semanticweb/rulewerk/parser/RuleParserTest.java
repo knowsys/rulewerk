@@ -449,6 +449,21 @@ public class RuleParserTest implements ParserTestUtils {
 	}
 
 	@Test
+	public void parse_absoluteIriInRuleHead_succeeds() throws ParsingException {
+		RuleParser.parseRule("<A>(?x) :- B(?x), C(?x) .");
+	}
+
+	@Test
+	public void parse_absoluteIriInRuleBody_succeeds() throws ParsingException {
+		RuleParser.parseRule("A(?x) :- B(?x), <C>(?x) .");
+	}
+
+	@Test
+	public void parse_absoluteIrisInRule_succeeds() throws ParsingException {
+		RuleParser.parseRule("<A>(?x) :- B(?x), <C>(?x) .");
+	}
+
+	@Test
 	public void testCustomDatatype() throws ParsingException {
 		final String typename = "http://example.org/#test";
 		DatatypeConstant constant = Expressions.makeDatatypeConstant("test", typename);
