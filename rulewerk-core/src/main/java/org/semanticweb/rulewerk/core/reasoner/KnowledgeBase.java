@@ -273,13 +273,18 @@ public class KnowledgeBase implements Iterable<Statement> {
 	}
 
 	/**
-	 * Removes a single statement from the knowledge base.
+	 * Removes a single statement from the knowledge base, and returns the number of
+	 * statements that were actually removed (0 or 1).
 	 *
 	 * @param statement the statement to remove
+	 * @return number of removed statements
 	 */
-	public void removeStatement(final Statement statement) {
+	public int removeStatement(final Statement statement) {
 		if (this.doRemoveStatement(statement)) {
 			this.notifyListenersOnStatementRemoved(statement);
+			return 1;
+		} else {
+			return 0;
 		}
 	}
 
@@ -303,8 +308,9 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * Removes a collection of statements to the knowledge base.
 	 *
 	 * @param statements the statements to remove
+	 * @return number of removed statements
 	 */
-	public void removeStatements(final Collection<? extends Statement> statements) {
+	public int removeStatements(final Collection<? extends Statement> statements) {
 		final List<Statement> removedStatements = new ArrayList<>();
 
 		for (final Statement statement : statements) {
@@ -314,14 +320,16 @@ public class KnowledgeBase implements Iterable<Statement> {
 		}
 
 		this.notifyListenersOnStatementsRemoved(removedStatements);
+		return removedStatements.size();
 	}
 
 	/**
 	 * Removes a list of statements from the knowledge base.
 	 *
 	 * @param statements the statements to remove
+	 * @return number of removed statements
 	 */
-	public void removeStatements(final Statement... statements) {
+	public int removeStatements(final Statement... statements) {
 		final List<Statement> removedStatements = new ArrayList<>();
 
 		for (final Statement statement : statements) {
@@ -331,6 +339,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 		}
 
 		this.notifyListenersOnStatementsRemoved(removedStatements);
+		return removedStatements.size();
 	}
 
 	private void notifyListenersOnStatementAdded(final Statement addedStatement) {
