@@ -32,6 +32,8 @@ public class AssertCommandInterpreter implements CommandInterpreter {
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
 
+		int factCount = 0;
+		int ruleCount = 0;
 		for (Argument argument : command.getArguments()) {
 			if (argument.fromPositiveLiteral().isPresent()) {
 				PositiveLiteral literal = argument.fromPositiveLiteral().get();
@@ -42,13 +44,17 @@ public class AssertCommandInterpreter implements CommandInterpreter {
 					throw new CommandExecutionException("Literal " + literal.toString() + " is not a fact.", e);
 				}
 				interpreter.getReasoner().getKnowledgeBase().addStatement(fact);
+				factCount++;
 			} else if (argument.fromRule().isPresent()) {
 				interpreter.getReasoner().getKnowledgeBase().addStatement(argument.fromRule().get());
+				ruleCount++;
 			} else {
 				throw new CommandExecutionException(
 						"Only facts and rules can be asserted. Encountered " + argument.toString());
 			}
 		}
+		
+		interpreter.getOut().println("Asserted " + factCount + " fact(s) and " + ruleCount + " rules.");
 	}
 
 	@Override
