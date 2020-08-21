@@ -1,6 +1,5 @@
 package org.semanticweb.rulewerk.reliances;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,112 +70,122 @@ public class Reliance {
 
 	}
 
-	static private void print(String name, ArrayList<Literal> literals) {
-		String result = name + ": ";
-		for (Literal literal : literals)
-			result += literal + ", ";
-		System.out.println(result);
+	static private boolean thereIsSomethingNew(List<Literal> headLiterals2, List<Literal> positiveLiterals1,
+			List<Literal> headLiterals1) {
+		Set<Literal> copyHeadLiterals2 = new HashSet<>(headLiterals2);
+		positiveLiterals1.forEach(literal -> copyHeadLiterals2.remove(literal));
+		headLiterals1.forEach(literal -> copyHeadLiterals2.remove(literal));
+		return !copyHeadLiterals2.isEmpty();
 	}
 
-	static private void print(String name, Set<Literal> literals) {
-		String result = name + ": ";
-		for (Literal literal : literals)
-			result += literal + ", ";
-		System.out.println(result);
-	}
-
-	static private void print(String name, int[] intArray) {
-		String base = name + ": [";
-		for (int i = 0; i < intArray.length; i++) {
-			base += intArray[i] + ",";
-		}
-		base += "]";
-		System.out.println(base);
-	}
-
-	static private void print(String name, List<Integer> list) {
-		String base = name + ": [";
-		for (int i = 0; i < list.size(); i++) {
-			base += list.get(i) + ",";
-		}
-		base += "]";
-		System.out.println(base);
-	}
+//	static private <T> void print(String name, List<T> objects) {
+//		String result = name + ": [";
+//		for (T o : objects)
+//			result += o + ", ";
+//		result += "]";
+//		System.out.println(result);
+//	}
+//
+//	static private void print(String name, Set<Literal> literals) {
+//		String result = name + ": ";
+//		for (Literal literal : literals)
+//			result += literal + ", ";
+//		System.out.println(result);
+//	}
+//
+//	static private void print(String name, int[] intArray) {
+//		String base = name + ": [";
+//		for (int i = 0; i < intArray.length; i++) {
+//			base += intArray[i] + ",";
+//		}
+//		base += "]";
+//		System.out.println(base);
+//	}
 
 	/*
 	 * @return True if rule2 positively relies in rule1 $\arule_1\rpos\arule_2$
 	 */
 	static public boolean positively(Rule rule1, Rule rule2) {
-		Rule firstRuleRenamedVariables = VariableRenamer.renameVariables(rule1, 1);
-		Rule secondRuleRenamedVariables = VariableRenamer.renameVariables(rule2, 2);
+		Rule renamedRule1 = VariableRenamer.rename(rule1, 1);
+		Rule renamedRule2 = VariableRenamer.rename(rule2, 2);
 
-		System.out.println("rule 1: " + rule1);
-		System.out.println("rule 2: " + rule2);
-		System.out.println("rule 1 renamed: " + firstRuleRenamedVariables);
-		System.out.println("rule 2 renamed: " + secondRuleRenamedVariables);
+//		System.out.println("rule 1: " + rule1);
+//		System.out.println("rule 2: " + rule2);
+//		System.out.println("rule 1 renamed: " + renamedRule1);
+//		System.out.println("rule 2 renamed: " + renamedRule2);
 
-		ArrayList<Literal> literalsInHead1 = new ArrayList<>();
-		firstRuleRenamedVariables.getHead().getLiterals().forEach(literal -> literalsInHead1.add(literal));
-		print("literalsInHead1", literalsInHead1);
+		List<Literal> positiveBodyLiterals1 = renamedRule1.getPositiveBodyLiterals();
+//		List<Literal> negativeBodyLiterals1 = renamedRule1.getNegativeBodyLiterals();
+		List<Literal> headLiterals1 = renamedRule1.getHeadLiterals();
+		List<Literal> positiveBodyLiterals2 = renamedRule2.getPositiveBodyLiterals();
+//		List<Literal> negativeBodyLiterals2 = renamedRule2.getNegativeBodyLiterals();
+		List<Literal> headLiterals2 = renamedRule2.getHeadLiterals();
 
-		ArrayList<Literal> literalsInBody2 = new ArrayList<>();
-		for (Literal literal : secondRuleRenamedVariables.getBody().getLiterals()) {
-			if (!literal.isNegated()) {
-				literalsInBody2.add(literal);
-			}
-		}
-		print("literalsInBody2", literalsInBody2);
+//		print("positiveBodyLiterals1: ", positiveBodyLiterals1);
+//		print("negativeBodyLiterals1: ", negativeBodyLiterals1);
+//		print("headLiterals1: ", headLiterals1);
+//		print("positiveBodyLiterals2", positiveBodyLiterals2);
+//		print("negativeBodyLiterals2", negativeBodyLiterals2);
+//		print("headLiterals2: ", headLiterals2);
 
-		int sizeHead1 = literalsInHead1.size();
-		int sizeBody2 = literalsInBody2.size();
+		int sizeHead1 = headLiterals1.size();
+		int sizePositiveBody2 = positiveBodyLiterals2.size();
 
-		Assignment assignment = new Assignment(sizeBody2, sizeHead1);
+		Assignment assignment = new Assignment(sizePositiveBody2, sizeHead1);
 
 		for (int[] match : assignment) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-			print("match", match);
+//			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+//			print("match", match);
 
-			List<Integer> head11Idx = Assignment.head11Idx(sizeHead1, match);
-			List<Integer> head12Idx = Assignment.head12Idx(sizeHead1, match);
-			List<Integer> body21Idx = Assignment.body21Idx(sizeBody2, match);
-			List<Integer> body22Idx = Assignment.body22Idx(sizeBody2, match);
+			// this could be improved
+			List<Integer> headLiterals11Idx = Assignment.head11Idx(sizeHead1, match);
+			List<Integer> headLiterals12Idx = Assignment.head12Idx(sizeHead1, match);
+			List<Integer> positiveBodyLiterals21Idx = Assignment.body21Idx(sizePositiveBody2, match);
+			List<Integer> positiveBodyLiterals22Idx = Assignment.body22Idx(sizePositiveBody2, match);
 
-			print("head11Idx: ", head11Idx);
-			print("head12Idx: ", head12Idx);
-			print("body21Idx: ", body21Idx);
-			print("body22Idx: ", body22Idx);
+//			print("headLiterals11Idx: ", headLiterals11Idx);
+//			print("headLiterals12Idx: ", headLiterals12Idx);
+//			print("positiveBodyLiterals21Idx: ", positiveBodyLiterals21Idx);
+//			print("positiveBodyLiterals22Idx: ", positiveBodyLiterals22Idx);
 
-			Unifier unifier = new Unifier(literalsInBody2, literalsInHead1, match);
+			Unifier unifier = new Unifier(positiveBodyLiterals2, headLiterals1, match);
+//			System.out.println(unifier);
 
-			ArrayList<Literal> literalsInHead1RenamedWithUnifier = new ArrayList<>();
-			literalsInHead1.forEach(literal -> literalsInHead1RenamedWithUnifier
-					.add(VariableRenamer.renameVariables(literal, unifier)));
-			ArrayList<Literal> literalsInBody2RenamedWithUnifier = new ArrayList<>();
-			literalsInBody2.forEach(literal -> literalsInBody2RenamedWithUnifier
-					.add(VariableRenamer.renameVariables(literal, unifier)));
-
-			System.out.println(unifier);
+			// RWU = renamed with unifier
 			if (unifier.success) {
+				List<Literal> positiveBodyLiterals1RWU = VariableRenamer.rename(positiveBodyLiterals1, unifier);
+//				List<Literal> negativeBodyLiterals1RWU = VariableRenamer.rename(negativeBodyLiterals1, unifier);
+				List<Literal> headLiterals1RWU = VariableRenamer.rename(headLiterals1, unifier);
+				List<Literal> positiveBodyLiterals2RWU = VariableRenamer.rename(positiveBodyLiterals2, unifier);
+//				List<Literal> negativeBodyLiterals2RWU = VariableRenamer.rename(negativeBodyLiterals2, unifier);
+				List<Literal> headLiterals2RWU = VariableRenamer.rename(headLiterals2, unifier);
 
-				Set<Literal> head11 = new HashSet<>();
-				head11Idx.forEach(idx -> head11.add(literalsInHead1RenamedWithUnifier.get(idx)));
+				Set<Literal> headLiterals11 = new HashSet<>();
+				headLiterals11Idx.forEach(idx -> headLiterals11.add(headLiterals1RWU.get(idx)));
 
-				Set<Literal> head12 = new HashSet<>();
-				head12Idx.forEach(idx -> head12.add(literalsInHead1RenamedWithUnifier.get(idx)));
+				Set<Literal> headLiterals12 = new HashSet<>();
+				headLiterals12Idx.forEach(idx -> headLiterals12.add(headLiterals1RWU.get(idx)));
 
-				Set<Literal> body21 = new HashSet<>();
-				body21Idx.forEach(idx -> body21.add(literalsInBody2RenamedWithUnifier.get(idx)));
+				Set<Literal> positiveBodyLiterals21 = new HashSet<>();
+				positiveBodyLiterals21Idx.forEach(idx -> positiveBodyLiterals21.add(positiveBodyLiterals2RWU.get(idx)));
 
-				Set<Literal> body22 = new HashSet<>();
-				body22Idx.forEach(idx -> body22.add(literalsInBody2RenamedWithUnifier.get(idx)));
+				Set<Literal> positiveBodyLiterals22 = new HashSet<>();
+				positiveBodyLiterals22Idx.forEach(idx -> positiveBodyLiterals22.add(positiveBodyLiterals2RWU.get(idx)));
 
-				print("head11: ", head11);
-				print("head12: ", head12);
-				print("body21: ", body21);
-				print("body22: ", body22);
+//				print("positiveBodyLiterals1: ", positiveBodyLiterals1RWU);
+//				print("headLiterals11: ", headLiterals11);
+//				print("headLiterals12: ", headLiterals12);
+//				print("positiveBodyLiterals21: ", positiveBodyLiterals21);
+//				print("positiveBodyLiterals22: ", positiveBodyLiterals22);
+//				print("headLiterals2RWU: ", headLiterals2RWU);
 
-				if (!shareAnyExistentialVariable(head11, body22)
-						&& !universalVariableInPositionOfExistentialVariable(head11, body22)) {
+//				System.out.println(!shareAnyExistentialVariable(headLiterals11, positiveBodyLiterals22));
+//				System.out.println(
+//						!universalVariableInPositionOfExistentialVariable(headLiterals11, positiveBodyLiterals22));
+//				System.out.println(thereIsSomethingNew(headLiterals2RWU, positiveBodyLiterals1RWU, headLiterals1RWU));
+				if (!shareAnyExistentialVariable(headLiterals11, positiveBodyLiterals22)
+						&& !universalVariableInPositionOfExistentialVariable(headLiterals11, positiveBodyLiterals22)
+						&& thereIsSomethingNew(headLiterals2RWU, positiveBodyLiterals1RWU, headLiterals1RWU)) {
 					return true;
 				}
 			}
