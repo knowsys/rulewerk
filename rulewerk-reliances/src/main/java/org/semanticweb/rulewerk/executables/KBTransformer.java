@@ -1,5 +1,25 @@
 package org.semanticweb.rulewerk.executables;
 
+/*-
+ * #%L
+ * Rulewerk Reliances
+ * %%
+ * Copyright (C) 2018 - 2020 Rulewerk Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,6 +28,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Literal;
@@ -71,23 +92,33 @@ public class KBTransformer {
 //			System.out.println(i + ": " + rules.get(i));
 //		}
 
-		List<int[]> positiveDependency = new ArrayList<>();
+		Graph positiveDependencyGraph = new Graph(kb.getRules().size());
+//		List<int[]> positiveDependency = new ArrayList<>();
 		for (int i = 0; i < rules.size(); i++) {
 			for (int j = 0; j < rules.size(); j++) {
 				if (Reliance.positively(rules.get(i), rules.get(j))) {
-					positiveDependency.add(new int[] { i, j });
+//					positiveDependency.add(new int[] { i, j });
+					positiveDependencyGraph.addRemovableEdge(i, j);
 				}
 			}
 		}
+		positiveDependencyGraph.removeCycles();
+		
+//		System.out.println("cycles:");
+//		for (Vector<Integer> cycle : positiveDependencyGraph.getCycles()) {
+//			Graph.print(cycle);
+//		}
+//		System.out.println("ending cycles");
 
 		String newFacts = "";
-		for (int i = 0; i < positiveDependency.size(); i++) {
+		Vector<int[]> edges = positiveDependencyGraph.getEdges();
+		for (int i = 0; i < edges.size(); i++) {
 			String name = "newPredicateName";
 			Fact fact = RuleParser.parseFact(name + i + "(1).");
 			PositiveLiteral literal1 = RuleParser.parsePositiveLiteral(name + i + "(1)");
 			Literal literal2 = RuleParser.parseLiteral("~" + name + i + "(2)");
 
-			int[] pair = positiveDependency.get(i);
+			int[] pair = edges.get(i);
 			if (pair[0] != pair[1]) {
 				newFacts += fact + "\n";
 				Rule r1 = addHeadAtom(rules.get(pair[0]), literal1);

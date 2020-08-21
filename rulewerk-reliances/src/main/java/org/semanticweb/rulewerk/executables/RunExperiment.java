@@ -1,5 +1,25 @@
 package org.semanticweb.rulewerk.executables;
 
+/*-
+ * #%L
+ * Rulewerk Reliances
+ * %%
+ * Copyright (C) 2018 - 2020 Rulewerk Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -80,16 +100,17 @@ public class RunExperiment {
 				first[j] = materialize(base + "original/crossword-rules.rls",
 						base + "original/crossword-size-" + i + ".lp",
 						base + "logs/crossword-original-" + i + "-" + j + ".log");
-				System.out.println(first[j]);
+//				System.out.println(first[j]);
 				second[j] = materialize(base + "transformed/crossword-rules.rls",
 						base + "transformed/crossword-size-" + i + ".lp",
 						base + "logs/crossword-transformed-" + i + "-" + j + ".log");
-				System.out.println(second[j]);
+//				System.out.println(second[j]);
 			}
-			print(first);
-			print(second);
-			System.out.println(average(first));
-			System.out.println(average(second));
+//			print(first);
+//			print(second);
+
+			System.out.println("original crossword, data size: " + i + ". average: " + average(first));
+			System.out.println("transfo. crossword, data size: " + i + ". average: " + average(second));
 		}
 	}
 
@@ -117,12 +138,12 @@ public class RunExperiment {
 			}
 //			print(first);
 //			print(second);
-			System.out.println("erdos-renyi-graph-" + g + ": " + average(first) + " " + average(second));
+			System.out.println("3col-erdos-renyi-graph-" + g + ": " + average(first) + " " + average(second));
 
 		}
 	}
-	
-	//not stratifiable
+
+	// not stratifiable
 	static private void hamiltonianErdos() throws ParsingException, IOException {
 		String base = "/home/lgonzale/ontologies/phillip/";
 
@@ -137,7 +158,8 @@ public class RunExperiment {
 		for (String g : graphs) {
 
 			for (int j = 0; j < 10; j++) {
-				first[j] = materialize(base + "original/hamiltonian.rls", base + "original/erdos-renyi-graph-" + g + ".lp",
+				first[j] = materialize(base + "original/hamiltonian.rls",
+						base + "original/erdos-renyi-graph-" + g + ".lp",
 						base + "logs/hamiltonian-erdos-renyi-graph-" + g + "-original.log");
 //				System.out.println(first[j]);
 				second[j] = materialize(base + "transformed/hamiltonian.rls",
@@ -147,7 +169,7 @@ public class RunExperiment {
 			}
 //			print(first);
 //			print(second);
-			System.out.println("erdos-renyi-graph-" + g + ": " + average(first) + " " + average(second));
+			System.out.println("hamiltonian-erdos-renyi-graph-" + g + ": " + average(first) + " " + average(second));
 
 		}
 	}
@@ -177,12 +199,12 @@ public class RunExperiment {
 			}
 //			print(first);
 //			print(second);
-			System.out.println("erdos-renyi-graph-" + g + ": " + average(first) + " " + average(second));
+			System.out.println("3col-power-law-graph-" + g + ": " + average(first) + " " + average(second));
 
 		}
 	}
 
-	//not stratifiable
+	// not stratifiable
 	static private void hamiltonianPowerLaw() throws ParsingException, IOException {
 		String base = "/home/lgonzale/ontologies/phillip/";
 
@@ -200,7 +222,8 @@ public class RunExperiment {
 		for (String g : graphs) {
 
 			for (int j = 0; j < 10; j++) {
-				first[j] = materialize(base + "original/hamiltonian.rls", base + "original/power-law-graph-" + g + ".lp",
+				first[j] = materialize(base + "original/hamiltonian.rls",
+						base + "original/power-law-graph-" + g + ".lp",
 						base + "logs/hamiltonian-power-law-graph-" + g + "-original.log");
 //				System.out.println(first[j]);
 				second[j] = materialize(base + "transformed/hamiltonian.rls",
@@ -210,22 +233,17 @@ public class RunExperiment {
 			}
 //			print(first);
 //			print(second);
-			System.out.println("erdos-renyi-graph-" + g + ": " + average(first) + " " + average(second));
+			System.out.println("hamiltonian-power-law-graph-" + g + ": " + average(first) + " " + average(second));
 
 		}
 	}
 
-	
 	public static void main(final String[] args) throws IOException, ParsingException {
-		// chasingSets();
-		// crossword();
-		//threeColErdos();
-		//threeColPowerLaw();
-		//hamiltonianErdos();
-		//hamiltonianPowerLaw();
-		long x = materialize("/home/lgonzale/ontologies/phillip/original/hamiltonian.rls", "/home/lgonzale/ontologies/phillip/original/erdos-renyi-graph-v32_e153.lp",
-				"/tmp/vlog.log");
-		System.out.println(x);
+//		chasingSets(); // error in c? - it was non stratifiable
+//		crossword(); // it was non stratifiable
+//		threeColErdos();
+//		threeColPowerLaw();
+//		hamiltonianErdos(); // it was not stratifiable
+		hamiltonianPowerLaw(); // it was not stratifiable
 	}
-
 }
