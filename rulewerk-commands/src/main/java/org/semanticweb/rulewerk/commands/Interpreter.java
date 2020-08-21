@@ -25,7 +25,7 @@ import java.io.InputStream;
 
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -47,7 +47,7 @@ public class Interpreter {
 	final PrintWriter out;
 	final ParserConfiguration parserConfiguration;
 
-	final HashMap<String, CommandInterpreter> commandInterpreters = new HashMap<>();
+	final LinkedHashMap<String, CommandInterpreter> commandInterpreters = new LinkedHashMap<>();
 
 	public Interpreter(Reasoner reasoner, PrintWriter out, ParserConfiguration parserConfiguration) {
 		this.reasoner = reasoner;
