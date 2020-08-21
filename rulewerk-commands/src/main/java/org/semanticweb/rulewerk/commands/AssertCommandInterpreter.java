@@ -31,7 +31,6 @@ public class AssertCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
-
 		int factCount = 0;
 		int ruleCount = 0;
 		for (Argument argument : command.getArguments()) {
