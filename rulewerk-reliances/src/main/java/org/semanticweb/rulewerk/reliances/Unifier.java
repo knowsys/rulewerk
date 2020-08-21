@@ -46,7 +46,7 @@ public class Unifier {
 		return result;
 	}
 	
-	public Unifier(ArrayList<Literal> atomsInBody2, ArrayList<Literal> atomsInHead1, int[] assignment) {
+	public Unifier(List<Literal> atomsInBody2, List<Literal> atomsInHead1, int[] assignment) {
 		unifier = new HashMap<>();
 		success = true;
 		for (int i = 0; i < assignment.length; i++) {
