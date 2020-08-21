@@ -35,6 +35,7 @@ public class ReasonCommandInterpreter implements CommandInterpreter {
 		}
 
 		interpreter.getOut().println("Loading and materializing inferences ...");
+		interpreter.getOut().flush();
 
 		Timer timer = new Timer("reasoning");
 		timer.start();
