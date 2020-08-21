@@ -37,7 +37,7 @@ public class VariableRenamerTest {
 		Rule rule1 = RuleParser.parseRule("q(?X) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("q(?X0001) :- p(?X0001) .");
 
-		assertEquals(rule2, VariableRenamer.renameVariables(rule1, 1));
+		assertEquals(rule2, VariableRenamer.rename(rule1, 1));
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public class VariableRenamerTest {
 		Rule rule1 = RuleParser.parseRule("q(?X,!Y) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("q(?X0002,!Y0002) :- p(?X0002) .");
 
-		assertEquals(rule2, VariableRenamer.renameVariables(rule1, 2));
+		assertEquals(rule2, VariableRenamer.rename(rule1, 2));
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class VariableRenamerTest {
 		Rule rule1 = RuleParser.parseRule("q(?X,!Y),r(a) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("q(?X0003,!Y0003),r(a) :- p(?X0003) .");
 
-		assertEquals(rule2, VariableRenamer.renameVariables(rule1, 3));
+		assertEquals(rule2, VariableRenamer.rename(rule1, 3));
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class VariableRenamerTest {
 		Rule rule1 = RuleParser.parseRule("r(?X,!Y) :- p(?X),~q(?X) .");
 		Rule rule2 = RuleParser.parseRule("r(?X0004,!Y0004) :- p(?X0004),~q(?X0004) .");
 
-		assertEquals(rule2, VariableRenamer.renameVariables(rule1, 4));
+		assertEquals(rule2, VariableRenamer.rename(rule1, 4));
 	}
 
 }

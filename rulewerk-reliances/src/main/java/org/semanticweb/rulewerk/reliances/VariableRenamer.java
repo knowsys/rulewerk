@@ -32,7 +32,7 @@ import org.semanticweb.rulewerk.core.model.api.TermType;
 
 public class VariableRenamer {
 
-	static private Term renameVariables(Term term, int idx1) {
+	static private Term rename(Term term, int idx1) {
 		if (term.getType() == TermType.UNIVERSAL_VARIABLE) {
 			return Expressions.makeUniversalVariable(term.getName() + "000" + idx1);
 		} else if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
@@ -42,10 +42,10 @@ public class VariableRenamer {
 		}
 	}
 
-	static private Literal renameVariables(Literal literal, int idx1) {
+	static private Literal rename(Literal literal, int idx1) {
 		List<Term> newTerms = new ArrayList<>();
 		for (Term term : literal.getArguments()) {
-			newTerms.add(renameVariables(term, idx1));
+			newTerms.add(rename(term, idx1));
 		}
 		if (literal.isNegated()) {
 			return Expressions.makeNegativeLiteral(literal.getPredicate(), newTerms);
@@ -54,22 +54,22 @@ public class VariableRenamer {
 		}
 	}
 
-	static public Rule renameVariables(Rule rule, int idx) {
+	static public Rule rename(Rule rule, int idx) {
 		List<Literal> newBody = new ArrayList<>();
-		rule.getBody().forEach(literal -> newBody.add(renameVariables(literal, idx)));
+		rule.getBody().forEach(literal -> newBody.add(rename(literal, idx)));
 
 		List<PositiveLiteral> newHead = new ArrayList<>();
-		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) renameVariables(literal, idx)));
+		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) rename(literal, idx)));
 
 		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
 	}
 
 	// this is wrong, I need to close it over
-	static private Term renameVariables(Term term, Unifier unifier) {
+	static private Term rename(Term term, Unifier unifier) {
 		if (unifier.unifier.containsKey(term)) {
 			Term value = unifier.unifier.get(term);
 			if (unifier.unifier.containsKey(value)) {
-				return renameVariables(value, unifier);
+				return rename(value, unifier);
 			} else {
 				return value;
 			}
@@ -78,10 +78,10 @@ public class VariableRenamer {
 		}
 	}
 
-	static public Literal renameVariables(Literal literal, Unifier unifier) {
+	static public Literal rename(Literal literal, Unifier unifier) {
 		List<Term> newTerms = new ArrayList<>();
 		for (Term term : literal.getArguments()) {
-			newTerms.add(renameVariables(term, unifier));
+			newTerms.add(rename(term, unifier));
 		}
 		if (literal.isNegated()) {
 			return Expressions.makeNegativeLiteral(literal.getPredicate(), newTerms);
@@ -90,22 +90,22 @@ public class VariableRenamer {
 		}
 	}
 
-	static public Rule renameVariables(Rule rule, Unifier unifier) throws Exception {
+	static public Rule rename(Rule rule, Unifier unifier) throws Exception {
 		if (!unifier.success) {
 			throw new Exception("unifier did not success");
 		}
 		List<Literal> newBody = new ArrayList<>();
-		rule.getBody().forEach(literal -> newBody.add(renameVariables(literal, unifier)));
+		rule.getBody().forEach(literal -> newBody.add(rename(literal, unifier)));
 
 		List<PositiveLiteral> newHead = new ArrayList<>();
-		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) renameVariables(literal, unifier)));
+		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) rename(literal, unifier)));
 
 		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
 	}
 
-	static public ArrayList<Literal> renameVariables(ArrayList<Literal> literals, Unifier unifier) {
-		ArrayList<Literal> result = new ArrayList<>();
-		literals.forEach(literal -> result.add(renameVariables(literal, unifier)));
+	static public List<Literal> rename(List<Literal> literals, Unifier unifier) {
+		List<Literal> result = new ArrayList<>();
+		literals.forEach(literal -> result.add(rename(literal, unifier)));
 		return result;
 	}
 }
