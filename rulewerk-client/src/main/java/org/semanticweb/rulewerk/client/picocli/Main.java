@@ -22,6 +22,10 @@ package org.semanticweb.rulewerk.client.picocli;
 
 import java.io.IOException;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.semanticweb.rulewerk.client.shell.InteractiveShell;
 
 import picocli.CommandLine;
@@ -39,6 +43,8 @@ import picocli.CommandLine.Command;
 public class Main {
 
 	public static void main(final String[] args) throws IOException {
+		configureLogging();
+		
 		if (args.length == 0 || (args.length > 0 && args[0].equals("shell"))) {
 			InteractiveShell.run();
 		} else {
@@ -56,6 +62,20 @@ public class Main {
 			}
 		}
 
+	}
+	
+	public static void configureLogging() {
+		// Create the appender that will write log messages to the console.
+		final ConsoleAppender consoleAppender = new ConsoleAppender();
+		// Define the pattern of log messages.
+		// Insert the string "%c{1}:%L" to also show class name and line.
+		final String pattern = "%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n";
+		consoleAppender.setLayout(new PatternLayout(pattern));
+		// Change to Level.ERROR for fewer messages:
+		consoleAppender.setThreshold(Level.FATAL);
+
+		consoleAppender.activateOptions();
+		Logger.getRootLogger().addAppender(consoleAppender);
 	}
 
 }
