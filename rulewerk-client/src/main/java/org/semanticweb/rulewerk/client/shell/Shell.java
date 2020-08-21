@@ -62,6 +62,7 @@ public class Shell {
 			}
 		}
 		interpreter.getOut().println("Rulewerk shell is stopped. Bye.");
+		interpreter.getOut().flush();
 	}
 
 	public void exitShell() {
