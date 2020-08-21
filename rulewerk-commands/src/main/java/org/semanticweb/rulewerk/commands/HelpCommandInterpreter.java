@@ -33,6 +33,9 @@ public class HelpCommandInterpreter implements CommandInterpreter {
 				interpreter.getOut().println(
 						" @" + commandName + ": " + interpreter.commandInterpreters.get(commandName).getSynopsis());
 			}
+			interpreter.getOut().println();
+			interpreter.getOut()
+					.println("For more information on any command, use @" + command.getName() + " [command name].");
 		} else if (command.getArguments().size() == 1 && command.getArguments().get(0).fromTerm().isPresent()
 				&& command.getArguments().get(0).fromTerm().get().getType() == TermType.ABSTRACT_CONSTANT) {
 			String helpCommand = command.getArguments().get(0).fromTerm().get().getName();
