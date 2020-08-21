@@ -68,11 +68,11 @@
 			<artifactId>jansi</artifactId>
 			<version>${jansi.version}</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.jline</groupId>
 			<artifactId>jline-terminal-jansi</artifactId>
 			<version>${jline.version}</version>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 	<profiles>
 		<profile>
