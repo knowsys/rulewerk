@@ -20,10 +20,6 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import java.util.function.Function;
-
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
-
 /**
  * Interface for {@link TermType#NAMED_NULL} terms. A blank is an entity used to
  * represent anonymous domain elements introduced during the reasoning process
@@ -38,13 +34,4 @@ public interface NamedNull extends Term {
 		return TermType.NAMED_NULL;
 	}
 
-	@Override
-	default String getSyntacticRepresentation() {
-		return OldSerializer.getString(this);
-	}
-
-	@Override
-	default String getSyntacticRepresentation(Function<String, String> iriTransformer) {
-		return getSyntacticRepresentation();
-	}
 }

@@ -185,12 +185,10 @@ public class EntityTest {
 
 	@Test
 	public void datatypeDoubleConstantToStringRoundTripTest() throws ParsingException {
-		String shortDoubleConstant = "12.345E67";
-		assertEquals(shortDoubleConstant,
-				RuleParser.parseFact("p(\"" + shortDoubleConstant + "\"^^<http://www.w3.org/2001/XMLSchema#double>).")
-						.getArguments().get(0).toString());
-		assertEquals(shortDoubleConstant,
-				RuleParser.parseFact("p(" + shortDoubleConstant + ").").getArguments().get(0).toString());
+		String doubleConstant = "\"12.345E67\"^^<http://www.w3.org/2001/XMLSchema#double>";
+		assertEquals(doubleConstant,
+				RuleParser.parseFact("p(" + doubleConstant + ").").getArguments().get(0).toString());
+		assertEquals(doubleConstant, RuleParser.parseFact("p(12.345E67).").getArguments().get(0).toString());
 	}
 
 	@Test
@@ -221,11 +219,9 @@ public class EntityTest {
 
 	@Test
 	public void datatypeDecimalToStringRoundTripTest() throws ParsingException {
-		String shortDecimalConstant = "0.23";
-		assertEquals(shortDecimalConstant,
-				RuleParser.parseFact("p(\"" + shortDecimalConstant + "\"^^<http://www.w3.org/2001/XMLSchema#decimal>).")
-						.getArguments().get(0).toString());
-		assertEquals(shortDecimalConstant,
-				RuleParser.parseFact("p(" + shortDecimalConstant + ").").getArguments().get(0).toString());
+		String decimalConstant = "\"0.23\"^^<http://www.w3.org/2001/XMLSchema#decimal>";
+		assertEquals(decimalConstant,
+				RuleParser.parseFact("p(" + decimalConstant + ").").getArguments().get(0).toString());
+		assertEquals(decimalConstant, RuleParser.parseFact("p(0.23).").getArguments().get(0).toString());
 	}
 }

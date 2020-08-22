@@ -37,6 +37,12 @@ import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
  * @author Maximilian Marx
  */
 public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclarationRegistry {
+
+	/**
+	 * Pattern for strings that are permissible as local names in abbreviated forms.
+	 */
+	static public final String REGEXP_LOCNAME = "^[a-zA-Z]([/a-zA-Z0-9_-])*$";
+
 	/**
 	 * Map associating each prefixName with the full prefixIri.
 	 */
@@ -101,7 +107,7 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 	public String unresolveAbsoluteIri(String iri, boolean addIriBrackets) {
 		String shortestIri;
 		if (addIriBrackets) {
-			if (!iri.contains(":")) {
+			if (!iri.contains(":") && iri.matches(REGEXP_LOCNAME)) {
 				shortestIri = iri;
 				if (!PrefixDeclarationRegistry.EMPTY_BASE.equals(baseIri)) {
 					throw new RulewerkRuntimeException("Relative IRIs cannot be serialized when a base is declared.");
@@ -120,8 +126,7 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 			String shorterIri = iri.substring(baseIri.length());
 			// Only allow very simple names of this form, to avoid confusion, e.g., with
 			// numbers or boolean literals:
-			if (shorterIri.matches("^[a-zA-Z]([/a-zA-Z0-9_-])*$") && !"true".equals(shorterIri)
-					|| !"false".equals(shorterIri)) {
+			if (shorterIri.matches(REGEXP_LOCNAME) && !"true".equals(shorterIri) || !"false".equals(shorterIri)) {
 				shortestIri = shorterIri;
 			}
 		}

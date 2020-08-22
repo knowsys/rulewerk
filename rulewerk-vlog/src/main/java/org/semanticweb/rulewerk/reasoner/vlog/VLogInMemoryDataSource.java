@@ -73,7 +73,7 @@ public class VLogInMemoryDataSource extends InMemoryDataSource {
 	}
 
 	@Override
-	public String getSyntacticRepresentation() {
+	public String toString() {
 		final StringBuilder sb = new StringBuilder(
 				"This InMemoryDataSource holds the following tuples of constant names, one tuple per line:");
 		for (int i = 0; i < getData().length; i++) {

@@ -1,7 +1,5 @@
 package org.semanticweb.rulewerk.core.model.api;
 
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -47,10 +45,5 @@ public interface Rule extends SyntaxObject, Statement, Entity {
 	 * @return conjunction of literals
 	 */
 	Conjunction<Literal> getBody();
-
-	@Override
-	default String getSyntacticRepresentation() {
-		return OldSerializer.getString(this);
-	}
 
 }

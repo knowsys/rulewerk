@@ -20,10 +20,6 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import java.util.function.Function;
-
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
-
 /**
  * Interface for string constants with a language tag, used to represent values
  * of type http://www.w3.org/1999/02/22-rdf-syntax-ns#langString in RDF, OWL,
@@ -65,13 +61,4 @@ public interface LanguageStringConstant extends Constant {
 	 */
 	String getLanguageTag();
 
-	@Override
-	default String getSyntacticRepresentation() {
-		return OldSerializer.getConstantName(this);
-	}
-
-	@Override
-	default String getSyntacticRepresentation(Function<String, String> iriTransformer) {
-		return getSyntacticRepresentation();
-	}
 }

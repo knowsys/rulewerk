@@ -32,7 +32,6 @@ import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * A SparqlQueryResultDataSource provide the results of a SPARQL query on a
@@ -42,6 +41,11 @@ import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
  *
  */
 public class SparqlQueryResultDataSource implements ReasonerDataSource {
+
+	/**
+	 * The name of the predicate used for declarations of data sources of this type.
+	 */
+	public static final String declarationPredicateName = "sparql";
 
 	private final URL endpoint;
 	private final String queryVariables;
@@ -161,18 +165,13 @@ public class SparqlQueryResultDataSource implements ReasonerDataSource {
 	}
 
 	@Override
-	public String getSyntacticRepresentation() {
-		return OldSerializer.getString(this);
-	}
-
-	@Override
 	public void accept(DataSourceConfigurationVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	@Override
 	public Fact getDeclarationFact() {
-		Predicate predicate = Expressions.makePredicate("sparql", 3);
+		Predicate predicate = Expressions.makePredicate(declarationPredicateName, 3);
 		Term endpointTerm = Expressions.makeAbstractConstant(getEndpoint().toString());
 		Term variablesTerm = Expressions.makeDatatypeConstant(getQueryVariables(),
 				PrefixDeclarationRegistry.XSD_STRING);

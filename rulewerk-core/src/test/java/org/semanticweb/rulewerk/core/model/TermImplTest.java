@@ -97,10 +97,10 @@ public class TermImplTest {
 
 	@Test
 	public void datatypeConstantGetterTest() {
-		DatatypeConstant c = new DatatypeConstantImpl("c", PrefixDeclarationRegistry.XSD_STRING);
+		DatatypeConstant c = new DatatypeConstantImpl("c", "http://example.org/type");
 		assertEquals("c", c.getLexicalValue());
-		assertEquals("http://www.w3.org/2001/XMLSchema#string", c.getDatatype());
-		assertEquals("\"c\"^^<http://www.w3.org/2001/XMLSchema#string>", c.getName());
+		assertEquals("http://example.org/type", c.getDatatype());
+		assertEquals("\"c\"^^<http://example.org/type>", c.getName());
 		assertEquals(TermType.DATATYPE_CONSTANT, c.getType());
 	}
 

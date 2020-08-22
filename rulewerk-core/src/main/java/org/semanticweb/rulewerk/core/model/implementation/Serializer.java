@@ -25,6 +25,7 @@ import java.io.StringWriter;
 
 import java.io.Writer;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
@@ -68,7 +69,11 @@ public class Serializer {
 	public static final Function<String, String> identityIriSerializer = new Function<String, String>() {
 		@Override
 		public String apply(String iri) {
-			return iri.contains(":") ? "<" + iri + ">" : iri;
+			if (iri.contains(":") || !iri.matches(AbstractPrefixDeclarationRegistry.REGEXP_LOCNAME)) {
+				return "<" + iri + ">";
+			} else {
+				return iri;
+			}
 		}
 	};
 
@@ -310,11 +315,26 @@ public class Serializer {
 	 * @throws IOException
 	 */
 	public void writeLiteral(Literal literal) throws IOException {
-		writer.write(getIri(literal.getPredicate().getName()));
+		if (literal.isNegated()) {
+			writer.write("~");
+		}
+		writePositiveLiteral(literal.getPredicate(), literal.getArguments());
+	}
+
+	/**
+	 * Serialize the given predicate and list of terms like a
+	 * {@link PositiveLiteral}.
+	 *
+	 * @param predicate a {@link Predicate}
+	 * @param arguments a list of {@link Term} arguments
+	 * @throws IOException
+	 */
+	public void writePositiveLiteral(Predicate predicate, List<Term> arguments) throws IOException {
+		writer.write(getIri(predicate.getName()));
 		writer.write("(");
 
 		boolean first = true;
-		for (final Term term : literal.getArguments()) {
+		for (final Term term : arguments) {
 			if (first) {
 				first = false;
 			} else {

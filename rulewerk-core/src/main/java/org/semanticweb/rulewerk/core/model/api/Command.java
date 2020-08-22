@@ -64,7 +64,6 @@ public class Command implements Entity {
 		return arguments;
 	}
 
-	@Override
 	public String getSyntacticRepresentation() {
 		StringBuilder result = new StringBuilder("@");
 		result.append(name);
@@ -75,7 +74,7 @@ public class Command implements Entity {
 				result.append(OldSerializer.getString(rule.getHead())).append(OldSerializer.RULE_SEPARATOR)
 						.append(OldSerializer.getString(rule.getBody()));
 			} else if (argument.fromPositiveLiteral().isPresent()) {
-				result.append(argument.fromPositiveLiteral().get().getSyntacticRepresentation());
+				result.append(argument.fromPositiveLiteral().get().toString());
 			} else {
 				throw new UnsupportedOperationException("Serialisation of commands is not fully implemented yet.");
 			}

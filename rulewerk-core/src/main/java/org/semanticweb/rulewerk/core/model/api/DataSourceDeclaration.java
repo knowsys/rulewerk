@@ -1,7 +1,5 @@
 package org.semanticweb.rulewerk.core.model.api;
 
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -45,8 +43,4 @@ public interface DataSourceDeclaration extends Statement, Entity {
 	 */
 	DataSource getDataSource();
 
-	@Override
-	default String getSyntacticRepresentation() {
-		return OldSerializer.getString(this);
-	}
 }

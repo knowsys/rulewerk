@@ -1,5 +1,9 @@
 package org.semanticweb.rulewerk.parser;
 
+import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
+
 /*-
  * #%L
  * Rulewerk Parser
@@ -20,7 +24,6 @@ package org.semanticweb.rulewerk.parser;
  * #L%
  */
 
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 import org.semanticweb.rulewerk.parser.datasources.CsvFileDataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.datasources.RdfFileDataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.datasources.SparqlQueryResultDataSourceDeclarationHandler;
@@ -43,9 +46,9 @@ public class DefaultParserConfiguration extends ParserConfiguration {
 	 * Register built-in data sources (currently CSV, RDF, SPARQL).
 	 */
 	private void registerDefaultDataSources() {
-		registerDataSource(OldSerializer.CSV_FILE_DATA_SOURCE, new CsvFileDataSourceDeclarationHandler());
-		registerDataSource(OldSerializer.RDF_FILE_DATA_SOURCE, new RdfFileDataSourceDeclarationHandler());
-		registerDataSource(OldSerializer.SPARQL_QUERY_RESULT_DATA_SOURCE,
+		registerDataSource(CsvFileDataSource.declarationPredicateName, new CsvFileDataSourceDeclarationHandler());
+		registerDataSource(RdfFileDataSource.declarationPredicateName, new RdfFileDataSourceDeclarationHandler());
+		registerDataSource(SparqlQueryResultDataSource.declarationPredicateName,
 				new SparqlQueryResultDataSourceDeclarationHandler());
 	}
 

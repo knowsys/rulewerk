@@ -86,7 +86,7 @@ public class PredicateImpl implements Predicate {
 
 	@Override
 	public String toString() {
-		return getSyntacticRepresentation();
+		return Serializer.getSerialization(serializer -> serializer.writePredicate(this));
 	}
 
 }

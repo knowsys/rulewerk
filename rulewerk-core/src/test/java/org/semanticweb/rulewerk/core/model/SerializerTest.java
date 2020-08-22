@@ -68,6 +68,7 @@ public class SerializerTest {
 	static PositiveLiteral l1 = Expressions.makePositiveLiteral(p1, universalVariable);
 	static Literal l2 = Expressions.makePositiveLiteral(p2, universalVariable, abstractConstantShort);
 	static Rule rule = Expressions.makeRule(l1, l2, fact);
+	static Literal ln1 = Expressions.makeNegativeLiteral(p1, existentialVariable);
 
 	StringWriter writer;
 	Serializer serializer;
@@ -159,6 +160,24 @@ public class SerializerTest {
 				new SparqlQueryResultDataSource(new URL("http://example.org"), "var", "?var <a> <b>"));
 		serializer.writeStatement(sparqlSourceDecl);
 		assertEquals("@source p1[1]: sparql(<http://example.org>, \"var\", \"?var <a> <b>\") .", writer.toString());
+	}
+
+	@Test
+	public void serializePositiveLiteral() throws IOException {
+		serializer.writeLiteral(l1);
+		assertEquals("p1(?X)", writer.toString());
+	}
+	
+	@Test
+	public void serializePositiveLiteralFromTerms() throws IOException {
+		serializer.writePositiveLiteral(l1.getPredicate(),l1.getArguments());
+		assertEquals("p1(?X)", writer.toString());
+	}
+
+	@Test
+	public void serializeNegativeLiteral() throws IOException {
+		serializer.writeLiteral(ln1);
+		assertEquals("~p1(!X)", writer.toString());
 	}
 
 	@Test

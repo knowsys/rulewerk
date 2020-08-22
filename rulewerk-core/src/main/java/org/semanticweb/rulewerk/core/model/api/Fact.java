@@ -1,7 +1,5 @@
 package org.semanticweb.rulewerk.core.model.api;
 
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -30,10 +28,5 @@ import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
  *
  */
 public interface Fact extends PositiveLiteral, Statement {
-
-	@Override
-	default String getSyntacticRepresentation() {
-		return OldSerializer.getFactString(this);
-	}
 
 }

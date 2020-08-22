@@ -27,11 +27,5 @@ package org.semanticweb.rulewerk.core.model.api;
  *
  */
 public interface Entity {
-	/**
-	 * Returns the parsable string representation of an Entity.
-	 * 
-	 * @return non-empty String
-	 */
-	String getSyntacticRepresentation();
 
 }

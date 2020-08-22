@@ -30,7 +30,6 @@ import org.semanticweb.rulewerk.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.LanguageStringConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.NamedNullImpl;
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 import org.semanticweb.rulewerk.core.reasoner.implementation.QueryResultImpl;
 
 /**
@@ -83,15 +82,15 @@ class VLogToModelConverter {
 	static Term toTerm(karmaresearch.vlog.Term vLogTerm) {
 		final String name = vLogTerm.getName();
 		switch (vLogTerm.getTermType()) {
-			case CONSTANT:
-				return toConstant(name);
-			case BLANK:
-				return new NamedNullImpl(name);
-			case VARIABLE:
-				throw new IllegalArgumentException(
-						"VLog variables cannot be converted without knowing if they are universally or existentially quantified.");
-			default:
-				throw new IllegalArgumentException("Unexpected VLog term type: " + vLogTerm.getTermType());
+		case CONSTANT:
+			return toConstant(name);
+		case BLANK:
+			return new NamedNullImpl(name);
+		case VARIABLE:
+			throw new IllegalArgumentException(
+					"VLog variables cannot be converted without knowing if they are universally or existentially quantified.");
+		default:
+			throw new IllegalArgumentException("Unexpected VLog term type: " + vLogTerm.getTermType());
 		}
 	}
 
@@ -103,19 +102,17 @@ class VLogToModelConverter {
 	 */
 	static Constant toConstant(String vLogConstantName) {
 		final Constant constant;
-		if (vLogConstantName.charAt(0) == OldSerializer.LESS_THAN
-				&& vLogConstantName.charAt(vLogConstantName.length() - 1) == OldSerializer.MORE_THAN) {
+		if (vLogConstantName.charAt(0) == '<' && vLogConstantName.charAt(vLogConstantName.length() - 1) == '>') {
 			// strip <> off of IRIs
 			constant = new AbstractConstantImpl(vLogConstantName.substring(1, vLogConstantName.length() - 1));
-		} else if (vLogConstantName.charAt(0) == OldSerializer.QUOTE) {
-			if (vLogConstantName.charAt(vLogConstantName.length() - 1) == OldSerializer.MORE_THAN) {
-				final int startTypeIdx = vLogConstantName.lastIndexOf(OldSerializer.LESS_THAN,
-						vLogConstantName.length() - 2);
+		} else if (vLogConstantName.charAt(0) == '"') {
+			if (vLogConstantName.charAt(vLogConstantName.length() - 1) == '>') {
+				final int startTypeIdx = vLogConstantName.lastIndexOf('<', vLogConstantName.length() - 2);
 				final String datatype = vLogConstantName.substring(startTypeIdx + 1, vLogConstantName.length() - 1);
 				final String lexicalValue = vLogConstantName.substring(1, startTypeIdx - 3);
 				constant = new DatatypeConstantImpl(lexicalValue, datatype);
 			} else {
-				final int startTypeIdx = vLogConstantName.lastIndexOf(OldSerializer.AT, vLogConstantName.length() - 2);
+				final int startTypeIdx = vLogConstantName.lastIndexOf('@', vLogConstantName.length() - 2);
 				if (startTypeIdx > -1) {
 					final String languageTag = vLogConstantName.substring(startTypeIdx + 1, vLogConstantName.length());
 					final String string = vLogConstantName.substring(1, startTypeIdx - 1);

@@ -20,8 +20,6 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import java.util.function.Function;
-
 /**
  * Interface for terms. A term is characterized by a string name and a
  * {@link TermType}.
@@ -73,13 +71,4 @@ public interface Term extends Entity {
 	 */
 	<T> T accept(TermVisitor<T> termVisitor);
 
-	/**
-	 * Return the parseable string representation of this Term, transforming IRIs.
-	 *
-	 * @param iriTransformer a function that is applied to transform any IRIs
-	 *                       occurring in the output.
-	 *
-	 * @return non-empty String containing the representation.
-	 */
-	String getSyntacticRepresentation(Function<String, String> iriTransformer);
 }

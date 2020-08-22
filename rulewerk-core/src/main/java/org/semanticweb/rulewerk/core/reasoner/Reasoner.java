@@ -23,7 +23,9 @@ package org.semanticweb.rulewerk.core.reasoner;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
@@ -36,13 +38,14 @@ import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.QueryResult;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
+import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 /**
  * Interface that exposes the (existential) rule reasoning capabilities of a
@@ -131,11 +134,16 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
 	 */
-	default Correctness writeInferences(OutputStream stream) throws IOException {
-		final KnowledgeBase knowledgeBase = getKnowledgeBase();
-		stream.write(OldSerializer.getBaseAndPrefixDeclarations(knowledgeBase).getBytes());
-		return forEachInference((predicate, termList) -> stream
-				.write(OldSerializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri).getBytes()));
+	default Correctness writeInferences(Writer writer) throws IOException {
+		final PrefixDeclarationRegistry prefixDeclarationRegistry = getKnowledgeBase().getPrefixDeclarationRegistry();
+		final Serializer serializer = new Serializer(writer, prefixDeclarationRegistry);
+
+		serializer.writePrefixDeclarationRegistry(prefixDeclarationRegistry);
+
+		return forEachInference((predicate, termList) -> {
+			serializer.writePositiveLiteral(predicate, termList);
+			writer.write(" .\n");
+		});
 	}
 
 	/**
@@ -160,18 +168,21 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	Correctness getCorrectness();
 
 	/**
-	 * Exports all the (explicit and implicit) facts inferred during
-	 * reasoning of the knowledge base to a desired file.
+	 * Exports all the (explicit and implicit) facts inferred during reasoning of
+	 * the knowledge base to a desired file.
 	 *
 	 * @param filePath a String of the file path for the facts to be written to.
 	 * @return the correctness of the query answers, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
 	 * @throws FileNotFoundException
+	 * @deprecated Use {@link KnowledgeBase#writeInferences(Writer)} instead. The
+	 *             method will disappear.
 	 */
+	@Deprecated
 	default Correctness writeInferences(String filePath) throws FileNotFoundException, IOException {
-		try (OutputStream stream = new FileOutputStream(filePath)) {
-			return writeInferences(stream);
+		try (Writer writer = new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
+			return this.writeInferences(writer);
 		}
 	}
 

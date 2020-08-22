@@ -33,7 +33,6 @@ import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
@@ -89,7 +88,7 @@ public class DataSourceDeclarationTest {
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate2,
 				unzippedCsvFileDataSource);
 
-		final String expectedFilePath = OldSerializer.getString(relativeDirName + fileName);
+		final String expectedFilePath = "\"" + relativeDirName + fileName + "\"";
 		assertEquals("@source q[1]: load-csv(" + expectedFilePath + ") .", dataSourceDeclaration.toString());
 	}
 
@@ -114,7 +113,7 @@ public class DataSourceDeclarationTest {
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate,
 				unzippedRdfFileDataSource);
 
-		final String expectedFilePath = OldSerializer.getString(relativeDirName + fileName);
+		final String expectedFilePath = "\"" + relativeDirName + fileName + "\"";
 		assertEquals("@source q[1]: load-rdf(" + expectedFilePath + ") .", dataSourceDeclaration.toString());
 	}
 }

@@ -20,10 +20,6 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import java.util.function.Function;
-
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
-
 /**
  * Interface for datatype constants, i.e. for constants that represent a
  * specific value of a concrete datatype). Such terms are of type
@@ -62,13 +58,4 @@ public interface DatatypeConstant extends Constant {
 	 */
 	String getLexicalValue();
 
-	@Override
-	default String getSyntacticRepresentation() {
-		return OldSerializer.getString(this);
-	}
-
-	@Override
-	default String getSyntacticRepresentation(Function<String, String> iriTransformer) {
-		return OldSerializer.getString(this, iriTransformer);
-	}
 }

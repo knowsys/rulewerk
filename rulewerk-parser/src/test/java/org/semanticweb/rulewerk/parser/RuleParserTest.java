@@ -249,7 +249,7 @@ public class RuleParserTest implements ParserTestUtils {
 	public void parseLiteral_escapeSequences_roundTrips() throws ParsingException {
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("_\"_\\_\n_\t_", PrefixDeclarationRegistry.XSD_STRING));
-		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
+		assertEquals(fact, RuleParser.parseLiteral(fact.toString()));
 	}
 
 	@Test
@@ -265,7 +265,7 @@ public class RuleParserTest implements ParserTestUtils {
 	public void parseLiteral_allEscapeSequences_roundTrips() throws ParsingException {
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("_\n_\t_\r_\b_\f_\'_\"_\\_", PrefixDeclarationRegistry.XSD_STRING));
-		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
+		assertEquals(fact, RuleParser.parseLiteral(fact.toString()));
 	}
 
 	@Test(expected = ParsingException.class)
@@ -292,7 +292,7 @@ public class RuleParserTest implements ParserTestUtils {
 	public void parseLiteral_multiLineLiteral_roundTrips() throws ParsingException {
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("line 1\n\nline 2\nline 3", PrefixDeclarationRegistry.XSD_STRING));
-		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
+		assertEquals(fact, RuleParser.parseLiteral(fact.toString()));
 	}
 
 	@Test(expected = ParsingException.class)
