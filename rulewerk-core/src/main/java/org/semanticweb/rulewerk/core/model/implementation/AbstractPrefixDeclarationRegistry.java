@@ -64,7 +64,7 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 
 		return prefixes.get(prefixName);
 	}
-	
+
 	@Override
 	public void unsetPrefix(String prefixName) {
 		prefixes.remove(prefixName);
@@ -95,16 +95,8 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 			return getBaseIri() + potentiallyRelativeIri;
 		}
 	}
-	
-	/**
-	 * Turn an absolute Iri into a (possibly) prefixed name. Dual to
-	 * {@link AbstractPrefixDeclarationRegistry#resolvePrefixedName}.
-	 *
-	 * @param iri an absolute Iri to abbreviate.
-	 *
-	 * @return an abbreviated form of {@code iri} if an appropriate prefix is known,
-	 *         or {@code iri}.
-	 */
+
+	@Override
 	public String unresolveAbsoluteIri(String iri) {
 		String shortestIri = iri;
 		String baseIri = getBaseIri();

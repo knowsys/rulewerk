@@ -115,4 +115,14 @@ public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String
 	 */
 	String absolutizeIri(String relativeOrAbsoluteIri) throws PrefixDeclarationException;
 
+	/**
+	 * Turn an absolute IRI into a (possibly) prefixed name. Dual to
+	 * {@link PrefixDeclarationRegistry#resolvePrefixedName}.
+	 *
+	 * @param iri an absolute IRI to abbreviate.
+	 *
+	 * @return an abbreviated form of {@code iri} if an appropriate prefix is known,
+	 *         or {@code iri}.
+	 */
+	String unresolveAbsoluteIri(String iri);
 }
