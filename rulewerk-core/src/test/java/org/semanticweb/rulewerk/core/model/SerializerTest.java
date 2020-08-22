@@ -130,6 +130,7 @@ public class SerializerTest {
 	public void serializeFact() throws IOException {
 		serializer.writeStatement(fact);
 		assertEquals("p1(c) .", writer.toString());
+		assertEquals("p1(c) .", Serializer.getSerialization(serializer -> serializer.writeFact(fact)));
 	}
 
 	@Test

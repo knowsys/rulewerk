@@ -1,6 +1,7 @@
 package org.semanticweb.rulewerk.core.model.implementation;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 /*-
  * #%L
@@ -70,6 +71,14 @@ public class Serializer {
 			return iri.contains(":") ? "<" + iri + ">" : iri;
 		}
 	};
+
+	/**
+	 * Interface for a method that writes something to a writer.
+	 */
+	@FunctionalInterface
+	public interface SerializationWriter {
+		void write(final Serializer serializer) throws IOException;
+	}
 
 	final Writer writer;
 	final Function<String, String> iriTransformer;
@@ -464,6 +473,24 @@ public class Serializer {
 		writer.write(getQuotedString(languageStringConstant.getString()));
 		writer.write("@");
 		writer.write(languageStringConstant.getLanguageTag());
+	}
+
+	/**
+	 * Convenience method for obtaining serializations as Java strings.
+	 * 
+	 * @param writeAction a function that accepts a {@link Serializer} and produces
+	 *                    a string
+	 * @return serialization string
+	 */
+	public static String getSerialization(SerializationWriter writeAction) {
+		final StringWriter stringWriter = new StringWriter();
+		final Serializer serializer = new Serializer(stringWriter);
+		try {
+			writeAction.write(serializer);
+		} catch (IOException e) {
+			throw new RuntimeException("StringWriter should never throw an IOException.");
+		}
+		return stringWriter.toString();
 	}
 
 	/**
