@@ -23,6 +23,7 @@ package org.semanticweb.rulewerk.reasoner.vlog;
 import java.util.Arrays;
 
 import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
+import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.reasoner.implementation.DataSourceConfigurationVisitor;
 
 /**
@@ -87,5 +88,10 @@ public class VLogInMemoryDataSource extends InMemoryDataSource {
 	@Override
 	public void accept(DataSourceConfigurationVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	@Override
+	public Fact getDeclarationFact() {
+		throw new UnsupportedOperationException("VLogInMemoryDataSource is cannot be serialized.");
 	}
 }
