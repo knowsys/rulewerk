@@ -22,7 +22,7 @@ package org.semanticweb.rulewerk.core.model.api;
 
 import java.util.List;
 
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
+import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 /**
  * Class for representing a generic command that can be executed.
@@ -64,23 +64,9 @@ public class Command implements Entity {
 		return arguments;
 	}
 
-	public String getSyntacticRepresentation() {
-		StringBuilder result = new StringBuilder("@");
-		result.append(name);
-		for (Argument argument : arguments) {
-			result.append(" ");
-			if (argument.fromRule().isPresent()) {
-				Rule rule = argument.fromRule().get();
-				result.append(OldSerializer.getString(rule.getHead())).append(OldSerializer.RULE_SEPARATOR)
-						.append(OldSerializer.getString(rule.getBody()));
-			} else if (argument.fromPositiveLiteral().isPresent()) {
-				result.append(argument.fromPositiveLiteral().get().toString());
-			} else {
-				throw new UnsupportedOperationException("Serialisation of commands is not fully implemented yet.");
-			}
-		}
-		result.append(OldSerializer.STATEMENT_SEPARATOR);
-		return result.toString();
+	@Override
+	public String toString() {
+		return Serializer.getSerialization(serializer -> serializer.writeCommand(this));
 	}
 
 }

@@ -30,6 +30,8 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
+import org.semanticweb.rulewerk.core.model.api.Argument;
+import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.DatatypeConstant;
@@ -493,6 +495,29 @@ public class Serializer {
 		writer.write(getQuotedString(languageStringConstant.getString()));
 		writer.write("@");
 		writer.write(languageStringConstant.getLanguageTag());
+	}
+
+	/**
+	 * Writes a serialization of the given {@link Command}.
+	 *
+	 * @param command a {@link Command}
+	 * @throws IOException
+	 */
+	public void writeCommand(Command command) throws IOException {
+		writer.write("@");
+		writer.write(command.getName());
+
+		for (Argument argument : command.getArguments()) {
+			writer.write(" ");
+			if (argument.fromRule().isPresent()) {
+				writeRule(argument.fromRule().get());
+			} else if (argument.fromPositiveLiteral().isPresent()) {
+				writeLiteral(argument.fromPositiveLiteral().get());
+			} else {
+				throw new UnsupportedOperationException("Serialisation of commands is not fully implemented yet.");
+			}
+		}
+		writer.write(STATEMENT_END);
 	}
 
 	/**
