@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 
 /**
@@ -98,10 +99,23 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 
 	@Override
 	public String unresolveAbsoluteIri(String iri, boolean addIriBrackets) {
-		String shortestIri = addIriBrackets ? "<" + iri + ">" : iri;
+		String shortestIri;
+		if (addIriBrackets) {
+			if (!iri.contains(":")) {
+				shortestIri = iri;
+				if (!PrefixDeclarationRegistry.EMPTY_BASE.equals(baseIri)) {
+					throw new RulewerkRuntimeException("Relative IRIs cannot be serialized when a base is declared.");
+				}
+			} else {
+				shortestIri = "<" + iri + ">";
+			}
+		} else {
+			shortestIri = iri;
+		}
+
 		String baseIri = getBaseIri();
 
-		if (baseIri != PrefixDeclarationRegistry.EMPTY_BASE && iri.length() > baseIri.length()
+		if (!PrefixDeclarationRegistry.EMPTY_BASE.equals(baseIri) && iri.length() > baseIri.length()
 				&& iri.startsWith(baseIri)) {
 			String shorterIri = iri.substring(baseIri.length());
 			// Only allow very simple names of this form, to avoid confusion, e.g., with

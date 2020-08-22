@@ -23,6 +23,8 @@ import java.io.IOException;
  */
 
 import java.io.Writer;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
@@ -421,6 +423,35 @@ public class Serializer {
 	public void writeNamedNull(NamedNull namedNull) throws IOException {
 		writer.write("_:");
 		writer.write(namedNull.getName());
+	}
+
+	/**
+	 * Writes a serialization of the given {@link PrefixDeclarationRegistry}.
+	 *
+	 * @param prefixDeclarationRegistry a {@link PrefixDeclarationRegistry}
+	 * @throws IOException
+	 */
+	public void writePrefixDeclarationRegistry(PrefixDeclarationRegistry prefixDeclarationRegistry) throws IOException {
+		final String baseIri = prefixDeclarationRegistry.getBaseIri();
+		if (!PrefixDeclarationRegistry.EMPTY_BASE.contentEquals(baseIri)) {
+			writer.write("@base <");
+			writer.write(baseIri);
+			writer.write(">");
+			writer.write(STATEMENT_END);
+			writer.write("\n");
+		}
+
+		Iterator<Entry<String, String>> prefixIterator = prefixDeclarationRegistry.iterator();
+		while (prefixIterator.hasNext()) {
+			Entry<String, String> entry = prefixIterator.next();
+			writer.write("@prefix ");
+			writer.write(entry.getKey());
+			writer.write(" <");
+			writer.write(entry.getValue());
+			writer.write(">");
+			writer.write(STATEMENT_END);
+			writer.write("\n");
+		}
 	}
 
 	/**

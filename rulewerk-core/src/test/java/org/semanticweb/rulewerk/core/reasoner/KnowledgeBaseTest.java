@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
@@ -137,15 +138,18 @@ public class KnowledgeBaseTest {
 		assertEquals("P(c) .\nP(d) .\nQ(c) .\n", writer.toString());
 	}
 
-	@Test
-	public void writeKnowledgeBase_withBase_succeeds() throws IOException {
+	@Test(expected = RulewerkRuntimeException.class)
+	public void writeKnowledgeBase_withBase_fails() throws IOException {
 		String baseIri = "https://example.org/";
 		MergingPrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
 		prefixDeclarations.setBaseIri(baseIri);
 		this.kb.mergePrefixDeclarations(prefixDeclarations);
 		StringWriter writer = new StringWriter();
 		this.kb.writeKnowledgeBase(writer);
-		assertEquals("@base <" + baseIri + "> .\nP(c) .\nP(d) .\nQ(c) .\n", writer.toString());
+		//// This would be incorrect, since parsing this would lead to another KB
+		//// that uses IRIs like <https://example.org/P>:
+		// assertEquals("@base <" + baseIri + "> .\nP(c) .\nP(d) .\nQ(c) .\n",
+		// writer.toString());
 	}
 
 	@Test

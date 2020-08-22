@@ -53,7 +53,7 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Statement;
 import org.semanticweb.rulewerk.core.model.api.StatementVisitor;
 import org.semanticweb.rulewerk.core.model.implementation.MergingPrefixDeclarationRegistry;
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
+import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
 /**
  * A knowledge base with rules, facts, and declarations for loading data from
@@ -589,20 +589,22 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 *                     stream
 	 */
 	public void writeKnowledgeBase(Writer writer) throws IOException {
-		writer.write(OldSerializer.getBaseAndPrefixDeclarations(this));
+		Serializer serializer = new Serializer(writer, prefixDeclarationRegistry);
 
-		for (DataSourceDeclaration dataSource : this.getDataSourceDeclarations()) {
-			writer.write(OldSerializer.getString(dataSource));
+		serializer.writePrefixDeclarationRegistry(prefixDeclarationRegistry);
+
+		for (DataSourceDeclaration dataSourceDeclaration : this.getDataSourceDeclarations()) {
+			serializer.writeDataSourceDeclaration(dataSourceDeclaration);
 			writer.write('\n');
 		}
 
 		for (Fact fact : this.getFacts()) {
-			writer.write(OldSerializer.getFactString(fact));
+			serializer.writeFact(fact);
 			writer.write('\n');
 		}
 
 		for (Rule rule : this.getRules()) {
-			writer.write(OldSerializer.getString(rule));
+			serializer.writeRule(rule);
 			writer.write('\n');
 		}
 	}

@@ -181,10 +181,21 @@ public class SerializerTest {
 	}
 
 	@Test
+	public void serializePrefixDeclarations() throws IOException {
+		final MergingPrefixDeclarationRegistry prefixes = new MergingPrefixDeclarationRegistry();
+		prefixes.setBaseIri("http://example.org/base");
+		prefixes.setPrefixIri("eg:", "http://example.org/");
+		Serializer prefSerializer = new Serializer(writer, prefixes);
+
+		prefSerializer.writePrefixDeclarationRegistry(prefixes);
+		assertEquals("@base <http://example.org/base> .\n@prefix eg: <http://example.org/> .\n", writer.toString());
+	}
+
+	@Test
 	public void createThrowingSerializer_succeeds() throws IOException {
 		getThrowingSerializer();
 	}
-	
+
 	@Test(expected = IOException.class)
 	public void serializeAbstractConstant_fails() throws IOException {
 		getThrowingSerializer().writeTerm(abstractConstant);
