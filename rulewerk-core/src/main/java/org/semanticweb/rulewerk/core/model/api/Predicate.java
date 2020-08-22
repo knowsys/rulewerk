@@ -20,7 +20,7 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * A Predicate represents a relation between terms. Is uniquely identified by
@@ -51,6 +51,6 @@ public interface Predicate extends Entity {
 
 	@Override
 	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
+		return OldSerializer.getString(this);
 	}
 }

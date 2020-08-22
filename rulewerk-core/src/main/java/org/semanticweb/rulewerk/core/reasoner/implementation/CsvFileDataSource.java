@@ -23,7 +23,8 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.model.api.Fact;
+import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * An {@code CsvFileDataSource} stores facts in the CSV format inside a file of
@@ -74,11 +75,16 @@ public class CsvFileDataSource extends FileDataSource {
 
 	@Override
 	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
+		return OldSerializer.getString(this);
 	}
 
 	@Override
 	public void accept(DataSourceConfigurationVisitor visitor) throws IOException {
 		visitor.visit(this);
+	}
+
+	@Override
+	String getDeclarationPredicateName() {
+		return "load-csv";
 	}
 }

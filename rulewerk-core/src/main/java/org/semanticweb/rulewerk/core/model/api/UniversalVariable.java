@@ -20,7 +20,7 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * Interface for universally quantified variables, i.e., variables that appear
@@ -37,6 +37,6 @@ public interface UniversalVariable extends Variable {
 
 	@Override
 	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
+		return OldSerializer.getString(this);
 	}
 }

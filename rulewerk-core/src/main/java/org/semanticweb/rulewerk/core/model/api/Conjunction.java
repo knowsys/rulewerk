@@ -22,7 +22,7 @@ package org.semanticweb.rulewerk.core.model.api;
 
 import java.util.List;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * Interface for representing conjunctions of {@link Literal}s, i.e., lists of
@@ -43,7 +43,7 @@ public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObjec
 
 	@Override
 	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
+		return OldSerializer.getString(this);
 	}
 
 }

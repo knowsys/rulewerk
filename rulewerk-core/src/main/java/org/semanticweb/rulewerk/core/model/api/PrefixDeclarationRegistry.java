@@ -119,10 +119,12 @@ public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String
 	 * Turn an absolute IRI into a (possibly) prefixed name. Dual to
 	 * {@link PrefixDeclarationRegistry#resolvePrefixedName}.
 	 *
-	 * @param iri an absolute IRI to abbreviate.
+	 * @param iri            an absolute IRI to abbreviate
+	 * @param addIriBrackets if true, unabbreviated IRIs will be enclosed in &lt;
+	 *                       &gt;
 	 *
 	 * @return an abbreviated form of {@code iri} if an appropriate prefix is known,
 	 *         or {@code iri}.
 	 */
-	String unresolveAbsoluteIri(String iri);
+	String unresolveAbsoluteIri(String iri, boolean addIriBrackets);
 }

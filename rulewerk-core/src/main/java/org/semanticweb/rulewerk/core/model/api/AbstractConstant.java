@@ -22,7 +22,7 @@ package org.semanticweb.rulewerk.core.model.api;
 
 import java.util.function.Function;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * Interface for abstract constants, i.e. for constants that represent an
@@ -40,11 +40,11 @@ public interface AbstractConstant extends Constant {
 
 	@Override
 	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
+		return OldSerializer.getString(this);
 	}
 
 	@Override
 	default String getSyntacticRepresentation(Function<String, String> iriTransformer) {
-		return Serializer.getString(this, iriTransformer);
+		return OldSerializer.getString(this, iriTransformer);
 	}
 }

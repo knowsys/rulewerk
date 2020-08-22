@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * An {@code RdfFileDataSource} stores facts in the RDF N-Triples format inside
@@ -73,7 +73,7 @@ public class RdfFileDataSource extends FileDataSource {
 
 	@Override
 	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
+		return OldSerializer.getString(this);
 	}
 
 	@Override
@@ -84,5 +84,10 @@ public class RdfFileDataSource extends FileDataSource {
 	@Override
 	public void accept(DataSourceConfigurationVisitor visitor) throws IOException {
 		visitor.visit(this);
+	}
+
+	@Override
+	String getDeclarationPredicateName() {
+		return "load-rdf";
 	}
 }

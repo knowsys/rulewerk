@@ -22,7 +22,7 @@ package org.semanticweb.rulewerk.core.model.api;
 
 import java.util.function.Function;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * Interface for string constants with a language tag, used to represent values
@@ -67,7 +67,7 @@ public interface LanguageStringConstant extends Constant {
 
 	@Override
 	default String getSyntacticRepresentation() {
-		return Serializer.getConstantName(this);
+		return OldSerializer.getConstantName(this);
 	}
 
 	@Override

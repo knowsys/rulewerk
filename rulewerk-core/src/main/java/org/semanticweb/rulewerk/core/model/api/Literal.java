@@ -22,7 +22,7 @@ package org.semanticweb.rulewerk.core.model.api;
 
 import java.util.List;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * Interface for literals. A positive literal is simply an atomic formula, i.e.,
@@ -54,7 +54,7 @@ public interface Literal extends SyntaxObject, Entity {
 
 	@Override
 	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
+		return OldSerializer.getString(this);
 	}
 
 }

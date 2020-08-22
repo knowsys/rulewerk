@@ -91,7 +91,7 @@ public class MergingPrefixDeclarationRegistryTest {
 		String prefix = "eg:";
 		prefixDeclarations.setPrefixIri(prefix, BASE);
 		String resolved = BASE + RELATIVE;
-		String unresolved = prefixDeclarations.unresolveAbsoluteIri(resolved);
+		String unresolved = prefixDeclarations.unresolveAbsoluteIri(resolved, false);
 		assertEquals(resolved, prefixDeclarations.resolvePrefixedName(unresolved));
 	}
 
@@ -133,49 +133,49 @@ public class MergingPrefixDeclarationRegistryTest {
 
 	@Test
 	public void unresolveAbsoluteIri_default_identical() {
-		assertEquals(BASE, prefixDeclarations.unresolveAbsoluteIri(BASE));
+		assertEquals(BASE, prefixDeclarations.unresolveAbsoluteIri(BASE, false));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_declaredPrefix_succeeds() {
-		assertEquals(MORE_SPECIFIC, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
+		assertEquals(MORE_SPECIFIC, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC, false));
 		prefixDeclarations.setPrefixIri("eg:", BASE);
-		assertEquals("eg:example/", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
+		assertEquals("eg:example/", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC, false));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_unrelatedPrefix_identical() {
 		prefixDeclarations.setPrefixIri("eg:", UNRELATED);
-		assertEquals(MORE_SPECIFIC, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
+		assertEquals(MORE_SPECIFIC, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC, false));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_unrelatedAndRelatedPrefixes_succeeds() {
 		prefixDeclarations.setPrefixIri("ex:", UNRELATED);
 		prefixDeclarations.setPrefixIri("eg:", BASE);
-		assertEquals("eg:example/", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC));
+		assertEquals("eg:example/", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC, false));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_multipleMatchingPrefixes_longestMatchWins() {
 		prefixDeclarations.setPrefixIri("eg:", BASE);
 		prefixDeclarations.setPrefixIri("ex:", MORE_SPECIFIC);
-		assertEquals("ex:" + RELATIVE, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE));
+		assertEquals("ex:" + RELATIVE, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE, false));
 		prefixDeclarations.setPrefixIri("er:", EVEN_MORE_SPECIFIC);
-		assertEquals("er:test", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE));
+		assertEquals("er:test", prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE, false));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_exactPrefixMatch_identical() {
 		prefixDeclarations.setPrefixIri("eg:", BASE);
-		assertEquals(BASE, prefixDeclarations.unresolveAbsoluteIri(BASE));
+		assertEquals(BASE, prefixDeclarations.unresolveAbsoluteIri(BASE, false));
 	}
 
 	@Test
 	public void unresolveAbsoluteIri_baseIsMoreSpecific_baseWins() {
 		prefixDeclarations.setBaseIri(MORE_SPECIFIC);
 		prefixDeclarations.setPrefixIri("eg:", BASE);
-		assertEquals(RELATIVE, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE));
+		assertEquals(RELATIVE, prefixDeclarations.unresolveAbsoluteIri(MORE_SPECIFIC + RELATIVE, false));
 	}
 
 	@Test
@@ -184,7 +184,7 @@ public class MergingPrefixDeclarationRegistryTest {
 		prefixDeclarations.setPrefixIri(prefix, BASE);
 		String unresolved = prefix + RELATIVE;
 		String resolved = prefixDeclarations.resolvePrefixedName(unresolved);
-		assertEquals(unresolved, prefixDeclarations.unresolveAbsoluteIri(resolved));
+		assertEquals(unresolved, prefixDeclarations.unresolveAbsoluteIri(resolved, false));
 	}
 
 	@Test
@@ -194,7 +194,7 @@ public class MergingPrefixDeclarationRegistryTest {
 		PrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
 		prefixDeclarations.setBaseIri(BASE);
 		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
-		assertEquals(relativeIri, this.prefixDeclarations.unresolveAbsoluteIri(relativeIri));
+		assertEquals(relativeIri, this.prefixDeclarations.unresolveAbsoluteIri(relativeIri, false));
 	}
 
 	@Test
@@ -205,7 +205,7 @@ public class MergingPrefixDeclarationRegistryTest {
 		prefixDeclarations.setBaseIri(BASE);
 		String absoluteIri = prefixDeclarations.absolutizeIri(RELATIVE);
 		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
-		String resolvedIri = this.prefixDeclarations.unresolveAbsoluteIri(absoluteIri);
+		String resolvedIri = this.prefixDeclarations.unresolveAbsoluteIri(absoluteIri, false);
 
 		assertNotEquals(RELATIVE, resolvedIri);
 		assertEquals("rw_gen0:" + RELATIVE, resolvedIri);

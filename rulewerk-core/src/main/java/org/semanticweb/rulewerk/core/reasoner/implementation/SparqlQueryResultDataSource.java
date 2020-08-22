@@ -26,8 +26,13 @@ import java.util.LinkedHashSet;
 import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
+import org.semanticweb.rulewerk.core.model.api.Fact;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
+import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.Variable;
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * A SparqlQueryResultDataSource provide the results of a SPARQL query on a
@@ -37,8 +42,6 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
  *
  */
 public class SparqlQueryResultDataSource implements ReasonerDataSource {
-
-
 
 	private final URL endpoint;
 	private final String queryVariables;
@@ -82,8 +85,8 @@ public class SparqlQueryResultDataSource implements ReasonerDataSource {
 	 */
 	// TODO add examples to javadoc
 	// TODO add illegal argument exceptions to javadoc
-	public SparqlQueryResultDataSource(final URL endpoint,
-			final LinkedHashSet<Variable> queryVariables, final String queryBody) {
+	public SparqlQueryResultDataSource(final URL endpoint, final LinkedHashSet<Variable> queryVariables,
+			final String queryBody) {
 		Validate.notNull(endpoint, "Endpoint cannot be null.");
 		Validate.notNull(queryVariables, "Query variables ordered set cannot be null.");
 		Validate.noNullElements(queryVariables, "Query variables cannot be null or contain null elements.");
@@ -159,12 +162,22 @@ public class SparqlQueryResultDataSource implements ReasonerDataSource {
 
 	@Override
 	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
+		return OldSerializer.getString(this);
 	}
 
 	@Override
 	public void accept(DataSourceConfigurationVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	@Override
+	public Fact getDeclarationFact() {
+		Predicate predicate = Expressions.makePredicate("sparql", 3);
+		Term endpointTerm = Expressions.makeAbstractConstant(getEndpoint().toString());
+		Term variablesTerm = Expressions.makeDatatypeConstant(getQueryVariables(),
+				PrefixDeclarationRegistry.XSD_STRING);
+		Term patternTerm = Expressions.makeDatatypeConstant(getQueryBody(), PrefixDeclarationRegistry.XSD_STRING);
+		return Expressions.makeFact(predicate, endpointTerm, variablesTerm, patternTerm);
 	}
 
 }

@@ -42,7 +42,7 @@ import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
+import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 /**
  * Interface that exposes the (existential) rule reasoning capabilities of a
@@ -133,9 +133,9 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 */
 	default Correctness writeInferences(OutputStream stream) throws IOException {
 		final KnowledgeBase knowledgeBase = getKnowledgeBase();
-		stream.write(Serializer.getBaseAndPrefixDeclarations(knowledgeBase).getBytes());
+		stream.write(OldSerializer.getBaseAndPrefixDeclarations(knowledgeBase).getBytes());
 		return forEachInference((predicate, termList) -> stream
-				.write(Serializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri).getBytes()));
+				.write(OldSerializer.getFactString(predicate, termList, knowledgeBase::unresolveAbsoluteIri).getBytes()));
 	}
 
 	/**

@@ -97,18 +97,18 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 	}
 
 	@Override
-	public String unresolveAbsoluteIri(String iri) {
-		String shortestIri = iri;
+	public String unresolveAbsoluteIri(String iri, boolean addIriBrackets) {
+		String shortestIri = addIriBrackets ? "<" + iri + ">" : iri;
 		String baseIri = getBaseIri();
 
 		if (baseIri != PrefixDeclarationRegistry.EMPTY_BASE && iri.length() > baseIri.length()
 				&& iri.startsWith(baseIri)) {
-			shortestIri = iri.substring(baseIri.length());
+			String shorterIri = iri.substring(baseIri.length());
 			// Only allow very simple names of this form, to avoid confusion, e.g., with
 			// numbers or boolean literals:
-			if (!shortestIri.matches("^[a-zA-Z]([/a-zA-Z0-9_-])*$") || "true".equals(shortestIri)
-					|| "false".equals(shortestIri)) {
-				shortestIri = iri;
+			if (shorterIri.matches("^[a-zA-Z]([/a-zA-Z0-9_-])*$") && !"true".equals(shorterIri)
+					|| !"false".equals(shorterIri)) {
+				shortestIri = shorterIri;
 			}
 		}
 
