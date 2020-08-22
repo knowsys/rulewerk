@@ -34,7 +34,6 @@ import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 import org.semanticweb.rulewerk.commands.Interpreter;
-import org.semanticweb.rulewerk.core.model.implementation.OldSerializer;
 
 public final class DefaultConfiguration {
 
@@ -63,7 +62,7 @@ public final class DefaultConfiguration {
 	private static Completer buildCompleter(final Interpreter interpreter) {
 		final Set<String> registeredCommandNames = interpreter.getRegisteredCommands();
 		final List<String> serializedCommandNames = registeredCommandNames.stream()
-				.map(commandName -> OldSerializer.getCommandName(commandName))
+				.map(commandName -> "@" + commandName)
 				.collect(Collectors.toList());
 		return new StringsCompleter(serializedCommandNames);
 	}
