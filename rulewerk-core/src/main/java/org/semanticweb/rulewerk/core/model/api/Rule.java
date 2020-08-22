@@ -30,7 +30,7 @@ package org.semanticweb.rulewerk.core.model.api;
  * @author Markus Krötzsch
  *
  */
-public interface Rule extends SyntaxObject, Statement, Entity {
+public interface Rule extends SyntaxObject, Statement {
 
 	/**
 	 * Returns the conjunction of head literals (the consequence of the rule).

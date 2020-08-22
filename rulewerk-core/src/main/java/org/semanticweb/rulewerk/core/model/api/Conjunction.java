@@ -30,7 +30,7 @@ import java.util.List;
  * @author Markus Krötzsch
  *
  */
-public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObject, Entity {
+public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObject {
 
 	/**
 	 * Returns the list of literals that are part of this conjunction.

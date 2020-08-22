@@ -21,9 +21,7 @@ package org.semanticweb.rulewerk.core.model.api;
  */
 
 /**
- * Interface for every parsable data model that has a string representation
- * 
- * @author Ali Elhalawati
+ * Most general type of syntactic entity in Rulewerk.
  *
  */
 public interface Entity {

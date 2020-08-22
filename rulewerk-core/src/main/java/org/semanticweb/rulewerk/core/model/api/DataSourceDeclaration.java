@@ -27,7 +27,7 @@ package org.semanticweb.rulewerk.core.model.api;
  * @author Markus Kroetzsch
  *
  */
-public interface DataSourceDeclaration extends Statement, Entity {
+public interface DataSourceDeclaration extends Statement {
 
 	/**
 	 * Returns the {@link Predicate} that this source applies to.
