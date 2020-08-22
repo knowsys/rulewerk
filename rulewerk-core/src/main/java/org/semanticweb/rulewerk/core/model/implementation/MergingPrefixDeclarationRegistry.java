@@ -20,11 +20,6 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.Validate;
@@ -47,7 +42,7 @@ final public class MergingPrefixDeclarationRegistry extends AbstractPrefixDeclar
 	/**
 	 * Template string to use for generated prefix name
 	 */
-	private static final String GENERATED_PREFIX_TEMPLATE = "rulewerk_generated_%d"
+	private static final String GENERATED_PREFIX_TEMPLATE = "rw_gen%d"
 			+ PrefixDeclarationRegistry.PREFIX_NAME_SEPARATOR;
 
 	public MergingPrefixDeclarationRegistry() {
@@ -97,42 +92,6 @@ final public class MergingPrefixDeclarationRegistry extends AbstractPrefixDeclar
 	public void setPrefixIri(String prefixName, String prefixIri) {
 		String name = prefixes.containsKey(prefixName) ? getFreshPrefix() : prefixName;
 		prefixes.put(name, prefixIri);
-	}
-
-	/**
-	 * Turn an absolute Iri into a (possibly) prefixed name. Dual to
-	 * {@link AbstractPrefixDeclarationRegistry#resolvePrefixedName}.
-	 *
-	 * @param iri an absolute Iri to abbreviate.
-	 *
-	 * @return an abbreviated form of {@code iri} if an appropriate prefix is known,
-	 *         or {@code iri}.
-	 */
-	public String unresolveAbsoluteIri(String iri) {
-		Map<String, Integer> matches = new HashMap<>();
-		String baseIri = getBaseIri();
-
-		if (baseIri != PrefixDeclarationRegistry.EMPTY_BASE && iri.startsWith(baseIri) && !iri.equals(baseIri)) {
-			matches.put(iri.replaceFirst(baseIri, PrefixDeclarationRegistry.EMPTY_BASE), baseIri.length());
-		}
-
-		prefixes.forEach((prefixName, prefixIri) -> {
-			// only select proper prefixes here, since `eg:` is not a valid prefixed name.
-			if (iri.startsWith(prefixIri) && !iri.equals(prefixIri)) {
-				matches.put(iri.replaceFirst(prefixIri, prefixName), prefixIri.length());
-			}
-		});
-
-		List<String> matchesByLength = new ArrayList<>(matches.keySet());
-		// reverse order, so we get the longest match first
-		matchesByLength.sort(Comparator.comparing(matches::get).reversed());
-
-		if (matchesByLength.size() > 0) {
-			return matchesByLength.get(0);
-		} else {
-			// no matching prefix
-			return iri;
-		}
 	}
 
 	/**

@@ -104,7 +104,7 @@ public class MergingPrefixDeclarationRegistryTest {
 
 	@Test
 	public void getFreshPrefix_registeredPrefix_returnsFreshPrefix() throws PrefixDeclarationException {
-		String prefix = "rulewerk_generated_";
+		String prefix = "rw_gen";
 		prefixDeclarations.setPrefixIri(prefix + "0:", BASE + "generated/");
 		prefixDeclarations.setPrefixIri("eg:", BASE);
 		prefixDeclarations.setPrefixIri("eg:", MORE_SPECIFIC);
@@ -128,7 +128,7 @@ public class MergingPrefixDeclarationRegistryTest {
 		prefixDeclarations.setPrefixIri("eg:", MORE_SPECIFIC);
 		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
 		assertEquals(BASE, this.prefixDeclarations.getPrefixIri("eg:"));
-		assertEquals(MORE_SPECIFIC, this.prefixDeclarations.getPrefixIri("rulewerk_generated_0:"));
+		assertEquals(MORE_SPECIFIC, this.prefixDeclarations.getPrefixIri("rw_gen0:"));
 	}
 
 	@Test
@@ -188,7 +188,8 @@ public class MergingPrefixDeclarationRegistryTest {
 	}
 
 	@Test
-	public void unresolveAbsoluteIri_relativeIriAfterMergeWithNewBase_staysRelative() throws PrefixDeclarationException {
+	public void unresolveAbsoluteIri_relativeIriAfterMergeWithNewBase_staysRelative()
+			throws PrefixDeclarationException {
 		String relativeIri = this.prefixDeclarations.absolutizeIri(RELATIVE);
 		PrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
 		prefixDeclarations.setBaseIri(BASE);
@@ -198,13 +199,15 @@ public class MergingPrefixDeclarationRegistryTest {
 
 	@Test
 	public void unresolveAbsoluteIri_absoluteIriMergedOntoEmptyBase_staysAbsolute() throws PrefixDeclarationException {
-		assertEquals("", this.prefixDeclarations.getBaseIri());
+		assertEquals("", this.prefixDeclarations.getBaseIri()); // FIXME: why test this?
+
 		PrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
 		prefixDeclarations.setBaseIri(BASE);
 		String absoluteIri = prefixDeclarations.absolutizeIri(RELATIVE);
 		this.prefixDeclarations.mergePrefixDeclarations(prefixDeclarations);
 		String resolvedIri = this.prefixDeclarations.unresolveAbsoluteIri(absoluteIri);
+
 		assertNotEquals(RELATIVE, resolvedIri);
-		assertEquals("rulewerk_generated_0:" + RELATIVE, resolvedIri);
+		assertEquals("rw_gen0:" + RELATIVE, resolvedIri);
 	}
 }

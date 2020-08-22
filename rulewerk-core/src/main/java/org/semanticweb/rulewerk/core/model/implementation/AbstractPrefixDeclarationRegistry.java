@@ -95,6 +95,35 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 			return getBaseIri() + potentiallyRelativeIri;
 		}
 	}
+	
+	/**
+	 * Turn an absolute Iri into a (possibly) prefixed name. Dual to
+	 * {@link AbstractPrefixDeclarationRegistry#resolvePrefixedName}.
+	 *
+	 * @param iri an absolute Iri to abbreviate.
+	 *
+	 * @return an abbreviated form of {@code iri} if an appropriate prefix is known,
+	 *         or {@code iri}.
+	 */
+	public String unresolveAbsoluteIri(String iri) {
+		String shortestIri = iri;
+		String baseIri = getBaseIri();
+
+		if (baseIri != PrefixDeclarationRegistry.EMPTY_BASE && iri.length() > baseIri.length()
+				&& iri.startsWith(baseIri)) {
+			shortestIri = iri.substring(baseIri.length());
+		}
+
+		for (Map.Entry<String, String> entry : prefixes.entrySet()) {
+			int localNameLength = iri.length() - entry.getValue().length();
+			if (localNameLength > 0 && shortestIri.length() > localNameLength + entry.getKey().length()
+					&& iri.startsWith(entry.getValue())) {
+				shortestIri = entry.getKey() + iri.substring(entry.getValue().length());
+			}
+		}
+
+		return shortestIri;
+	}
 
 	@Override
 	public Iterator<Entry<String, String>> iterator() {

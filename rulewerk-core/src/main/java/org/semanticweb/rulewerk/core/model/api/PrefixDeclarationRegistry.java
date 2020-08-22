@@ -91,7 +91,7 @@ public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String
 	 * @param prefixName the name of the prefix.
 	 */
 	void unsetPrefix(String prefixName);
-	
+
 	/**
 	 * Turn a <a href="https://www.w3.org/TR/turtle/#prefixed-name">prefixed
 	 * name</a> into an absolute IRI.
@@ -114,4 +114,5 @@ public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String
 	 *         Otherwise, the current base IRI is prepended.
 	 */
 	String absolutizeIri(String relativeOrAbsoluteIri) throws PrefixDeclarationException;
+
 }
