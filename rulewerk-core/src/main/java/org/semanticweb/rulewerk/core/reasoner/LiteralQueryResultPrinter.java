@@ -43,15 +43,28 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 public class LiteralQueryResultPrinter {
 
 	final LinkedHashMap<UniversalVariable, Integer> firstIndex = new LinkedHashMap<>();
-	final PrefixDeclarationRegistry prefixDeclarationRegistry;
 	final Writer writer;
 	final Serializer serializer;
 
+	int resultCount = 0;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param positiveLiteral           the query pattern for which query results
+	 *                                  are to be printed
+	 * @param writer                    the object to write the output to
+	 * @param prefixDeclarationRegistry information on prefixes used to compute IRI
+	 *                                  abbreviations; can be null
+	 */
 	public LiteralQueryResultPrinter(PositiveLiteral positiveLiteral, Writer writer,
 			PrefixDeclarationRegistry prefixDeclarationRegistry) {
 		this.writer = writer;
-		this.serializer = new Serializer(writer, prefixDeclarationRegistry);
-		this.prefixDeclarationRegistry = prefixDeclarationRegistry;
+		if (prefixDeclarationRegistry == null) {
+			this.serializer = new Serializer(writer);
+		} else {
+			this.serializer = new Serializer(writer, prefixDeclarationRegistry);
+		}
 
 		int i = 0;
 		for (Term term : positiveLiteral.getArguments()) {
@@ -65,6 +78,14 @@ public class LiteralQueryResultPrinter {
 		}
 	}
 
+	/**
+	 * Writes a {@link QueryResult} to the specified writer. Nothing is written for
+	 * results of Boolean queries (not even a linebreak).
+	 * 
+	 * @param queryResult the {@link QueryResult} to write; this result must be
+	 *                    based on the query literal specified in the constructor
+	 * @throws IOException if a problem occurred in writing
+	 */
 	public void write(QueryResult queryResult) throws IOException {
 		boolean first = true;
 		for (Entry<UniversalVariable, Integer> entry : firstIndex.entrySet()) {
@@ -77,9 +98,37 @@ public class LiteralQueryResultPrinter {
 			writer.write(" -> ");
 			serializer.writeTerm(queryResult.getTerms().get(entry.getValue()));
 		}
-		if (first) {
-			writer.write("true");
+		resultCount++;
+		if (!first) {
+			writer.write("\n");
 		}
-		writer.write("\n");
 	}
+
+	/**
+	 * Returns the number of results written so far.
+	 * 
+	 * @return number of results
+	 */
+	public int getResultCount() {
+		return resultCount;
+	}
+
+	/**
+	 * Returns true if the query has had any results.
+	 * 
+	 * @return true if query result is not empty
+	 */
+	public boolean hadResults() {
+		return resultCount != 0;
+	}
+
+	/**
+	 * Returns true if the query is boolean, i.e., has no answer variables.
+	 * 
+	 * @return true if query is boolean
+	 */
+	public boolean isBooleanQuery() {
+		return firstIndex.size() == 0;
+	}
+
 }

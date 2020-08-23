@@ -68,14 +68,19 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 		Timer timer = new Timer("query");
 		timer.start();
 		try (final QueryResultIterator answers = interpreter.getReasoner().answerQuery(literal, true)) {
-			int count = 0;
-			while (count != limit && answers.hasNext()) {
+			while (printer.getResultCount() != limit && answers.hasNext()) {
 				printer.write(answers.next());
-				count++;
 			}
 			timer.stop();
-			interpreter.getWriter().println(count + " result(s) in " + timer.getTotalCpuTime() / 1000000
-					+ "ms. Results are " + answers.getCorrectness() + ".");
+
+			if (printer.isBooleanQuery()) {
+				interpreter.printEmph(printer.hadResults() ? "true\n" : "false\n");
+				interpreter.printNormal("Answered in " + timer.getTotalCpuTime() / 1000000 + "ms.");
+			} else {
+				interpreter.printNormal(
+						printer.getResultCount() + " result(s) in " + timer.getTotalCpuTime() / 1000000 + "ms.");
+			}
+			interpreter.printNormal(" Results are " + answers.getCorrectness() + ".\n");
 		} catch (IOException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}
