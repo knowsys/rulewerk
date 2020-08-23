@@ -53,7 +53,7 @@ public class AssertCommandInterpreter implements CommandInterpreter {
 			}
 		}
 
-		interpreter.getWriter().println("Asserted " + factCount + " fact(s) and " + ruleCount + " rule(s).");
+		interpreter.printNormal("Asserted " + factCount + " fact(s) and " + ruleCount + " rule(s).\n");
 	}
 
 	@Override

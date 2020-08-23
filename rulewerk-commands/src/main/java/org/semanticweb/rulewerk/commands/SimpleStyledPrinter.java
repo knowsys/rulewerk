@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.commands;
 
+import java.io.IOException;
+
 /*-
  * #%L
  * Rulewerk command execution support
@@ -20,7 +22,7 @@ package org.semanticweb.rulewerk.commands;
  * #L%
  */
 
-import java.io.PrintWriter;
+import java.io.Writer;
 
 /**
  * Simple implementation of {@link StyledPrinter} based on an arbitrary
@@ -31,40 +33,48 @@ import java.io.PrintWriter;
  */
 public class SimpleStyledPrinter implements StyledPrinter {
 
-	final PrintWriter printWriter;
+	final Writer writer;
 
-	public SimpleStyledPrinter(final PrintWriter printWriter) {
-		this.printWriter = printWriter;
+	public SimpleStyledPrinter(final Writer writer) {
+		this.writer = writer;
 	}
 
 	@Override
 	public void printNormal(String string) {
-		printWriter.print(string);
+		write(string);
 	}
 
 	@Override
 	public void printSection(String string) {
-		printWriter.print(string);
+		write(string);
 	}
 
 	@Override
 	public void printEmph(String string) {
-		printWriter.print(string);
+		write(string);
 	}
 
 	@Override
 	public void printCode(String string) {
-		printWriter.print(string);
+		write(string);
 	}
 
 	@Override
 	public void printImportant(String string) {
-		printWriter.print(string);
+		write(string);
 	}
 
 	@Override
-	public PrintWriter getWriter() {
-		return printWriter;
+	public Writer getWriter() {
+		return writer;
+	}
+
+	private void write(String string) {
+		try {
+			writer.write(string);
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
 	}
 
 }

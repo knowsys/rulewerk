@@ -51,7 +51,7 @@ public class Shell {
 			try {
 				command = commandReader.readCommand();
 			} catch (final Exception e) {
-				interpreter.getWriter().println("Unexpected error: " + e.getMessage());
+				interpreter.printNormal("Unexpected error: " + e.getMessage() + "\n");
 				e.printStackTrace();
 				continue;
 			}
@@ -60,12 +60,11 @@ public class Shell {
 				try {
 					this.interpreter.runCommand(command);
 				} catch (final CommandExecutionException e) {
-					interpreter.getWriter().println("Error: " + e.getMessage());
+					interpreter.printNormal("Error: " + e.getMessage() + "\n");
 				}
 			}
 		}
 		interpreter.printSection("Existing Rulewerk shell ... bye.\n\n");
-		interpreter.getWriter().flush();
 	}
 
 	public void exitShell() {

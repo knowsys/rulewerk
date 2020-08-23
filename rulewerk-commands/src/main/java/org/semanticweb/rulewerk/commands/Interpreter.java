@@ -2,7 +2,7 @@ package org.semanticweb.rulewerk.commands;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.Writer;
 
 /*-
  * #%L
@@ -121,7 +121,7 @@ public class Interpreter {
 		return this.parserConfiguration;
 	}
 
-	public PrintWriter getWriter() {
+	public Writer getWriter() {
 		return this.printer.getWriter();
 	}
 

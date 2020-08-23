@@ -40,7 +40,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		} catch (FileNotFoundException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		} catch (ParsingException e) {
-			interpreter.getWriter().println("Error parsing file: " + e.getMessage());
+			interpreter.printNormal("Error parsing file: " + e.getMessage() + "\n");
 		}
 	}
 

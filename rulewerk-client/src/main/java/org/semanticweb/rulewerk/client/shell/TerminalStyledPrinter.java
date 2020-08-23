@@ -68,5 +68,6 @@ public class TerminalStyledPrinter implements StyledPrinter {
 	private void printStyled(String string, AttributedStyle attributedStyle) {
 		AttributedString attributedString = new AttributedString(string, attributedStyle);
 		getWriter().print(attributedString.toAnsi(terminal));
+		getWriter().flush();
 	}
 }

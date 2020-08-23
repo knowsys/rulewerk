@@ -20,20 +20,20 @@ package org.semanticweb.rulewerk.commands;
  * #L%
  */
 
-import java.io.PrintWriter;
+import java.io.Writer;
 
 public interface StyledPrinter {
-	
+
 	void printNormal(String string);
-	
+
 	void printSection(String string);
-	
+
 	void printEmph(String string);
-	
+
 	void printCode(String string);
-	
+
 	void printImportant(String string);
-	
-	PrintWriter getWriter();
+
+	Writer getWriter();
 
 }
