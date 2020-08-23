@@ -58,8 +58,8 @@ public class HelpCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void printHelp(String commandName, Interpreter interpreter) {
-		interpreter.printNormal(
-				"Usage: @" + commandName + " [command name] .\n" + "\t command name: command to get detailed help for");
+		interpreter.printNormal("Usage: @" + commandName + " [command name] .\n" //
+				+ "\t command name: command to get detailed help for\n");
 	}
 
 	@Override
