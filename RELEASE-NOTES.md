@@ -5,11 +5,21 @@ Rulewerk v0.7.0
 ---------------
 
 New features:
+* New interactive Rulewerk shell for rule reasoning from the command line client 
 * Significant speedup in iterating over query results
+* New class `LiteralQueryResultPrinter` for pretty-printing query results
 
 Other improvements:
+* Improved serialization of knowledge bases (using namespaces)
+* Simple (non-IRI, namespace-less) predicate names can now include - and _
 * InMemoryGraphAnalysisExample now counts proper triangles using negation to avoid "triangles" where
   two or more edges are the same.
+  
+Breaking changes:
+* The `Serializer` class in the core package has been replaced by a new implementation
+  with a completely different interface. 
+* The methods `getSerialization` that were present in most syntax objects have been removed. Use `toString()` instead for simple serializations, or invoke a custom Serializer.
+* The `DataSource` interface requires a new method to be implemented. 
 
 Rulewerk v0.6.0
 ---------------
