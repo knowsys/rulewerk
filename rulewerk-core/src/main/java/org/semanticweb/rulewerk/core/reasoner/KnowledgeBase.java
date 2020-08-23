@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -581,9 +580,9 @@ public class KnowledgeBase implements Iterable<Statement> {
 	}
 
 	/**
-	 * Serialise the KnowledgeBase to the {@link OutputStream}.
+	 * Serialise the KnowledgeBase to the {@link Writer}.
 	 *
-	 * @param writer the {@link OutputStream} to serialise to.
+	 * @param writer the {@link Writer} to serialise to.
 	 *
 	 * @throws IOException if an I/O error occurs while writing to given output
 	 *                     stream
