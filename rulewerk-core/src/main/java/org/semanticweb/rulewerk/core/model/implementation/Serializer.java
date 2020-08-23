@@ -290,10 +290,20 @@ public class Serializer {
 	 * @throws IOException
 	 */
 	public void writeRule(Rule rule) throws IOException {
+		writeRuleNoStatment(rule);
+		writer.write(STATEMENT_END);
+	}
+
+	/**
+	 * Writes a serialization of the given {@link Rule} without the final dot.
+	 *
+	 * @param rule a {@link Rule}
+	 * @throws IOException
+	 */
+	private void writeRuleNoStatment(Rule rule) throws IOException {
 		writeLiteralConjunction(rule.getHead());
 		writer.write(" :- ");
 		writeLiteralConjunction(rule.getBody());
-		writer.write(STATEMENT_END);
 	}
 
 	/**
@@ -510,11 +520,11 @@ public class Serializer {
 		for (Argument argument : command.getArguments()) {
 			writer.write(" ");
 			if (argument.fromRule().isPresent()) {
-				writeRule(argument.fromRule().get());
+				writeRuleNoStatment(argument.fromRule().get());
 			} else if (argument.fromPositiveLiteral().isPresent()) {
 				writeLiteral(argument.fromPositiveLiteral().get());
 			} else {
-				throw new UnsupportedOperationException("Serialisation of commands is not fully implemented yet.");
+				writeTerm(argument.fromTerm().get());
 			}
 		}
 		writer.write(STATEMENT_END);

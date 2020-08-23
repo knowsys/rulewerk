@@ -26,10 +26,13 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.semanticweb.rulewerk.core.model.api.Argument;
+import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Literal;
@@ -167,10 +170,10 @@ public class SerializerTest {
 		serializer.writeLiteral(l1);
 		assertEquals("p1(?X)", writer.toString());
 	}
-	
+
 	@Test
 	public void serializePositiveLiteralFromTerms() throws IOException {
-		serializer.writePositiveLiteral(l1.getPredicate(),l1.getArguments());
+		serializer.writePositiveLiteral(l1.getPredicate(), l1.getArguments());
 		assertEquals("p1(?X)", writer.toString());
 	}
 
@@ -209,6 +212,18 @@ public class SerializerTest {
 
 		prefSerializer.writePrefixDeclarationRegistry(prefixes);
 		assertEquals("@base <http://example.org/base> .\n@prefix eg: <http://example.org/> .\n", writer.toString());
+	}
+
+	@Test
+	public void serializeCommand() throws IOException {
+		ArrayList<Argument> arguments = new ArrayList<>();
+		arguments.add(Argument.term(abstractConstant));
+		arguments.add(Argument.positiveLiteral(fact));
+		arguments.add(Argument.rule(rule));
+		Command command = new Command("command", arguments);
+
+		serializer.writeCommand(command);
+		assertEquals("@command <http://example.org/test> p1(c) p1(?X) :- p2(?X, c), p1(c) .", writer.toString());
 	}
 
 	@Test
