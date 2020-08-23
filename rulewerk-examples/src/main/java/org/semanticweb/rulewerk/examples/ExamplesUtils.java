@@ -21,6 +21,7 @@ package org.semanticweb.rulewerk.examples;
  */
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,7 @@ import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.Correctness;
+import org.semanticweb.rulewerk.core.reasoner.LiteralQueryResultPrinter;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -88,10 +90,17 @@ public final class ExamplesUtils {
 	 */
 	public static void printOutQueryAnswers(final PositiveLiteral queryAtom, final Reasoner reasoner) {
 		System.out.println("Answers to query " + queryAtom + " :");
+		OutputStreamWriter writer = new OutputStreamWriter(System.out);
+		LiteralQueryResultPrinter printer = new LiteralQueryResultPrinter(queryAtom, writer,
+				reasoner.getKnowledgeBase().getPrefixDeclarationRegistry());
 		try (final QueryResultIterator answers = reasoner.answerQuery(queryAtom, true)) {
-			answers.forEachRemaining(answer -> System.out.println(" - " + answer));
-
+			while (answers.hasNext()) {
+				printer.write(answers.next());
+				writer.flush();
+			}
 			System.out.println("Query answers are: " + answers.getCorrectness());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 		System.out.println();
 	}
