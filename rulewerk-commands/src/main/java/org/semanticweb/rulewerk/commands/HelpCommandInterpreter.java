@@ -47,18 +47,19 @@ public class HelpCommandInterpreter implements CommandInterpreter {
 			if (interpreter.commandInterpreters.containsKey(helpCommand)) {
 				interpreter.printCode("@" + helpCommand);
 				interpreter.printNormal(": " + interpreter.commandInterpreters.get(helpCommand).getSynopsis() + "\n");
-				interpreter.printNormal(interpreter.commandInterpreters.get(helpCommand).getHelp(helpCommand) + "\n");
+				interpreter.commandInterpreters.get(helpCommand).printHelp(helpCommand, interpreter);
 			} else {
 				interpreter.printNormal("Command '" + helpCommand + "' not known.\n");
 			}
 		} else {
-			interpreter.printNormal(getHelp(command.getName()));
+			printHelp(command.getName(), interpreter);
 		}
 	}
 
 	@Override
-	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " [command name] .\n" + "\t command name: command to get detailed help for";
+	public void printHelp(String commandName, Interpreter interpreter) {
+		interpreter.printNormal(
+				"Usage: @" + commandName + " [command name] .\n" + "\t command name: command to get detailed help for");
 	}
 
 	@Override

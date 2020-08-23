@@ -37,8 +37,8 @@ public class ShowKbCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + ".";
+	public void printHelp(String commandName, Interpreter interpreter) {
+		interpreter.printNormal("Usage: @" + commandName + " .\n");
 	}
 
 	@Override

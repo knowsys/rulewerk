@@ -25,18 +25,18 @@ import java.util.ArrayList;
 import org.semanticweb.rulewerk.client.shell.Shell;
 import org.semanticweb.rulewerk.commands.CommandExecutionException;
 import org.semanticweb.rulewerk.commands.CommandInterpreter;
+import org.semanticweb.rulewerk.commands.Interpreter;
 import org.semanticweb.rulewerk.core.model.api.Command;
 
 public class ExitCommandInterpreter implements CommandInterpreter {
 
 	public static final Command EXIT_COMMAND = new Command(ExitCommandName.exit.toString(), new ArrayList<>());
 
-	public static enum ExitCommandName
-	{
+	public static enum ExitCommandName {
 		exit;
 
 		public static boolean isExitCommand(final String commandName) {
-			for(final ExitCommandName name: values()) {
+			for (final ExitCommandName name : values()) {
 				if (name.toString().equals(commandName)) {
 					return true;
 				}
@@ -44,16 +44,16 @@ public class ExitCommandInterpreter implements CommandInterpreter {
 			return false;
 		}
 	}
-	
+
 	final Shell shell;
-	
+
 	public ExitCommandInterpreter(Shell shell) {
 		this.shell = shell;
 	}
 
 	@Override
-	public String getHelp(final String commandName) {
-		return "Usage: " + commandName + ".";
+	public void printHelp(final String commandName, Interpreter interpreter) {
+		interpreter.printNormal("Usage: " + commandName + ".\n");
 	}
 
 	@Override

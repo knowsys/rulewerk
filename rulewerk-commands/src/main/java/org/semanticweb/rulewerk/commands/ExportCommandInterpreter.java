@@ -54,10 +54,10 @@ public class ExportCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " TASK \"filename\" .\n" //
+	public void printHelp(String commandName, Interpreter interpreter) {
+		interpreter.printNormal("Usage: @" + commandName + " TASK \"filename\" .\n" //
 				+ " TASK: what to export; can be KB or INFERENCES\n" //
-				+ " \"filename\": string path export file (suggested extension: .rls)";
+				+ " \"filename\": string path export file (suggested extension: .rls)\n");
 	}
 
 	@Override
@@ -76,7 +76,8 @@ public class ExportCommandInterpreter implements CommandInterpreter {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}
 
-		interpreter.printNormal("Exported all inferences in " + timer.getTotalWallTime() / 1000000 + "ms (" + timer.getTotalCpuTime() / 1000000 + "ms CPU time).");
+		interpreter.printNormal("Exported all inferences in " + timer.getTotalWallTime() / 1000000 + "ms ("
+				+ timer.getTotalCpuTime() / 1000000 + "ms CPU time).");
 		interpreter.printNormal(" This result is " + correctness + ".\n");
 	}
 
@@ -89,7 +90,8 @@ public class ExportCommandInterpreter implements CommandInterpreter {
 		} catch (IOException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}
-		interpreter.printNormal("Exported knowledge base in " + timer.getTotalWallTime() / 1000000 + "ms (" + timer.getTotalCpuTime() / 1000000 + "ms CPU time).\n");
+		interpreter.printNormal("Exported knowledge base in " + timer.getTotalWallTime() / 1000000 + "ms ("
+				+ timer.getTotalCpuTime() / 1000000 + "ms CPU time).\n");
 	}
 
 }

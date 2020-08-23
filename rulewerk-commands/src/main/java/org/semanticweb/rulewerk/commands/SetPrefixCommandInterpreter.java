@@ -40,8 +40,8 @@ public class SetPrefixCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " <prefix>: <IRI>.";
+	public void printHelp(String commandName, Interpreter interpreter) {
+		interpreter.printNormal("Usage: @" + commandName + " <prefix>: <IRI>.\n");
 	}
 
 	@Override

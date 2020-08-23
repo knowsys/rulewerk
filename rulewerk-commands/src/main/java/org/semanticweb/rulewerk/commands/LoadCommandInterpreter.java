@@ -45,8 +45,8 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " <file>\n" + " file: path to a Rulewerk rls file";
+	public void printHelp(String commandName, Interpreter interpreter) {
+		interpreter.printNormal("Usage: @" + commandName + " <file>\n" + " file: path to a Rulewerk rls file\n");
 	}
 
 	@Override

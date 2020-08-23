@@ -57,10 +57,10 @@ public class AssertCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " (<fact or rule>)+ .\n"
+	public void printHelp(String commandName, Interpreter interpreter) {
+		interpreter.printNormal("Usage: @" + commandName + " (<fact or rule>)+ .\n"
 				+ " fact or rule: statement(s) to be added to the knowledge base\n"
-				+ "Reasoning needs to be invoked after finishing addition of statements.";
+				+ "Reasoning needs to be invoked after finishing addition of statements.\n");
 	}
 
 	@Override

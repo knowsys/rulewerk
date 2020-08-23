@@ -66,11 +66,11 @@ public class RemoveSourceCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " <predicateName>[<arity>]: <source declartion>.\n"
+	public void printHelp(String commandName, Interpreter interpreter) {
+		interpreter.printNormal("Usage: @" + commandName + " <predicateName>[<arity>]: <source declartion>.\n"
 				+ " <predicateName>[<arity>] : the name of the predicate and its arity\n"
 				+ " <source declaration> (optional): a fact specifying a source declaration\n\n"
-				+ "Note that every predicate can have multiple sources.";
+				+ "Note that every predicate can have multiple sources.\n");
 	}
 
 	@Override

@@ -40,13 +40,12 @@ public interface CommandInterpreter {
 	void run(Command command, Interpreter interpreter) throws CommandExecutionException;
 
 	/**
-	 * Return a text that describes command use and parameters, using the given
+	 * Prints a text that describes command use and parameters, using the given
 	 * command name. The output should start with a "Usage:" line, followed by
-	 * single-space-indented parameter descriptions.
-	 * 
-	 * @return help message
+	 * single-space-indented parameter descriptions, and it should end with a
+	 * newline.
 	 */
-	String getHelp(String commandName);
+	void printHelp(String commandName, Interpreter interpreter);
 
 	/**
 	 * Returns a short line describing the purpose of the command.
