@@ -29,10 +29,6 @@ public class CommandExecutionException extends RulewerkException {
 	 */
 	private static final long serialVersionUID = 1479091500621334935L;
 
-	public CommandExecutionException(Throwable cause) {
-		super(cause);
-	}
-
 	public CommandExecutionException(String message, Throwable cause) {
 		super(message, cause);
 	}
