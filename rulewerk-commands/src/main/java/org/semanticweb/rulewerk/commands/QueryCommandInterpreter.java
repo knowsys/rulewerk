@@ -63,7 +63,7 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 	@Override
 	public String getHelp(String commandName) {
 		return "Usage: @" + commandName + " [COUNT] <query literal> [LIMIT <limit>] [EXPORTCSV <filename>] .\n"
-				+ " query literal: positive literal; may use ?queryVariables and ?existentialVariables\n"
+				+ " query literal: positive literal, possibly with ?queryVariables\n"
 				+ " limit: maximal number of results to be shown\n"
 				+ " filename: string path to CSV file for exporting query results";
 	}
