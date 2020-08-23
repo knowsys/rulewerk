@@ -1,7 +1,10 @@
 package org.semanticweb.rulewerk.commands;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 /*-
@@ -203,6 +206,10 @@ public class Interpreter {
 			final String parameterName) throws CommandExecutionException {
 		return command.getArguments().get(index).fromPositiveLiteral()
 				.orElseThrow(() -> getArgumentTypeError(index, "literal", parameterName));
+	}
+
+	public Writer getFileWriter(String fileName) throws FileNotFoundException {
+		return new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
 	}
 
 }

@@ -20,11 +20,8 @@ package org.semanticweb.rulewerk.commands;
  * #L%
  */
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.reasoner.Correctness;
@@ -68,7 +65,7 @@ public class ExportCommandInterpreter implements CommandInterpreter {
 	private void exportInferences(Interpreter interpreter, String fileName) throws CommandExecutionException {
 		Timer timer = new Timer("export");
 		Correctness correctness;
-		try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8)) {
+		try (Writer writer = interpreter.getFileWriter(fileName)) {
 			timer.start();
 			correctness = interpreter.getReasoner().writeInferences(writer);
 			timer.stop();
@@ -83,7 +80,7 @@ public class ExportCommandInterpreter implements CommandInterpreter {
 
 	private void exportKb(Interpreter interpreter, String fileName) throws CommandExecutionException {
 		Timer timer = new Timer("export");
-		try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8)) {
+		try (Writer writer = interpreter.getFileWriter(fileName)) {
 			timer.start();
 			interpreter.getKnowledgeBase().writeKnowledgeBase(writer);
 			timer.stop();
