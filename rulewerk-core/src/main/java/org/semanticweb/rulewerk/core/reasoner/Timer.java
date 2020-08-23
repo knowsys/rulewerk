@@ -22,22 +22,22 @@ package org.semanticweb.rulewerk.core.reasoner;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class for keeping CPU and system times. The class has a number of features
  * that can be used to measure and aggregate times across many threads and many
  * methods.
  * 
+ * @implNote This file originates from the ELK Reasoner, where more extensive thread-aware
+ * timing was required. The file contains commented out functions from that source that
+ * could be used to activate those features here.
+ * 
  * @author Markus Kroetzsch
  */
 public class Timer {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(Timer.class);
+	//private static Logger LOGGER = LoggerFactory.getLogger(Timer.class);
 
 	/** Flag for indicating that no times should be taken (just count runs). */
 	public static final int RECORD_NONE = 0x00000000;
@@ -223,316 +223,316 @@ public class Timer {
 		return totalTime;
 	}
 
-	/**
-	 * Print logging information for the timer. The log only shows the recorded time
-	 * of the completed start-stop cycles. If the timer is still running, then it
-	 * will not be stopped to add the currently measured time to the output but a
-	 * warning will be logged.
-	 * 
-	 */
-	public void log() {
-		if (LOGGER.isInfoEnabled()) {
-			String timerLabel;
-			if (threadId != 0) {
-				timerLabel = name + " (thread " + threadId + ")";
-			} else if (threadCount > 1) {
-				timerLabel = name + " (over " + threadCount + " threads)";
-			} else {
-				timerLabel = name;
-			}
-
-			if (todoFlags == RECORD_NONE) {
-				LOGGER.info("Timer " + timerLabel + " recorded " + measurements + " run(s), no times taken");
-			} else {
-				String labels = "";
-				String values = "";
-				String separator;
-
-				if ((todoFlags & RECORD_CPUTIME) != 0 && threadId != 0) {
-					labels += "CPU";
-					values += totalCpuTime / 1000000;
-					separator = "/";
-				} else {
-					separator = "";
-				}
-				if ((todoFlags & RECORD_WALLTIME) != 0) {
-					labels += separator + "Wall";
-					values += separator + totalWallTime / 1000000;
-				}
-				if ((todoFlags & RECORD_CPUTIME) != 0 && threadId != 0) {
-					labels += "/CPU avg";
-					values += "/" + (float) (totalCpuTime) / measurements / 1000000;
-				}
-				if ((todoFlags & RECORD_WALLTIME) != 0) {
-					labels += "/Wall avg";
-					values += "/" + (float) (totalWallTime) / measurements / 1000000;
-				}
-				if (threadCount > 1) {
-					if ((todoFlags & RECORD_CPUTIME) != 0 && threadId != 0) {
-						labels += "/CPU per thread";
-						values += "/" + (float) (totalCpuTime) / threadCount / 1000000;
-					}
-					if ((todoFlags & RECORD_WALLTIME) != 0) {
-						labels += "/Wall per thread";
-						values += "/" + (float) (totalWallTime) / threadCount / 1000000;
-					}
-				}
-
-				LOGGER.info(
-						"Time for " + timerLabel + " for " + measurements + " run(s) " + labels + " (ms): " + values);
-			}
-
-			if (isRunning) {
-				LOGGER.warn("Timer " + timerLabel + " logged while it was still running");
-			}
-		}
-	}
-
-	/**
-	 * Start a timer of the given string name for all todos and the current thread.
-	 * If no such timer exists yet, then it will be newly created.
-	 * 
-	 * @param timerName the name of the timer
-	 */
-	public static void startNamedTimer(String timerName) {
-		getNamedTimer(timerName).start();
-	}
-
-	/**
-	 * Start a timer of the given string name for the current thread. If no such
-	 * timer exists yet, then it will be newly created.
-	 * 
-	 * @param timerName the name of the timer
-	 * @param todoFlags
-	 */
-	public static void startNamedTimer(String timerName, int todoFlags) {
-		getNamedTimer(timerName, todoFlags).start();
-	}
-
-	/**
-	 * Start a timer of the given string name for the current thread. If no such
-	 * timer exists yet, then it will be newly created.
-	 * 
-	 * @param timerName the name of the timer
-	 * @param todoFlags
-	 * @param threadId  of the thread to track, or 0 if only system clock should be
-	 *                  tracked
-	 */
-	public static void startNamedTimer(String timerName, int todoFlags, long threadId) {
-		getNamedTimer(timerName, todoFlags, threadId).start();
-	}
-
-	/**
-	 * Stop a timer of the given string name for all todos and the current thread.
-	 * If no such timer exists, -1 will be returned. Otherwise the return value is
-	 * the CPU time that was measured.
-	 * 
-	 * @param timerName the name of the timer
-	 * @return CPU time if timer existed and was running, and -1 otherwise
-	 */
-	public static long stopNamedTimer(String timerName) {
-		return stopNamedTimer(timerName, RECORD_ALL, Thread.currentThread().getId());
-	}
-
-	/**
-	 * Stop a timer of the given string name for the current thread. If no such
-	 * timer exists, -1 will be returned. Otherwise the return value is the CPU time
-	 * that was measured.
-	 * 
-	 * @param timerName the name of the timer
-	 * @param todoFlags
-	 * @return CPU time if timer existed and was running, and -1 otherwise
-	 */
-	public static long stopNamedTimer(String timerName, int todoFlags) {
-		return stopNamedTimer(timerName, todoFlags, Thread.currentThread().getId());
-	}
-
-	/**
-	 * Stop a timer of the given string name for the given thread. If no such timer
-	 * exists, -1 will be returned. Otherwise the return value is the CPU time that
-	 * was measured.
-	 * 
-	 * @param timerName the name of the timer
-	 * @param todoFlags
-	 * @param threadId  of the thread to track, or 0 if only system clock should be
-	 *                  tracked
-	 * @return CPU time if timer existed and was running, and -1 otherwise
-	 */
-	public static long stopNamedTimer(String timerName, int todoFlags, long threadId) {
-		Timer key = new Timer(timerName, todoFlags, threadId);
-		if (registeredTimers.containsKey(key)) {
-			return registeredTimers.get(key).stop();
-		} else {
-			return -1;
-		}
-	}
-
-	/**
-	 * Reset a timer of the given string name for all todos and the current thread.
-	 * If no such timer exists yet, then it will be newly created.
-	 * 
-	 * @param timerName the name of the timer
-	 */
-	public static void resetNamedTimer(String timerName) {
-		getNamedTimer(timerName).reset();
-	}
-
-	/**
-	 * Reset a timer of the given string name for the current thread. If no such
-	 * timer exists yet, then it will be newly created.
-	 * 
-	 * @param timerName the name of the timer
-	 * @param todoFlags
-	 */
-	public static void resetNamedTimer(String timerName, int todoFlags) {
-		getNamedTimer(timerName, todoFlags).reset();
-	}
-
-	/**
-	 * Reset a timer of the given string name for the given thread. If no such timer
-	 * exists yet, then it will be newly created.
-	 * 
-	 * @param timerName the name of the timer
-	 * @param todoFlags
-	 * @param threadId  of the thread to track, or 0 if only system clock should be
-	 *                  tracked
-	 */
-	public static void resetNamedTimer(String timerName, int todoFlags, long threadId) {
-		getNamedTimer(timerName, todoFlags, threadId).reset();
-	}
-
-	/**
-	 * Get a timer of the given string name that takes all possible times (todos)
-	 * for the current thread. If no such timer exists yet, then it will be newly
-	 * created.
-	 * 
-	 * @param timerName the name of the timer
-	 * @return timer
-	 */
-	public static Timer getNamedTimer(String timerName) {
-		return getNamedTimer(timerName, RECORD_ALL, Thread.currentThread().getId());
-	}
-
-	/**
-	 * Returns all registered timers
-	 * 
-	 * @return an iterable collection of named timers
-	 */
-	public static Iterable<Timer> getNamedTimers() {
-		return registeredTimers.keySet();
-	}
-
-	/**
-	 * Get a timer of the given string name and todos for the current thread. If no
-	 * such timer exists yet, then it will be newly created.
-	 * 
-	 * @param timerName the name of the timer
-	 * @param todoFlags
-	 * @return timer
-	 */
-	public static Timer getNamedTimer(String timerName, int todoFlags) {
-		return getNamedTimer(timerName, todoFlags, Thread.currentThread().getId());
-	}
-
-	/**
-	 * Get a timer of the given string name for the given thread. If no such timer
-	 * exists yet, then it will be newly created.
-	 * 
-	 * @param timerName the name of the timer
-	 * @param todoFlags
-	 * @param threadId  of the thread to track, or 0 if only system clock should be
-	 *                  tracked
-	 * @return timer
-	 */
-	public static Timer getNamedTimer(String timerName, int todoFlags, long threadId) {
-		Timer key = new Timer(timerName, todoFlags, threadId);
-		Timer previous = registeredTimers.putIfAbsent(key, key);
-		if (previous != null) {
-			return previous;
-		}
-		// else
-		return key;
-	}
-
-	/**
-	 * Collect the total times measured by all known named timers of the given name.
-	 * 
-	 * @param timerName
-	 * @return timer
-	 */
-	public static Timer getNamedTotalTimer(String timerName) {
-		long totalCpuTime = 0;
-		long totalSystemTime = 0;
-		int measurements = 0;
-		int threadCount = 0;
-		int todoFlags = RECORD_NONE;
-		Timer previousTimer = null;
-		for (Map.Entry<Timer, Timer> entry : registeredTimers.entrySet()) {
-			if (entry.getValue().name.equals(timerName)) {
-				previousTimer = entry.getValue();
-				threadCount += 1;
-				totalCpuTime += previousTimer.totalCpuTime;
-				totalSystemTime += previousTimer.totalWallTime;
-				measurements += previousTimer.measurements;
-				todoFlags |= previousTimer.todoFlags;
-			}
-		}
-
-		if (threadCount == 1) {
-			return previousTimer;
-		} else {
-			Timer result = new Timer(timerName, todoFlags, 0);
-			result.totalCpuTime = totalCpuTime;
-			result.totalWallTime = totalSystemTime;
-			result.measurements = measurements;
-			result.threadCount = threadCount;
-			return result;
-		}
-	}
-
-	public static void logAllNamedTimers(String timerName) {
-		for (Map.Entry<Timer, Timer> entry : registeredTimers.entrySet()) {
-			if (entry.getValue().name.equals(timerName)) {
-				entry.getValue().log();
-			}
-		}
-	}
-
-	@Override
-	public int hashCode() {
-		// Jenkins hash, see http://www.burtleburtle.net/bob/hash/doobs.html and also
-		// http://en.wikipedia.org/wiki/Jenkins_hash_function.
-		int hash = name.hashCode();
-		hash += (hash << 10);
-		hash ^= (hash >> 6);
-		hash += Long.valueOf(threadId).hashCode();
-		hash += (hash << 10);
-		hash ^= (hash >> 6);
-		hash += Integer.valueOf(todoFlags).hashCode();
-		hash += (hash << 10);
-		hash ^= (hash >> 6);
-
-		hash += (hash << 3);
-		hash ^= (hash >> 11);
-		hash += (hash << 15);
-		return hash;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		} else if (obj == null) {
-			return false;
-		} else if (getClass() != obj.getClass()) {
-			return false;
-		} else if (threadId == ((Timer) obj).threadId && todoFlags == ((Timer) obj).todoFlags
-				&& name.equals(((Timer) obj).name)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+//	/**
+//	 * Print logging information for the timer. The log only shows the recorded time
+//	 * of the completed start-stop cycles. If the timer is still running, then it
+//	 * will not be stopped to add the currently measured time to the output but a
+//	 * warning will be logged.
+//	 * 
+//	 */
+//	public void log() {
+//		if (LOGGER.isInfoEnabled()) {
+//			String timerLabel;
+//			if (threadId != 0) {
+//				timerLabel = name + " (thread " + threadId + ")";
+//			} else if (threadCount > 1) {
+//				timerLabel = name + " (over " + threadCount + " threads)";
+//			} else {
+//				timerLabel = name;
+//			}
+//
+//			if (todoFlags == RECORD_NONE) {
+//				LOGGER.info("Timer " + timerLabel + " recorded " + measurements + " run(s), no times taken");
+//			} else {
+//				String labels = "";
+//				String values = "";
+//				String separator;
+//
+//				if ((todoFlags & RECORD_CPUTIME) != 0 && threadId != 0) {
+//					labels += "CPU";
+//					values += totalCpuTime / 1000000;
+//					separator = "/";
+//				} else {
+//					separator = "";
+//				}
+//				if ((todoFlags & RECORD_WALLTIME) != 0) {
+//					labels += separator + "Wall";
+//					values += separator + totalWallTime / 1000000;
+//				}
+//				if ((todoFlags & RECORD_CPUTIME) != 0 && threadId != 0) {
+//					labels += "/CPU avg";
+//					values += "/" + (float) (totalCpuTime) / measurements / 1000000;
+//				}
+//				if ((todoFlags & RECORD_WALLTIME) != 0) {
+//					labels += "/Wall avg";
+//					values += "/" + (float) (totalWallTime) / measurements / 1000000;
+//				}
+//				if (threadCount > 1) {
+//					if ((todoFlags & RECORD_CPUTIME) != 0 && threadId != 0) {
+//						labels += "/CPU per thread";
+//						values += "/" + (float) (totalCpuTime) / threadCount / 1000000;
+//					}
+//					if ((todoFlags & RECORD_WALLTIME) != 0) {
+//						labels += "/Wall per thread";
+//						values += "/" + (float) (totalWallTime) / threadCount / 1000000;
+//					}
+//				}
+//
+//				LOGGER.info(
+//						"Time for " + timerLabel + " for " + measurements + " run(s) " + labels + " (ms): " + values);
+//			}
+//
+//			if (isRunning) {
+//				LOGGER.warn("Timer " + timerLabel + " logged while it was still running");
+//			}
+//		}
+//	}
+//
+//	/**
+//	 * Start a timer of the given string name for all todos and the current thread.
+//	 * If no such timer exists yet, then it will be newly created.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 */
+//	public static void startNamedTimer(String timerName) {
+//		getNamedTimer(timerName).start();
+//	}
+//
+//	/**
+//	 * Start a timer of the given string name for the current thread. If no such
+//	 * timer exists yet, then it will be newly created.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 * @param todoFlags
+//	 */
+//	public static void startNamedTimer(String timerName, int todoFlags) {
+//		getNamedTimer(timerName, todoFlags).start();
+//	}
+//
+//	/**
+//	 * Start a timer of the given string name for the current thread. If no such
+//	 * timer exists yet, then it will be newly created.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 * @param todoFlags
+//	 * @param threadId  of the thread to track, or 0 if only system clock should be
+//	 *                  tracked
+//	 */
+//	public static void startNamedTimer(String timerName, int todoFlags, long threadId) {
+//		getNamedTimer(timerName, todoFlags, threadId).start();
+//	}
+//
+//	/**
+//	 * Stop a timer of the given string name for all todos and the current thread.
+//	 * If no such timer exists, -1 will be returned. Otherwise the return value is
+//	 * the CPU time that was measured.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 * @return CPU time if timer existed and was running, and -1 otherwise
+//	 */
+//	public static long stopNamedTimer(String timerName) {
+//		return stopNamedTimer(timerName, RECORD_ALL, Thread.currentThread().getId());
+//	}
+//
+//	/**
+//	 * Stop a timer of the given string name for the current thread. If no such
+//	 * timer exists, -1 will be returned. Otherwise the return value is the CPU time
+//	 * that was measured.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 * @param todoFlags
+//	 * @return CPU time if timer existed and was running, and -1 otherwise
+//	 */
+//	public static long stopNamedTimer(String timerName, int todoFlags) {
+//		return stopNamedTimer(timerName, todoFlags, Thread.currentThread().getId());
+//	}
+//
+//	/**
+//	 * Stop a timer of the given string name for the given thread. If no such timer
+//	 * exists, -1 will be returned. Otherwise the return value is the CPU time that
+//	 * was measured.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 * @param todoFlags
+//	 * @param threadId  of the thread to track, or 0 if only system clock should be
+//	 *                  tracked
+//	 * @return CPU time if timer existed and was running, and -1 otherwise
+//	 */
+//	public static long stopNamedTimer(String timerName, int todoFlags, long threadId) {
+//		Timer key = new Timer(timerName, todoFlags, threadId);
+//		if (registeredTimers.containsKey(key)) {
+//			return registeredTimers.get(key).stop();
+//		} else {
+//			return -1;
+//		}
+//	}
+//
+//	/**
+//	 * Reset a timer of the given string name for all todos and the current thread.
+//	 * If no such timer exists yet, then it will be newly created.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 */
+//	public static void resetNamedTimer(String timerName) {
+//		getNamedTimer(timerName).reset();
+//	}
+//
+//	/**
+//	 * Reset a timer of the given string name for the current thread. If no such
+//	 * timer exists yet, then it will be newly created.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 * @param todoFlags
+//	 */
+//	public static void resetNamedTimer(String timerName, int todoFlags) {
+//		getNamedTimer(timerName, todoFlags).reset();
+//	}
+//
+//	/**
+//	 * Reset a timer of the given string name for the given thread. If no such timer
+//	 * exists yet, then it will be newly created.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 * @param todoFlags
+//	 * @param threadId  of the thread to track, or 0 if only system clock should be
+//	 *                  tracked
+//	 */
+//	public static void resetNamedTimer(String timerName, int todoFlags, long threadId) {
+//		getNamedTimer(timerName, todoFlags, threadId).reset();
+//	}
+//
+//	/**
+//	 * Get a timer of the given string name that takes all possible times (todos)
+//	 * for the current thread. If no such timer exists yet, then it will be newly
+//	 * created.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 * @return timer
+//	 */
+//	public static Timer getNamedTimer(String timerName) {
+//		return getNamedTimer(timerName, RECORD_ALL, Thread.currentThread().getId());
+//	}
+//
+//	/**
+//	 * Returns all registered timers
+//	 * 
+//	 * @return an iterable collection of named timers
+//	 */
+//	public static Iterable<Timer> getNamedTimers() {
+//		return registeredTimers.keySet();
+//	}
+//
+//	/**
+//	 * Get a timer of the given string name and todos for the current thread. If no
+//	 * such timer exists yet, then it will be newly created.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 * @param todoFlags
+//	 * @return timer
+//	 */
+//	public static Timer getNamedTimer(String timerName, int todoFlags) {
+//		return getNamedTimer(timerName, todoFlags, Thread.currentThread().getId());
+//	}
+//
+//	/**
+//	 * Get a timer of the given string name for the given thread. If no such timer
+//	 * exists yet, then it will be newly created.
+//	 * 
+//	 * @param timerName the name of the timer
+//	 * @param todoFlags
+//	 * @param threadId  of the thread to track, or 0 if only system clock should be
+//	 *                  tracked
+//	 * @return timer
+//	 */
+//	public static Timer getNamedTimer(String timerName, int todoFlags, long threadId) {
+//		Timer key = new Timer(timerName, todoFlags, threadId);
+//		Timer previous = registeredTimers.putIfAbsent(key, key);
+//		if (previous != null) {
+//			return previous;
+//		}
+//		// else
+//		return key;
+//	}
+//
+//	/**
+//	 * Collect the total times measured by all known named timers of the given name.
+//	 * 
+//	 * @param timerName
+//	 * @return timer
+//	 */
+//	public static Timer getNamedTotalTimer(String timerName) {
+//		long totalCpuTime = 0;
+//		long totalSystemTime = 0;
+//		int measurements = 0;
+//		int threadCount = 0;
+//		int todoFlags = RECORD_NONE;
+//		Timer previousTimer = null;
+//		for (Map.Entry<Timer, Timer> entry : registeredTimers.entrySet()) {
+//			if (entry.getValue().name.equals(timerName)) {
+//				previousTimer = entry.getValue();
+//				threadCount += 1;
+//				totalCpuTime += previousTimer.totalCpuTime;
+//				totalSystemTime += previousTimer.totalWallTime;
+//				measurements += previousTimer.measurements;
+//				todoFlags |= previousTimer.todoFlags;
+//			}
+//		}
+//
+//		if (threadCount == 1) {
+//			return previousTimer;
+//		} else {
+//			Timer result = new Timer(timerName, todoFlags, 0);
+//			result.totalCpuTime = totalCpuTime;
+//			result.totalWallTime = totalSystemTime;
+//			result.measurements = measurements;
+//			result.threadCount = threadCount;
+//			return result;
+//		}
+//	}
+//
+//	public static void logAllNamedTimers(String timerName) {
+//		for (Map.Entry<Timer, Timer> entry : registeredTimers.entrySet()) {
+//			if (entry.getValue().name.equals(timerName)) {
+//				entry.getValue().log();
+//			}
+//		}
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		// Jenkins hash, see http://www.burtleburtle.net/bob/hash/doobs.html and also
+//		// http://en.wikipedia.org/wiki/Jenkins_hash_function.
+//		int hash = name.hashCode();
+//		hash += (hash << 10);
+//		hash ^= (hash >> 6);
+//		hash += Long.valueOf(threadId).hashCode();
+//		hash += (hash << 10);
+//		hash ^= (hash >> 6);
+//		hash += Integer.valueOf(todoFlags).hashCode();
+//		hash += (hash << 10);
+//		hash ^= (hash >> 6);
+//
+//		hash += (hash << 3);
+//		hash ^= (hash >> 11);
+//		hash += (hash << 15);
+//		return hash;
+//	}
+//
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj) {
+//			return true;
+//		} else if (obj == null) {
+//			return false;
+//		} else if (getClass() != obj.getClass()) {
+//			return false;
+//		} else if (threadId == ((Timer) obj).threadId && todoFlags == ((Timer) obj).todoFlags
+//				&& name.equals(((Timer) obj).name)) {
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 
 	protected static long getThreadCpuTime(long threadId) {
 		if (threadId == 0) { // generally invalid
