@@ -50,7 +50,8 @@ public class Interpreter {
 
 	final LinkedHashMap<String, CommandInterpreter> commandInterpreters = new LinkedHashMap<>();
 
-	public Interpreter(final Reasoner reasoner, final StyledPrinter printer, final ParserConfiguration parserConfiguration) {
+	public Interpreter(final Reasoner reasoner, final StyledPrinter printer,
+			final ParserConfiguration parserConfiguration) {
 		this.reasoner = reasoner;
 		this.printer = printer;
 		this.parserConfiguration = parserConfiguration;
@@ -154,6 +155,7 @@ public class Interpreter {
 		this.registerCommandInterpreter("setprefix", new SetPrefixCommandInterpreter());
 		this.registerCommandInterpreter("reason", new ReasonCommandInterpreter());
 		this.registerCommandInterpreter("query", new QueryCommandInterpreter());
+		this.registerCommandInterpreter("export", new ExportCommandInterpreter());
 		this.registerCommandInterpreter("showkb", new ShowKbCommandInterpreter());
 	}
 
@@ -197,8 +199,8 @@ public class Interpreter {
 		}
 	}
 
-	public static PositiveLiteral extractPositiveLiteralArgument(final Command command, final int index, final String parameterName)
-			throws CommandExecutionException {
+	public static PositiveLiteral extractPositiveLiteralArgument(final Command command, final int index,
+			final String parameterName) throws CommandExecutionException {
 		return command.getArguments().get(index).fromPositiveLiteral()
 				.orElseThrow(() -> getArgumentTypeError(index, "literal", parameterName));
 	}
