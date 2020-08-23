@@ -71,7 +71,7 @@ public class CommandReader {
 			readLine = "@" + readLine;
 		}
 		if (readLine.charAt(readLine.length() - 1) != '.') {
-			readLine = readLine + ".";
+			readLine = readLine + " .";
 		}
 
 		try {
