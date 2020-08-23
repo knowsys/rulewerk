@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import org.semanticweb.rulewerk.core.model.api.Command;
-import org.semanticweb.rulewerk.core.model.api.Terms;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
 
@@ -32,28 +31,17 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
-		if (command.getArguments().size() == 1) {
-			String fileName;
-			try {
-				fileName = Terms.extractString(
-						command.getArguments().get(0).fromTerm().orElseThrow(() -> new CommandExecutionException(
-								"Expected string for file name, but did not find a term.")));
-			} catch (IllegalArgumentException e) {
-				throw new CommandExecutionException("Failed to convert term given for file name to string.");
-			}
-			try {
-				FileInputStream fileInputStream = new FileInputStream(fileName);
-				RuleParser.parseInto(interpreter.getKnowledgeBase(), fileInputStream);
-			} catch (FileNotFoundException e) {
-				throw new CommandExecutionException(e.getMessage(), e);
-			} catch (ParsingException e) {
-				interpreter.getWriter().println("Error parsing file: " + e.getMessage());
-			}
+		Interpreter.validateArgumentCount(command, 1);
+		String fileName = Interpreter.extractStringArgument(command, 0, "filename");
 
-		} else {
-			throw new CommandExecutionException(getHelp(command.getName()));
+		try {
+			FileInputStream fileInputStream = new FileInputStream(fileName);
+			RuleParser.parseInto(interpreter.getKnowledgeBase(), fileInputStream);
+		} catch (FileNotFoundException e) {
+			throw new CommandExecutionException(e.getMessage(), e);
+		} catch (ParsingException e) {
+			interpreter.getWriter().println("Error parsing file: " + e.getMessage());
 		}
-
 	}
 
 	@Override

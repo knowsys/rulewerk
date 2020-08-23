@@ -45,7 +45,7 @@ public class ReasonCommandInterpreter implements CommandInterpreter {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}
 		timer.stop();
-		interpreter.getWriter().println("... finished in " + timer.getTotalCpuTime() / 1000000 + "ms.");
+		interpreter.getWriter().println("... finished in " + timer.getTotalWallTime() / 1000000 + "ms (" + timer.getTotalCpuTime() / 1000000 + "ms CPU time).");
 	}
 
 	@Override
