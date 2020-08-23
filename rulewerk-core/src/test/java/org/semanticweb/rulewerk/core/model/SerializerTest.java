@@ -210,8 +210,19 @@ public class SerializerTest {
 		prefixes.setPrefixIri("eg:", "http://example.org/");
 		Serializer prefSerializer = new Serializer(writer, prefixes);
 
-		prefSerializer.writePrefixDeclarationRegistry(prefixes);
+		boolean result = prefSerializer.writePrefixDeclarationRegistry(prefixes);
 		assertEquals("@base <http://example.org/base> .\n@prefix eg: <http://example.org/> .\n", writer.toString());
+		assertTrue(result);
+	}
+
+	@Test
+	public void serializeEmptyPrefixDeclarations() throws IOException {
+		final MergingPrefixDeclarationRegistry prefixes = new MergingPrefixDeclarationRegistry();
+		Serializer prefSerializer = new Serializer(writer, prefixes);
+
+		boolean result = prefSerializer.writePrefixDeclarationRegistry(prefixes);
+		assertEquals("", writer.toString());
+		assertFalse(result);
 	}
 
 	@Test
@@ -275,6 +286,14 @@ public class SerializerTest {
 	public void serializeDataSourceDeclaration_fails() throws IOException {
 		DataSourceDeclaration csvSourceDecl = new DataSourceDeclarationImpl(p1, new CsvFileDataSource("test.csv"));
 		getThrowingSerializer().writeStatement(csvSourceDecl);
+	}
+
+	@Test(expected = IOException.class)
+	public void serializePrefixDeclarations_fails() throws IOException {
+		final MergingPrefixDeclarationRegistry prefixes = new MergingPrefixDeclarationRegistry();
+		prefixes.setBaseIri("http://example.org/base");
+		prefixes.setPrefixIri("eg:", "http://example.org/");
+		getThrowingSerializer().writePrefixDeclarationRegistry(prefixes);
 	}
 
 }

@@ -467,12 +467,16 @@ public class Serializer {
 	}
 
 	/**
-	 * Writes a serialization of the given {@link PrefixDeclarationRegistry}.
+	 * Writes a serialization of the given {@link PrefixDeclarationRegistry}, and
+	 * returns true if anything has been written.
 	 *
 	 * @param prefixDeclarationRegistry a {@link PrefixDeclarationRegistry}
 	 * @throws IOException
+	 * @return true if anything has been written
 	 */
-	public void writePrefixDeclarationRegistry(PrefixDeclarationRegistry prefixDeclarationRegistry) throws IOException {
+	public boolean writePrefixDeclarationRegistry(PrefixDeclarationRegistry prefixDeclarationRegistry)
+			throws IOException {
+		boolean result = false;
 		final String baseIri = prefixDeclarationRegistry.getBaseIri();
 		if (!PrefixDeclarationRegistry.EMPTY_BASE.contentEquals(baseIri)) {
 			writer.write("@base <");
@@ -480,6 +484,7 @@ public class Serializer {
 			writer.write(">");
 			writer.write(STATEMENT_END);
 			writer.write("\n");
+			result = true;
 		}
 
 		Iterator<Entry<String, String>> prefixIterator = prefixDeclarationRegistry.iterator();
@@ -492,7 +497,9 @@ public class Serializer {
 			writer.write(">");
 			writer.write(STATEMENT_END);
 			writer.write("\n");
+			result = true;
 		}
+		return result;
 	}
 
 	/**

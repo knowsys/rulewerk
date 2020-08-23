@@ -591,19 +591,33 @@ public class KnowledgeBase implements Iterable<Statement> {
 	public void writeKnowledgeBase(Writer writer) throws IOException {
 		Serializer serializer = new Serializer(writer, prefixDeclarationRegistry);
 
-		serializer.writePrefixDeclarationRegistry(prefixDeclarationRegistry);
+		boolean makeSeperator = serializer.writePrefixDeclarationRegistry(prefixDeclarationRegistry);
 
 		for (DataSourceDeclaration dataSourceDeclaration : this.getDataSourceDeclarations()) {
+			if (makeSeperator) {
+				writer.write('\n');
+				makeSeperator = false;
+			}
 			serializer.writeDataSourceDeclaration(dataSourceDeclaration);
 			writer.write('\n');
 		}
+		makeSeperator |= !this.getDataSourceDeclarations().isEmpty();
 
 		for (Fact fact : this.getFacts()) {
+			if (makeSeperator) {
+				writer.write('\n');
+				makeSeperator = false;
+			}
 			serializer.writeFact(fact);
 			writer.write('\n');
 		}
+		makeSeperator |= !this.getFacts().isEmpty();
 
 		for (Rule rule : this.getRules()) {
+			if (makeSeperator) {
+				writer.write('\n');
+				makeSeperator = false;
+			}
 			serializer.writeRule(rule);
 			writer.write('\n');
 		}

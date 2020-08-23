@@ -163,6 +163,6 @@ public class KnowledgeBaseTest {
 		StringWriter writer = new StringWriter();
 		this.kb.writeKnowledgeBase(writer);
 		assertEquals("@source S[1]: sparql(<" + sparqlIri + ">, \"?X\", \"" + sparqlBgp
-				+ "\") .\nP(c) .\nP(d) .\nQ(c) .\nP(?X) :- Q(?X) .\n", writer.toString());
+				+ "\") .\n\nP(c) .\nP(d) .\nQ(c) .\n\nP(?X) :- Q(?X) .\n", writer.toString());
 	}
 }
