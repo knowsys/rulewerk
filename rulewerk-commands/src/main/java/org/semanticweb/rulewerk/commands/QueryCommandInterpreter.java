@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.commands;
 
+import java.io.IOException;
+
 /*-
  * #%L
  * Rulewerk Core Components
@@ -28,6 +30,7 @@ import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.Terms;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.reasoner.LiteralQueryResultPrinter;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Timer;
 
@@ -59,17 +62,22 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 			throw new CommandExecutionException("Unrecognized arguments");
 		}
 
+		LiteralQueryResultPrinter printer = new LiteralQueryResultPrinter(literal, interpreter.getWriter(),
+				interpreter.getKnowledgeBase().getPrefixDeclarationRegistry());
+
 		Timer timer = new Timer("query");
 		timer.start();
 		try (final QueryResultIterator answers = interpreter.getReasoner().answerQuery(literal, true)) {
 			int count = 0;
 			while (count != limit && answers.hasNext()) {
-				interpreter.getWriter().println(" " + answers.next());
+				printer.write(answers.next());
 				count++;
 			}
 			timer.stop();
 			interpreter.getWriter().println(count + " result(s) in " + timer.getTotalCpuTime() / 1000000
 					+ "ms. Results are " + answers.getCorrectness() + ".");
+		} catch (IOException e) {
+			throw new CommandExecutionException(e.getMessage(), e);
 		}
 	}
 
