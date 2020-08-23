@@ -27,6 +27,7 @@ import java.io.Writer;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
@@ -98,6 +99,41 @@ public class InterpreterTest {
 		Interpreter interpreter = getMockInterpreter(writer);
 
 		interpreter.parseCommand("malformed .");
+	}
+
+	@Test
+	public void prefixesAreUsed_succeeds() throws ParsingException, PrefixDeclarationException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+		interpreter.getKnowledgeBase().getPrefixDeclarationRegistry().setPrefixIri("eg:", "http://example.org/");
+
+		Command command = interpreter.parseCommand("@somecommand eg:test .");
+
+		assertEquals(1, command.getArguments().size());
+		assertTrue(command.getArguments().get(0).fromTerm().isPresent());
+		assertEquals("http://example.org/test", command.getArguments().get(0).fromTerm().get().getName());
+	}
+
+	@Test
+	public void print_succeeds() {
+		StringWriter writer = new StringWriter();
+		SimpleStyledPrinter printer = Mockito.spy(new SimpleStyledPrinter(writer));
+		ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
+		Reasoner reasoner = Mockito.mock(Reasoner.class);
+		Interpreter interpreter = new Interpreter(reasoner, printer, parserConfiguration);
+
+		interpreter.printCode("Code");
+		interpreter.printNormal("Normal");
+		interpreter.printEmph("Emph");
+		interpreter.printSection("Section");
+		interpreter.printImportant("Important");
+
+		Mockito.verify(printer).printCode("Code");
+		Mockito.verify(printer).printNormal("Normal");
+		Mockito.verify(printer).printEmph("Emph");
+		Mockito.verify(printer).printSection("Section");
+		Mockito.verify(printer).printImportant("Important");
+
 	}
 
 }

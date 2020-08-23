@@ -20,8 +20,8 @@ package org.semanticweb.rulewerk.commands;
  * #L%
  */
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -35,12 +35,12 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		String fileName = Interpreter.extractStringArgument(command, 0, "filename");
 
 		try {
-			FileInputStream fileInputStream = new FileInputStream(fileName);
-			RuleParser.parseInto(interpreter.getKnowledgeBase(), fileInputStream);
+			InputStream inputStream = interpreter.getFileInputStream(fileName);
+			RuleParser.parseInto(interpreter.getKnowledgeBase(), inputStream);
 		} catch (FileNotFoundException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		} catch (ParsingException e) {
-			interpreter.printNormal("Error parsing file: " + e.getMessage() + "\n");
+			throw new CommandExecutionException("Error parsing file: " + e.getMessage(), e);
 		}
 	}
 

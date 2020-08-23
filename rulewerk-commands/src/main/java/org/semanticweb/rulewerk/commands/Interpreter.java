@@ -1,6 +1,7 @@
 package org.semanticweb.rulewerk.commands;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -208,8 +209,26 @@ public class Interpreter {
 				.orElseThrow(() -> getArgumentTypeError(index, "literal", parameterName));
 	}
 
+	/**
+	 * Returns a Writer to write to the specified file.
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws FileNotFoundException
+	 */
 	public Writer getFileWriter(String fileName) throws FileNotFoundException {
 		return new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Returns an InputStream to read from the specified file.
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	public InputStream getFileInputStream(String fileName) throws FileNotFoundException {
+		return new FileInputStream(fileName);
 	}
 
 }
