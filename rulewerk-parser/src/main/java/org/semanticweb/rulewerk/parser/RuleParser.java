@@ -26,7 +26,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
-import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Entity;
 import org.semanticweb.rulewerk.core.model.api.Fact;
@@ -252,15 +251,6 @@ public class RuleParser {
 
 	public static DataSourceDeclaration parseDataSourceDeclaration(final String input) throws ParsingException {
 		return parseDataSourceDeclaration(input, null);
-	}
-
-	public static Command parseCommand(final String input, ParserConfiguration parserConfiguration)
-			throws ParsingException {
-		return parseSyntaxFragment(input, JavaCCParser::command, "command", parserConfiguration);
-	}
-
-	public static Command parseCommand(final String input) throws ParsingException {
-		return parseCommand(input, null);
 	}
 
 	static KnowledgeBase doParse(final JavaCCParser parser) throws ParsingException {
