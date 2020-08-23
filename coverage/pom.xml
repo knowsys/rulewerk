@@ -44,6 +44,11 @@
 		<artifactId>rulewerk-parser</artifactId>
 		<version>${project.version}</version>
 	  </dependency>
+          <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>rulewerk-commands</artifactId>
+                <version>${project.version}</version>
+          </dependency>
 	  <dependency>
 		<groupId>${project.groupId}</groupId>
 		<artifactId>rulewerk-client</artifactId>
