@@ -70,28 +70,30 @@ public class CompareWikidataDBpedia {
 
 		// Configure the SPARQL data sources and some rules to analyse results:
 		final String rules = "" //
-				+ "@prefix wdqs: <https://query.wikidata.org/> ." //
-				+ "@prefix dbp: <https://dbpedia.org/> ." //
-				+ "@source dbpResult[2] : sparql(dbp:sparql, \"result,enwikipage\", '''" + dbpediaSparql + "''') ." //
-				+ "@source wdResult[2] : sparql(wdqs:sparql, \"result,enwikipage\", '''" + wikidataSparql + "''') ." //
+				+ "@prefix wdqs: <https://query.wikidata.org/> .\n" //
+				+ "@prefix dbp: <https://dbpedia.org/> .\n" //
+				+ "@source dbpResult[2] : sparql(dbp:sparql, \"result,enwikipage\", '''" + dbpediaSparql + "''') .\n" //
+				+ "@source wdResult[2] : sparql(wdqs:sparql, \"result,enwikipage\", '''" + wikidataSparql + "''') .\n" //
 				+ "% Rules:\n" //
-				+ "inWd(?Wikipage) :- wdResult(?WdId,?Wikipage)." //
-				+ "inDbp(?Wikipage) :- dbpResult(?DbpId,?Wikipage)." //
-				+ "result(?Wikipage) :- inWd(?Wikipage)." //
-				+ "result(?Wikipage) :- inDbp(?Wikipage)." //
-				+ "match(?WdId,?DbpId) :- dbpResult(?DbpId,?Wikipage), wdResult(?WdId,?Wikipage)."
-				+ "dbpOnly(?Wikipage) :- inDbp(?Wikipage), ~inWd(?Wikipage)."
-				+ "wdpOnly(?WdId,?Wikipage) :- wdResult(?WdId,?Wikipage), ~inDbp(?Wikipage)." + ""; //
+				+ "inWd(?Wikipage) :- wdResult(?WdId,?Wikipage).\n" //
+				+ "inDbp(?Wikipage) :- dbpResult(?DbpId,?Wikipage).\n" //
+				+ "result(?Wikipage) :- inWd(?Wikipage).\n" //
+				+ "result(?Wikipage) :- inDbp(?Wikipage).\n" //
+				+ "match(?WdId,?DbpId) :- dbpResult(?DbpId,?Wikipage), wdResult(?WdId,?Wikipage).\n"
+				+ "dbpOnly(?Wikipage) :- inDbp(?Wikipage), ~inWd(?Wikipage).\n"
+				+ "wdpOnly(?WdId,?Wikipage) :- wdResult(?WdId,?Wikipage), ~inDbp(?Wikipage).\n"; //
+
+		System.out.println("Knowledge base used in this example:\n\n" + rules);
 
 		final KnowledgeBase kb = RuleParser.parse(rules);
 
 		try (final Reasoner reasoner = new VLogReasoner(kb)) {
 			reasoner.reason();
 
-			final double resultCount = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("result(?X)"))
+			final long resultCount = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("result(?X)"))
 					.getCount();
-			final double wdCount = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("inWd(?X)")).getCount();
-			final double dbpCount = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("inDbp(?X)")).getCount();
+			final long wdCount = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("inWd(?X)")).getCount();
+			final long dbpCount = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral("inDbp(?X)")).getCount();
 
 			System.out.println("Found " + resultCount + " matching entities overall, of which " + wdCount
 					+ " were in Wikidata and " + dbpCount + " were in DBPedia");
