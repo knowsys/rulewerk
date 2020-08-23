@@ -30,44 +30,117 @@ import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.Terms;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.reasoner.Correctness;
 import org.semanticweb.rulewerk.core.reasoner.LiteralQueryResultPrinter;
+import org.semanticweb.rulewerk.core.reasoner.QueryAnswerCount;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Timer;
 
 public class QueryCommandInterpreter implements CommandInterpreter {
 
 	public static Term KEYWORD_LIMIT = Expressions.makeAbstractConstant("LIMIT");
+	public static Term KEYWORD_COUNT = Expressions.makeAbstractConstant("COUNT");
+	public static Term KEYWORD_TOFILE = Expressions.makeAbstractConstant("EXPORTCSV");
+
+	private PositiveLiteral queryLiteral;
+	private int limit;
+	private boolean doCount;
+	private String csvFile;
 
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
+		processArguments(command.getArguments());
 
-		List<Argument> arguments = command.getArguments();
-		PositiveLiteral literal;
-
-		if (arguments.size() > 0 && arguments.get(0).fromPositiveLiteral().isPresent()) {
-			literal = arguments.get(0).fromPositiveLiteral().get();
+		if (doCount) {
+			printCountQueryResults(interpreter);
+		} else if (csvFile == null) {
+			printQueryResults(interpreter);
 		} else {
-			throw new CommandExecutionException("First argument must be a query literal.");
+			exportQueryResults(interpreter);
+		}
+	}
+
+	@Override
+	public String getHelp(String commandName) {
+		return "Usage: @" + commandName + " [COUNT] <query literal> [LIMIT <limit>] [EXPORTCSV <filename>] .\n"
+				+ " query literal: positive literal; may use ?queryVariables and ?existentialVariables\n"
+				+ " limit: maximal number of results to be shown\n"
+				+ " filename: string path to CSV file for exporting query results";
+	}
+
+	@Override
+	public String getSynopsis() {
+		return "print or export query results";
+	}
+
+	private void processArguments(List<Argument> arguments) throws CommandExecutionException {
+		int pos = 0;
+		limit = -1;
+		doCount = false;
+		csvFile = null;
+
+		if (arguments.size() > 0 && KEYWORD_COUNT.equals(arguments.get(0).fromTerm().orElse(null))) {
+			doCount = true;
+			pos++;
 		}
 
-		int limit = -1;
-		if (arguments.size() == 3 && KEYWORD_LIMIT.equals(arguments.get(1).fromTerm().orElse(null))
-				&& arguments.get(2).fromTerm().isPresent()) {
-			try {
-				limit = Terms.extractInt(arguments.get(2).fromTerm().get());
-			} catch (IllegalArgumentException e) {
-				throw new CommandExecutionException("Invalid limit given: " + arguments.get(3).fromTerm().get());
+		if (arguments.size() > pos && arguments.get(pos).fromPositiveLiteral().isPresent()) {
+			queryLiteral = arguments.get(pos).fromPositiveLiteral().get();
+			pos++;
+		} else {
+			throw new CommandExecutionException("A query literal must be given.");
+		}
+
+		while (arguments.size() > pos) {
+			if (arguments.size() > pos + 1 && KEYWORD_LIMIT.equals(arguments.get(pos).fromTerm().orElse(null))
+					&& arguments.get(pos + 1).fromTerm().isPresent()) {
+				try {
+					limit = Terms.extractInt(arguments.get(pos + 1).fromTerm().get());
+					pos += 2;
+				} catch (IllegalArgumentException e) {
+					throw new CommandExecutionException(
+							"Invalid limit given: " + arguments.get(pos + 1).fromTerm().get());
+				}
+			} else if (arguments.size() > pos + 1 && KEYWORD_TOFILE.equals(arguments.get(pos).fromTerm().orElse(null))
+					&& arguments.get(pos + 1).fromTerm().isPresent()) {
+				try {
+					csvFile = Terms.extractString(arguments.get(pos + 1).fromTerm().get());
+					pos += 2;
+				} catch (IllegalArgumentException e) {
+					throw new CommandExecutionException(
+							"Invalid filename given: " + arguments.get(pos + 1).fromTerm().get());
+				}
+			} else {
+				throw new CommandExecutionException("Unrecognized arguments");
 			}
-		} else if (arguments.size() != 1) {
-			throw new CommandExecutionException("Unrecognized arguments");
+		}
+	}
+
+	private void printCountQueryResults(Interpreter interpreter) throws CommandExecutionException {
+		if (limit != -1) {
+			throw new CommandExecutionException("LIMIT not supported with COUNT");
+		}
+		if (csvFile != null) {
+			throw new CommandExecutionException("COUNT results cannot be exported to CSV");
 		}
 
-		LiteralQueryResultPrinter printer = new LiteralQueryResultPrinter(literal, interpreter.getWriter(),
+		Timer timer = new Timer("query");
+		timer.start();
+		QueryAnswerCount count = interpreter.getReasoner().countQueryAnswers(queryLiteral);
+		timer.stop();
+
+		interpreter.printNormal(String.valueOf(count.getCount()) + "\n");
+		interpreter.printNormal("Answered in " + timer.getTotalCpuTime() / 1000000 + "ms.");
+		interpreter.printNormal(" This result is " + count.getCorrectness() + ".\n");
+	}
+
+	private void printQueryResults(Interpreter interpreter) throws CommandExecutionException {
+		LiteralQueryResultPrinter printer = new LiteralQueryResultPrinter(queryLiteral, interpreter.getWriter(),
 				interpreter.getKnowledgeBase().getPrefixDeclarationRegistry());
 
 		Timer timer = new Timer("query");
 		timer.start();
-		try (final QueryResultIterator answers = interpreter.getReasoner().answerQuery(literal, true)) {
+		try (final QueryResultIterator answers = interpreter.getReasoner().answerQuery(queryLiteral, true)) {
 			while (printer.getResultCount() != limit && answers.hasNext()) {
 				printer.write(answers.next());
 			}
@@ -86,15 +159,22 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 		}
 	}
 
-	@Override
-	public String getHelp(String commandName) {
-		return "Usage: @" + commandName + " <query literal> [LIMIT <limit>] .\n"
-				+ " query literal: positive literal; may use ?queryVariables and ?existentialVariables\n"
-				+ " limit: maximal number of results to be shown";
-	}
+	private void exportQueryResults(Interpreter interpreter) throws CommandExecutionException {
+		if (limit != -1) {
+			throw new CommandExecutionException("LIMIT not supported for CSV export");
+		}
 
-	@Override
-	public String getSynopsis() {
-		return "print results to queries";
+		Timer timer = new Timer("query");
+		timer.start();
+		Correctness correctness;
+		try {
+			correctness = interpreter.getReasoner().exportQueryAnswersToCsv(queryLiteral, csvFile, true);
+		} catch (IOException e) {
+			throw new CommandExecutionException(e.getMessage(), e);
+		}
+		timer.stop();
+
+		interpreter.printNormal("Written query result file in " + timer.getTotalCpuTime() / 1000000 + "ms.");
+		interpreter.printNormal(" This result is " + correctness + ".\n");
 	}
 }
