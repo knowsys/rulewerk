@@ -70,13 +70,13 @@ public class RunExperiment {
 		System.out.println(content);
 	}
 
-	// not stratifiable.
+	// not stratifiable. Is it?
 	static private void chasingSets() throws ParsingException, IOException {
 		String base = "/home/lgonzale/ontologies/chasing-sets/";
 		// normal
 		long first[] = new long[10];
 		long second[] = new long[10];
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1; i++) {
 			first[i] = materialize(base + "original/rules.rls", base + "original/data.lp", base + "logs/data-ori.log");
 			System.out.println(first[i]);
 			second[i] = materialize(base + "transformed/rules.rls", base + "transformed/data.lp",
@@ -239,11 +239,11 @@ public class RunExperiment {
 	}
 
 	public static void main(final String[] args) throws IOException, ParsingException {
-//		chasingSets(); // error in c? - it was non stratifiable
-//		crossword(); // it was non stratifiable
-//		threeColErdos();
-//		threeColPowerLaw();
-//		hamiltonianErdos(); // it was not stratifiable
-		hamiltonianPowerLaw(); // it was not stratifiable
+//		chasingSets();         // error in c?
+//		crossword();           // slower with our transformation. more rule executions also
+//		threeColErdos();       // better with big graphs
+//		threeColPowerLaw();    // better only in special cases
+//		hamiltonianErdos();    // slower
+//		hamiltonianPowerLaw(); // slower
 	}
 }
