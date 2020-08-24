@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.completer.ArgumentCompleter;
+import org.jline.reader.impl.completer.NullCompleter;
 import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -59,13 +61,16 @@ public final class DefaultConfiguration {
 		return lineReader;
 	}
 
+
 	private static Completer buildCompleter(final Interpreter interpreter) {
 		final Set<String> registeredCommandNames = interpreter.getRegisteredCommands();
 		final List<String> serializedCommandNames = registeredCommandNames.stream()
-				.map(commandName -> "@" + commandName)
-				.collect(Collectors.toList());
-		return new StringsCompleter(serializedCommandNames);
+				.map(commandName -> "@" + commandName).collect(Collectors.toList());
+		final Completer commandNamesCompleter = new StringsCompleter(serializedCommandNames);
+		// do not complete command arguments
+		return new ArgumentCompleter(commandNamesCompleter, NullCompleter.INSTANCE);
 	}
+
 
 	public static Terminal buildTerminal() throws IOException {
 		return TerminalBuilder.builder().dumb(true).jansi(true).jna(false).system(true).build();
