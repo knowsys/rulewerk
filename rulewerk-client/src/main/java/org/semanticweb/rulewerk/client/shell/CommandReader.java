@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.client.shell;
 
+import org.jline.reader.EndOfFileException;
+
 /*-
  * #%L
  * Rulewerk Client
@@ -61,6 +63,10 @@ public class CommandReader {
 			} else {
 				return null; // used as empty command
 			}
+		} catch (final EndOfFileException e) {
+			// Exit request from user CTRL+D
+			return ExitCommandInterpreter.EXIT_COMMAND;
+
 		}
 
 		readLine = readLine.trim();
