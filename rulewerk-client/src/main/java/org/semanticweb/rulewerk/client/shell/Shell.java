@@ -64,7 +64,7 @@ public class Shell {
 				}
 			}
 		}
-		interpreter.printSection("Existing Rulewerk shell ... bye.\n\n");
+		interpreter.printSection("Exiting Rulewerk shell ... bye.\n\n");
 	}
 
 	public void exitShell() {
