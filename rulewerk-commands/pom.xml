@@ -27,5 +27,15 @@
 		  <artifactId>rulewerk-parser</artifactId>
 		  <version>${project.version}</version>
 	  </dependency>
+	  <dependency>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>rulewerk-owlapi</artifactId>
+                  <version>${project.version}</version>
+	  </dependency>
+	            <dependency>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>rulewerk-rdf</artifactId>
+                  <version>${project.version}</version>
+          </dependency>
   </dependencies>
 </project>
