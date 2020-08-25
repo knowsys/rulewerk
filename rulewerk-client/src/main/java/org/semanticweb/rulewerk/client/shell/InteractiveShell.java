@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
+import org.jline.utils.AttributedString;
 import org.semanticweb.rulewerk.commands.Interpreter;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
@@ -51,7 +52,7 @@ public class InteractiveShell
 		final Shell shell = new Shell(interpreter);
 
 		final LineReader lineReader = DefaultConfiguration.buildLineReader(terminal, interpreter);
-		final PromptProvider promptProvider = DefaultConfiguration.buildPromptProvider();
+		final AttributedString promptProvider = DefaultConfiguration.buildPromptProvider();
 		final CommandReader commandReader = new CommandReader(lineReader, promptProvider, interpreter);
 
 		shell.run(commandReader);
