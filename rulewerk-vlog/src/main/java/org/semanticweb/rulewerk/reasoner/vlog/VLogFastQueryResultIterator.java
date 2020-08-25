@@ -117,8 +117,8 @@ public class VLogFastQueryResultIterator implements QueryResultIterator {
 	 */
 	private final VLog vLog;
 	/**
-	 * VLog ids of the previous tuple, with the last id fixed to -1 (since it is never
-	 * useful in caching).
+	 * VLog ids of the previous tuple, with the last id fixed to -1 (since it is
+	 * never useful in caching).
 	 */
 	private long[] prevIds = null;
 	/**
