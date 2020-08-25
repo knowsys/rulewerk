@@ -3,6 +3,7 @@ package org.semanticweb.rulewerk.parser;
 import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.TridentDataSource;
 
 /*-
  * #%L
@@ -27,6 +28,7 @@ import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDa
 import org.semanticweb.rulewerk.parser.datasources.CsvFileDataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.datasources.RdfFileDataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.datasources.SparqlQueryResultDataSourceDeclarationHandler;
+import org.semanticweb.rulewerk.parser.datasources.TridentDataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.directives.ImportFileDirectiveHandler;
 import org.semanticweb.rulewerk.parser.directives.ImportFileRelativeDirectiveHandler;
 
@@ -50,6 +52,7 @@ public class DefaultParserConfiguration extends ParserConfiguration {
 		registerDataSource(RdfFileDataSource.declarationPredicateName, new RdfFileDataSourceDeclarationHandler());
 		registerDataSource(SparqlQueryResultDataSource.declarationPredicateName,
 				new SparqlQueryResultDataSourceDeclarationHandler());
+		registerDataSource(TridentDataSource.declarationPredicateName, new TridentDataSourceDeclarationHandler());
 	}
 
 	private void registerDefaultDirectives() {
