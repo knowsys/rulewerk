@@ -40,8 +40,6 @@ import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationI
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
-import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.TridentDataSource;
 
 public class VLogReasonerTridentInput {
