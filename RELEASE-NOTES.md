@@ -7,6 +7,8 @@ Rulewerk v0.7.0
 New features:
 * New interactive Rulewerk shell for rule reasoning from the command line client 
 * Significant speedup in iterating over query results
+* Support for using data from a Trident database, the recommended data source for large
+  RDF graphs in VLog
 * New class `LiteralQueryResultPrinter` for pretty-printing query results
 
 Other improvements:
