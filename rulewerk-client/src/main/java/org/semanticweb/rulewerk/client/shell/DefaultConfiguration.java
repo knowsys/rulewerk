@@ -21,16 +21,17 @@ package org.semanticweb.rulewerk.client.shell;
  */
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import org.jline.builtins.Completers;
+import org.jline.builtins.Completers.FileNameCompleter;
+import org.jline.builtins.Completers.TreeCompleter;
+import org.jline.builtins.Completers.TreeCompleter.Node;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.impl.completer.ArgumentCompleter;
-import org.jline.reader.impl.completer.NullCompleter;
-import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedString;
@@ -48,8 +49,7 @@ public final class DefaultConfiguration {
 
 	public static LineReader buildLineReader(final Terminal terminal, final Interpreter interpreter) {
 		final LineReaderBuilder lineReaderBuilder = LineReaderBuilder.builder().terminal(terminal)
-				.appName("Rulewerk Shell")
-				.completer(buildCompleter(interpreter))
+				.appName("Rulewerk Shell").completer(buildCompleter(interpreter))
 		// .expander(expander())
 		// .history(buildHistory())
 		// .highlighter(buildHighlighter())
@@ -61,16 +61,22 @@ public final class DefaultConfiguration {
 		return lineReader;
 	}
 
-
 	private static Completer buildCompleter(final Interpreter interpreter) {
-		final Set<String> registeredCommandNames = interpreter.getRegisteredCommands();
-		final List<String> serializedCommandNames = registeredCommandNames.stream()
-				.map(commandName -> "@" + commandName).collect(Collectors.toList());
-		final Completer commandNamesCompleter = new StringsCompleter(serializedCommandNames);
-		// do not complete command arguments
-		return new ArgumentCompleter(commandNamesCompleter, NullCompleter.INSTANCE);
-	}
+// @load and @export commands require a file name as argument
+		final FileNameCompleter fileNameCompleter = new Completers.FileNameCompleter();
 
+		final Set<String> registeredCommandNames = interpreter.getRegisteredCommands();
+		final List<Node> nodes = new ArrayList<>();
+		registeredCommandNames.stream().map(commandName -> "@" + commandName).forEach(serializedCommandName -> {
+			if (serializedCommandName.equals("@load") || serializedCommandName.equals("@export")) {
+				nodes.add(TreeCompleter.node(serializedCommandName, TreeCompleter.node(fileNameCompleter)));
+			} else {
+				nodes.add(TreeCompleter.node(serializedCommandName));
+			}
+		});
+		return new TreeCompleter(nodes);
+
+	}
 
 	public static Terminal buildTerminal() throws IOException {
 		return TerminalBuilder.builder().dumb(true).jansi(true).jna(false).system(true).build();
