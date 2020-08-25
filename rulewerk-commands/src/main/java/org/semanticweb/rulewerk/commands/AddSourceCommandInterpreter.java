@@ -53,7 +53,7 @@ public class AddSourceCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void printHelp(String commandName, Interpreter interpreter) {
-		interpreter.printNormal("Usage: @" + commandName + " <predicateName>[<arity>]: <source declartion>.\n"
+		interpreter.printNormal("Usage: @" + commandName + " <predicateName>[<arity>]: <source declaration>.\n"
 				+ " <predicateName>[<arity>] : the name of the predicate and its arity\n"
 				+ " <source declaration> : a fact specifying a source declaration\n\n"
 				+ "Note that every predicate can have multiple sources.\n");
@@ -87,7 +87,7 @@ public class AddSourceCommandInterpreter implements CommandInterpreter {
 			return interpreter.getParserConfiguration()
 					.parseDataSourceSpecificPartOfDataSourceDeclaration(sourceDeclaration);
 		} catch (ParsingException e) {
-			throw new CommandExecutionException("Could not parse source declartion: " + e.getMessage());
+			throw new CommandExecutionException("Could not parse source declaration: " + e.getMessage());
 		}
 	}
 
