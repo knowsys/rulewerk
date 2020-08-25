@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
@@ -41,6 +42,7 @@ import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.TridentDataSource;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
@@ -50,6 +52,7 @@ public class RuleParserDataSourceTest {
 	private static final String EXAMPLE_RDF_FILE_PATH = "src/main/data/input/example.nt.gz";
 	private static final String EXAMPLE_CSV_FILE_PATH = "src/main/data/input/example.csv";
 	private static final String WIKIDATA_SPARQL_ENDPOINT_URI = "https://query.wikidata.org/sparql";
+	private static final String EXAMPLE_TRIDENT_PATH = "src/main/data/trident";
 
 	@Test
 	public void testCsvSource() throws ParsingException, IOException {
@@ -191,6 +194,27 @@ public class RuleParserDataSourceTest {
 	@Test
 	public void parseDataSourceDeclaration_windowsStylePathName_succeeds() throws ParsingException, IOException {
 		RuleParser.parseDataSourceDeclaration("@source p[1] : load-csv(\"\\\\test\\\\with\\\\backslashes.csv\") .");
+	}
+
+	@Test
+	public void testTridentSource_succeeds() throws ParsingException, IOException {
+		String input = "@source p[2] : trident(\"" + EXAMPLE_TRIDENT_PATH + "\") .";
+		DataSource parsed = RuleParser.parseDataSourceDeclaration(input).getDataSource();
+		TridentDataSource expected = new TridentDataSource(EXAMPLE_TRIDENT_PATH);
+
+		assertEquals(expected, parsed);
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testTridentSourcewrongParameterCount_fails() throws ParsingException, IOException {
+		String input = "@source p[2] : trident(\"" + EXAMPLE_TRIDENT_PATH + "\", 42) .";
+		RuleParser.parseDataSourceDeclaration(input).getDataSource();
+	}
+
+	@Test(expected = ParsingException.class)
+	public void testTridentSourcewrongParameterType_fails() throws ParsingException, IOException {
+		String input = "@source p[2] : trident(42) .";
+		RuleParser.parseDataSourceDeclaration(input).getDataSource();
 	}
 
 }
