@@ -68,7 +68,7 @@ public final class DefaultConfiguration {
 		final Set<String> registeredCommandNames = interpreter.getRegisteredCommands();
 		final List<Node> nodes = new ArrayList<>();
 		registeredCommandNames.stream().map(commandName -> "@" + commandName).forEach(serializedCommandName -> {
-			if (serializedCommandName.equals("@load") || serializedCommandName.equals("@export")) {
+			if (serializedCommandName.equals("@load")) {
 				nodes.add(TreeCompleter.node(serializedCommandName, TreeCompleter.node(fileNameCompleter)));
 			} else {
 				nodes.add(TreeCompleter.node(serializedCommandName));
