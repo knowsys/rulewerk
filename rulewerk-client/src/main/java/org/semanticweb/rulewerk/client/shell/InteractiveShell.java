@@ -49,13 +49,12 @@ public class InteractiveShell
 		final Terminal terminal = DefaultConfiguration.buildTerminal();
 		final Interpreter interpreter = initializeInterpreter(terminal);
 
-		final Shell shell = new Shell(interpreter);
 
 		final LineReader lineReader = DefaultConfiguration.buildLineReader(terminal, interpreter);
 		final AttributedString promptProvider = DefaultConfiguration.buildPromptProvider();
-		final CommandReader commandReader = new CommandReader(lineReader, promptProvider, interpreter);
 
-		shell.run(commandReader);
+		final Shell shell = new Shell(lineReader, promptProvider, interpreter);
+		shell.run();
 
 	}
 
