@@ -22,6 +22,7 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
@@ -47,6 +48,7 @@ public class TridentDataSource implements ReasonerDataSource {
 	final String filePath;
 
 	public TridentDataSource(final String filePath) {
+		Validate.notBlank(filePath, "Path to Trident database cannot be blank!");
 		this.filePath = filePath;
 	}
 
@@ -64,7 +66,6 @@ public class TridentDataSource implements ReasonerDataSource {
 	@Override
 	public void accept(DataSourceConfigurationVisitor visitor) throws IOException {
 		visitor.visit(this);
-
 	}
 
 	@Override
