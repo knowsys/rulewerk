@@ -130,6 +130,16 @@ public class LoadCommandInterpreterTest {
 		Command command = interpreter.parseCommand("@load OWL 'src/test/data/loadtest-fails.owl' .");
 		interpreter.runCommand(command);
 	}
+	
+	@Test(expected = CommandExecutionException.class)
+	public void correctUseWithOwlTask_missingFile_fails()
+			throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Command command = interpreter.parseCommand("@load OWL 'src/test/data/file-does-not-exist.owl' .");
+		interpreter.runCommand(command);
+	}
 
 	@Test(expected = CommandExecutionException.class)
 	public void correctUseParseError_fails() throws ParsingException, CommandExecutionException, IOException {
