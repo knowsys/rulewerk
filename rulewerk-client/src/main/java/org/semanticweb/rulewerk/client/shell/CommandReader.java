@@ -33,13 +33,13 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 public class CommandReader {
 
 	private final LineReader lineReader;
-	private final PromptProvider promptProvider;
+	private final AttributedString prompt;
 	private final Interpreter interpreter;
 
-	public CommandReader(final LineReader lineReader, final PromptProvider promptProvider,
+	public CommandReader(final LineReader lineReader, final AttributedString prompt,
 			final Interpreter interpreter) {
 		this.lineReader = lineReader;
-		this.promptProvider = promptProvider;
+		this.prompt = prompt;
 		this.interpreter = interpreter;
 	}
 
@@ -54,8 +54,7 @@ public class CommandReader {
 	public Command readCommand() {
 		String readLine;
 		try {
-			final AttributedString prompt = this.promptProvider.getPrompt();
-			readLine = this.lineReader.readLine(prompt.toAnsi(this.lineReader.getTerminal()));
+			readLine = this.lineReader.readLine(this.prompt.toAnsi(this.lineReader.getTerminal()));
 		} catch (final UserInterruptException e) {
 			if (e.getPartialLine().isEmpty()) {
 				// Exit request from user CTRL+C

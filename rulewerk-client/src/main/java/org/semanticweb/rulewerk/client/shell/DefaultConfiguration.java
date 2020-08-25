@@ -43,9 +43,10 @@ public final class DefaultConfiguration {
 	private DefaultConfiguration() {
 	}
 
-	public static PromptProvider buildPromptProvider() {
-		return () -> new AttributedString("rulewerk>", AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
+	public static AttributedString buildPromptProvider() {
+		return new AttributedString("rulewerk>", AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
 	}
+
 
 	public static LineReader buildLineReader(final Terminal terminal, final Interpreter interpreter) {
 		final LineReaderBuilder lineReaderBuilder = LineReaderBuilder.builder().terminal(terminal)
