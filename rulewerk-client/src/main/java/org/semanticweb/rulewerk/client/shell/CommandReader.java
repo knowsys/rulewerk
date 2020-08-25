@@ -36,8 +36,7 @@ public class CommandReader {
 	private final AttributedString prompt;
 	private final Interpreter interpreter;
 
-	public CommandReader(final LineReader lineReader, final AttributedString prompt,
-			final Interpreter interpreter) {
+	public CommandReader(final LineReader lineReader, final AttributedString prompt, final Interpreter interpreter) {
 		this.lineReader = lineReader;
 		this.prompt = prompt;
 		this.interpreter = interpreter;
@@ -82,9 +81,8 @@ public class CommandReader {
 		try {
 			return this.interpreter.parseCommand(readLine);
 		} catch (final ParsingException e) {
-			// FIXME do I need to flush terminal?
-			this.lineReader.getTerminal().writer()
-					.println("Error: " + e.getMessage() + "\n" + e.getCause().getMessage());
+			this.interpreter.printNormal("Error: " + e.getMessage() + "\n" + e.getCause().getMessage());
+
 			return null;
 		}
 	}
