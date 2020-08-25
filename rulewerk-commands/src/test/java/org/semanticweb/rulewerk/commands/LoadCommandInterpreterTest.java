@@ -101,6 +101,25 @@ public class LoadCommandInterpreterTest {
 		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
 		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
 	}
+	
+	@Test
+	public void correctUseWithOwlTask_UnsupportedAxioms_succeeds() throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Predicate predicate = Expressions.makePredicate("http://example.org/C", 1);
+		Term term = Expressions.makeAbstractConstant("http://example.org/a");
+		Fact fact = Expressions.makeFact(predicate, term);
+
+		Command command = interpreter.parseCommand("@load OWL 'src/test/data/loadtest-unsupported.owl' .");
+		interpreter.runCommand(command);
+
+		assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+		// OUtput mentions the offending axiom in Functional-Style Syntax:
+		assertTrue(writer.toString().contains("InverseFunctionalObjectProperty(<http://example.org/p>)"));
+	}
 
 	@Test(expected = CommandExecutionException.class)
 	public void correctUseWithOwlTask_malformedOwl_fails()

@@ -76,7 +76,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 
 		interpreter.printNormal(
 				"Loaded " + (interpreter.getKnowledgeBase().getFacts().size() - countFactsBefore) + " new fact(s) and "
-						+ (interpreter.getKnowledgeBase().getRules().size() - countRulesBefore) + " new rule(s)\n");
+						+ (interpreter.getKnowledgeBase().getRules().size() - countRulesBefore) + " new rule(s).\n");
 
 	}
 
@@ -102,8 +102,19 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		interpreter.printNormal(
 				"Found OWL ontology with " + ontology.getLogicalAxiomCount() + " logical OWL axioms ...\n");
 
-		final OwlToRulesConverter owlToRulesConverter = new OwlToRulesConverter();
+		final OwlToRulesConverter owlToRulesConverter = new OwlToRulesConverter(false);
 		owlToRulesConverter.addOntology(ontology);
+		if (owlToRulesConverter.getUnsupportedAxiomsCount() > 0) {
+			interpreter.printImportant("Warning: Some OWL axioms could not be converted to rules.\n");
+			owlToRulesConverter.getUnsupportedAxiomsSample()
+					.forEach((owlAxiom) -> interpreter.printNormal(owlAxiom.toString() + "\n"));
+			if (owlToRulesConverter.getUnsupportedAxiomsSample().size() < owlToRulesConverter
+					.getUnsupportedAxiomsCount()) {
+				interpreter.printNormal("...\n");
+			}
+			interpreter.printNormal("Encountered " + owlToRulesConverter.getUnsupportedAxiomsCount()
+					+ " unsupported logical axioms in total.\n");
+		}
 
 		interpreter.getKnowledgeBase().addStatements(owlToRulesConverter.getRules());
 		interpreter.getKnowledgeBase().addStatements(owlToRulesConverter.getFacts());
