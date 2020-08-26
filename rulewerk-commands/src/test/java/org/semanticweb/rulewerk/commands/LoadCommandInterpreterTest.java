@@ -32,6 +32,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
@@ -85,6 +86,29 @@ public class LoadCommandInterpreterTest {
 		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
 	}
 
+	@Test(expected = CommandExecutionException.class)
+	public void correctUseParseError_fails() throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		InputStream inputStream = new ByteArrayInputStream("not parsable".getBytes(StandardCharsets.UTF_8));
+		Interpreter origInterpreter = InterpreterTest.getMockInterpreter(writer);
+		Interpreter interpreter = Mockito.spy(origInterpreter);
+		Mockito.doReturn(inputStream).when(interpreter).getFileInputStream(Mockito.eq("loadtest.rls"));
+
+		Command command = interpreter.parseCommand("@load 'loadtest.rls' .");
+		interpreter.runCommand(command);
+	}
+
+	@Test(expected = CommandExecutionException.class)
+	public void correctUseFileNotFoundError_fails() throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		Interpreter origInterpreter = InterpreterTest.getMockInterpreter(writer);
+		Interpreter interpreter = Mockito.spy(origInterpreter);
+		Mockito.doThrow(FileNotFoundException.class).when(interpreter).getFileInputStream(Mockito.eq("loadtest.rls"));
+
+		Command command = interpreter.parseCommand("@load 'loadtest.rls' .");
+		interpreter.runCommand(command);
+	}
+
 	@Test
 	public void correctUseWithOwlTask_succeeds() throws ParsingException, CommandExecutionException, IOException {
 		StringWriter writer = new StringWriter();
@@ -101,9 +125,10 @@ public class LoadCommandInterpreterTest {
 		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
 		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
 	}
-	
+
 	@Test
-	public void correctUseWithOwlTask_UnsupportedAxioms_succeeds() throws ParsingException, CommandExecutionException, IOException {
+	public void correctUseWithOwlTask_UnsupportedAxioms_succeeds()
+			throws ParsingException, CommandExecutionException, IOException {
 		StringWriter writer = new StringWriter();
 		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
 
@@ -130,7 +155,7 @@ public class LoadCommandInterpreterTest {
 		Command command = interpreter.parseCommand("@load OWL 'src/test/data/loadtest-fails.owl' .");
 		interpreter.runCommand(command);
 	}
-	
+
 	@Test(expected = CommandExecutionException.class)
 	public void correctUseWithOwlTask_missingFile_fails()
 			throws ParsingException, CommandExecutionException, IOException {
@@ -141,26 +166,85 @@ public class LoadCommandInterpreterTest {
 		interpreter.runCommand(command);
 	}
 
-	@Test(expected = CommandExecutionException.class)
-	public void correctUseParseError_fails() throws ParsingException, CommandExecutionException, IOException {
+	@Test
+	public void correctUseWithRdfTask_Nt_succeeds()
+			throws ParsingException, CommandExecutionException, IOException, PrefixDeclarationException {
 		StringWriter writer = new StringWriter();
-		InputStream inputStream = new ByteArrayInputStream("not parsable".getBytes(StandardCharsets.UTF_8));
-		Interpreter origInterpreter = InterpreterTest.getMockInterpreter(writer);
-		Interpreter interpreter = Mockito.spy(origInterpreter);
-		Mockito.doReturn(inputStream).when(interpreter).getFileInputStream(Mockito.eq("loadtest.rls"));
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
 
-		Command command = interpreter.parseCommand("@load 'loadtest.rls' .");
+		Predicate predicate = Expressions.makePredicate("TRIPLE", 3);
+		Term terma = Expressions.makeAbstractConstant("http://example.org/a");
+		Term termb = Expressions.makeAbstractConstant("http://example.org/b");
+		Term termc = Expressions.makeAbstractConstant("http://example.org/c");
+		Fact fact = Expressions.makeFact(predicate, terma, termb, termc);
+
+		Command command = interpreter.parseCommand("@load RDF 'src/test/data/loadtest.nt' .");
+		interpreter.runCommand(command);
+
+		assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+	}
+
+	@Test
+	public void correctUseWithRdfTask_Turtle_succeeds()
+			throws ParsingException, CommandExecutionException, IOException, PrefixDeclarationException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Predicate predicate = Expressions.makePredicate("TRIPLE", 3);
+		Term terma = Expressions.makeAbstractConstant("http://example.org/a");
+		Term termb = Expressions.makeAbstractConstant("http://example.org/b");
+		Term termc = Expressions.makeAbstractConstant("http://example.org/c");
+		Fact fact = Expressions.makeFact(predicate, terma, termb, termc);
+
+		Command command = interpreter.parseCommand("@load RDF 'src/test/data/loadtest.ttl' .");
+		interpreter.runCommand(command);
+
+		assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+		assertEquals("http://example.org/", interpreter.getKnowledgeBase().getPrefixIri(":"));
+		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+	}
+
+	@Test
+	public void correctUseWithRdfTask_RdfXml_succeeds()
+			throws ParsingException, CommandExecutionException, IOException, PrefixDeclarationException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Predicate predicate = Expressions.makePredicate("TRIPLE", 3);
+		Term terma = Expressions.makeAbstractConstant("http://example.org/a");
+		Term termb = Expressions.makeAbstractConstant("http://example.org/b");
+		Term termc = Expressions.makeAbstractConstant("http://example.org/c");
+		Fact fact = Expressions.makeFact(predicate, terma, termb, termc);
+
+		Command command = interpreter.parseCommand("@load RDF 'src/test/data/loadtest.rdf' .");
+		interpreter.runCommand(command);
+
+		assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+		assertEquals("http://example.org/", interpreter.getKnowledgeBase().getPrefixIri("eg:"));
+		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+	}
+
+	@Test(expected = CommandExecutionException.class)
+	public void correctUseWithRdfTask_malformedRdf_fails()
+			throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Command command = interpreter.parseCommand("@load RDF 'src/test/data/loadtest-fails.owl' .");
 		interpreter.runCommand(command);
 	}
 
 	@Test(expected = CommandExecutionException.class)
-	public void correctUseFileNotFoundError_fails() throws ParsingException, CommandExecutionException, IOException {
+	public void correctUseWithRdfTask_missingFile_fails()
+			throws ParsingException, CommandExecutionException, IOException {
 		StringWriter writer = new StringWriter();
-		Interpreter origInterpreter = InterpreterTest.getMockInterpreter(writer);
-		Interpreter interpreter = Mockito.spy(origInterpreter);
-		Mockito.doThrow(FileNotFoundException.class).when(interpreter).getFileInputStream(Mockito.eq("loadtest.rls"));
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
 
-		Command command = interpreter.parseCommand("@load 'loadtest.rls' .");
+		Command command = interpreter.parseCommand("@load RDF 'src/test/data/file-does-not-exist.rdf' .");
 		interpreter.runCommand(command);
 	}
 

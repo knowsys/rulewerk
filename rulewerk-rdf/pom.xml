@@ -46,7 +46,6 @@
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-turtle</artifactId>
 			<version>${openrdf.sesame.version}</version>
-			<scope>test</scope>
 		</dependency>
 		<!-- Useful Collection utilities, like intersection -->
 		<dependency>
