@@ -47,7 +47,7 @@ import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
-public class TestConvertRdfFileToFacts {
+public class IntegrationTestsConvertRdfFiles {
 	
 	final RdfModelConverter rdfModelConverter = new RdfModelConverter();
 

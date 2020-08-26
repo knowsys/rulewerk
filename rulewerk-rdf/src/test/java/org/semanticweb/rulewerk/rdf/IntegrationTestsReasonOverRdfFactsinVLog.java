@@ -46,7 +46,7 @@ import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
-public class TestReasonOverRdfFacts {
+public class IntegrationTestsReasonOverRdfFactsinVLog {
 	
 	final RdfModelConverter rdfModelConverter = new RdfModelConverter();
 

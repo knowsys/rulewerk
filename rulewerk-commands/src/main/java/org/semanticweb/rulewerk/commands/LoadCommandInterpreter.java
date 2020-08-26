@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openrdf.model.Model;
-import org.openrdf.model.Namespace;
 import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
@@ -43,7 +42,6 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.owlapi.OwlToRulesConverter;
@@ -166,15 +164,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 			}
 
 			RdfModelConverter rdfModelConverter = new RdfModelConverter(true);
-			interpreter.getKnowledgeBase().addStatements(rdfModelConverter.rdfModelToFacts(model));
-			for (Namespace namespace : model.getNamespaces()) {
-				try {
-					interpreter.getKnowledgeBase().getPrefixDeclarationRegistry()
-							.setPrefixIri(namespace.getPrefix() + ":", namespace.getName());
-				} catch (PrefixDeclarationException e) {
-					// ignore this prefix
-				}
-			}
+			rdfModelConverter.addAll(interpreter.getKnowledgeBase(), model);
 		} catch (IOException e) {
 			throw new CommandExecutionException("Could not read input: " + e.getMessage(), e);
 		}
