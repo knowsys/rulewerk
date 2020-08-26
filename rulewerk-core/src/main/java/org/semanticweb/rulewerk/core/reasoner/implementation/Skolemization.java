@@ -92,11 +92,8 @@ public class Skolemization {
 	 *         instance and {@code namedNull}.
 	 */
 	public AbstractConstant getSkolemConstant(NamedNull namedNull) {
-		if (namedNull instanceof RenamedNamedNull) {
-			return new AbstractConstantImpl(getSkolemConstantNameFromUniqueName(namedNull.getName()));
-		} else {
-			return new AbstractConstantImpl(getSkolemConstantName(namedNull.getName()));
-		}
+		return new AbstractConstantImpl(getSkolemConstantName(namedNull));
+
 	}
 
 	/**
@@ -109,6 +106,23 @@ public class Skolemization {
 	 */
 	public String getSkolemConstantName(String name) {
 		return getSkolemConstantNameFromUniqueName(getFreshName(name).toString());
+	}
+
+	/**
+	 * Returns the name (IRI string) of a skolem constant for skolemising the given
+	 * named {@link NamedNull}. The method ensures that a new unique name is
+	 * generated unless the given object is already a {@link RenamedNamedNull}.
+	 * 
+	 * @param name the name of the {@link NamedNull} to be renamed here (or any
+	 *             other string for which to create a unique renaming)
+	 * @return string that is an IRI for a skolem constant
+	 */
+	public String getSkolemConstantName(NamedNull namedNull) {
+		if (namedNull instanceof RenamedNamedNull) {
+			return getSkolemConstantNameFromUniqueName(namedNull.getName());
+		} else {
+			return getSkolemConstantName(namedNull.getName());
+		}
 	}
 
 	/**
