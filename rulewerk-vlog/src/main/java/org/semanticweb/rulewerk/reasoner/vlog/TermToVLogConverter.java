@@ -30,7 +30,6 @@ import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.TermVisitor;
 import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
-import org.semanticweb.rulewerk.core.model.implementation.RenamedNamedNull;
 import org.semanticweb.rulewerk.core.reasoner.implementation.Skolemization;
 
 /**
@@ -94,11 +93,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * @return VLog constant string
 	 */
 	public static String getVLogNameForNamedNull(final NamedNull namedNull) {
-		if (namedNull instanceof RenamedNamedNull) {
-			return namedNull.getName();
-		} else {
-			return skolemization.getRenamedNamedNull(namedNull.getName()).getName();
-		}
+		return skolemization.getSkolemConstantName(namedNull);
 	}
 
 	/**
