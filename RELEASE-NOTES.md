@@ -9,15 +9,18 @@ New features:
 * Significant speedup in iterating over query results
 * Support for using data from a Trident database, the recommended data source for large
   RDF graphs in VLog
+* More features to control how Rulewerk imports RDF data using rulewerk-rdf module
 * New class `LiteralQueryResultPrinter` for pretty-printing query results
 
 Other improvements:
 * Improved serialization of knowledge bases (using namespaces)
 * Simple (non-IRI, namespace-less) predicate names can now include - and _
+* Nulls in input data (aka "blank nodes") are now properly skolemized for VLog
 * InMemoryGraphAnalysisExample now counts proper triangles using negation to avoid "triangles" where
   two or more edges are the same.
   
 Breaking changes:
+* The `RdfModelConverter` class from the rdf package is no longer static (and has more options)
 * The `Serializer` class in the core package has been replaced by a new implementation
   with a completely different interface. 
 * The methods `getSerialization` that were present in most syntax objects have been removed. Use `toString()` instead for simple serializations, or invoke a custom Serializer.
