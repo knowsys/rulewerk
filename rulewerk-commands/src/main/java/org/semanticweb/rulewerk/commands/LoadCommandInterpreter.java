@@ -89,7 +89,8 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		} else if (TASK_RDF.equals(task)) {
 			loadRdf(interpreter, fileName);
 		} else {
-			throw new CommandExecutionException("Unknown task " + task + ". Should be " + TASK_RLS + " or " + TASK_OWL);
+			throw new CommandExecutionException(
+					"Unknown task " + task + ". Should be one of " + TASK_RLS + ", " + TASK_OWL + ", " + TASK_RDF);
 		}
 
 		interpreter.printNormal(
@@ -191,14 +192,15 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 	public void printHelp(String commandName, Interpreter interpreter) {
 		interpreter.printNormal("Usage: @" + commandName + " [TASK] <file>\n" //
 				+ " file: path to the file to load\n" //
-				+ " TASK: optional; one of RULES (default) or OWL:\n" //
+				+ " TASK: optional; one of RULES (default), OWL, RDF:\n" //
 				+ "       RULES to load a knowledge base in Rulewerk rls format\n" //
-				+ "       OWL to load an OWL ontology and convert it to rules\n");
+				+ "       OWL to load an OWL ontology and convert it to facts and rules\n" //
+				+ "       RDF to load an RDF document and convert it to facts for predicate TRIPLE[3]\n");
 	}
 
 	@Override
 	public String getSynopsis() {
-		return "load a knowledge base from file (in Rulewerk rls format)";
+		return "load a knowledge base from file (in Rulewerk format, OWL, or RDF)";
 	}
 
 }
