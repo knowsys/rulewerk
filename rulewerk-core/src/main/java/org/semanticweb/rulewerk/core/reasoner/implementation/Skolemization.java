@@ -49,7 +49,7 @@ public class Skolemization {
 	/**
 	 * Prefix used to ensure that UUID-based local names do not start with a number.
 	 */
-	private final static String SKOLEM_UUID_START = "ID";
+	private final static String SKOLEM_UUID_START = "B-";
 
 	/**
 	 * The namespace to use for skolemizing named null names.
