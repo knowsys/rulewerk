@@ -3,8 +3,6 @@ package org.semanticweb.rulewerk.client.shell;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
-import org.jline.terminal.Terminal;
-import org.jline.utils.AttributedString;
 
 /*-
  * #%L
@@ -53,7 +51,7 @@ public class Shell {
 		}
 	}
 
-	public void run(final LineReader lineReader, final AttributedString prompt) {
+	public void run(final LineReader lineReader, final String prompt) {
 		this.printWelcome();
 
 		this.running = true;
@@ -84,12 +82,14 @@ public class Shell {
 	 * made to interpret mistyped commands by adding @ and . before and after the
 	 * input, if forgotten.
 	 * 
+	 * @param prompt
+	 * 
 	 * @return command or null
 	 */
-	public Command readCommand(final LineReader lineReader, final AttributedString prompt) {
+	public Command readCommand(final LineReader lineReader, final String prompt) {
 		String readLine;
 		try {
-			readLine = this.readLine(lineReader, prompt);
+			readLine = lineReader.readLine(prompt);
 		} catch (final UserInterruptException e) {
 			if (e.getPartialLine().isEmpty()) {
 				// Exit request from user CTRL+C
@@ -116,19 +116,14 @@ public class Shell {
 		}
 	}
 
-	private String readLine(final LineReader lineReader, final AttributedString prompt) {
-		final Terminal terminal = lineReader.getTerminal();
-		return lineReader.readLine(prompt.toAnsi(terminal));
-	}
-
 	String processReadLine(final String readLine) {
 		String result = readLine.trim();
 		if (!result.isEmpty()) {
-			if (readLine.charAt(0) != '@') {
-				result = "@" + readLine;
+			if (result.charAt(0) != '@') {
+				result = "@" + result;
 			}
-			if (readLine.charAt(readLine.length() - 1) != '.') {
-				result = readLine + " .";
+			if (result.charAt(result.length() - 1) != '.') {
+				result = result + " .";
 			}
 		}
 		return result;

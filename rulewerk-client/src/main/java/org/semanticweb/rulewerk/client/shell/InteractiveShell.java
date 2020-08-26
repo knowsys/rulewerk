@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
-import org.jline.utils.AttributedString;
 import org.semanticweb.rulewerk.commands.Interpreter;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
@@ -39,24 +38,20 @@ public class InteractiveShell
 //implements Runnable
 {
 
-	public static void main(final String[] args) throws IOException {
-		run();
-	}
-
 //	@Override
-	public static void run() throws IOException {
+	public void run() throws IOException {
 
 		final Terminal terminal = DefaultConfiguration.buildTerminal();
-		final Interpreter interpreter = initializeInterpreter(terminal);
+		final Interpreter interpreter = this.initializeInterpreter(terminal);
 		final Shell shell = new Shell(interpreter);
 
 		final LineReader lineReader = DefaultConfiguration.buildLineReader(terminal, interpreter);
-		final AttributedString promptProvider = DefaultConfiguration.buildPromptProvider();
+		final String prompt = DefaultConfiguration.buildPrompt(terminal);
 
-		shell.run(lineReader, promptProvider);
+		shell.run(lineReader, prompt);
 	}
 
-	static Interpreter initializeInterpreter(final Terminal terminal) {
+	Interpreter initializeInterpreter(final Terminal terminal) {
 		final KnowledgeBase knowledgeBase = new KnowledgeBase();
 		final Reasoner reasoner = new VLogReasoner(knowledgeBase);
 		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();

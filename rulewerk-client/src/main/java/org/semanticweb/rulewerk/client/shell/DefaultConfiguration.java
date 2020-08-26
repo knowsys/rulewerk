@@ -43,11 +43,6 @@ public final class DefaultConfiguration {
 	private DefaultConfiguration() {
 	}
 
-	public static AttributedString buildPromptProvider() {
-		return new AttributedString("rulewerk>", AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
-	}
-
-
 	public static LineReader buildLineReader(final Terminal terminal, final Interpreter interpreter) {
 		final LineReaderBuilder lineReaderBuilder = LineReaderBuilder.builder().terminal(terminal)
 				.appName("Rulewerk Shell").completer(buildCompleter(interpreter))
@@ -83,6 +78,15 @@ public final class DefaultConfiguration {
 
 	public static Terminal buildTerminal() throws IOException {
 		return TerminalBuilder.builder().dumb(true).jansi(true).jna(false).system(true).build();
+	}
+
+	public static String buildPrompt(final Terminal terminal) {
+		return buildPromptProvider().toAnsi(terminal);
+	}
+
+	public static AttributedString buildPromptProvider() {
+		final AttributedStyle promptStyle = AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW);
+		return new AttributedString("rulewerk>", promptStyle);
 	}
 
 }

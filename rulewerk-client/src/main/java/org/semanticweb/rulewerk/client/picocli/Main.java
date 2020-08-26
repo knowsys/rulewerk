@@ -46,7 +46,7 @@ public class Main {
 		configureLogging();
 		
 		if (args.length == 0 || (args.length > 0 && args[0].equals("shell"))) {
-			InteractiveShell.run();
+			new InteractiveShell().run();
 		} else {
 			if (args[0].equals("materialize")) {
 				final CommandLine commandline = new CommandLine(new RulewerkClientMaterialize());
