@@ -100,7 +100,6 @@ public class Shell {
 		} catch (final EndOfFileException e) {
 			// Exit request from user CTRL+D
 			return ExitCommandInterpreter.EXIT_COMMAND;
-
 		}
 
 		readLine = this.processReadLine(readLine);
