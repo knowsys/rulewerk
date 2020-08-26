@@ -72,9 +72,45 @@ public class RetractCommandInterpreterTest {
 		assertTrue(rules.isEmpty());
 		assertTrue(dataSourceDeclarations.isEmpty());
 	}
+	
+	@Test
+	public void correctUse_retractPredicate_succeeds() throws ParsingException, CommandExecutionException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+		Term a = Expressions.makeAbstractConstant("a");
+		Term b = Expressions.makeAbstractConstant("b");
+		Predicate p = Expressions.makePredicate("p", 1);
+		Predicate q = Expressions.makePredicate("q", 1);
+		Fact pa = Expressions.makeFact(p, a);
+		Fact pb = Expressions.makeFact(p, b);
+		Fact qa = Expressions.makeFact(q, a);
+
+		interpreter.getKnowledgeBase().addStatement(pa);
+		interpreter.getKnowledgeBase().addStatement(pb);
+		interpreter.getKnowledgeBase().addStatement(qa);
+
+		Command command = interpreter.parseCommand("@retract p[1] .");
+		interpreter.runCommand(command);
+		List<Fact> facts = interpreter.getKnowledgeBase().getFacts();
+		List<Rule> rules = interpreter.getKnowledgeBase().getRules();
+		List<DataSourceDeclaration> dataSourceDeclarations = interpreter.getKnowledgeBase().getDataSourceDeclarations();
+
+		assertEquals(Arrays.asList(qa), facts);
+		assertTrue(rules.isEmpty());
+		assertTrue(dataSourceDeclarations.isEmpty());
+	}
 
 	@Test(expected = CommandExecutionException.class)
-	public void wrongArgumentTerm_fails() throws ParsingException, CommandExecutionException {
+	public void wrongArgumentTermNumber_fails() throws ParsingException, CommandExecutionException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Command command = interpreter.parseCommand("@retract 42 .");
+		interpreter.runCommand(command);
+	}
+	
+	@Test(expected = CommandExecutionException.class)
+	public void wrongArgumentTermStringNoPredicate_fails() throws ParsingException, CommandExecutionException {
 		StringWriter writer = new StringWriter();
 		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
 
