@@ -162,7 +162,7 @@ public class JavaCCParserBase {
 	}
 
 	NamedNull createNamedNull(String lexicalForm) throws ParseException {
-		return this.skolemization.skolemizeNamedNull(lexicalForm);
+		return this.skolemization.getRenamedNamedNull(lexicalForm);
 	}
 
 	void addStatement(Statement statement) {

@@ -22,11 +22,11 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
+import org.semanticweb.rulewerk.core.model.implementation.NamedNullImpl;
 
 public class SkolemizationTest {
 	private Skolemization skolemization;
@@ -39,38 +39,60 @@ public class SkolemizationTest {
 	}
 
 	@Test
-	public void skolemizeNamedNull_sameName_mapsToSameNamedNull() throws IOException {
-		NamedNull null1 = skolemization.skolemizeNamedNull(name1);
-		NamedNull null2 = skolemization.skolemizeNamedNull(name1);
+	public void skolemizeNamedNull_sameName_mapsToSameNamedNull() {
+		NamedNull null1 = skolemization.getRenamedNamedNull(name1);
+		NamedNull null2 = skolemization.getRenamedNamedNull(name1);
 
 		assertEquals(null1.getName(), null2.getName());
 	}
 
 	@Test
-	public void skolemizeNamedNull_differentName_mapsToDifferentNamedNull() throws IOException {
-		NamedNull null1 = skolemization.skolemizeNamedNull(name1);
-		NamedNull null2 = skolemization.skolemizeNamedNull(name2);
+	public void skolemizeNamedNull_differentName_mapsToDifferentNamedNull() {
+		NamedNull null1 = skolemization.getRenamedNamedNull(name1);
+		NamedNull null2 = skolemization.getRenamedNamedNull(name2);
 
 		assertNotEquals(null1.getName(), null2.getName());
 	}
 
 	@Test
-	public void skolemizeNamedNull_differentInstances_mapsToDifferentNamedNull() throws IOException {
-		NamedNull null1 = skolemization.skolemizeNamedNull(name1);
+	public void skolemizeNamedNull_differentInstances_mapsToDifferentNamedNull() {
+		NamedNull null1 = skolemization.getRenamedNamedNull(name1);
 		Skolemization other = new Skolemization();
-		NamedNull null2 = other.skolemizeNamedNull(name1);
+		NamedNull null2 = other.getRenamedNamedNull(name1);
 
 		assertNotEquals(null1.getName(), null2.getName());
 	}
 
 	@Test
-	public void skolemizeNamedNull_differentInstancesDifferentNames_mapsToDifferentNamedNull() throws IOException {
-		NamedNull null1 = skolemization.skolemizeNamedNull(name1);
+	public void skolemizeNamedNull_differentInstancesDifferentNames_mapsToDifferentNamedNull() {
+		NamedNull null1 = skolemization.getRenamedNamedNull(name1);
 		Skolemization other = new Skolemization();
-		NamedNull null2 = other.skolemizeNamedNull(name2);
+		NamedNull null2 = other.getRenamedNamedNull(name2);
 
 		assertNotEquals(null1.getName(), null2.getName());
-		assertEquals(null1.getName(), skolemization.skolemizeNamedNull(name1).getName());
-		assertEquals(null2.getName(), other.skolemizeNamedNull(name2).getName());
+		assertEquals(null1.getName(), skolemization.getRenamedNamedNull(name1).getName());
+		assertEquals(null2.getName(), other.getRenamedNamedNull(name2).getName());
+	}
+
+	@Test
+	public void skolemConstant_succeeds() {
+		AbstractConstant skolem = skolemization.getSkolemConstant(name1);
+		assertTrue(skolem.getName().startsWith(Skolemization.SKOLEM_IRI_PREFIX));
+	}
+
+	@Test
+	public void skolemConstantFromNamedNull_succeeds() {
+		NamedNull null1 = new NamedNullImpl(name1);
+		AbstractConstant skolem1 = skolemization.getSkolemConstant(null1);
+		AbstractConstant skolem2 = skolemization.getSkolemConstant(name1);
+		assertEquals(skolem2, skolem1);
+	}
+
+	@Test
+	public void skolemConstantFromRenamedNamedNull_succeeds() {
+		NamedNull null1 = skolemization.getRenamedNamedNull(name1);
+		AbstractConstant skolem1 = skolemization.getSkolemConstant(null1);
+		AbstractConstant skolem2 = skolemization.getSkolemConstant(name1);
+		assertEquals(skolem2, skolem1);
 	}
 }

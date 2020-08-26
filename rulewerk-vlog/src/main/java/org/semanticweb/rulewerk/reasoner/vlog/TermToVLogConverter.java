@@ -97,7 +97,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 		if (namedNull instanceof RenamedNamedNull) {
 			return namedNull.getName();
 		} else {
-			return skolemization.skolemizeNamedNull(namedNull.getName()).getName();
+			return skolemization.getRenamedNamedNull(namedNull.getName()).getName();
 		}
 	}
 
