@@ -200,12 +200,14 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 	@Override
 	public void printHelp(String commandName, Interpreter interpreter) {
 		interpreter.printNormal("Usage: @" + commandName + " [TASK] <file> [RDF predicate]\n" //
-				+ " file: path to the file to load\n" //
 				+ " TASK: optional; one of RULES (default), OWL, RDF:\n" //
 				+ "       RULES to load a knowledge base in Rulewerk rls format\n" //
 				+ "       OWL to load an OWL ontology and convert it to facts and rules\n" //
-				+ "       RDF to load an RDF document and convert it to facts\n"
-				+ " RDF predicate: optional name of the predicate used for loading RDF triples (default: TRIPLE)\n");
+				+ "       RDF to load an RDF document and convert it to facts\n" //
+				+ " file: path to the file to load\n" //
+				+ " RDF predicate: optional name of the predicate used for loading RDF\n" //
+				+ "                triples (default: TRIPLE); use ABOX to load triples\n" //
+				+ "                like OWL assertions, using unary and binary predicates\n");
 	}
 
 	@Override
