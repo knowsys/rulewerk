@@ -76,32 +76,55 @@ public final class RdfModelConverter {
 	 */
 	public static final Predicate RDF_TRIPLE_PREDICATE = Expressions.makePredicate(RDF_TRIPLE_PREDICATE_NAME, 3);
 
-	private RdfModelConverter() {
+	final RdfValueToTermConverter rdfValueToTermConverter;
+
+	/**
+	 * Construct an object that does not skolemize blank nodes.
+	 */
+	public RdfModelConverter() {
+		this(false);
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param skolemize if true, blank nodes are translated to constants with
+	 *                  generated IRIs; otherwise they are replanced by named nulls
+	 *                  with generated ids
+	 */
+	public RdfModelConverter(boolean skolemize) {
+		rdfValueToTermConverter = new RdfValueToTermConverter(skolemize);
 	}
 
 	/**
 	 * Converts each {@code <subject, predicate, object>} triple statement of the
-	 * given {@code rdfModel} into a {@link PositiveLiteral} of the form
+	 * given {@code rdfModel} into a {@link Fact} of the form
 	 * {@code TRIPLE(subject, predicate, object)}. See
 	 * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}, the ternary predicate used
 	 * for all literals generated from RDF triples.
 	 *
 	 * @param rdfModel a {@link Model} of an RDF document, containing triple
 	 *                 statements that will be converter to facts.
-	 * @return a set of literals corresponding to the statements of given
+	 * @return a set of facts corresponding to the statements of given
 	 *         {@code rdfModel}.
 	 */
-	public static Set<Fact> rdfModelToFacts(final Model rdfModel) {
-		return rdfModel.stream().map(RdfModelConverter::rdfStatementToFact).collect(Collectors.toSet());
+	public Set<Fact> rdfModelToFacts(final Model rdfModel) {
+		return rdfModel.stream().map((statement) -> rdfStatementToFact(statement)).collect(Collectors.toSet());
 	}
 
-	static Fact rdfStatementToFact(final Statement statement) {
+	/**
+	 * Converts an RDF statement (triple) to a Rulewerk {@link Fact}.
+	 * 
+	 * @param statement
+	 * @return
+	 */
+	Fact rdfStatementToFact(final Statement statement) {
 		final Resource subject = statement.getSubject();
 		final URI predicate = statement.getPredicate();
 		final Value object = statement.getObject();
 
-		return Expressions.makeFact(RDF_TRIPLE_PREDICATE, Arrays.asList(RdfValueToTermConverter.rdfValueToTerm(subject),
-				RdfValueToTermConverter.rdfValueToTerm(predicate), RdfValueToTermConverter.rdfValueToTerm(object)));
+		return Expressions.makeFact(RDF_TRIPLE_PREDICATE, Arrays.asList(rdfValueToTermConverter.convertValue(subject),
+				rdfValueToTermConverter.convertValue(predicate), rdfValueToTermConverter.convertValue(object)));
 	}
 
 }

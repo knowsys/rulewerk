@@ -165,7 +165,8 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 				throw new CommandExecutionException(message);
 			}
 
-			interpreter.getKnowledgeBase().addStatements(RdfModelConverter.rdfModelToFacts(model));
+			RdfModelConverter rdfModelConverter = new RdfModelConverter(true);
+			interpreter.getKnowledgeBase().addStatements(rdfModelConverter.rdfModelToFacts(model));
 			for (Namespace namespace : model.getNamespaces()) {
 				try {
 					interpreter.getKnowledgeBase().getPrefixDeclarationRegistry()

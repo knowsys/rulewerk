@@ -47,6 +47,8 @@ import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
 public class TestReasonOverRdfFacts {
+	
+	final RdfModelConverter rdfModelConverter = new RdfModelConverter();
 
 	private final Constant carlBenz = Expressions.makeAbstractConstant("https://example.org/Carl-Benz");
 	private final Constant invention = Expressions.makeAbstractConstant("https://example.org/invention");
@@ -64,7 +66,7 @@ public class TestReasonOverRdfFacts {
 	public void testCanLoadRdfFactsIntoReasoner() throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
-		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		final Set<Fact> facts = rdfModelConverter.rdfModelToFacts(model);
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(facts);
@@ -83,7 +85,7 @@ public class TestReasonOverRdfFacts {
 	public void testQueryAnsweringOverRdfFacts() throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "exampleFacts.ttl"),
 				RDFFormat.TURTLE);
-		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		final Set<Fact> facts = rdfModelConverter.rdfModelToFacts(model);
 
 		final KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(facts);

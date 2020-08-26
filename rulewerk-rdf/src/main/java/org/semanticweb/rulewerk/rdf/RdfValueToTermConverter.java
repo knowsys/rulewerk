@@ -29,39 +29,62 @@ import org.openrdf.rio.ntriples.NTriplesUtil;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
-import org.semanticweb.rulewerk.core.model.implementation.NamedNullImpl;
+import org.semanticweb.rulewerk.core.reasoner.implementation.Skolemization;
 import org.semanticweb.rulewerk.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.LanguageStringConstantImpl;
 
+/**
+ * Helper class to convert RDF ters to Rulewerk {@link Term} objects.
+ * 
+ * @author Markus Kroetzsch
+ *
+ */
 final class RdfValueToTermConverter {
 
-	private RdfValueToTermConverter() {
+	final boolean skolemize;
+	final Skolemization skolemization = new Skolemization();
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param skolemize if true, blank nodes are translated to constants with
+	 *                  generated IRIs; otherwise they are replanced by named nulls
+	 *                  with generated ids
+	 */
+	public RdfValueToTermConverter(boolean skolemize) {
+		this.skolemize = skolemize;
 	}
 
-	static Term rdfValueToTerm(final Value value) {
+	public Term convertValue(final Value value) {
 		if (value instanceof BNode) {
-			return rdfBlankNodeToBlank((BNode) value);
+			return convertBlankNode((BNode) value);
 		} else if (value instanceof Literal) {
-			return rdfLiteralToConstant((Literal) value);
+			return convertLiteral((Literal) value);
 		} else if (value instanceof URI) {
-			return rdfUriToConstant((URI) value);
+			return convertUri((URI) value);
 		} else {
 			throw new RulewerkRuntimeException("Unknown value type: " + value.getClass());
 		}
 	}
 
-	static Term rdfBlankNodeToBlank(final BNode bNode) {
-		// IDs are generated to be unique in every Model.
-		return new NamedNullImpl(bNode.getID());
+	public Term convertBlankNode(final BNode bNode) {
+		// Note: IDs are generated to be unique in every Model, so our renaming might be
+		// redundant. But we want a RenamedNamedNull here, and a consistent name format
+		// is nice too.
+		if (skolemize) {
+			return skolemization.getSkolemConstant(bNode.getID());
+		} else {
+			return skolemization.getRenamedNamedNull(bNode.getID());
+		}
 	}
 
-	static Term rdfUriToConstant(final URI uri) {
+	public Term convertUri(final URI uri) {
 		final String escapedURIString = NTriplesUtil.escapeString(uri.toString());
 		return new AbstractConstantImpl(escapedURIString);
 	}
 
-	static Term rdfLiteralToConstant(final Literal literal) {
+	public Term convertLiteral(final Literal literal) {
 		final URI datatype = literal.getDatatype();
 		if (datatype != null) {
 			return new DatatypeConstantImpl(XMLDatatypeUtil.normalize(literal.getLabel(), datatype),
