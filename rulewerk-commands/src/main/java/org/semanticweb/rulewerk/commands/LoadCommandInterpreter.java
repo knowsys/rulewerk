@@ -68,14 +68,26 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		if (command.getArguments().size() > 0 && command.getArguments().get(0).fromTerm().isPresent()
 				&& command.getArguments().get(0).fromTerm().get().getType() == TermType.ABSTRACT_CONSTANT) {
 			task = Interpreter.extractNameArgument(command, 0, "task");
-			Interpreter.validateArgumentCount(command, 2);
 			pos++;
 		} else {
 			task = TASK_RLS;
-			Interpreter.validateArgumentCount(command, 1);
 		}
 
 		String fileName = Interpreter.extractStringArgument(command, pos, "filename");
+		pos++;
+
+		String rdfTriplePredicate = RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME;
+		if (TASK_RDF.equals(task) && command.getArguments().size() > pos) {
+			if (command.getArguments().get(pos).fromTerm().isPresent()
+					&& command.getArguments().get(pos).fromTerm().get().getType() == TermType.ABSTRACT_CONSTANT) {
+				rdfTriplePredicate = command.getArguments().get(pos).fromTerm().get().getName();
+				pos++;
+			} else {
+				throw new CommandExecutionException("Optional triple predicate name must be an IRI.");
+			}
+		}
+
+		Interpreter.validateArgumentCount(command, pos);
 
 		int countRulesBefore = interpreter.getKnowledgeBase().getRules().size();
 		int countFactsBefore = interpreter.getKnowledgeBase().getFacts().size();
@@ -85,7 +97,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		} else if (TASK_OWL.equals(task)) {
 			loadOwl(interpreter, fileName);
 		} else if (TASK_RDF.equals(task)) {
-			loadRdf(interpreter, fileName);
+			loadRdf(interpreter, fileName, rdfTriplePredicate);
 		} else {
 			throw new CommandExecutionException(
 					"Unknown task " + task + ". Should be one of " + TASK_RLS + ", " + TASK_OWL + ", " + TASK_RDF);
@@ -137,7 +149,8 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		interpreter.getKnowledgeBase().addStatements(owlToRulesConverter.getFacts());
 	}
 
-	private void loadRdf(Interpreter interpreter, String fileName) throws CommandExecutionException {
+	private void loadRdf(Interpreter interpreter, String fileName, String triplePredicateName)
+			throws CommandExecutionException {
 		try {
 			String baseIri = new File(fileName).toURI().toString();
 
@@ -163,8 +176,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 				throw new CommandExecutionException(message);
 			}
 
-			RdfModelConverter rdfModelConverter = new RdfModelConverter(true,
-					RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME);
+			RdfModelConverter rdfModelConverter = new RdfModelConverter(true, triplePredicateName);
 			rdfModelConverter.addAll(interpreter.getKnowledgeBase(), model);
 		} catch (IOException e) {
 			throw new CommandExecutionException("Could not read input: " + e.getMessage(), e);
@@ -182,12 +194,13 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void printHelp(String commandName, Interpreter interpreter) {
-		interpreter.printNormal("Usage: @" + commandName + " [TASK] <file>\n" //
+		interpreter.printNormal("Usage: @" + commandName + " [TASK] <file> [RDF predicate]\n" //
 				+ " file: path to the file to load\n" //
 				+ " TASK: optional; one of RULES (default), OWL, RDF:\n" //
 				+ "       RULES to load a knowledge base in Rulewerk rls format\n" //
 				+ "       OWL to load an OWL ontology and convert it to facts and rules\n" //
-				+ "       RDF to load an RDF document and convert it to facts for predicate TRIPLE[3]\n");
+				+ "       RDF to load an RDF document and convert it to facts\n"
+				+ " RDF predicate: optional name of the predicate used for loading RDF triples (default: TRIPLE)\n");
 	}
 
 	@Override

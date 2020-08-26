@@ -185,6 +185,26 @@ public class LoadCommandInterpreterTest {
 		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
 		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
 	}
+	
+	@Test
+	public void correctUseWithRdfTask_NtCustomPredicate_succeeds()
+			throws ParsingException, CommandExecutionException, IOException, PrefixDeclarationException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Predicate predicate = Expressions.makePredicate("http://example.org/mytriple", 3);
+		Term terma = Expressions.makeAbstractConstant("http://example.org/a");
+		Term termb = Expressions.makeAbstractConstant("http://example.org/b");
+		Term termc = Expressions.makeAbstractConstant("http://example.org/c");
+		Fact fact = Expressions.makeFact(predicate, terma, termb, termc);
+
+		Command command = interpreter.parseCommand("@load RDF 'src/test/data/loadtest.nt' <http://example.org/mytriple>.");
+		interpreter.runCommand(command);
+
+		assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+	}
 
 	@Test
 	public void correctUseWithRdfTask_Turtle_succeeds()
@@ -254,6 +274,24 @@ public class LoadCommandInterpreterTest {
 		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
 
 		Command command = interpreter.parseCommand("@load .");
+		interpreter.runCommand(command);
+	}
+	
+	@Test(expected = CommandExecutionException.class)
+	public void wrongRdfPredicateTermType_fails() throws ParsingException, CommandExecutionException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Command command = interpreter.parseCommand("@load RDF \"file.nt\" \"string\" .");
+		interpreter.runCommand(command);
+	}
+	
+	@Test(expected = CommandExecutionException.class)
+	public void wrongRdfPredicateArgumentType_fails() throws ParsingException, CommandExecutionException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Command command = interpreter.parseCommand("@load RDF \"file.nt\" p(a) .");
 		interpreter.runCommand(command);
 	}
 
