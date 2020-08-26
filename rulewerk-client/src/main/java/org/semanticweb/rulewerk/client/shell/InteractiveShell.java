@@ -48,14 +48,12 @@ public class InteractiveShell
 
 		final Terminal terminal = DefaultConfiguration.buildTerminal();
 		final Interpreter interpreter = initializeInterpreter(terminal);
-
+		final Shell shell = new Shell(interpreter);
 
 		final LineReader lineReader = DefaultConfiguration.buildLineReader(terminal, interpreter);
 		final AttributedString promptProvider = DefaultConfiguration.buildPromptProvider();
 
-		final Shell shell = new Shell(lineReader, promptProvider, interpreter);
-		shell.run();
-
+		shell.run(lineReader, promptProvider);
 	}
 
 	static Interpreter initializeInterpreter(final Terminal terminal) {

@@ -3,6 +3,7 @@ package org.semanticweb.rulewerk.client.shell;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
+import org.jline.terminal.Terminal;
 import org.jline.utils.AttributedString;
 
 /*-
@@ -36,30 +37,30 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 public class Shell {
 
 	private final Interpreter interpreter;
-	private final LineReader lineReader;
-	private final AttributedString prompt;
 
 	boolean running;
 
-	public Shell(final LineReader lineReader, final AttributedString prompt, final Interpreter interpreter) {
-		this.lineReader = lineReader;
-		this.prompt = prompt;
+	public Shell(final Interpreter interpreter) {
 		this.interpreter = interpreter;
 
+		this.registerExitCommand();
+	}
+
+	private void registerExitCommand() {
 		final CommandInterpreter exitCommandInterpreter = new ExitCommandInterpreter(this);
 		for (final ExitCommandName exitCommandName : ExitCommandName.values()) {
-			interpreter.registerCommandInterpreter(exitCommandName.toString(), exitCommandInterpreter);
+			this.interpreter.registerCommandInterpreter(exitCommandName.toString(), exitCommandInterpreter);
 		}
 	}
 
-	public void run() {
+	public void run(final LineReader lineReader, final AttributedString prompt) {
 		this.printWelcome();
 
 		this.running = true;
 		while (this.running) {
 			final Command command;
 			try {
-				command = this.readCommand();
+				command = this.readCommand(lineReader, prompt);
 			} catch (final Exception e) {
 				this.interpreter.printNormal("Unexpected error: " + e.getMessage() + "\n");
 				e.printStackTrace();
@@ -85,10 +86,10 @@ public class Shell {
 	 * 
 	 * @return command or null
 	 */
-	public Command readCommand() {
+	public Command readCommand(final LineReader lineReader, final AttributedString prompt) {
 		String readLine;
 		try {
-			readLine = this.lineReader.readLine(this.prompt.toAnsi(this.lineReader.getTerminal()));
+			readLine = this.readLine(lineReader, prompt);
 		} catch (final UserInterruptException e) {
 			if (e.getPartialLine().isEmpty()) {
 				// Exit request from user CTRL+C
@@ -102,15 +103,9 @@ public class Shell {
 
 		}
 
-		readLine = readLine.trim();
-		if ("".equals(readLine)) {
+		readLine = this.processReadLine(readLine);
+		if (readLine.isEmpty()) {
 			return null;
-		}
-		if (readLine.charAt(0) != '@') {
-			readLine = "@" + readLine;
-		}
-		if (readLine.charAt(readLine.length() - 1) != '.') {
-			readLine = readLine + " .";
 		}
 
 		try {
@@ -119,6 +114,24 @@ public class Shell {
 			this.interpreter.printNormal("Error: " + e.getMessage() + "\n" + e.getCause().getMessage() + "\n");
 			return null;
 		}
+	}
+
+	private String readLine(final LineReader lineReader, final AttributedString prompt) {
+		final Terminal terminal = lineReader.getTerminal();
+		return lineReader.readLine(prompt.toAnsi(terminal));
+	}
+
+	String processReadLine(final String readLine) {
+		String result = readLine.trim();
+		if (!result.isEmpty()) {
+			if (readLine.charAt(0) != '@') {
+				result = "@" + readLine;
+			}
+			if (readLine.charAt(readLine.length() - 1) != '.') {
+				result = readLine + " .";
+			}
+		}
+		return result;
 	}
 
 	public void exitShell() {
