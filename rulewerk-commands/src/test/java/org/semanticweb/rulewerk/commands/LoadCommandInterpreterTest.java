@@ -185,7 +185,7 @@ public class LoadCommandInterpreterTest {
 		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
 		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
 	}
-	
+
 	@Test
 	public void correctUseWithRdfTask_NtCustomPredicate_succeeds()
 			throws ParsingException, CommandExecutionException, IOException, PrefixDeclarationException {
@@ -198,7 +198,27 @@ public class LoadCommandInterpreterTest {
 		Term termc = Expressions.makeAbstractConstant("http://example.org/c");
 		Fact fact = Expressions.makeFact(predicate, terma, termb, termc);
 
-		Command command = interpreter.parseCommand("@load RDF 'src/test/data/loadtest.nt' <http://example.org/mytriple>.");
+		Command command = interpreter
+				.parseCommand("@load RDF 'src/test/data/loadtest.nt' <http://example.org/mytriple>.");
+		interpreter.runCommand(command);
+
+		assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+	}
+
+	@Test
+	public void correctUseWithRdfTask_NtABoxLoading_succeeds()
+			throws ParsingException, CommandExecutionException, IOException, PrefixDeclarationException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Predicate predicate = Expressions.makePredicate("http://example.org/b", 2);
+		Term terma = Expressions.makeAbstractConstant("http://example.org/a");
+		Term termc = Expressions.makeAbstractConstant("http://example.org/c");
+		Fact fact = Expressions.makeFact(predicate, terma, termc);
+
+		Command command = interpreter.parseCommand("@load RDF 'src/test/data/loadtest.nt' ABOX.");
 		interpreter.runCommand(command);
 
 		assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
@@ -276,7 +296,7 @@ public class LoadCommandInterpreterTest {
 		Command command = interpreter.parseCommand("@load .");
 		interpreter.runCommand(command);
 	}
-	
+
 	@Test(expected = CommandExecutionException.class)
 	public void wrongRdfPredicateTermType_fails() throws ParsingException, CommandExecutionException {
 		StringWriter writer = new StringWriter();
@@ -285,7 +305,7 @@ public class LoadCommandInterpreterTest {
 		Command command = interpreter.parseCommand("@load RDF \"file.nt\" \"string\" .");
 		interpreter.runCommand(command);
 	}
-	
+
 	@Test(expected = CommandExecutionException.class)
 	public void wrongRdfPredicateArgumentType_fails() throws ParsingException, CommandExecutionException {
 		StringWriter writer = new StringWriter();

@@ -61,6 +61,8 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 	static final String TASK_OWL = "OWL";
 	static final String TASK_RDF = "RDF";
 
+	static final String PREDICATE_ABOX = "ABOX";
+
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
 		String task;
@@ -81,6 +83,9 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 			if (command.getArguments().get(pos).fromTerm().isPresent()
 					&& command.getArguments().get(pos).fromTerm().get().getType() == TermType.ABSTRACT_CONSTANT) {
 				rdfTriplePredicate = command.getArguments().get(pos).fromTerm().get().getName();
+				if (PREDICATE_ABOX.equals(rdfTriplePredicate)) { // ABox-style import
+					rdfTriplePredicate = null;
+				}
 				pos++;
 			} else {
 				throw new CommandExecutionException("Optional triple predicate name must be an IRI.");
