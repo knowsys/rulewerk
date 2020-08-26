@@ -47,7 +47,9 @@ import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
-public class TestConvertRdfFileToFacts {
+public class IntegrationTestsConvertRdfFiles {
+	
+	final RdfModelConverter rdfModelConverter = new RdfModelConverter();
 
 	// FIXME: The openrdf parser does neither support '\b' nor '\f' (from ASCII) and
 	// encodes such characters as "\u0008" and "\u000C", respectively (the
@@ -127,7 +129,7 @@ public class TestConvertRdfFileToFacts {
 	public void testDataTypesNormalized() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils
 				.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "unnormalizedLiteralValues.ttl"), RDFFormat.TURTLE);
-		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		final Set<Fact> facts = rdfModelConverter.rdfModelToFacts(model);
 		assertEquals(expectedNormalizedFacts, facts);
 	}
 
@@ -135,7 +137,7 @@ public class TestConvertRdfFileToFacts {
 	public void testLiteralValuesPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "literalValues.ttl"),
 				RDFFormat.TURTLE);
-		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		final Set<Fact> facts = rdfModelConverter.rdfModelToFacts(model);
 		assertEquals(expectedLiteralFacts, facts);
 	}
 
@@ -143,7 +145,7 @@ public class TestConvertRdfFileToFacts {
 	public void testRelativeURIsMadeAbsolute() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "relativeURIs.ttl"),
 				RDFFormat.TURTLE);
-		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		final Set<Fact> facts = rdfModelConverter.rdfModelToFacts(model);
 		assertEquals(expectedRelativeUriFacts, facts);
 	}
 
@@ -151,7 +153,7 @@ public class TestConvertRdfFileToFacts {
 	public void testEscapedCharactersExpanded() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "escapedCharacters.ttl"),
 				RDFFormat.TURTLE);
-		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		final Set<Fact> facts = rdfModelConverter.rdfModelToFacts(model);
 		assertEquals(expectedEscapedCharacterFacts, facts);
 	}
 
@@ -159,7 +161,7 @@ public class TestConvertRdfFileToFacts {
 	public void testLanguageTagsPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "languageTags.ttl"),
 				RDFFormat.TURTLE);
-		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		final Set<Fact> facts = rdfModelConverter.rdfModelToFacts(model);
 		assertEquals(expectedLanguageTagFacts, facts);
 	}
 
@@ -167,7 +169,7 @@ public class TestConvertRdfFileToFacts {
 	public void testCollectionsPreserved() throws RDFHandlerException, RDFParseException, IOException {
 		final Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "collections.ttl"),
 				RDFFormat.TURTLE);
-		final Set<Fact> factsFromModel = RdfModelConverter.rdfModelToFacts(model);
+		final Set<Fact> factsFromModel = rdfModelConverter.rdfModelToFacts(model);
 
 		final Term blank1 = RdfTestUtils.getObjectOfFirstMatchedTriple(file2, fileA, factsFromModel);
 		final Term blank2 = RdfTestUtils.getObjectOfFirstMatchedTriple(file3, fileA, factsFromModel);
@@ -215,7 +217,7 @@ public class TestConvertRdfFileToFacts {
 	private Set<NamedNull> getBlanksFromTurtleFile(final File file)
 			throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = RdfTestUtils.parseFile(file, RDFFormat.TURTLE);
-		final Set<Fact> facts = RdfModelConverter.rdfModelToFacts(model);
+		final Set<Fact> facts = rdfModelConverter.rdfModelToFacts(model);
 
 		final Set<NamedNull> blanks = new HashSet<>();
 		facts.forEach(fact -> blanks.addAll(fact.getNamedNulls().collect(Collectors.toSet())));

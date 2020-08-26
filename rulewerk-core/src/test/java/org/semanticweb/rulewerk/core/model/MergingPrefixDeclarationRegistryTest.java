@@ -23,6 +23,8 @@ package org.semanticweb.rulewerk.core.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import java.util.stream.StreamSupport;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
@@ -100,6 +102,15 @@ public class MergingPrefixDeclarationRegistryTest {
 		prefixDeclarations.setPrefixIri("eg:", BASE);
 		prefixDeclarations.setPrefixIri("eg:", MORE_SPECIFIC);
 		assertEquals(BASE, prefixDeclarations.getPrefixIri("eg:"));
+		assertEquals(2, StreamSupport.stream(prefixDeclarations.spliterator(), false).count());
+	}
+	
+	@Test
+	public void setPrefixIri_setSamePrefix_succeeds() throws PrefixDeclarationException {
+		prefixDeclarations.setPrefixIri("eg:", BASE);
+		prefixDeclarations.setPrefixIri("eg:", BASE);
+		assertEquals(BASE, prefixDeclarations.getPrefixIri("eg:"));
+		assertEquals(1, StreamSupport.stream(prefixDeclarations.spliterator(), false).count());
 	}
 
 	@Test

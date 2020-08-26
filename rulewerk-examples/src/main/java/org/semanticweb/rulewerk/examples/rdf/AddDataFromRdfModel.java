@@ -65,6 +65,7 @@ public class AddDataFromRdfModel {
 			throws IOException, RDFParseException, RDFHandlerException, URISyntaxException {
 
 		ExamplesUtils.configureLogging();
+		RdfModelConverter rdfModelConverter = new RdfModelConverter();
 
 		/*
 		 * Local file containing metadata of publications from ISWC'16 conference, in
@@ -77,10 +78,10 @@ public class AddDataFromRdfModel {
 				RDFFormat.RDFXML);
 
 		/*
-		 * Using rulewerk-rdf library, we convert RDF Model triples to facts, each having
-		 * the ternary predicate "TRIPLE".
+		 * Using rulewerk-rdf library, we convert RDF Model triples to facts, each
+		 * having the ternary predicate "TRIPLE".
 		 */
-		final Set<Fact> tripleFactsISWC2016 = RdfModelConverter.rdfModelToFacts(rdfModelISWC2016);
+		final Set<Fact> tripleFactsISWC2016 = rdfModelConverter.rdfModelToFacts(rdfModelISWC2016);
 		System.out.println("Example triple fact from iswc-2016 dataset:");
 		System.out.println(" - " + tripleFactsISWC2016.iterator().next());
 
@@ -96,10 +97,10 @@ public class AddDataFromRdfModel {
 				RDFFormat.TURTLE);
 
 		/*
-		 * Using rulewerk-rdf library, we convert RDF Model triples to facts, each having
-		 * the ternary predicate "TRIPLE".
+		 * Using rulewerk-rdf library, we convert RDF Model triples to facts, each
+		 * having the ternary predicate "TRIPLE".
 		 */
-		final Set<Fact> tripleFactsISWC2017 = RdfModelConverter.rdfModelToFacts(rdfModelISWC2017);
+		final Set<Fact> tripleFactsISWC2017 = rdfModelConverter.rdfModelToFacts(rdfModelISWC2017);
 		System.out.println("Example triple fact from iswc-2017 dataset:");
 		System.out.println(" - " + tripleFactsISWC2017.iterator().next());
 

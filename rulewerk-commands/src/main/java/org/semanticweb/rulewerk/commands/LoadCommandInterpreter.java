@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openrdf.model.Model;
-import org.openrdf.model.Namespace;
 import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
@@ -43,7 +42,6 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.owlapi.OwlToRulesConverter;
@@ -63,6 +61,8 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 	static final String TASK_OWL = "OWL";
 	static final String TASK_RDF = "RDF";
 
+	static final String PREDICATE_ABOX = "ABOX";
+
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
 		String task;
@@ -70,14 +70,29 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		if (command.getArguments().size() > 0 && command.getArguments().get(0).fromTerm().isPresent()
 				&& command.getArguments().get(0).fromTerm().get().getType() == TermType.ABSTRACT_CONSTANT) {
 			task = Interpreter.extractNameArgument(command, 0, "task");
-			Interpreter.validateArgumentCount(command, 2);
 			pos++;
 		} else {
 			task = TASK_RLS;
-			Interpreter.validateArgumentCount(command, 1);
 		}
 
 		String fileName = Interpreter.extractStringArgument(command, pos, "filename");
+		pos++;
+
+		String rdfTriplePredicate = RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME;
+		if (TASK_RDF.equals(task) && command.getArguments().size() > pos) {
+			if (command.getArguments().get(pos).fromTerm().isPresent()
+					&& command.getArguments().get(pos).fromTerm().get().getType() == TermType.ABSTRACT_CONSTANT) {
+				rdfTriplePredicate = command.getArguments().get(pos).fromTerm().get().getName();
+				if (PREDICATE_ABOX.equals(rdfTriplePredicate)) { // ABox-style import
+					rdfTriplePredicate = null;
+				}
+				pos++;
+			} else {
+				throw new CommandExecutionException("Optional triple predicate name must be an IRI.");
+			}
+		}
+
+		Interpreter.validateArgumentCount(command, pos);
 
 		int countRulesBefore = interpreter.getKnowledgeBase().getRules().size();
 		int countFactsBefore = interpreter.getKnowledgeBase().getFacts().size();
@@ -87,7 +102,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		} else if (TASK_OWL.equals(task)) {
 			loadOwl(interpreter, fileName);
 		} else if (TASK_RDF.equals(task)) {
-			loadRdf(interpreter, fileName);
+			loadRdf(interpreter, fileName, rdfTriplePredicate);
 		} else {
 			throw new CommandExecutionException(
 					"Unknown task " + task + ". Should be one of " + TASK_RLS + ", " + TASK_OWL + ", " + TASK_RDF);
@@ -139,7 +154,8 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		interpreter.getKnowledgeBase().addStatements(owlToRulesConverter.getFacts());
 	}
 
-	private void loadRdf(Interpreter interpreter, String fileName) throws CommandExecutionException {
+	private void loadRdf(Interpreter interpreter, String fileName, String triplePredicateName)
+			throws CommandExecutionException {
 		try {
 			String baseIri = new File(fileName).toURI().toString();
 
@@ -165,15 +181,8 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 				throw new CommandExecutionException(message);
 			}
 
-			interpreter.getKnowledgeBase().addStatements(RdfModelConverter.rdfModelToFacts(model));
-			for (Namespace namespace : model.getNamespaces()) {
-				try {
-					interpreter.getKnowledgeBase().getPrefixDeclarationRegistry()
-							.setPrefixIri(namespace.getPrefix() + ":", namespace.getName());
-				} catch (PrefixDeclarationException e) {
-					// ignore this prefix
-				}
-			}
+			RdfModelConverter rdfModelConverter = new RdfModelConverter(true, triplePredicateName);
+			rdfModelConverter.addAll(interpreter.getKnowledgeBase(), model);
 		} catch (IOException e) {
 			throw new CommandExecutionException("Could not read input: " + e.getMessage(), e);
 		}
@@ -190,12 +199,15 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void printHelp(String commandName, Interpreter interpreter) {
-		interpreter.printNormal("Usage: @" + commandName + " [TASK] <file>\n" //
-				+ " file: path to the file to load\n" //
+		interpreter.printNormal("Usage: @" + commandName + " [TASK] <file> [RDF predicate]\n" //
 				+ " TASK: optional; one of RULES (default), OWL, RDF:\n" //
 				+ "       RULES to load a knowledge base in Rulewerk rls format\n" //
 				+ "       OWL to load an OWL ontology and convert it to facts and rules\n" //
-				+ "       RDF to load an RDF document and convert it to facts for predicate TRIPLE[3]\n");
+				+ "       RDF to load an RDF document and convert it to facts\n" //
+				+ " file: path to the file to load\n" //
+				+ " RDF predicate: optional name of the predicate used for loading RDF\n" //
+				+ "                triples (default: TRIPLE); use ABOX to load triples\n" //
+				+ "                like OWL assertions, using unary and binary predicates\n");
 	}
 
 	@Override
