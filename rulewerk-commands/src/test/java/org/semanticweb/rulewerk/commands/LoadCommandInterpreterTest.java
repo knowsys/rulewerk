@@ -65,6 +65,82 @@ public class LoadCommandInterpreterTest {
 		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
 	}
 
+	@Test
+	public void correctUseWithRulesTask_succeeds() throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		InputStream inputStream = new ByteArrayInputStream("p(a) .".getBytes(StandardCharsets.UTF_8));
+		Interpreter origInterpreter = InterpreterTest.getMockInterpreter(writer);
+		Interpreter interpreter = Mockito.spy(origInterpreter);
+		Mockito.doReturn(inputStream).when(interpreter).getFileInputStream(Mockito.eq("loadtest.rls"));
+
+		Predicate predicate = Expressions.makePredicate("p", 1);
+		Term term = Expressions.makeAbstractConstant("a");
+		Fact fact = Expressions.makeFact(predicate, term);
+
+		Command command = interpreter.parseCommand("@load RULES 'loadtest.rls' .");
+		interpreter.runCommand(command);
+
+		assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+	}
+
+	@Test
+	public void correctUseWithOwlTask_succeeds() throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Predicate predicate = Expressions.makePredicate("http://example.org/C", 1);
+		Term term = Expressions.makeAbstractConstant("http://example.org/a");
+		Fact fact = Expressions.makeFact(predicate, term);
+
+		Command command = interpreter.parseCommand("@load OWL 'src/test/data/loadtest.owl' .");
+		interpreter.runCommand(command);
+
+		assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+	}
+	
+	@Test
+	public void correctUseWithOwlTask_UnsupportedAxioms_succeeds() throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Predicate predicate = Expressions.makePredicate("http://example.org/C", 1);
+		Term term = Expressions.makeAbstractConstant("http://example.org/a");
+		Fact fact = Expressions.makeFact(predicate, term);
+
+		Command command = interpreter.parseCommand("@load OWL 'src/test/data/loadtest-unsupported.owl' .");
+		interpreter.runCommand(command);
+
+		assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+		assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+		assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+		// OUtput mentions the offending axiom in Functional-Style Syntax:
+		assertTrue(writer.toString().contains("InverseFunctionalObjectProperty(<http://example.org/p>)"));
+	}
+
+	@Test(expected = CommandExecutionException.class)
+	public void correctUseWithOwlTask_malformedOwl_fails()
+			throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Command command = interpreter.parseCommand("@load OWL 'src/test/data/loadtest-fails.owl' .");
+		interpreter.runCommand(command);
+	}
+	
+	@Test(expected = CommandExecutionException.class)
+	public void correctUseWithOwlTask_missingFile_fails()
+			throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Command command = interpreter.parseCommand("@load OWL 'src/test/data/file-does-not-exist.owl' .");
+		interpreter.runCommand(command);
+	}
+
 	@Test(expected = CommandExecutionException.class)
 	public void correctUseParseError_fails() throws ParsingException, CommandExecutionException, IOException {
 		StringWriter writer = new StringWriter();
@@ -103,6 +179,15 @@ public class LoadCommandInterpreterTest {
 		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
 
 		Command command = interpreter.parseCommand("@load p(a) .");
+		interpreter.runCommand(command);
+	}
+
+	@Test(expected = CommandExecutionException.class)
+	public void wrongTask_fails() throws ParsingException, CommandExecutionException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Command command = interpreter.parseCommand("@load UNKOWNTASK 'loadtest.rls' .");
 		interpreter.runCommand(command);
 	}
 

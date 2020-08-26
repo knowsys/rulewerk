@@ -23,7 +23,9 @@ package org.semanticweb.rulewerk.reasoner.vlog;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Constant;
+import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.QueryResult;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.AbstractConstantImpl;
@@ -117,8 +119,15 @@ class VLogToModelConverter {
 					final String languageTag = vLogConstantName.substring(startTypeIdx + 1, vLogConstantName.length());
 					final String string = vLogConstantName.substring(1, startTypeIdx - 1);
 					constant = new LanguageStringConstantImpl(string, languageTag);
+				} else if (vLogConstantName.charAt(vLogConstantName.length() - 1) == '"'
+						&& vLogConstantName.length() > 1) {
+					// This is already an unexpceted case. Untyped strings "constant" should not
+					// occur. But if they do, this is our best guess on how to interpret them.
+					constant = new DatatypeConstantImpl(vLogConstantName.substring(1, vLogConstantName.length() - 1),
+							PrefixDeclarationRegistry.XSD_STRING);
 				} else {
-					constant = new AbstractConstantImpl(vLogConstantName);
+					throw new RulewerkRuntimeException("VLog returned a constant name '" + vLogConstantName
+							+ "' that Rulewerk cannot make sense of.");
 				}
 			}
 		} else {

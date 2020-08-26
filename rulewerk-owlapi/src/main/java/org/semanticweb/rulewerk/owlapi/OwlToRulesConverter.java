@@ -1,5 +1,8 @@
 package org.semanticweb.rulewerk.owlapi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*-
  * #%L
  * Rulewerk OWL API Support
@@ -22,9 +25,12 @@ package org.semanticweb.rulewerk.owlapi;
 
 import java.util.Set;
 
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for converting OWL ontologies to rules.
@@ -34,7 +40,34 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
  */
 public class OwlToRulesConverter {
 
+	private static Logger LOGGER = LoggerFactory.getLogger(OwlToRulesConverter.class);
+
 	final OwlAxiomToRulesConverter owlAxiomToRulesConverter = new OwlAxiomToRulesConverter();
+
+	private final boolean failOnUnsupported;
+	private int unsupportedAxiomsCount = 0;
+	private final List<OWLAxiom> unsupportedAxioms = new ArrayList<>();
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param failOnUnsupported whether the converter should fail with an
+	 *                          {@link OwlFeatureNotSupportedException} when
+	 *                          encountering axioms that cannot be converted to
+	 *                          rules or facts.
+	 */
+	public OwlToRulesConverter(boolean failOnUnsupported) {
+		this.failOnUnsupported = failOnUnsupported;
+	}
+
+	/**
+	 * Constructs an object that fails with a
+	 * {@link OwlFeatureNotSupportedException} when encountering axioms that cannot
+	 * be converted to rules or facts.
+	 */
+	public OwlToRulesConverter() {
+		this(true);
+	}
 
 	/**
 	 * Converts the given OWL ontology to rules and facts, and adds the result to
@@ -44,7 +77,22 @@ public class OwlToRulesConverter {
 	 */
 	public void addOntology(final OWLOntology owlOntology) {
 		this.owlAxiomToRulesConverter.startNewBlankNodeContext();
-		owlOntology.axioms().forEach(owlAxiom -> owlAxiom.accept(this.owlAxiomToRulesConverter));
+		owlOntology.axioms().forEach(owlAxiom -> {
+			try {
+				owlAxiom.accept(this.owlAxiomToRulesConverter);
+			} catch (OwlFeatureNotSupportedException e) {
+				if (failOnUnsupported) {
+					LOGGER.error(e.getMessage());
+					throw e;
+				} else {
+					LOGGER.warn(e.getMessage());
+					unsupportedAxiomsCount++;
+					if (unsupportedAxioms.size() < 10) {
+						unsupportedAxioms.add(owlAxiom);
+					}
+				}
+			}
+		});
 	}
 
 	/**
@@ -67,6 +115,28 @@ public class OwlToRulesConverter {
 	 */
 	public Set<Rule> getRules() {
 		return this.owlAxiomToRulesConverter.rules;
+	}
+
+	/**
+	 * Returns the number of OWL axioms that could not be converted into rules. This
+	 * number is only computed if the object is not configured to fail when
+	 * encountering the first unsupported axiom.
+	 * 
+	 * @return total number of unsupported axioms
+	 */
+	public int getUnsupportedAxiomsCount() {
+		return unsupportedAxiomsCount;
+	}
+
+	/**
+	 * Returns up to 10 unsupported axioms encountered during the conversion. The
+	 * complete number of unsupported axioms can be queried using
+	 * {@link #getUnsupportedAxiomsCount()}.
+	 * 
+	 * @return list of first ten unsupported axioms that were encountered
+	 */
+	public List<OWLAxiom> getUnsupportedAxiomsSample() {
+		return unsupportedAxioms;
 	}
 
 }
