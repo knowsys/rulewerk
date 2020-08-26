@@ -36,6 +36,7 @@ import org.openrdf.rio.RDFParseException;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
@@ -92,6 +93,57 @@ public class RdfModelConverterTest {
 		Term termb = Expressions.makeAbstractConstant("http://example.org/b");
 		Term termc = Expressions.makeAbstractConstant("http://example.org/c");
 		Fact fact = Expressions.makeFact(predicate, terma, termb, termc);
+
+		rdfModelConverter.addFacts(knowledgeBase, model);
+
+		assertEquals(Arrays.asList(fact), knowledgeBase.getFacts());
+	}
+
+	@Test
+	public void addFactsNoTriplePredicate_succeeds()
+			throws RDFParseException, RDFHandlerException, IOException, PrefixDeclarationException {
+		RdfModelConverter rdfModelConverter = new RdfModelConverter(true, null);
+		Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "test-turtle.ttl"), RDFFormat.TURTLE);
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+
+		Predicate predicate = Expressions.makePredicate("http://example.org/b", 2);
+		Term terma = Expressions.makeAbstractConstant("http://example.org/a");
+		Term termc = Expressions.makeAbstractConstant("http://example.org/c");
+		Fact fact = Expressions.makeFact(predicate, terma, termc);
+
+		rdfModelConverter.addFacts(knowledgeBase, model);
+
+		assertEquals(Arrays.asList(fact), knowledgeBase.getFacts());
+	}
+
+	@Test
+	public void addFactsNoTriplePredicateType_succeeds()
+			throws RDFParseException, RDFHandlerException, IOException, PrefixDeclarationException {
+		RdfModelConverter rdfModelConverter = new RdfModelConverter(true, null);
+		Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "test-turtle-type.ttl"),
+				RDFFormat.TURTLE);
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+
+		Predicate predicate = Expressions.makePredicate("http://example.org/c", 1);
+		Term terma = Expressions.makeAbstractConstant("http://example.org/a");
+		Fact fact = Expressions.makeFact(predicate, terma);
+
+		rdfModelConverter.addFacts(knowledgeBase, model);
+
+		assertEquals(Arrays.asList(fact), knowledgeBase.getFacts());
+	}
+
+	@Test
+	public void addFactsNoTriplePredicateTypeWeird_succeeds()
+			throws RDFParseException, RDFHandlerException, IOException, PrefixDeclarationException {
+		RdfModelConverter rdfModelConverter = new RdfModelConverter(true, null);
+		Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "test-turtle-type-weird.ttl"), RDFFormat.TURTLE);
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+
+		Predicate predicate = Expressions.makePredicate(PrefixDeclarationRegistry.RDF_TYPE, 2);
+		Term terma = Expressions.makeAbstractConstant("http://example.org/a");
+		Term termc = Expressions.makeLanguageStringConstant("test", "de");
+		Fact fact = Expressions.makeFact(predicate, terma, termc);
 
 		rdfModelConverter.addFacts(knowledgeBase, model);
 

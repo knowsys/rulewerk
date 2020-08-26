@@ -34,6 +34,7 @@ import org.openrdf.model.impl.URIImpl;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.DatatypeConstant;
 import org.semanticweb.rulewerk.core.model.api.LanguageStringConstant;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
@@ -50,6 +51,17 @@ public class RdfValueToTermConverterTest {
 
 		assertEquals(TermType.ABSTRACT_CONSTANT, term.getType());
 		assertEquals("http://example.org", term.getName());
+	}
+
+	@Test
+	public void convertUriToPredicate_succeeds() {
+		URI uri = new URIImpl("http://example.org/mypred");
+
+		RdfValueToTermConverter converter = new RdfValueToTermConverter(true);
+		Predicate predicate = converter.convertUriToPredicate(uri, 2);
+
+		assertEquals("http://example.org/mypred", predicate.getName());
+		assertEquals(2, predicate.getArity());
 	}
 
 	@Test
@@ -113,7 +125,7 @@ public class RdfValueToTermConverterTest {
 		assertNotEquals("myid", term.getName());
 	}
 
-	@Test(expected=RulewerkRuntimeException.class)
+	@Test(expected = RulewerkRuntimeException.class)
 	public void convertValueUnkownType_fails() {
 		Value value = Mockito.mock(Value.class);
 

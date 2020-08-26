@@ -27,12 +27,14 @@ import org.openrdf.model.Value;
 import org.openrdf.model.datatypes.XMLDatatypeUtil;
 import org.openrdf.rio.ntriples.NTriplesUtil;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.reasoner.implementation.Skolemization;
 import org.semanticweb.rulewerk.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.DatatypeConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.LanguageStringConstantImpl;
+import org.semanticweb.rulewerk.core.model.implementation.PredicateImpl;
 
 /**
  * Helper class to convert RDF ters to Rulewerk {@link Term} objects.
@@ -94,6 +96,11 @@ final class RdfValueToTermConverter {
 		} else {
 			return new DatatypeConstantImpl(literal.getLabel(), PrefixDeclarationRegistry.XSD_STRING);
 		}
+	}
+
+	public Predicate convertUriToPredicate(final URI uri, int arity) {
+		final String escapedURIString = NTriplesUtil.escapeString(uri.toString());
+		return new PredicateImpl(escapedURIString, arity);
 	}
 
 }

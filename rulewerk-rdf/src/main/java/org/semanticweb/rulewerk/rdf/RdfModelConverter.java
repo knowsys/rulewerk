@@ -28,7 +28,6 @@ import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
 import org.openrdf.model.Namespace;
-import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -38,6 +37,7 @@ import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
@@ -90,17 +90,26 @@ public final class RdfModelConverter {
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor. If {@code triplePredicateName} is a string, then RDF triples
+	 * will be represented as ternary facts with a predicate of that name. If it is
+	 * {@code null}, then triples will be converted to binary facts where the
+	 * predicate is the RDF predicate; moreover, triples with rdf:rype as predicate
+	 * will be converted to unary facts.
 	 * 
 	 * @param skolemize           if true, blank nodes are translated to constants
 	 *                            with generated IRIs; otherwise they are replanced
 	 *                            by named nulls with generated ids
 	 * @param triplePredicateName name of the ternary predicate that should be used
-	 *                            to store RDF triples
+	 *                            to store RDF triples; or null to generate binary
+	 *                            predicates from the predicates of RDF triples
 	 */
 	public RdfModelConverter(boolean skolemize, String triplePredicateName) {
 		this.rdfValueToTermConverter = new RdfValueToTermConverter(skolemize);
-		this.triplePredicate = Expressions.makePredicate(triplePredicateName, 3);
+		if (triplePredicateName != null) {
+			this.triplePredicate = Expressions.makePredicate(triplePredicateName, 3);
+		} else {
+			this.triplePredicate = null;
+		}
 	}
 
 	/**
@@ -170,12 +179,22 @@ public final class RdfModelConverter {
 	 * @return
 	 */
 	Fact rdfStatementToFact(final Statement statement) {
-		final Resource subject = statement.getSubject();
-		final URI predicate = statement.getPredicate();
-		final Value object = statement.getObject();
+		final Term subject = rdfValueToTermConverter.convertValue(statement.getSubject());
+		final Term object = rdfValueToTermConverter.convertValue(statement.getObject());
 
-		return Expressions.makeFact(triplePredicate, Arrays.asList(rdfValueToTermConverter.convertValue(subject),
-				rdfValueToTermConverter.convertValue(predicate), rdfValueToTermConverter.convertValue(object)));
+		if (triplePredicate != null) {
+			final Term predicate = rdfValueToTermConverter.convertUri(statement.getPredicate());
+			return Expressions.makeFact(triplePredicate, Arrays.asList(subject, predicate, object));
+		} else {
+			if (PrefixDeclarationRegistry.RDF_TYPE.equals(statement.getPredicate().stringValue())
+					&& statement.getObject() instanceof URI) {
+				Predicate classPredicate = rdfValueToTermConverter.convertUriToPredicate((URI) statement.getObject(), 1);
+				return Expressions.makeFact(classPredicate, Arrays.asList(subject));
+			} else {
+				Predicate factPredicate = rdfValueToTermConverter.convertUriToPredicate(statement.getPredicate(), 2);
+				return Expressions.makeFact(factPredicate, Arrays.asList(subject, object));
+			}
+		}
 	}
 
 }
