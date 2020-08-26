@@ -163,7 +163,8 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 				throw new CommandExecutionException(message);
 			}
 
-			RdfModelConverter rdfModelConverter = new RdfModelConverter(true);
+			RdfModelConverter rdfModelConverter = new RdfModelConverter(true,
+					RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME);
 			rdfModelConverter.addAll(interpreter.getKnowledgeBase(), model);
 		} catch (IOException e) {
 			throw new CommandExecutionException("Could not read input: " + e.getMessage(), e);

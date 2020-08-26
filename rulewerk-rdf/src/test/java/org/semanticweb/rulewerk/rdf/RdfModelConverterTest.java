@@ -80,4 +80,22 @@ public class RdfModelConverterTest {
 		assertEquals(expected, facts);
 	}
 
+	@Test
+	public void addFactsCustomTriplePredicate_succeeds()
+			throws RDFParseException, RDFHandlerException, IOException, PrefixDeclarationException {
+		RdfModelConverter rdfModelConverter = new RdfModelConverter(true, "mytriple");
+		Model model = RdfTestUtils.parseFile(new File(RdfTestUtils.INPUT_FOLDER + "test-turtle.ttl"), RDFFormat.TURTLE);
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+
+		Predicate predicate = Expressions.makePredicate("mytriple", 3);
+		Term terma = Expressions.makeAbstractConstant("http://example.org/a");
+		Term termb = Expressions.makeAbstractConstant("http://example.org/b");
+		Term termc = Expressions.makeAbstractConstant("http://example.org/c");
+		Fact fact = Expressions.makeFact(predicate, terma, termb, termc);
+
+		rdfModelConverter.addFacts(knowledgeBase, model);
+
+		assertEquals(Arrays.asList(fact), knowledgeBase.getFacts());
+	}
+
 }

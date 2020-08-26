@@ -72,36 +72,35 @@ public final class RdfModelConverter {
 	private static Logger LOGGER = LoggerFactory.getLogger(RdfModelConverter.class);
 
 	/**
-	 * The name of the ternary predicate of literals generated from RDF triples:
-	 * "TRIPLE".
+	 * The name of the ternary predicate of literals generated from RDF triples by
+	 * default.
 	 */
 	public static final String RDF_TRIPLE_PREDICATE_NAME = "TRIPLE";
 
-	/**
-	 * The ternary predicate of literals generated from RDF triples. It has
-	 * {@code name}({@link Predicate#getName()}) "TRIPLE" and
-	 * {@code arity}({@link Predicate#getArity()}) 3.
-	 */
-	public static final Predicate RDF_TRIPLE_PREDICATE = Expressions.makePredicate(RDF_TRIPLE_PREDICATE_NAME, 3);
-
 	final RdfValueToTermConverter rdfValueToTermConverter;
+	final Predicate triplePredicate;
 
 	/**
-	 * Construct an object that does not skolemize blank nodes.
+	 * Construct an object that does not skolemize blank nodes and that uses a
+	 * ternary predicate named {@link RdfModelConverter#RDF_TRIPLE_PREDICATE_NAME}
+	 * for storing triples.
 	 */
 	public RdfModelConverter() {
-		this(false);
+		this(false, RDF_TRIPLE_PREDICATE_NAME);
 	}
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param skolemize if true, blank nodes are translated to constants with
-	 *                  generated IRIs; otherwise they are replanced by named nulls
-	 *                  with generated ids
+	 * @param skolemize           if true, blank nodes are translated to constants
+	 *                            with generated IRIs; otherwise they are replanced
+	 *                            by named nulls with generated ids
+	 * @param triplePredicateName name of the ternary predicate that should be used
+	 *                            to store RDF triples
 	 */
-	public RdfModelConverter(boolean skolemize) {
-		rdfValueToTermConverter = new RdfValueToTermConverter(skolemize);
+	public RdfModelConverter(boolean skolemize, String triplePredicateName) {
+		this.rdfValueToTermConverter = new RdfValueToTermConverter(skolemize);
+		this.triplePredicate = Expressions.makePredicate(triplePredicateName, 3);
 	}
 
 	/**
@@ -175,7 +174,7 @@ public final class RdfModelConverter {
 		final URI predicate = statement.getPredicate();
 		final Value object = statement.getObject();
 
-		return Expressions.makeFact(RDF_TRIPLE_PREDICATE, Arrays.asList(rdfValueToTermConverter.convertValue(subject),
+		return Expressions.makeFact(triplePredicate, Arrays.asList(rdfValueToTermConverter.convertValue(subject),
 				rdfValueToTermConverter.convertValue(predicate), rdfValueToTermConverter.convertValue(object)));
 	}
 
