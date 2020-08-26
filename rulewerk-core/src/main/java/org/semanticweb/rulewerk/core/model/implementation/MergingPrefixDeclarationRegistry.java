@@ -82,15 +82,20 @@ final public class MergingPrefixDeclarationRegistry extends AbstractPrefixDeclar
 	}
 
 	/**
-	 * Registers a prefix declaration. If prefixName is already registered, a
-	 * freshly generated name will be used instead.
+	 * Registers a prefix declaration. If prefixName is already registered for
+	 * another IRI, a freshly generated name will be used instead.
 	 *
 	 * @param prefixName the name of the prefix.
 	 * @param prefixIri  the IRI of the prefix.
 	 */
 	@Override
 	public void setPrefixIri(String prefixName, String prefixIri) {
-		String name = prefixes.containsKey(prefixName) ? getFreshPrefix() : prefixName;
+		String name;
+		if (prefixes.containsKey(prefixName) && !prefixIri.equals(prefixes.get(prefixName))) {
+			name = getFreshPrefix();
+		} else {
+			name = prefixName;
+		}
 		prefixes.put(name, prefixIri);
 	}
 
