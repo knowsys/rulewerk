@@ -23,17 +23,33 @@ import java.io.File;
  */
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
+import org.openrdf.model.Model;
+import org.openrdf.model.Namespace;
+import org.openrdf.model.impl.LinkedHashModel;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.Rio;
+import org.openrdf.rio.helpers.StatementCollector;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.owlapi.OwlToRulesConverter;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
+import org.semanticweb.rulewerk.rdf.RdfModelConverter;
 
 /**
  * Interpreter for the load command.
@@ -70,6 +86,8 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 			loadKb(interpreter, fileName);
 		} else if (TASK_OWL.equals(task)) {
 			loadOwl(interpreter, fileName);
+		} else if (TASK_RDF.equals(task)) {
+			loadRdf(interpreter, fileName);
 		} else {
 			throw new CommandExecutionException("Unknown task " + task + ". Should be " + TASK_RLS + " or " + TASK_OWL);
 		}
@@ -87,7 +105,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		} catch (FileNotFoundException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		} catch (ParsingException e) {
-			throw new CommandExecutionException("Error parsing file: " + e.getMessage(), e);
+			throw new CommandExecutionException("Failed to parse Rulewerk file: " + e.getMessage(), e);
 		}
 	}
 
@@ -118,6 +136,55 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 
 		interpreter.getKnowledgeBase().addStatements(owlToRulesConverter.getRules());
 		interpreter.getKnowledgeBase().addStatements(owlToRulesConverter.getFacts());
+	}
+
+	private void loadRdf(Interpreter interpreter, String fileName) throws CommandExecutionException {
+		try {
+			String baseIri = new File(fileName).toURI().toString();
+
+			Iterator<RDFFormat> formatsToTry = Arrays.asList(RDFFormat.NTRIPLES, RDFFormat.TURTLE, RDFFormat.RDFXML)
+					.iterator();
+			Model model = null;
+			List<String> parseErrors = new ArrayList<>();
+			while (model == null && formatsToTry.hasNext()) {
+				RDFFormat rdfFormat = formatsToTry.next();
+				try {
+					InputStream inputStream = interpreter.getFileInputStream(fileName);
+					model = parseRdfFromStream(inputStream, rdfFormat, baseIri);
+					interpreter.printNormal("Found RDF document in format " + rdfFormat.getName() + " ...\n");
+				} catch (RDFParseException | RDFHandlerException e) {
+					parseErrors.add("Failed to parse as " + rdfFormat.getName() + ": " + e.getMessage());
+				}
+			}
+			if (model == null) {
+				String message = "Failed to parse RDF input:";
+				for (String error : parseErrors) {
+					message += "\n " + error;
+				}
+				throw new CommandExecutionException(message);
+			}
+
+			interpreter.getKnowledgeBase().addStatements(RdfModelConverter.rdfModelToFacts(model));
+			for (Namespace namespace : model.getNamespaces()) {
+				try {
+					interpreter.getKnowledgeBase().getPrefixDeclarationRegistry()
+							.setPrefixIri(namespace.getPrefix() + ":", namespace.getName());
+				} catch (PrefixDeclarationException e) {
+					// ignore this prefix
+				}
+			}
+		} catch (IOException e) {
+			throw new CommandExecutionException("Could not read input: " + e.getMessage(), e);
+		}
+	}
+
+	private Model parseRdfFromStream(InputStream inputStream, RDFFormat rdfFormat, String baseIri)
+			throws RDFParseException, RDFHandlerException, IOException {
+		final Model model = new LinkedHashModel();
+		final RDFParser rdfParser = Rio.createParser(rdfFormat);
+		rdfParser.setRDFHandler(new StatementCollector(model));
+		rdfParser.parse(inputStream, baseIri);
+		return model;
 	}
 
 	@Override
