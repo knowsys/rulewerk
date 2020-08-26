@@ -117,7 +117,6 @@ public class Shell {
 			return this.interpreter.parseCommand(readLine);
 		} catch (final ParsingException e) {
 			this.interpreter.printNormal("Error: " + e.getMessage() + "\n" + e.getCause().getMessage() + "\n");
-
 			return null;
 		}
 	}

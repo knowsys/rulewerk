@@ -75,8 +75,8 @@ public class AddSourceCommandInterpreter implements CommandInterpreter {
 			arity = Integer.parseInt(arityString);
 		} catch (IndexOutOfBoundsException | NumberFormatException e) {
 			throw new CommandExecutionException(
-					"Predicate declaration must have the format \"predicateName[number]\" but was "
-							+ predicateDeclaration);
+					"Predicate declaration must have the format \"predicateName[number]\" but was \""
+							+ predicateDeclaration + "\".");
 		}
 		return Expressions.makePredicate(predicateName, arity);
 	}

@@ -24,6 +24,7 @@ import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 public class RetractCommandInterpreter implements CommandInterpreter {
@@ -44,9 +45,14 @@ public class RetractCommandInterpreter implements CommandInterpreter {
 				factCount += interpreter.getKnowledgeBase().removeStatement(fact);
 			} else if (argument.fromRule().isPresent()) {
 				ruleCount += interpreter.getKnowledgeBase().removeStatement(argument.fromRule().get());
-			} else {
-				throw new CommandExecutionException(
-						"Only facts and rules can be retracted. Encountered " + argument.toString());
+			} else { // implies argument.fromTerm().isPresent() 
+				String predicateDeclaration = Interpreter.extractStringArgument(command, 0, "predicateName[arity]");
+				Predicate predicate = AddSourceCommandInterpreter.extractPredicate(predicateDeclaration);
+				for (Fact fact : interpreter.getKnowledgeBase().getFacts()) {
+					if (predicate.equals(fact.getPredicate())) {
+						factCount += interpreter.getKnowledgeBase().removeStatement(fact);
+					}
+				}
 			}
 		}
 
@@ -56,7 +62,8 @@ public class RetractCommandInterpreter implements CommandInterpreter {
 	@Override
 	public void printHelp(String commandName, Interpreter interpreter) {
 		interpreter.printNormal("Usage: @" + commandName + " (<fact or rule>)+ .\n"
-				+ " fact or rule: statement(s) to be removed from the knowledge base\n"
+				+ " fact or rule: statement(s) to be removed from the knowledge base, or a predicate declaration\n"
+				+ "               of the form name[arity] to remove all facts for that predicate.\n"
 				+ "Reasoning needs to be invoked after finishing the removal of statements.\n");
 	}
 
