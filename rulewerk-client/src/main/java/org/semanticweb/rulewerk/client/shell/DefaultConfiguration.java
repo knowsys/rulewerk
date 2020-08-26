@@ -57,8 +57,10 @@ public final class DefaultConfiguration {
 		;
 
 		final LineReader lineReader = lineReaderBuilder.build();
+
 		lineReader.unsetOpt(LineReader.Option.INSERT_TAB); // This allows completion on an empty buffer, rather than
 															// inserting a tab
+		lineReader.setOpt(LineReader.Option.AUTO_FRESH_LINE);
 		return lineReader;
 	}
 
