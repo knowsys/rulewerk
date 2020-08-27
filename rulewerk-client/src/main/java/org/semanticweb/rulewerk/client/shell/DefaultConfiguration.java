@@ -86,7 +86,7 @@ public final class DefaultConfiguration {
 
 	public static AttributedString buildPromptProvider() {
 		final AttributedStyle promptStyle = AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW);
-		return new AttributedString("rulewerk>", promptStyle);
+		return new AttributedString("rulewerk> ", promptStyle);
 	}
 
 }
