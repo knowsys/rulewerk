@@ -25,8 +25,6 @@ import java.io.IOException;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
 import org.semanticweb.rulewerk.commands.Interpreter;
-import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.DefaultParserConfiguration;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
@@ -42,20 +40,21 @@ public class InteractiveShell
 	public void run() throws IOException {
 
 		final Terminal terminal = DefaultConfiguration.buildTerminal();
-		final Interpreter interpreter = this.initializeInterpreter(terminal);
-		final Shell shell = new Shell(interpreter);
 
-		final LineReader lineReader = DefaultConfiguration.buildLineReader(terminal, interpreter);
-		final String prompt = DefaultConfiguration.buildPrompt(terminal);
+		try (Interpreter interpreter = this.initializeInterpreter(terminal)) {
+			final Shell shell = new Shell(interpreter);
 
-		shell.run(lineReader, prompt);
+			final LineReader lineReader = DefaultConfiguration.buildLineReader(terminal, interpreter);
+			final String prompt = DefaultConfiguration.buildPrompt(terminal);
+
+			shell.run(lineReader, prompt);
+		}
 	}
 
 	Interpreter initializeInterpreter(final Terminal terminal) {
-		final KnowledgeBase knowledgeBase = new KnowledgeBase();
-		final Reasoner reasoner = new VLogReasoner(knowledgeBase);
 		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
-		final Interpreter interpreter = new Interpreter(reasoner, new TerminalStyledPrinter(terminal),
+		final Interpreter interpreter = new Interpreter(Interpreter.EMPTY_KNOWLEDGE_BASE_PROVIDER,
+				(knowledgeBase) -> new VLogReasoner(knowledgeBase), new TerminalStyledPrinter(terminal),
 				parserConfiguration);
 
 		return interpreter;

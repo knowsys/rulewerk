@@ -83,8 +83,8 @@ public class ExitCommandInterpreterTest {
 	static public Interpreter getMockInterpreter(final Writer writer) {
 		final SimpleStyledPrinter printer = new SimpleStyledPrinter(writer);
 		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
-		final Reasoner reasoner = Mockito.mock(Reasoner.class);
-		return new Interpreter(reasoner, printer, parserConfiguration);
+		return new Interpreter(Interpreter.EMPTY_KNOWLEDGE_BASE_PROVIDER, (kb) -> Mockito.mock(Reasoner.class), printer,
+				parserConfiguration);
 	}
 
 	@Test

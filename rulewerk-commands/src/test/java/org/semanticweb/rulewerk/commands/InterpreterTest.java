@@ -40,10 +40,11 @@ public class InterpreterTest {
 	static public Interpreter getMockInterpreter(Writer writer) {
 		SimpleStyledPrinter printer = new SimpleStyledPrinter(writer);
 		ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
-		KnowledgeBase knowledgeBase = new KnowledgeBase();
-		Reasoner reasoner = Mockito.mock(Reasoner.class);
-		Mockito.when(reasoner.getKnowledgeBase()).thenReturn(knowledgeBase);
-		return new Interpreter(reasoner, printer, parserConfiguration);
+		return new Interpreter(Interpreter.EMPTY_KNOWLEDGE_BASE_PROVIDER, (knowledgeBase) -> {
+			Reasoner reasoner = Mockito.mock(Reasoner.class);
+			Mockito.when(reasoner.getKnowledgeBase()).thenReturn(knowledgeBase);
+			return reasoner;
+		}, printer, parserConfiguration);
 	}
 
 	/**
@@ -73,45 +74,47 @@ public class InterpreterTest {
 		StringWriter writer = new StringWriter();
 		SimpleStyledPrinter printer = new SimpleStyledPrinter(writer);
 		ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
-		KnowledgeBase knowledgeBase = new KnowledgeBase();
-		Reasoner reasoner = Mockito.mock(Reasoner.class);
+		final KnowledgeBase knowledgeBase = new KnowledgeBase();
+		final Reasoner reasoner = Mockito.mock(Reasoner.class);
 		Mockito.when(reasoner.getKnowledgeBase()).thenReturn(knowledgeBase);
-		Interpreter interpreter = new Interpreter(reasoner, printer, parserConfiguration);
-
-		assertEquals(knowledgeBase, interpreter.getKnowledgeBase());
-		assertEquals(reasoner, interpreter.getReasoner());
-		assertEquals(writer, interpreter.getWriter());
-		assertEquals(parserConfiguration, interpreter.getParserConfiguration());
+		try (Interpreter interpreter = new Interpreter(() -> knowledgeBase, (kb) -> reasoner, printer,
+				parserConfiguration)) {
+			assertEquals(knowledgeBase, interpreter.getKnowledgeBase());
+			assertEquals(reasoner, interpreter.getReasoner());
+			assertEquals(writer, interpreter.getWriter());
+			assertEquals(parserConfiguration, interpreter.getParserConfiguration());
+		}
 	}
 
 	@Test(expected = CommandExecutionException.class)
 	public void unknownCommand_fails() throws ParsingException, CommandExecutionException {
 		StringWriter writer = new StringWriter();
-		Interpreter interpreter = getMockInterpreter(writer);
-
-		Command command = interpreter.parseCommand("@unknown .");
-		interpreter.runCommand(command);
+		try (Interpreter interpreter = getMockInterpreter(writer)) {
+			Command command = interpreter.parseCommand("@unknown .");
+			interpreter.runCommand(command);
+		}
 	}
 
 	@Test(expected = ParsingException.class)
 	public void malformedCommand_fails() throws ParsingException {
 		StringWriter writer = new StringWriter();
-		Interpreter interpreter = getMockInterpreter(writer);
-
-		interpreter.parseCommand("malformed .");
+		try (Interpreter interpreter = getMockInterpreter(writer)) {
+			interpreter.parseCommand("malformed .");
+		}
 	}
 
 	@Test
 	public void prefixesAreUsed_succeeds() throws ParsingException, PrefixDeclarationException {
 		StringWriter writer = new StringWriter();
-		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
-		interpreter.getKnowledgeBase().getPrefixDeclarationRegistry().setPrefixIri("eg:", "http://example.org/");
+		try (Interpreter interpreter = InterpreterTest.getMockInterpreter(writer)) {
+			interpreter.getKnowledgeBase().getPrefixDeclarationRegistry().setPrefixIri("eg:", "http://example.org/");
 
-		Command command = interpreter.parseCommand("@somecommand eg:test .");
+			Command command = interpreter.parseCommand("@somecommand eg:test .");
 
-		assertEquals(1, command.getArguments().size());
-		assertTrue(command.getArguments().get(0).fromTerm().isPresent());
-		assertEquals("http://example.org/test", command.getArguments().get(0).fromTerm().get().getName());
+			assertEquals(1, command.getArguments().size());
+			assertTrue(command.getArguments().get(0).fromTerm().isPresent());
+			assertEquals("http://example.org/test", command.getArguments().get(0).fromTerm().get().getName());
+		}
 	}
 
 	@Test
@@ -119,21 +122,20 @@ public class InterpreterTest {
 		StringWriter writer = new StringWriter();
 		SimpleStyledPrinter printer = Mockito.spy(new SimpleStyledPrinter(writer));
 		ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
-		Reasoner reasoner = Mockito.mock(Reasoner.class);
-		Interpreter interpreter = new Interpreter(reasoner, printer, parserConfiguration);
+		try (Interpreter interpreter = new Interpreter(Interpreter.EMPTY_KNOWLEDGE_BASE_PROVIDER,
+				(kb) -> Mockito.mock(Reasoner.class), printer, parserConfiguration)) {
+			interpreter.printCode("Code");
+			interpreter.printNormal("Normal");
+			interpreter.printEmph("Emph");
+			interpreter.printSection("Section");
+			interpreter.printImportant("Important");
 
-		interpreter.printCode("Code");
-		interpreter.printNormal("Normal");
-		interpreter.printEmph("Emph");
-		interpreter.printSection("Section");
-		interpreter.printImportant("Important");
-
-		Mockito.verify(printer).printCode("Code");
-		Mockito.verify(printer).printNormal("Normal");
-		Mockito.verify(printer).printEmph("Emph");
-		Mockito.verify(printer).printSection("Section");
-		Mockito.verify(printer).printImportant("Important");
-
+			Mockito.verify(printer).printCode("Code");
+			Mockito.verify(printer).printNormal("Normal");
+			Mockito.verify(printer).printEmph("Emph");
+			Mockito.verify(printer).printSection("Section");
+			Mockito.verify(printer).printImportant("Important");
+		}
 	}
 
 }

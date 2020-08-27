@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -35,6 +36,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Terms;
@@ -46,17 +48,39 @@ import org.semanticweb.rulewerk.parser.javacc.JavaCCParser;
 import org.semanticweb.rulewerk.parser.javacc.ParseException;
 import org.semanticweb.rulewerk.parser.javacc.TokenMgrError;
 
-public class Interpreter {
+public class Interpreter implements AutoCloseable {
 
-	final Reasoner reasoner;
+	@FunctionalInterface
+	public interface ReasonerProvider {
+		public Reasoner reasoner(KnowledgeBase knowledgeBase);
+	}
+
+	@FunctionalInterface
+	public interface KnowledgeBaseProvider {
+		public KnowledgeBase knowledgeBase();
+	}
+
+	final public static KnowledgeBaseProvider EMPTY_KNOWLEDGE_BASE_PROVIDER = new KnowledgeBaseProvider() {
+		@Override
+		public KnowledgeBase knowledgeBase() {
+			return new KnowledgeBase();
+		}
+	};
+
+	final ReasonerProvider reasonerProvider;
+	final KnowledgeBaseProvider knowledgeBaseProvider;
+
+	Reasoner reasoner = null;
 	final StyledPrinter printer;
 	final ParserConfiguration parserConfiguration;
 
 	final LinkedHashMap<String, CommandInterpreter> commandInterpreters = new LinkedHashMap<>();
 
-	public Interpreter(final Reasoner reasoner, final StyledPrinter printer,
-			final ParserConfiguration parserConfiguration) {
-		this.reasoner = reasoner;
+	public Interpreter(final KnowledgeBaseProvider knowledgeBaseProvider, final ReasonerProvider reasonerProvider,
+			final StyledPrinter printer, final ParserConfiguration parserConfiguration) {
+		this.knowledgeBaseProvider = knowledgeBaseProvider;
+		this.reasonerProvider = reasonerProvider;
+		clearReasonerAndKnowledgeBase();
 		this.printer = printer;
 		this.parserConfiguration = parserConfiguration;
 		this.registerDefaultCommandInterpreters();
@@ -157,6 +181,7 @@ public class Interpreter {
 		this.registerCommandInterpreter("addsource", new AddSourceCommandInterpreter());
 		this.registerCommandInterpreter("delsource", new RemoveSourceCommandInterpreter());
 		this.registerCommandInterpreter("setprefix", new SetPrefixCommandInterpreter());
+		this.registerCommandInterpreter("clear", new ClearCommandInterpreter());
 		this.registerCommandInterpreter("reason", new ReasonCommandInterpreter());
 		this.registerCommandInterpreter("query", new QueryCommandInterpreter());
 		this.registerCommandInterpreter("export", new ExportCommandInterpreter());
@@ -229,6 +254,38 @@ public class Interpreter {
 	 */
 	public InputStream getFileInputStream(String fileName) throws FileNotFoundException {
 		return new FileInputStream(fileName);
+	}
+
+	/**
+	 * Completely resets the reasoner and knowledge base. All inferences and
+	 * statements are cleared.
+	 */
+	public void clearReasonerAndKnowledgeBase() {
+		closeReasoner();
+		reasoner = reasonerProvider.reasoner(knowledgeBaseProvider.knowledgeBase());
+		try {
+			reasoner.reason();
+		} catch (IOException e) {
+			throw new RulewerkRuntimeException("Failed to initialise reasoner: " + e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Frees all resources, especially those associated with reasoning.
+	 */
+	@Override
+	public void close() {
+		closeReasoner();
+	}
+
+	/**
+	 * Closes and discards the internal {@link Reasoner}.
+	 */
+	private void closeReasoner() {
+		if (reasoner != null) {
+			reasoner.close();
+			reasoner = null;
+		}
 	}
 
 }
