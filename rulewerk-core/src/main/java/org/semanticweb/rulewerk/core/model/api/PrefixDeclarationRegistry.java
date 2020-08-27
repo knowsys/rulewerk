@@ -44,12 +44,17 @@ public interface PrefixDeclarationRegistry extends Iterable<Entry<String, String
 	static final String XSD_BYTE = "http://www.w3.org/2001/XMLSchema#byte";
 	static final String XSD_BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
 	static final String RDF_LANGSTRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
-	
+
 	static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 
 	static final String EMPTY_BASE = "";
 	static final String PREFIX_NAME_SEPARATOR = ":";
+
+	/**
+	 * Resets the registry to an empty state, without a base or any prefixes.
+	 */
+	void clear();
 
 	/**
 	 * Returns the relevant base namespace. This should always return a result,

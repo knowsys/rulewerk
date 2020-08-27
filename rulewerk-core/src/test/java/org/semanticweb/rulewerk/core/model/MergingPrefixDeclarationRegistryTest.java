@@ -106,6 +106,14 @@ public class MergingPrefixDeclarationRegistryTest {
 	}
 	
 	@Test
+	public void clearPrefix_succeeds() throws PrefixDeclarationException {
+		prefixDeclarations.setPrefixIri("eg:", BASE);
+		prefixDeclarations.setPrefixIri("another:", MORE_SPECIFIC);
+		prefixDeclarations.clear();
+		assertEquals(0, StreamSupport.stream(prefixDeclarations.spliterator(), false).count());
+	}
+	
+	@Test
 	public void setPrefixIri_setSamePrefix_succeeds() throws PrefixDeclarationException {
 		prefixDeclarations.setPrefixIri("eg:", BASE);
 		prefixDeclarations.setPrefixIri("eg:", BASE);
