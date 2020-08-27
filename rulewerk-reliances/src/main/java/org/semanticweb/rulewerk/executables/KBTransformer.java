@@ -133,7 +133,10 @@ public class KBTransformer {
 			newRules += rules.get(i) + "\n";
 		}
 
+		System.out.println("XXXXX");
+		System.out.println(newRules);
 		saveStringToFile(outputRulePath, newRules);
+		System.out.println(newFacts);
 		addFactsToKB(inputDataPath, outputDataPath, newFacts);
 
 	}

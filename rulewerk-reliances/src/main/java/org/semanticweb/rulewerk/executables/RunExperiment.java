@@ -204,7 +204,6 @@ public class RunExperiment {
 		}
 	}
 
-	// not stratifiable
 	static private void hamiltonianPowerLaw() throws ParsingException, IOException {
 		String base = "/home/lgonzale/ontologies/phillip/";
 
@@ -238,6 +237,33 @@ public class RunExperiment {
 		}
 	}
 
+	static private void chain() throws ParsingException, IOException {
+		String base = "/home/lgonzale/ontologies/chain/";
+
+		String[] graphs = { "r-10-e-10.lp", "r-10-e-100.lp", "r-100-e-10.lp", "r-100-e-100.lp", "r-1000-e-10.lp",
+				"r-1000-e-100.lp", "r-10000-e-10.lp", "r-10000-e-100.lp", "r-100000-e-10.lp", "r-100000-e-100.lp",
+				"r-1000000-e-10.lp", "r-1000000-e-100.lp" };
+
+		long first[] = new long[2];
+		long second[] = new long[2];
+
+		for (String g : graphs) {
+
+			for (int j = 0; j < 2; j++) {
+				first[j] = materialize(base + "original/rules.rls", base + "original/" + g,
+						base + "logs/" + g + "-original.log");
+//				System.out.println(first[j]);
+				second[j] = materialize(base + "transformed/rules.rls", base + "transformed/" + g,
+						base + "logs/" + g + "-transformed.log");
+//				System.out.println(second[j]);
+			}
+//			print(first);
+//			print(second);
+			System.out.println(g + ": " + average(first) + " " + average(second));
+
+		}
+	}
+
 	public static void main(final String[] args) throws IOException, ParsingException {
 //		chasingSets();         // error in c?
 //		crossword();           // slower with our transformation. more rule executions also
@@ -245,5 +271,6 @@ public class RunExperiment {
 //		threeColPowerLaw();    // better only in special cases
 //		hamiltonianErdos();    // slower
 //		hamiltonianPowerLaw(); // slower
+		chain();
 	}
 }

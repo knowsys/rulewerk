@@ -112,12 +112,28 @@ public class KBTransformerMain {
 		}
 	}
 
+	static private void chain() throws ParsingException, IOException {
+		String originalPath = "/home/lgonzale/ontologies/chain/original/";
+		String transformedPath = "/home/lgonzale/ontologies/chain/transformed/";
+
+		String[] graphs = { "r-10-e-10.lp", "r-10-e-100.lp", "r-100-e-10.lp", "r-100-e-100.lp", "r-1000-e-10.lp",
+				"r-1000-e-100.lp", "r-10000-e-10.lp", "r-10000-e-100.lp", "r-100000-e-10.lp", "r-100000-e-100.lp",
+				"r-1000000-e-10.lp", "r-1000000-e-100.lp" };
+
+		KBTransformer kbt = new KBTransformer();
+		for (String g : graphs) {
+			kbt.transform(originalPath + "rules.rls", originalPath + g, transformedPath + "rules.rls",
+					transformedPath + g);
+		}
+	}
+
 	static public void main(String args[]) throws ParsingException, IOException {
-		chasingSets();
-		crossword();
-		threeColErdos();
-		threeColPowerLaw();
-		hamiltonianErdos();
-		hamiltonianPowerLaw();
+//		chasingSets();
+//		crossword();
+//		threeColErdos();
+//		threeColPowerLaw();
+//		hamiltonianErdos();
+//		hamiltonianPowerLaw();
+		chain();
 	}
 }
