@@ -20,23 +20,21 @@ package org.semanticweb.rulewerk.client.shell;
  * #L%
  */
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import org.jline.reader.LineReader;
-import org.jline.terminal.Terminal;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.semanticweb.rulewerk.client.shell.commands.ExitCommandInterpreter;
+import org.semanticweb.rulewerk.commands.CommandExecutionException;
 import org.semanticweb.rulewerk.commands.Interpreter;
 import org.semanticweb.rulewerk.core.model.api.Command;
-import org.semanticweb.rulewerk.core.reasoner.Reasoner;
-import org.semanticweb.rulewerk.parser.DefaultParserConfiguration;
-import org.semanticweb.rulewerk.parser.ParserConfiguration;
+import org.semanticweb.rulewerk.parser.ParsingException;
 
 public class ShellTest {
 
@@ -92,54 +90,67 @@ public class ShellTest {
 	}
 
 	@Test
-	public void readCommand_Invalid() {
+	public void readCommand_Unknown() throws ParsingException {
 		final LineReader lineReaderMock = Mockito.mock(LineReader.class);
 
 		final String prompt = "myPrompt";
-		final Shell shell = new Shell(Mockito.mock(Interpreter.class));
 
-		Mockito.when(lineReaderMock.readLine(prompt)).thenReturn("invalid");
+		final StringWriter stringWriter = new StringWriter();
+		final Interpreter interpreter = ShellTestUtils.getMockInterpreter(stringWriter);
+		final Interpreter interpreterSpy = Mockito.spy(interpreter);
+		final Shell shell = new Shell(interpreterSpy);
+
+		Mockito.when(lineReaderMock.readLine(prompt)).thenReturn("unknown");
 
 		final Command command = shell.readCommand(lineReaderMock, prompt);
-		assertNull(command);
 
-		// TODO test interpreter.parseCommand was called
-		// TODO test Parsing exception has been thrown
+		Mockito.verify(interpreterSpy).parseCommand("@unknown .");
+		assertEquals("unknown", command.getName());
+		assertTrue(command.getArguments().isEmpty());
+
+		// TODO test Parsing exception has not been thrown
 	}
 
 	@Test
-	public void readCommand_Exit() {
+	public void readCommand_ParsingException() throws ParsingException {
 		final LineReader lineReaderMock = Mockito.mock(LineReader.class);
 
 		final String prompt = "myPrompt";
-		// TODO need real interpreter here
-		final Shell shell = new Shell(getMockInterpreter());
+
+		final StringWriter stringWriter = new StringWriter();
+		final Interpreter interpreter = ShellTestUtils.getMockInterpreter(stringWriter);
+		final Interpreter interpreterSpy = Mockito.spy(interpreter);
+		final Shell shell = new Shell(interpreterSpy);
+
+		Mockito.when(lineReaderMock.readLine(prompt)).thenReturn("@");
+
+		final Command command = shell.readCommand(lineReaderMock, prompt);
+
+		Mockito.verify(interpreterSpy).parseCommand("@ .");
+		assertNull(command);
+		
+		// TODO test Parsing exception has been thrown
+		assertTrue(stringWriter.toString().startsWith("Error: "));
+	}
+
+	@Test
+	public void readCommand_Exit() throws CommandExecutionException {
+		final LineReader lineReaderMock = Mockito.mock(LineReader.class);
+
+		final String prompt = "myPrompt";
+
+		final StringWriter stringWriter = new StringWriter();
+		final Interpreter interpreterMock = ShellTestUtils.getMockInterpreter(stringWriter);
+		final Shell shell = new Shell(interpreterMock);
 
 		Mockito.when(lineReaderMock.readLine(prompt)).thenReturn("exit");
 
 		final Command command = shell.readCommand(lineReaderMock, prompt);
 		assertEquals(ExitCommandInterpreter.EXIT_COMMAND.getName(), command.getName());
+		assertTrue(command.getArguments().isEmpty());
 
 		// TODO test Parsing exception has not been thrown
-		// TODO test ExitCommandInterpreter.run() has been called
-
 		assertFalse(shell.running);
-	}
-
-	static public Interpreter getMockInterpreter() {
-		final Terminal terminal = Mockito.mock(Terminal.class);
-		final PrintWriter printWriter = Mockito.mock(PrintWriter.class);
-		Mockito.when(terminal.writer()).thenReturn(printWriter);
-
-		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
-
-		final Interpreter interpreter = new Interpreter(Interpreter.EMPTY_KNOWLEDGE_BASE_PROVIDER, (kb) -> {
-			Reasoner reasoner = Mockito.mock(Reasoner.class);
-			Mockito.when(reasoner.getKnowledgeBase()).thenReturn(kb);
-			return reasoner;
-		}, new TerminalStyledPrinter(terminal), parserConfiguration);
-
-		return interpreter;
 	}
 
 }
