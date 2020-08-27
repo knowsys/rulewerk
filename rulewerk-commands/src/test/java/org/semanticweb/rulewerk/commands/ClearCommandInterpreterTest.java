@@ -36,12 +36,15 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Command;
+import org.semanticweb.rulewerk.core.model.api.DataSource;
+import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
+import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
@@ -64,10 +67,13 @@ public class ClearCommandInterpreterTest {
 	static {
 		standardPrefixes.put("eg:", "http://example.org/");
 	}
+	static DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(p,
+			Mockito.mock(DataSource.class));
 
 	private void prepareKnowledgeBase(KnowledgeBase knowledgeBase) throws PrefixDeclarationException {
 		knowledgeBase.addStatement(fact);
 		knowledgeBase.addStatement(rule);
+		knowledgeBase.addStatement(dataSourceDeclaration);
 		knowledgeBase.getPrefixDeclarationRegistry().setPrefixIri("eg:", "http://example.org/");
 	}
 
@@ -115,7 +121,8 @@ public class ClearCommandInterpreterTest {
 
 			assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
 			assertEquals(Arrays.asList(rule), interpreter.getKnowledgeBase().getRules());
-			assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+			assertEquals(Arrays.asList(dataSourceDeclaration),
+					interpreter.getKnowledgeBase().getDataSourceDeclarations());
 			assertPrefixesEqual(standardPrefixes, interpreter.getKnowledgeBase().getPrefixDeclarationRegistry());
 			Mockito.verify(reasoner).resetReasoner();
 		}
@@ -133,7 +140,8 @@ public class ClearCommandInterpreterTest {
 
 			assertTrue(interpreter.getKnowledgeBase().getFacts().isEmpty());
 			assertEquals(Arrays.asList(rule), interpreter.getKnowledgeBase().getRules());
-			assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+			assertEquals(Arrays.asList(dataSourceDeclaration),
+					interpreter.getKnowledgeBase().getDataSourceDeclarations());
 			assertPrefixesEqual(standardPrefixes, interpreter.getKnowledgeBase().getPrefixDeclarationRegistry());
 		}
 	}
@@ -150,6 +158,24 @@ public class ClearCommandInterpreterTest {
 
 			assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
 			assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+			assertEquals(Arrays.asList(dataSourceDeclaration),
+					interpreter.getKnowledgeBase().getDataSourceDeclarations());
+			assertPrefixesEqual(standardPrefixes, interpreter.getKnowledgeBase().getPrefixDeclarationRegistry());
+		}
+	}
+
+	@Test
+	public void correctUseSources_succeeds()
+			throws ParsingException, CommandExecutionException, PrefixDeclarationException {
+		StringWriter writer = new StringWriter();
+		try (Interpreter interpreter = InterpreterTest.getMockInterpreter(writer)) {
+			prepareKnowledgeBase(interpreter.getKnowledgeBase());
+
+			Command command = interpreter.parseCommand("@clear DATASOURCES .");
+			interpreter.runCommand(command);
+
+			assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+			assertEquals(Arrays.asList(rule), interpreter.getKnowledgeBase().getRules());
 			assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
 			assertPrefixesEqual(standardPrefixes, interpreter.getKnowledgeBase().getPrefixDeclarationRegistry());
 		}
@@ -161,16 +187,15 @@ public class ClearCommandInterpreterTest {
 		StringWriter writer = new StringWriter();
 		try (Interpreter interpreter = InterpreterTest.getMockInterpreter(writer)) {
 
-			interpreter.getKnowledgeBase().addStatement(fact);
-			interpreter.getKnowledgeBase().addStatement(rule);
-			interpreter.getKnowledgeBase().getPrefixDeclarationRegistry().setPrefixIri("eg:", "http://example.org/");
+			prepareKnowledgeBase(interpreter.getKnowledgeBase());
 
 			Command command = interpreter.parseCommand("@clear PREFIXES .");
 			interpreter.runCommand(command);
 
 			assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
 			assertEquals(Arrays.asList(rule), interpreter.getKnowledgeBase().getRules());
-			assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+			assertEquals(Arrays.asList(dataSourceDeclaration),
+					interpreter.getKnowledgeBase().getDataSourceDeclarations());
 			assertPrefixesEqual(Collections.emptyMap(), interpreter.getKnowledgeBase().getPrefixDeclarationRegistry());
 		}
 	}

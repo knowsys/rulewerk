@@ -21,6 +21,7 @@ package org.semanticweb.rulewerk.commands;
  */
 
 import org.semanticweb.rulewerk.core.model.api.Command;
+import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 
@@ -30,6 +31,7 @@ public class ClearCommandInterpreter implements CommandInterpreter {
 	static final String TASK_INFERENCES = "INF";
 	static final String TASK_FACTS = "FACTS";
 	static final String TASK_RULES = "RULES";
+	static final String TASK_SOURCES = "DATASOURCES";
 	static final String TASK_PREFIXES = "PREFIXES";
 
 	@Override
@@ -52,12 +54,19 @@ public class ClearCommandInterpreter implements CommandInterpreter {
 				interpreter.getKnowledgeBase().removeStatement(rule);
 			}
 			interpreter.printNormal("All rules have been removed from the knowledge base.\n");
+		} else if (TASK_SOURCES.equals(task)) {
+			for (DataSourceDeclaration dataSourceDeclaration : interpreter.getKnowledgeBase()
+					.getDataSourceDeclarations()) {
+				interpreter.getKnowledgeBase().removeStatement(dataSourceDeclaration);
+			}
+			interpreter.printNormal("All datasource declarations have been removed from the knowledge base.\n");
 		} else if (TASK_PREFIXES.equals(task)) {
 			interpreter.getKnowledgeBase().getPrefixDeclarationRegistry().clear();
 			interpreter.printNormal("All prefixes and the base namespace have been removed from the knowledge base.\n");
 		} else {
-			throw new CommandExecutionException("Task \"" + task + "\" not supported; should be one of:  " + TASK_ALL
-					+ ", " + TASK_INFERENCES + ", " + TASK_FACTS + ", " + TASK_RULES + ", " + TASK_PREFIXES);
+			throw new CommandExecutionException(
+					"Task \"" + task + "\" not supported; should be one of:  " + TASK_ALL + ", " + TASK_INFERENCES
+							+ ", " + TASK_FACTS + ", " + TASK_RULES + ", " + TASK_SOURCES + ", " + TASK_PREFIXES);
 		}
 	}
 
@@ -69,12 +78,13 @@ public class ClearCommandInterpreter implements CommandInterpreter {
 				+ "   INF: reset reasoner to clear all loaded data and inferences\n" //
 				+ "   FACTS: remove all facts from knowledge base\n" //
 				+ "   RULES: remove all rules from knowledge base\n" //
+				+ "   DATASOURCES: remove all data source declarations from knowledge base\n" //
 				+ "   PREFIXES: undeclare all prefixes and base namespace\n");
 	}
 
 	@Override
 	public String getSynopsis() {
-		return "discards the knowledge base and/or previously computed inferences";
+		return "discards (parts of) the knowledge base or computed inferences";
 	}
 
 }
