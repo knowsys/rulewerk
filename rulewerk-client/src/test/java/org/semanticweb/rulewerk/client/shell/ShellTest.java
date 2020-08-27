@@ -21,16 +21,16 @@ package org.semanticweb.rulewerk.client.shell;
  */
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
 
+import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.semanticweb.rulewerk.client.shell.commands.ExitCommandInterpreter;
 import org.semanticweb.rulewerk.commands.CommandExecutionException;
 import org.semanticweb.rulewerk.commands.Interpreter;
 import org.semanticweb.rulewerk.core.model.api.Command;
@@ -38,71 +38,71 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 
 public class ShellTest {
 
+	private final String prompt = "myPrompt";
+
 	@Test
-	public void processReadLine_Blank() {
+	public void processReadLine_blank() {
 		final Shell shell = new Shell(Mockito.mock(Interpreter.class));
 		final String processedReadLine = shell.processReadLine(" ");
 		assertEquals("", processedReadLine);
 	}
 
 	@Test
-	public void processReadLine_StartsWithAt() {
+	public void processReadLine_startsWithAt() {
 		final Shell shell = new Shell(Mockito.mock(Interpreter.class));
 		final String processedReadLine = shell.processReadLine(" @ ");
 		assertEquals("@ .", processedReadLine);
 	}
 
 	@Test
-	public void processReadLine_EndsWithStop() {
+	public void processReadLine_endsWithStop() {
 		final Shell shell = new Shell(Mockito.mock(Interpreter.class));
 		final String processedReadLine = shell.processReadLine(" . ");
 		assertEquals("@.", processedReadLine);
 	}
 
 	@Test
-	public void processReadLine_StartsWithAtEndsWithStop() {
+	public void processReadLine_startsWithAtEndsWithStop() {
 		final Shell shell = new Shell(Mockito.mock(Interpreter.class));
 		final String processedReadLine = shell.processReadLine(" @. ");
 		assertEquals("@.", processedReadLine);
 	}
 
 	@Test
-	public void processReadLine_DoesNotStartWithAt_DoesNotEndWithStop() {
+	public void processReadLine_doesNotStartWithAt_DoesNotEndWithStop() {
 		final Shell shell = new Shell(Mockito.mock(Interpreter.class));
 		final String processedReadLine = shell.processReadLine(" .@ ");
 		assertEquals("@.@ .", processedReadLine);
 	}
 
 	@Test
-	public void readCommand_Blank() {
+	public void readCommand_blank() throws ParsingException {
 		final LineReader lineReaderMock = Mockito.mock(LineReader.class);
 
-		final String prompt = "myPrompt";
-		final Shell shell = new Shell(Mockito.mock(Interpreter.class));
+		final Interpreter interpreterMock = Mockito.mock(Interpreter.class);
+		final Shell shell = new Shell(interpreterMock);
 
-		Mockito.when(lineReaderMock.readLine(prompt)).thenReturn(" ");
+		Mockito.when(lineReaderMock.readLine(this.prompt)).thenReturn(" ");
 
-		final Command command = shell.readCommand(lineReaderMock, prompt);
+		final Command command = shell.readCommand(lineReaderMock, this.prompt);
 		assertNull(command);
 
-		// TODO test interpreter.parseCommand was not called
+		Mockito.verify(interpreterMock, Mockito.never()).parseCommand(Mockito.anyString());
 		// TODO test exceptions have not been thrown
 	}
 
 	@Test
-	public void readCommand_Unknown() throws ParsingException {
+	public void readCommand_unknown() throws ParsingException {
 		final LineReader lineReaderMock = Mockito.mock(LineReader.class);
-
-		final String prompt = "myPrompt";
 
 		final StringWriter stringWriter = new StringWriter();
 		final Interpreter interpreter = ShellTestUtils.getMockInterpreter(stringWriter);
 		final Interpreter interpreterSpy = Mockito.spy(interpreter);
 		final Shell shell = new Shell(interpreterSpy);
 
-		Mockito.when(lineReaderMock.readLine(prompt)).thenReturn("unknown");
+		Mockito.when(lineReaderMock.readLine(this.prompt)).thenReturn("unknown");
 
-		final Command command = shell.readCommand(lineReaderMock, prompt);
+		final Command command = shell.readCommand(lineReaderMock, this.prompt);
 
 		Mockito.verify(interpreterSpy).parseCommand("@unknown .");
 		assertEquals("unknown", command.getName());
@@ -112,45 +112,83 @@ public class ShellTest {
 	}
 
 	@Test
-	public void readCommand_ParsingException() throws ParsingException {
+	public void readCommand_parsingException() throws ParsingException {
 		final LineReader lineReaderMock = Mockito.mock(LineReader.class);
-
-		final String prompt = "myPrompt";
 
 		final StringWriter stringWriter = new StringWriter();
 		final Interpreter interpreter = ShellTestUtils.getMockInterpreter(stringWriter);
 		final Interpreter interpreterSpy = Mockito.spy(interpreter);
 		final Shell shell = new Shell(interpreterSpy);
 
-		Mockito.when(lineReaderMock.readLine(prompt)).thenReturn("@");
+		Mockito.when(lineReaderMock.readLine(this.prompt)).thenReturn("@");
 
-		final Command command = shell.readCommand(lineReaderMock, prompt);
+		final Command command = shell.readCommand(lineReaderMock, this.prompt);
 
 		Mockito.verify(interpreterSpy).parseCommand("@ .");
 		assertNull(command);
-		
+
 		// TODO test Parsing exception has been thrown
-		assertTrue(stringWriter.toString().startsWith("Error: "));
+		assertTrue(stringWriter.toString().startsWith("Error: failed to parse command"));
 	}
 
 	@Test
-	public void readCommand_Exit() throws CommandExecutionException {
+	public void readCommand_exit() throws CommandExecutionException, ParsingException {
 		final LineReader lineReaderMock = Mockito.mock(LineReader.class);
 
-		final String prompt = "myPrompt";
-
 		final StringWriter stringWriter = new StringWriter();
-		final Interpreter interpreterMock = ShellTestUtils.getMockInterpreter(stringWriter);
-		final Shell shell = new Shell(interpreterMock);
+		final Interpreter interpreter = ShellTestUtils.getMockInterpreter(stringWriter);
+		final Interpreter interpreterSpy = Mockito.spy(interpreter);
+		final Shell shell = new Shell(interpreterSpy);
 
-		Mockito.when(lineReaderMock.readLine(prompt)).thenReturn("exit");
+		Mockito.when(lineReaderMock.readLine(this.prompt)).thenReturn("exit");
 
-		final Command command = shell.readCommand(lineReaderMock, prompt);
-		assertEquals(ExitCommandInterpreter.EXIT_COMMAND.getName(), command.getName());
-		assertTrue(command.getArguments().isEmpty());
+		final Command command = shell.readCommand(lineReaderMock, this.prompt);
+		ShellTestUtils.testIsExitCommand(command);
+		Mockito.verify(interpreterSpy).parseCommand("@exit .");
 
 		// TODO test Parsing exception has not been thrown
-		assertFalse(shell.running);
+	}
+
+	@Test
+	public void readCommand_interruptRequest_CTRLC_emptyPartialLine() throws ParsingException {
+		final LineReader lineReaderMock = Mockito.mock(LineReader.class);
+		final Interpreter interpreterMock = Mockito.mock(Interpreter.class);
+		final Shell shell = new Shell(interpreterMock);
+
+		Mockito.doThrow(new UserInterruptException("")).when(lineReaderMock).readLine(this.prompt);
+
+		final Command command = shell.readCommand(lineReaderMock, this.prompt);
+		ShellTestUtils.testIsExitCommand(command);
+
+		Mockito.verify(interpreterMock, Mockito.never()).parseCommand(Mockito.anyString());
+	}
+
+	@Test
+	public void readCommand_interruptRequest_CTRLC_nonEmptyPartialLine() throws ParsingException {
+		final LineReader lineReaderMock = Mockito.mock(LineReader.class);
+		final Interpreter interpreterMock = Mockito.mock(Interpreter.class);
+		final Shell shell = new Shell(interpreterMock);
+
+		Mockito.doThrow(new UserInterruptException(" ")).when(lineReaderMock).readLine(this.prompt);
+
+		final Command command = shell.readCommand(lineReaderMock, this.prompt);
+		assertNull(command);
+
+		Mockito.verify(interpreterMock, Mockito.never()).parseCommand(Mockito.anyString());
+	}
+
+	@Test
+	public void readCommand_interruptRequest_CTRLD_emptyPartialLine() throws ParsingException {
+		final LineReader lineReaderMock = Mockito.mock(LineReader.class);
+		final Interpreter interpreterMock = Mockito.mock(Interpreter.class);
+		final Shell shell = new Shell(interpreterMock);
+
+		Mockito.doThrow(EndOfFileException.class).when(lineReaderMock).readLine(this.prompt);
+
+		final Command command = shell.readCommand(lineReaderMock, this.prompt);
+		ShellTestUtils.testIsExitCommand(command);
+
+		Mockito.verify(interpreterMock, Mockito.never()).parseCommand(Mockito.anyString());
 	}
 
 }

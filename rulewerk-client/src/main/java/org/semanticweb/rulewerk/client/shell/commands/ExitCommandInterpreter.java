@@ -30,7 +30,7 @@ import org.semanticweb.rulewerk.core.model.api.Command;
 
 public class ExitCommandInterpreter implements CommandInterpreter {
 
-	public static final Command EXIT_COMMAND = new Command(ExitCommandName.exit.toString(), new ArrayList<>());
+	public static final Command EXIT_COMMAND = new Command(ExitCommandName.exit.toString(), new ArrayList<>(0));
 
 	public static enum ExitCommandName {
 		exit;
