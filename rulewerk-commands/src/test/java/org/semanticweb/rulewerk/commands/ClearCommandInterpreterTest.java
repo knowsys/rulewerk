@@ -30,7 +30,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.Fact;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
@@ -45,10 +47,17 @@ public class ClearCommandInterpreterTest {
 	public void correctUseAll_succeeds() throws ParsingException, CommandExecutionException, IOException {
 		StringWriter writer = new StringWriter();
 		Interpreter interpreter = Mockito.spy(InterpreterTest.getMockInterpreter(writer));
-		Predicate predicate = Expressions.makePredicate("p", 1);
-		Term term = Expressions.makeAbstractConstant("a");
-		Fact fact = Expressions.makeFact(predicate, term);
+		Term a = Expressions.makeAbstractConstant("a");
+		Term x = Expressions.makeUniversalVariable("X");
+		Predicate p = Expressions.makePredicate("p", 1);
+		Predicate q = Expressions.makePredicate("q", 1);
+		Predicate r = Expressions.makePredicate("r", 1);
+		Fact fact = Expressions.makeFact(p, a);
+		PositiveLiteral headLiteral = Expressions.makePositiveLiteral(q, x);
+		PositiveLiteral bodyLiteral = Expressions.makePositiveLiteral(r, x);
+		Rule rule = Expressions.makeRule(headLiteral, bodyLiteral);
 		interpreter.getKnowledgeBase().addStatement(fact);
+		interpreter.getKnowledgeBase().addStatement(rule);
 
 		assertEquals(1, interpreter.getKnowledgeBase().getFacts().size());
 
@@ -71,18 +80,75 @@ public class ClearCommandInterpreterTest {
 		Mockito.when(reasoner.getKnowledgeBase()).thenReturn(knowledgeBase);
 		try (Interpreter interpreter = new Interpreter(() -> knowledgeBase, (kb) -> reasoner, printer,
 				parserConfiguration)) {
-			Predicate predicate = Expressions.makePredicate("p", 1);
-			Term term = Expressions.makeAbstractConstant("a");
-			Fact fact = Expressions.makeFact(predicate, term);
+			Term a = Expressions.makeAbstractConstant("a");
+			Term x = Expressions.makeUniversalVariable("X");
+			Predicate p = Expressions.makePredicate("p", 1);
+			Predicate q = Expressions.makePredicate("q", 1);
+			Predicate r = Expressions.makePredicate("r", 1);
+			Fact fact = Expressions.makeFact(p, a);
+			PositiveLiteral headLiteral = Expressions.makePositiveLiteral(q, x);
+			PositiveLiteral bodyLiteral = Expressions.makePositiveLiteral(r, x);
+			Rule rule = Expressions.makeRule(headLiteral, bodyLiteral);
 			interpreter.getKnowledgeBase().addStatement(fact);
+			interpreter.getKnowledgeBase().addStatement(rule);
 
 			Command command = interpreter.parseCommand("@clear INF .");
 			interpreter.runCommand(command);
 
 			assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
-			assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+			assertEquals(Arrays.asList(rule), interpreter.getKnowledgeBase().getRules());
 			assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
 			Mockito.verify(reasoner).resetReasoner();
+		}
+	}
+
+	@Test
+	public void correctUseFacts_succeeds() throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		try (Interpreter interpreter = InterpreterTest.getMockInterpreter(writer)) {
+			Term a = Expressions.makeAbstractConstant("a");
+			Term x = Expressions.makeUniversalVariable("X");
+			Predicate p = Expressions.makePredicate("p", 1);
+			Predicate q = Expressions.makePredicate("q", 1);
+			Predicate r = Expressions.makePredicate("r", 1);
+			Fact fact = Expressions.makeFact(p, a);
+			PositiveLiteral headLiteral = Expressions.makePositiveLiteral(q, x);
+			PositiveLiteral bodyLiteral = Expressions.makePositiveLiteral(r, x);
+			Rule rule = Expressions.makeRule(headLiteral, bodyLiteral);
+			interpreter.getKnowledgeBase().addStatement(fact);
+			interpreter.getKnowledgeBase().addStatement(rule);
+
+			Command command = interpreter.parseCommand("@clear FACTS .");
+			interpreter.runCommand(command);
+
+			assertTrue(interpreter.getKnowledgeBase().getFacts().isEmpty());
+			assertEquals(Arrays.asList(rule), interpreter.getKnowledgeBase().getRules());
+			assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
+		}
+	}
+
+	@Test
+	public void correctUseRules_succeeds() throws ParsingException, CommandExecutionException, IOException {
+		StringWriter writer = new StringWriter();
+		try (Interpreter interpreter = InterpreterTest.getMockInterpreter(writer)) {
+			Term a = Expressions.makeAbstractConstant("a");
+			Term x = Expressions.makeUniversalVariable("X");
+			Predicate p = Expressions.makePredicate("p", 1);
+			Predicate q = Expressions.makePredicate("q", 1);
+			Predicate r = Expressions.makePredicate("r", 1);
+			Fact fact = Expressions.makeFact(p, a);
+			PositiveLiteral headLiteral = Expressions.makePositiveLiteral(q, x);
+			PositiveLiteral bodyLiteral = Expressions.makePositiveLiteral(r, x);
+			Rule rule = Expressions.makeRule(headLiteral, bodyLiteral);
+			interpreter.getKnowledgeBase().addStatement(fact);
+			interpreter.getKnowledgeBase().addStatement(rule);
+
+			Command command = interpreter.parseCommand("@clear RULES .");
+			interpreter.runCommand(command);
+
+			assertEquals(Arrays.asList(fact), interpreter.getKnowledgeBase().getFacts());
+			assertTrue(interpreter.getKnowledgeBase().getRules().isEmpty());
+			assertTrue(interpreter.getKnowledgeBase().getDataSourceDeclarations().isEmpty());
 		}
 	}
 
@@ -103,7 +169,7 @@ public class ClearCommandInterpreterTest {
 		Command command = interpreter.parseCommand("@clear \"string\" .");
 		interpreter.runCommand(command);
 	}
-	
+
 	@Test(expected = CommandExecutionException.class)
 	public void unkonwnTask_fails() throws ParsingException, CommandExecutionException {
 		StringWriter writer = new StringWriter();

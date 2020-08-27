@@ -21,11 +21,15 @@ package org.semanticweb.rulewerk.commands;
  */
 
 import org.semanticweb.rulewerk.core.model.api.Command;
+import org.semanticweb.rulewerk.core.model.api.Fact;
+import org.semanticweb.rulewerk.core.model.api.Rule;
 
 public class ClearCommandInterpreter implements CommandInterpreter {
 
 	static final String TASK_ALL = "ALL";
 	static final String TASK_INFERENCES = "INF";
+	static final String TASK_FACTS = "FACTS";
+	static final String TASK_RULES = "RULES";
 
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
@@ -37,6 +41,16 @@ public class ClearCommandInterpreter implements CommandInterpreter {
 		} else if (TASK_INFERENCES.equals(task)) {
 			interpreter.getReasoner().resetReasoner();
 			interpreter.printNormal("Reasoner has been reset.\n");
+		} else if (TASK_FACTS.equals(task)) {
+			for (Fact fact : interpreter.getKnowledgeBase().getFacts()) {
+				interpreter.getKnowledgeBase().removeStatement(fact);
+			}
+			interpreter.printNormal("All facts have been removed from the knowledge base.\n");
+		} else if (TASK_RULES.equals(task)) {
+			for (Rule rule : interpreter.getKnowledgeBase().getRules()) {
+				interpreter.getKnowledgeBase().removeStatement(rule);
+			}
+			interpreter.printNormal("All rules have been removed from the knowledge base.\n");
 		} else {
 			throw new CommandExecutionException(
 					"Task \"" + task + "\" not supported; should be one of:  " + TASK_ALL + ", " + TASK_INFERENCES);
