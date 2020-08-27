@@ -33,7 +33,7 @@ public class ClearCommandInterpreter implements CommandInterpreter {
 		String task = Interpreter.extractNameArgument(command, 0, "task");
 		if (TASK_ALL.equals(task)) {
 			interpreter.clearReasonerAndKnowledgeBase();
-			interpreter.printNormal("Knowledge has been cleared; reasoner has been completely reset.\n");
+			interpreter.printNormal("Knowledge base has been cleared; reasoner has been completely reset.\n");
 		} else if (TASK_INFERENCES.equals(task)) {
 			interpreter.getReasoner().resetReasoner();
 			interpreter.printNormal("Reasoner has been reset.\n");
