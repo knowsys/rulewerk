@@ -30,6 +30,7 @@ public class ClearCommandInterpreter implements CommandInterpreter {
 	static final String TASK_INFERENCES = "INF";
 	static final String TASK_FACTS = "FACTS";
 	static final String TASK_RULES = "RULES";
+	static final String TASK_PREFIXES = "PREFIXES";
 
 	@Override
 	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
@@ -51,16 +52,24 @@ public class ClearCommandInterpreter implements CommandInterpreter {
 				interpreter.getKnowledgeBase().removeStatement(rule);
 			}
 			interpreter.printNormal("All rules have been removed from the knowledge base.\n");
+		} else if (TASK_PREFIXES.equals(task)) {
+			interpreter.getKnowledgeBase().getPrefixDeclarationRegistry().clear();
+			interpreter.printNormal("All prefixes and the base namespace have been removed from the knowledge base.\n");
 		} else {
-			throw new CommandExecutionException(
-					"Task \"" + task + "\" not supported; should be one of:  " + TASK_ALL + ", " + TASK_INFERENCES);
+			throw new CommandExecutionException("Task \"" + task + "\" not supported; should be one of:  " + TASK_ALL
+					+ ", " + TASK_INFERENCES + ", " + TASK_FACTS + ", " + TASK_RULES + ", " + TASK_PREFIXES);
 		}
 	}
 
 	@Override
 	public void printHelp(String commandName, Interpreter interpreter) {
-		interpreter.printNormal("Usage: @" + commandName + " TASK\n" + //
-				" TASK: what to reset, ALL (knowledge base), INF (inferences)\n");
+		interpreter.printNormal("Usage: @" + commandName + " TASK\n" //
+				+ " TASK: what to reset, possuble values:\n" //
+				+ "   ALL: empty knowledge base and completely reset reasoner\n" //
+				+ "   INF: reset reasoner to clear all loaded data and inferences\n" //
+				+ "   FACTS: remove all facts from knowledge base\n" //
+				+ "   RULES: remove all rules from knowledge base\n" //
+				+ "   PREFIXES: undeclare all prefixes and base namespace\n");
 	}
 
 	@Override

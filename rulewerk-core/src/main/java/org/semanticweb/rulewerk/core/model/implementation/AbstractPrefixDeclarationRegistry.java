@@ -54,6 +54,12 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 	protected String baseIri = null;
 
 	@Override
+	public void clear() {
+		baseIri = null;
+		prefixes = new HashMap<>();
+	}
+
+	@Override
 	public String getBaseIri() {
 		if (baseIri == null) {
 			baseIri = PrefixDeclarationRegistry.EMPTY_BASE;
