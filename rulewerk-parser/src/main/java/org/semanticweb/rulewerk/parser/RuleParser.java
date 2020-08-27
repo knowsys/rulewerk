@@ -181,8 +181,8 @@ public class RuleParser {
 			result = parserAction.parse(localParser);
 			localParser.ensureEndOfInput();
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError | RuntimeException e) {
-			LOGGER.error("Exception while parsing " + syntaxFragmentType + ": {}!", input);
-			throw new ParsingException("Exception while parsing " + syntaxFragmentType, e);
+			LOGGER.error("Error parsing " + syntaxFragmentType + ": {}!", input);
+			throw new ParsingException("Error parsing " + syntaxFragmentType + ": " + e.getMessage(), e);
 		}
 		return result;
 	}
@@ -257,8 +257,8 @@ public class RuleParser {
 		try {
 			parser.parse();
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
-			LOGGER.error("Exception while parsing Knowledge Base!", e);
-			throw new ParsingException("Exception while parsing Knowledge Base.", e);
+			LOGGER.error("Error parsing Knowledge Base: " + e.getMessage(), e);
+			throw new ParsingException(e.getMessage(), e);
 		}
 
 		KnowledgeBase knowledgeBase = parser.getKnowledgeBase();
