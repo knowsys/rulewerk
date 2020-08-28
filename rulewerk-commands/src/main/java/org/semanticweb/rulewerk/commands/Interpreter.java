@@ -1,5 +1,6 @@
 package org.semanticweb.rulewerk.commands;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -242,7 +243,7 @@ public class Interpreter implements AutoCloseable {
 	 * @throws FileNotFoundException
 	 */
 	public Writer getFileWriter(String fileName) throws FileNotFoundException {
-		return new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
+		return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8));
 	}
 
 	/**
