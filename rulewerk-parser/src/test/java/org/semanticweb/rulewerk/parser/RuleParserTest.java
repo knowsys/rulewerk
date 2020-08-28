@@ -140,6 +140,14 @@ public class RuleParserTest implements ParserTestUtils {
 	}
 
 	@Test
+	public void testFactWithCommentSymbol() throws ParsingException {
+		String input = "t(\"%test\") . ";
+		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(Expressions.makeFact("t",
+				Expressions.makeDatatypeConstant("%test", PrefixDeclarationRegistry.XSD_STRING))), statements);
+	}
+
+	@Test
 	public void testNegationRule() throws ParsingException {
 		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- ~p(?X,c), p(?X,?Z) . ";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
