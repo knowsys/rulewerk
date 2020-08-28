@@ -36,7 +36,7 @@ public class Shell {
 
 	private final Interpreter interpreter;
 
-	boolean running;
+	private boolean running;
 
 	public Shell(final Interpreter interpreter) {
 		this.interpreter = interpreter;
@@ -56,24 +56,28 @@ public class Shell {
 
 		this.running = true;
 		while (this.running) {
-			final Command command;
-			try {
-				command = this.readCommand(lineReader, prompt);
-			} catch (final Exception e) {
-				this.interpreter.printNormal("Unexpected error: " + e.getMessage() + "\n");
-				e.printStackTrace();
-				continue;
-			}
-
-			if (command != null) {
-				try {
-					this.interpreter.runCommand(command);
-				} catch (final CommandExecutionException e) {
-					this.interpreter.printNormal("Error: " + e.getMessage() + "\n");
-				}
-			}
+			this.runCommand(lineReader, prompt);
 		}
 		this.interpreter.printSection("Exiting Rulewerk shell ... bye.\n\n");
+	}
+
+	Command runCommand(final LineReader lineReader, final String prompt) {
+		Command command = null;
+		try {
+			command = this.readCommand(lineReader, prompt);
+		} catch (final Exception e) {
+			this.interpreter.printNormal("Unexpected error: " + e.getMessage() + "\n");
+			e.printStackTrace();
+		}
+
+		if (command != null) {
+			try {
+				this.interpreter.runCommand(command);
+			} catch (final CommandExecutionException e) {
+				this.interpreter.printNormal("Error: " + e.getMessage() + "\n");
+			}
+		}
+		return command;
 	}
 
 	/**
@@ -140,6 +144,10 @@ public class Shell {
 		this.interpreter.printNormal(" To quit, type ");
 		this.interpreter.printCode("@exit.\n");
 		this.interpreter.printNormal("\n");
+	}
+
+	boolean isRunning() {
+		return this.running;
 	}
 
 }

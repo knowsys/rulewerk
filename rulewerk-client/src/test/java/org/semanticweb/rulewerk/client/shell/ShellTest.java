@@ -21,10 +21,13 @@ package org.semanticweb.rulewerk.client.shell;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
+import java.io.Writer;
 
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
@@ -189,6 +192,135 @@ public class ShellTest {
 		ShellTestUtils.testIsExitCommand(command);
 
 		Mockito.verify(interpreterMock, Mockito.never()).parseCommand(Mockito.anyString());
+	}
+
+	@Test
+	public void run_exit() throws CommandExecutionException {
+		final Writer writer = new StringWriter();
+		final Interpreter interpreter = ShellTestUtils.getMockInterpreter(writer);
+		final Interpreter interpreterSpy = Mockito.spy(interpreter);
+		final Shell shell = new Shell(interpreterSpy);
+
+		final LineReader lineReader = Mockito.mock(LineReader.class);
+		Mockito.when(lineReader.readLine(this.prompt)).thenReturn("exit");
+
+		shell.run(lineReader, this.prompt);
+
+		assertFalse(shell.isRunning());
+
+		this.testPrintWelcome(interpreterSpy);
+
+		Mockito.verify(interpreterSpy).runCommand(Mockito.any(Command.class));
+
+		this.testPrintExit(interpreterSpy);
+
+		final String[] lines = writer.toString().split("\r\n|\r|\n");
+		assertEquals(7, lines.length);
+	}
+
+	@Test
+	public void run_empty_exit() throws CommandExecutionException {
+		final Writer writer = new StringWriter();
+		final Interpreter interpreter = ShellTestUtils.getMockInterpreter(writer);
+		final Interpreter interpreterSpy = Mockito.spy(interpreter);
+		final Shell shell = new Shell(interpreterSpy);
+
+		final LineReader lineReader = Mockito.mock(LineReader.class);
+		Mockito.when(lineReader.readLine(this.prompt)).thenReturn("", "exit");
+
+		shell.run(lineReader, this.prompt);
+
+		assertFalse(shell.isRunning());
+
+		this.testPrintWelcome(interpreterSpy);
+
+		Mockito.verify(interpreterSpy).runCommand(Mockito.any(Command.class));
+
+		this.testPrintExit(interpreterSpy);
+
+		final String[] lines = writer.toString().split("\r\n|\r|\n");
+		assertEquals(7, lines.length);
+	}
+
+	@Test
+	public void run_help_exit() throws CommandExecutionException {
+		final Writer writer = new StringWriter();
+		final Interpreter interpreter = ShellTestUtils.getMockInterpreter(writer);
+		final Interpreter interpreterSpy = Mockito.spy(interpreter);
+		final Shell shell = new Shell(interpreterSpy);
+
+		final LineReader lineReader = Mockito.mock(LineReader.class);
+		Mockito.when(lineReader.readLine(this.prompt)).thenReturn("help", "exit");
+
+		shell.run(lineReader, this.prompt);
+
+		assertFalse(shell.isRunning());
+
+		this.testPrintWelcome(interpreterSpy);
+
+		Mockito.verify(interpreterSpy, Mockito.times(2)).runCommand(Mockito.any(Command.class));
+
+		this.testPrintExit(interpreterSpy);
+
+		final String[] lines = writer.toString().split("\r\n|\r|\n");
+		assertTrue(lines.length > 7);
+	}
+
+	@Test
+	public void runCommand_unknown() throws CommandExecutionException {
+		final Writer writer = new StringWriter();
+		final Interpreter interpreter = ShellTestUtils.getMockInterpreter(writer);
+		final Interpreter interpreterSpy = Mockito.spy(interpreter);
+		final Shell shell = new Shell(interpreterSpy);
+
+		final LineReader lineReader = Mockito.mock(LineReader.class);
+		Mockito.when(lineReader.readLine(this.prompt)).thenReturn("unknown", "exit");
+
+		final Command command = shell.runCommand(lineReader, this.prompt);
+		assertNotNull(command);
+		assertEquals("unknown", command.getName());
+
+		Mockito.verify(interpreterSpy).runCommand(Mockito.any(Command.class));
+
+		final String printedResult = writer.toString();
+		assertTrue(printedResult.startsWith("Error: "));
+	}
+
+	@Test
+	public void runCommand_exceptionDuringReading() throws CommandExecutionException {
+		final Writer writer = new StringWriter();
+		final Interpreter interpreter = ShellTestUtils.getMockInterpreter(writer);
+		final Interpreter interpreterSpy = Mockito.spy(interpreter);
+		final Shell shell = new Shell(interpreterSpy);
+
+		final LineReader lineReader = Mockito.mock(LineReader.class);
+		final RuntimeException runtimeException = new RuntimeException("test");
+		final RuntimeException runtimeExceptionSpy = Mockito.spy(runtimeException);
+
+		Mockito.when(lineReader.readLine(this.prompt)).thenThrow(runtimeExceptionSpy);
+
+		final Command command = shell.runCommand(lineReader, this.prompt);
+		assertNull(command);
+
+		Mockito.verify(interpreterSpy, Mockito.never()).runCommand(Mockito.any(Command.class));
+
+		final String printedResult = writer.toString();
+		assertTrue(printedResult.startsWith("Unexpected error: " + runtimeException.getMessage()));
+
+		Mockito.verify(runtimeExceptionSpy).printStackTrace();
+	}
+
+	public void testPrintWelcome(final Interpreter interpreterSpy) {
+		Mockito.verify(interpreterSpy, Mockito.times(2)).printNormal("\n");
+		Mockito.verify(interpreterSpy).printSection("Welcome to the Rulewerk interactive shell.\n");
+		Mockito.verify(interpreterSpy).printNormal("For further information, type ");
+		Mockito.verify(interpreterSpy).printCode("@help.");
+		Mockito.verify(interpreterSpy).printNormal(" To quit, type ");
+		Mockito.verify(interpreterSpy).printCode("@exit.\n");
+	}
+
+	public void testPrintExit(final Interpreter interpreterSpy) {
+		Mockito.verify(interpreterSpy).printSection("Exiting Rulewerk shell ... bye.\n\n");
 	}
 
 }
