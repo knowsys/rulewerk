@@ -32,6 +32,7 @@ import org.jline.builtins.Completers.TreeCompleter.Node;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedString;
@@ -68,6 +69,9 @@ public final class DefaultConfiguration {
 		registeredCommandNames.stream().map(commandName -> "@" + commandName).forEach(serializedCommandName -> {
 			if (serializedCommandName.equals("@load")) {
 				nodes.add(TreeCompleter.node(serializedCommandName, TreeCompleter.node(fileNameCompleter)));
+			} else if (serializedCommandName.equals("@help")) {
+				nodes.add(TreeCompleter.node(serializedCommandName,
+						TreeCompleter.node(new StringsCompleter(registeredCommandNames))));
 			} else {
 				nodes.add(TreeCompleter.node(serializedCommandName));
 			}
