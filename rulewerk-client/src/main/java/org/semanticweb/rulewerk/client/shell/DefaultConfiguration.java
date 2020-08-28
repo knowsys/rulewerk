@@ -77,14 +77,18 @@ public final class DefaultConfiguration {
 	}
 
 	public static Terminal buildTerminal() throws IOException {
-		return TerminalBuilder.builder().dumb(true).jansi(true).jna(false).system(true).build();
+		return getDefaultTerminalConfiguration().build();
+	}
+
+	static TerminalBuilder getDefaultTerminalConfiguration() {
+		return TerminalBuilder.builder().dumb(true).jansi(true).jna(false).system(true);
 	}
 
 	public static String buildPrompt(final Terminal terminal) {
-		return buildPromptProvider().toAnsi(terminal);
+		return getDefaultPromptStyle().toAnsi(terminal);
 	}
 
-	public static AttributedString buildPromptProvider() {
+	static AttributedString getDefaultPromptStyle() {
 		final AttributedStyle promptStyle = AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW);
 		return new AttributedString("rulewerk> ", promptStyle);
 	}
