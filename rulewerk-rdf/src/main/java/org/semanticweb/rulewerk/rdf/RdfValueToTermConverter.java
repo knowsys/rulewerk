@@ -31,10 +31,7 @@ import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.reasoner.implementation.Skolemization;
-import org.semanticweb.rulewerk.core.model.implementation.AbstractConstantImpl;
-import org.semanticweb.rulewerk.core.model.implementation.DatatypeConstantImpl;
-import org.semanticweb.rulewerk.core.model.implementation.LanguageStringConstantImpl;
-import org.semanticweb.rulewerk.core.model.implementation.PredicateImpl;
+import org.semanticweb.rulewerk.core.model.implementation.TermFactory;
 
 /**
  * Helper class to convert RDF ters to Rulewerk {@link Term} objects.
@@ -46,6 +43,7 @@ final class RdfValueToTermConverter {
 
 	final boolean skolemize;
 	final Skolemization skolemization = new Skolemization();
+	final TermFactory termFactory = new TermFactory();
 
 	/**
 	 * Constructor.
@@ -75,7 +73,7 @@ final class RdfValueToTermConverter {
 		// redundant. But we want a RenamedNamedNull here, and a consistent name format
 		// is nice too.
 		if (skolemize) {
-			return skolemization.getSkolemConstant(bNode.getID());
+			return skolemization.getSkolemConstant(bNode.getID(), termFactory);
 		} else {
 			return skolemization.getRenamedNamedNull(bNode.getID());
 		}
@@ -83,24 +81,24 @@ final class RdfValueToTermConverter {
 
 	public Term convertUri(final URI uri) {
 		final String escapedURIString = NTriplesUtil.escapeString(uri.toString());
-		return new AbstractConstantImpl(escapedURIString);
+		return termFactory.makeAbstractConstant(escapedURIString);
 	}
 
 	public Term convertLiteral(final Literal literal) {
 		final URI datatype = literal.getDatatype();
 		if (datatype != null) {
-			return new DatatypeConstantImpl(XMLDatatypeUtil.normalize(literal.getLabel(), datatype),
+			return termFactory.makeDatatypeConstant(XMLDatatypeUtil.normalize(literal.getLabel(), datatype),
 					datatype.toString());
 		} else if (literal.getLanguage() != null) {
-			return new LanguageStringConstantImpl(literal.getLabel(), literal.getLanguage());
+			return termFactory.makeLanguageStringConstant(literal.getLabel(), literal.getLanguage());
 		} else {
-			return new DatatypeConstantImpl(literal.getLabel(), PrefixDeclarationRegistry.XSD_STRING);
+			return termFactory.makeDatatypeConstant(literal.getLabel(), PrefixDeclarationRegistry.XSD_STRING);
 		}
 	}
 
 	public Predicate convertUriToPredicate(final URI uri, int arity) {
 		final String escapedURIString = NTriplesUtil.escapeString(uri.toString());
-		return new PredicateImpl(escapedURIString, arity);
+		return termFactory.makePredicate(escapedURIString, arity);
 	}
 
 }
