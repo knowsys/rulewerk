@@ -28,7 +28,6 @@ import java.util.Set;
 import org.jline.builtins.Completers;
 import org.jline.builtins.Completers.FileNameCompleter;
 import org.jline.builtins.Completers.TreeCompleter;
-import org.jline.builtins.Completers.TreeCompleter.Node;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -46,18 +45,16 @@ public final class DefaultConfiguration {
 
 	public static LineReader buildLineReader(final Terminal terminal, final Interpreter interpreter) {
 		final LineReaderBuilder lineReaderBuilder = LineReaderBuilder.builder().terminal(terminal)
-				.appName("Rulewerk Shell").completer(buildCompleter(interpreter))
-		// .expander(expander())
-		// .history(buildHistory())
-		// .highlighter(buildHighlighter())
-		;
+				.appName("Rulewerk Shell");
+		/*
+		 * This allows completion on an empty buffer, rather than inserting a tab
+		 */
+		lineReaderBuilder.option(LineReader.Option.INSERT_TAB, false);
+		lineReaderBuilder.option(LineReader.Option.AUTO_FRESH_LINE, true);
 
-		final LineReader lineReader = lineReaderBuilder.build();
+		lineReaderBuilder.completer(buildCompleter(interpreter));
 
-		lineReader.unsetOpt(LineReader.Option.INSERT_TAB); // This allows completion on an empty buffer, rather than
-															// inserting a tab
-		lineReader.setOpt(LineReader.Option.AUTO_FRESH_LINE);
-		return lineReader;
+		return lineReaderBuilder.build();
 	}
 
 	private static Completer buildCompleter(final Interpreter interpreter) {
@@ -65,7 +62,7 @@ public final class DefaultConfiguration {
 		final FileNameCompleter fileNameCompleter = new Completers.FileNameCompleter();
 
 		final Set<String> registeredCommandNames = interpreter.getRegisteredCommands();
-		final List<Node> nodes = new ArrayList<>();
+		final List<TreeCompleter.Node> nodes = new ArrayList<>();
 		registeredCommandNames.stream().map(commandName -> "@" + commandName).forEach(serializedCommandName -> {
 			if (serializedCommandName.equals("@load")) {
 				nodes.add(TreeCompleter.node(serializedCommandName, TreeCompleter.node(fileNameCompleter)));
@@ -77,7 +74,6 @@ public final class DefaultConfiguration {
 			}
 		});
 		return new TreeCompleter(nodes);
-
 	}
 
 	public static Terminal buildTerminal() throws IOException {
