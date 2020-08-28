@@ -32,7 +32,7 @@ import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
-import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.model.implementation.TermFactory;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParserBase.ConfigurableLiteralDelimiter;
 import org.semanticweb.rulewerk.parser.datasources.DataSourceDeclarationHandler;
@@ -129,12 +129,14 @@ public class ParserConfiguration {
 	 *
 	 * @param lexicalForm the (unescaped) lexical form of the constant.
 	 * @param datatype    the datatype, or null if not present.
+	 * @param termFactory the {@link TermFactory} to use for creating the result
 	 *
 	 * @throws ParsingException when the lexical form is invalid for the given data
 	 *                          type.
 	 * @return the {@link Constant} corresponding to the given arguments.
 	 */
-	public Constant parseDatatypeConstant(final String lexicalForm, final String datatype) throws ParsingException {
+	public Constant parseDatatypeConstant(final String lexicalForm, final String datatype,
+			final TermFactory termFactory) throws ParsingException {
 		final String type = ((datatype != null) ? datatype : PrefixDeclarationRegistry.XSD_STRING);
 		final DatatypeConstantHandler handler = this.datatypes.get(type);
 
@@ -142,7 +144,7 @@ public class ParserConfiguration {
 			return handler.createConstant(lexicalForm);
 		}
 
-		return Expressions.makeDatatypeConstant(lexicalForm, type);
+		return termFactory.makeDatatypeConstant(lexicalForm, type);
 	}
 
 	/**
