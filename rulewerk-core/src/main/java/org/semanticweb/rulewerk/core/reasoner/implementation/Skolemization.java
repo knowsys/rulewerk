@@ -25,8 +25,8 @@ import java.util.UUID;
 
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
-import org.semanticweb.rulewerk.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.RenamedNamedNull;
+import org.semanticweb.rulewerk.core.model.implementation.TermFactory;
 
 /**
  * A class that implements skolemization and collision-free renaming of named
@@ -73,13 +73,15 @@ public class Skolemization {
 	/**
 	 * Creates a skolem constant that is determined by the given original name.
 	 * 
-	 * @param name the name of the {@link NamedNull} to skolemize (or any other
-	 *             string for which to create a unique renaming)
+	 * @param name        the name of the {@link NamedNull} to skolemize (or any
+	 *                    other string for which to create a unique renaming)
+	 * @param termFactory the {@link TermFactory} that is used to create the
+	 *                    constant
 	 * @return a {@link AbstractConstant} with an IRI that is specific to this
 	 *         instance and {@code name}.
 	 */
-	public AbstractConstant getSkolemConstant(String name) {
-		return new AbstractConstantImpl(getSkolemConstantName(name));
+	public AbstractConstant getSkolemConstant(String name, TermFactory termFactory) {
+		return termFactory.makeAbstractConstant(getSkolemConstantName(name));
 	}
 
 	/**
@@ -87,12 +89,14 @@ public class Skolemization {
 	 * The method ensures that a new unique name is generated unless the given
 	 * object is already a {@link RenamedNamedNull}.
 	 * 
-	 * @param namedNull the {@link NamedNull} to skolemize
+	 * @param namedNull   the {@link NamedNull} to skolemize
+	 * @param termFactory the {@link TermFactory} that is used to create the
+	 *                    constant
 	 * @return a {@link AbstractConstant} with an IRI that is specific to this
 	 *         instance and {@code namedNull}.
 	 */
-	public AbstractConstant getSkolemConstant(NamedNull namedNull) {
-		return new AbstractConstantImpl(getSkolemConstantName(namedNull));
+	public AbstractConstant getSkolemConstant(NamedNull namedNull, TermFactory termFactory) {
+		return termFactory.makeAbstractConstant(getSkolemConstantName(namedNull));
 
 	}
 

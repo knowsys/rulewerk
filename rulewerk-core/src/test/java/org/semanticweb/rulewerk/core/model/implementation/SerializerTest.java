@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.core.model;
+package org.semanticweb.rulewerk.core.model.implementation;
 
 /*-
  * #%L
