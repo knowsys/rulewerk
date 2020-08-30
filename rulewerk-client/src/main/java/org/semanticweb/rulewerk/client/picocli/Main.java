@@ -26,7 +26,8 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.semanticweb.rulewerk.client.shell.InteractiveShell;
+import org.semanticweb.rulewerk.client.shell.DefaultShellConfiguration;
+import org.semanticweb.rulewerk.client.shell.InteractiveShellClient;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -38,7 +39,7 @@ import picocli.CommandLine.Command;
  * @author Irina Dragoste
  *
  */
-@Command(name = "", description = "A command line client for Rulewerk.", subcommands = { InteractiveShell.class,
+@Command(name = "", description = "A command line client for Rulewerk.", subcommands = { InteractiveShellClient.class,
 		RulewerkClientMaterialize.class })
 public class Main {
 
@@ -46,7 +47,7 @@ public class Main {
 		configureLogging();
 		
 		if (args.length == 0 || (args.length > 0 && args[0].equals("shell"))) {
-			new InteractiveShell().run();
+			new InteractiveShellClient().run(new DefaultShellConfiguration());
 		} else {
 			if (args[0].equals("materialize")) {
 				final CommandLine commandline = new CommandLine(new RulewerkClientMaterialize());

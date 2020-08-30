@@ -54,6 +54,17 @@ public final class ShellTestUtils {
 		}, terminalStyledPrinter, parserConfiguration);
 	}
 
+	public static Interpreter getMockInterpreter(final Writer writer, final Terminal terminal) {
+		final TerminalStyledPrinter terminalStyledPrinter = new TerminalStyledPrinter(terminal);
+
+		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
+		return new Interpreter(Interpreter.EMPTY_KNOWLEDGE_BASE_PROVIDER, (knowledgeBase) -> {
+			final Reasoner reasoner = Mockito.mock(Reasoner.class);
+			Mockito.when(reasoner.getKnowledgeBase()).thenReturn(knowledgeBase);
+			return reasoner;
+		}, terminalStyledPrinter, parserConfiguration);
+	}
+
 	public static void testIsExitCommand(final Command command) {
 		assertEquals(ExitCommandInterpreter.EXIT_COMMAND.getName(), command.getName());
 		assertTrue(command.getArguments().isEmpty());

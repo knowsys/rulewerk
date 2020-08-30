@@ -32,20 +32,18 @@ import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 import picocli.CommandLine.Command;
 
 @Command(name = "shell", description = "An interactive shell for Rulewerk. The default command.")
-public class InteractiveShell
-//implements Runnable
+public class InteractiveShellClient
 {
 
-//	@Override
-	public void run() throws IOException {
+	public void run(final ShellConfiguration configuration) throws IOException {
 
-		final Terminal terminal = DefaultConfiguration.buildTerminal();
+		final Terminal terminal = configuration.buildTerminal();
 
 		try (Interpreter interpreter = this.initializeInterpreter(terminal)) {
 			final Shell shell = new Shell(interpreter);
 
-			final LineReader lineReader = DefaultConfiguration.buildLineReader(terminal, interpreter);
-			final String prompt = DefaultConfiguration.buildPrompt(terminal);
+			final LineReader lineReader = configuration.buildLineReader(terminal, interpreter);
+			final String prompt = configuration.buildPrompt(terminal);
 
 			shell.run(lineReader, prompt);
 		}

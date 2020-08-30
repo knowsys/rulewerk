@@ -38,26 +38,32 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 import org.semanticweb.rulewerk.commands.Interpreter;
 
-public final class DefaultConfiguration {
+public class DefaultShellConfiguration implements ShellConfiguration {
 
-	private DefaultConfiguration() {
+	public static final String PROMPT_STRING = "rulewerk> ";
+
+	@Override
+	public LineReader buildLineReader(final Terminal terminal, final Interpreter interpreter) {
+		final LineReaderBuilder lineReaderBuilder = this.getDefaultLineReaderConfiguration(terminal);
+
+		lineReaderBuilder.terminal(terminal);
+		lineReaderBuilder.completer(this.buildCompleter(interpreter));
+
+		return lineReaderBuilder.build();
 	}
 
-	public static LineReader buildLineReader(final Terminal terminal, final Interpreter interpreter) {
-		final LineReaderBuilder lineReaderBuilder = LineReaderBuilder.builder().terminal(terminal)
+	LineReaderBuilder getDefaultLineReaderConfiguration(final Terminal terminal) {
+		final LineReaderBuilder lineReaderBuilder = LineReaderBuilder.builder()
 				.appName("Rulewerk Shell");
 		/*
 		 * This allows completion on an empty buffer, rather than inserting a tab
 		 */
 		lineReaderBuilder.option(LineReader.Option.INSERT_TAB, false);
 		lineReaderBuilder.option(LineReader.Option.AUTO_FRESH_LINE, true);
-
-		lineReaderBuilder.completer(buildCompleter(interpreter));
-
-		return lineReaderBuilder.build();
+		return lineReaderBuilder;
 	}
 
-	private static Completer buildCompleter(final Interpreter interpreter) {
+	Completer buildCompleter(final Interpreter interpreter) {
 // @load and @export commands require a file name as argument
 		final FileNameCompleter fileNameCompleter = new Completers.FileNameCompleter();
 
@@ -76,21 +82,23 @@ public final class DefaultConfiguration {
 		return new TreeCompleter(nodes);
 	}
 
-	public static Terminal buildTerminal() throws IOException {
-		return getDefaultTerminalConfiguration().build();
+	@Override
+	public Terminal buildTerminal() throws IOException {
+		return this.getDefaultTerminalConfiguration().build();
 	}
 
-	static TerminalBuilder getDefaultTerminalConfiguration() {
+	TerminalBuilder getDefaultTerminalConfiguration() {
 		return TerminalBuilder.builder().dumb(true).jansi(true).jna(false).system(true);
 	}
 
-	public static String buildPrompt(final Terminal terminal) {
-		return getDefaultPromptStyle().toAnsi(terminal);
+	@Override
+	public String buildPrompt(final Terminal terminal) {
+		return this.getDefaultPromptStyle().toAnsi(terminal);
 	}
 
-	static AttributedString getDefaultPromptStyle() {
+	AttributedString getDefaultPromptStyle() {
 		final AttributedStyle promptStyle = AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW);
-		return new AttributedString("rulewerk> ", promptStyle);
+		return new AttributedString(PROMPT_STRING, promptStyle);
 	}
 
 }

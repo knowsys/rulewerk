@@ -28,11 +28,11 @@ import org.jline.utils.AttributedString;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class DefaultConfigurationTest {
+public class DefaultShellConfigurationTest {
 
 	@Test
 	public void buildPromptProvider() {
-		final AttributedString promptProvider = DefaultConfiguration.getDefaultPromptStyle();
+		final AttributedString promptProvider = new DefaultShellConfiguration().getDefaultPromptStyle();
 		assertEquals("rulewerk> ", promptProvider.toString());
 	}
 
@@ -40,7 +40,7 @@ public class DefaultConfigurationTest {
 	public void buildPrompt() {
 		final Terminal terminal = Mockito.mock(Terminal.class);
 		Mockito.when(terminal.getType()).thenReturn(Terminal.TYPE_DUMB);
-		final String string = DefaultConfiguration.buildPrompt(terminal);
+		final String string = new DefaultShellConfiguration().buildPrompt(terminal);
 		assertTrue(string.length() >= 10);
 	}
 
