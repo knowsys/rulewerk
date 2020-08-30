@@ -257,7 +257,7 @@ PositiveLiteral positiveLiteral(FormulaContext context) throws PrefixDeclaration
     String predicateName;
 } {
     predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN > {
-		return Expressions.makePositiveLiteral(predicateName, terms);
+		return Expressions.makePositiveLiteral(createPredicate(predicateName,terms.size()), terms);
 	}
 }
 
@@ -268,7 +268,7 @@ Fact fact(FormulaContext context) throws PrefixDeclarationException : {
 } {
     predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN > < DOT > {
       try {
-      	return Expressions.makeFact(predicateName, terms);
+      	return Expressions.makeFact(createPredicate(predicateName,terms.size()), terms);
       } catch (IllegalArgumentException e) {
 		  throw makeParseExceptionWithCause("Error parsing fact: " + e.getMessage(), e);
       }
@@ -280,7 +280,7 @@ NegativeLiteral negativeLiteral(FormulaContext context) throws PrefixDeclaration
     String predicateName;
 } {
     < TILDE > predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN > {
-		return Expressions.makeNegativeLiteral(predicateName, terms);
+		return Expressions.makeNegativeLiteral(createPredicate(predicateName,terms.size()), terms);
 	}
 }
 
@@ -325,7 +325,7 @@ Term term(FormulaContext context) throws PrefixDeclarationException : {
             headUniVars.add(s);
         else if (context == FormulaContext.BODY)
             bodyVars.add(s);
-        return Expressions.makeUniversalVariable(s);
+        return createUniversalVariable(s);
     }
   | t = < EXIVAR > {
         s = t.image.substring(1);
@@ -333,7 +333,7 @@ Term term(FormulaContext context) throws PrefixDeclarationException : {
             headExiVars.add(s);
         if (context == FormulaContext.BODY)
             throw new ParseException("Existentialy quantified variables can not appear in the body. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
-        return Expressions.makeExistentialVariable(s);
+        return createExistentialVariable(s);
     }
   | try {
 		tt = ConfigurableLiteral () { return tt; }
@@ -357,7 +357,7 @@ Constant RDFLiteral() throws PrefixDeclarationException : {
 } {
     lex = String() ( lang = < LANGTAG > | < DATATYPE > dt = absoluteIri() )? {
 		if (lang != null) {
-			return Expressions.makeLanguageStringConstant(lex, lang.image);
+			return createLanguageStringConstant(lex, lang.image);
 		}
 		return createConstant(lex, dt);
 	}
@@ -487,7 +487,7 @@ String PrefixedName() throws PrefixDeclarationException : {
 }
 
 // Comments
-< * > SKIP : {
+< DEFAULT, BODY, DIRECTIVE_ARGUMENTS > SKIP : {
   < COMMENT : "%" ( ~[ "\n" ] )* "\n" >
 }
 

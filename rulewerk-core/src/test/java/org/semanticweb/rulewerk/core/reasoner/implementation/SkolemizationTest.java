@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.implementation.NamedNullImpl;
+import org.semanticweb.rulewerk.core.model.implementation.TermFactory;
 
 public class SkolemizationTest {
 	private Skolemization skolemization;
@@ -76,23 +77,26 @@ public class SkolemizationTest {
 
 	@Test
 	public void skolemConstant_succeeds() {
-		AbstractConstant skolem = skolemization.getSkolemConstant(name1);
+		TermFactory termFactory = new TermFactory();
+		AbstractConstant skolem = skolemization.getSkolemConstant(name1, termFactory);
 		assertTrue(skolem.getName().startsWith(Skolemization.SKOLEM_IRI_PREFIX));
 	}
 
 	@Test
 	public void skolemConstantFromNamedNull_succeeds() {
+		TermFactory termFactory = new TermFactory();
 		NamedNull null1 = new NamedNullImpl(name1);
-		AbstractConstant skolem1 = skolemization.getSkolemConstant(null1);
-		AbstractConstant skolem2 = skolemization.getSkolemConstant(name1);
+		AbstractConstant skolem1 = skolemization.getSkolemConstant(null1, termFactory);
+		AbstractConstant skolem2 = skolemization.getSkolemConstant(name1, termFactory);
 		assertEquals(skolem2, skolem1);
 	}
 
 	@Test
 	public void skolemConstantFromRenamedNamedNull_succeeds() {
+		TermFactory termFactory = new TermFactory();
 		NamedNull null1 = skolemization.getRenamedNamedNull(name1);
-		AbstractConstant skolem1 = skolemization.getSkolemConstant(null1);
-		AbstractConstant skolem2 = skolemization.getSkolemConstant(name1);
+		AbstractConstant skolem1 = skolemization.getSkolemConstant(null1, termFactory);
+		AbstractConstant skolem2 = skolemization.getSkolemConstant(name1, termFactory);
 		assertEquals(skolem2, skolem1);
 	}
 }
