@@ -54,7 +54,7 @@ public final class ShellTestUtils {
 		}, terminalStyledPrinter, parserConfiguration);
 	}
 
-	public static Interpreter getMockInterpreter(final Writer writer, final Terminal terminal) {
+	public static Interpreter getMockInterpreter(final Terminal terminal) {
 		final TerminalStyledPrinter terminalStyledPrinter = new TerminalStyledPrinter(terminal);
 
 		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
