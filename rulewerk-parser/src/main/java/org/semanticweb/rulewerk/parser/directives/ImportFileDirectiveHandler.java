@@ -54,7 +54,7 @@ public class ImportFileDirectiveHandler implements DirectiveHandler<KnowledgeBas
 				RuleParser.parseInto(kb, stream, parserConfiguration);
 			});
 		} catch (RulewerkException | IOException | IllegalArgumentException e) {
-			throw new ParsingException("Failed while trying to import rules file \"" + file.getName() + "\"", e);
+			throw new ParsingException("Could not import rules file \"" + file.getName() + "\": " + e.getMessage(), e);
 		}
 
 		return knowledgeBase;

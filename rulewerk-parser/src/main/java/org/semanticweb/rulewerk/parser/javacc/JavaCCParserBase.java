@@ -370,7 +370,7 @@ public class JavaCCParserBase {
 		try {
 			return parserConfiguration.parseDirectiveStatement(name, arguments, subParserFactory);
 		} catch (ParsingException e) {
-			throw makeParseExceptionWithCause("Failed while trying to parse directive statement", e);
+			throw makeParseExceptionWithCause(e.getMessage(), e);
 		}
 	}
 
