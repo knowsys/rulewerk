@@ -294,10 +294,11 @@ public class ShellTest {
 		final Shell shell = new Shell(interpreterSpy);
 
 		final LineReader lineReader = Mockito.mock(LineReader.class);
-		final RuntimeException runtimeException = new RuntimeException("test");
-		final RuntimeException runtimeExceptionSpy = Mockito.spy(runtimeException);
+		final RuntimeException exception = Mockito.mock(RuntimeException.class);
+		Mockito.when(exception.getMessage())
+				.thenReturn("This exception is thrown intentionally as part of a unit test");
 
-		Mockito.when(lineReader.readLine(this.prompt)).thenThrow(runtimeExceptionSpy);
+		Mockito.when(lineReader.readLine(this.prompt)).thenThrow(exception);
 
 		final Command command = shell.runCommand(lineReader, this.prompt);
 		assertNull(command);
@@ -305,9 +306,9 @@ public class ShellTest {
 		Mockito.verify(interpreterSpy, Mockito.never()).runCommand(Mockito.any(Command.class));
 
 		final String printedResult = writer.toString();
-		assertTrue(printedResult.startsWith("Unexpected error: " + runtimeException.getMessage()));
+		assertTrue(printedResult.startsWith("Unexpected error: " + exception.getMessage()));
 
-		Mockito.verify(runtimeExceptionSpy).printStackTrace();
+		Mockito.verify(exception).printStackTrace();
 	}
 
 	public void testPrintWelcome(final Interpreter interpreterSpy) {
