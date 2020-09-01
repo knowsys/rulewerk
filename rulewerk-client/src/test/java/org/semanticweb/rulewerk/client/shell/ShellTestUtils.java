@@ -42,16 +42,10 @@ public final class ShellTestUtils {
 
 	public static Interpreter getMockInterpreter(final Writer writer) {
 		final Terminal terminalMock = Mockito.mock(Terminal.class);
-		final TerminalStyledPrinter terminalStyledPrinter = new TerminalStyledPrinter(terminalMock);
 		final PrintWriter printWriter = new PrintWriter(writer);
 		Mockito.when(terminalMock.writer()).thenReturn(printWriter);
 
-		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration();
-		return new Interpreter(Interpreter.EMPTY_KNOWLEDGE_BASE_PROVIDER, (knowledgeBase) -> {
-			final Reasoner reasoner = Mockito.mock(Reasoner.class);
-			Mockito.when(reasoner.getKnowledgeBase()).thenReturn(knowledgeBase);
-			return reasoner;
-		}, terminalStyledPrinter, parserConfiguration);
+		return getMockInterpreter(terminalMock);
 	}
 
 	public static Interpreter getMockInterpreter(final Terminal terminal) {
