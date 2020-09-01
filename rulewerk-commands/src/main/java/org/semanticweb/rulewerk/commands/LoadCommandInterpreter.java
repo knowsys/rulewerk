@@ -96,6 +96,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 
 		int countRulesBefore = interpreter.getKnowledgeBase().getRules().size();
 		int countFactsBefore = interpreter.getKnowledgeBase().getFacts().size();
+		int countDataSourceDeclarationsBefore = interpreter.getKnowledgeBase().getDataSourceDeclarations().size();
 
 		if (TASK_RLS.equals(task)) {
 			loadKb(interpreter, fileName);
@@ -108,9 +109,11 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 					"Unknown task " + task + ". Should be one of " + TASK_RLS + ", " + TASK_OWL + ", " + TASK_RDF);
 		}
 
-		interpreter.printNormal(
-				"Loaded " + (interpreter.getKnowledgeBase().getFacts().size() - countFactsBefore) + " new fact(s) and "
-						+ (interpreter.getKnowledgeBase().getRules().size() - countRulesBefore) + " new rule(s).\n");
+		interpreter.printNormal("Loaded " + (interpreter.getKnowledgeBase().getFacts().size() - countFactsBefore)
+				+ " new fact(s), " + (interpreter.getKnowledgeBase().getRules().size() - countRulesBefore)
+				+ " new rule(s), and " + (interpreter.getKnowledgeBase().getDataSourceDeclarations().size()
+						- countDataSourceDeclarationsBefore)
+				+ " new datasource declaration(s).\n");
 
 	}
 
