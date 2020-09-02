@@ -61,10 +61,10 @@ public class ExitCommandInterpreterTest {
 		final Interpreter interpreterSpy = Mockito.spy(interpreter);
 		commandInterpreter.printHelp("commandname", interpreterSpy);
 
-		Mockito.verify(interpreterSpy).printNormal("Usage: commandname.\n");
+		Mockito.verify(interpreterSpy).printNormal("Usage: @commandname .\n");
 
 		final String result = writer.toString();
-		assertEquals("Usage: commandname.\n", result);
+		assertEquals("Usage: @commandname .\n", result);
 	}
 
 	@Test
