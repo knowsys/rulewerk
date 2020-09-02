@@ -28,16 +28,33 @@ import org.semanticweb.rulewerk.commands.CommandInterpreter;
 import org.semanticweb.rulewerk.commands.Interpreter;
 import org.semanticweb.rulewerk.core.model.api.Command;
 
+/**
+ * Interpreter for the command to exit an interactive shell
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public class ExitCommandInterpreter implements CommandInterpreter {
 
 	public static final Command EXIT_COMMAND = new Command(ExitCommandName.exit.toString(), new ArrayList<>(0));
 
+	/**
+	 * Command names used for requesting exiting an interactive shell
+	 * 
+	 * @author Irina Dragoste
+	 *
+	 */
 	public static enum ExitCommandName {
 		exit;
 	}
 
 	final Shell shell;
 
+	/**
+	 * Constructor that provides the interactive shell from which exit is requested
+	 * 
+	 * @param shell interactive shell to exit from
+	 */
 	public ExitCommandInterpreter(final Shell shell) {
 		this.shell = shell;
 	}

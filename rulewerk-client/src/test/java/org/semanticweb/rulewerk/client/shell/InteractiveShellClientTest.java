@@ -69,7 +69,7 @@ public class InteractiveShellClientTest {
 				.thenReturn(lineReader);
 
 		final InteractiveShellClient shellClient = new InteractiveShellClient();
-		shellClient.run(configuration);
+		shellClient.launchShell(configuration);
 
 		assertTrue(output.toString().contains("Welcome to the Rulewerk interactive shell."));
 		

@@ -21,6 +21,7 @@ package org.semanticweb.rulewerk.client.picocli;
  */
 
 import java.io.IOException;
+import java.io.PrintStream;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -33,8 +34,8 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 /**
- * Dummy class with main method that is a command with subcommands shell and
- * materialize
+ * Class with main method that is a command with subcommands {@code shell}
+ * (default) and {@code materialize}.
  * 
  * @author Irina Dragoste
  *
@@ -43,28 +44,56 @@ import picocli.CommandLine.Command;
 		RulewerkClientMaterialize.class })
 public class Main {
 
+	public static String INTERACTIVE_SHELL_COMMAND = "shell";
+	public static String COMMAND_LINE_CLIENT_COMMAND = "materialize";
+	public static String HELP_COMMAND = "help";
+
+	/**
+	 * Launches the client application for Rulewerk. The functionality depends on
+	 * the given command-line args ({@code args}):
+	 * <ul>
+	 * <li>empty args (<b>""</b>) or argument <b>"shell"</b></li> launch an
+	 * interactive shell.
+	 * <li>argument "materialize" can be used with different options to complete
+	 * several materialization and querying tasks from the command line.</li>
+	 * </ul>
+	 * <li>help</li>
+	 * 
+	 * @param args
+	 * 
+	 * @throws IOException
+	 */
 	public static void main(final String[] args) throws IOException {
 		configureLogging();
-		
-		if (args.length == 0 || (args.length > 0 && args[0].equals("shell"))) {
-			new InteractiveShellClient().run(new DefaultShellConfiguration());
+
+		if (args.length == 0 || (args.length > 0 && INTERACTIVE_SHELL_COMMAND.equals(args[0]))) {
+			new InteractiveShellClient().launchShell(new DefaultShellConfiguration());
 		} else {
-			if (args[0].equals("materialize")) {
+			if (COMMAND_LINE_CLIENT_COMMAND.equals(args[0])) {
 				final CommandLine commandline = new CommandLine(new RulewerkClientMaterialize());
 				commandline.execute(args);
 			} else {
-				if (!args[0].equals("help")) {
-					System.out.println("Invalid command.");
-				}
-				// TODO improve help
-				// TODO do we need to create a Help command?
-				(new CommandLine(new Main())).usage(System.out);
-
+				displayHelp(args, System.out);
 			}
 		}
-
 	}
-	
+
+	static void displayHelp(final String[] args, final PrintStream printStream) {
+		if (!HELP_COMMAND.equals(args[0])) {
+			printStream.println("Invalid command.");
+		}
+
+		if (HELP_COMMAND.equals(args[0]) && args.length > 1 && COMMAND_LINE_CLIENT_COMMAND.equals(args[1])) {
+			(new CommandLine(new RulewerkClientMaterialize())).usage(printStream);
+		} else {
+			(new CommandLine(new Main())).usage(printStream);
+		}
+	}
+
+	/**
+	 * Configures {@link Logger} settings. Messages are logged to the console. Log
+	 * level is set to {@link Level.FATAL}.
+	 */
 	public static void configureLogging() {
 		// Create the appender that will write log messages to the console.
 		final ConsoleAppender consoleAppender = new ConsoleAppender();

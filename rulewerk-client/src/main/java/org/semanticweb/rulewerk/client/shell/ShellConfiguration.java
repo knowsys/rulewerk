@@ -26,12 +26,40 @@ import java.util.Collection;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
 
+/**
+ * Interface for providing I/O resources for an interactive shell: terminal,
+ * terminal prompt, and line reader
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public interface ShellConfiguration {
 
+	/**
+	 * Provides a line reader that reads user input from the given terminal. The
+	 * line reader offers tab-completion for the given list of command names.
+	 * 
+	 * @param terminal terminal to read from.
+	 * @param commands list of command names recognized by the interactive shell.
+	 * @return a line reader for interacting with the shell terminal.
+	 */
 	LineReader buildLineReader(Terminal terminal, Collection<String> commands);
 
+	/**
+	 * Provides an I/O terminal for the interactive shell.
+	 * 
+	 * @return the interactive shell terminal.
+	 * @throws IOException when the terminal cannot be built
+	 */
 	Terminal buildTerminal() throws IOException;
 
+	/**
+	 * Provides the prompt text (with colour and style) to be displayed on the given
+	 * terminal.
+	 * 
+	 * @param terminal terminal for the prompt to be displayed on
+	 * @return the prompt text with embedded style.
+	 */
 	String buildPrompt(Terminal terminal);
 
 }

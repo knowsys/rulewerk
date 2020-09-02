@@ -31,18 +31,32 @@ import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
 import picocli.CommandLine.Command;
 
-@Command(name = "shell", description = "An interactive shell for Rulewerk. The default command.")
+/**
+ * Class for executing the default {@code shell} command, which launches an
+ * interactive shell.
+ * 
+ * @author Irina Dragoste
+ *
+ */
+@Command(name = "shell", description = "Launch an interactive shell for Rulewerk. The default command.")
 public class InteractiveShellClient
 {
 
-	public void run(final ShellConfiguration configuration) throws IOException {
+	/**
+	 * Builds and launches an interactive shell, which accepts commands for running
+	 * Rulewerk tasks using VLog Reasosner.
+	 * 
+	 * @param configuration for shell I/O resources
+	 * @throws IOException if {@link Terminal} cannot be built.
+	 */
+	public void launchShell(final ShellConfiguration configuration) throws IOException {
 
 		final Terminal terminal = configuration.buildTerminal();
 
 		try (Interpreter interpreter = this.initializeInterpreter(terminal)) {
 			final Shell shell = new Shell(interpreter);
 
-			final LineReader lineReader = configuration.buildLineReader(terminal, shell.getRegisteredCommands());
+			final LineReader lineReader = configuration.buildLineReader(terminal, shell.getCommands());
 			final String prompt = configuration.buildPrompt(terminal);
 
 			shell.run(lineReader, prompt);

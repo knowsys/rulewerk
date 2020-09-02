@@ -22,6 +22,12 @@ package org.semanticweb.rulewerk.commands;
 
 import java.io.Writer;
 
+/**
+ * Interface for printing given Strings to a writer using different styles.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public interface StyledPrinter {
 
 	void printNormal(String string);
@@ -34,6 +40,10 @@ public interface StyledPrinter {
 
 	void printImportant(String string);
 
+	/**
+	 * 
+	 * @return the writer to print to
+	 */
 	Writer getWriter();
 
 }
