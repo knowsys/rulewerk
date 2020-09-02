@@ -151,7 +151,12 @@ public class Shell {
 		return this.running;
 	}
 
-	public Set<String> getRegisteredCommands() {
+	/**
+	 * Getter for the shell commands.
+	 * 
+	 * @return the names of the commands that are recognized by this shell.
+	 */
+	public Set<String> getCommands() {
 		return this.interpreter.getRegisteredCommands();
 	}
 

@@ -27,47 +27,59 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 import org.semanticweb.rulewerk.commands.StyledPrinter;
 
+/**
+ * StyledPrinter that uses the {@link PrintWriter} of a {@link Terminal} and has
+ * various styling.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public class TerminalStyledPrinter implements StyledPrinter {
 
 	final Terminal terminal;
 
+	/**
+	 * Constructor providing a terminal for the StyledPrinter to write to.
+	 * 
+	 * @param terminal the terminal to write to
+	 */
 	public TerminalStyledPrinter(final Terminal terminal) {
 		this.terminal = terminal;
 	}
 
 	@Override
-	public void printNormal(String string) {
-		printStyled(string, AttributedStyle.DEFAULT);
+	public void printNormal(final String string) {
+		this.printStyled(string, AttributedStyle.DEFAULT);
 	}
 
 	@Override
-	public void printSection(String string) {
-		printStyled(string, AttributedStyle.DEFAULT.bold());
+	public void printSection(final String string) {
+		this.printStyled(string, AttributedStyle.DEFAULT.bold());
 	}
 
 	@Override
-	public void printEmph(String string) {
-		printStyled(string, AttributedStyle.DEFAULT.bold());
+	public void printEmph(final String string) {
+		this.printStyled(string, AttributedStyle.DEFAULT.bold());
 	}
 
 	@Override
-	public void printCode(String string) {
-		printStyled(string, AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW).bold());
+	public void printCode(final String string) {
+		this.printStyled(string, AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW).bold());
 	}
 
 	@Override
-	public void printImportant(String string) {
-		printStyled(string, AttributedStyle.DEFAULT.foreground(AttributedStyle.RED));
+	public void printImportant(final String string) {
+		this.printStyled(string, AttributedStyle.DEFAULT.foreground(AttributedStyle.RED));
 	}
 
 	@Override
 	public PrintWriter getWriter() {
-		return terminal.writer();
+		return this.terminal.writer();
 	}
 
-	private void printStyled(String string, AttributedStyle attributedStyle) {
-		AttributedString attributedString = new AttributedString(string, attributedStyle);
-		getWriter().print(attributedString.toAnsi(terminal));
-		getWriter().flush();
+	private void printStyled(final String string, final AttributedStyle attributedStyle) {
+		final AttributedString attributedString = new AttributedString(string, attributedStyle);
+		this.getWriter().print(attributedString.toAnsi(this.terminal));
+		this.getWriter().flush();
 	}
 }

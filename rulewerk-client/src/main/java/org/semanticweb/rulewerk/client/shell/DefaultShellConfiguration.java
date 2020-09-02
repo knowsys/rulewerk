@@ -36,6 +36,13 @@ import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 
+/**
+ * An implementation of {@link ShellConfiguration} with custom styling and
+ * completion for recognized commands.
+ * 
+ * @author Irina Dragoste
+ *
+ */
 public class DefaultShellConfiguration implements ShellConfiguration {
 
 	public static final String PROMPT_STRING = "rulewerk> ";
