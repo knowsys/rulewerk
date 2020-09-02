@@ -42,6 +42,7 @@ import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Terms;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.semanticweb.rulewerk.core.reasoner.LogLevel;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -264,6 +265,7 @@ public class Interpreter implements AutoCloseable {
 	public void clearReasonerAndKnowledgeBase() {
 		this.closeReasoner();
 		this.reasoner = this.reasonerProvider.reasoner(this.knowledgeBaseProvider.knowledgeBase());
+		this.reasoner.setLogLevel(LogLevel.ERROR);
 		try {
 			this.reasoner.reason();
 		} catch (final IOException e) {
