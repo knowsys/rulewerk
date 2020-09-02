@@ -296,6 +296,15 @@ public class LoadCommandInterpreterTest {
 		Command command = interpreter.parseCommand("@load .");
 		interpreter.runCommand(command);
 	}
+	
+	@Test(expected = CommandExecutionException.class)
+	public void wrongArgumentCountWithOptional_fails() throws ParsingException, CommandExecutionException {
+		StringWriter writer = new StringWriter();
+		Interpreter interpreter = InterpreterTest.getMockInterpreter(writer);
+
+		Command command = interpreter.parseCommand("@load OWL .");
+		interpreter.runCommand(command);
+	}
 
 	@Test(expected = CommandExecutionException.class)
 	public void wrongRdfPredicateTermType_fails() throws ParsingException, CommandExecutionException {

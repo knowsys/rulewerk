@@ -215,7 +215,7 @@ public class Interpreter implements AutoCloseable {
 		try {
 			return Terms.extractString(command.getArguments().get(index).fromTerm()
 					.orElseThrow(() -> getArgumentTypeError(index, "string", parameterName)));
-		} catch (final IllegalArgumentException e) {
+		} catch (final IllegalArgumentException | IndexOutOfBoundsException e) {
 			throw getArgumentTypeError(index, "string", parameterName);
 		}
 	}
@@ -225,15 +225,19 @@ public class Interpreter implements AutoCloseable {
 		try {
 			return Terms.extractName(command.getArguments().get(index).fromTerm()
 					.orElseThrow(() -> getArgumentTypeError(index, "constant", parameterName)));
-		} catch (final IllegalArgumentException e) {
+		} catch (final IllegalArgumentException | IndexOutOfBoundsException e) {
 			throw getArgumentTypeError(index, "constant", parameterName);
 		}
 	}
 
 	public static PositiveLiteral extractPositiveLiteralArgument(final Command command, final int index,
 			final String parameterName) throws CommandExecutionException {
-		return command.getArguments().get(index).fromPositiveLiteral()
-				.orElseThrow(() -> getArgumentTypeError(index, "literal", parameterName));
+		try {
+			return command.getArguments().get(index).fromPositiveLiteral()
+					.orElseThrow(() -> getArgumentTypeError(index, "literal", parameterName));
+		} catch (final IndexOutOfBoundsException e) {
+			throw getArgumentTypeError(index, "constant", parameterName);
+		}
 	}
 
 	/**
