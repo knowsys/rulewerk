@@ -31,17 +31,17 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 public class AddSourceCommandInterpreter implements CommandInterpreter {
 
 	@Override
-	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
+	public void run(final Command command, final Interpreter interpreter) throws CommandExecutionException {
 		Interpreter.validateArgumentCount(command, 2);
-		String predicateDeclaration = Interpreter.extractStringArgument(command, 0, "predicateName[arity]");
-		PositiveLiteral sourceDeclaration = Interpreter.extractPositiveLiteralArgument(command, 1,
+		final String predicateDeclaration = Interpreter.extractStringArgument(command, 0, "predicateName[arity]");
+		final PositiveLiteral sourceDeclaration = Interpreter.extractPositiveLiteralArgument(command, 1,
 				"source declaration");
 
-		Predicate predicate = extractPredicate(predicateDeclaration);
-		DataSource dataSource = extractDataSource(sourceDeclaration, interpreter);
+		final Predicate predicate = extractPredicate(predicateDeclaration);
+		final DataSource dataSource = extractDataSource(sourceDeclaration, interpreter);
 
 		if (dataSource.getRequiredArity().isPresent()) {
-			Integer requiredArity = dataSource.getRequiredArity().get();
+			final Integer requiredArity = dataSource.getRequiredArity().get();
 			if (predicate.getArity() != requiredArity) {
 				throw new CommandExecutionException("Invalid arity " + predicate.getArity() + " for data source, "
 						+ "expected " + requiredArity + ".");
@@ -52,8 +52,8 @@ public class AddSourceCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public void printHelp(String commandName, Interpreter interpreter) {
-		interpreter.printNormal("Usage: @" + commandName + " <predicateName>[<arity>]: <source declaration>.\n"
+	public void printHelp(final String commandName, final Interpreter interpreter) {
+		interpreter.printNormal("Usage: @" + commandName + " <predicateName>[<arity>]: <source declaration> .\n"
 				+ " <predicateName>[<arity>] : the name of the predicate and its arity\n"
 				+ " <source declaration> : a fact specifying a source declaration\n\n"
 				+ "Note that every predicate can have multiple sources.\n");
@@ -64,14 +64,14 @@ public class AddSourceCommandInterpreter implements CommandInterpreter {
 		return "define a new external data source for a predicate";
 	}
 
-	static Predicate extractPredicate(String predicateDeclaration) throws CommandExecutionException {
+	static Predicate extractPredicate(final String predicateDeclaration) throws CommandExecutionException {
 		String predicateName;
 		int arity;
 		try {
-			int openBracket = predicateDeclaration.indexOf('[');
-			int closeBracket = predicateDeclaration.indexOf(']');
+			final int openBracket = predicateDeclaration.indexOf('[');
+			final int closeBracket = predicateDeclaration.indexOf(']');
 			predicateName = predicateDeclaration.substring(0, openBracket);
-			String arityString = predicateDeclaration.substring(openBracket + 1, closeBracket);
+			final String arityString = predicateDeclaration.substring(openBracket + 1, closeBracket);
 			arity = Integer.parseInt(arityString);
 		} catch (IndexOutOfBoundsException | NumberFormatException e) {
 			throw new CommandExecutionException(
@@ -81,12 +81,12 @@ public class AddSourceCommandInterpreter implements CommandInterpreter {
 		return Expressions.makePredicate(predicateName, arity);
 	}
 
-	static DataSource extractDataSource(PositiveLiteral sourceDeclaration, Interpreter interpreter)
+	static DataSource extractDataSource(final PositiveLiteral sourceDeclaration, final Interpreter interpreter)
 			throws CommandExecutionException {
 		try {
 			return interpreter.getParserConfiguration()
 					.parseDataSourceSpecificPartOfDataSourceDeclaration(sourceDeclaration);
-		} catch (ParsingException e) {
+		} catch (final ParsingException e) {
 			throw new CommandExecutionException("Could not parse source declaration: " + e.getMessage());
 		}
 	}

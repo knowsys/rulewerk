@@ -72,7 +72,7 @@ public class ClearCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void printHelp(final String commandName, final Interpreter interpreter) {
-		interpreter.printNormal("Usage: @" + commandName + " TASK\n" //
+		interpreter.printNormal("Usage: @" + commandName + " TASK .\n" //
 				+ " TASK: what to reset, possuble values:\n" //
 				+ "   ALL: empty knowledge base and completely reset reasoner\n" //
 				+ "   INF: reset reasoner to clear all loaded data and inferences\n" //

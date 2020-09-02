@@ -26,22 +26,22 @@ import org.semanticweb.rulewerk.core.model.api.Command;
 public class SetPrefixCommandInterpreter implements CommandInterpreter {
 
 	@Override
-	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
+	public void run(final Command command, final Interpreter interpreter) throws CommandExecutionException {
 		Interpreter.validateArgumentCount(command, 2);
-		String prefixName = Interpreter.extractStringArgument(command, 0, "prefix name");
-		String prefixIri = Interpreter.extractNameArgument(command, 1, "prefix IRI");
+		final String prefixName = Interpreter.extractStringArgument(command, 0, "prefix name");
+		final String prefixIri = Interpreter.extractNameArgument(command, 1, "prefix IRI");
 
 		interpreter.getKnowledgeBase().getPrefixDeclarationRegistry().unsetPrefix(prefixName);
 		try {
 			interpreter.getKnowledgeBase().getPrefixDeclarationRegistry().setPrefixIri(prefixName, prefixIri);
-		} catch (PrefixDeclarationException e) { // practically impossible
+		} catch (final PrefixDeclarationException e) { // practically impossible
 			throw new CommandExecutionException("Setting prefix failed: " + e.getMessage());
 		}
 	}
 
 	@Override
-	public void printHelp(String commandName, Interpreter interpreter) {
-		interpreter.printNormal("Usage: @" + commandName + " <prefix>: <IRI>.\n");
+	public void printHelp(final String commandName, final Interpreter interpreter) {
+		interpreter.printNormal("Usage: @" + commandName + " <prefix>: <IRI> .\n");
 	}
 
 	@Override

@@ -61,7 +61,7 @@ public class ExitCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void printHelp(final String commandName, final Interpreter interpreter) {
-		interpreter.printNormal("Usage: " + commandName + ".\n");
+		interpreter.printNormal("Usage: @" + commandName + ".\n");
 	}
 
 	@Override

@@ -202,7 +202,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void printHelp(final String commandName, final Interpreter interpreter) {
-		interpreter.printNormal("Usage: @" + commandName + " [TASK] \"file\" [RDF predicate]\n" //
+		interpreter.printNormal("Usage: @" + commandName + " [TASK] \"file\" [RDF predicate] .\n" //
 				+ " TASK: optional; one of RULES (default), OWL, RDF:\n" //
 				+ "       RULES to load a knowledge base in Rulewerk rls format\n" //
 				+ "       OWL to load an OWL ontology and convert it to facts and rules\n" //

@@ -30,22 +30,22 @@ import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationI
 public class RemoveSourceCommandInterpreter implements CommandInterpreter {
 
 	@Override
-	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
+	public void run(final Command command, final Interpreter interpreter) throws CommandExecutionException {
 		if (command.getArguments().size() == 0 || command.getArguments().size() > 2) {
 			throw new CommandExecutionException("This command requires one or two arguments.");
 		}
 
-		String predicateDeclaration = Interpreter.extractStringArgument(command, 0, "predicateName[arity]");
-		Predicate predicate = AddSourceCommandInterpreter.extractPredicate(predicateDeclaration);
+		final String predicateDeclaration = Interpreter.extractStringArgument(command, 0, "predicateName[arity]");
+		final Predicate predicate = AddSourceCommandInterpreter.extractPredicate(predicateDeclaration);
 		DataSource dataSource = null;
 		if (command.getArguments().size() == 2) {
-			PositiveLiteral sourceDeclaration = Interpreter.extractPositiveLiteralArgument(command, 1,
+			final PositiveLiteral sourceDeclaration = Interpreter.extractPositiveLiteralArgument(command, 1,
 					"source declaration");
 			dataSource = AddSourceCommandInterpreter.extractDataSource(sourceDeclaration, interpreter);
 		}
 
 		if (dataSource != null) {
-			DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate, dataSource);
+			final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate, dataSource);
 			if (interpreter.getKnowledgeBase().removeStatement(dataSourceDeclaration) > 0) {
 				interpreter.printNormal("Removed specified data source declaration.\n");
 			} else {
@@ -53,7 +53,7 @@ public class RemoveSourceCommandInterpreter implements CommandInterpreter {
 			}
 		} else {
 			int count = 0;
-			for (DataSourceDeclaration dataSourceDeclaration : interpreter.getKnowledgeBase()
+			for (final DataSourceDeclaration dataSourceDeclaration : interpreter.getKnowledgeBase()
 					.getDataSourceDeclarations()) {
 				if (dataSourceDeclaration.getPredicate().equals(predicate)) {
 					interpreter.getKnowledgeBase().removeStatement(dataSourceDeclaration);
@@ -66,8 +66,8 @@ public class RemoveSourceCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public void printHelp(String commandName, Interpreter interpreter) {
-		interpreter.printNormal("Usage: @" + commandName + " <predicateName>[<arity>]: <source declartion>.\n"
+	public void printHelp(final String commandName, final Interpreter interpreter) {
+		interpreter.printNormal("Usage: @" + commandName + " <predicateName>[<arity>]: <source declartion> .\n"
 				+ " <predicateName>[<arity>] : the name of the predicate and its arity\n"
 				+ " <source declaration> (optional): a fact specifying a source declaration\n\n"
 				+ "Note that every predicate can have multiple sources.\n");
