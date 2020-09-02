@@ -27,17 +27,17 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 
 public class ClearCommandInterpreter implements CommandInterpreter {
 
-	static final String TASK_ALL = "ALL";
-	static final String TASK_INFERENCES = "INF";
-	static final String TASK_FACTS = "FACTS";
-	static final String TASK_RULES = "RULES";
-	static final String TASK_SOURCES = "DATASOURCES";
-	static final String TASK_PREFIXES = "PREFIXES";
+	public static final String TASK_ALL = "ALL";
+	public static final String TASK_INFERENCES = "INF";
+	public static final String TASK_FACTS = "FACTS";
+	public static final String TASK_RULES = "RULES";
+	public static final String TASK_SOURCES = "DATASOURCES";
+	public static final String TASK_PREFIXES = "PREFIXES";
 
 	@Override
-	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
+	public void run(final Command command, final Interpreter interpreter) throws CommandExecutionException {
 		Interpreter.validateArgumentCount(command, 1);
-		String task = Interpreter.extractNameArgument(command, 0, "task");
+		final String task = Interpreter.extractNameArgument(command, 0, "task");
 		if (TASK_ALL.equals(task)) {
 			interpreter.clearReasonerAndKnowledgeBase();
 			interpreter.printNormal("Knowledge base has been cleared; reasoner has been completely reset.\n");
@@ -45,17 +45,17 @@ public class ClearCommandInterpreter implements CommandInterpreter {
 			interpreter.getReasoner().resetReasoner();
 			interpreter.printNormal("Reasoner has been reset.\n");
 		} else if (TASK_FACTS.equals(task)) {
-			for (Fact fact : interpreter.getKnowledgeBase().getFacts()) {
+			for (final Fact fact : interpreter.getKnowledgeBase().getFacts()) {
 				interpreter.getKnowledgeBase().removeStatement(fact);
 			}
 			interpreter.printNormal("All facts have been removed from the knowledge base.\n");
 		} else if (TASK_RULES.equals(task)) {
-			for (Rule rule : interpreter.getKnowledgeBase().getRules()) {
+			for (final Rule rule : interpreter.getKnowledgeBase().getRules()) {
 				interpreter.getKnowledgeBase().removeStatement(rule);
 			}
 			interpreter.printNormal("All rules have been removed from the knowledge base.\n");
 		} else if (TASK_SOURCES.equals(task)) {
-			for (DataSourceDeclaration dataSourceDeclaration : interpreter.getKnowledgeBase()
+			for (final DataSourceDeclaration dataSourceDeclaration : interpreter.getKnowledgeBase()
 					.getDataSourceDeclarations()) {
 				interpreter.getKnowledgeBase().removeStatement(dataSourceDeclaration);
 			}
@@ -71,7 +71,7 @@ public class ClearCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public void printHelp(String commandName, Interpreter interpreter) {
+	public void printHelp(final String commandName, final Interpreter interpreter) {
 		interpreter.printNormal("Usage: @" + commandName + " TASK\n" //
 				+ " TASK: what to reset, possuble values:\n" //
 				+ "   ALL: empty knowledge base and completely reset reasoner\n" //

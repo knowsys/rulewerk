@@ -57,14 +57,14 @@ import org.semanticweb.rulewerk.rdf.RdfModelConverter;
  */
 public class LoadCommandInterpreter implements CommandInterpreter {
 
-	static final String TASK_RLS = "RULES";
-	static final String TASK_OWL = "OWL";
-	static final String TASK_RDF = "RDF";
+	public static final String TASK_RLS = "RULES";
+	public static final String TASK_OWL = "OWL";
+	public static final String TASK_RDF = "RDF";
 
 	static final String PREDICATE_ABOX = "ABOX";
 
 	@Override
-	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
+	public void run(final Command command, final Interpreter interpreter) throws CommandExecutionException {
 		String task;
 		int pos = 0;
 		if (command.getArguments().size() > 0 && command.getArguments().get(0).fromTerm().isPresent()
@@ -75,7 +75,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 			task = TASK_RLS;
 		}
 
-		String fileName = Interpreter.extractStringArgument(command, pos, "filename");
+		final String fileName = Interpreter.extractStringArgument(command, pos, "filename");
 		pos++;
 
 		String rdfTriplePredicate = RdfModelConverter.RDF_TRIPLE_PREDICATE_NAME;
@@ -94,16 +94,16 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 
 		Interpreter.validateArgumentCount(command, pos);
 
-		int countRulesBefore = interpreter.getKnowledgeBase().getRules().size();
-		int countFactsBefore = interpreter.getKnowledgeBase().getFacts().size();
-		int countDataSourceDeclarationsBefore = interpreter.getKnowledgeBase().getDataSourceDeclarations().size();
+		final int countRulesBefore = interpreter.getKnowledgeBase().getRules().size();
+		final int countFactsBefore = interpreter.getKnowledgeBase().getFacts().size();
+		final int countDataSourceDeclarationsBefore = interpreter.getKnowledgeBase().getDataSourceDeclarations().size();
 
 		if (TASK_RLS.equals(task)) {
-			loadKb(interpreter, fileName);
+			this.loadKb(interpreter, fileName);
 		} else if (TASK_OWL.equals(task)) {
-			loadOwl(interpreter, fileName);
+			this.loadOwl(interpreter, fileName);
 		} else if (TASK_RDF.equals(task)) {
-			loadRdf(interpreter, fileName, rdfTriplePredicate);
+			this.loadRdf(interpreter, fileName, rdfTriplePredicate);
 		} else {
 			throw new CommandExecutionException(
 					"Unknown task " + task + ". Should be one of " + TASK_RLS + ", " + TASK_OWL + ", " + TASK_RDF);
@@ -117,23 +117,23 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 
 	}
 
-	private void loadKb(Interpreter interpreter, String fileName) throws CommandExecutionException {
+	private void loadKb(final Interpreter interpreter, final String fileName) throws CommandExecutionException {
 		try {
-			InputStream inputStream = interpreter.getFileInputStream(fileName);
+			final InputStream inputStream = interpreter.getFileInputStream(fileName);
 			RuleParser.parseInto(interpreter.getKnowledgeBase(), inputStream);
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
-		} catch (ParsingException e) {
+		} catch (final ParsingException e) {
 			throw new CommandExecutionException("Failed to parse Rulewerk file: " + e.getMessage(), e);
 		}
 	}
 
-	private void loadOwl(Interpreter interpreter, String fileName) throws CommandExecutionException {
+	private void loadOwl(final Interpreter interpreter, final String fileName) throws CommandExecutionException {
 		final OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology;
 		try {
 			ontology = ontologyManager.loadOntologyFromOntologyDocument(new File(fileName));
-		} catch (OWLOntologyCreationException e) {
+		} catch (final OWLOntologyCreationException e) {
 			throw new CommandExecutionException("Problem loading OWL ontology: " + e.getMessage(), e);
 		}
 		interpreter.printNormal(
@@ -157,20 +157,20 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 		interpreter.getKnowledgeBase().addStatements(owlToRulesConverter.getFacts());
 	}
 
-	private void loadRdf(Interpreter interpreter, String fileName, String triplePredicateName)
+	private void loadRdf(final Interpreter interpreter, final String fileName, final String triplePredicateName)
 			throws CommandExecutionException {
 		try {
-			String baseIri = new File(fileName).toURI().toString();
+			final String baseIri = new File(fileName).toURI().toString();
 
-			Iterator<RDFFormat> formatsToTry = Arrays.asList(RDFFormat.NTRIPLES, RDFFormat.TURTLE, RDFFormat.RDFXML)
-					.iterator();
+			final Iterator<RDFFormat> formatsToTry = Arrays
+					.asList(RDFFormat.NTRIPLES, RDFFormat.TURTLE, RDFFormat.RDFXML).iterator();
 			Model model = null;
-			List<String> parseErrors = new ArrayList<>();
+			final List<String> parseErrors = new ArrayList<>();
 			while (model == null && formatsToTry.hasNext()) {
-				RDFFormat rdfFormat = formatsToTry.next();
+				final RDFFormat rdfFormat = formatsToTry.next();
 				try {
-					InputStream inputStream = interpreter.getFileInputStream(fileName);
-					model = parseRdfFromStream(inputStream, rdfFormat, baseIri);
+					final InputStream inputStream = interpreter.getFileInputStream(fileName);
+					model = this.parseRdfFromStream(inputStream, rdfFormat, baseIri);
 					interpreter.printNormal("Found RDF document in format " + rdfFormat.getName() + " ...\n");
 				} catch (RDFParseException | RDFHandlerException e) {
 					parseErrors.add("Failed to parse as " + rdfFormat.getName() + ": " + e.getMessage());
@@ -178,20 +178,20 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 			}
 			if (model == null) {
 				String message = "Failed to parse RDF input:";
-				for (String error : parseErrors) {
+				for (final String error : parseErrors) {
 					message += "\n " + error;
 				}
 				throw new CommandExecutionException(message);
 			}
 
-			RdfModelConverter rdfModelConverter = new RdfModelConverter(true, triplePredicateName);
+			final RdfModelConverter rdfModelConverter = new RdfModelConverter(true, triplePredicateName);
 			rdfModelConverter.addAll(interpreter.getKnowledgeBase(), model);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new CommandExecutionException("Could not read input: " + e.getMessage(), e);
 		}
 	}
 
-	private Model parseRdfFromStream(InputStream inputStream, RDFFormat rdfFormat, String baseIri)
+	private Model parseRdfFromStream(final InputStream inputStream, final RDFFormat rdfFormat, final String baseIri)
 			throws RDFParseException, RDFHandlerException, IOException {
 		final Model model = new LinkedHashModel();
 		final RDFParser rdfParser = Rio.createParser(rdfFormat);
@@ -201,7 +201,7 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public void printHelp(String commandName, Interpreter interpreter) {
+	public void printHelp(final String commandName, final Interpreter interpreter) {
 		interpreter.printNormal("Usage: @" + commandName + " [TASK] \"file\" [RDF predicate]\n" //
 				+ " TASK: optional; one of RULES (default), OWL, RDF:\n" //
 				+ "       RULES to load a knowledge base in Rulewerk rls format\n" //

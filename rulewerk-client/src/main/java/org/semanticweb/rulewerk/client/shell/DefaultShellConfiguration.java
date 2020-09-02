@@ -26,8 +26,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.jline.builtins.Completers;
-import org.jline.builtins.Completers.FileNameCompleter;
 import org.jline.builtins.Completers.TreeCompleter;
+import org.jline.builtins.Completers.TreeCompleter.Node;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.impl.completer.StringsCompleter;
@@ -35,6 +35,9 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
+import org.semanticweb.rulewerk.commands.ClearCommandInterpreter;
+import org.semanticweb.rulewerk.commands.ExportCommandInterpreter;
+import org.semanticweb.rulewerk.commands.LoadCommandInterpreter;
 
 /**
  * An implementation of {@link ShellConfiguration} with custom styling and
@@ -69,21 +72,38 @@ public class DefaultShellConfiguration implements ShellConfiguration {
 	}
 
 	TreeCompleter buildCompleter(final Collection<String> registeredCommands) {
-// @load and @export commands require a file name as argument
-		final FileNameCompleter fileNameCompleter = new Completers.FileNameCompleter();
+		final Node fileNameCompleterNode = TreeCompleter.node(new Completers.FileNameCompleter());
 
 		final List<TreeCompleter.Node> nodes = new ArrayList<>();
-		registeredCommands.stream().map(commandName -> "@" + commandName).forEach(serializedCommandName -> {
-			if (serializedCommandName.equals("@load")) {
-				nodes.add(TreeCompleter.node(serializedCommandName, TreeCompleter.node(fileNameCompleter)));
-			} else if (serializedCommandName.equals("@help")) {
-				nodes.add(TreeCompleter.node(serializedCommandName,
-						TreeCompleter.node(new StringsCompleter(registeredCommands))));
+		registeredCommands.stream().map(command -> "@" + command).forEach(commandName -> {
+			if (commandName.equals("@load")) {
+				nodes.add(TreeCompleter.node(commandName, fileNameCompleterNode));
+
+				final StringsCompleter taskOptionsCompleter = new StringsCompleter(LoadCommandInterpreter.TASK_OWL,
+						LoadCommandInterpreter.TASK_RDF, LoadCommandInterpreter.TASK_RLS);
+				nodes.add(TreeCompleter.node(commandName,
+						TreeCompleter.node(taskOptionsCompleter, fileNameCompleterNode)));
+			} else if (commandName.equals("@export")) {
+				final StringsCompleter taskOptionsCompleter = new StringsCompleter(
+						ExportCommandInterpreter.TASK_INFERENCES, ExportCommandInterpreter.TASK_KB
+						);
+				nodes.add(TreeCompleter.node(commandName,
+						TreeCompleter.node(taskOptionsCompleter, fileNameCompleterNode)));
+			} else if (commandName.equals("@clear")) {
+				final StringsCompleter taskOptionsCompleter = new StringsCompleter(ClearCommandInterpreter.TASK_ALL,
+						ClearCommandInterpreter.TASK_INFERENCES, ClearCommandInterpreter.TASK_FACTS,
+						ClearCommandInterpreter.TASK_PREFIXES, ClearCommandInterpreter.TASK_RULES,
+						ClearCommandInterpreter.TASK_SOURCES);
+				nodes.add(TreeCompleter.node(commandName, TreeCompleter.node(taskOptionsCompleter)));
+			} else if (commandName.equals("@help")) {
+				nodes.add(
+						TreeCompleter.node(commandName, TreeCompleter.node(new StringsCompleter(registeredCommands))));
 			} else {
-				nodes.add(TreeCompleter.node(serializedCommandName));
+				nodes.add(TreeCompleter.node(commandName));
 			}
 		});
 		return new TreeCompleter(nodes);
+
 	}
 
 	@Override

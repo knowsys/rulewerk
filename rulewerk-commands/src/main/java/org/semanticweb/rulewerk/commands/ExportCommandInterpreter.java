@@ -29,20 +29,20 @@ import org.semanticweb.rulewerk.core.reasoner.Timer;
 
 public class ExportCommandInterpreter implements CommandInterpreter {
 
-	static final String TASK_KB = "KB";
-	static final String TASK_INFERENCES = "INFERENCES";
+	public static final String TASK_KB = "KB";
+	public static final String TASK_INFERENCES = "INFERENCES";
 
 	@Override
-	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
+	public void run(final Command command, final Interpreter interpreter) throws CommandExecutionException {
 		Interpreter.validateArgumentCount(command, 2);
 
-		String task = Interpreter.extractNameArgument(command, 0, "task");
-		String fileName = Interpreter.extractStringArgument(command, 1, "filename");
+		final String task = Interpreter.extractNameArgument(command, 0, "task");
+		final String fileName = Interpreter.extractStringArgument(command, 1, "filename");
 
 		if (TASK_KB.equals(task)) {
-			exportKb(interpreter, fileName);
+			this.exportKb(interpreter, fileName);
 		} else if (TASK_INFERENCES.equals(task)) {
-			exportInferences(interpreter, fileName);
+			this.exportInferences(interpreter, fileName);
 		} else {
 			throw new CommandExecutionException(
 					"Unknown task " + task + ". Should be " + TASK_KB + " or " + TASK_INFERENCES);
@@ -51,7 +51,7 @@ public class ExportCommandInterpreter implements CommandInterpreter {
 	}
 
 	@Override
-	public void printHelp(String commandName, Interpreter interpreter) {
+	public void printHelp(final String commandName, final Interpreter interpreter) {
 		interpreter.printNormal("Usage: @" + commandName + " TASK \"filename\" .\n" //
 				+ " TASK: what to export; can be KB or INFERENCES\n" //
 				+ " \"filename\": string path export file (suggested extension: .rls)\n");
@@ -62,14 +62,14 @@ public class ExportCommandInterpreter implements CommandInterpreter {
 		return "export knowledgebase or inferences to a Rulewerk file";
 	}
 
-	private void exportInferences(Interpreter interpreter, String fileName) throws CommandExecutionException {
-		Timer timer = new Timer("export");
+	private void exportInferences(final Interpreter interpreter, final String fileName) throws CommandExecutionException {
+		final Timer timer = new Timer("export");
 		Correctness correctness;
 		try (Writer writer = interpreter.getFileWriter(fileName)) {
 			timer.start();
 			correctness = interpreter.getReasoner().writeInferences(writer);
 			timer.stop();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}
 
@@ -78,13 +78,13 @@ public class ExportCommandInterpreter implements CommandInterpreter {
 		interpreter.printNormal(" This result is " + correctness + ".\n");
 	}
 
-	private void exportKb(Interpreter interpreter, String fileName) throws CommandExecutionException {
-		Timer timer = new Timer("export");
+	private void exportKb(final Interpreter interpreter, final String fileName) throws CommandExecutionException {
+		final Timer timer = new Timer("export");
 		try (Writer writer = interpreter.getFileWriter(fileName)) {
 			timer.start();
 			interpreter.getKnowledgeBase().writeKnowledgeBase(writer);
 			timer.stop();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}
 		interpreter.printNormal("Exported knowledge base in " + timer.getTotalWallTime() / 1000000 + "ms ("
