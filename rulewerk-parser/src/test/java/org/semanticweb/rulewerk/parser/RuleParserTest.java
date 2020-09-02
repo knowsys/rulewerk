@@ -536,15 +536,15 @@ public class RuleParserTest implements ParserTestUtils {
 		assertArgumentIsNamedNull(fact3, 1);
 	}
 
-	@Test(expected = ParsingException.class)
-	public void parseInto_duplicateImportStatements_throws() throws ParsingException {
+	@Test
+	public void parseInto_duplicateImportStatements_succeeds() throws ParsingException {
 		String input = "@import \"src/test/resources/facts.rls\" . ";
 		KnowledgeBase knowledgeBase = RuleParser.parse(input);
 		RuleParser.parseInto(knowledgeBase, input);
 	}
 
-	@Test(expected = ParsingException.class)
-	public void parseInto_duplicateRelativeImportStatements_throws() throws ParsingException {
+	@Test
+	public void parseInto_duplicateRelativeImportStatements_succeeds() throws ParsingException {
 		String input = "@import \"src/test/resources/facts.rls\" . @import-relative \"src/test/resources/facts.rls\" .";
 		KnowledgeBase knowledgeBase = RuleParser.parse(input);
 		RuleParser.parseInto(knowledgeBase, input);

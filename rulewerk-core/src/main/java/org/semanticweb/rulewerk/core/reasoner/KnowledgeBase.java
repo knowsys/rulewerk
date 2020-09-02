@@ -490,10 +490,10 @@ public class KnowledgeBase implements Iterable<Statement> {
 		Validate.notNull(file, "file must not be null");
 
 		boolean isNewFile = this.importedFilePaths.add(file.getCanonicalPath());
-		Validate.isTrue(isNewFile, "file \"" + file.getName() + "\" was already imported.");
-
-		try (InputStream stream = new FileInputStream(file)) {
-			parseFunction.parseInto(stream, this);
+		if (isNewFile) {
+			try (InputStream stream = new FileInputStream(file)) {
+				parseFunction.parseInto(stream, this);
+			}
 		}
 	}
 
