@@ -31,6 +31,7 @@ import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.impl.DumbTerminal;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.semanticweb.rulewerk.commands.Interpreter;
 import org.semanticweb.rulewerk.parser.DefaultParserConfiguration;
@@ -64,7 +65,7 @@ public class InteractiveShellClientTest {
 
 		Mockito.when(configuration.buildTerminal()).thenReturn(terminal);
 		Mockito.when(configuration.buildPrompt(terminal)).thenReturn("prompt");
-		Mockito.when(configuration.buildLineReader(Mockito.eq(terminal), Mockito.any(Interpreter.class)))
+		Mockito.when(configuration.buildLineReader(Mockito.eq(terminal), ArgumentMatchers.anyCollection()))
 				.thenReturn(lineReader);
 
 		final InteractiveShellClient shellClient = new InteractiveShellClient();

@@ -21,14 +21,14 @@ package org.semanticweb.rulewerk.client.shell;
  */
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
-import org.semanticweb.rulewerk.commands.Interpreter;
 
 public interface ShellConfiguration {
 
-	LineReader buildLineReader(Terminal terminal, Interpreter interpreter);
+	LineReader buildLineReader(Terminal terminal, Collection<String> commands);
 
 	Terminal buildTerminal() throws IOException;
 

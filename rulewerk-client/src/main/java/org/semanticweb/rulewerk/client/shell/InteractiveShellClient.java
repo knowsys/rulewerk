@@ -42,7 +42,7 @@ public class InteractiveShellClient
 		try (Interpreter interpreter = this.initializeInterpreter(terminal)) {
 			final Shell shell = new Shell(interpreter);
 
-			final LineReader lineReader = configuration.buildLineReader(terminal, interpreter);
+			final LineReader lineReader = configuration.buildLineReader(terminal, shell.getRegisteredCommands());
 			final String prompt = configuration.buildPrompt(terminal);
 
 			shell.run(lineReader, prompt);

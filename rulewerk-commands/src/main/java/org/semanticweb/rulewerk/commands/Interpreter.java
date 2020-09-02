@@ -81,7 +81,7 @@ public class Interpreter implements AutoCloseable {
 			final StyledPrinter printer, final ParserConfiguration parserConfiguration) {
 		this.knowledgeBaseProvider = knowledgeBaseProvider;
 		this.reasonerProvider = reasonerProvider;
-		clearReasonerAndKnowledgeBase();
+		this.clearReasonerAndKnowledgeBase();
 		this.printer = printer;
 		this.parserConfiguration = parserConfiguration;
 		this.registerDefaultCommandInterpreters();
@@ -242,7 +242,7 @@ public class Interpreter implements AutoCloseable {
 	 * @return
 	 * @throws FileNotFoundException
 	 */
-	public Writer getFileWriter(String fileName) throws FileNotFoundException {
+	public Writer getFileWriter(final String fileName) throws FileNotFoundException {
 		return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8));
 	}
 
@@ -253,7 +253,7 @@ public class Interpreter implements AutoCloseable {
 	 * @return
 	 * @throws FileNotFoundException
 	 */
-	public InputStream getFileInputStream(String fileName) throws FileNotFoundException {
+	public InputStream getFileInputStream(final String fileName) throws FileNotFoundException {
 		return new FileInputStream(fileName);
 	}
 
@@ -262,11 +262,11 @@ public class Interpreter implements AutoCloseable {
 	 * statements are cleared.
 	 */
 	public void clearReasonerAndKnowledgeBase() {
-		closeReasoner();
-		reasoner = reasonerProvider.reasoner(knowledgeBaseProvider.knowledgeBase());
+		this.closeReasoner();
+		this.reasoner = this.reasonerProvider.reasoner(this.knowledgeBaseProvider.knowledgeBase());
 		try {
-			reasoner.reason();
-		} catch (IOException e) {
+			this.reasoner.reason();
+		} catch (final IOException e) {
 			throw new RulewerkRuntimeException("Failed to initialise reasoner: " + e.getMessage(), e);
 		}
 	}
@@ -276,16 +276,16 @@ public class Interpreter implements AutoCloseable {
 	 */
 	@Override
 	public void close() {
-		closeReasoner();
+		this.closeReasoner();
 	}
 
 	/**
 	 * Closes and discards the internal {@link Reasoner}.
 	 */
 	private void closeReasoner() {
-		if (reasoner != null) {
-			reasoner.close();
-			reasoner = null;
+		if (this.reasoner != null) {
+			this.reasoner.close();
+			this.reasoner = null;
 		}
 	}
 

@@ -1,9 +1,5 @@
 package org.semanticweb.rulewerk.client.shell;
 
-import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
-import org.jline.reader.UserInterruptException;
-
 /*-
  * #%L
  * Rulewerk Client
@@ -24,6 +20,11 @@ import org.jline.reader.UserInterruptException;
  * #L%
  */
 
+import java.util.Set;
+
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
 import org.semanticweb.rulewerk.client.shell.commands.ExitCommandInterpreter;
 import org.semanticweb.rulewerk.client.shell.commands.ExitCommandInterpreter.ExitCommandName;
 import org.semanticweb.rulewerk.commands.CommandExecutionException;
@@ -148,6 +149,10 @@ public class Shell {
 
 	boolean isRunning() {
 		return this.running;
+	}
+
+	public Set<String> getRegisteredCommands() {
+		return this.interpreter.getRegisteredCommands();
 	}
 
 }
