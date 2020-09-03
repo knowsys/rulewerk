@@ -24,12 +24,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.semanticweb.rulewerk.core.model.api.DataSource;
+import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
-import org.semanticweb.rulewerk.parser.DataSourceDeclarationHandler;
-import org.semanticweb.rulewerk.parser.DirectiveArgument;
-import org.semanticweb.rulewerk.parser.DirectiveHandler;
 import org.semanticweb.rulewerk.parser.ParsingException;
-import org.semanticweb.rulewerk.parser.javacc.SubParserFactory;
 
 /**
  * Handler for parsing {@link CsvFileDataSource} declarations
@@ -38,10 +35,9 @@ import org.semanticweb.rulewerk.parser.javacc.SubParserFactory;
  */
 public class CsvFileDataSourceDeclarationHandler implements DataSourceDeclarationHandler {
 	@Override
-	public DataSource handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
-			throws ParsingException {
-		DirectiveHandler.validateNumberOfArguments(arguments, 1);
-		String fileName = DirectiveHandler.validateStringArgument(arguments.get(0), "source file");
+	public DataSource handleDataSourceDeclaration(List<Term> terms) throws ParsingException {
+		DataSourceDeclarationHandler.validateNumberOfArguments(terms, 1);
+		String fileName = DataSourceDeclarationHandler.validateStringArgument(terms.get(0), "CSV file name");
 
 		try {
 			return new CsvFileDataSource(fileName);

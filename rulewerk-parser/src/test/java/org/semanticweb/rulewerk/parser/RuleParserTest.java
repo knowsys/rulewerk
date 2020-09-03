@@ -140,6 +140,14 @@ public class RuleParserTest implements ParserTestUtils {
 	}
 
 	@Test
+	public void testFactWithCommentSymbol() throws ParsingException {
+		String input = "t(\"%test\") . ";
+		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(Expressions.makeFact("t",
+				Expressions.makeDatatypeConstant("%test", PrefixDeclarationRegistry.XSD_STRING))), statements);
+	}
+
+	@Test
 	public void testNegationRule() throws ParsingException {
 		String input = "@base <http://example.org/> . " + " q(?X, !Y), r(?X, d) :- ~p(?X,c), p(?X,?Z) . ";
 		ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
@@ -249,7 +257,7 @@ public class RuleParserTest implements ParserTestUtils {
 	public void parseLiteral_escapeSequences_roundTrips() throws ParsingException {
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("_\"_\\_\n_\t_", PrefixDeclarationRegistry.XSD_STRING));
-		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
+		assertEquals(fact, RuleParser.parseLiteral(fact.toString()));
 	}
 
 	@Test
@@ -265,7 +273,7 @@ public class RuleParserTest implements ParserTestUtils {
 	public void parseLiteral_allEscapeSequences_roundTrips() throws ParsingException {
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("_\n_\t_\r_\b_\f_\'_\"_\\_", PrefixDeclarationRegistry.XSD_STRING));
-		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
+		assertEquals(fact, RuleParser.parseLiteral(fact.toString()));
 	}
 
 	@Test(expected = ParsingException.class)
@@ -292,7 +300,7 @@ public class RuleParserTest implements ParserTestUtils {
 	public void parseLiteral_multiLineLiteral_roundTrips() throws ParsingException {
 		PositiveLiteral fact = Expressions.makePositiveLiteral("p",
 				Expressions.makeDatatypeConstant("line 1\n\nline 2\nline 3", PrefixDeclarationRegistry.XSD_STRING));
-		assertEquals(fact, RuleParser.parseLiteral(fact.getSyntacticRepresentation()));
+		assertEquals(fact, RuleParser.parseLiteral(fact.toString()));
 	}
 
 	@Test(expected = ParsingException.class)
@@ -528,15 +536,15 @@ public class RuleParserTest implements ParserTestUtils {
 		assertArgumentIsNamedNull(fact3, 1);
 	}
 
-	@Test(expected = ParsingException.class)
-	public void parseInto_duplicateImportStatements_throws() throws ParsingException {
+	@Test
+	public void parseInto_duplicateImportStatements_succeeds() throws ParsingException {
 		String input = "@import \"src/test/resources/facts.rls\" . ";
 		KnowledgeBase knowledgeBase = RuleParser.parse(input);
 		RuleParser.parseInto(knowledgeBase, input);
 	}
 
-	@Test(expected = ParsingException.class)
-	public void parseInto_duplicateRelativeImportStatements_throws() throws ParsingException {
+	@Test
+	public void parseInto_duplicateRelativeImportStatements_succeeds() throws ParsingException {
 		String input = "@import \"src/test/resources/facts.rls\" . @import-relative \"src/test/resources/facts.rls\" .";
 		KnowledgeBase knowledgeBase = RuleParser.parse(input);
 		RuleParser.parseInto(knowledgeBase, input);

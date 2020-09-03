@@ -34,20 +34,17 @@ options
 PARSER_BEGIN(JavaCCParser)
 package org.semanticweb.rulewerk.parser.javacc;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.List;
-import java.util.Deque;
 import java.util.ArrayList;
-import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import org.semanticweb.rulewerk.parser.ParsingException;
-import org.semanticweb.rulewerk.parser.DirectiveArgument;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParserBase;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 
@@ -61,10 +58,9 @@ import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
+import org.semanticweb.rulewerk.core.model.api.Argument;
+import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
@@ -147,22 +143,45 @@ void source() throws PrefixDeclarationException : {
 }
 
 DataSource dataSource() throws PrefixDeclarationException : {
-	Token sourceName;
-	List< DirectiveArgument > arguments;
+	PositiveLiteral positiveLiteral;
+	List< Argument > arguments;
 } {
-	( sourceName = < ARGUMENT_NAME >
-	| sourceName = < VARORPREDNAME > ) < LPAREN > arguments = Arguments() < RPAREN > {
-		return parseDataSourceSpecificPartOfDataSourceDeclaration(sourceName.image, arguments, getSubParserFactory());
+	positiveLiteral = positiveLiteral(FormulaContext.HEAD) {
+		return parseDataSourceSpecificPartOfDataSourceDeclaration(positiveLiteral);
     }
 }
 
 KnowledgeBase directive() throws PrefixDeclarationException : {
 	Token name;
-	List< DirectiveArgument > arguments;
+	List< Argument > arguments;
 } {
 	name = < CUSTOM_DIRECTIVE > arguments = Arguments() < DOT > {
 		return parseDirectiveStatement(name.image, arguments, getSubParserFactory());
 	}
+}
+
+Command command() throws PrefixDeclarationException : {
+	Token name, pn, arity;
+	LinkedList< Argument > arguments;
+    String predicateName;
+
+} {
+	name = < CUSTOM_DIRECTIVE >
+	( LOOKAHEAD(predicateName() < ARITY > <DOT >) predicateName = predicateName() arity = < ARITY > < DOT > {
+	        Argument argument = Argument.term(Expressions.makeDatatypeConstant(predicateName + "[" + arity.image + "]:", PrefixDeclarationRegistry.XSD_STRING));
+	  		return new Command(name.image, Arrays.asList(argument));
+	  	}
+    | LOOKAHEAD(predicateName() < ARITY >) predicateName = predicateName() arity = < ARITY > < COLON > arguments = Arguments() < DOT > {
+	  		arguments.addFirst(Argument.term(Expressions.makeDatatypeConstant(predicateName + "[" + arity.image + "]:", PrefixDeclarationRegistry.XSD_STRING)));
+	  		return new Command(name.image,arguments);
+	  	}  	
+    | arguments = Arguments() < DOT > { return new Command(name.image,arguments); }
+	| pn = < PNAME_NS > arguments = Arguments() < DOT > {
+	  		arguments.addFirst(Argument.term(Expressions.makeDatatypeConstant(pn.image, PrefixDeclarationRegistry.XSD_STRING)));
+	  		return new Command(name.image,arguments);
+	  	}
+	| < DOT > { return new Command(name.image, new LinkedList< Argument >()); }
+	)
 }
 
 void statement() throws PrefixDeclarationException : {
@@ -177,10 +196,18 @@ void statement() throws PrefixDeclarationException : {
 }
 
 Rule rule() throws PrefixDeclarationException : {
+  Rule rule;
+} {
+  rule = ruleNoDot() < DOT > {
+    return rule;
+  }
+}
+
+Rule ruleNoDot() throws PrefixDeclarationException : {
     List < PositiveLiteral > head;
     List < Literal > body;
 } {
-    head = listOfPositiveLiterals(FormulaContext.HEAD) < ARROW > body = listOfLiterals(FormulaContext.BODY) < DOT > {
+    head = listOfPositiveLiterals(FormulaContext.HEAD) < ARROW > body = listOfLiterals(FormulaContext.BODY) {
         // check that the intersection between headExiVars and BodyVars is empty
         for (String variable : headExiVars) {
           if (bodyVars.contains(variable))
@@ -230,7 +257,7 @@ PositiveLiteral positiveLiteral(FormulaContext context) throws PrefixDeclaration
     String predicateName;
 } {
     predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN > {
-		return Expressions.makePositiveLiteral(predicateName, terms);
+		return Expressions.makePositiveLiteral(createPredicate(predicateName,terms.size()), terms);
 	}
 }
 
@@ -241,7 +268,7 @@ Fact fact(FormulaContext context) throws PrefixDeclarationException : {
 } {
     predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN > < DOT > {
       try {
-      	return Expressions.makeFact(predicateName, terms);
+      	return Expressions.makeFact(createPredicate(predicateName,terms.size()), terms);
       } catch (IllegalArgumentException e) {
 		  throw makeParseExceptionWithCause("Error parsing fact: " + e.getMessage(), e);
       }
@@ -253,7 +280,7 @@ NegativeLiteral negativeLiteral(FormulaContext context) throws PrefixDeclaration
     String predicateName;
 } {
     < TILDE > predicateName = predicateName() < LPAREN > terms = listOfTerms(context) < RPAREN > {
-		return Expressions.makeNegativeLiteral(predicateName, terms);
+		return Expressions.makeNegativeLiteral(createPredicate(predicateName,terms.size()), terms);
 	}
 }
 
@@ -298,7 +325,7 @@ Term term(FormulaContext context) throws PrefixDeclarationException : {
             headUniVars.add(s);
         else if (context == FormulaContext.BODY)
             bodyVars.add(s);
-        return Expressions.makeUniversalVariable(s);
+        return createUniversalVariable(s);
     }
   | t = < EXIVAR > {
         s = t.image.substring(1);
@@ -306,7 +333,7 @@ Term term(FormulaContext context) throws PrefixDeclarationException : {
             headExiVars.add(s);
         if (context == FormulaContext.BODY)
             throw new ParseException("Existentialy quantified variables can not appear in the body. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
-        return Expressions.makeExistentialVariable(s);
+        return createExistentialVariable(s);
     }
   | try {
 		tt = ConfigurableLiteral () { return tt; }
@@ -330,7 +357,7 @@ Constant RDFLiteral() throws PrefixDeclarationException : {
 } {
     lex = String() ( lang = < LANGTAG > | < DATATYPE > dt = absoluteIri() )? {
 		if (lang != null) {
-			return Expressions.makeLanguageStringConstant(lex, lang.image);
+			return createLanguageStringConstant(lex, lang.image);
 		}
 		return createConstant(lex, dt);
 	}
@@ -429,24 +456,18 @@ String String() : {
 	) { return unescapeStr(t.image, t.beginLine, t.beginColumn); }
 }
 
-LinkedList< DirectiveArgument > Arguments() throws PrefixDeclarationException : {
-	DirectiveArgument argument;
+LinkedList< Argument > Arguments() throws PrefixDeclarationException : {
+	Argument argument;
     String str;
+    Rule rule;
+    PositiveLiteral positiveLiteral;
 	Term t;
-    LinkedList< DirectiveArgument > rest = new LinkedList< DirectiveArgument >();
+    LinkedList< Argument > rest = new LinkedList< Argument >();
 } {
-    ( LOOKAHEAD(String()) str = String() { argument = DirectiveArgument.string(str); }
-	| LOOKAHEAD(absoluteIri()) str = absoluteIri() {
-		URI url;
-		try {
-			url = new URI(str);
-		} catch (URISyntaxException e) {
-			throw makeParseExceptionWithCause("Error parsing IRIhandler: " + e.getMessage(), e);
-		}
-		argument = DirectiveArgument.iri(url);
-	}
-    | t = term(FormulaContext.HEAD) { argument = DirectiveArgument.term(t); }
-    ) [< COMMA > rest = Arguments()] {
+    ( LOOKAHEAD(ruleNoDot()) rule = ruleNoDot() { argument = Argument.rule(rule); }
+    | LOOKAHEAD(positiveLiteral(FormulaContext.HEAD)) positiveLiteral = positiveLiteral(FormulaContext.HEAD) { argument = Argument.positiveLiteral(positiveLiteral); }
+    | t = term(FormulaContext.HEAD) { argument = Argument.term(t); }
+    ) [rest = Arguments()] {
 		rest.addFirst(argument);
         return rest;
     }
@@ -466,7 +487,7 @@ String PrefixedName() throws PrefixDeclarationException : {
 }
 
 // Comments
-< * > SKIP : {
+< DEFAULT, BODY, DIRECTIVE_ARGUMENTS > SKIP : {
   < COMMENT : "%" ( ~[ "\n" ] )* "\n" >
 }
 
@@ -479,9 +500,10 @@ MORE : {
 }
 
 < DEFAULT, BODY, TERM, DIRECTIVE_ARGUMENTS > TOKEN : {
-  < VARORPREDNAME : < A2Z> (< A2ZN >)* >
+  < VARORPREDNAME : < A2Z> (< A2ZND >)* >
   | < #A2Z : [ "a"-"z", "A"-"Z" ] >
   | < #A2ZN : [ "a"-"z", "A"-"Z", "0"-"9" ] >
+  | < #A2ZND : [ "a"-"z", "A"-"Z", "0"-"9", "-", "_" ] >
   | < PNAME_LN : (< PN_PREFIX >)? ":" < PN_LOCAL > >
   | < PNAME_NS : < PN_PREFIX > ":" >
   | < #PN_CHARS_BASE : [ "a"-"z", "A"-"Z", "\u00c0"-"\u00d6",
@@ -531,11 +553,11 @@ MORE : {
   | < COLON : ":" >
 }
 
-TOKEN : {
-  < ARROW : ":-" > : BODY
+< DEFAULT, BODY, DIRECTIVE_ARGUMENTS > TOKEN : {
+  < ARROW : ":-" >
 }
 
-< DEFAULT, BODY > TOKEN : {
+< DEFAULT, BODY, DIRECTIVE_ARGUMENTS > TOKEN : {
   < TILDE : "~" >
 }
 
@@ -567,7 +589,7 @@ TOKEN : {
   | < ARGUMENT_NAME : < DIRECTIVENAME > >
 }
 
-< TERM > TOKEN : {
+< TERM, DIRECTIVE_ARGUMENTS > TOKEN : {
 	< UNIVAR : "?" < VARORPREDNAME > >
   | < EXIVAR : "!" < VARORPREDNAME > >
   | < LANGTAG : "@" ( < A2Z > )+ ( "-" ( < A2ZN > )+ )? > {

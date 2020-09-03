@@ -145,7 +145,7 @@ public class VLogReasoner implements Reasoner {
 	public RuleRewriteStrategy getRuleRewriteStrategy() {
 		return this.ruleRewriteStrategy;
 	}
-	
+
 	@Override
 	public Correctness getCorrectness() {
 		return this.correctness;
@@ -370,11 +370,7 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
 		} catch (final MaterializationException e) {
-			// FIXME: the message generated here is not guaranteed to be the correct
-			// interpretation of the exception that is caught
-			throw new RulewerkRuntimeException(
-					"Knowledge base incompatible with stratified negation: either the Rules are not stratifiable, or the variables in negated atom cannot be bound.",
-					e);
+			throw new RulewerkRuntimeException("VLog encounterd an error during materialization: " + e.getMessage(), e);
 		}
 
 		if (this.reasoningCompleted) {
@@ -504,7 +500,7 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RulewerkRuntimeException("Inconsistent reasoner state!", e);
 		} catch (final NonExistingPredicateException e1) {
-			final Correctness correctness =  this.getCorrectnessUnknownPredicate(query);
+			final Correctness correctness = this.getCorrectnessUnknownPredicate(query);
 			this.logWarningOnCorrectness(correctness);
 			return correctness;
 		}
@@ -515,7 +511,8 @@ public class VLogReasoner implements Reasoner {
 	private void validateBeforeQuerying(final PositiveLiteral query) {
 		this.validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState, "Querying is not allowed before Reasoner#reason() was first called!");
+			throw new ReasonerStateException(this.reasonerState,
+					"Querying is not allowed before Reasoner#reason() was first called!");
 		}
 		Validate.notNull(query, "Query atom must not be null!");
 	}

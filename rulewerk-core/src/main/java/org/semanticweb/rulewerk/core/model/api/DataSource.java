@@ -40,4 +40,13 @@ public interface DataSource extends Entity {
 		return Optional.empty();
 	}
 
+	/**
+	 * Returns a fact that represents the declaration of this {@link DataSource}.
+	 * Rulewerk syntax uses facts to specify the relevant parameters for data source
+	 * declarations.
+	 * 
+	 * @return {@link Fact} that contains the parameters of this data source
+	 */
+	public Fact getDeclarationFact();
+
 }

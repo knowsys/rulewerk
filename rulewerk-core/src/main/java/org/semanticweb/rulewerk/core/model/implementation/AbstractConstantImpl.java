@@ -47,6 +47,6 @@ public class AbstractConstantImpl extends AbstractTermImpl implements AbstractCo
 
 	@Override
 	public String toString() {
-		return getSyntacticRepresentation();
+		return Serializer.getSerialization(serializer -> serializer.writeAbstractConstant(this));
 	}
 }

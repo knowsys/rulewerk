@@ -105,7 +105,7 @@ public class RuleImpl implements Rule {
 
 	@Override
 	public String toString() {
-		return getSyntacticRepresentation();
+		return Serializer.getSerialization(serializer -> serializer.writeRule(this));
 	}
 
 	@Override

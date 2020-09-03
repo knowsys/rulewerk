@@ -22,8 +22,6 @@ package org.semanticweb.rulewerk.core.model.api;
 
 import java.util.List;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-
 /**
  * Interface for representing conjunctions of {@link Literal}s, i.e., lists of
  * (negated or positive) atomic formulas that are connected with logical AND.
@@ -32,7 +30,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
  * @author Markus Krötzsch
  *
  */
-public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObject, Entity {
+public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObject {
 
 	/**
 	 * Returns the list of literals that are part of this conjunction.
@@ -40,10 +38,5 @@ public interface Conjunction<T extends Literal> extends Iterable<T>, SyntaxObjec
 	 * @return list of literals
 	 */
 	List<T> getLiterals();
-
-	@Override
-	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
 
 }

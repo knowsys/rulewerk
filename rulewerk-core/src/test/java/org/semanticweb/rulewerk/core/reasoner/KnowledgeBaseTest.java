@@ -22,9 +22,8 @@ package org.semanticweb.rulewerk.core.reasoner;
 
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -32,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
@@ -133,20 +133,23 @@ public class KnowledgeBaseTest {
 
 	@Test
 	public void writeKnowledgeBase_justFacts_succeeds() throws IOException {
-		OutputStream stream = new ByteArrayOutputStream();
-		this.kb.writeKnowledgeBase(stream);
-		assertEquals("P(c) .\nP(d) .\nQ(c) .\n", stream.toString());
+		StringWriter writer = new StringWriter();
+		this.kb.writeKnowledgeBase(writer);
+		assertEquals("P(c) .\nP(d) .\nQ(c) .\n", writer.toString());
 	}
 
-	@Test
-	public void writeKnowledgeBase_withBase_succeeds() throws IOException {
+	@Test(expected = RulewerkRuntimeException.class)
+	public void writeKnowledgeBase_withBase_fails() throws IOException {
 		String baseIri = "https://example.org/";
 		MergingPrefixDeclarationRegistry prefixDeclarations = new MergingPrefixDeclarationRegistry();
 		prefixDeclarations.setBaseIri(baseIri);
 		this.kb.mergePrefixDeclarations(prefixDeclarations);
-		OutputStream stream = new ByteArrayOutputStream();
-		this.kb.writeKnowledgeBase(stream);
-		assertEquals("@base <" + baseIri + "> .\nP(c) .\nP(d) .\nQ(c) .\n", stream.toString());
+		StringWriter writer = new StringWriter();
+		this.kb.writeKnowledgeBase(writer);
+		//// This would be incorrect, since parsing this would lead to another KB
+		//// that uses IRIs like <https://example.org/P>:
+		// assertEquals("@base <" + baseIri + "> .\nP(c) .\nP(d) .\nQ(c) .\n",
+		// writer.toString());
 	}
 
 	@Test
@@ -157,9 +160,9 @@ public class KnowledgeBaseTest {
 		this.kb.addStatement(new DataSourceDeclarationImpl(Expressions.makePredicate("S", 1),
 				new SparqlQueryResultDataSource(new URL(sparqlIri), "?X", sparqlBgp)));
 
-		OutputStream stream = new ByteArrayOutputStream();
-		this.kb.writeKnowledgeBase(stream);
+		StringWriter writer = new StringWriter();
+		this.kb.writeKnowledgeBase(writer);
 		assertEquals("@source S[1]: sparql(<" + sparqlIri + ">, \"?X\", \"" + sparqlBgp
-				+ "\") .\nP(?X) :- Q(?X) .\nP(c) .\nP(d) .\nQ(c) .\n", stream.toString());
+				+ "\") .\n\nP(c) .\nP(d) .\nQ(c) .\n\nP(?X) :- Q(?X) .\n", writer.toString());
 	}
 }

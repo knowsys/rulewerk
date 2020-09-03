@@ -37,16 +37,21 @@
 			<artifactId>rulewerk-graal</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>rulewerk-parser</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>rulewerk-vlog</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rulewerk-parser</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rulewerk-vlog</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rulewerk-commands</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>

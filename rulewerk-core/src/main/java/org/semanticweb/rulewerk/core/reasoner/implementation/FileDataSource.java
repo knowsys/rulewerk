@@ -27,6 +27,10 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.Validate;
+import org.semanticweb.rulewerk.core.model.api.Fact;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
+import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 /**
  * A {@code FileDataSource} is an abstract implementation of a storage for fact
@@ -112,5 +116,20 @@ public abstract class FileDataSource implements ReasonerDataSource {
 		final FileDataSource other = (FileDataSource) obj;
 		return this.file.equals(other.getFile());
 	}
+
+	@Override
+	public Fact getDeclarationFact() {
+		Predicate predicate = Expressions.makePredicate(getDeclarationPredicateName(), 1);
+		return Expressions.makeFact(predicate,
+				Expressions.makeDatatypeConstant(getPath(), PrefixDeclarationRegistry.XSD_STRING));
+	}
+
+	/**
+	 * Returns the name of the predicate that is used to define a declaration of
+	 * this data source.
+	 * 
+	 * @return
+	 */
+	abstract String getDeclarationPredicateName();
 
 }

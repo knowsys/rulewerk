@@ -33,13 +33,13 @@ public enum Correctness {
 	 * Completeness is not guaranteed, but soundness is. For example, query
 	 * answering yields sound, but possibly incomplete answers.
 	 */
-	SOUND_BUT_INCOMPLETE("sound but incomplete"),
+	SOUND_BUT_INCOMPLETE("sound but possibly incomplete"),
 
 	/**
 	 * Soundness is not guaranteed. For example, query answering may give incorrect
 	 * (unsound and incomplete) answers.
 	 */
-	INCORRECT("incorrect"),
+	INCORRECT("possibly incorrect"),
 
 	/**
 	 * Correctness is guaranteed. For example, query answering yealds are correct

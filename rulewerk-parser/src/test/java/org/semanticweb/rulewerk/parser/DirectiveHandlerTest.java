@@ -22,86 +22,48 @@ package org.semanticweb.rulewerk.parser;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
 
 import org.junit.Test;
+import org.semanticweb.rulewerk.core.model.api.Argument;
+import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 public class DirectiveHandlerTest {
 	private static final String STRING = "src/test/resources/facts.rls";
-	private static final URI IRI = URI.create("https://example.org");
-	private static final Term TERM = Expressions.makeDatatypeConstant(STRING, IRI.toString());
+	private static final Term STRINGTERM = Expressions.makeDatatypeConstant(STRING,
+			PrefixDeclarationRegistry.XSD_STRING);
+	private static final Term INTTERM = Expressions.makeDatatypeConstant("42", PrefixDeclarationRegistry.XSD_INT);
 
-	private static final DirectiveArgument STRING_ARGUMENT = DirectiveArgument.string(STRING);
-	private static final DirectiveArgument IRI_ARGUMENT = DirectiveArgument.iri(IRI);
-	private static final DirectiveArgument TERM_ARGUMENT = DirectiveArgument.term(TERM);
+	private static final Argument TERM_STRING_ARGUMENT = Argument.term(STRINGTERM);
+	private static final Argument TERM_INT_ARGUMENT = Argument.term(INTTERM);
 
 	@Test
 	public void validateStringArgument_stringArgument_succeeds() throws ParsingException {
-		assertEquals(STRING, DirectiveHandler.validateStringArgument(STRING_ARGUMENT, "string argument"));
+		assertEquals(STRING, DirectiveHandler.validateStringArgument(TERM_STRING_ARGUMENT, "string argument"));
 	}
-
+	
 	@Test(expected = ParsingException.class)
-	public void validateStringArgument_iriArgument_throws() throws ParsingException {
-		DirectiveHandler.validateStringArgument(IRI_ARGUMENT, "string argument");
-	}
-
-	@Test(expected = ParsingException.class)
-	public void validateStringArgument_termArgument_throws() throws ParsingException {
-		DirectiveHandler.validateStringArgument(TERM_ARGUMENT, "string argument");
-	}
-
-	@Test
-	public void validateIriArgument_iriArgument_succeeds() throws ParsingException {
-		assertEquals(IRI, DirectiveHandler.validateIriArgument(IRI_ARGUMENT, "iri argument"));
-	}
-
-	@Test(expected = ParsingException.class)
-	public void validateIriArgument_StringArgument_throws() throws ParsingException {
-		DirectiveHandler.validateIriArgument(STRING_ARGUMENT, "iri argument");
-	}
-
-	@Test(expected = ParsingException.class)
-	public void validateIriArgument_termArgument_throws() throws ParsingException {
-		DirectiveHandler.validateIriArgument(TERM_ARGUMENT, "iri argument");
+	public void validateStringArgument_stringArgument_throws() throws ParsingException {
+		assertEquals(STRING, DirectiveHandler.validateStringArgument(TERM_INT_ARGUMENT, "string argument"));
 	}
 
 	@Test
 	public void validateTermArgument_termArgument_succeeds() throws ParsingException {
-		assertEquals(TERM, DirectiveHandler.validateTermArgument(TERM_ARGUMENT, "term argument"));
-	}
-
-	@Test(expected = ParsingException.class)
-	public void validateTermArgument_stringArgument_throws() throws ParsingException {
-		DirectiveHandler.validateTermArgument(STRING_ARGUMENT, "term argument");
-	}
-
-	@Test(expected = ParsingException.class)
-	public void validateTermArgument_iriArgument_throws() throws ParsingException {
-		DirectiveHandler.validateTermArgument(IRI_ARGUMENT, "term argument");
+		assertEquals(STRINGTERM, DirectiveHandler.validateTermArgument(TERM_STRING_ARGUMENT, "term argument"));
 	}
 
 	@Test
 	public void validateFilenameArgument_filename_succeeds() throws ParsingException {
-		assertEquals(new File(STRING), DirectiveHandler.validateFilenameArgument(STRING_ARGUMENT, "filename argument"));
+		assertEquals(new File(STRING),
+				DirectiveHandler.validateFilenameArgument(TERM_STRING_ARGUMENT, "filename argument"));
 	}
 
 	@Test
 	public void validateFilenameArgument_invalidFilename_throws() throws ParsingException {
-		DirectiveHandler.validateFilenameArgument(DirectiveArgument.string(STRING + "-nonexistant"),
+		DirectiveHandler.validateFilenameArgument(Argument
+				.term(Expressions.makeDatatypeConstant(STRING + "-nonexistent", PrefixDeclarationRegistry.XSD_STRING)),
 				"filename argument");
-	}
-
-	@Test
-	public void validateUrlArgument_url_succeeds() throws ParsingException, MalformedURLException {
-		assertEquals(IRI.toURL(), DirectiveHandler.validateUrlArgument(IRI_ARGUMENT, "urls argument"));
-	}
-
-	@Test(expected = ParsingException.class)
-	public void validateUrlArgument_invalidUrl_throws() throws ParsingException {
-		DirectiveHandler.validateUrlArgument(DirectiveArgument.iri(URI.create("example://test")), "url argument");
 	}
 
 }

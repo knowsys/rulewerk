@@ -1,7 +1,5 @@
 package org.semanticweb.rulewerk.core.model.api;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -32,7 +30,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
  * @author Markus Krötzsch
  *
  */
-public interface Rule extends SyntaxObject, Statement, Entity {
+public interface Rule extends SyntaxObject, Statement {
 
 	/**
 	 * Returns the conjunction of head literals (the consequence of the rule).
@@ -47,10 +45,5 @@ public interface Rule extends SyntaxObject, Statement, Entity {
 	 * @return conjunction of literals
 	 */
 	Conjunction<Literal> getBody();
-
-	@Override
-	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
 
 }

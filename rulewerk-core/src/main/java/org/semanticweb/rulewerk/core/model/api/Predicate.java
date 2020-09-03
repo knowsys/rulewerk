@@ -20,8 +20,6 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-
 /**
  * A Predicate represents a relation between terms. Is uniquely identified by
  * its name and arity. The arity determines the number of terms allowed in the
@@ -48,9 +46,4 @@ public interface Predicate extends Entity {
 	 * @return the arity of the Predicate.
 	 */
 	int getArity();
-
-	@Override
-	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
 }

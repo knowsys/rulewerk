@@ -85,7 +85,7 @@ public class DataSourceDeclarationImpl implements DataSourceDeclaration {
 
 	@Override
 	public String toString() {
-		return getSyntacticRepresentation();
+		return Serializer.getSerialization(serializer -> serializer.writeDataSourceDeclaration(this));
 	}
 
 }

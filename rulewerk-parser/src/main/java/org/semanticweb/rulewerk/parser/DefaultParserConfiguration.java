@@ -1,5 +1,10 @@
 package org.semanticweb.rulewerk.parser;
 
+import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.TridentDataSource;
+
 /*-
  * #%L
  * Rulewerk Parser
@@ -20,10 +25,10 @@ package org.semanticweb.rulewerk.parser;
  * #L%
  */
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 import org.semanticweb.rulewerk.parser.datasources.CsvFileDataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.datasources.RdfFileDataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.datasources.SparqlQueryResultDataSourceDeclarationHandler;
+import org.semanticweb.rulewerk.parser.datasources.TridentDataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.directives.ImportFileDirectiveHandler;
 import org.semanticweb.rulewerk.parser.directives.ImportFileRelativeDirectiveHandler;
 
@@ -43,10 +48,11 @@ public class DefaultParserConfiguration extends ParserConfiguration {
 	 * Register built-in data sources (currently CSV, RDF, SPARQL).
 	 */
 	private void registerDefaultDataSources() {
-		registerDataSource(Serializer.CSV_FILE_DATA_SOURCE, new CsvFileDataSourceDeclarationHandler());
-		registerDataSource(Serializer.RDF_FILE_DATA_SOURCE, new RdfFileDataSourceDeclarationHandler());
-		registerDataSource(Serializer.SPARQL_QUERY_RESULT_DATA_SOURCE,
+		registerDataSource(CsvFileDataSource.declarationPredicateName, new CsvFileDataSourceDeclarationHandler());
+		registerDataSource(RdfFileDataSource.declarationPredicateName, new RdfFileDataSourceDeclarationHandler());
+		registerDataSource(SparqlQueryResultDataSource.declarationPredicateName,
 				new SparqlQueryResultDataSourceDeclarationHandler());
+		registerDataSource(TridentDataSource.declarationPredicateName, new TridentDataSourceDeclarationHandler());
 	}
 
 	private void registerDefaultDirectives() {

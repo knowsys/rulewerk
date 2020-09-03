@@ -48,6 +48,6 @@ public class NamedNullImpl extends AbstractTermImpl implements NamedNull {
 
 	@Override
 	public String toString() {
-		return getSyntacticRepresentation();
+		return Serializer.getSerialization(serializer -> serializer.writeNamedNull(this));
 	}
 }

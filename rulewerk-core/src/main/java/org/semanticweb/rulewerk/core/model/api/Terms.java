@@ -1,5 +1,10 @@
 package org.semanticweb.rulewerk.core.model.api;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 /*-
  * #%L
  * Rulewerk Core Components
@@ -106,6 +111,101 @@ public class Terms {
 	 */
 	public static Stream<DatatypeConstant> getDatatypeConstants(Stream<Term> terms) {
 		return terms.filter(term -> term.getType() == TermType.DATATYPE_CONSTANT).map(DatatypeConstant.class::cast);
+	}
+
+	/**
+	 * Returns the lexical value of a term that is an xsd:string constant, and
+	 * throws an exception for all other cases.
+	 * 
+	 * @param term the term from which the string is to be extracted
+	 * @return extracted string
+	 * @throws IllegalArgumentException if the given term is not a constant of type
+	 *                                  xsd:string
+	 */
+	public static String extractString(Term term) {
+		if (term.getType() == TermType.DATATYPE_CONSTANT) {
+			DatatypeConstant datatypeConstant = (DatatypeConstant) term;
+			if (PrefixDeclarationRegistry.XSD_STRING.equals(datatypeConstant.getDatatype()))
+				return datatypeConstant.getLexicalValue();
+		}
+		throw new IllegalArgumentException(
+				"Term " + term.toString() + " is not a datatype constant of type xsd:string.");
+	}
+
+	/**
+	 * Returns the name of an abstract term, and throws an exception for all other
+	 * cases.
+	 * 
+	 * @param term the term from which the name is to be extracted
+	 * @return extracted name
+	 * @throws IllegalArgumentException if the given term is not an abstract
+	 *                                  constant
+	 */
+	public static String extractName(Term term) {
+		if (term.getType() == TermType.ABSTRACT_CONSTANT) {
+			return term.getName();
+		} else {
+			throw new IllegalArgumentException("Term " + term.toString() + " is not an abstract constant.");
+		}
+	}
+
+	/**
+	 * Returns the IRI representation of an abstract term, and throws an exception
+	 * for all other cases.
+	 * 
+	 * @param term the term from which the IRI is to be extracted
+	 * @return extracted IRI
+	 * @throws IllegalArgumentException if the given term is not an abstract
+	 *                                  constant or cannot be parsed as an IRI
+	 */
+	public static URI extractIri(Term term) {
+		try {
+			return new URI(extractName(term));
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	/**
+	 * Returns the URL representation of an abstract term, and throws an exception
+	 * for all other cases.
+	 * 
+	 * @param term the term from which the URL is to be extracted
+	 * @return extracted URL
+	 * @throws IllegalArgumentException if the given term is not an abstract
+	 *                                  constant or cannot be parsed as a URL
+	 */
+	public static URL extractUrl(Term term) {
+		try {
+			return new URL(extractName(term));
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	/**
+	 * Returns the numeric value of a term that is an xsd:integer (or supported
+	 * subtype) constant, and throws an exception for all other cases.
+	 * 
+	 * @param term the term from which the integer is to be extracted
+	 * @return extracted integer
+	 * @throws IllegalArgumentException if the given term is not a constant of an
+	 *                                  integer type, or if the lexical
+	 *                                  representation could not be parsed into a
+	 *                                  Java int
+	 */
+	public static int extractInt(Term term) {
+		if (term.getType() == TermType.DATATYPE_CONSTANT) {
+			DatatypeConstant datatypeConstant = (DatatypeConstant) term;
+			if (PrefixDeclarationRegistry.XSD_INTEGER.equals(datatypeConstant.getDatatype())
+					|| PrefixDeclarationRegistry.XSD_LONG.equals(datatypeConstant.getDatatype())
+					|| PrefixDeclarationRegistry.XSD_INT.equals(datatypeConstant.getDatatype())
+					|| PrefixDeclarationRegistry.XSD_SHORT.equals(datatypeConstant.getDatatype())
+					|| PrefixDeclarationRegistry.XSD_BYTE.equals(datatypeConstant.getDatatype()))
+				return Integer.parseInt(datatypeConstant.getLexicalValue());
+		}
+		throw new IllegalArgumentException(
+				"Term " + term.toString() + " is not a datatype constant of a supported integer type.");
 	}
 
 }
