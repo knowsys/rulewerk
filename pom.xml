@@ -427,6 +427,9 @@
 			<activation>
 				<jdk>[9,)</jdk>
 			</activation>
+			<properties>
+				<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
