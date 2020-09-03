@@ -68,6 +68,8 @@ public class DefaultShellConfiguration implements ShellConfiguration {
 		 */
 		lineReaderBuilder.option(LineReader.Option.INSERT_TAB, false);
 		lineReaderBuilder.option(LineReader.Option.AUTO_FRESH_LINE, true);
+		lineReaderBuilder.option(LineReader.Option.USE_FORWARD_SLASH, true);
+
 		return lineReaderBuilder;
 	}
 
