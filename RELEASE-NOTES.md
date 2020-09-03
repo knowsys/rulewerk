@@ -5,7 +5,7 @@ Rulewerk v0.7.0
 ---------------
 
 New features:
-* New interactive Rulewerk shell for rule reasoning from the command line client 
+* New interactive Rulewerk shell for rule reasoning from the command line client
 * Significant speedup in iterating over query results
 * Support for using data from a Trident database, the recommended data source for large
   RDF graphs in VLog
@@ -18,13 +18,14 @@ Other improvements:
 * Nulls in input data (aka "blank nodes") are now properly skolemized for VLog
 * InMemoryGraphAnalysisExample now counts proper triangles using negation to avoid "triangles" where
   two or more edges are the same.
-  
+
 Breaking changes:
 * The `RdfModelConverter` class from the rdf package is no longer static (and has more options)
 * The `Serializer` class in the core package has been replaced by a new implementation
-  with a completely different interface. 
+  with a completely different interface.
 * The methods `getSerialization` that were present in most syntax objects have been removed. Use `toString()` instead for simple serializations, or invoke a custom Serializer.
-* The `DataSource` interface requires a new method to be implemented. 
+* The `DataSource` interface requires a new method to be implemented.
+* `@import`, `@import-relative`, and `@source` now treat relative paths as relative to the file they occur in, as opposed to the global working directory.
 
 Rulewerk v0.6.0
 ---------------
