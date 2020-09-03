@@ -82,7 +82,7 @@ public class VLogDataSourceConfigurationVisitor implements DataSourceConfigurati
 	public void visit(TridentDataSource dataSource) {
 		this.configString = PREDICATE_NAME_CONFIG_LINE + DATASOURCE_TYPE_CONFIG_PARAM + "=" //
 				+ TRIDENT_DATASOURCE_TYPE_CONFIG_VALUE + "\n" //
-				+ "EDB%1$d_param0=" + dataSource.getPath() + "\n";
+				+ "EDB%1$d_param0=" + dataSource.getName() + "\n";
 	}
 
 	@Override

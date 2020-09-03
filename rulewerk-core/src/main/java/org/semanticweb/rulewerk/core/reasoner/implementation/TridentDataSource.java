@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.core.reasoner.implementation;
 
+import java.io.File;
+
 /*-
  * #%L
  * Rulewerk Core Components
@@ -46,15 +48,22 @@ public class TridentDataSource implements ReasonerDataSource {
 	public static final String declarationPredicateName = "trident";
 
 	final String filePath;
+	final String fileName;
 
 	public TridentDataSource(final String filePath) {
 		Validate.notBlank(filePath, "Path to Trident database cannot be blank!");
-		this.filePath = filePath;
+		this.filePath = filePath;  // unmodified file path, necessary for correct serialisation
+		this.fileName = new File(filePath).getName();
 	}
 
 	public String getPath() {
 		return this.filePath;
 	}
+
+	public String getName() {
+		return this.fileName;
+	}
+
 
 	@Override
 	public Fact getDeclarationFact() {
@@ -65,7 +74,7 @@ public class TridentDataSource implements ReasonerDataSource {
 
 	@Override
 	public String toString() {
-		return "[TridentDataSource [tridentFile=" + this.filePath + "]";
+		return "[TridentDataSource [tridentFile=" + this.fileName + "]";
 	}
 
 	@Override
@@ -90,7 +99,7 @@ public class TridentDataSource implements ReasonerDataSource {
 			return false;
 		}
 		final TridentDataSource other = (TridentDataSource) obj;
-		return this.filePath.equals(other.getPath());
+		return this.fileName.equals(other.getName());
 	}
 
 }
