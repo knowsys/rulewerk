@@ -1,4 +1,7 @@
 org.semanticweb.rulewerk.client.picocli
+org.semanticweb.rulewerk.client.shell
+org.semanticweb.rulewerk.client.shell.commands
+org.semanticweb.rulewerk.commands
 org.semanticweb.rulewerk.core.exceptions
 org.semanticweb.rulewerk.core.model.api
 org.semanticweb.rulewerk.core.model.implementation
