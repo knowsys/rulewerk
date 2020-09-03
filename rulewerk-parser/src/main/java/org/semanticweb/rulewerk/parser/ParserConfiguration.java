@@ -343,10 +343,16 @@ public class ParserConfiguration {
 	/**
 	 * Set a new base path for file imports.
 	 *
-	 * @param importBasePath path that relative imports will be resolved against.
+	 * @param importBasePath path that relative imports will be
+	 * resolved against. If null, default to current working
+	 * directory.
 	 */
 	public ParserConfiguration setImportBasePath(String importBasePath) {
-		this.importBasePath = importBasePath;
+		if (importBasePath != null) {
+			this.importBasePath = importBasePath;
+		} else {
+			this.importBasePath = System.getProperty("user.dir");
+		}
 
 		return this;
 	}
