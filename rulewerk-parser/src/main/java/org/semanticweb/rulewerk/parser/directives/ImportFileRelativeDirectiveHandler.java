@@ -44,11 +44,14 @@ public class ImportFileRelativeDirectiveHandler implements DirectiveHandler<Know
 	@Override
 	public KnowledgeBase handleDirective(List<Argument> arguments, SubParserFactory subParserFactory)
 			throws ParsingException {
+		final ParserConfiguration parserConfiguration = new ParserConfiguration(
+				getParserConfiguration(subParserFactory));
 		DirectiveHandler.validateNumberOfArguments(arguments, 1);
 		PrefixDeclarationRegistry prefixDeclarationRegistry = getPrefixDeclarationRegistry(subParserFactory);
-		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "rules file");
+		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "rules file",
+				parserConfiguration.getImportBasePath());
 		KnowledgeBase knowledgeBase = getKnowledgeBase(subParserFactory);
-		ParserConfiguration parserConfiguration = getParserConfiguration(subParserFactory);
+		parserConfiguration.setImportBasePath(file.getParent());
 
 		try {
 			knowledgeBase.importRulesFile(file, (InputStream stream, KnowledgeBase kb) -> {

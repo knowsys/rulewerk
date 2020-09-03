@@ -11,9 +11,9 @@ import java.io.File;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,13 +45,15 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.owlapi.OwlToRulesConverter;
+import org.semanticweb.rulewerk.parser.DefaultParserConfiguration;
+import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
 import org.semanticweb.rulewerk.rdf.RdfModelConverter;
 
 /**
  * Interpreter for the load command.
- * 
+ *
  * @author Markus Kroetzsch
  *
  */
@@ -120,7 +122,10 @@ public class LoadCommandInterpreter implements CommandInterpreter {
 	private void loadKb(final Interpreter interpreter, final String fileName) throws CommandExecutionException {
 		try {
 			final InputStream inputStream = interpreter.getFileInputStream(fileName);
-			RuleParser.parseInto(interpreter.getKnowledgeBase(), inputStream);
+			final File file = new File(fileName);
+			final ParserConfiguration parserConfiguration = new DefaultParserConfiguration()
+					.setImportBasePath(file.getParent());
+			RuleParser.parseInto(interpreter.getKnowledgeBase(), inputStream, parserConfiguration);
 		} catch (final FileNotFoundException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		} catch (final ParsingException e) {

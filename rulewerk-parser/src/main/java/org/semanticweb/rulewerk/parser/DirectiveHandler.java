@@ -97,16 +97,22 @@ public interface DirectiveHandler<T> {
 	 *
 	 * @param argument    the argument to validate
 	 * @param description a description of the argument, used in constructing the
-	 *                    error message.
+	 *                    error message
+	 * @param importBasePath the path that relative file names are resolved against
 	 *
-	 * @throws ParsingException when the given argument is not a valid file path.
+	 * @throws ParsingException when the given argument is not a valid file path
 	 *
-	 * @return the File corresponding to the contained file path.
+	 * @return the File corresponding to the contained file path
 	 */
-	public static File validateFilenameArgument(final Argument argument, final String description)
+	public static File validateFilenameArgument(final Argument argument, final String description, final String importBasePath)
 			throws ParsingException {
 		String fileName = DirectiveHandler.validateStringArgument(argument, description);
 		File file = new File(fileName);
+
+		if (!file.isAbsolute() || importBasePath.isEmpty()) {
+			file = new File(importBasePath + File.separator + fileName);
+		}
+
 		try {
 			// we don't care about the actual path, just that there is one.
 			file.toPath();

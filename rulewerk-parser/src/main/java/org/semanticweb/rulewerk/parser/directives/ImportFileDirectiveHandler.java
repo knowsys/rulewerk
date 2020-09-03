@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.parser.directives;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,15 +42,18 @@ import org.semanticweb.rulewerk.parser.javacc.SubParserFactory;
 public class ImportFileDirectiveHandler implements DirectiveHandler<KnowledgeBase> {
 
 	@Override
-	public KnowledgeBase handleDirective(List<Argument> arguments, final SubParserFactory subParserFactory)
+	public KnowledgeBase handleDirective(final List<Argument> arguments, final SubParserFactory subParserFactory)
 			throws ParsingException {
+		final ParserConfiguration parserConfiguration = new ParserConfiguration(
+				getParserConfiguration(subParserFactory));
 		DirectiveHandler.validateNumberOfArguments(arguments, 1);
-		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "rules file");
-		KnowledgeBase knowledgeBase = getKnowledgeBase(subParserFactory);
-		ParserConfiguration parserConfiguration = getParserConfiguration(subParserFactory);
+		final File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "rules file",
+				parserConfiguration.getImportBasePath());
+		final KnowledgeBase knowledgeBase = getKnowledgeBase(subParserFactory);
+		parserConfiguration.setImportBasePath(file.getParent());
 
 		try {
-			knowledgeBase.importRulesFile(file, (InputStream stream, KnowledgeBase kb) -> {
+			knowledgeBase.importRulesFile(file, (final InputStream stream, final KnowledgeBase kb) -> {
 				RuleParser.parseInto(kb, stream, parserConfiguration);
 			});
 		} catch (RulewerkException | IOException | IllegalArgumentException e) {

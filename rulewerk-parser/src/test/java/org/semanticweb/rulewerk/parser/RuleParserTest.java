@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,9 @@ public class RuleParserTest implements ParserTestUtils {
 	private final Variable z = Expressions.makeUniversalVariable("Z");
 	private final Constant c = Expressions.makeAbstractConstant("http://example.org/c");
 	private final Constant d = Expressions.makeAbstractConstant("http://example.org/d");
+	private final Constant e = Expressions.makeAbstractConstant("https://example.org/e");
 	private final Constant abc = Expressions.makeDatatypeConstant("abc", PrefixDeclarationRegistry.XSD_STRING);
+	private final Constant xyz = Expressions.makeDatatypeConstant("xyz", PrefixDeclarationRegistry.XSD_STRING);
 	private final Literal atom1 = Expressions.makePositiveLiteral("http://example.org/p", x, c);
 	private final Literal negAtom1 = Expressions.makeNegativeLiteral("http://example.org/p", x, c);
 	private final Literal atom2 = Expressions.makePositiveLiteral("http://example.org/p", x, z);
@@ -60,6 +62,9 @@ public class RuleParserTest implements ParserTestUtils {
 	private final PositiveLiteral fact1 = Expressions.makePositiveLiteral("http://example.org/s", c);
 	private final PositiveLiteral fact2 = Expressions.makePositiveLiteral("p", abc);
 	private final PositiveLiteral fact3 = Expressions.makePositiveLiteral("http://example.org/p", abc);
+	private final PositiveLiteral fact4 = Expressions.makePositiveLiteral("https://example.org/s", e);
+	private final PositiveLiteral fact5 = Expressions.makePositiveLiteral("q", xyz);
+	private final PositiveLiteral fact6 = Expressions.makePositiveLiteral("http://example.org/p", abc);
 	private final Conjunction<Literal> body1 = Expressions.makeConjunction(atom1, atom2);
 	private final Conjunction<Literal> body2 = Expressions.makeConjunction(negAtom1, atom2);
 	private final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(atom3, atom4);
@@ -500,6 +505,42 @@ public class RuleParserTest implements ParserTestUtils {
 		String input = "@base <http://example.org/> . @import-relative \"src/test/resources/facts.rls\" .";
 		KnowledgeBase knowledgeBase = RuleParser.parse(input);
 		List<PositiveLiteral> expected = Arrays.asList(fact1, fact3);
+		List<Fact> result = knowledgeBase.getFacts();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void parse_importStatement_relativeImport_succeeds() throws ParsingException {
+	String input = "@import \"src/test/resources/subdir/sibling.rls\" .";
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		List<PositiveLiteral> expected = Arrays.asList(fact4, fact5);
+		List<Fact> result = knowledgeBase.getFacts();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void parse_importStatement_relativeParentImport_succeeds() throws ParsingException {
+	String input = "@import \"src/test/resources/subdir/parent.rls\" .";
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		List<PositiveLiteral> expected = Arrays.asList(fact1, fact2);
+		List<Fact> result = knowledgeBase.getFacts();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void parse_relativeImportStatement_relativeImport_succeeds() throws ParsingException {
+		String input = "@base <http://example.org/> . @import-relative \"src/test/resources/subdir/sibling.rls\" .";
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		List<PositiveLiteral> expected = Arrays.asList(fact4, fact5);
+		List<Fact> result = knowledgeBase.getFacts();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void parse_relativeImportStatement_relativeParentImport_succeeds() throws ParsingException {
+		String input = "@base <http://example.org/> . @import-relative \"src/test/resources/subdir/parent.rls\" .";
+		KnowledgeBase knowledgeBase = RuleParser.parse(input);
+		List<PositiveLiteral> expected = Arrays.asList(fact1, fact2);
 		List<Fact> result = knowledgeBase.getFacts();
 		assertEquals(expected, result);
 	}

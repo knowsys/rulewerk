@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
  * storage</a> utility. This is the recommended data source for large RDF
  * datasets in the VLog reasoner. Trident databases are generated from RDF input
  * files in a batch process using the Trident tool.
- * 
+ *
  * @author Markus Kroetzsch
  *
  */
@@ -61,6 +61,11 @@ public class TridentDataSource implements ReasonerDataSource {
 		Predicate predicate = Expressions.makePredicate(declarationPredicateName, 1);
 		return Expressions.makeFact(predicate,
 				Expressions.makeDatatypeConstant(filePath, PrefixDeclarationRegistry.XSD_STRING));
+	}
+
+	@Override
+	public String toString() {
+		return "[TridentDataSource [tridentFile=" + this.filePath + "]";
 	}
 
 	@Override

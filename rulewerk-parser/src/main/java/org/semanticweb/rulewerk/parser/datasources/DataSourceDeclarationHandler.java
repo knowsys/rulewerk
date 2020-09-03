@@ -1,5 +1,6 @@
 package org.semanticweb.rulewerk.parser.datasources;
 
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 
@@ -12,9 +13,9 @@ import java.util.List;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +37,19 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 @FunctionalInterface
 public interface DataSourceDeclarationHandler {
 
-	DataSource handleDataSourceDeclaration(List<Term> terms) throws ParsingException;
+	/**
+	 * Handle a data source declaration.
+	 *
+	 * @param terms          the list of arguments given in the declaration
+	 * @param importBasePath the base path that relative imports will be resolved
+	 *                       against
+	 *
+	 * @throws ParsingException when the arguments are unsuitable for the data
+	 *                          source.
+	 *
+	 * @return a DataSource instance.
+	 */
+	DataSource handleDataSourceDeclaration(List<Term> terms, String importBasePath) throws ParsingException;
 
 	/**
 	 * Validate the provided number of arguments to the source declaration.
@@ -56,7 +69,7 @@ public interface DataSourceDeclarationHandler {
 	/**
 	 * Returns the string content of the given term, or reports an error if the term
 	 * is not an xsd:string.
-	 * 
+	 *
 	 * @param term          the term to be processed
 	 * @param parameterName the string name of the parameter to be used in error
 	 *                      messages
@@ -67,14 +80,14 @@ public interface DataSourceDeclarationHandler {
 		try {
 			return Terms.extractString(term);
 		} catch (IllegalArgumentException e) {
-			throw makeParameterParsingException(term, parameterName, e);
+			throw makeParameterParsingException(term, parameterName, "String", e);
 		}
 	}
 
 	/**
 	 * Returns the URL represented by the given term, or reports an error if no
 	 * valid URL could be extracted from the term.
-	 * 
+	 *
 	 * @param term          the term to be processed
 	 * @param parameterName the string name of the parameter to be used in error
 	 *                      messages
@@ -85,12 +98,42 @@ public interface DataSourceDeclarationHandler {
 		try {
 			return Terms.extractUrl(term);
 		} catch (IllegalArgumentException e) {
-			throw makeParameterParsingException(term, parameterName, e);
+			throw makeParameterParsingException(term, parameterName, "URL", e);
 		}
 	}
 
-	static ParsingException makeParameterParsingException(Term term, String parameterName, Throwable cause) {
-		return new ParsingException("Expected " + parameterName + " to be a string. Found " + term.toString() + ".",
-				cause);
+	/**
+	 * Returns the File name represented by the given term, or reports an error if
+	 * no valid File name could be extracted from the term.
+	 *
+	 * @param term           the term to be processed
+	 * @param parameterName  the string name of the parameter to be used in error
+	 *                       messages
+	 * @param importBasePath the base path that relative paths will be resolved
+	 *                       against
+	 *
+	 * @throws ParsingException when the term was not a valid file path
+	 * @return the extracted file path
+	 */
+	public static String validateFileNameArgument(Term term, String parameterName, String importBasePath)
+			throws ParsingException {
+		File file;
+
+		try {
+			file = new File(Terms.extractString(term));
+		} catch (IllegalArgumentException e) {
+			throw makeParameterParsingException(term, parameterName, "File name", e);
+		}
+
+		if (file.isAbsolute() || importBasePath.isEmpty()) {
+			return file.getPath();
+		}
+		return importBasePath + File.separator + file.getPath();
+	}
+
+	static ParsingException makeParameterParsingException(Term term, String parameterName, String type,
+			Throwable cause) {
+		return new ParsingException(
+				"Expected " + parameterName + " to be a " + type + ". Found " + term.toString() + ".", cause);
 	}
 }

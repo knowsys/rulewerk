@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -57,12 +57,12 @@ public class ParserConfiguration {
 	/**
 	 * The registered data sources.
 	 */
-	private final HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
+	private HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
 
 	/**
 	 * The registered datatypes.
 	 */
-	private final HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
+	private HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
 
 	/**
 	 * The registered configurable literals.
@@ -73,6 +73,28 @@ public class ParserConfiguration {
 	 * The registered custom directives.
 	 */
 	private HashMap<String, DirectiveHandler<KnowledgeBase>> directives = new HashMap<>();
+
+	/**
+	 * The current base path to resolve imports against. Defaults to the current
+	 * working directory.
+	 */
+	private String importBasePath = System.getProperty("user.dir");
+
+	public ParserConfiguration() {
+	}
+
+	/**
+	 * Copy constructor.
+	 *
+	 * @param other {@link ParserConfiguration} to copy
+	 */
+	public ParserConfiguration(ParserConfiguration other) {
+		this.allowNamedNulls = other.allowNamedNulls;
+		this.dataSources = new HashMap<>(other.dataSources);
+		this.literals = new HashMap<>(other.literals);
+		this.directives = new HashMap<>(other.directives);
+		this.importBasePath = new String(other.importBasePath);
+	}
 
 	/**
 	 * Register a new (type of) Data Source.
@@ -121,7 +143,7 @@ public class ParserConfiguration {
 			throw new ParsingException("Data source \"" + declaration.getPredicate().getName() + "\" is not known.");
 		}
 
-		return handler.handleDataSourceDeclaration(declaration.getArguments());
+		return handler.handleDataSourceDeclaration(declaration.getArguments(), this.importBasePath);
 	}
 
 	/**
@@ -308,4 +330,25 @@ public class ParserConfiguration {
 	public boolean isParsingOfNamedNullsAllowed() {
 		return this.allowNamedNulls;
 	}
+
+	/**
+	 * Get the base path for file imports.
+	 *
+	 * @return the path that relative imports will be resolved against.
+	 */
+	public String getImportBasePath() {
+		return this.importBasePath;
+	}
+
+	/**
+	 * Set a new base path for file imports.
+	 *
+	 * @param importBasePath path that relative imports will be resolved against.
+	 */
+	public ParserConfiguration setImportBasePath(String importBasePath) {
+		this.importBasePath = importBasePath;
+
+		return this;
+	}
+
 }
