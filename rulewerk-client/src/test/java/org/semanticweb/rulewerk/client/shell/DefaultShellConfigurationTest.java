@@ -42,6 +42,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+import org.semanticweb.rulewerk.commands.ClearCommandInterpreter;
+import org.semanticweb.rulewerk.commands.ExportCommandInterpreter;
 import org.semanticweb.rulewerk.commands.LoadCommandInterpreter;
 
 public class DefaultShellConfigurationTest {
@@ -165,6 +167,98 @@ public class DefaultShellConfigurationTest {
 		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_OWL));
 		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_RDF));
 		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_RLS));
+	}
+
+	@Test
+	public void buildCompleterExport_emptyLine() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@export");
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+
+		final HashSet<String> expectedCandidates = new HashSet<>();
+		expectedCandidates.add(ExportCommandInterpreter.TASK_INFERENCES);
+		expectedCandidates.add(ExportCommandInterpreter.TASK_KB);
+
+		assertEquals(expectedCandidates, candidates);
+	}
+
+	@Test
+	public void buildCompleterExport_task_INFERENCES() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@export");
+		readWords.add(ExportCommandInterpreter.TASK_INFERENCES);
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+
+		final String tempFolderName = this.folder.getRoot().getName();
+		assertTrue(candidates.contains(tempFolderName));
+
+		assertFalse(candidates.contains(ExportCommandInterpreter.TASK_INFERENCES));
+		assertFalse(candidates.contains(ExportCommandInterpreter.TASK_KB));
+	}
+
+	@Test
+	public void buildCompleterExport_unknown() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@export");
+		readWords.add("unknown");
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+		assertTrue(candidates.isEmpty());
+	}
+
+	@Test
+	public void buildCompleterExport_task_KB() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@export");
+		readWords.add(ExportCommandInterpreter.TASK_KB);
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+
+		final String tempFolderName = this.folder.getRoot().getName();
+		assertTrue(candidates.contains(tempFolderName));
+
+		assertFalse(candidates.contains(ExportCommandInterpreter.TASK_INFERENCES));
+		assertFalse(candidates.contains(ExportCommandInterpreter.TASK_KB));
+	}
+
+	@Test
+	public void buildCompleterClear_emptyLine() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@clear");
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+
+		final HashSet<String> expectedCandidates = new HashSet<>();
+		expectedCandidates.add(ClearCommandInterpreter.TASK_ALL);
+		expectedCandidates.add(ClearCommandInterpreter.TASK_FACTS);
+		expectedCandidates.add(ClearCommandInterpreter.TASK_INFERENCES);
+		expectedCandidates.add(ClearCommandInterpreter.TASK_PREFIXES);
+		expectedCandidates.add(ClearCommandInterpreter.TASK_RULES);
+		expectedCandidates.add(ClearCommandInterpreter.TASK_SOURCES);
+
+		assertEquals(expectedCandidates, candidates);
+	}
+
+	@Test
+	public void buildCompleterClear_unknown() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@clear");
+		readWords.add("unknown");
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+		assertTrue(candidates.isEmpty());
+	}
+
+	@Test
+	public void buildCompleterClear_task_ALL() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@clear");
+		readWords.add(ClearCommandInterpreter.TASK_ALL);
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+		assertTrue(candidates.isEmpty());
 	}
 
 	private Set<String> getCompleterCandidates(final ArrayList<String> readWords, final String wordToComplete) {
