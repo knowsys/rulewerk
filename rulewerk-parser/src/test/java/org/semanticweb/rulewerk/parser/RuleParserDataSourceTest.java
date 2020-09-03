@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ package org.semanticweb.rulewerk.parser;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -49,6 +50,7 @@ import org.semanticweb.rulewerk.parser.RuleParser;
 import org.semanticweb.rulewerk.parser.datasources.DataSourceDeclarationHandler;
 
 public class RuleParserDataSourceTest {
+	private static final String BASE_PATH = System.getProperty("user.dir") + File.separator;
 	private static final String EXAMPLE_RDF_FILE_PATH = "src/main/data/input/example.nt.gz";
 	private static final String EXAMPLE_CSV_FILE_PATH = "src/main/data/input/example.csv";
 	private static final String WIKIDATA_SPARQL_ENDPOINT_URI = "https://query.wikidata.org/sparql";
@@ -57,14 +59,14 @@ public class RuleParserDataSourceTest {
 	@Test
 	public void testCsvSource() throws ParsingException, IOException {
 		String input = "@source p[2] : load-csv(\"" + EXAMPLE_CSV_FILE_PATH + "\") .";
-		CsvFileDataSource csvds = new CsvFileDataSource(EXAMPLE_CSV_FILE_PATH);
+		CsvFileDataSource csvds = new CsvFileDataSource(BASE_PATH + EXAMPLE_CSV_FILE_PATH);
 		assertEquals(csvds, RuleParser.parseDataSourceDeclaration(input).getDataSource());
 	}
 
 	@Test
 	public void testRdfSource() throws ParsingException, IOException {
 		String input = "@source p[3] : load-rdf(\"" + EXAMPLE_RDF_FILE_PATH + "\") .";
-		RdfFileDataSource rdfds = new RdfFileDataSource(EXAMPLE_RDF_FILE_PATH);
+		RdfFileDataSource rdfds = new RdfFileDataSource(BASE_PATH + EXAMPLE_RDF_FILE_PATH);
 		assertEquals(rdfds, RuleParser.parseDataSourceDeclaration(input).getDataSource());
 	}
 
@@ -142,15 +144,18 @@ public class RuleParserDataSourceTest {
 		DataSourceDeclarationHandler handler = mock(DataSourceDeclarationHandler.class);
 		ParserConfiguration parserConfiguration = new ParserConfiguration();
 		parserConfiguration.registerDataSource("mock-source", handler);
-		doReturn(source).when(handler).handleDataSourceDeclaration(ArgumentMatchers.<List<Term>>any());
+		doReturn(source).when(handler).handleDataSourceDeclaration(ArgumentMatchers.<List<Term>>any(),
+				ArgumentMatchers.<String>any());
 
 		String input = "@source p[2] : mock-source(\"hello\", \"world\") .";
 		List<Term> expectedArguments = Arrays.asList(
 				Expressions.makeDatatypeConstant("hello", PrefixDeclarationRegistry.XSD_STRING),
 				Expressions.makeDatatypeConstant("world", PrefixDeclarationRegistry.XSD_STRING));
 		RuleParser.parse(input, parserConfiguration);
+		final String expectedImportBasePath = System.getProperty("user.dir");
 
-		verify(handler).handleDataSourceDeclaration(ArgumentMatchers.eq(expectedArguments));
+		verify(handler).handleDataSourceDeclaration(ArgumentMatchers.eq(expectedArguments),
+				ArgumentMatchers.eq(expectedImportBasePath));
 	}
 
 	@Test
@@ -159,9 +164,9 @@ public class RuleParserDataSourceTest {
 		Predicate predicate1 = Expressions.makePredicate("p", 1);
 		SparqlQueryResultDataSource dataSource = new SparqlQueryResultDataSource(new URL(WIKIDATA_SPARQL_ENDPOINT_URI),
 				"var", "?var wdt:P31 wd:Q5 .");
-		DataSourceDeclaration dataSourceDeclaration1 = new DataSourceDeclarationImpl(predicate1, dataSource);
-		RuleParser.parseInto(kb, dataSourceDeclaration1.toString());
-		assertEquals(dataSourceDeclaration1, kb.getDataSourceDeclarations().get(0));
+		DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1, dataSource);
+		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
+		assertEquals(dataSourceDeclaration, kb.getDataSourceDeclarations().get(0));
 	}
 
 	@Test
@@ -171,7 +176,8 @@ public class RuleParserDataSourceTest {
 		RdfFileDataSource unzippedRdfFileDataSource = new RdfFileDataSource(EXAMPLE_RDF_FILE_PATH);
 		DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1,
 				unzippedRdfFileDataSource);
-		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
+		ParserConfiguration parserConfiguration = new DefaultParserConfiguration().setImportBasePath("");
+		RuleParser.parseInto(kb, dataSourceDeclaration.toString(), parserConfiguration);
 		assertEquals(dataSourceDeclaration, kb.getDataSourceDeclarations().get(0));
 	}
 
@@ -182,7 +188,8 @@ public class RuleParserDataSourceTest {
 		CsvFileDataSource unzippedCsvFileDataSource = new CsvFileDataSource(EXAMPLE_CSV_FILE_PATH);
 		final DataSourceDeclaration dataSourceDeclaration = new DataSourceDeclarationImpl(predicate1,
 				unzippedCsvFileDataSource);
-		RuleParser.parseInto(kb, dataSourceDeclaration.toString());
+		ParserConfiguration parserConfiguration = new DefaultParserConfiguration().setImportBasePath("");
+		RuleParser.parseInto(kb, dataSourceDeclaration.toString(), parserConfiguration);
 		assertEquals(dataSourceDeclaration, kb.getDataSourceDeclarations().get(0));
 	}
 
@@ -200,7 +207,7 @@ public class RuleParserDataSourceTest {
 	public void testTridentSource_succeeds() throws ParsingException, IOException {
 		String input = "@source p[2] : trident(\"" + EXAMPLE_TRIDENT_PATH + "\") .";
 		DataSource parsed = RuleParser.parseDataSourceDeclaration(input).getDataSource();
-		TridentDataSource expected = new TridentDataSource(EXAMPLE_TRIDENT_PATH);
+		TridentDataSource expected = new TridentDataSource(BASE_PATH + EXAMPLE_TRIDENT_PATH);
 
 		assertEquals(expected, parsed);
 	}

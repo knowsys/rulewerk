@@ -30,6 +30,7 @@ import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 public class DirectiveHandlerTest {
+	private static final String BASE_PATH = System.getProperty("user.dir");
 	private static final String STRING = "src/test/resources/facts.rls";
 	private static final Term STRINGTERM = Expressions.makeDatatypeConstant(STRING,
 			PrefixDeclarationRegistry.XSD_STRING);
@@ -42,7 +43,7 @@ public class DirectiveHandlerTest {
 	public void validateStringArgument_stringArgument_succeeds() throws ParsingException {
 		assertEquals(STRING, DirectiveHandler.validateStringArgument(TERM_STRING_ARGUMENT, "string argument"));
 	}
-	
+
 	@Test(expected = ParsingException.class)
 	public void validateStringArgument_stringArgument_throws() throws ParsingException {
 		assertEquals(STRING, DirectiveHandler.validateStringArgument(TERM_INT_ARGUMENT, "string argument"));
@@ -55,15 +56,15 @@ public class DirectiveHandlerTest {
 
 	@Test
 	public void validateFilenameArgument_filename_succeeds() throws ParsingException {
-		assertEquals(new File(STRING),
-				DirectiveHandler.validateFilenameArgument(TERM_STRING_ARGUMENT, "filename argument"));
+		assertEquals(new File(BASE_PATH + File.separator + STRING),
+				DirectiveHandler.validateFilenameArgument(TERM_STRING_ARGUMENT, "filename argument", BASE_PATH));
 	}
 
 	@Test
 	public void validateFilenameArgument_invalidFilename_throws() throws ParsingException {
 		DirectiveHandler.validateFilenameArgument(Argument
 				.term(Expressions.makeDatatypeConstant(STRING + "-nonexistent", PrefixDeclarationRegistry.XSD_STRING)),
-				"filename argument");
+				"filename argument", BASE_PATH);
 	}
 
 }
