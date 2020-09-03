@@ -48,25 +48,25 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 	private String csvFile;
 
 	@Override
-	public void run(Command command, Interpreter interpreter) throws CommandExecutionException {
-		processArguments(command.getArguments());
+	public void run(final Command command, final Interpreter interpreter) throws CommandExecutionException {
+		this.processArguments(command.getArguments());
 
-		if (doCount) {
-			printCountQueryResults(interpreter);
-		} else if (csvFile == null) {
-			printQueryResults(interpreter);
+		if (this.doCount) {
+			this.printCountQueryResults(interpreter);
+		} else if (this.csvFile == null) {
+			this.printQueryResults(interpreter);
 		} else {
-			exportQueryResults(interpreter);
+			this.exportQueryResults(interpreter);
 		}
 	}
 
 	@Override
-	public void printHelp(String commandName, Interpreter interpreter) {
+	public void printHelp(final String commandName, final Interpreter interpreter) {
 		interpreter.printNormal(
-				"Usage: @" + commandName + " [COUNT] <query literal> [LIMIT <limit>] [EXPORTCSV <filename>] .\n"
+				"Usage: @" + commandName + " [COUNT] <query literal> [LIMIT <limit>] [EXPORTCSV <\"file\">] .\n"
 						+ " query literal: positive literal, possibly with ?queryVariables\n"
 						+ " limit: maximal number of results to be shown\n"
-						+ " filename: string path to CSV file for exporting query results\n");
+						+ " \"file\": path to CSV file for exporting query results, enclosed in quotes\n");
 	}
 
 	@Override
@@ -74,19 +74,19 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 		return "print or export query results";
 	}
 
-	private void processArguments(List<Argument> arguments) throws CommandExecutionException {
+	private void processArguments(final List<Argument> arguments) throws CommandExecutionException {
 		int pos = 0;
-		limit = -1;
-		doCount = false;
-		csvFile = null;
+		this.limit = -1;
+		this.doCount = false;
+		this.csvFile = null;
 
 		if (arguments.size() > 0 && KEYWORD_COUNT.equals(arguments.get(0).fromTerm().orElse(null))) {
-			doCount = true;
+			this.doCount = true;
 			pos++;
 		}
 
 		if (arguments.size() > pos && arguments.get(pos).fromPositiveLiteral().isPresent()) {
-			queryLiteral = arguments.get(pos).fromPositiveLiteral().get();
+			this.queryLiteral = arguments.get(pos).fromPositiveLiteral().get();
 			pos++;
 		} else {
 			throw new CommandExecutionException("A query literal must be given.");
@@ -96,18 +96,18 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 			if (arguments.size() > pos + 1 && KEYWORD_LIMIT.equals(arguments.get(pos).fromTerm().orElse(null))
 					&& arguments.get(pos + 1).fromTerm().isPresent()) {
 				try {
-					limit = Terms.extractInt(arguments.get(pos + 1).fromTerm().get());
+					this.limit = Terms.extractInt(arguments.get(pos + 1).fromTerm().get());
 					pos += 2;
-				} catch (IllegalArgumentException e) {
+				} catch (final IllegalArgumentException e) {
 					throw new CommandExecutionException(
 							"Invalid limit given: " + arguments.get(pos + 1).fromTerm().get());
 				}
 			} else if (arguments.size() > pos + 1 && KEYWORD_TOFILE.equals(arguments.get(pos).fromTerm().orElse(null))
 					&& arguments.get(pos + 1).fromTerm().isPresent()) {
 				try {
-					csvFile = Terms.extractString(arguments.get(pos + 1).fromTerm().get());
+					this.csvFile = Terms.extractString(arguments.get(pos + 1).fromTerm().get());
 					pos += 2;
-				} catch (IllegalArgumentException e) {
+				} catch (final IllegalArgumentException e) {
 					throw new CommandExecutionException(
 							"Invalid filename given: " + arguments.get(pos + 1).fromTerm().get());
 				}
@@ -117,17 +117,17 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 		}
 	}
 
-	private void printCountQueryResults(Interpreter interpreter) throws CommandExecutionException {
-		if (limit != -1) {
+	private void printCountQueryResults(final Interpreter interpreter) throws CommandExecutionException {
+		if (this.limit != -1) {
 			throw new CommandExecutionException("LIMIT not supported with COUNT");
 		}
-		if (csvFile != null) {
+		if (this.csvFile != null) {
 			throw new CommandExecutionException("COUNT results cannot be exported to CSV");
 		}
 
-		Timer timer = new Timer("query");
+		final Timer timer = new Timer("query");
 		timer.start();
-		QueryAnswerCount count = interpreter.getReasoner().countQueryAnswers(queryLiteral);
+		final QueryAnswerCount count = interpreter.getReasoner().countQueryAnswers(this.queryLiteral);
 		timer.stop();
 
 		interpreter.printNormal(String.valueOf(count.getCount()) + "\n");
@@ -135,14 +135,14 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 		interpreter.printNormal(" This result is " + count.getCorrectness() + ".\n");
 	}
 
-	private void printQueryResults(Interpreter interpreter) throws CommandExecutionException {
-		LiteralQueryResultPrinter printer = new LiteralQueryResultPrinter(queryLiteral, interpreter.getWriter(),
+	private void printQueryResults(final Interpreter interpreter) throws CommandExecutionException {
+		final LiteralQueryResultPrinter printer = new LiteralQueryResultPrinter(this.queryLiteral, interpreter.getWriter(),
 				interpreter.getKnowledgeBase().getPrefixDeclarationRegistry());
 
-		Timer timer = new Timer("query");
+		final Timer timer = new Timer("query");
 		timer.start();
-		try (final QueryResultIterator answers = interpreter.getReasoner().answerQuery(queryLiteral, true)) {
-			while (printer.getResultCount() != limit && answers.hasNext()) {
+		try (final QueryResultIterator answers = interpreter.getReasoner().answerQuery(this.queryLiteral, true)) {
+			while (printer.getResultCount() != this.limit && answers.hasNext()) {
 				printer.write(answers.next());
 			}
 			timer.stop();
@@ -155,22 +155,22 @@ public class QueryCommandInterpreter implements CommandInterpreter {
 						printer.getResultCount() + " result(s) in " + timer.getTotalCpuTime() / 1000000 + "ms.");
 			}
 			interpreter.printNormal(" Results are " + answers.getCorrectness() + ".\n");
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}
 	}
 
-	private void exportQueryResults(Interpreter interpreter) throws CommandExecutionException {
-		if (limit != -1) {
+	private void exportQueryResults(final Interpreter interpreter) throws CommandExecutionException {
+		if (this.limit != -1) {
 			throw new CommandExecutionException("LIMIT not supported for CSV export");
 		}
 
-		Timer timer = new Timer("query");
+		final Timer timer = new Timer("query");
 		timer.start();
 		Correctness correctness;
 		try {
-			correctness = interpreter.getReasoner().exportQueryAnswersToCsv(queryLiteral, csvFile, true);
-		} catch (IOException e) {
+			correctness = interpreter.getReasoner().exportQueryAnswersToCsv(this.queryLiteral, this.csvFile, true);
+		} catch (final IOException e) {
 			throw new CommandExecutionException(e.getMessage(), e);
 		}
 		timer.stop();

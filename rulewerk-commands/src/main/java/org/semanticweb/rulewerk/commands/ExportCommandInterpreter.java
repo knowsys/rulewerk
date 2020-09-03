@@ -52,9 +52,9 @@ public class ExportCommandInterpreter implements CommandInterpreter {
 
 	@Override
 	public void printHelp(final String commandName, final Interpreter interpreter) {
-		interpreter.printNormal("Usage: @" + commandName + " TASK \"filename\" .\n" //
+		interpreter.printNormal("Usage: @" + commandName + " TASK \"file\" .\n" //
 				+ " TASK: what to export; can be KB or INFERENCES\n" //
-				+ " \"filename\": string path export file (suggested extension: .rls)\n");
+				+ " \"file\": path to export file (suggested extension: .rls), enclosed in quotes\n");
 	}
 
 	@Override
