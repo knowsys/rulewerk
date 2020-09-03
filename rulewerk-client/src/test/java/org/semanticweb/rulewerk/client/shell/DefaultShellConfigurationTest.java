@@ -42,6 +42,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+import org.semanticweb.rulewerk.commands.LoadCommandInterpreter;
 
 public class DefaultShellConfigurationTest {
 
@@ -86,7 +87,7 @@ public class DefaultShellConfigurationTest {
 	}
 
 	@Test
-	public void buildCompleterLoad() {
+	public void buildCompleterLoad_emptyLine() {
 		final ArrayList<String> readWords = new ArrayList<String>();
 		readWords.add("@load");
 
@@ -95,6 +96,75 @@ public class DefaultShellConfigurationTest {
 		assertFalse(candidates.isEmpty());
 		final String tempFolderName = this.folder.getRoot().getName();
 		assertTrue(candidates.contains(tempFolderName));
+
+		assertTrue(candidates.contains(LoadCommandInterpreter.TASK_OWL));
+		assertTrue(candidates.contains(LoadCommandInterpreter.TASK_RDF));
+		assertTrue(candidates.contains(LoadCommandInterpreter.TASK_RLS));
+	}
+
+	@Test
+	public void buildCompleterLoad_task_OWL() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@load");
+		readWords.add(LoadCommandInterpreter.TASK_OWL);
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+
+		assertFalse(candidates.isEmpty());
+		final String tempFolderName = this.folder.getRoot().getName();
+		assertTrue(candidates.contains(tempFolderName));
+
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_OWL));
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_RDF));
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_RLS));
+	}
+
+	@Test
+	public void buildCompleterLoad_task_RDF() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@load");
+		readWords.add(LoadCommandInterpreter.TASK_RDF);
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+
+		assertFalse(candidates.isEmpty());
+		final String tempFolderName = this.folder.getRoot().getName();
+		assertTrue(candidates.contains(tempFolderName));
+
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_OWL));
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_RDF));
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_RLS));
+	}
+
+	@Test
+	public void buildCompleterLoad_task_RLS() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@load");
+		readWords.add(LoadCommandInterpreter.TASK_RLS);
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+
+		assertFalse(candidates.isEmpty());
+		final String tempFolderName = this.folder.getRoot().getName();
+		assertTrue(candidates.contains(tempFolderName));
+
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_OWL));
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_RDF));
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_RLS));
+	}
+
+	@Test
+	public void buildCompleterLoad_file() {
+		final ArrayList<String> readWords = new ArrayList<String>();
+		readWords.add("@load");
+		final String tempFolderName = this.folder.getRoot().getName();
+		readWords.add(tempFolderName);
+
+		final Set<String> candidates = this.getCompleterCandidates(readWords, "");
+
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_OWL));
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_RDF));
+		assertFalse(candidates.contains(LoadCommandInterpreter.TASK_RLS));
 	}
 
 	private Set<String> getCompleterCandidates(final ArrayList<String> readWords, final String wordToComplete) {
