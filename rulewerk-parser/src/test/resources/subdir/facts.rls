@@ -1,0 +1,4 @@
+@prefix ex: <https://example.org/> .
+
+ex:s(ex:e) .
+q("xyz") .

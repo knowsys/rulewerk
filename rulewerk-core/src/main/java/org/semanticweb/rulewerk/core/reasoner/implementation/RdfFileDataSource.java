@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-
 /**
  * An {@code RdfFileDataSource} stores facts in the RDF N-Triples format inside
  * a file of the extension {@code .nt}. These fact triples can be associated
@@ -48,6 +46,11 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
  *
  */
 public class RdfFileDataSource extends FileDataSource {
+
+	/**
+	 * The name of the predicate used for declarations of data sources of this type.
+	 */
+	public static final String declarationPredicateName = "load-rdf";
 
 	private final static Iterable<String> possibleExtensions = Arrays.asList(".nt", ".nt.gz");
 
@@ -72,11 +75,6 @@ public class RdfFileDataSource extends FileDataSource {
 	}
 
 	@Override
-	public String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
-
-	@Override
 	public Optional<Integer> getRequiredArity() {
 		return Optional.of(3);
 	}
@@ -84,5 +82,10 @@ public class RdfFileDataSource extends FileDataSource {
 	@Override
 	public void accept(DataSourceConfigurationVisitor visitor) throws IOException {
 		visitor.visit(this);
+	}
+
+	@Override
+	String getDeclarationPredicateName() {
+		return declarationPredicateName;
 	}
 }

@@ -60,12 +60,12 @@ public class DatatypeConstantImpl implements DatatypeConstant {
 
 	@Override
 	public String toString() {
-		return getSyntacticRepresentation();
+		return Serializer.getSerialization(serializer -> serializer.writeDatatypeConstant(this));
 	}
 
 	@Override
 	public String getName() {
-		return Serializer.getConstantName(this);
+		return toString();
 	}
 
 	@Override

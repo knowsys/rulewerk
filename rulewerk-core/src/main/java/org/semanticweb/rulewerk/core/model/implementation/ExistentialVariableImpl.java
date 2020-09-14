@@ -46,6 +46,6 @@ public class ExistentialVariableImpl extends AbstractTermImpl implements Existen
 
 	@Override
 	public String toString() {
-		return getSyntacticRepresentation();
+		return Serializer.getSerialization(serializer -> serializer.writeExistentialVariable(this));
 	}
 }

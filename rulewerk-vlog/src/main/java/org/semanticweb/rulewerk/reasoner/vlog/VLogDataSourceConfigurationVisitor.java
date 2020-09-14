@@ -29,6 +29,7 @@ import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.TridentDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.InMemoryDataSource;
 
 public class VLogDataSourceConfigurationVisitor implements DataSourceConfigurationVisitor {
@@ -37,6 +38,7 @@ public class VLogDataSourceConfigurationVisitor implements DataSourceConfigurati
 	private static final String PREDICATE_NAME_CONFIG_LINE = "EDB%1$d_predname=%2$s\n";
 	private static final String DATASOURCE_TYPE_CONFIG_PARAM = "EDB%1$d_type";
 	private final static String FILE_DATASOURCE_TYPE_CONFIG_VALUE = "INMEMORY";
+	private final static String TRIDENT_DATASOURCE_TYPE_CONFIG_VALUE = "Trident";
 	private static final String SPARQL_DATASOURCE_TYPE_CONFIG_VALUE = "SPARQL";
 
 	public String getConfigString() {
@@ -44,11 +46,9 @@ public class VLogDataSourceConfigurationVisitor implements DataSourceConfigurati
 	}
 
 	protected void setFileConfigString(FileDataSource dataSource) throws IOException {
-		this.configString =
-			PREDICATE_NAME_CONFIG_LINE +
-			DATASOURCE_TYPE_CONFIG_PARAM + "=" + FILE_DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
-			"EDB%1$d_param0=" + getDirCanonicalPath(dataSource) + "\n" +
-			"EDB%1$d_param1=" + getFileNameWithoutExtension(dataSource) + "\n";
+		this.configString = PREDICATE_NAME_CONFIG_LINE + DATASOURCE_TYPE_CONFIG_PARAM + "="
+				+ FILE_DATASOURCE_TYPE_CONFIG_VALUE + "\n" + "EDB%1$d_param0=" + getDirCanonicalPath(dataSource) + "\n"
+				+ "EDB%1$d_param1=" + getFileNameWithoutExtension(dataSource) + "\n";
 	}
 
 	String getDirCanonicalPath(FileDataSource dataSource) throws IOException {
@@ -72,11 +72,17 @@ public class VLogDataSourceConfigurationVisitor implements DataSourceConfigurati
 
 	@Override
 	public void visit(SparqlQueryResultDataSource dataSource) {
-		this.configString =
-			PREDICATE_NAME_CONFIG_LINE +
-			DATASOURCE_TYPE_CONFIG_PARAM + "=" + SPARQL_DATASOURCE_TYPE_CONFIG_VALUE + "\n" +
-			"EDB%1$d_param0=" + dataSource.getEndpoint() + "\n" + "EDB%1$d_param1=" + dataSource.getQueryVariables() + "\n" +
-			"EDB%1$d_param2=" + dataSource.getQueryBody() + "\n";
+		this.configString = PREDICATE_NAME_CONFIG_LINE + DATASOURCE_TYPE_CONFIG_PARAM + "="
+				+ SPARQL_DATASOURCE_TYPE_CONFIG_VALUE + "\n" + "EDB%1$d_param0=" + dataSource.getEndpoint() + "\n"
+				+ "EDB%1$d_param1=" + dataSource.getQueryVariables() + "\n" + "EDB%1$d_param2="
+				+ dataSource.getQueryBody() + "\n";
+	}
+
+	@Override
+	public void visit(TridentDataSource dataSource) {
+		this.configString = PREDICATE_NAME_CONFIG_LINE + DATASOURCE_TYPE_CONFIG_PARAM + "=" //
+				+ TRIDENT_DATASOURCE_TYPE_CONFIG_VALUE + "\n" //
+				+ "EDB%1$d_param0=" + dataSource.getName() + "\n";
 	}
 
 	@Override

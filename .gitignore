@@ -53,5 +53,6 @@ rulewerk-core/src/test/data/output/*
 rulewerk-examples/src/main/data/output/*
 rulewerk-examples/src/main/data/logs/*
 rulewerk-rdf/src/main/data/output/*
+rulewerk-vlog/src/test/data/output/*
 /build-vlog/vlog/
 /TAGS

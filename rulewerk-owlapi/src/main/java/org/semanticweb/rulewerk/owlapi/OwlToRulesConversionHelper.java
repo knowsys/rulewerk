@@ -64,7 +64,7 @@ public class OwlToRulesConversionHelper {
 		if (owlIndividual instanceof OWLNamedIndividual) {
 			return new AbstractConstantImpl(((OWLNamedIndividual) owlIndividual).getIRI().toString());
 		} else if (owlIndividual instanceof OWLAnonymousIndividual) {
-			return skolemization.skolemizeNamedNull(((OWLAnonymousIndividual) owlIndividual).getID().toString());
+			return skolemization.getRenamedNamedNull(((OWLAnonymousIndividual) owlIndividual).getID().toString());
 		} else {
 			throw new OwlFeatureNotSupportedException(
 					"Could not convert OWL individual '" + owlIndividual.toString() + "' to a term.");

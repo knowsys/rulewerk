@@ -21,14 +21,13 @@ package org.semanticweb.rulewerk.parser;
  */
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.util.List;
 
+import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
+import org.semanticweb.rulewerk.core.model.api.Terms;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParser;
 import org.semanticweb.rulewerk.parser.javacc.SubParserFactory;
@@ -53,8 +52,7 @@ public interface DirectiveHandler<T> {
 	 *                          directive, or the number of arguments is invalid.
 	 * @return a {@code T} instance corresponding to the given arguments.
 	 */
-	public T handleDirective(List<DirectiveArgument> arguments, final SubParserFactory subParserFactory)
-			throws ParsingException;
+	public T handleDirective(List<Argument> arguments, final SubParserFactory subParserFactory) throws ParsingException;
 
 	/**
 	 * Validate the provided number of arguments to the directive statement.
@@ -65,7 +63,7 @@ public interface DirectiveHandler<T> {
 	 * @throws ParsingException when the given number of Arguments is invalid for
 	 *                          the Directive statement.
 	 */
-	public static void validateNumberOfArguments(final List<DirectiveArgument> arguments, final int number)
+	public static void validateNumberOfArguments(final List<Argument> arguments, final int number)
 			throws ParsingException {
 		if (arguments.size() != number) {
 			throw new ParsingException(
@@ -84,10 +82,14 @@ public interface DirectiveHandler<T> {
 	 *
 	 * @return the contained {@link String}.
 	 */
-	public static String validateStringArgument(final DirectiveArgument argument, final String description)
+	public static String validateStringArgument(final Argument argument, final String description)
 			throws ParsingException {
-		return argument.fromString()
-				.orElseThrow(() -> new ParsingException("description \"" + argument + "\" is not a string."));
+		try {
+			return Terms.extractString(argument.fromTerm().orElseThrow(
+					() -> new ParsingException("Expected string for " + description + ", but did not find a term.")));
+		} catch (IllegalArgumentException e) {
+			throw new ParsingException("Failed to convert term given for " + description + " to string.");
+		}
 	}
 
 	/**
@@ -95,62 +97,30 @@ public interface DirectiveHandler<T> {
 	 *
 	 * @param argument    the argument to validate
 	 * @param description a description of the argument, used in constructing the
-	 *                    error message.
+	 *                    error message
+	 * @param importBasePath the path that relative file names are resolved against
 	 *
-	 * @throws ParsingException when the given argument is not a valid file path.
+	 * @throws ParsingException when the given argument is not a valid file path
 	 *
-	 * @return the File corresponding to the contained file path.
+	 * @return the File corresponding to the contained file path
 	 */
-	public static File validateFilenameArgument(final DirectiveArgument argument, final String description)
+	public static File validateFilenameArgument(final Argument argument, final String description, final String importBasePath)
 			throws ParsingException {
 		String fileName = DirectiveHandler.validateStringArgument(argument, description);
 		File file = new File(fileName);
+
+		if (!file.isAbsolute() || importBasePath.isEmpty()) {
+			file = new File(importBasePath + File.separator + fileName);
+		}
+
 		try {
 			// we don't care about the actual path, just that there is one.
 			file.toPath();
 		} catch (InvalidPathException e) {
-			throw new ParsingException(description + "\"" + argument + "\" is not a valid file path.", e);
+			throw new ParsingException(description + "\"" + fileName + "\" is not a valid file path.", e);
 		}
 
 		return file;
-	}
-
-	/**
-	 * Validate that the provided argument is an IRI.
-	 *
-	 * @param argument    the argument to validate
-	 * @param description a description of the argument, used in constructing the
-	 *                    error message.
-	 *
-	 * @throws ParsingException when the given argument is not an IRI.
-	 *
-	 * @return the contained IRI.
-	 */
-	public static URI validateIriArgument(final DirectiveArgument argument, final String description)
-			throws ParsingException {
-		return argument.fromIri()
-				.orElseThrow(() -> new ParsingException(description + "\"" + argument + "\" is not an IRI."));
-	}
-
-	/**
-	 * Validate that the provided argument is a {@link URL}.
-	 *
-	 * @param argument    the argument to validate
-	 * @param description a description of the argument, used in constructing the
-	 *                    error message.
-	 *
-	 * @throws ParsingException when the given argument is not a valid {@link URL}.
-	 *
-	 * @return the {@link URL} corresponding to the contained IRI.
-	 */
-	public static URL validateUrlArgument(final DirectiveArgument argument, final String description)
-			throws ParsingException {
-		URI iri = DirectiveHandler.validateIriArgument(argument, description);
-		try {
-			return iri.toURL();
-		} catch (MalformedURLException e) {
-			throw new ParsingException(description + "\"" + argument + "\" is not a valid URL.", e);
-		}
 	}
 
 	/**
@@ -164,8 +134,7 @@ public interface DirectiveHandler<T> {
 	 *
 	 * @return the contained {@link Term}.
 	 */
-	public static Term validateTermArgument(final DirectiveArgument argument, final String description)
-			throws ParsingException {
+	public static Term validateTermArgument(final Argument argument, final String description) throws ParsingException {
 		return argument.fromTerm()
 				.orElseThrow(() -> new ParsingException(description + "\"" + argument + "\" is not a Term."));
 	}

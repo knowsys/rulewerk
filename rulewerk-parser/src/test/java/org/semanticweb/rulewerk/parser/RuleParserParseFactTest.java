@@ -33,7 +33,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 public class RuleParserParseFactTest implements ParserTestUtils {
 
 	private final Constant a = Expressions.makeDatatypeConstant("a", PrefixDeclarationRegistry.XSD_STRING);
-	private final Constant b = Expressions.makeDatatypeConstant("b", PrefixDeclarationRegistry.XSD_STRING);
+	private final Constant b = Expressions.makeDatatypeConstant("b%c", PrefixDeclarationRegistry.XSD_STRING);
 
 	private final Fact factA = Expressions.makeFact("p", a);
 	private final Fact factAB = Expressions.makeFact("p", a, b);
@@ -45,7 +45,7 @@ public class RuleParserParseFactTest implements ParserTestUtils {
 
 	@Test
 	public void parseFact_twoStrings_succeeds() throws ParsingException {
-		assertEquals(factAB, RuleParser.parseFact("p(\"a\",\"b\") ."));
+		assertEquals(factAB, RuleParser.parseFact("p(\"a\",\"b%c\") ."));
 	}
 
 	@Test(expected = ParsingException.class)

@@ -51,7 +51,7 @@ public class FactImpl extends PositiveLiteralImpl implements Fact {
 
 	@Override
 	public String toString() {
-		return this.getSyntacticRepresentation();
+		return Serializer.getSerialization(serializer -> serializer.writeFact(this));
 	}
 
 }

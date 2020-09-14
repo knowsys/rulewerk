@@ -20,10 +20,6 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import java.util.function.Function;
-
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-
 /**
  * Interface for abstract constants, i.e. for constants that represent an
  * abstract domain element (in contrast to a specific value of a concrete
@@ -38,13 +34,4 @@ public interface AbstractConstant extends Constant {
 		return TermType.ABSTRACT_CONSTANT;
 	}
 
-	@Override
-	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
-
-	@Override
-	default String getSyntacticRepresentation(Function<String, String> iriTransformer) {
-		return Serializer.getString(this, iriTransformer);
-	}
 }

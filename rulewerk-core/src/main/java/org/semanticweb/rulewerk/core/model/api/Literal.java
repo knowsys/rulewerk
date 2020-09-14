@@ -22,8 +22,6 @@ package org.semanticweb.rulewerk.core.model.api;
 
 import java.util.List;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-
 /**
  * Interface for literals. A positive literal is simply an atomic formula, i.e.,
  * a formula of the form P(t1,...,tn) where P is a {@link Predicate} of arity n
@@ -33,7 +31,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
  * @author david.carral@tu-dresden.de
  * @author Irina Dragoste
  */
-public interface Literal extends SyntaxObject, Entity {
+public interface Literal extends SyntaxObject {
 
 	boolean isNegated();
 
@@ -51,10 +49,5 @@ public interface Literal extends SyntaxObject, Entity {
 	 *         {@link Predicate} arity.
 	 */
 	List<Term> getArguments();
-
-	@Override
-	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
 
 }

@@ -32,30 +32,38 @@ public interface DataSourceConfigurationVisitor {
 	/**
 	 * Configure the reasoner for a {@link CsvFileDataSource}.
 	 *
-	 * @param dataSource the data source to configure.
-	 * @throws IOexception when an IO error occurs during configuration.
+	 * @param dataSource the data source to configure
+	 * @throws IOexception when an IO error occurs during configuration
 	 */
 	public void visit(CsvFileDataSource dataSource) throws IOException;
 
 	/**
 	 * Configure the reasoner for a {@link RdfFileDataSource}.
 	 *
-	 * @param dataSource the data source to configure.
-	 * @throws IOexception when an IO error occurs during configuration.
+	 * @param dataSource the data source to configure
+	 * @throws IOexception when an IO error occurs during configuration
 	 */
 	public void visit(RdfFileDataSource dataSource) throws IOException;
 
 	/**
+	 * Configure the reasoner for a {@link TridentDataSource}.
+	 *
+	 * @param dataSource the data source to configure
+	 * @throws IOexception when an IO error occurs during configuration
+	 */
+	public void visit(TridentDataSource dataSource) throws IOException;
+
+	/**
 	 * Configure the reasoner for a {@link SparqlQueryResultDataSource}.
 	 *
-	 * @param dataSource the data source to configure.
+	 * @param dataSource the data source to configure
 	 */
 	public void visit(SparqlQueryResultDataSource dataSource);
 
 	/**
 	 * Configure the reasoner for a {@link InMemoryDataSource}.
 	 *
-	 * @param dataSource the data source to configure.
+	 * @param dataSource the data source to configure
 	 */
 	public void visit(InMemoryDataSource dataSource);
 }

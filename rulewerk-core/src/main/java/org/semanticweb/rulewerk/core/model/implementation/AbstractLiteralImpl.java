@@ -93,7 +93,7 @@ public abstract class AbstractLiteralImpl implements Literal {
 
 	@Override
 	public String toString() {
-		return getSyntacticRepresentation();
+		return Serializer.getSerialization(serializer -> serializer.writeLiteral(this));
 	}
 
 	@Override

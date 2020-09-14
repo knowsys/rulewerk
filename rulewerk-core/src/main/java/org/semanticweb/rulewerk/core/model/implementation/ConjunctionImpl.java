@@ -87,7 +87,7 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 
 	@Override
 	public String toString() {
-		return getSyntacticRepresentation();
+		return Serializer.getSerialization(serializer -> serializer.writeLiteralConjunction(this));
 	}
 
 }

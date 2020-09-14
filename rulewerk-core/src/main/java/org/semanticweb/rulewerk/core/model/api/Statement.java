@@ -27,7 +27,7 @@ package org.semanticweb.rulewerk.core.model.api;
  * @author Markus Kroetzsch
  *
  */
-public interface Statement {
+public interface Statement extends Entity {
 
 	/**
 	 * Accept a {@link StatementVisitor} and return its output.

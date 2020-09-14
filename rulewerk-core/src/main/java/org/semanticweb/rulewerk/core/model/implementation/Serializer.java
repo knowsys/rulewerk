@@ -1,5 +1,8 @@
 package org.semanticweb.rulewerk.core.model.implementation;
 
+import java.io.IOException;
+import java.io.StringWriter;
+
 /*-
  * #%L
  * Rulewerk Core Components
@@ -20,11 +23,15 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * #L%
  */
 
+import java.io.Writer;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
+import org.semanticweb.rulewerk.core.model.api.Argument;
+import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.DatatypeConstant;
@@ -36,398 +43,516 @@ import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.api.Statement;
+import org.semanticweb.rulewerk.core.model.api.StatementVisitor;
 import org.semanticweb.rulewerk.core.model.api.Term;
+import org.semanticweb.rulewerk.core.model.api.TermVisitor;
 import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
-import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
-import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 /**
- * A utility class with static methods to obtain the correct parsable string
- * representation of the different data models.
- *
- * @author Ali Elhalawati
+ * Objects of this class are used to create string representations of syntactic
+ * objects.
+ * 
+ * @see <a href=
+ *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">RuleWerk
+ *      rule syntax</a>
+ * 
+ * @author Markus Kroetzsch
  *
  */
-public final class Serializer {
-	private static final String NEW_LINE = "\n";
-	public static final String STATEMENT_SEPARATOR = " .";
-	public static final String COMMA = ", ";
-	public static final String NEGATIVE_IDENTIFIER = "~";
-	public static final String EXISTENTIAL_IDENTIFIER = "!";
-	public static final String UNIVERSAL_IDENTIFIER = "?";
-	public static final String NAMEDNULL_IDENTIFIER = "_:";
-	public static final String OPENING_PARENTHESIS = "(";
-	public static final String CLOSING_PARENTHESIS = ")";
-	public static final String OPENING_BRACKET = "[";
-	public static final String CLOSING_BRACKET = "]";
-	public static final String RULE_SEPARATOR = " :- ";
-	public static final char AT = '@';
-	public static final String DATA_SOURCE = "@source ";
-	public static final String BASE = "@base ";
-	public static final String PREFIX = "@prefix ";
-	public static final String CSV_FILE_DATA_SOURCE = "load-csv";
-	public static final String RDF_FILE_DATA_SOURCE = "load-rdf";
-	public static final String SPARQL_QUERY_RESULT_DATA_SOURCE = "sparql";
-	public static final String DATA_SOURCE_SEPARATOR = ": ";
-	public static final String COLON = ":";
-	public static final String DOUBLE_CARET = "^^";
-	public static final char LESS_THAN = '<';
-	public static final char MORE_THAN = '>';
-	public static final char QUOTE = '"';
+public class Serializer {
 
-	public static final String REGEX_DOUBLE = "^[-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?$";
-	public static final String REGEX_INTEGER = "^[-+]?\\d+$";
-	public static final String REGEX_DECIMAL = "^(\\d*\\.)?\\d+$";
-	public static final String REGEX_TRUE = "true";
-	public static final String REGEX_FALSE = "false";
+	public static final String STATEMENT_END = " .";
 
 	/**
-	 * Constructor.
+	 * Default IRI serializer that can be used if no abbreviations (prefixes, base,
+	 * etc.) are used.
 	 */
-	private Serializer() {
+	public static final Function<String, String> identityIriSerializer = new Function<String, String>() {
+		@Override
+		public String apply(String iri) {
+			if (iri.contains(":") || !iri.matches(AbstractPrefixDeclarationRegistry.REGEXP_LOCNAME)) {
+				return "<" + iri + ">";
+			} else {
+				return iri;
+			}
+		}
+	};
+
+	/**
+	 * Interface for a method that writes something to a writer.
+	 */
+	@FunctionalInterface
+	public interface SerializationWriter {
+		void write(final Serializer serializer) throws IOException;
+	}
+
+	final Writer writer;
+	final Function<String, String> iriTransformer;
+	final SerializerTermVisitor serializerTermVisitor = new SerializerTermVisitor();
+	final SerializerStatementVisitor serializerStatementVisitor = new SerializerStatementVisitor();
+
+	/**
+	 * Runtime exception used to report errors that occurred in visitors that do not
+	 * declare checked exceptions.
+	 * 
+	 * @author Markus Kroetzsch
+	 *
+	 */
+	private class RuntimeIoException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+		final IOException cause;
+
+		public RuntimeIoException(IOException cause) {
+			super(cause);
+			this.cause = cause;
+		}
+
+		public IOException getIoException() {
+			return cause;
+		}
+	}
+
+	/**
+	 * Auxiliary class to visit {@link Term} objects for writing.
+	 * 
+	 * @author Markus Kroetzsch
+	 *
+	 */
+	private class SerializerTermVisitor implements TermVisitor<Void> {
+
+		@Override
+		public Void visit(AbstractConstant term) {
+			try {
+				Serializer.this.writeAbstractConstant(term);
+			} catch (IOException e) {
+				throw new RuntimeIoException(e);
+			}
+			return null;
+		}
+
+		@Override
+		public Void visit(DatatypeConstant term) {
+			try {
+				Serializer.this.writeDatatypeConstant(term);
+			} catch (IOException e) {
+				throw new RuntimeIoException(e);
+			}
+			return null;
+		}
+
+		@Override
+		public Void visit(LanguageStringConstant term) {
+			try {
+				Serializer.this.writeLanguageStringConstant(term);
+			} catch (IOException e) {
+				throw new RuntimeIoException(e);
+			}
+			return null;
+		}
+
+		@Override
+		public Void visit(UniversalVariable term) {
+			try {
+				Serializer.this.writeUniversalVariable(term);
+			} catch (IOException e) {
+				throw new RuntimeIoException(e);
+			}
+			return null;
+		}
+
+		@Override
+		public Void visit(ExistentialVariable term) {
+			try {
+				Serializer.this.writeExistentialVariable(term);
+			} catch (IOException e) {
+				throw new RuntimeIoException(e);
+			}
+			return null;
+		}
+
+		@Override
+		public Void visit(NamedNull term) {
+			try {
+				Serializer.this.writeNamedNull(term);
+			} catch (IOException e) {
+				throw new RuntimeIoException(e);
+			}
+			return null;
+		}
 
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Rule}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param rule a {@link Rule}.
-	 * @return String representation corresponding to a given {@link Rule}.
+	 * Auxiliary class to visit {@link Statement} objects for writing.
+	 * 
+	 * @author Markus Kroetzsch
 	 *
 	 */
-	public static String getString(final Rule rule) {
-		return getString(rule.getHead()) + RULE_SEPARATOR + getString(rule.getBody()) + STATEMENT_SEPARATOR;
+	private class SerializerStatementVisitor implements StatementVisitor<Void> {
+
+		@Override
+		public Void visit(Fact statement) {
+			try {
+				Serializer.this.writeFact(statement);
+			} catch (IOException e) {
+				throw new RuntimeIoException(e);
+			}
+			return null;
+		}
+
+		@Override
+		public Void visit(Rule statement) {
+			try {
+				Serializer.this.writeRule(statement);
+			} catch (IOException e) {
+				throw new RuntimeIoException(e);
+			}
+			return null;
+		}
+
+		@Override
+		public Void visit(DataSourceDeclaration statement) {
+			try {
+				Serializer.this.writeDataSourceDeclaration(statement);
+			} catch (IOException e) {
+				throw new RuntimeIoException(e);
+			}
+			return null;
+		}
+
 	}
 
 	/**
-	 * Creates a String representation of a given {@link Conjunction}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param conjunction a {@link Conjunction}
-	 * @return String representation corresponding to a given {@link Conjunction}.
+	 * Construct a serializer that uses a specific function to serialize IRIs.
+	 * 
+	 * @param writer         the object used to write serializations
+	 * @param iriTransformer a function used to abbreviate IRIs, e.g., if namespace
+	 *                       prefixes were declared
 	 */
-	public static String getString(final Conjunction<? extends Literal> conjunction) {
-		final StringBuilder stringBuilder = new StringBuilder();
+	public Serializer(final Writer writer, final Function<String, String> iriTransformer) {
+		this.writer = writer;
+		this.iriTransformer = iriTransformer;
+	}
+
+	/**
+	 * Construct a serializer that serializes IRIs without any form of
+	 * transformation or abbreviation.
+	 * 
+	 * @param writer the object used to write serializations
+	 */
+	public Serializer(final Writer writer) {
+		this(writer, identityIriSerializer);
+	}
+
+	/**
+	 * Construct a serializer that uses the given {@link PrefixDeclarationRegistry}
+	 * to abbreviate IRIs.
+	 * 
+	 * @param writer                    the object used to write serializations
+	 * @param prefixDeclarationRegistry the object used to abbreviate IRIs
+	 */
+	public Serializer(final Writer writer, PrefixDeclarationRegistry prefixDeclarationRegistry) {
+		this(writer, (string) -> {
+			return prefixDeclarationRegistry.unresolveAbsoluteIri(string, true);
+		});
+	}
+
+	/**
+	 * Writes a serialization of the given {@link Statement}.
+	 *
+	 * @param term a {@link Statement}
+	 * @throws IOException
+	 */
+	public void writeStatement(Statement statement) throws IOException {
+		try {
+			statement.accept(this.serializerStatementVisitor);
+		} catch (Serializer.RuntimeIoException e) {
+			throw e.getIoException();
+		}
+	}
+
+	/**
+	 * Writes a serialization of the given {@link Fact}.
+	 *
+	 * @param fact a {@link Fact}
+	 * @throws IOException
+	 */
+	public void writeFact(Fact fact) throws IOException {
+		writeLiteral(fact);
+		writer.write(STATEMENT_END);
+	}
+
+	/**
+	 * Writes a serialization of the given {@link Rule}.
+	 *
+	 * @param rule a {@link Rule}
+	 * @throws IOException
+	 */
+	public void writeRule(Rule rule) throws IOException {
+		writeRuleNoStatment(rule);
+		writer.write(STATEMENT_END);
+	}
+
+	/**
+	 * Writes a serialization of the given {@link Rule} without the final dot.
+	 *
+	 * @param rule a {@link Rule}
+	 * @throws IOException
+	 */
+	private void writeRuleNoStatment(Rule rule) throws IOException {
+		writeLiteralConjunction(rule.getHead());
+		writer.write(" :- ");
+		writeLiteralConjunction(rule.getBody());
+	}
+
+	/**
+	 * Writes a serialization of the given {@link DataSourceDeclaration}.
+	 *
+	 * @param dataSourceDeclaration a {@link DataSourceDeclaration}
+	 * @throws IOException
+	 */
+	public void writeDataSourceDeclaration(DataSourceDeclaration dataSourceDeclaration) throws IOException {
+		writer.write("@source ");
+		writePredicate(dataSourceDeclaration.getPredicate());
+		writer.write(": ");
+		writeLiteral(dataSourceDeclaration.getDataSource().getDeclarationFact());
+		writer.write(STATEMENT_END);
+	}
+
+	/**
+	 * Writes a serialization of the given {@link Literal}.
+	 *
+	 * @param literal a {@link Literal}
+	 * @throws IOException
+	 */
+	public void writeLiteral(Literal literal) throws IOException {
+		if (literal.isNegated()) {
+			writer.write("~");
+		}
+		writePositiveLiteral(literal.getPredicate(), literal.getArguments());
+	}
+
+	/**
+	 * Serialize the given predicate and list of terms like a
+	 * {@link PositiveLiteral}.
+	 *
+	 * @param predicate a {@link Predicate}
+	 * @param arguments a list of {@link Term} arguments
+	 * @throws IOException
+	 */
+	public void writePositiveLiteral(Predicate predicate, List<Term> arguments) throws IOException {
+		writer.write(getIri(predicate.getName()));
+		writer.write("(");
+
 		boolean first = true;
-		for (final Literal literal : conjunction.getLiterals()) {
+		for (final Term term : arguments) {
 			if (first) {
 				first = false;
 			} else {
-				stringBuilder.append(COMMA);
+				writer.write(", ");
 			}
-			stringBuilder.append(getString(literal));
-		}
-		return stringBuilder.toString();
-	}
-
-	/**
-	 * Creates a String representation of a given {@link Literal}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param literal a {@link Literal}
-	 * @return String representation corresponding to a given {@link Literal}.
-	 */
-	public static String getString(final Literal literal) {
-		final StringBuilder stringBuilder = new StringBuilder("");
-		if (literal.isNegated()) {
-			stringBuilder.append(NEGATIVE_IDENTIFIER);
-		}
-		stringBuilder.append(getString(literal.getPredicate(), literal.getArguments()));
-		return stringBuilder.toString();
-	}
-
-	/**
-	 * Creates a String representation of a given {@link Fact}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param fact a {@link Fact}
-	 * @return String representation corresponding to a given {@link Fact}.
-	 */
-	public static String getFactString(final Fact fact) {
-		return getString(fact) + STATEMENT_SEPARATOR;
-	}
-
-	/**
-	 * Creates a String representation of a given {@link AbstractConstant}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param constant       a {@link AbstractConstant}
-	 * @param iriTransformer a function to transform IRIs with.
-	 * @return String representation corresponding to a given
-	 *         {@link AbstractConstant}.
-	 */
-	public static String getString(final AbstractConstant constant, Function<String, String> iriTransformer) {
-		return getIRIString(constant.getName(), iriTransformer);
-	}
-
-	/**
-	 * Creates a String representation of a given {@link AbstractConstant}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param constant a {@link AbstractConstant}
-	 * @return String representation corresponding to a given
-	 *         {@link AbstractConstant}.
-	 */
-	public static String getString(final AbstractConstant constant) {
-		return getIRIString(constant.getName());
-	}
-
-	/**
-	 * Creates a String representation corresponding to the name of a given
-	 * {@link LanguageStringConstant}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param languageStringConstant a {@link LanguageStringConstant}
-	 * @return String representation corresponding to the name of a given
-	 *         {@link LanguageStringConstant}.
-	 */
-	public static String getConstantName(final LanguageStringConstant languageStringConstant) {
-		return getString(languageStringConstant.getString()) + AT + languageStringConstant.getLanguageTag();
-	}
-
-	/**
-	 * Creates a String representation corresponding to the given
-	 * {@link DatatypeConstant}. For datatypes that have specialised lexical
-	 * representations (i.e., xsd:String, xsd:Decimal, xsd:Integer, and xsd:Double),
-	 * this representation is returned, otherwise the result is a generic literal
-	 * with full datatype IRI.
-	 *
-	 * examples:
-	 * <ul>
-	 * <li>{@code "string"^^xsd:String} results in {@code "string"},</li>
-	 * <li>{@code "23.0"^^xsd:Decimal} results in {@code 23.0},</li>
-	 * <li>{@code "42"^^xsd:Integer} results in {@code 42},</li>
-	 * <li>{@code "23.42"^^xsd:Double} results in {@code 23.42E0}, and</li>
-	 * <li>{@code "test"^^<http://example.org>} results in
-	 * {@code "test"^^<http://example.org>}, modulo transformation of the datatype
-	 * IRI.</li>
-	 * </ul>
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param datatypeConstant a {@link DatatypeConstant}
-	 * @param iriTransformer   a function to transform IRIs with.
-	 * @return String representation corresponding to a given
-	 *         {@link DatatypeConstant}.
-	 */
-	public static String getString(final DatatypeConstant datatypeConstant, Function<String, String> iriTransformer) {
-		if (datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_STRING)) {
-			return getString(datatypeConstant.getLexicalValue());
-		} else if (datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_DECIMAL)
-				|| datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_INTEGER)
-				|| datatypeConstant.getDatatype().equals(PrefixDeclarationRegistry.XSD_DOUBLE)) {
-			return datatypeConstant.getLexicalValue();
+			writeTerm(term);
 		}
 
-		return getConstantName(datatypeConstant, iriTransformer);
+		writer.write(")");
 	}
 
 	/**
-	 * Creates a String representation corresponding to the given
-	 * {@link DatatypeConstant}. For datatypes that have specialised lexical
-	 * representations (i.e., xsd:String, xsd:Decimal, xsd:Integer, and xsd:Double),
-	 * this representation is returned, otherwise the result is a generic literal
-	 * with full datatype IRI.
+	 * Writes a serialization of the given {@link Conjunction} of {@link Literal}
+	 * objects.
 	 *
-	 * examples:
-	 * <ul>
-	 * <li>{@code "string"^^xsd:String} results in {@code "string"},</li>
-	 * <li>{@code "23.0"^^xsd:Decimal} results in {@code 23.0},</li>
-	 * <li>{@code "42"^^xsd:Integer} results in {@code 42},</li>
-	 * <li>{@code "23.42"^^xsd:Double} results in {@code 23.42E0}, and</li>
-	 * <li>{@code "test"^^<http://example.org>} results in
-	 * {@code "test"^^<http://example.org>}.</li>
-	 * </ul>
-	 *
-	 * @param datatypeConstant a {@link DatatypeConstant}
-	 * @return String representation corresponding to a given
-	 *         {@link DatatypeConstant}.
+	 * @param literals a {@link Conjunction}
+	 * @throws IOException
 	 */
-	public static String getString(final DatatypeConstant datatypeConstant) {
-		return getString(datatypeConstant, Function.identity());
+	public void writeLiteralConjunction(final Conjunction<? extends Literal> literals) throws IOException {
+		boolean first = true;
+		for (final Literal literal : literals.getLiterals()) {
+			if (first) {
+				first = false;
+			} else {
+				writer.write(", ");
+			}
+			writeLiteral(literal);
+		}
 	}
 
 	/**
-	 * Creates a String representation corresponding to the name of a given
-	 * {@link DatatypeConstant} including an IRI.
+	 * Writes a serialization of the given {@link Predicate}. This serialization
+	 * specifies the name and arity of the predicate.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param datatypeConstant a {@link DatatypeConstant}
-	 * @return String representation corresponding to a given
-	 *         {@link DatatypeConstant}.
-	 */
-	private static String getConstantName(final DatatypeConstant datatypeConstant,
-			Function<String, String> iriTransformer) {
-		return getString(datatypeConstant.getLexicalValue()) + DOUBLE_CARET
-				+ getIRIString(datatypeConstant.getDatatype(), iriTransformer);
-	}
-
-	/**
-	 * Creates a String representation corresponding to the name of a given
-	 * {@link DatatypeConstant} including an IRI.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param datatypeConstant a {@link DatatypeConstant}
-	 * @return String representation corresponding to a given
-	 *         {@link DatatypeConstant}.
-	 */
-	public static String getConstantName(final DatatypeConstant datatypeConstant) {
-		return getString(datatypeConstant.getLexicalValue()) + DOUBLE_CARET
-				+ addAngleBrackets(datatypeConstant.getDatatype());
-	}
-
-	/**
-	 * Creates a String representation of a given {@link ExistentialVariable}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param existentialVariable a {@link ExistentialVariable}
-	 * @return String representation corresponding to a given
-	 *         {@link ExistentialVariable}.
-	 */
-	public static String getString(final ExistentialVariable existentialVariable) {
-		return EXISTENTIAL_IDENTIFIER + existentialVariable.getName();
-	}
-
-	/**
-	 * Creates a String representation of a given {@link UniversalVariable}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param universalVariable a {@link UniversalVariable}
-	 * @return String representation corresponding to a given
-	 *         {@link UniversalVariable}.
-	 */
-	public static String getString(final UniversalVariable universalVariable) {
-		return UNIVERSAL_IDENTIFIER + universalVariable.getName();
-	}
-
-	/**
-	 * Creates a String representation of a given {@link NamedNull}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param namedNull a {@link NamedNull}
-	 * @return String representation corresponding to a given {@link NamedNull}.
-	 */
-	public static String getString(final NamedNull namedNull) {
-		return NAMEDNULL_IDENTIFIER + namedNull.getName();
-	}
-
-	/**
-	 * Creates a String representation of a given {@link Predicate}.
-	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
 	 * @param predicate a {@link Predicate}
-	 * @return String representation corresponding to a given {@link Predicate}.
+	 * @throws IOException
 	 */
-	public static String getString(final Predicate predicate) {
-		return predicate.getName() + OPENING_BRACKET + predicate.getArity() + CLOSING_BRACKET;
+	public void writePredicate(Predicate predicate) throws IOException {
+		writer.write(getIri(predicate.getName()));
+		writer.write("[");
+		writer.write(String.valueOf(predicate.getArity()));
+		writer.write("]");
 	}
 
 	/**
-	 * Creates a String representation of a given {@link DataSourceDeclaration}.
+	 * Writes a serialization of the given {@link Term}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 * @param dataSourceDeclaration a {@link DataSourceDeclaration}
-	 * @return String representation corresponding to a given
-	 *         {@link DataSourceDeclaration}.
+	 * @param term a {@link Term}
+	 * @throws IOException
 	 */
-	public static String getString(final DataSourceDeclaration dataSourceDeclaration) {
-		return DATA_SOURCE + getString(dataSourceDeclaration.getPredicate()) + DATA_SOURCE_SEPARATOR
-				+ dataSourceDeclaration.getDataSource().getSyntacticRepresentation() + STATEMENT_SEPARATOR;
+	public void writeTerm(Term term) throws IOException {
+		try {
+			term.accept(this.serializerTermVisitor);
+		} catch (Serializer.RuntimeIoException e) {
+			throw e.getIoException();
+		}
 	}
 
 	/**
-	 * Creates a String representation of a given {@link CsvFileDataSource}.
+	 * Writes a serialization of the given {@link AbstractConstant}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 *
-	 * @param csvFileDataSource
-	 * @return String representation corresponding to a given
-	 *         {@link CsvFileDataSource}.
+	 * @param abstractConstant a {@link AbstractConstant}
+	 * @throws IOException
 	 */
-	public static String getString(final CsvFileDataSource csvFileDataSource) {
-		return CSV_FILE_DATA_SOURCE + OPENING_PARENTHESIS + getFileString(csvFileDataSource) + CLOSING_PARENTHESIS;
+	public void writeAbstractConstant(AbstractConstant abstractConstant) throws IOException {
+		writer.write(getIri(abstractConstant.getName()));
 	}
 
 	/**
-	 * Creates a String representation of a given {@link RdfFileDataSource}.
+	 * Writes a serialization of the given {@link DatatypeConstant}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 *
-	 *
-	 * @param rdfFileDataSource
-	 * @return String representation corresponding to a given
-	 *         {@link RdfFileDataSource}.
+	 * @param datatypeConstant a {@link DatatypeConstant}
+	 * @throws IOException
 	 */
-	public static String getString(final RdfFileDataSource rdfFileDataSource) {
-		return RDF_FILE_DATA_SOURCE + OPENING_PARENTHESIS + getFileString(rdfFileDataSource) + CLOSING_PARENTHESIS;
+	public void writeDatatypeConstant(DatatypeConstant datatypeConstant) throws IOException {
+		if (PrefixDeclarationRegistry.XSD_STRING.equals(datatypeConstant.getDatatype())) {
+			writer.write(getQuotedString(datatypeConstant.getLexicalValue()));
+		} else if (PrefixDeclarationRegistry.XSD_INTEGER.equals(datatypeConstant.getDatatype())) {
+			writer.write(datatypeConstant.getLexicalValue());
+		} else {
+			writer.write(getQuotedString(datatypeConstant.getLexicalValue()));
+			writer.write("^^");
+			writer.write(getIri(datatypeConstant.getDatatype()));
+		}
 	}
 
 	/**
-	 * Creates a String representation of a given
-	 * {@link SparqlQueryResultDataSource}.
+	 * Writes a serialization of the given {@link UniversalVariable}.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">Rule syntax</a>
-	 *
-	 *
-	 * @param dataSource
-	 * @return String representation corresponding to a given
-	 *         {@link SparqlQueryResultDataSource}.
+	 * @param universalVariable a {@link UniversalVariable}
+	 * @throws IOException
 	 */
-	public static String getString(final SparqlQueryResultDataSource dataSource) {
-		return SPARQL_QUERY_RESULT_DATA_SOURCE + OPENING_PARENTHESIS
-				+ addAngleBrackets(dataSource.getEndpoint().toString()) + COMMA
-				+ addQuotes(dataSource.getQueryVariables()) + COMMA + addQuotes(dataSource.getQueryBody())
-				+ CLOSING_PARENTHESIS;
+	public void writeUniversalVariable(UniversalVariable universalVariable) throws IOException {
+		writer.write("?");
+		writer.write(universalVariable.getName());
 	}
 
-	private static String getFileString(final FileDataSource fileDataSource) {
-		return getString(fileDataSource.getPath());
+	/**
+	 * Writes a serialization of the given {@link ExistentialVariable}.
+	 *
+	 * @param existentialVariable a {@link ExistentialVariable}
+	 * @throws IOException
+	 */
+	public void writeExistentialVariable(ExistentialVariable existentialVariable) throws IOException {
+		writer.write("!");
+		writer.write(existentialVariable.getName());
 	}
 
-	private static String getIRIString(final String string) {
-		return getIRIString(string, Function.identity());
+	/**
+	 * Writes a serialization of the given {@link NamedNull}.
+	 *
+	 * @param namedNull a {@link NamedNull}
+	 * @throws IOException
+	 */
+	public void writeNamedNull(NamedNull namedNull) throws IOException {
+		writer.write("_:");
+		writer.write(namedNull.getName());
 	}
 
-	private static String getIRIString(final String string, Function<String, String> iriTransformer) {
-		String transformed = iriTransformer.apply(string);
-
-		if (!transformed.equals(string)) {
-			return transformed;
+	/**
+	 * Writes a serialization of the given {@link PrefixDeclarationRegistry}, and
+	 * returns true if anything has been written.
+	 *
+	 * @param prefixDeclarationRegistry a {@link PrefixDeclarationRegistry}
+	 * @throws IOException
+	 * @return true if anything has been written
+	 */
+	public boolean writePrefixDeclarationRegistry(PrefixDeclarationRegistry prefixDeclarationRegistry)
+			throws IOException {
+		boolean result = false;
+		final String baseIri = prefixDeclarationRegistry.getBaseIri();
+		if (!PrefixDeclarationRegistry.EMPTY_BASE.contentEquals(baseIri)) {
+			writer.write("@base <");
+			writer.write(baseIri);
+			writer.write(">");
+			writer.write(STATEMENT_END);
+			writer.write("\n");
+			result = true;
 		}
 
-		if (string.contains(COLON) || string.matches(REGEX_INTEGER) || string.matches(REGEX_DOUBLE)
-				|| string.matches(REGEX_DECIMAL) || string.equals(REGEX_TRUE) || string.equals(REGEX_FALSE)) {
-			return addAngleBrackets(string);
+		Iterator<Entry<String, String>> prefixIterator = prefixDeclarationRegistry.iterator();
+		while (prefixIterator.hasNext()) {
+			Entry<String, String> entry = prefixIterator.next();
+			writer.write("@prefix ");
+			writer.write(entry.getKey());
+			writer.write(" <");
+			writer.write(entry.getValue());
+			writer.write(">");
+			writer.write(STATEMENT_END);
+			writer.write("\n");
+			result = true;
 		}
-
-		return string;
+		return result;
 	}
 
 	/**
-	 * Constructs the parseable, serialized representation of given {@code string}.
-	 * Escapes (with {@code \}) special character occurrences in given
-	 * {@code string}, and surrounds the result with double quotation marks
-	 * ({@code "}). The special characters are:
-	 * <ul>
-	 * <li>{@code \}</li>
-	 * <li>{@code "}</li>
-	 * <li>{@code \t}</li>
-	 * <li>{@code \b}</li>
-	 * <li>{@code \n}</li>
-	 * <li>{@code \r}</li>
-	 * <li>{@code \f}</li>
-	 * </ul>
-	 * Example for {@code string = "\\a"}, the returned value is
-	 * {@code string = "\"\\\\a\""}
+	 * Writes a serialization of the given {@link LanguageStringConstant}.
 	 *
-	 * @param string
-	 * @return an escaped string surrounded by {@code "}.
+	 * @param languageStringConstant a {@link LanguageStringConstant}
+	 * @throws IOException
 	 */
-	public static String getString(final String string) {
-		return addQuotes(escape(string));
+	public void writeLanguageStringConstant(LanguageStringConstant languageStringConstant) throws IOException {
+		writer.write(getQuotedString(languageStringConstant.getString()));
+		writer.write("@");
+		writer.write(languageStringConstant.getLanguageTag());
+	}
+
+	/**
+	 * Writes a serialization of the given {@link Command}.
+	 *
+	 * @param command a {@link Command}
+	 * @throws IOException
+	 */
+	public void writeCommand(Command command) throws IOException {
+		writer.write("@");
+		writer.write(command.getName());
+
+		for (Argument argument : command.getArguments()) {
+			writer.write(" ");
+			if (argument.fromRule().isPresent()) {
+				writeRuleNoStatment(argument.fromRule().get());
+			} else if (argument.fromPositiveLiteral().isPresent()) {
+				writeLiteral(argument.fromPositiveLiteral().get());
+			} else {
+				writeTerm(argument.fromTerm().get());
+			}
+		}
+		writer.write(STATEMENT_END);
+	}
+
+	/**
+	 * Convenience method for obtaining serializations as Java strings.
+	 * 
+	 * @param writeAction a function that accepts a {@link Serializer} and produces
+	 *                    a string
+	 * @return serialization string
+	 */
+	public static String getSerialization(SerializationWriter writeAction) {
+		final StringWriter stringWriter = new StringWriter();
+		final Serializer serializer = new Serializer(stringWriter);
+		try {
+			writeAction.write(serializer);
+		} catch (IOException e) {
+			throw new RuntimeException("StringWriter should never throw an IOException.");
+		}
+		return stringWriter.toString();
 	}
 
 	/**
@@ -446,70 +571,12 @@ public final class Serializer {
 	 * @param string
 	 * @return an escaped string
 	 */
-	private static String escape(final String string) {
-		return string.replace("\\", "\\\\").replace("\"", "\\\"").replace("\t", "\\t").replace("\b", "\\b")
-				.replace(NEW_LINE, "\\n").replace("\r", "\\r").replace("\f", "\\f");
-		// don't touch single quotes here since we only construct double-quoted strings
+	private String getQuotedString(final String string) {
+		return "\"" + string.replace("\\", "\\\\").replace("\"", "\\\"").replace("\t", "\\t").replace("\b", "\\b")
+				.replace("\n", "\\n").replace("\r", "\\r").replace("\f", "\\f") + "\"";
 	}
 
-	private static String addQuotes(final String string) {
-		return QUOTE + string + QUOTE;
-	}
-
-	private static String addAngleBrackets(final String string) {
-		return LESS_THAN + string + MORE_THAN;
-	}
-
-	public static String getFactString(Predicate predicate, List<Term> terms) {
-		return getString(predicate, terms) + STATEMENT_SEPARATOR + NEW_LINE;
-	}
-
-	public static String getFactString(Predicate predicate, List<Term> terms, Function<String, String> iriTransformer) {
-		return getString(predicate, terms, iriTransformer) + STATEMENT_SEPARATOR + NEW_LINE;
-	}
-
-	public static String getString(Predicate predicate, List<Term> terms) {
-		return getString(predicate, terms, Function.identity());
-	}
-
-	public static String getString(Predicate predicate, List<Term> terms, Function<String, String> iriTransformer) {
-		final StringBuilder stringBuilder = new StringBuilder(getIRIString(predicate.getName(), iriTransformer));
-		stringBuilder.append(OPENING_PARENTHESIS);
-
-		boolean first = true;
-		for (final Term term : terms) {
-			if (first) {
-				first = false;
-			} else {
-				stringBuilder.append(COMMA);
-			}
-			final String string = term.getSyntacticRepresentation(iriTransformer);
-			stringBuilder.append(string);
-		}
-		stringBuilder.append(CLOSING_PARENTHESIS);
-		return stringBuilder.toString();
-	}
-
-	public static String getBaseString(KnowledgeBase knowledgeBase) {
-		String baseIri = knowledgeBase.getBaseIri();
-
-		return baseIri.equals(PrefixDeclarationRegistry.EMPTY_BASE) ? baseIri : getBaseDeclarationString(baseIri);
-	}
-
-	private static String getBaseDeclarationString(String baseIri) {
-		return BASE + addAngleBrackets(baseIri) + STATEMENT_SEPARATOR + NEW_LINE;
-	}
-
-	public static String getPrefixString(Entry<String, String> prefix) {
-		return PREFIX + prefix.getKey() + " " + addAngleBrackets(prefix.getValue()) + STATEMENT_SEPARATOR + NEW_LINE;
-	}
-
-	public static String getBaseAndPrefixDeclarations(KnowledgeBase knowledgeBase) {
-		StringBuilder sb = new StringBuilder();
-
-		sb.append(getBaseString(knowledgeBase));
-		knowledgeBase.getPrefixes().forEachRemaining(prefix -> sb.append(getPrefixString(prefix)));
-
-		return sb.toString();
+	private String getIri(final String string) {
+		return iriTransformer.apply(string);
 	}
 }

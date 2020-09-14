@@ -27,17 +27,22 @@ import java.util.stream.Collectors;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
-import org.openrdf.model.Resource;
+import org.openrdf.model.Namespace;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
+import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for converting RDF {@link Model}s to {@link PositiveLiteral} sets.
@@ -59,49 +64,137 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
  * </ul>
  *
  * @author Irina Dragoste
+ * @author Markus Kroetzsch
  *
  */
 public final class RdfModelConverter {
 
+	private static Logger LOGGER = LoggerFactory.getLogger(RdfModelConverter.class);
+
 	/**
-	 * The name of the ternary predicate of literals generated from RDF triples:
-	 * "TRIPLE".
+	 * The name of the ternary predicate of literals generated from RDF triples by
+	 * default.
 	 */
 	public static final String RDF_TRIPLE_PREDICATE_NAME = "TRIPLE";
 
-	/**
-	 * The ternary predicate of literals generated from RDF triples. It has
-	 * {@code name}({@link Predicate#getName()}) "TRIPLE" and
-	 * {@code arity}({@link Predicate#getArity()}) 3.
-	 */
-	public static final Predicate RDF_TRIPLE_PREDICATE = Expressions.makePredicate(RDF_TRIPLE_PREDICATE_NAME, 3);
+	final RdfValueToTermConverter rdfValueToTermConverter;
+	final Predicate triplePredicate;
 
-	private RdfModelConverter() {
+	/**
+	 * Construct an object that does not skolemize blank nodes and that uses a
+	 * ternary predicate named {@link RdfModelConverter#RDF_TRIPLE_PREDICATE_NAME}
+	 * for storing triples.
+	 */
+	public RdfModelConverter() {
+		this(false, RDF_TRIPLE_PREDICATE_NAME);
+	}
+
+	/**
+	 * Constructor. If {@code triplePredicateName} is a string, then RDF triples
+	 * will be represented as ternary facts with a predicate of that name. If it is
+	 * {@code null}, then triples will be converted to binary facts where the
+	 * predicate is the RDF predicate; moreover, triples with rdf:rype as predicate
+	 * will be converted to unary facts.
+	 * 
+	 * @param skolemize           if true, blank nodes are translated to constants
+	 *                            with generated IRIs; otherwise they are replanced
+	 *                            by named nulls with generated ids
+	 * @param triplePredicateName name of the ternary predicate that should be used
+	 *                            to store RDF triples; or null to generate binary
+	 *                            predicates from the predicates of RDF triples
+	 */
+	public RdfModelConverter(boolean skolemize, String triplePredicateName) {
+		this.rdfValueToTermConverter = new RdfValueToTermConverter(skolemize);
+		if (triplePredicateName != null) {
+			this.triplePredicate = Expressions.makePredicate(triplePredicateName, 3);
+		} else {
+			this.triplePredicate = null;
+		}
 	}
 
 	/**
 	 * Converts each {@code <subject, predicate, object>} triple statement of the
-	 * given {@code rdfModel} into a {@link PositiveLiteral} of the form
+	 * given {@code rdfModel} into a {@link Fact} of the form
 	 * {@code TRIPLE(subject, predicate, object)}. See
 	 * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}, the ternary predicate used
 	 * for all literals generated from RDF triples.
 	 *
-	 * @param rdfModel a {@link Model} of an RDF document, containing triple
-	 *                 statements that will be converter to facts.
-	 * @return a set of literals corresponding to the statements of given
+	 * @param model a {@link Model} of an RDF document, containing triple statements
+	 *              that will be converter to facts.
+	 * @return a set of facts corresponding to the statements of given
 	 *         {@code rdfModel}.
 	 */
-	public static Set<Fact> rdfModelToFacts(final Model rdfModel) {
-		return rdfModel.stream().map(RdfModelConverter::rdfStatementToFact).collect(Collectors.toSet());
+	public Set<Fact> rdfModelToFacts(final Model model) {
+		return model.stream().map((statement) -> rdfStatementToFact(statement)).collect(Collectors.toSet());
 	}
 
-	static Fact rdfStatementToFact(final Statement statement) {
-		final Resource subject = statement.getSubject();
-		final URI predicate = statement.getPredicate();
-		final Value object = statement.getObject();
+	/**
+	 * Adds data and prefix declarations from a given RDF {@link Model} to a given
+	 * {@link KnowledgeBase}.
+	 * 
+	 * @param knowledgeBase the {@link KnowledgeBase} to add to
+	 * @param model         the {@link Model} with the RDF data
+	 */
+	public void addAll(KnowledgeBase knowledgeBase, Model model) {
+		addPrefixes(knowledgeBase, model);
+		addFacts(knowledgeBase, model);
+	}
 
-		return Expressions.makeFact(RDF_TRIPLE_PREDICATE, Arrays.asList(RdfValueToTermConverter.rdfValueToTerm(subject),
-				RdfValueToTermConverter.rdfValueToTerm(predicate), RdfValueToTermConverter.rdfValueToTerm(object)));
+	/**
+	 * Adds the data from a given RDF {@link Model} as {@link Fact}s to the given
+	 * {@link KnowledgeBase}.
+	 * 
+	 * @param knowledgeBase the {@link KnowledgeBase} to add {@link Fact}s to
+	 * @param model         the {@link Model} with the RDF data
+	 */
+	public void addFacts(KnowledgeBase knowledgeBase, Model model) {
+		model.stream().forEach((statement) -> {
+			knowledgeBase.addStatement(rdfStatementToFact(statement));
+		});
+	}
+
+	/**
+	 * Adds the prefixes declared for a given RDF {@link Model} to the given
+	 * {@link KnowledgeBase}. If a prefix cannot be added for some reason, it is
+	 * ignored and a warning is logged.
+	 * 
+	 * @param knowledgeBase the {@link KnowledgeBase} to add prefix declarations to
+	 * @param model         the {@link Model} with the RDF data
+	 */
+	public void addPrefixes(KnowledgeBase knowledgeBase, Model model) {
+		for (Namespace namespace : model.getNamespaces()) {
+			try {
+				knowledgeBase.getPrefixDeclarationRegistry().setPrefixIri(namespace.getPrefix() + ":",
+						namespace.getName());
+			} catch (PrefixDeclarationException e) {
+				LOGGER.warn("Failed to set prefix \"" + namespace.getPrefix() + "\" from RDF model: " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Converts an RDF statement (triple) to a Rulewerk {@link Fact}.
+	 * 
+	 * @param statement
+	 * @return
+	 */
+	Fact rdfStatementToFact(final Statement statement) {
+		final Term subject = rdfValueToTermConverter.convertValue(statement.getSubject());
+		final Term object = rdfValueToTermConverter.convertValue(statement.getObject());
+
+		if (triplePredicate != null) {
+			final Term predicate = rdfValueToTermConverter.convertUri(statement.getPredicate());
+			return Expressions.makeFact(triplePredicate, Arrays.asList(subject, predicate, object));
+		} else {
+			if (PrefixDeclarationRegistry.RDF_TYPE.equals(statement.getPredicate().stringValue())
+					&& statement.getObject() instanceof URI) {
+				Predicate classPredicate = rdfValueToTermConverter.convertUriToPredicate((URI) statement.getObject(), 1);
+				return Expressions.makeFact(classPredicate, Arrays.asList(subject));
+			} else {
+				Predicate factPredicate = rdfValueToTermConverter.convertUriToPredicate(statement.getPredicate(), 2);
+				return Expressions.makeFact(factPredicate, Arrays.asList(subject, object));
+			}
+		}
 	}
 
 }

@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 
 /**
@@ -36,6 +37,12 @@ import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
  * @author Maximilian Marx
  */
 public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclarationRegistry {
+
+	/**
+	 * Pattern for strings that are permissible as local names in abbreviated forms.
+	 */
+	static public final String REGEXP_LOCNAME = "^[a-zA-Z]([/a-zA-Z0-9_-])*$";
+
 	/**
 	 * Map associating each prefixName with the full prefixIri.
 	 */
@@ -45,6 +52,12 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 	 * Iri holding the base namespace.
 	 */
 	protected String baseIri = null;
+
+	@Override
+	public void clear() {
+		baseIri = null;
+		prefixes = new HashMap<>();
+	}
 
 	@Override
 	public String getBaseIri() {
@@ -63,6 +76,11 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 		}
 
 		return prefixes.get(prefixName);
+	}
+
+	@Override
+	public void unsetPrefix(String prefixName) {
+		prefixes.remove(prefixName);
 	}
 
 	@Override
@@ -89,6 +107,45 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 		} else {
 			return getBaseIri() + potentiallyRelativeIri;
 		}
+	}
+
+	@Override
+	public String unresolveAbsoluteIri(String iri, boolean addIriBrackets) {
+		String shortestIri;
+		if (addIriBrackets) {
+			if (!iri.contains(":") && iri.matches(REGEXP_LOCNAME)) {
+				shortestIri = iri;
+				if (!PrefixDeclarationRegistry.EMPTY_BASE.equals(baseIri)) {
+					throw new RulewerkRuntimeException("Relative IRIs cannot be serialized when a base is declared.");
+				}
+			} else {
+				shortestIri = "<" + iri + ">";
+			}
+		} else {
+			shortestIri = iri;
+		}
+
+		String baseIri = getBaseIri();
+
+		if (!PrefixDeclarationRegistry.EMPTY_BASE.equals(baseIri) && iri.length() > baseIri.length()
+				&& iri.startsWith(baseIri)) {
+			String shorterIri = iri.substring(baseIri.length());
+			// Only allow very simple names of this form, to avoid confusion, e.g., with
+			// numbers or boolean literals:
+			if (shorterIri.matches(REGEXP_LOCNAME) && !"true".equals(shorterIri) || !"false".equals(shorterIri)) {
+				shortestIri = shorterIri;
+			}
+		}
+
+		for (Map.Entry<String, String> entry : prefixes.entrySet()) {
+			int localNameLength = iri.length() - entry.getValue().length();
+			if (localNameLength > 0 && shortestIri.length() > localNameLength + entry.getKey().length()
+					&& iri.startsWith(entry.getValue())) {
+				shortestIri = entry.getKey() + iri.substring(entry.getValue().length());
+			}
+		}
+
+		return shortestIri;
 	}
 
 	@Override

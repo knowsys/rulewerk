@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.semanticweb.rulewerk</groupId>
 		<artifactId>rulewerk-parent</artifactId>
-		<version>0.7.0-SNAPSHOT</version>
+		<version>0.8.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>rulewerk-rdf</artifactId>
@@ -46,7 +46,6 @@
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-turtle</artifactId>
 			<version>${openrdf.sesame.version}</version>
-			<scope>test</scope>
 		</dependency>
 		<!-- Useful Collection utilities, like intersection -->
 		<dependency>

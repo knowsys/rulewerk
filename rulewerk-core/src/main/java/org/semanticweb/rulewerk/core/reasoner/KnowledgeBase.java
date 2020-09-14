@@ -25,7 +25,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -271,13 +273,18 @@ public class KnowledgeBase implements Iterable<Statement> {
 	}
 
 	/**
-	 * Removes a single statement from the knowledge base.
+	 * Removes a single statement from the knowledge base, and returns the number of
+	 * statements that were actually removed (0 or 1).
 	 *
 	 * @param statement the statement to remove
+	 * @return number of removed statements
 	 */
-	public void removeStatement(final Statement statement) {
+	public int removeStatement(final Statement statement) {
 		if (this.doRemoveStatement(statement)) {
 			this.notifyListenersOnStatementRemoved(statement);
+			return 1;
+		} else {
+			return 0;
 		}
 	}
 
@@ -301,8 +308,9 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * Removes a collection of statements to the knowledge base.
 	 *
 	 * @param statements the statements to remove
+	 * @return number of removed statements
 	 */
-	public void removeStatements(final Collection<? extends Statement> statements) {
+	public int removeStatements(final Collection<? extends Statement> statements) {
 		final List<Statement> removedStatements = new ArrayList<>();
 
 		for (final Statement statement : statements) {
@@ -312,14 +320,16 @@ public class KnowledgeBase implements Iterable<Statement> {
 		}
 
 		this.notifyListenersOnStatementsRemoved(removedStatements);
+		return removedStatements.size();
 	}
 
 	/**
 	 * Removes a list of statements from the knowledge base.
 	 *
 	 * @param statements the statements to remove
+	 * @return number of removed statements
 	 */
-	public void removeStatements(final Statement... statements) {
+	public int removeStatements(final Statement... statements) {
 		final List<Statement> removedStatements = new ArrayList<>();
 
 		for (final Statement statement : statements) {
@@ -329,6 +339,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 		}
 
 		this.notifyListenersOnStatementsRemoved(removedStatements);
+		return removedStatements.size();
 	}
 
 	private void notifyListenersOnStatementAdded(final Statement addedStatement) {
@@ -479,10 +490,10 @@ public class KnowledgeBase implements Iterable<Statement> {
 		Validate.notNull(file, "file must not be null");
 
 		boolean isNewFile = this.importedFilePaths.add(file.getCanonicalPath());
-		Validate.isTrue(isNewFile, "file \"" + file.getName() + "\" was already imported.");
-
-		try (InputStream stream = new FileInputStream(file)) {
-			parseFunction.parseInto(stream, this);
+		if (isNewFile) {
+			try (InputStream stream = new FileInputStream(file)) {
+				parseFunction.parseInto(stream, this);
+			}
 		}
 	}
 
@@ -497,6 +508,15 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 */
 	public void mergePrefixDeclarations(PrefixDeclarationRegistry prefixDeclarationRegistry) {
 		this.prefixDeclarationRegistry.mergePrefixDeclarations(prefixDeclarationRegistry);
+	}
+
+	/**
+	 * Returns the {@link PrefixDeclarationRegistry} used by this knowledge base.
+	 * 
+	 * @return registry for prefix declarations
+	 */
+	public PrefixDeclarationRegistry getPrefixDeclarationRegistry() {
+		return this.prefixDeclarationRegistry;
 	}
 
 	/**
@@ -556,32 +576,49 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 *         declared prefixes, or {@code iri} if no suitable prefix is declared.
 	 */
 	public String unresolveAbsoluteIri(String iri) {
-		return this.prefixDeclarationRegistry.unresolveAbsoluteIri(iri);
+		return this.prefixDeclarationRegistry.unresolveAbsoluteIri(iri, false);
 	}
 
 	/**
-	 * Serialise the KnowledgeBase to the {@link OutputStream}.
+	 * Serialise the KnowledgeBase to the {@link Writer}.
 	 *
-	 * @param stream the {@link OutputStream} to serialise to.
+	 * @param writer the {@link Writer} to serialise to.
 	 *
-	 * @throws IOException if an I/O error occurs while writing to given output stream
+	 * @throws IOException if an I/O error occurs while writing to given output
+	 *                     stream
 	 */
-	public void writeKnowledgeBase(OutputStream stream) throws IOException {
-		stream.write(Serializer.getBaseAndPrefixDeclarations(this).getBytes());
+	public void writeKnowledgeBase(Writer writer) throws IOException {
+		Serializer serializer = new Serializer(writer, prefixDeclarationRegistry);
 
-		for (DataSourceDeclaration dataSource : this.getDataSourceDeclarations()) {
-			stream.write(Serializer.getString(dataSource).getBytes());
-			stream.write('\n');
-		}
+		boolean makeSeperator = serializer.writePrefixDeclarationRegistry(prefixDeclarationRegistry);
 
-		for (Rule rule : this.getRules()) {
-			stream.write(Serializer.getString(rule).getBytes());
-			stream.write('\n');
+		for (DataSourceDeclaration dataSourceDeclaration : this.getDataSourceDeclarations()) {
+			if (makeSeperator) {
+				writer.write('\n');
+				makeSeperator = false;
+			}
+			serializer.writeDataSourceDeclaration(dataSourceDeclaration);
+			writer.write('\n');
 		}
+		makeSeperator |= !this.getDataSourceDeclarations().isEmpty();
 
 		for (Fact fact : this.getFacts()) {
-			stream.write(Serializer.getFactString(fact).getBytes());
-			stream.write('\n');
+			if (makeSeperator) {
+				writer.write('\n');
+				makeSeperator = false;
+			}
+			serializer.writeFact(fact);
+			writer.write('\n');
+		}
+		makeSeperator |= !this.getFacts().isEmpty();
+
+		for (Rule rule : this.getRules()) {
+			if (makeSeperator) {
+				writer.write('\n');
+				makeSeperator = false;
+			}
+			serializer.writeRule(rule);
+			writer.write('\n');
 		}
 	}
 
@@ -591,10 +628,13 @@ public class KnowledgeBase implements Iterable<Statement> {
 	 * @param filePath path to the file to serialise into.
 	 *
 	 * @throws IOException
+	 * @deprecated Use {@link KnowledgeBase#writeKnowledgeBase(Writer)} instead. The
+	 *             method will disappear.
 	 */
+	@Deprecated
 	public void writeKnowledgeBase(String filePath) throws IOException {
-		try (OutputStream stream = new FileOutputStream(filePath)) {
-			this.writeKnowledgeBase(stream);
+		try (Writer writer = new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
+			this.writeKnowledgeBase(writer);
 		}
 	}
 }

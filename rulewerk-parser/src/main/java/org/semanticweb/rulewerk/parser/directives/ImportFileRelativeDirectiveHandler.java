@@ -26,9 +26,9 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.semanticweb.rulewerk.core.exceptions.RulewerkException;
+import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-import org.semanticweb.rulewerk.parser.DirectiveArgument;
 import org.semanticweb.rulewerk.parser.DirectiveHandler;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -42,13 +42,16 @@ import org.semanticweb.rulewerk.parser.javacc.SubParserFactory;
  */
 public class ImportFileRelativeDirectiveHandler implements DirectiveHandler<KnowledgeBase> {
 	@Override
-	public KnowledgeBase handleDirective(List<DirectiveArgument> arguments, SubParserFactory subParserFactory)
+	public KnowledgeBase handleDirective(List<Argument> arguments, SubParserFactory subParserFactory)
 			throws ParsingException {
+		final ParserConfiguration parserConfiguration = new ParserConfiguration(
+				getParserConfiguration(subParserFactory));
 		DirectiveHandler.validateNumberOfArguments(arguments, 1);
 		PrefixDeclarationRegistry prefixDeclarationRegistry = getPrefixDeclarationRegistry(subParserFactory);
-		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "rules file");
+		File file = DirectiveHandler.validateFilenameArgument(arguments.get(0), "rules file",
+				parserConfiguration.getImportBasePath());
 		KnowledgeBase knowledgeBase = getKnowledgeBase(subParserFactory);
-		ParserConfiguration parserConfiguration = getParserConfiguration(subParserFactory);
+		parserConfiguration.setImportBasePath(file.getParent());
 
 		try {
 			knowledgeBase.importRulesFile(file, (InputStream stream, KnowledgeBase kb) -> {

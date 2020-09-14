@@ -20,8 +20,6 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import java.util.function.Function;
-
 /**
  * Interface for variables, i.e., terms of type
  * {@link TermType#UNIVERSAL_VARIABLE} and
@@ -32,8 +30,4 @@ import java.util.function.Function;
  * @author Markus Krötzsch
  */
 public interface Variable extends Term {
-	@Override
-	default String getSyntacticRepresentation(Function<String, String> iriTransformer) {
-		return getSyntacticRepresentation();
-	}
 }

@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.parser;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,14 +25,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.Validate;
+import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
-import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.model.implementation.TermFactory;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParserBase.ConfigurableLiteralDelimiter;
+import org.semanticweb.rulewerk.parser.datasources.DataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.javacc.SubParserFactory;
 
 /**
@@ -54,12 +57,12 @@ public class ParserConfiguration {
 	/**
 	 * The registered data sources.
 	 */
-	private final HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
+	private HashMap<String, DataSourceDeclarationHandler> dataSources = new HashMap<>();
 
 	/**
 	 * The registered datatypes.
 	 */
-	private final HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
+	private HashMap<String, DatatypeConstantHandler> datatypes = new HashMap<>();
 
 	/**
 	 * The registered configurable literals.
@@ -72,13 +75,36 @@ public class ParserConfiguration {
 	private HashMap<String, DirectiveHandler<KnowledgeBase>> directives = new HashMap<>();
 
 	/**
+	 * The current base path to resolve imports against. Defaults to the current
+	 * working directory.
+	 */
+	private String importBasePath = System.getProperty("user.dir");
+
+	public ParserConfiguration() {
+	}
+
+	/**
+	 * Copy constructor.
+	 *
+	 * @param other {@link ParserConfiguration} to copy
+	 */
+	public ParserConfiguration(ParserConfiguration other) {
+		this.allowNamedNulls = other.allowNamedNulls;
+		this.dataSources = new HashMap<>(other.dataSources);
+		this.literals = new HashMap<>(other.literals);
+		this.directives = new HashMap<>(other.directives);
+		this.importBasePath = new String(other.importBasePath);
+	}
+
+	/**
 	 * Register a new (type of) Data Source.
 	 *
 	 * This registers a handler for some custom value of the {@code DATASOURCE}
 	 * production of the rules grammar, corresponding to some {@link DataSource}
 	 * type.
 	 *
-	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar"> the grammar</a>
+	 * @see <a href="https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">
+	 *      the grammar</a>
 	 *
 	 * @param name    Name of the data source, as it appears in the declaring
 	 *                directive.
@@ -96,30 +122,28 @@ public class ParserConfiguration {
 	}
 
 	/**
-	 * Parse the source-specific part of a Data Source declaration.
+	 * Parse the source-specific part of a data source declaration.
 	 *
 	 * This is called by the parser to construct a {@link DataSourceDeclaration}. It
 	 * is responsible for instantiating an appropriate {@link DataSource} type.
 	 *
-	 * @param name             Name of the data source.
-	 * @param args             arguments given in the data source declaration.
-	 * @param subParserFactory a {@link SubParserFactory} instance that creates
-	 *                         parser with the same context as the current parser.
+	 * @param declaration literal that specifies the type and parameters for this
+	 *                    data source declarations
 	 *
-	 * @throws ParsingException when the declaration is invalid, e.g., if the Data
-	 *                          Source is not known.
+	 * @throws ParsingException when the declaration is invalid, e.g., if the data
+	 *                          source is not known.
 	 *
-	 * @return the Data Source instance.
+	 * @return the data source instance.
 	 */
-	public DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(final String name,
-			final List<DirectiveArgument> args, final SubParserFactory subParserFactory) throws ParsingException {
-		final DataSourceDeclarationHandler handler = this.dataSources.get(name);
+	public DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(PositiveLiteral declaration)
+			throws ParsingException {
+		final DataSourceDeclarationHandler handler = this.dataSources.get(declaration.getPredicate().getName());
 
 		if (handler == null) {
-			throw new ParsingException("Data source \"" + name + "\" is not known.");
+			throw new ParsingException("Data source \"" + declaration.getPredicate().getName() + "\" is not known.");
 		}
 
-		return handler.handleDirective(args, subParserFactory);
+		return handler.handleDataSourceDeclaration(declaration.getArguments(), this.importBasePath);
 	}
 
 	/**
@@ -127,12 +151,14 @@ public class ParserConfiguration {
 	 *
 	 * @param lexicalForm the (unescaped) lexical form of the constant.
 	 * @param datatype    the datatype, or null if not present.
+	 * @param termFactory the {@link TermFactory} to use for creating the result
 	 *
 	 * @throws ParsingException when the lexical form is invalid for the given data
 	 *                          type.
 	 * @return the {@link Constant} corresponding to the given arguments.
 	 */
-	public Constant parseDatatypeConstant(final String lexicalForm, final String datatype) throws ParsingException {
+	public Constant parseDatatypeConstant(final String lexicalForm, final String datatype,
+			final TermFactory termFactory) throws ParsingException {
 		final String type = ((datatype != null) ? datatype : PrefixDeclarationRegistry.XSD_STRING);
 		final DatatypeConstantHandler handler = this.datatypes.get(type);
 
@@ -140,7 +166,7 @@ public class ParserConfiguration {
 			return handler.createConstant(lexicalForm);
 		}
 
-		return Expressions.makeDatatypeConstant(lexicalForm, type);
+		return termFactory.makeDatatypeConstant(lexicalForm, type);
 	}
 
 	/**
@@ -252,7 +278,7 @@ public class ParserConfiguration {
 	 *
 	 * @return the (possibly updated) KnowledgeBase
 	 */
-	public KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments,
+	public KnowledgeBase parseDirectiveStatement(String name, List<Argument> arguments,
 			SubParserFactory subParserFactory) throws ParsingException {
 		final DirectiveHandler<KnowledgeBase> handler = this.directives.get(name);
 
@@ -286,7 +312,8 @@ public class ParserConfiguration {
 	}
 
 	/**
-	 * Disallow parsing of {@link org.semanticweb.rulewerk.core.model.api.NamedNull}.
+	 * Disallow parsing of
+	 * {@link org.semanticweb.rulewerk.core.model.api.NamedNull}.
 	 *
 	 * @return this
 	 */
@@ -295,12 +322,39 @@ public class ParserConfiguration {
 	}
 
 	/**
-	 * Whether parsing of {@link org.semanticweb.rulewerk.core.model.api.NamedNull} is
-	 * allowed.
+	 * Whether parsing of {@link org.semanticweb.rulewerk.core.model.api.NamedNull}
+	 * is allowed.
 	 *
 	 * @return true iff parsing of NamedNulls is allowed.
 	 */
 	public boolean isParsingOfNamedNullsAllowed() {
 		return this.allowNamedNulls;
 	}
+
+	/**
+	 * Get the base path for file imports.
+	 *
+	 * @return the path that relative imports will be resolved against.
+	 */
+	public String getImportBasePath() {
+		return this.importBasePath;
+	}
+
+	/**
+	 * Set a new base path for file imports.
+	 *
+	 * @param importBasePath path that relative imports will be
+	 * resolved against. If null, default to current working
+	 * directory.
+	 */
+	public ParserConfiguration setImportBasePath(String importBasePath) {
+		if (importBasePath != null) {
+			this.importBasePath = importBasePath;
+		} else {
+			this.importBasePath = System.getProperty("user.dir");
+		}
+
+		return this;
+	}
+
 }

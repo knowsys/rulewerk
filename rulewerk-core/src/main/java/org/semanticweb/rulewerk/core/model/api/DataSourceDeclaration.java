@@ -1,7 +1,5 @@
 package org.semanticweb.rulewerk.core.model.api;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -29,7 +27,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Serializer;
  * @author Markus Kroetzsch
  *
  */
-public interface DataSourceDeclaration extends Statement, Entity {
+public interface DataSourceDeclaration extends Statement {
 
 	/**
 	 * Returns the {@link Predicate} that this source applies to.
@@ -45,8 +43,4 @@ public interface DataSourceDeclaration extends Statement, Entity {
 	 */
 	DataSource getDataSource();
 
-	@Override
-	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
 }

@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  * @author Markus Kroetzsch
  *
  */
-public interface SyntaxObject {
+public interface SyntaxObject extends Entity {
 
 	/**
 	 * Returns the stream of distinct terms that occur in this object.

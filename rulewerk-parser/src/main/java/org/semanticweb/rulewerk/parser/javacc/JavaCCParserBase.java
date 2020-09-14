@@ -25,19 +25,23 @@ import java.util.List;
 
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
+import org.semanticweb.rulewerk.core.model.api.Argument;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
+import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
+import org.semanticweb.rulewerk.core.model.api.LanguageStringConstant;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Statement;
 import org.semanticweb.rulewerk.core.model.api.Term;
+import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
-import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.model.implementation.TermFactory;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.implementation.Skolemization;
 import org.semanticweb.rulewerk.parser.DefaultParserConfiguration;
-import org.semanticweb.rulewerk.parser.DirectiveArgument;
 import org.semanticweb.rulewerk.parser.LocalPrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -63,6 +67,7 @@ public class JavaCCParserBase {
 	private KnowledgeBase knowledgeBase;
 	private ParserConfiguration parserConfiguration;
 	private Skolemization skolemization = new Skolemization();
+	private TermFactory termFactory = new TermFactory();
 
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
@@ -142,7 +147,7 @@ public class JavaCCParserBase {
 		} catch (PrefixDeclarationException e) {
 			throw makeParseExceptionWithCause("Failed to parse IRI", e);
 		}
-		return Expressions.makeAbstractConstant(absoluteIri);
+		return termFactory.makeAbstractConstant(absoluteIri);
 	}
 
 	/**
@@ -154,14 +159,30 @@ public class JavaCCParserBase {
 	 */
 	Constant createConstant(String lexicalForm, String datatype) throws ParseException {
 		try {
-			return parserConfiguration.parseDatatypeConstant(lexicalForm, datatype);
+			return parserConfiguration.parseDatatypeConstant(lexicalForm, datatype, termFactory);
 		} catch (ParsingException e) {
 			throw makeParseExceptionWithCause("Failed to parse Constant", e);
 		}
 	}
 
-	NamedNull createNamedNull(String lexicalForm) throws ParseException {
-		return this.skolemization.skolemizeNamedNull(lexicalForm);
+	NamedNull createNamedNull(String lexicalForm) {
+		return this.skolemization.getRenamedNamedNull(lexicalForm);
+	}
+
+	UniversalVariable createUniversalVariable(String name) {
+		return termFactory.makeUniversalVariable(name);
+	}
+
+	ExistentialVariable createExistentialVariable(String name) {
+		return termFactory.makeExistentialVariable(name);
+	}
+
+	LanguageStringConstant createLanguageStringConstant(String string, String languageTag) {
+		return termFactory.makeLanguageStringConstant(string, languageTag);
+	}
+
+	Predicate createPredicate(String name, int arity) {
+		return termFactory.makePredicate(name, arity);
 	}
 
 	void addStatement(Statement statement) {
@@ -177,7 +198,7 @@ public class JavaCCParserBase {
 			}
 		}
 
-		Predicate predicate = Expressions.makePredicate(predicateName, arity);
+		Predicate predicate = termFactory.makePredicate(predicateName, arity);
 		addStatement(new DataSourceDeclarationImpl(predicate, dataSource));
 	}
 
@@ -330,11 +351,9 @@ public class JavaCCParserBase {
 		return this.prefixDeclarationRegistry;
 	}
 
-	DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(String syntacticForm,
-			List<DirectiveArgument> arguments, SubParserFactory subParserFactory) throws ParseException {
+	DataSource parseDataSourceSpecificPartOfDataSourceDeclaration(PositiveLiteral declaration) throws ParseException {
 		try {
-			return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(syntacticForm, arguments,
-					subParserFactory);
+			return parserConfiguration.parseDataSourceSpecificPartOfDataSourceDeclaration(declaration);
 		} catch (ParsingException e) {
 			throw makeParseExceptionWithCause(
 					"Failed while trying to parse the source-specific part of a data source declaration", e);
@@ -346,12 +365,12 @@ public class JavaCCParserBase {
 		return parserConfiguration.parseConfigurableLiteral(delimiter, syntacticForm, subParserFactory);
 	}
 
-	KnowledgeBase parseDirectiveStatement(String name, List<DirectiveArgument> arguments,
-			SubParserFactory subParserFactory) throws ParseException {
+	KnowledgeBase parseDirectiveStatement(String name, List<Argument> arguments, SubParserFactory subParserFactory)
+			throws ParseException {
 		try {
 			return parserConfiguration.parseDirectiveStatement(name, arguments, subParserFactory);
 		} catch (ParsingException e) {
-			throw makeParseExceptionWithCause("Failed while trying to parse directive statement", e);
+			throw makeParseExceptionWithCause(e.getMessage(), e);
 		}
 	}
 

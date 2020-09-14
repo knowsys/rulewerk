@@ -27,6 +27,7 @@ import org.semanticweb.rulewerk.core.model.api.Term;
 
 /**
  * Implements {@link QueryResult}s.
+ * 
  * @author Irina Dragoste
  *
  */
@@ -72,7 +73,7 @@ public final class QueryResultImpl implements QueryResult {
 
 	@Override
 	public String toString() {
-		return "QueryResult [terms=" + this.terms + "]";
+		return this.terms.toString();
 	}
 
 }

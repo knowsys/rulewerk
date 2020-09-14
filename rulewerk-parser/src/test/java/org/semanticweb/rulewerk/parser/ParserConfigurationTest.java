@@ -28,9 +28,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-import org.semanticweb.rulewerk.parser.DataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.DatatypeConstantHandler;
 import org.semanticweb.rulewerk.parser.ParserConfiguration;
+import org.semanticweb.rulewerk.parser.datasources.DataSourceDeclarationHandler;
 import org.semanticweb.rulewerk.parser.javacc.SubParserFactory;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParserBase.ConfigurableLiteralDelimiter;
 

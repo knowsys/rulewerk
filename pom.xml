@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.semanticweb.rulewerk</groupId>
 	<artifactId>rulewerk-parent</artifactId>
-	<version>0.7.0-SNAPSHOT</version>
+	<version>0.8.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Rulewerk</name>
@@ -23,11 +21,12 @@
 		<module>rulewerk-owlapi</module>
 		<module>rulewerk-graal</module>
 		<module>rulewerk-parser</module>
+		<module>rulewerk-commands</module>
 		<module>rulewerk-examples</module>
 		<module>rulewerk-client</module>
 		<module>rulewerk-reliances</module>
 		<module>coverage</module>
-	</modules>
+  </modules>
 
 	<licenses>
 		<license>
@@ -89,6 +88,8 @@
 		<graal.version>1.3.1</graal.version>
 		<picoli.version>4.0.4</picoli.version>
 		<shade.version>3.2.0</shade.version>
+		<jline.version>3.16.0</jline.version>
+		<jansi.version>1.18</jansi.version>
 	</properties>
 
 	<dependencies>
@@ -131,7 +132,7 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
 					<version>1.14</version>
-					<configuration />
+					<configuration/>
 					<executions>
 						<execution>
 							<id>first</id>
@@ -174,7 +175,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 
@@ -189,7 +190,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute />
+										<execute/>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -427,6 +428,9 @@
 			<activation>
 				<jdk>[9,)</jdk>
 			</activation>
+			<properties>
+				<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>

@@ -20,8 +20,6 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-
 /**
  * Interface for universally quantified variables, i.e., variables that appear
  * in the scope of an (implicit) universal quantifier in a rule.
@@ -35,8 +33,4 @@ public interface UniversalVariable extends Variable {
 		return TermType.UNIVERSAL_VARIABLE;
 	}
 
-	@Override
-	default String getSyntacticRepresentation() {
-		return Serializer.getString(this);
-	}
 }
