@@ -1,12 +1,7 @@
 package org.semanticweb.rulewerk.core.model.api;
 
-<<<<<<< HEAD
 import java.util.List;
 
-import org.semanticweb.rulewerk.core.model.implementation.Serializer;
-
-=======
->>>>>>> master
 /*-
  * #%L
  * Rulewerk Core Components
