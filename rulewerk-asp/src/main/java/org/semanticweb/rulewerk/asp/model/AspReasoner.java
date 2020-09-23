@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.asp;
+package org.semanticweb.rulewerk.asp.model;
 
 /*
  * #%L
@@ -20,10 +20,18 @@ package org.semanticweb.rulewerk.asp;
  * #L%
  */
 
+import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 
 /**
  * Interface that extends the standard reasoner by ASP specific features
  */
 public interface AspReasoner extends Reasoner {
+
+	/**
+	 * Getter for the transformed knowledge base that is an over-approximation of the ASP knowledge base.
+	 *
+	 * @return knowledge base
+	 */
+	KnowledgeBase getDatalogKnowledgeBase();
 }

@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -40,6 +41,21 @@ import org.semanticweb.rulewerk.core.model.implementation.LanguageStringConstant
 import org.semanticweb.rulewerk.core.model.implementation.RuleImpl;
 
 public class RuleImplTest {
+
+	final Variable x = Expressions.makeUniversalVariable("X");
+	final Variable y = Expressions.makeExistentialVariable("Y");
+	final Variable y2 = Expressions.makeUniversalVariable("Y");
+	final Variable z = Expressions.makeUniversalVariable("Z");
+
+	final Constant c = Expressions.makeAbstractConstant("c");
+	final Constant d = Expressions.makeAbstractConstant("d");
+	final LanguageStringConstantImpl s = new LanguageStringConstantImpl("Test", "en");
+
+	final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
+	final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
+	final PositiveLiteral atom3 = Expressions.makePositiveLiteral("p", c, z);
+	final PositiveLiteral atom4 = Expressions.makePositiveLiteral("q", x, y2, z);
+	final NegativeLiteral negativeLiteral = Expressions.makeNegativeLiteral("r", x, d);
 
 	@Test
 	public void testGetters() {
@@ -146,13 +162,6 @@ public class RuleImplTest {
 
 	@Test
 	public void ruleToStringTest() {
-		final Variable x = Expressions.makeUniversalVariable("X");
-		final Variable y = Expressions.makeExistentialVariable("Y");
-		final Variable z = Expressions.makeUniversalVariable("Z");
-		final Variable y2 = Expressions.makeUniversalVariable("Y");
-		final Constant d = Expressions.makeAbstractConstant("d");
-		final Constant c = Expressions.makeAbstractConstant("c");
-		final LanguageStringConstantImpl s = new LanguageStringConstantImpl("Test", "en");
 		final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
 		final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
 		final PositiveLiteral headAtom1 = Expressions.makePositiveLiteral("q", x, y);
@@ -170,7 +179,43 @@ public class RuleImplTest {
 		final Rule rule2 = new RuleImpl(headPositiveLiterals, bodyConjunction);
 		assertEquals("q(?X, !Y) :- p(?X, c), p(?X, ?Z) .", rule1.toString());
 		assertEquals("q(?X, !Y) :- p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, \"Test\"@en) .", rule2.toString());
-
 	}
 
+	@Test
+	public void getIndexTest() {
+		List<Literal> bodyList = Arrays.asList(atom1, negativeLiteral, atom4);
+		List<PositiveLiteral> headList = Collections.singletonList(atom2);
+		Conjunction<Literal> body = Expressions.makeConjunction(bodyList);
+		Conjunction<PositiveLiteral> head = Expressions.makeConjunction(headList);
+		Rule rule = Expressions.makeRule(head, body);
+		Rule rule1 = Expressions.makeRule(head, body);
+
+		List<PositiveLiteral> headList2 = Collections.singletonList(atom3);
+		Conjunction<PositiveLiteral> head2 = Expressions.makeConjunction(headList2);
+		Rule rule2 = Expressions.makeRule(head2, body);
+
+		assertEquals(rule.getIndex(), rule.getIndex());
+		assertEquals(rule.getIndex(), rule1.getIndex());
+		assertNotEquals(rule.getIndex(), rule2.getIndex());
+	}
+
+	@Test
+	public void getBodyVariablesLiteralTest() {
+		List<Literal> bodyList = Arrays.asList(atom1, negativeLiteral, atom4);
+		List<PositiveLiteral> headList = Collections.singletonList(atom2);
+		Conjunction<Literal> body = Expressions.makeConjunction(bodyList);
+		Conjunction<PositiveLiteral> head = Expressions.makeConjunction(headList);
+		Rule rule = Expressions.makeRule(head, body);
+		PositiveLiteral expectedLiteral = Expressions.makePositiveLiteral("_rule_" + rule.getIndex(), x, y2, z);
+		assertEquals(expectedLiteral, rule.getBodyVariablesLiteral());
+
+		PositiveLiteral groundAtom = Expressions.makePositiveLiteral("p", c);
+		PositiveLiteral groundAtom2 = Expressions.makePositiveLiteral("q", d);
+		Conjunction<Literal> body2 = Expressions.makeConjunction(Collections.singletonList(groundAtom));
+		Conjunction<PositiveLiteral> head2 = Expressions.makeConjunction(Collections.singletonList(groundAtom2));
+		Rule rule2 = Expressions.makeRule(head2, body2);
+		Constant constant = Expressions.makeAbstractConstant("_0");
+		PositiveLiteral expectedLiteral2 = Expressions.makePositiveLiteral("_rule_" + rule2.getIndex(), constant);
+		assertEquals(expectedLiteral2, rule2.getBodyVariablesLiteral());
+	}
 }
