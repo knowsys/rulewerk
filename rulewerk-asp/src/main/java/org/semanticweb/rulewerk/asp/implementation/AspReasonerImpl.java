@@ -45,8 +45,6 @@ public class AspReasonerImpl implements AspReasoner {
 
 	final private Map<Rule, Integer> ruleIndexMap;
 
-	private LogLevel internalLogLevel = LogLevel.WARNING;
-
 	/**
 	 * Auxiliary class to over-approximate ASP statements by plain Datalog statements.
 	 *
@@ -108,7 +106,7 @@ public class AspReasonerImpl implements AspReasoner {
 
 		// Create reasoner with the transformed knowledge base
 		this.datalogReasoner = new VLogReasoner(datalogKnowledgeBase);
-		this.setLogLevel(this.internalLogLevel);
+		this.setLogLevel(LogLevel.WARNING);
 	}
 
 	@Override
@@ -119,6 +117,21 @@ public class AspReasonerImpl implements AspReasoner {
 	@Override
 	public KnowledgeBase getDatalogKnowledgeBase() {
 		return this.datalogKnowledgeBase;
+	}
+
+	@Override
+	public void setLogLevel(LogLevel logLevel) {
+		this.datalogReasoner.setLogLevel(logLevel);
+	}
+
+	@Override
+	public LogLevel getLogLevel() {
+		return this.datalogReasoner.getLogLevel();
+	}
+
+	@Override
+	public void setLogFile(String filePath) {
+		this.datalogReasoner.setLogFile(filePath);
 	}
 
 	// start: dummy implementations
@@ -160,21 +173,6 @@ public class AspReasonerImpl implements AspReasoner {
 	@Override
 	public RuleRewriteStrategy getRuleRewriteStrategy() {
 		return null;
-	}
-
-	@Override
-	public void setLogLevel(LogLevel logLevel) {
-
-	}
-
-	@Override
-	public LogLevel getLogLevel() {
-		return null;
-	}
-
-	@Override
-	public void setLogFile(String filePath) {
-
 	}
 
 	@Override
