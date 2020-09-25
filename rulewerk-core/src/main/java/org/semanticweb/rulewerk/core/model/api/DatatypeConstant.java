@@ -58,4 +58,18 @@ public interface DatatypeConstant extends Constant {
 	 */
 	String getLexicalValue();
 
+	/**
+	 * Returns a string representation of this value that conforms to RDF
+	 * serialisation formats such as Turtle. Turtle supports some abbreviations for
+	 * common types, e.g., by leaving the type away for xsd:string literals, which
+	 * can be enabled or disabled through the functions parameter.
+	 * 
+	 * @param useAbbreviations if true, the result may use Turtle-style
+	 *                         abbreviations to shorten the output where supported;
+	 *                         otherwise the literal will always be serialised in
+	 *                         full
+	 * @return RDF-style string serialisation of the value
+	 */
+	String getRdfLiteralString(boolean useAbbreviations);
+
 }

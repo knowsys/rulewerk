@@ -427,10 +427,21 @@ public class Serializer {
 		} else if (PrefixDeclarationRegistry.XSD_INTEGER.equals(datatypeConstant.getDatatype())) {
 			writer.write(datatypeConstant.getLexicalValue());
 		} else {
-			writer.write(getQuotedString(datatypeConstant.getLexicalValue()));
-			writer.write("^^");
-			writer.write(getIri(datatypeConstant.getDatatype()));
+			writeDatatypeConstantNoAbbreviations(datatypeConstant);
 		}
+	}
+
+	/**
+	 * Writes a serialization of the given {@link DatatypeConstant} without using
+	 * any Turtle-style abbreviations for common datatypes like string and int.
+	 *
+	 * @param datatypeConstant a {@link DatatypeConstant}
+	 * @throws IOException
+	 */
+	public void writeDatatypeConstantNoAbbreviations(DatatypeConstant datatypeConstant) throws IOException {
+		writer.write(getQuotedString(datatypeConstant.getLexicalValue()));
+		writer.write("^^");
+		writer.write(getIri(datatypeConstant.getDatatype()));
 	}
 
 	/**

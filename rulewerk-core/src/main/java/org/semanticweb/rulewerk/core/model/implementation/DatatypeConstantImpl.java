@@ -59,6 +59,15 @@ public class DatatypeConstantImpl implements DatatypeConstant {
 	}
 
 	@Override
+	public String getRdfLiteralString(boolean useAbbreviations) {
+		if (useAbbreviations) {
+			return Serializer.getSerialization(serializer -> serializer.writeDatatypeConstant(this));
+		} else {
+			return Serializer.getSerialization(serializer -> serializer.writeDatatypeConstantNoAbbreviations(this));
+		}
+	}
+
+	@Override
 	public String toString() {
 		return Serializer.getSerialization(serializer -> serializer.writeDatatypeConstant(this));
 	}

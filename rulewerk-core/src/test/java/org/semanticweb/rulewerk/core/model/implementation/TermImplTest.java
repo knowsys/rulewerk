@@ -144,6 +144,8 @@ public class TermImplTest {
 	public void datatypeConstantToStringTest() {
 		DatatypeConstantImpl c = new DatatypeConstantImpl("c", PrefixDeclarationRegistry.XSD_STRING);
 		assertEquals("\"c\"", c.toString());
+		assertEquals("\"c\"", c.getRdfLiteralString(true));
+		assertEquals("\"c\"^^<" + PrefixDeclarationRegistry.XSD_STRING + ">", c.getRdfLiteralString(false));
 	}
 
 	@Test
