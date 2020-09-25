@@ -57,5 +57,5 @@ Development
 * The master branch may require a development version of [VLog](https://github.com/karmaresearch/vlog).
 Use the script `build-vlog-library.sh` to create and install it on your machine (you may need to delete previous local builds `build-vlog` and `local_builds` first). This will compile and install `vlog-java`dependency with the current code of [VLog](https://github.com/karmaresearch/vlog) master branch.
 
-* Users of Eclipse should install the javacc plugin to generate the parser sources. After installing the plugin, right-click on the file `JavaCCParser.jj` in `org.semanticweb.rulewerk.parser.javacc`, and select "compile with javacc". This step needs to be repeated when the file changes.
+* Users of Eclipse should install the [JavaCC Eclipse Plug-in](https://marketplace.eclipse.org/content/javacc-eclipse-plug) to generate the parser sources. After [installing](https://marketplace.eclipse.org/content/javacc-eclipse-plug/help) the plugin, right-click on the file `JavaCCParser.jj` in `org.semanticweb.rulewerk.parser.javacc`, and select "compile with javacc". This step needs to be repeated when the file changes.
 * To build the standalone client jar, run `mvn install -Pclient`. This generates `standalone-rulewerk-client-[VERSION].jar` in `rulewerk-client/target`.
