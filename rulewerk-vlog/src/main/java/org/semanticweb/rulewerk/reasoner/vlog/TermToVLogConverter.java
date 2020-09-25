@@ -58,7 +58,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 */
 	@Override
 	public karmaresearch.vlog.Term visit(final DatatypeConstant term) {
-		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getName());
+		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getRdfLiteralString(false));
 	}
 
 	/**

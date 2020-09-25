@@ -20,6 +20,7 @@ package org.semanticweb.rulewerk.parser.datasources;
  * #L%
  */
 
+import java.io.IOException;
 import java.util.List;
 
 import org.semanticweb.rulewerk.core.model.api.DataSource;
@@ -39,6 +40,10 @@ public class TridentDataSourceDeclarationHandler implements DataSourceDeclaratio
 		String fileName = DataSourceDeclarationHandler.validateFileNameArgument(terms.get(0),
 				"path to Trident database", importBasePath);
 
-		return new TridentDataSource(fileName);
+		try {
+			return new TridentDataSource(fileName);
+		} catch (IOException e) {
+			throw new ParsingException("Could not use trident database \"" + fileName + "\": " + e.getMessage(), e);
+		}
 	}
 }
