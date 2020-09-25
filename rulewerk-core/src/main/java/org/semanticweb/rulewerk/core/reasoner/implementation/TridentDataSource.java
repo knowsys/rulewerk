@@ -50,10 +50,10 @@ public class TridentDataSource implements ReasonerDataSource {
 	final String filePath;
 	final String fileName;
 
-	public TridentDataSource(final String filePath) {
+	public TridentDataSource(final String filePath) throws IOException {
 		Validate.notBlank(filePath, "Path to Trident database cannot be blank!");
-		this.filePath = filePath;  // unmodified file path, necessary for correct serialisation
-		this.fileName = new File(filePath).getName();
+		this.filePath = filePath; // unmodified file path, necessary for correct serialisation
+		this.fileName = new File(filePath).getCanonicalPath();
 	}
 
 	public String getPath() {
@@ -63,7 +63,6 @@ public class TridentDataSource implements ReasonerDataSource {
 	public String getName() {
 		return this.fileName;
 	}
-
 
 	@Override
 	public Fact getDeclarationFact() {
