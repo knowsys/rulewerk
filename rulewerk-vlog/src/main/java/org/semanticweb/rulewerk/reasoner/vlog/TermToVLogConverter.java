@@ -58,7 +58,7 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 */
 	@Override
 	public karmaresearch.vlog.Term visit(final DatatypeConstant term) {
-		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, term.getRdfLiteralString(false));
+		return new karmaresearch.vlog.Term(karmaresearch.vlog.Term.TermType.CONSTANT, getVLogNameForConstant(term));
 	}
 
 	/**
@@ -78,11 +78,10 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	 * @return VLog constant string
 	 */
 	public static String getVLogNameForConstant(final Constant constant) {
-		final String constantName = constant.getName();
 		if (constant.getType() == TermType.ABSTRACT_CONSTANT) {
-			return getVLogNameForIRI(constantName);
+			return getVLogNameForIRI(constant.getName());
 		} else { // datatype literal
-			return constantName;
+			return ((DatatypeConstant)constant).getRdfLiteralString(false);
 		}
 	}
 
