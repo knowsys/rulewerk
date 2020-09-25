@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
@@ -48,6 +49,9 @@ public class VLogReasonerRdfInput {
 	private static final PositiveLiteral queryAtom = Expressions.makePositiveLiteral(ternaryPredicate,
 			Expressions.makeUniversalVariable("s"), Expressions.makeUniversalVariable("p"),
 			Expressions.makeUniversalVariable("o"));
+	private static final PositiveLiteral queryAtomString = Expressions.makePositiveLiteral(ternaryPredicate,
+			Expressions.makeUniversalVariable("s"), Expressions.makeUniversalVariable("p"),
+			Expressions.makeDatatypeConstant("test string", PrefixDeclarationRegistry.XSD_STRING));
 
 	@SuppressWarnings("unchecked")
 	private static final Set<List<Term>> expectedTernaryQueryResult = Sets.newSet(
@@ -55,6 +59,11 @@ public class VLogReasonerRdfInput {
 					Expressions.makeAbstractConstant("http://example.org/p"),
 					Expressions.makeAbstractConstant("http://example.org/c2")),
 			Arrays.asList(Expressions.makeAbstractConstant("http://example.org/c1"),
+					Expressions.makeAbstractConstant("http://example.org/q"),
+					Expressions.makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string")));
+	@SuppressWarnings("unchecked")
+	private static final Set<List<Term>> expectedTernaryQueryResultString = Sets
+			.newSet(Arrays.asList(Expressions.makeAbstractConstant("http://example.org/c1"),
 					Expressions.makeAbstractConstant("http://example.org/q"),
 					Expressions.makeDatatypeConstant("test string", "http://www.w3.org/2001/XMLSchema#string")));
 
@@ -83,6 +92,12 @@ public class VLogReasonerRdfInput {
 	}
 
 	@Test
+	public void queryStringFromRdf_succeeds() throws IOException {
+		testQueryStringFromSingleRdfDataSource(new RdfFileDataSource(
+				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.unzippedNtFileRoot + ".nt"));
+	}
+
+	@Test
 	public void testLoadTernaryFactsFromRdfFileGz() throws IOException {
 		testLoadTernaryFactsFromSingleRdfDataSource(new RdfFileDataSource(
 				FileDataSourceTestUtils.INPUT_FOLDER + FileDataSourceTestUtils.zippedNtFileRoot + ".nt.gz"));
@@ -99,6 +114,20 @@ public class VLogReasonerRdfInput {
 			final Set<List<Term>> queryResult = QueryResultsUtils.collectQueryResults(queryResultIterator);
 
 			assertEquals(expectedTernaryQueryResult, queryResult);
+		}
+	}
+
+	public void testQueryStringFromSingleRdfDataSource(final FileDataSource fileDataSource) throws IOException {
+		final KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatement(new DataSourceDeclarationImpl(ternaryPredicate, fileDataSource));
+
+		try (final VLogReasoner reasoner = new VLogReasoner(kb)) {
+			reasoner.load();
+
+			final QueryResultIterator queryResultIterator = reasoner.answerQuery(queryAtomString, true);
+			final Set<List<Term>> queryResult = QueryResultsUtils.collectQueryResults(queryResultIterator);
+
+			assertEquals(expectedTernaryQueryResultString, queryResult);
 		}
 	}
 
