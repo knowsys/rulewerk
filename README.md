@@ -35,9 +35,9 @@ You need to use Java 1.8 or above. Available source modules include:
 
 <a name="anchor-build-vlog">The released **rulewerk-vlog** packages use [`vlog-java`](https://search.maven.org/search?q=a:vlog-java), which packages system-dependent [VLog](https://github.com/karmaresearch/vlog) binaries for Linux, macOS, and Windows, and should work out of the box with current versions of these systems (for Linux, you will need at least libstdc++-v3.4.22; for macOS, you will need at least macOS 10.14). In case of problems, or if you are using the current development version, own binaries can be compiled as follows:
 * (Optional) It is recommended to increase the version of `vlog-java` (in `rulewerk-vlog/pom.xml`) before executing the next steps.
-* Delete (if existing) previous local builds (`local_builds` directory)
+* Delete (if existing) previous local builds (`local_builds` directory).
 * Run [build-vlog-library.sh](https://github.com/knowsys/rulewerk/blob/master/build-vlog-library.sh) or execute the commands in this file manually. This will compile a local jar file on your system, copy it to ```rulewerk-vlog/lib/jvlog-local.jar```, and install the new jar in your local Maven repository in place of the distributed version of `vlog-java`.
-* Run ```mvn install``` to test if the setup works</a>
+* Run ```mvn install``` to test if the setup works.</a>
 
 
 
