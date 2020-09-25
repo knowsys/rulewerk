@@ -33,8 +33,8 @@ You need to use Java 1.8 or above. Available source modules include:
 * **rulewerk-commands**: support for running commands, as done by the client
 * **rulewerk-vlog**: support for using [VLog](https://github.com/karmaresearch/vlog) as a reasoning backend for Rulewerk.
 
-The released packages use `vlog-java`, which packages system-dependent [VLog](https://github.com/karmaresearch/vlog) binaries for Linux, macOS, and Windows, and should work out of the box with current versions of these systems (for Linux, you will need at least libstdc++-v3.4.22; for macOS, you will need at least macOS 10.14). In case of problems, or if you are using the current development version, own binaries can be compiled as follows:
-
+The released **rulewerk-vlog** packages use [`vlog-java`](https://search.maven.org/search?q=a:vlog-java), which packages system-dependent [VLog](https://github.com/karmaresearch/vlog) binaries for Linux, macOS, and Windows, and should work out of the box with current versions of these systems (for Linux, you will need at least libstdc++-v3.4.22; for macOS, you will need at least macOS 10.14). In case of problems, or if you are using the current development version, own binaries can be compiled <a name="anchor-build-vlog">as follows</a> 
+* (Optional) It is recommended to increase the version of `vlog-java` (in `rulewerk-vlog/pom.xml`) before executing the next steps.
 * Run [build-vlog-library.sh](https://github.com/knowsys/rulewerk/blob/master/build-vlog-library.sh) or execute the commands in this file manually. This will compile a local jar file on your system, copy it to ```./rulewerk-vlog/lib/jvlog-local.jar```, and install the new jar in your local Maven repository in place of the distributed version of `vlog-java`.
 * Run ```mvn install``` to test if the setup works
 
@@ -55,7 +55,9 @@ Development
 * We largely follow [Java Programming Style Guidelines published by Petroware](https://petroware.no/javastyle.html). The main exception are the names of private members, which do not usually end in underscores in our code.
 
 * The master branch may require a development version of [VLog](https://github.com/karmaresearch/vlog).
-Use the script `build-vlog-library.sh` to create and install it on your machine (you may need to delete previous local builds `build-vlog` and `local_builds` first). This will compile and install `vlog-java`dependency with the current code of [VLog](https://github.com/karmaresearch/vlog) master branch.
+Use the script `build-vlog-library.sh` [as shown here](#anchor-build-vlog) to create and install it on your machine (you may need to delete previous local builds `build-vlog` and `local_builds` first). This will compile and install `vlog-java`dependency with the current code of [VLog](https://github.com/karmaresearch/vlog) master branch.
+
+
 
 * Users of Eclipse should install the [JavaCC Eclipse Plug-in](https://marketplace.eclipse.org/content/javacc-eclipse-plug) to generate the parser sources. After [installing](https://marketplace.eclipse.org/content/javacc-eclipse-plug/help) the plugin, right-click on the file `JavaCCParser.jj` in `org.semanticweb.rulewerk.parser.javacc`, and select "compile with javacc". This step needs to be repeated when the file changes.
 * To build the standalone client jar, run `mvn install -Pclient`. This generates `standalone-rulewerk-client-[VERSION].jar` in `rulewerk-client/target`.
