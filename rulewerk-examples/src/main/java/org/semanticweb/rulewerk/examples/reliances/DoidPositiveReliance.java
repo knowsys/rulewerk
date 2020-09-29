@@ -21,94 +21,80 @@ package org.semanticweb.rulewerk.examples.reliances;
  */
 
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.semanticweb.rulewerk.core.model.api.Fact;
+import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.implementation.ConjunctionImpl;
+import org.semanticweb.rulewerk.core.model.implementation.RuleImpl;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-import org.semanticweb.rulewerk.core.reasoner.LogLevel;
-import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.examples.ExamplesUtils;
-import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
-import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
+import org.semanticweb.rulewerk.reliances.Reliance;
 
-/**
- * This example reasons about human diseases, based on information from the
- * Disease Ontology (DOID) and Wikidata. It illustrates how to load data from
- * different sources (RDF file, SPARQL), and reason about these inputs using
- * rules that are loaded from a file. The rules used here employ existential
- * quantifiers and stratified negation.
- * 
- * @author Markus Kroetzsch
- * @author Larry Gonzalez
- */
-public class DoidPositiveReliance {
+public class PositiveReliance {
 
-	static private void meterialize(String ruleFile, String kind, int i) throws IOException, ParsingException {
-//		ExamplesUtils.configureLogging();
+	static private Rule addHeadAtom(Rule rule, PositiveLiteral literal) {
+		List<PositiveLiteral> head = new ArrayList<>();
+		rule.getHead().getLiterals().forEach(pl -> head.add(pl));
+		head.add(literal);
+		return new RuleImpl(new ConjunctionImpl<PositiveLiteral>(head), rule.getBody());
+	}
 
-		/* Configure rules */
-		KnowledgeBase kb;
-		try {
-			kb = RuleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + ruleFile)); // THIS SHOULD BE
-																								// CHANGED
-		} catch (final ParsingException e) {
-			System.out.println("Failed to parse rules: " + e.getMessage());
-			return;
+	static private Rule addBodyAtom(Rule rule, Literal literal) {
+		List<Literal> body = new ArrayList<>();
+		rule.getBody().getLiterals().forEach(l -> body.add(l));
+		body.add(literal);
+		return new RuleImpl(rule.getHead(), new ConjunctionImpl<Literal>(body));
+	}
+
+	static public void main(String args[]) throws Exception {
+		KnowledgeBase kb = RuleParser.parse(new FileInputStream(ExamplesUtils.INPUT_FOLDER + "/doid.rls"));
+
+		HashMap<Integer, Rule> rules = new HashMap<>();
+		kb.getRules().forEach(rule -> rules.put(rules.size(), rule));
+
+		System.out.println("Rules used in this example:");
+		for (int i = 0; i < rules.size(); i++) {
+			System.out.println(i + ": " + rules.get(i));
 		}
 
-		try (Reasoner reasoner = new VLogReasoner(kb)) {
-			reasoner.setLogFile(ExamplesUtils.OUTPUT_FOLDER + "vlog-" + kind + "-" + i + ".log");
-			reasoner.setLogLevel(LogLevel.DEBUG);
-
-			/* Initialise reasoner and compute inferences */
-			reasoner.reason();
-
-			/* Execute some queries */
-			final List<String> queries = Arrays.asList("humansWhoDiedOfCancer(?X)", "humansWhoDiedOfNoncancer(?X)",
-					"deathCause(?X,?Y)", "hasDoid(?X)", "doid(?X, ?Y)", "diseaseHierarchy(?X, ?Y)",
-					"cancerDisease(?X)");
-			System.out.println("\nNumber of inferred tuples for selected query atoms:");
-			for (final String queryString : queries) {
-				double answersCount = reasoner.countQueryAnswers(RuleParser.parsePositiveLiteral(queryString))
-						.getCount();
-				System.out.println("  " + queryString + ": " + answersCount);
+		List<int[]> positiveDependency = new ArrayList<>();
+		for (int i = 0; i < rules.size(); i++) {
+			for (int j = 0; j < rules.size(); j++) {
+				if (Reliance.positively(rules.get(i), rules.get(j))) {
+					positiveDependency.add(new int[] { i, j });
+				}
 			}
 		}
 
-	}
+		KnowledgeBase kb2 = new KnowledgeBase();
+		for (int i = 0; i < positiveDependency.size(); i++) {
+			String name = "newPredicateName";
+			Fact fact = RuleParser.parseFact(name + i + "(1).");
+			PositiveLiteral literal1 = RuleParser.parsePositiveLiteral(name + i + "(1)");
+			Literal literal2 = RuleParser.parseLiteral("~" + name + i + "(2)");
 
-	static private void print(long[] array) {
-		String content = "[";
-		for (int i = 0; i < array.length; i++) {
-			content += array[i] + ", ";
-		}
-		content += "]";
-		System.out.println(content);
-	}
-
-	public static void main(final String[] args) throws IOException, ParsingException {
-		// normal
-		long startTime, endTime;
-		long first[] = new long[10];
-		for (int i = 0; i < 10; i++) {
-			startTime = System.currentTimeMillis();
-			meterialize("/doid-local.rls", "ori", i);
-			endTime = System.currentTimeMillis();
-			first[i] = endTime - startTime;
+			int[] pair = positiveDependency.get(i);
+			if (pair[0] != pair[1]) {
+				kb2.addStatement(fact);
+				Rule r1 = addHeadAtom(rules.get(pair[0]), literal1);
+				System.out.println(r1);
+				rules.replace(pair[0], addHeadAtom(rules.get(pair[0]), literal1));
+				rules.replace(pair[1], addBodyAtom(rules.get(pair[1]), literal2));
+			}
 		}
 
-		long second[] = new long[10];
-		for (int i = 0; i < 10; i++) {
-			startTime = System.currentTimeMillis();
-			meterialize("/doid-local-positive-reliance.rls", "mod", i);
-			endTime = System.currentTimeMillis();
-			second[i] = endTime - startTime;
+		for (int i = 0; i < rules.size(); i++) {
+			kb2.addStatement(rules.get(i));
 		}
 
-		print(first);
-		print(second);
+		System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		kb2.getFacts().forEach(System.out::println);
+		kb2.getRules().forEach(System.out::println);
 	}
-
 }
