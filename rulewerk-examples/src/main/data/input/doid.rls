@@ -9,7 +9,7 @@
    '''?human wdt:P31 wd:Q5;
       wdt:P570 ?deathDate .
       FILTER (YEAR(?deathDate) = 2018)''') .
-      
+
 @source recentDeathsCause[2]: sparql(wdqs:sparql, "human,causeOfDeath",
    '''?human wdt:P31 wd:Q5;
       wdt:P570 ?deathDate ;
