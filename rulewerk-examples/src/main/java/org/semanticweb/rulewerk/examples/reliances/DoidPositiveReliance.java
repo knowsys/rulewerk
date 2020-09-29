@@ -43,7 +43,7 @@ import org.semanticweb.rulewerk.parser.RuleParser;
  * @author Markus Kroetzsch
  * @author Larry Gonzalez
  */
-public class DoidExampleMeasuringTime {
+public class DoidPositiveReliance {
 
 	static private void meterialize(String ruleFile, String kind, int i) throws IOException, ParsingException {
 //		ExamplesUtils.configureLogging();
