@@ -36,7 +36,7 @@ import org.semanticweb.rulewerk.examples.ExamplesUtils;
 import org.semanticweb.rulewerk.parser.RuleParser;
 import org.semanticweb.rulewerk.reliances.Reliance;
 
-public class PositiveReliance {
+public class DoidPositiveReliance {
 
 	static private Rule addHeadAtom(Rule rule, PositiveLiteral literal) {
 		List<PositiveLiteral> head = new ArrayList<>();
