@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.examples;
+package org.semanticweb.rulewerk.examples.reliances;
 
 /*-
  * #%L
@@ -32,6 +32,7 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.implementation.ConjunctionImpl;
 import org.semanticweb.rulewerk.core.model.implementation.RuleImpl;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.semanticweb.rulewerk.examples.ExamplesUtils;
 import org.semanticweb.rulewerk.parser.RuleParser;
 import org.semanticweb.rulewerk.reliances.Reliance;
 
