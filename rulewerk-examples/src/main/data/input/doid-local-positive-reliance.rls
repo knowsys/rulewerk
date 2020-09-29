@@ -3,29 +3,19 @@
 
 @source doidTriple[3]: load-rdf("src/main/data/input/doid.nt.gz") .
 
-%@source diseaseId[2]: sparql(wdqs:sparql, "disease,doid", "?disease wdt:P699 ?doid .") .
-@source diseaseId[2]: load-csv("src/main/data/input/reliances/wd-doid-diseaseId.csv.gz") .
+@source diseaseId[2]: load-csv("src/main/data/input/wd-doid-diseaseId.csv.gz") .
 
-%@source recentDeaths[1]: sparql(wdqs:sparql, "human",
-%   '''?human wdt:P31 wd:Q5;
-%      wdt:P570 ?deathDate .
-%      FILTER (YEAR(?deathDate) = 2018)''') .
-@source recentDeaths[1]: load-csv("src/main/data/input/reliances/wd-doid-recentDeadths.csv.gz") .
-      
-%@source recentDeathsCause[2]: sparql(wdqs:sparql, "human,causeOfDeath",
-%   '''?human wdt:P31 wd:Q5;
-%      wdt:P570 ?deathDate ;
-%      wdt:P509 ?causeOfDeath .
-%      FILTER (YEAR(?deathDate) = 2018)''') .
-@source recentDeathsCause[2]: load-csv("src/main/data/input/reliances/wd-doid-recentDeathsCause.csv.gz") .
+@source recentDeaths[1]: load-csv("src/main/data/input/wd-doid-recentDeadths.csv.gz") .
 
-p1(1).
-p2(1).
-p3(1).
-p4(1).
-p5(1).
-p6(1).
-p7(1).
+@source recentDeathsCause[2]: load-csv("src/main/data/input/wd-doid-recentDeathsCause.csv.gz") .
+
+p1(1) .
+p2(1) .
+p3(1) .
+p4(1) .
+p5(1) .
+p6(1) .
+p7(1) .
 
 % Combine recent death data (infer "unknown" cause if no cause given):
 deathCause(?X, ?Z), p1(1) :- recentDeathsCause(?X, ?Z) .

@@ -94,7 +94,7 @@ public class DoidExampleMeasuringTime {
 		long first[] = new long[10];
 		for (int i = 0; i < 10; i++) {
 			startTime = System.currentTimeMillis();
-			meterialize("/doid.rls", "ori", i);
+			meterialize("/doid-local.rls", "ori", i);
 			endTime = System.currentTimeMillis();
 			first[i] = endTime - startTime;
 		}
@@ -102,7 +102,7 @@ public class DoidExampleMeasuringTime {
 		long second[] = new long[10];
 		for (int i = 0; i < 10; i++) {
 			startTime = System.currentTimeMillis();
-			meterialize("/doid-modified.rls", "mod", i);
+			meterialize("/doid-local-positive-reliance.rls", "mod", i);
 			endTime = System.currentTimeMillis();
 			second[i] = endTime - startTime;
 		}
