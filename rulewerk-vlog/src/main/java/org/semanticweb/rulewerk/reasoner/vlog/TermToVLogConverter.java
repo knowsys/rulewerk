@@ -1,5 +1,6 @@
 package org.semanticweb.rulewerk.reasoner.vlog;
 
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.DatatypeConstant;
@@ -80,8 +81,12 @@ class TermToVLogConverter implements TermVisitor<karmaresearch.vlog.Term> {
 	public static String getVLogNameForConstant(final Constant constant) {
 		if (constant.getType() == TermType.ABSTRACT_CONSTANT) {
 			return getVLogNameForIRI(constant.getName());
-		} else { // datatype literal
+		} else if (constant.getType() == TermType.DATATYPE_CONSTANT) { 
 			return ((DatatypeConstant)constant).getRdfLiteralString(false);
+		} else if (constant.getType() == TermType.LANGSTRING_CONSTANT) {
+			return constant.getName();
+		} else {
+			throw new RulewerkRuntimeException("Unexpected term type: " + constant.getType());
 		}
 	}
 
