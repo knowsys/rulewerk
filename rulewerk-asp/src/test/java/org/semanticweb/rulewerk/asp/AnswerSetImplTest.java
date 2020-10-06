@@ -38,10 +38,12 @@ public class AnswerSetImplTest {
 	final Variable y = Expressions.makeUniversalVariable("Z");
 
 	final Constant c = Expressions.makeAbstractConstant("c");
+	final Constant d = Expressions.makeAbstractConstant("d");
+	final Constant e = Expressions.makeAbstractConstant("e");
 
-	final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
-	final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, y);
-	final PositiveLiteral atom3 = Expressions.makePositiveLiteral("q", x, c);
+	final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", d, c);
+	final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", e, c);
+	final PositiveLiteral atom3 = Expressions.makePositiveLiteral("q", d, c);
 
 	@Test(expected = NullPointerException.class)
 	public void answerSetRepresentationNotNull() {
@@ -130,5 +132,43 @@ public class AnswerSetImplTest {
 		integerLiteralMap.put(3, atom3);
 		AnswerSet answerSet = new AnswerSetImpl("1 2 3", integerLiteralMap);
 		answerSet.getLiterals(Expressions.makePredicate("q", 2)).add(atom1);
+	}
+
+	@Test
+	public void getQueryResultsForQueryWithoutConstants() {
+		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
+		integerLiteralMap.put(1, atom1);
+		integerLiteralMap.put(2, atom2);
+		integerLiteralMap.put(3, atom3);
+		AnswerSet answerSet = new AnswerSetImpl("1 2 3", integerLiteralMap);
+
+		PositiveLiteral query = Expressions.makePositiveLiteral("p", x, y);
+		QueryResultIterator queryResultIterator = answerSet.getQueryResults(query);
+		Set<List<Term>> expectedQueryResults = new HashSet<>(Arrays.asList(atom1.getArguments(), atom2.getArguments()));
+		int answerCounter = 0;
+		while (queryResultIterator.hasNext()) {
+			answerCounter++;
+			assertTrue(expectedQueryResults.contains(queryResultIterator.next().getTerms()));
+		}
+		assertEquals(2, answerCounter);
+	}
+
+	@Test
+	public void getQueryResultsForQueryWithConstants() {
+		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
+		integerLiteralMap.put(1, atom1);
+		integerLiteralMap.put(2, atom2);
+		integerLiteralMap.put(3, atom3);
+		AnswerSet answerSet = new AnswerSetImpl("1 2 3", integerLiteralMap);
+
+		PositiveLiteral query = Expressions.makePositiveLiteral("p", d, y);
+		QueryResultIterator queryResultIterator = answerSet.getQueryResults(query);
+		Set<List<Term>> expectedQueryResults = new HashSet<>(Collections.singletonList(atom1.getArguments()));
+		int answerCounter = 0;
+		while (queryResultIterator.hasNext()) {
+			answerCounter++;
+			assertTrue(expectedQueryResults.contains(queryResultIterator.next().getTerms()));
+		}
+		assertEquals(1, answerCounter);
 	}
 }

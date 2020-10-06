@@ -24,18 +24,21 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.asp.implementation.AspReasonerImpl;
+import org.semanticweb.rulewerk.asp.model.AnswerSet;
 import org.semanticweb.rulewerk.asp.model.AspReasoner;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class AspReasonerImplTest {
 
@@ -114,5 +117,28 @@ public class AspReasonerImplTest {
 		KnowledgeBase knowledgeBase = new KnowledgeBase();
 		knowledgeBase.addStatement(rule);
 		new AspReasonerImpl(knowledgeBase);
+	}
+
+	@Test
+	public void answerQueryForFactsOnly() throws IOException {
+		PositiveLiteral query = Expressions.makePositiveLiteral("p", x, y);
+
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatement(Expressions.makeFact("p", c, d));
+		knowledgeBase.addStatement(Expressions.makeFact("p", d, c));
+		knowledgeBase.addStatement(Expressions.makeFact("q", d, d));
+		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
+
+		assertTrue(aspReasoner.reason());
+		QueryResultIterator queryResultIterator = aspReasoner.answerQuery(query, false);
+		Set<List<Term>> expectedQueryResults = new HashSet<>();
+		expectedQueryResults.add(Arrays.asList(c, d));
+		expectedQueryResults.add(Arrays.asList(d, c));
+		int answerCounter = 0;
+		while (queryResultIterator.hasNext()) {
+			answerCounter++;
+			assertTrue(expectedQueryResults.contains(queryResultIterator.next().getTerms()));
+		}
+		assertEquals(2, answerCounter);
 	}
 }

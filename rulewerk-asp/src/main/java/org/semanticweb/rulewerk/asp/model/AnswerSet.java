@@ -21,6 +21,7 @@ package org.semanticweb.rulewerk.asp.model;
  */
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 
@@ -40,6 +41,15 @@ public interface AnswerSet {
 	 * @return query result iterator
 	 */
 	QueryResultIterator getQueryResults(Predicate predicate);
+
+	/**
+	 * Gets a query result iterator for the given query. A query result is a ground literal in the answer set whose
+	 * constants agree with the constants in the query.
+	 *
+	 * @param query the query literal
+	 * @return		a query result iterator
+	 */
+	QueryResultIterator getQueryResults(PositiveLiteral query);
 
 	/**
 	 * Gets all literals contained in the answer set.

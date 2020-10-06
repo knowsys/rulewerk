@@ -23,10 +23,13 @@ package org.semanticweb.rulewerk.asp.implementation;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.asp.model.AnswerSet;
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * Implementation of an answer set
@@ -65,6 +68,23 @@ public class AnswerSetImpl implements AnswerSet {
 	@Override
 	public QueryResultIterator getQueryResults(Predicate predicate) {
 		return new AspQueryResultIterator(getLiterals(predicate));
+	}
+
+	@Override
+	public QueryResultIterator getQueryResults(PositiveLiteral query) {
+		if (query.getArguments().stream().noneMatch(Term::isConstant)) {
+			return getQueryResults(query.getPredicate());
+		}
+
+		Set<Literal> answers = new HashSet<>();
+		List<Term> queryTerms = query.getArguments();
+		for (Literal literal : getLiterals(query.getPredicate())) {
+			if (IntStream.range(0, queryTerms.size()).allMatch(i -> !queryTerms.get(i).isConstant()
+				|| (queryTerms.get(i).equals(literal.getArguments().get(i))))) {
+				answers.add(literal);
+			};
+		}
+		return new AspQueryResultIterator(answers);
 	}
 
 	@Override

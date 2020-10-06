@@ -20,8 +20,11 @@ package org.semanticweb.rulewerk.asp.model;
  * #L%
  */
 
+import org.semanticweb.rulewerk.core.reasoner.Algorithm;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
+
+import java.io.IOException;
 
 /**
  * Interface that extends the standard reasoner by ASP specific features
@@ -34,4 +37,19 @@ public interface AspReasoner extends Reasoner {
 	 * @return knowledge base
 	 */
 	KnowledgeBase getDatalogKnowledgeBase();
+
+	/**
+	 * Performs materialisation on the reasoner with the over-approximated {@link KnowledgeBase}, depending on the set
+	 * {@link Algorithm}, and performs cautious reasoning for the {@link KnowledgeBase} representing an ASP program.
+	 * To avoid non-termination, a reasoning timeout can be set ({@link Reasoner#setReasoningTimeout(Integer)}). <br>
+	 *
+	 * @return
+	 *         <ul>
+	 *         <li>{@code true}, if materialisation reached completion.</li>
+	 *         <li>{@code false}, if materialisation has been interrupted before
+	 *         completion.</li>
+	 *         </ul>
+	 * @throws IOException if I/O exceptions occur during reasoning.
+	 */
+	boolean reason() throws IOException;
 }
