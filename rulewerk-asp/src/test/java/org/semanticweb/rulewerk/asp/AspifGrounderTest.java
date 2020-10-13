@@ -23,6 +23,7 @@ package org.semanticweb.rulewerk.asp;
 import org.junit.Test;
 import org.semanticweb.rulewerk.asp.implementation.AspReasonerImpl;
 import org.semanticweb.rulewerk.asp.implementation.AspifGrounder;
+import org.semanticweb.rulewerk.asp.implementation.AspifIdentifier;
 import org.semanticweb.rulewerk.asp.model.AspReasoner;
 import org.semanticweb.rulewerk.asp.model.Grounder;
 import org.semanticweb.rulewerk.core.model.api.*;
@@ -51,6 +52,7 @@ public class AspifGrounderTest {
 
 	@Test
 	public void visitFactTest() throws IOException {
+		AspifIdentifier.reset();
 		KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(fact, fact2);
 		Reasoner reasoner = new VLogReasoner(kb);
@@ -73,6 +75,7 @@ public class AspifGrounderTest {
 
 	@Test
 	public void visitRuleTest() throws IOException {
+		AspifIdentifier.reset();
 		KnowledgeBase knowledgeBase = new KnowledgeBase();
 		Fact fact = Expressions.makeFact("r", c);
 		Fact fact2 = Expressions.makeFact("r", d);
