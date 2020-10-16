@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.asp.implementation.AspReasonerImpl;
-import org.semanticweb.rulewerk.asp.model.AnswerSet;
 import org.semanticweb.rulewerk.asp.model.AspReasoner;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
@@ -33,9 +32,7 @@ import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -140,5 +137,25 @@ public class AspReasonerImplTest {
 			assertTrue(expectedQueryResults.contains(queryResultIterator.next().getTerms()));
 		}
 		assertEquals(2, answerCounter);
+	}
+
+	@Test
+	public void answerQueryWithIntermediateAnswerSets() {
+		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", c);
+		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", d);
+		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", c);
+		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", d);
+		KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(Expressions.makeRule(atomA, atomNegB), Expressions.makeRule(atomB, atomNegA));
+
+		AspReasoner reasoner = new AspReasonerImpl(kb);
+		PositiveLiteral query = Expressions.makePositiveLiteral("p", x);
+		QueryResultIterator queryResultIterator = reasoner.answerQuery(query, true);
+		int countResults = 0;
+		while (queryResultIterator.hasNext()) {
+			queryResultIterator.next();
+			countResults++;
+		}
+		assertEquals(0, countResults);
 	}
 }

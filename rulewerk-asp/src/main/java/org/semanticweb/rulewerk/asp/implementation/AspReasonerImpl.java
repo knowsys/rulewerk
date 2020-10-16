@@ -162,7 +162,7 @@ public class AspReasonerImpl implements AspReasoner {
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(clasp.getInputStream()));
 			try {
-				cautiousAnswerSet = getNextAnswerSet(reader, grounder.getIntegerLiteralMap());
+				cautiousAnswerSet = getLastAnswerSet(reader, grounder.getIntegerLiteralMap());
 			} catch (NoSuchElementException noSuchElementException) {
 				noSuchElementException.printStackTrace();
 				clasp.destroy();
@@ -195,6 +195,34 @@ public class AspReasonerImpl implements AspReasoner {
 			}
 		}
 		throw new NoSuchElementException("The given reader did not contain an answer set");
+	}
+
+	/**
+	 * Reads the last answer set from a buffered reader. It is assumed that the reader contains a line that starts with
+	 * "Answer: n" with an integer n, and that this line is followed by the string representation of an answer set,
+	 * i.e., a space-separated list of integers. The integer-to-literal map is used to retrieve the correct literal for
+	 * a integer.
+	 *
+	 * @param reader 				  the reader with the answer set
+	 * @param integerLiteralMap 	  the integer-to-literal map
+	 * @return 						  the last answer set
+	 * @throws NoSuchElementException exception if the reader contains no answer set
+	 * @throws IOException			  an IO exception
+	 */
+	private AnswerSet getLastAnswerSet(BufferedReader reader, Map<Integer, Literal> integerLiteralMap) throws NoSuchElementException, IOException {
+		String line;
+		String answerSetLine = null;
+		while ((line = reader.readLine()) != null) {
+			if (line.trim().startsWith("Answer: ")) {
+				answerSetLine = reader.readLine();
+			}
+		}
+
+		if (answerSetLine == null) {
+			throw new NoSuchElementException("The given reader did not contain an answer set");
+		} else {
+			return new AnswerSetImpl(answerSetLine, integerLiteralMap);
+		}
 	}
 
 	@Override

@@ -52,17 +52,19 @@ public class AnswerSetImpl implements AnswerSet {
 		Validate.notNull(integerLiteralMap);
 
 		answerSet = new HashMap<>();
-		for (String integerString : answerSetString.trim().split(" ")) {
-			Integer literalInteger = Integer.parseInt(integerString);
-			Literal literal = integerLiteralMap.get(literalInteger);
-			Validate.notNull(literal, "The integer of a literal in the answer set is unknown");
-			Set<Literal> answersByPredicate;
-			if ((answersByPredicate = answerSet.get(literal.getPredicate())) == null) {
-				answersByPredicate = new HashSet<>();
-				answerSet.put(literal.getPredicate(), answersByPredicate);
-			}
-			answersByPredicate.add(literal);
-		};
+		if (!answerSetString.isEmpty()) {
+			for (String integerString : answerSetString.trim().split(" ")) {
+				Integer literalInteger = Integer.parseInt(integerString);
+				Literal literal = integerLiteralMap.get(literalInteger);
+				Validate.notNull(literal, "The integer of a literal in the answer set is unknown");
+				Set<Literal> answersByPredicate;
+				if ((answersByPredicate = answerSet.get(literal.getPredicate())) == null) {
+					answersByPredicate = new HashSet<>();
+					answerSet.put(literal.getPredicate(), answersByPredicate);
+				}
+				answersByPredicate.add(literal);
+			};
+		}
 	};
 
 	@Override
