@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.asp.model.Grounder;
 import org.semanticweb.rulewerk.core.model.api.*;
+import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
@@ -129,7 +130,24 @@ public class AspifGrounder implements Grounder {
 
 	@Override
 	public Boolean visit(DataSourceDeclaration statement) {
-		return null;
+		Predicate dataSourcePredicate = statement.getPredicate();
+		List<Term> dataSourceQueryVariables = new ArrayList<>();
+		for (int i=0; i<dataSourcePredicate.getArity(); i++) {
+			dataSourceQueryVariables.add(Expressions.makeUniversalVariable("var" + i));
+		}
+		PositiveLiteral dataSourceQueryLiteral = Expressions.makePositiveLiteral(dataSourcePredicate, dataSourceQueryVariables);
+		QueryResultIterator answers = reasoner.answerQuery(dataSourceQueryLiteral, false);
+		try {
+			while (answers.hasNext()) {
+				writer.write("1 0 1 " + AspifIdentifier.getAspifValue(dataSourceQueryLiteral, answers.next().getTerms()) + " 0 0");
+				writer.newLine();
+			}
+		} catch (IOException ioException) {
+			ioException.printStackTrace();
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

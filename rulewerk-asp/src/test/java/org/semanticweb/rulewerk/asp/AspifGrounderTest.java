@@ -27,9 +27,11 @@ import org.semanticweb.rulewerk.asp.implementation.AspifIdentifier;
 import org.semanticweb.rulewerk.asp.model.AspReasoner;
 import org.semanticweb.rulewerk.asp.model.Grounder;
 import org.semanticweb.rulewerk.core.model.api.*;
+import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
+import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
 import java.io.BufferedWriter;
@@ -126,5 +128,34 @@ public class AspifGrounderTest {
 		assertEquals(Expressions.makePositiveLiteral("p", c, c, d), map.getOrDefault(5, null));
 		assertEquals(Expressions.makePositiveLiteral("q", d), map.getOrDefault(6, null));
 		assertEquals(Expressions.makePositiveLiteral("p", c, d, d), map.getOrDefault(7, null));
+	}
+
+	@Test
+	public void visitDataSourceDeclarationTest() throws IOException {
+		AspifIdentifier.reset();
+		Predicate predicate = Expressions.makePredicate("p", 2);
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatements(new DataSourceDeclarationImpl(predicate, new CsvFileDataSource("src/test/data/input/binaryFacts.csv"))); // TODO: csv file
+		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
+		Reasoner reasoner = new VLogReasoner(aspReasoner.getDatalogKnowledgeBase());
+		StringWriter writer = new StringWriter();
+		BufferedWriter bufferedWriter = new BufferedWriter(writer);
+		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, bufferedWriter);
+		grounder.ground();
+		bufferedWriter.flush();
+
+		assertEquals("asp 1 0 0\n" +
+			"1 0 1 1 0 0\n" +
+			"1 0 1 2 0 0\n" +
+			"1 0 1 3 0 0\n" +
+			"4 1 2 1 2\n" +
+			"4 1 1 1 1\n" +
+			"4 1 3 1 3\n" +
+			"0\n", writer.toString());
+		Map<Integer, Literal> map = grounder.getIntegerLiteralMap();
+		assertEquals(3, map.size());
+		assertEquals(Expressions.makePositiveLiteral("p", c, c), map.getOrDefault(1, null));
+		assertEquals(Expressions.makePositiveLiteral("p", c, d), map.getOrDefault(2, null));
+		assertEquals(Expressions.makePositiveLiteral("p", d, c), map.getOrDefault(3, null));
 	}
 }
