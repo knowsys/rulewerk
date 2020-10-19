@@ -48,6 +48,8 @@ public class AspReasonerImpl implements AspReasoner {
 	final private KnowledgeBase datalogKnowledgeBase;
 	final private Reasoner datalogReasoner;
 
+	final private OverApproximationStatementVisitor visitor = new OverApproximationStatementVisitor();
+
 	private AnswerSet cautiousAnswerSet;
 
 	/**
@@ -100,10 +102,10 @@ public class AspReasonerImpl implements AspReasoner {
 
 		Validate.notNull(knowledgeBase);
 		this.knowledgeBase = knowledgeBase;
+		this.knowledgeBase.addListener(this);
 
 		// Construct transformed knowledge base
 		this.datalogKnowledgeBase = new KnowledgeBase();
-		OverApproximationStatementVisitor visitor = new OverApproximationStatementVisitor();
 		for (Statement statement : knowledgeBase.getStatements()) {
 			this.datalogKnowledgeBase.addStatements(statement.accept(visitor));
 		}
@@ -310,6 +312,45 @@ public class AspReasonerImpl implements AspReasoner {
 		return answerSetIterator;
 	}
 
+	@Override
+	public void onStatementAdded(Statement statementAdded) {
+		cautiousAnswerSet = null;
+		this.datalogKnowledgeBase.addStatements(statementAdded.accept(visitor));
+	}
+
+	@Override
+	public void onStatementsAdded(List<Statement> statementsAdded) {
+		cautiousAnswerSet = null;
+		for (Statement statement : statementsAdded) {
+			this.datalogKnowledgeBase.addStatements(statement.accept(visitor));
+		}
+	}
+
+	@Override
+	public void onStatementRemoved(Statement statementRemoved) {
+		cautiousAnswerSet = null;
+		this.datalogKnowledgeBase.removeStatements(statementRemoved.accept(visitor));
+	}
+
+	@Override
+	public void onStatementsRemoved(List<Statement> statementsRemoved) {
+		cautiousAnswerSet = null;
+		for (Statement statement : statementsRemoved) {
+			this.datalogKnowledgeBase.removeStatements(statement.accept(visitor));
+		}
+	}
+
+	@Override
+	public void resetReasoner() {
+		this.datalogReasoner.resetReasoner();
+		this.cautiousAnswerSet = null;
+	}
+
+	@Override
+	public void close() {
+		this.datalogReasoner.close();
+	}
+
 	// start: dummy implementations
 	@Override
 	public Correctness forEachInference(InferenceAction action) throws IOException {
@@ -359,36 +400,6 @@ public class AspReasonerImpl implements AspReasoner {
 	@Override
 	public Correctness exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeNulls) throws IOException {
 		return null;
-	}
-
-	@Override
-	public void resetReasoner() {
-
-	}
-
-	@Override
-	public void close() {
-
-	}
-
-	@Override
-	public void onStatementAdded(Statement statementAdded) {
-
-	}
-
-	@Override
-	public void onStatementsAdded(List<Statement> statementsAdded) {
-
-	}
-
-	@Override
-	public void onStatementRemoved(Statement statementRemoved) {
-
-	}
-
-	@Override
-	public void onStatementsRemoved(List<Statement> statementsRemoved) {
-
 	}
 	// end: dummy implementations
 }

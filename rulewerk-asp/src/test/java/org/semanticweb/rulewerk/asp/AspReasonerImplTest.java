@@ -36,6 +36,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -198,5 +199,105 @@ public class AspReasonerImplTest {
 		KnowledgeBase kb = new KnowledgeBase();
 		AspReasoner reasoner = new AspReasonerImpl(kb);
 		reasoner.getAnswerSets(-1);
+	}
+
+	@Test
+	public void onStatementAddedTest() throws IOException {
+		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", x);
+		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", x);
+		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", x);
+		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", x);
+		PositiveLiteral atomC = Expressions.makePositiveLiteral("r", x);
+		KnowledgeBase kb = new KnowledgeBase();
+		Rule ruleA = Expressions.makeRule(atomA, atomNegB, atomC);
+		Rule ruleB = Expressions.makeRule(atomB, atomNegA, atomC);
+		kb.addStatements(ruleA);
+		AspReasoner reasoner = new AspReasonerImpl(kb);
+		kb.addStatement(ruleB);
+		List<Statement> expectedList = new ArrayList<>(overApproximatedRule(ruleA));
+		expectedList.addAll(overApproximatedRule(ruleB));
+		assertEquals(expectedList, reasoner.getDatalogKnowledgeBase().getRules());
+	}
+
+	@Test
+	public void onStatementsAddedTest() {
+		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", x);
+		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", x);
+		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", x);
+		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", x);
+		PositiveLiteral atomC = Expressions.makePositiveLiteral("r", x);
+		KnowledgeBase kb = new KnowledgeBase();
+		Rule ruleA = Expressions.makeRule(atomA, atomNegB, atomC);
+		Rule ruleB = Expressions.makeRule(atomB, atomNegA, atomC);
+		kb.addStatements(ruleA);
+		AspReasoner reasoner = new AspReasonerImpl(kb);
+		kb.addStatements(ruleB, ruleA);
+		List<Statement> expectedList = new ArrayList<>(overApproximatedRule(ruleA));
+		expectedList.addAll(overApproximatedRule(ruleB));
+		assertEquals(expectedList, reasoner.getDatalogKnowledgeBase().getRules());
+	}
+
+	@Test
+	public void onStatementRemovedTest() {
+		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", x);
+		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", x);
+		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", x);
+		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", x);
+		PositiveLiteral atomC = Expressions.makePositiveLiteral("r", x);
+		KnowledgeBase kb = new KnowledgeBase();
+		Rule ruleA = Expressions.makeRule(atomA, atomNegB, atomC);
+		Rule ruleB = Expressions.makeRule(atomB, atomNegA, atomC);
+		kb.addStatements(ruleA, ruleB);
+		AspReasoner reasoner = new AspReasonerImpl(kb);
+		kb.removeStatement(ruleA);
+		assertEquals(
+			reasoner.getDatalogKnowledgeBase().getRules(),
+			overApproximatedRule(ruleB)
+		);
+	}
+
+	@Test
+	public void onStatementsRemovedTest() {
+		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", x);
+		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", x);
+		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", x);
+		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", x);
+		PositiveLiteral atomC = Expressions.makePositiveLiteral("r", x);
+		KnowledgeBase kb = new KnowledgeBase();
+		Rule ruleA = Expressions.makeRule(atomA, atomNegB, atomC);
+		Rule ruleB = Expressions.makeRule(atomB, atomNegA, atomC);
+		kb.addStatements(ruleA, ruleB, ruleA);
+		AspReasoner reasoner = new AspReasonerImpl(kb);
+		kb.removeStatements(ruleA);
+		assertEquals(
+			reasoner.getDatalogKnowledgeBase().getRules(),
+			overApproximatedRule(ruleB)
+		);
+	}
+
+	/**
+	 * Utility function to over-approximate a rule.
+	 * Re-implements the functionality of the private over-approximation visitor from the ASP reasoner implementation
+	 * and should not be used to verify the correctness of the visitor.
+	 *
+	 * @param statement the rule to over-approximate
+	 * @return list of statements
+	 */
+	private List<Statement> overApproximatedRule(Rule statement) {
+		List<Literal> positiveBodyLiterals = statement.getBody().getLiterals().stream().filter(
+			literal -> !literal.isNegated()).collect(Collectors.toList());
+
+		Conjunction<Literal> positiveBodyConjunction = Expressions.makeConjunction(positiveBodyLiterals);
+		Conjunction<PositiveLiteral> bodyVariablesLiteralConjunction = Expressions.makePositiveConjunction(statement.getBodyVariablesLiteral());
+
+		List<Statement> rules = new ArrayList<>();
+		if (positiveBodyLiterals.isEmpty()) {
+			PositiveLiteral bodyVariableLiteral = statement.getBodyVariablesLiteral();
+			rules.add(Expressions.makeFact(bodyVariableLiteral.getPredicate(), bodyVariableLiteral.getArguments()));
+		} else {
+			rules.add(Expressions.makeRule(bodyVariablesLiteralConjunction, positiveBodyConjunction));
+		}
+		rules.add(Expressions.makePositiveLiteralsRule(statement.getHead(), bodyVariablesLiteralConjunction));
+		return rules;
 	}
 }
