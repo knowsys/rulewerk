@@ -1,0 +1,14 @@
+@source vertex[1]: load-csv("src/main/data/input/asp/vertex.csv").
+@source edge[2]: load-csv("src/main/data/input/asp/edge.csv").
+
+colour(red). colour(green). colour(blue).
+equals(?C,?C) :- colour(?C).
+
+coloured(<1-2>,red).
+
+coloured(?V,red) :- vertex(?V), ~coloured(?V,blue), ~coloured(?V,green).
+coloured(?V,blue) :- vertex(?V), ~coloured(?V,red), ~coloured(?V,green).
+coloured(?V,green) :- vertex(?V), ~coloured(?V,red), ~coloured(?V,blue).
+
+false(0) :- edge(?V,?W), coloured(?V,?C1), coloured(?W,?C2), equals(?C1,?C2).
+false(all) :- ~false(all), false(0).

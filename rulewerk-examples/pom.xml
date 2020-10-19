@@ -79,7 +79,13 @@
       			<artifactId>graal-io-dlgp</artifactId>
 	      		<version>${graal.version}</version>
     		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.semanticweb.rulewerk</groupId>
+            <artifactId>rulewerk-asp</artifactId>
+            <version>0.8.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
