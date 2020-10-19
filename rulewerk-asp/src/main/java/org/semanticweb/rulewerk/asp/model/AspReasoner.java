@@ -52,4 +52,22 @@ public interface AspReasoner extends Reasoner {
 	 * @throws IOException if I/O exceptions occur during reasoning.
 	 */
 	boolean reason() throws IOException;
+
+	/**
+	 * Gets the answer sets for the underlying knowledge base.
+	 *
+	 * @return an iterator of {@link AnswerSet}s
+	 * @throws IOException an IO exception
+	 */
+	AnswerSetIterator getAnswerSets() throws IOException;
+
+	/**
+	 * Gets the answer sets for the underlying knowledge base. The result is limited to a given maximum, but might
+	 * might contain fewer answer sets. If maximum is 0, all answer sets are returned.
+	 *
+	 * @param maximum an limit on the returned answer sets
+	 * @return an iterator of {@link AnswerSet}s
+	 * @throws IOException an IO exception
+	 */
+	AnswerSetIterator getAnswerSets(int maximum) throws IOException;
 }

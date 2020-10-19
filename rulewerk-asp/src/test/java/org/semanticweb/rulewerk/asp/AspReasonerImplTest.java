@@ -19,11 +19,11 @@ package org.semanticweb.rulewerk.asp;
  * limitations under the License.
  * #L%
  */
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.asp.implementation.AspReasonerImpl;
+import org.semanticweb.rulewerk.asp.model.AnswerSet;
+import org.semanticweb.rulewerk.asp.model.AnswerSetIterator;
 import org.semanticweb.rulewerk.asp.model.AspReasoner;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
@@ -36,6 +36,8 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+
+import static org.junit.Assert.*;
 
 public class AspReasonerImplTest {
 
@@ -157,5 +159,44 @@ public class AspReasonerImplTest {
 			countResults++;
 		}
 		assertEquals(0, countResults);
+	}
+
+	@Test
+	public void getAnswerSets() throws IOException {
+		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", c);
+		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", d);
+		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", c);
+		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", d);
+		KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(Expressions.makeRule(atomA, atomNegB), Expressions.makeRule(atomB, atomNegA));
+		AspReasoner reasoner = new AspReasonerImpl(kb);
+		AnswerSetIterator answerSetIterator = reasoner.getAnswerSets();
+		AnswerSet answerSet1 = answerSetIterator.next();
+		AnswerSet answerSet2 = answerSetIterator.next();
+		assertFalse(answerSetIterator.hasNext());
+		assertEquals(answerSet1.getLiterals(), Collections.singleton(atomA));
+		assertEquals(answerSet2.getLiterals(), Collections.singleton(atomB));
+	}
+
+	@Test
+	public void getAnswerSetsWithMaximum() throws IOException {
+		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", c);
+		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", d);
+		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", c);
+		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", d);
+		KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(Expressions.makeRule(atomA, atomNegB), Expressions.makeRule(atomB, atomNegA));
+		AspReasoner reasoner = new AspReasonerImpl(kb);
+		AnswerSetIterator answerSetIterator = reasoner.getAnswerSets(1);
+		AnswerSet answerSet1 = answerSetIterator.next();
+		assertFalse(answerSetIterator.hasNext());
+		assertEquals(answerSet1.getLiterals(), Collections.singleton(atomA));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void getAnswerSetsNoNegativeMaximum() throws IOException {
+		KnowledgeBase kb = new KnowledgeBase();
+		AspReasoner reasoner = new AspReasonerImpl(kb);
+		reasoner.getAnswerSets(-1);
 	}
 }

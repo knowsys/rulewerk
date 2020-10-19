@@ -22,6 +22,7 @@ package org.semanticweb.rulewerk.asp.implementation;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.asp.model.AnswerSet;
+import org.semanticweb.rulewerk.asp.model.AnswerSetIterator;
 import org.semanticweb.rulewerk.asp.model.AspReasoner;
 import org.semanticweb.rulewerk.asp.model.Grounder;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
@@ -32,6 +33,7 @@ import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -137,6 +139,36 @@ public class AspReasonerImpl implements AspReasoner {
 	}
 
 	@Override
+	public void setReasoningTimeout(Integer seconds) {
+		this.datalogReasoner.setReasoningTimeout(seconds);
+	}
+
+	@Override
+	public Integer getReasoningTimeout() {
+		return this.datalogReasoner.getReasoningTimeout();
+	}
+
+	@Override
+	public void setAlgorithm(Algorithm algorithm) {
+		datalogReasoner.setAlgorithm(algorithm);
+	}
+
+	@Override
+	public Algorithm getAlgorithm() {
+		return datalogReasoner.getAlgorithm();
+	}
+
+	@Override
+	public void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) {
+		datalogReasoner.setRuleRewriteStrategy(ruleRewritingStrategy);
+	}
+
+	@Override
+	public RuleRewriteStrategy getRuleRewriteStrategy() {
+		return datalogReasoner.getRuleRewriteStrategy();
+	}
+
+	@Override
 	public boolean reason() throws IOException {
 		if (cautiousAnswerSet == null) {
 			this.datalogReasoner.reason();
@@ -153,7 +185,11 @@ public class AspReasonerImpl implements AspReasoner {
 			}
 
 			try {
-				clasp.waitFor();
+				if (getReasoningTimeout() == null) {
+					clasp.waitFor();
+				} else {
+					clasp.waitFor(getReasoningTimeout(), TimeUnit.SECONDS);
+				}
 			} catch (InterruptedException interruptedException) {
 				interruptedException.printStackTrace();
 				clasp.destroy();
@@ -237,6 +273,43 @@ public class AspReasonerImpl implements AspReasoner {
 		return cautiousAnswerSet.getQueryResults(query);
 	}
 
+	@Override
+	public AnswerSetIterator getAnswerSets() throws IOException {
+		return getAnswerSets(0);
+	}
+
+	@Override
+	public AnswerSetIterator getAnswerSets(int maximum) throws IOException {
+		Validate.isTrue(maximum >= 0);
+		this.datalogReasoner.reason();
+
+		Process clasp = Runtime.getRuntime().exec("clasp -n " + maximum);
+		BufferedWriter writerToClasp = new BufferedWriter(new OutputStreamWriter(clasp.getOutputStream()));
+
+		Grounder grounder = new AspifGrounder(knowledgeBase, datalogReasoner, writerToClasp);
+		boolean successful = grounder.ground();
+		writerToClasp.close();
+		if (!successful) {
+			clasp.destroy();
+			return AnswerSetIteratorImpl.getErrorAnswerSetIterator();
+		}
+
+		try {
+			if (getReasoningTimeout() == null) {
+				clasp.waitFor();
+			} else {
+				clasp.waitFor(getReasoningTimeout(), TimeUnit.SECONDS);
+			}		} catch (InterruptedException interruptedException) {
+			interruptedException.printStackTrace();
+		}
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(clasp.getInputStream()));
+		AnswerSetIterator answerSetIterator = new AnswerSetIteratorImpl(reader, grounder.getIntegerLiteralMap());
+		reader.close();
+		clasp.destroy();
+		return answerSetIterator;
+	}
+
 	// start: dummy implementations
 	@Override
 	public Correctness forEachInference(InferenceAction action) throws IOException {
@@ -245,36 +318,6 @@ public class AspReasonerImpl implements AspReasoner {
 
 	@Override
 	public Correctness getCorrectness() {
-		return null;
-	}
-
-	@Override
-	public void setAlgorithm(Algorithm algorithm) {
-
-	}
-
-	@Override
-	public Algorithm getAlgorithm() {
-		return null;
-	}
-
-	@Override
-	public void setReasoningTimeout(Integer seconds) {
-
-	}
-
-	@Override
-	public Integer getReasoningTimeout() {
-		return null;
-	}
-
-	@Override
-	public void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) {
-
-	}
-
-	@Override
-	public RuleRewriteStrategy getRuleRewriteStrategy() {
 		return null;
 	}
 
