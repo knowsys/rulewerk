@@ -173,8 +173,6 @@ public class AspReasonerImpl implements AspReasoner {
 	@Override
 	public boolean reason() throws IOException {
 		if (cautiousAnswerSet == null) {
-			this.datalogReasoner.reason();
-
 			Process clasp = Runtime.getRuntime().exec("clasp -e cautious");
 			BufferedWriter writerToClasp = new BufferedWriter(new OutputStreamWriter(clasp.getOutputStream()));
 
@@ -283,7 +281,6 @@ public class AspReasonerImpl implements AspReasoner {
 	@Override
 	public AnswerSetIterator getAnswerSets(int maximum) throws IOException {
 		Validate.isTrue(maximum >= 0);
-		this.datalogReasoner.reason();
 
 		Process clasp = Runtime.getRuntime().exec("clasp -n " + maximum);
 		BufferedWriter writerToClasp = new BufferedWriter(new OutputStreamWriter(clasp.getOutputStream()));
