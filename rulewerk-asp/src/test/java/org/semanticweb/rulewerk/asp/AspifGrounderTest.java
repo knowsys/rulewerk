@@ -34,6 +34,7 @@ import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -135,7 +136,7 @@ public class AspifGrounderTest {
 		AspifIdentifier.reset();
 		Predicate predicate = Expressions.makePredicate("p", 2);
 		KnowledgeBase knowledgeBase = new KnowledgeBase();
-		knowledgeBase.addStatements(new DataSourceDeclarationImpl(predicate, new CsvFileDataSource("src/test/data/input/binaryFacts.csv"))); // TODO: csv file
+		knowledgeBase.addStatements(new DataSourceDeclarationImpl(predicate, new CsvFileDataSource("src/test/data/input/binaryFacts.csv")));
 		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
 		Reasoner reasoner = new VLogReasoner(aspReasoner.getDatalogKnowledgeBase());
 		StringWriter writer = new StringWriter();
@@ -157,5 +158,20 @@ public class AspifGrounderTest {
 		assertEquals(Expressions.makePositiveLiteral("p", c, c), map.getOrDefault(1, null));
 		assertEquals(Expressions.makePositiveLiteral("p", c, d), map.getOrDefault(2, null));
 		assertEquals(Expressions.makePositiveLiteral("p", d, c), map.getOrDefault(3, null));
+	}
+
+	@Test
+	public void groundWithIOException() throws IOException {
+		AspifIdentifier.reset();
+		Predicate predicate = Expressions.makePredicate("p", 2);
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatements(new DataSourceDeclarationImpl(predicate, new CsvFileDataSource("src/test/data/input/binaryFacts.csv")));
+		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
+		Reasoner reasoner = new VLogReasoner(aspReasoner.getDatalogKnowledgeBase());
+		StringWriter writer = new StringWriter();
+		BufferedWriter bufferedWriter = new BufferedWriter(writer);
+		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, bufferedWriter);
+		bufferedWriter.close();
+		grounder.ground();
 	}
 }

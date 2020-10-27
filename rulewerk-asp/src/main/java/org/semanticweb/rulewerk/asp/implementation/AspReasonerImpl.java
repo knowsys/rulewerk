@@ -214,28 +214,6 @@ public class AspReasonerImpl implements AspReasoner {
 	}
 
 	/**
-	 * Reads the next answer set from a buffered reader. It is assumed that the reader contains a line that starts with
-	 * "Answer: n" with an integer n, and that this line is followed by the string representation of an answer set,
-	 * i.e., a space-separated list of integers. The integer-to-literal map is used to retrieve the correct literal for
-	 * a integer.
-	 *
-	 * @param reader 				  the reader with the answer set
-	 * @param integerLiteralMap 	  the integer-to-literal map
-	 * @return 						  the next answer set
-	 * @throws NoSuchElementException exception if the reader contains no answer set
-	 * @throws IOException			  an IO exception
-	 */
-	private AnswerSet getNextAnswerSet(BufferedReader reader, Map<Integer, Literal> integerLiteralMap) throws NoSuchElementException, IOException {
-		String line;
-		while ((line = reader.readLine()) != null) {
-			if (line.trim().startsWith("Answer: ")) {
-				return new AnswerSetImpl(reader.readLine(), integerLiteralMap);
-			}
-		}
-		throw new NoSuchElementException("The given reader did not contain an answer set");
-	}
-
-	/**
 	 * Reads the last answer set from a buffered reader. It is assumed that the reader contains a line that starts with
 	 * "Answer: n" with an integer n, and that this line is followed by the string representation of an answer set,
 	 * i.e., a space-separated list of integers. The integer-to-literal map is used to retrieve the correct literal for
@@ -300,7 +278,8 @@ public class AspReasonerImpl implements AspReasoner {
 				clasp.waitFor();
 			} else {
 				clasp.waitFor(getReasoningTimeout(), TimeUnit.SECONDS);
-			}		} catch (InterruptedException interruptedException) {
+			}
+		} catch (InterruptedException interruptedException) {
 			interruptedException.printStackTrace();
 		}
 

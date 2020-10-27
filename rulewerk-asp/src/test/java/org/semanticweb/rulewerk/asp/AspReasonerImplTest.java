@@ -20,6 +20,7 @@ package org.semanticweb.rulewerk.asp;
  * #L%
  */
 
+import org.junit.After;
 import org.junit.Test;
 import org.semanticweb.rulewerk.asp.implementation.AspReasonerImpl;
 import org.semanticweb.rulewerk.asp.model.AnswerSet;
@@ -28,8 +29,7 @@ import org.semanticweb.rulewerk.asp.model.AspReasoner;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
-import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
+import org.semanticweb.rulewerk.core.reasoner.*;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 import java.io.*;
@@ -293,6 +293,38 @@ public class AspReasonerImplTest {
 		Constant constant = Expressions.makeAbstractConstant("_0");
 		PositiveLiteral expectedLiteral2 = Expressions.makePositiveLiteral("_rule_" + 2, constant);
 		assertEquals(expectedLiteral2, AspReasonerImpl.getBodyVariablesLiteral(rule2, 2));
+	}
+
+	@Test
+	public void setAndGetLogLevel() {
+		AspReasoner aspReasoner = new AspReasonerImpl(new KnowledgeBase());
+		assertEquals(LogLevel.WARNING, aspReasoner.getLogLevel());
+		aspReasoner.setLogLevel(LogLevel.INFO);
+		assertEquals(LogLevel.INFO, aspReasoner.getLogLevel());
+	}
+
+	@Test
+	public void setAndGetTimeout() {
+		AspReasoner aspReasoner = new AspReasonerImpl(new KnowledgeBase());
+		assertNull(aspReasoner.getReasoningTimeout());
+		aspReasoner.setReasoningTimeout(100);
+		assertEquals((Integer) 100, aspReasoner.getReasoningTimeout());
+	}
+
+	@Test
+	public void setAndGetAlgorithm() {
+		AspReasoner aspReasoner = new AspReasonerImpl(new KnowledgeBase());
+		assertEquals(Algorithm.RESTRICTED_CHASE, aspReasoner.getAlgorithm());
+		aspReasoner.setAlgorithm(Algorithm.SKOLEM_CHASE);
+		assertEquals(Algorithm.SKOLEM_CHASE, aspReasoner.getAlgorithm());
+	}
+
+	@Test
+	public void setAndGetRuleRewriteStrategy() {
+		AspReasoner aspReasoner = new AspReasonerImpl(new KnowledgeBase());
+		assertEquals(RuleRewriteStrategy.NONE, aspReasoner.getRuleRewriteStrategy());
+		aspReasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
+		assertEquals(RuleRewriteStrategy.SPLIT_HEAD_PIECES, aspReasoner.getRuleRewriteStrategy());
 	}
 
 	/**

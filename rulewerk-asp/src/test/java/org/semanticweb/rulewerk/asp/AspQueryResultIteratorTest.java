@@ -77,6 +77,7 @@ public class AspQueryResultIteratorTest {
 			assertTrue(expectedAnswers.contains(queryResultIterator.next().getTerms()));
 		}
 		assertEquals(3, answerCounter);
+		queryResultIterator.close();
 	}
 
 	@Test
@@ -89,5 +90,6 @@ public class AspQueryResultIteratorTest {
 			queryResultIterator.next();
 		}
 		assertEquals(3, answerCounter);
+		queryResultIterator.close();
 	}
 }

@@ -22,15 +22,17 @@ package org.semanticweb.rulewerk.asp;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.asp.implementation.AnswerSetImpl;
+import org.semanticweb.rulewerk.asp.implementation.AnswerSetIteratorImpl;
 import org.semanticweb.rulewerk.asp.model.AnswerSet;
+import org.semanticweb.rulewerk.asp.model.AnswerSetIterator;
+import org.semanticweb.rulewerk.asp.model.AspReasoningState;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class AnswerSetImplTest {
 
@@ -170,5 +172,12 @@ public class AnswerSetImplTest {
 			assertTrue(expectedQueryResults.contains(queryResultIterator.next().getTerms()));
 		}
 		assertEquals(1, answerCounter);
+	}
+
+	@Test
+	public void getErroneousAnswerSet() {
+		AnswerSetIterator answerSetIterator = AnswerSetIteratorImpl.getErrorAnswerSetIterator();
+		assertFalse(answerSetIterator.hasNext());
+		assertEquals(AspReasoningState.ERROR, answerSetIterator.getReasoningState());
 	}
 }

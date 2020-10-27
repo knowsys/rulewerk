@@ -65,29 +65,34 @@ public class AspifGrounder implements Grounder {
 	}
 
 	@Override
-	public boolean ground() throws IOException {
-		this.reasoner.reason();
-		writer.write("asp 1 0 0");
-		writer.newLine();
-
-		for (Statement statement : knowledgeBase.getStatements()) {
-			boolean successful = statement.accept(this);
-			if (!successful) {
-				return false;
-			}
-		}
-
-		for (Integer aspifValue : AspifIdentifier.getIntegerAspifIdentifierMap().keySet()) {
-			// We encode a literal in the answer set by its aspif integer, and we transform it back with the help of the
-			// integer-to-literal map later.
-			writer.write("4 "
-				+ aspifValue.toString().length() + " " + aspifValue.toString()
-				+ " 1 " + aspifValue.toString());
+	public boolean ground() {
+		try {
+			this.reasoner.reason();
+			writer.write("asp 1 0 0");
 			writer.newLine();
-		}
 
-		writer.write("0");
-		writer.newLine();
+			for (Statement statement : knowledgeBase.getStatements()) {
+				boolean successful = statement.accept(this);
+				if (!successful) {
+					return false;
+				}
+			}
+
+			for (Integer aspifValue : AspifIdentifier.getIntegerAspifIdentifierMap().keySet()) {
+				// We encode a literal in the answer set by its aspif integer, and we transform it back with the help of the
+				// integer-to-literal map later.
+				writer.write("4 "
+					+ aspifValue.toString().length() + " " + aspifValue.toString()
+					+ " 1 " + aspifValue.toString());
+				writer.newLine();
+			}
+
+			writer.write("0");
+			writer.newLine();
+		} catch (IOException ioException) {
+			ioException.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 
@@ -151,21 +156,5 @@ public class AspifGrounder implements Grounder {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Get the ground terms of a literal with respect to a specific answer.
-	 *
-	 * @param literal   the literal to ground
-	 * @param answerMap a map representing the answer
-	 * @return			list of ground terms
-	 */
-	private List<Term> getGroundTerms(Literal literal, Map<Variable, Term> answerMap) {
-		List<Term> groundTerms = new ArrayList<>();
-		for (int i = 0; i < literal.getArguments().size(); i++) {
-			Term term = literal.getArguments().get(i);
-			groundTerms.add(term.isVariable() ? answerMap.get(term) : term);
-		}
-		return groundTerms;
 	}
 }

@@ -58,7 +58,6 @@ public class AspQueryResultIterator implements QueryResultIterator {
 
 	@Override
 	public void close() {
-
 	}
 
 	@Override
