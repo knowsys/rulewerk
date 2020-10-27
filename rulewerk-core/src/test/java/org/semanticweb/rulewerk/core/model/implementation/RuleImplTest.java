@@ -180,42 +180,4 @@ public class RuleImplTest {
 		assertEquals("q(?X, !Y) :- p(?X, c), p(?X, ?Z) .", rule1.toString());
 		assertEquals("q(?X, !Y) :- p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, \"Test\"@en) .", rule2.toString());
 	}
-
-	@Test
-	public void getIndexTest() {
-		List<Literal> bodyList = Arrays.asList(atom1, negativeLiteral, atom4);
-		List<PositiveLiteral> headList = Collections.singletonList(atom2);
-		Conjunction<Literal> body = Expressions.makeConjunction(bodyList);
-		Conjunction<PositiveLiteral> head = Expressions.makeConjunction(headList);
-		Rule rule = Expressions.makeRule(head, body);
-		Rule rule1 = Expressions.makeRule(head, body);
-
-		List<PositiveLiteral> headList2 = Collections.singletonList(atom3);
-		Conjunction<PositiveLiteral> head2 = Expressions.makeConjunction(headList2);
-		Rule rule2 = Expressions.makeRule(head2, body);
-
-		assertEquals(rule.getIndex(), rule.getIndex());
-		assertEquals(rule.getIndex(), rule1.getIndex());
-		assertNotEquals(rule.getIndex(), rule2.getIndex());
-	}
-
-	@Test
-	public void getBodyVariablesLiteralTest() {
-		List<Literal> bodyList = Arrays.asList(atom1, negativeLiteral, atom4);
-		List<PositiveLiteral> headList = Collections.singletonList(atom2);
-		Conjunction<Literal> body = Expressions.makeConjunction(bodyList);
-		Conjunction<PositiveLiteral> head = Expressions.makeConjunction(headList);
-		Rule rule = Expressions.makeRule(head, body);
-		PositiveLiteral expectedLiteral = Expressions.makePositiveLiteral("_rule_" + rule.getIndex(), x, y2, z);
-		assertEquals(expectedLiteral, rule.getBodyVariablesLiteral());
-
-		PositiveLiteral groundAtom = Expressions.makePositiveLiteral("p", c);
-		PositiveLiteral groundAtom2 = Expressions.makePositiveLiteral("q", d);
-		Conjunction<Literal> body2 = Expressions.makeConjunction(Collections.singletonList(groundAtom));
-		Conjunction<PositiveLiteral> head2 = Expressions.makeConjunction(Collections.singletonList(groundAtom2));
-		Rule rule2 = Expressions.makeRule(head2, body2);
-		Constant constant = Expressions.makeAbstractConstant("_0");
-		PositiveLiteral expectedLiteral2 = Expressions.makePositiveLiteral("_rule_" + rule2.getIndex(), constant);
-		assertEquals(expectedLiteral2, rule2.getBodyVariablesLiteral());
-	}
 }

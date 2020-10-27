@@ -48,9 +48,6 @@ public class RuleImpl implements Rule {
 	final Conjunction<Literal> body;
 	final Conjunction<PositiveLiteral> head;
 
-	static Map<Rule, Integer> ruleIndexMap = new HashMap<>();
-	static int ruleIndexCounter = 0;
-
 	/**
 	 * Creates a Rule with a non-empty body and an non-empty head. All variables in
 	 * the body must be universally quantified; all variables in the head that do
@@ -120,25 +117,6 @@ public class RuleImpl implements Rule {
 	@Override
 	public Conjunction<Literal> getBody() {
 		return this.body;
-	}
-
-	@Override
-	public int getIndex() {
-		Integer ruleIdx;
-		if ((ruleIdx = ruleIndexMap.get(this)) == null) {
-			ruleIdx = ruleIndexCounter++;
-			ruleIndexMap.put(this, ruleIdx);
-		}
-		return ruleIdx;
-	}
-
-	@Override
-	public PositiveLiteral getBodyVariablesLiteral() {
-		if (getBody().getUniversalVariables().count() == 0) {
-			return Expressions.makePositiveLiteral("_rule_" + getIndex(), Expressions.makeAbstractConstant("_0"));
-		} else {
-			return Expressions.makePositiveLiteral("_rule_" + getIndex(), getBody().getUniversalVariables().collect(Collectors.toList()));
-		}
 	}
 
 	@Override

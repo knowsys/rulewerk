@@ -45,18 +45,4 @@ public interface Rule extends SyntaxObject, Statement {
 	 * @return conjunction of literals
 	 */
 	Conjunction<Literal> getBody();
-
-	/**
-	 * Returns a unique integer
-	 *
-	 * @return index
-	 */
-	int getIndex();
-
-	/**
-	 * Returns a literal that is unique for the rule and contains all universal variables of the body.
-	 *
-	 * @return literal
-	 */
-	PositiveLiteral getBodyVariablesLiteral();
 }

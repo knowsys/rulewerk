@@ -22,6 +22,7 @@ package org.semanticweb.rulewerk.asp.implementation;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.apache.commons.lang3.Validate;
+import org.semanticweb.rulewerk.asp.model.AspReasoner;
 import org.semanticweb.rulewerk.asp.model.Grounder;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
@@ -43,6 +44,8 @@ public class AspifGrounder implements Grounder {
 	private final KnowledgeBase knowledgeBase;
 	private final Reasoner reasoner;
 	private final BufferedWriter writer;
+
+	private int ruleIndex = 1;
 
 	/**
 	 * Constructor.
@@ -112,7 +115,7 @@ public class AspifGrounder implements Grounder {
 
 	@Override
 	public Boolean visit(Rule statement) {
-		PositiveLiteral query = statement.getBodyVariablesLiteral();
+		PositiveLiteral query = AspReasonerImpl.getBodyVariablesLiteral(statement, ruleIndex++);
 		QueryResultIterator answers = reasoner.answerQuery(query, false);
 		RuleAspifTemplate ruleTemplate = new RuleAspifTemplate(statement, writer, query);
 		try {

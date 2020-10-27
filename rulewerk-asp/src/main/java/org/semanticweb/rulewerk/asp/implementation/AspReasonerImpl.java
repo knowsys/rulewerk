@@ -48,7 +48,7 @@ public class AspReasonerImpl implements AspReasoner {
 	final private KnowledgeBase datalogKnowledgeBase;
 	final private Reasoner datalogReasoner;
 
-	final private OverApproximationStatementVisitor visitor = new OverApproximationStatementVisitor();
+	private OverApproximationStatementVisitor visitor = new OverApproximationStatementVisitor();
 
 	private AnswerSet cautiousAnswerSet;
 
@@ -58,6 +58,8 @@ public class AspReasonerImpl implements AspReasoner {
 	 * @author Philipp Hanisch
 	 */
 	private static class OverApproximationStatementVisitor implements StatementVisitor<List<Statement>> {
+
+		private int ruleIndex = 1;
 
 		@Override
 		public List<Statement> visit(Fact statement) {
@@ -73,11 +75,11 @@ public class AspReasonerImpl implements AspReasoner {
 				literal -> !literal.isNegated()).collect(Collectors.toList());
 
 			Conjunction<Literal> positiveBodyConjunction = Expressions.makeConjunction(positiveBodyLiterals);
-			Conjunction<PositiveLiteral> bodyVariablesLiteralConjunction = Expressions.makePositiveConjunction(statement.getBodyVariablesLiteral());
+			PositiveLiteral bodyVariableLiteral = getBodyVariablesLiteral(statement, ruleIndex++);
+			Conjunction<PositiveLiteral> bodyVariablesLiteralConjunction = Expressions.makePositiveConjunction(bodyVariableLiteral);
 
 			List<Statement> rules = new ArrayList<>();
 			if (positiveBodyLiterals.isEmpty()) {
-				PositiveLiteral bodyVariableLiteral = statement.getBodyVariablesLiteral();
 				rules.add(Expressions.makeFact(bodyVariableLiteral.getPredicate(), bodyVariableLiteral.getArguments()));
 			} else {
 				rules.add(Expressions.makeRule(bodyVariablesLiteralConjunction, positiveBodyConjunction));
@@ -326,14 +328,22 @@ public class AspReasonerImpl implements AspReasoner {
 	@Override
 	public void onStatementRemoved(Statement statementRemoved) {
 		cautiousAnswerSet = null;
-		this.datalogKnowledgeBase.removeStatements(statementRemoved.accept(visitor));
+		this.datalogKnowledgeBase.removeStatements(new ArrayList<>(this.datalogKnowledgeBase.getStatements()));
+		visitor = new OverApproximationStatementVisitor();
+
+		for (Statement statement : knowledgeBase.getStatements()) {
+			this.datalogKnowledgeBase.addStatements(statement.accept(visitor));
+		}
 	}
 
 	@Override
 	public void onStatementsRemoved(List<Statement> statementsRemoved) {
 		cautiousAnswerSet = null;
-		for (Statement statement : statementsRemoved) {
-			this.datalogKnowledgeBase.removeStatements(statement.accept(visitor));
+		this.datalogKnowledgeBase.removeStatements(new ArrayList<>(this.datalogKnowledgeBase.getStatements()));
+		visitor = new OverApproximationStatementVisitor();
+
+		for (Statement statement : knowledgeBase.getStatements()) {
+			this.datalogKnowledgeBase.addStatements(statement.accept(visitor));
 		}
 	}
 
@@ -346,6 +356,21 @@ public class AspReasonerImpl implements AspReasoner {
 	@Override
 	public void close() {
 		this.datalogReasoner.close();
+	}
+
+	/**
+	 * Returns a literal that is unique for the rule and index, and it contains all universal variables of the rule body.
+	 *
+	 * @param rule a rule
+	 * @param index a unique rule index
+	 * @return a positive literal
+	 */
+	public static PositiveLiteral getBodyVariablesLiteral(Rule rule, int index) {
+		if (rule.getBody().getUniversalVariables().count() == 0) {
+			return Expressions.makePositiveLiteral("_rule_" + index, Expressions.makeAbstractConstant("_0"));
+		} else {
+			return Expressions.makePositiveLiteral("_rule_" + index, rule.getBody().getUniversalVariables().collect(Collectors.toList()));
+		}
 	}
 
 	// start: dummy implementations

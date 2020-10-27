@@ -95,9 +95,9 @@ public class AspReasonerImplTest {
 
 		Conjunction<Literal> positiveBodyConjunction = Expressions.makeConjunction(atom1, atom4);
 		Conjunction<PositiveLiteral> bodyLiteralConjunction = Expressions.makeConjunction(
-			Collections.singletonList(rule.getBodyVariablesLiteral()));
+			Collections.singletonList(AspReasonerImpl.getBodyVariablesLiteral(rule, 1)));
 		Conjunction<Literal> bodyLiteralConjunction2 = Expressions.makeConjunction(
-			Collections.singletonList(rule.getBodyVariablesLiteral()));
+			Collections.singletonList(AspReasonerImpl.getBodyVariablesLiteral(rule, 1)));
 		Rule expectedRule1 = Expressions.makeRule(bodyLiteralConjunction, positiveBodyConjunction);
 		Rule expectedRule2 = Expressions.makeRule(rule.getHead(), bodyLiteralConjunction2);
 
@@ -214,8 +214,8 @@ public class AspReasonerImplTest {
 		kb.addStatements(ruleA);
 		AspReasoner reasoner = new AspReasonerImpl(kb);
 		kb.addStatement(ruleB);
-		List<Statement> expectedList = new ArrayList<>(overApproximatedRule(ruleA));
-		expectedList.addAll(overApproximatedRule(ruleB));
+		List<Statement> expectedList = new ArrayList<>(overApproximatedRule(ruleA, 1));
+		expectedList.addAll(overApproximatedRule(ruleB, 2));
 		assertEquals(expectedList, reasoner.getDatalogKnowledgeBase().getRules());
 	}
 
@@ -232,8 +232,8 @@ public class AspReasonerImplTest {
 		kb.addStatements(ruleA);
 		AspReasoner reasoner = new AspReasonerImpl(kb);
 		kb.addStatements(ruleB, ruleA);
-		List<Statement> expectedList = new ArrayList<>(overApproximatedRule(ruleA));
-		expectedList.addAll(overApproximatedRule(ruleB));
+		List<Statement> expectedList = new ArrayList<>(overApproximatedRule(ruleA, 1));
+		expectedList.addAll(overApproximatedRule(ruleB, 2));
 		assertEquals(expectedList, reasoner.getDatalogKnowledgeBase().getRules());
 	}
 
@@ -252,7 +252,7 @@ public class AspReasonerImplTest {
 		kb.removeStatement(ruleA);
 		assertEquals(
 			reasoner.getDatalogKnowledgeBase().getRules(),
-			overApproximatedRule(ruleB)
+			overApproximatedRule(ruleB, 1)
 		);
 	}
 
@@ -270,9 +270,29 @@ public class AspReasonerImplTest {
 		AspReasoner reasoner = new AspReasonerImpl(kb);
 		kb.removeStatements(ruleA);
 		assertEquals(
-			reasoner.getDatalogKnowledgeBase().getRules(),
-			overApproximatedRule(ruleB)
+			overApproximatedRule(ruleB, 1),
+			reasoner.getDatalogKnowledgeBase().getRules()
 		);
+	}
+
+	@Test
+	public void getBodyVariablesLiteral() {
+		List<Literal> bodyList = Arrays.asList(atom1, negativeLiteral, atom4);
+		List<PositiveLiteral> headList = Collections.singletonList(atom2);
+		Conjunction<Literal> body = Expressions.makeConjunction(bodyList);
+		Conjunction<PositiveLiteral> head = Expressions.makeConjunction(headList);
+		Rule rule = Expressions.makeRule(head, body);
+		PositiveLiteral expectedLiteral = Expressions.makePositiveLiteral("_rule_" + 1, x, y2, z);
+		assertEquals(expectedLiteral, AspReasonerImpl.getBodyVariablesLiteral(rule, 1));
+
+		PositiveLiteral groundAtom = Expressions.makePositiveLiteral("p", c);
+		PositiveLiteral groundAtom2 = Expressions.makePositiveLiteral("q", d);
+		Conjunction<Literal> body2 = Expressions.makeConjunction(Collections.singletonList(groundAtom));
+		Conjunction<PositiveLiteral> head2 = Expressions.makeConjunction(Collections.singletonList(groundAtom2));
+		Rule rule2 = Expressions.makeRule(head2, body2);
+		Constant constant = Expressions.makeAbstractConstant("_0");
+		PositiveLiteral expectedLiteral2 = Expressions.makePositiveLiteral("_rule_" + 2, constant);
+		assertEquals(expectedLiteral2, AspReasonerImpl.getBodyVariablesLiteral(rule2, 2));
 	}
 
 	/**
@@ -281,18 +301,19 @@ public class AspReasonerImplTest {
 	 * and should not be used to verify the correctness of the visitor.
 	 *
 	 * @param statement the rule to over-approximate
+	 * @param index a unique rule index
 	 * @return list of statements
 	 */
-	private List<Statement> overApproximatedRule(Rule statement) {
+	private List<Statement> overApproximatedRule(Rule statement, int index) {
 		List<Literal> positiveBodyLiterals = statement.getBody().getLiterals().stream().filter(
 			literal -> !literal.isNegated()).collect(Collectors.toList());
 
 		Conjunction<Literal> positiveBodyConjunction = Expressions.makeConjunction(positiveBodyLiterals);
-		Conjunction<PositiveLiteral> bodyVariablesLiteralConjunction = Expressions.makePositiveConjunction(statement.getBodyVariablesLiteral());
+		PositiveLiteral bodyVariableLiteral = AspReasonerImpl.getBodyVariablesLiteral(statement, index);
+		Conjunction<PositiveLiteral> bodyVariablesLiteralConjunction = Expressions.makePositiveConjunction(bodyVariableLiteral);
 
 		List<Statement> rules = new ArrayList<>();
 		if (positiveBodyLiterals.isEmpty()) {
-			PositiveLiteral bodyVariableLiteral = statement.getBodyVariablesLiteral();
 			rules.add(Expressions.makeFact(bodyVariableLiteral.getPredicate(), bodyVariableLiteral.getArguments()));
 		} else {
 			rules.add(Expressions.makeRule(bodyVariablesLiteralConjunction, positiveBodyConjunction));
