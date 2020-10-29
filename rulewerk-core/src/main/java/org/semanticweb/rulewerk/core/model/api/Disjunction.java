@@ -20,31 +20,21 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
+import java.util.List;
+
 /**
- * Interface for classes representing a rule. This implementation assumes that
- * rules are defined by their head and body literals, without explicitly
- * specifying quantifiers. All variables in the body are considered universally
- * quantified; all variables in the head that do not occur in the body are
- * considered existentially quantified.
+ * Interface for representing disjunctions of {@link Conjunctions}s.
  *
- * @author Markus Krötzsch
  * @author Lukas Gerlach
  *
  */
-public interface Rule extends SyntaxObject, Statement {
+public interface Disjunction<T extends Conjunction<?>> extends Iterable<T>, SyntaxObject {
 
 	/**
-	 * Returns the disjunction of conjunctions of head literals (the consequence of the rule).
+	 * Returns the list of conjunctions that are part of this disjunction.
 	 *
-	 * @return conjunction of literals
+	 * @return list of conjunctions
 	 */
-	Disjunction<Conjunction<PositiveLiteral>> getHead();
-
-	/**
-	 * Returns the conjunction of body literals (the premise of the rule).
-	 *
-	 * @return conjunction of literals
-	 */
-	Conjunction<Literal> getBody();
+	List<T> getConjunctions();
 
 }

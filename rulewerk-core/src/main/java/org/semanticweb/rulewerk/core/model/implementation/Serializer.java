@@ -12,9 +12,9 @@ import java.io.StringWriter;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,6 +35,7 @@ import org.semanticweb.rulewerk.core.model.api.Command;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.DatatypeConstant;
+import org.semanticweb.rulewerk.core.model.api.Disjunction;
 import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.LanguageStringConstant;
@@ -52,11 +53,11 @@ import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
 /**
  * Objects of this class are used to create string representations of syntactic
  * objects.
- * 
+ *
  * @see <a href=
  *      "https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar">RuleWerk
  *      rule syntax</a>
- * 
+ *
  * @author Markus Kroetzsch
  *
  */
@@ -95,7 +96,7 @@ public class Serializer {
 	/**
 	 * Runtime exception used to report errors that occurred in visitors that do not
 	 * declare checked exceptions.
-	 * 
+	 *
 	 * @author Markus Kroetzsch
 	 *
 	 */
@@ -115,7 +116,7 @@ public class Serializer {
 
 	/**
 	 * Auxiliary class to visit {@link Term} objects for writing.
-	 * 
+	 *
 	 * @author Markus Kroetzsch
 	 *
 	 */
@@ -185,7 +186,7 @@ public class Serializer {
 
 	/**
 	 * Auxiliary class to visit {@link Statement} objects for writing.
-	 * 
+	 *
 	 * @author Markus Kroetzsch
 	 *
 	 */
@@ -225,7 +226,7 @@ public class Serializer {
 
 	/**
 	 * Construct a serializer that uses a specific function to serialize IRIs.
-	 * 
+	 *
 	 * @param writer         the object used to write serializations
 	 * @param iriTransformer a function used to abbreviate IRIs, e.g., if namespace
 	 *                       prefixes were declared
@@ -238,7 +239,7 @@ public class Serializer {
 	/**
 	 * Construct a serializer that serializes IRIs without any form of
 	 * transformation or abbreviation.
-	 * 
+	 *
 	 * @param writer the object used to write serializations
 	 */
 	public Serializer(final Writer writer) {
@@ -248,7 +249,7 @@ public class Serializer {
 	/**
 	 * Construct a serializer that uses the given {@link PrefixDeclarationRegistry}
 	 * to abbreviate IRIs.
-	 * 
+	 *
 	 * @param writer                    the object used to write serializations
 	 * @param prefixDeclarationRegistry the object used to abbreviate IRIs
 	 */
@@ -301,7 +302,7 @@ public class Serializer {
 	 * @throws IOException
 	 */
 	private void writeRuleNoStatment(Rule rule) throws IOException {
-		writeLiteralConjunction(rule.getHead());
+		writeDisjunction(rule.getHead());
 		writer.write(" :- ");
 		writeLiteralConjunction(rule.getBody());
 	}
@@ -374,6 +375,26 @@ public class Serializer {
 				writer.write(", ");
 			}
 			writeLiteral(literal);
+		}
+	}
+
+	/**
+	 * Writes a serialization of the given {@link Disjunction} of {@link Conjunction}
+	 * objects.
+	 *
+	 * @param conjunctions a {@link Disjunction}
+	 * @throws IOException
+	 */
+	public void writeDisjunction(final Disjunction<? extends Conjunction> conjunctions) throws IOException {
+		boolean first = true;
+		for (final Conjunction conjunction : conjunctions.getConjunctions()) {
+			if (first) {
+				first = false;
+			} else {
+				// TODO: think about notation again
+				writer.write("; ");
+			}
+			writeLiteralConjunction(conjunction);
 		}
 	}
 
@@ -550,7 +571,7 @@ public class Serializer {
 
 	/**
 	 * Convenience method for obtaining serializations as Java strings.
-	 * 
+	 *
 	 * @param writeAction a function that accepts a {@link Serializer} and produces
 	 *                    a string
 	 * @return serialization string

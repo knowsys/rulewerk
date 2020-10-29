@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
+import org.semanticweb.rulewerk.core.model.api.Disjunction;
 import org.semanticweb.rulewerk.core.model.api.DatatypeConstant;
 import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
 import org.semanticweb.rulewerk.core.model.api.Fact;
@@ -43,6 +44,7 @@ import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
  * in Rulewerk.
  *
  * @author Markus Krötzsch
+ * @author Lukas Gerlach
  *
  */
 
@@ -330,7 +332,7 @@ public final class Expressions {
 	 * @return a {@link Rule} corresponding to the input
 	 */
 	public static Rule makeRule(final PositiveLiteral headLiteral, final Literal... bodyLiterals) {
-		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
+		return new RuleImpl(new DisjunctionImpl<>(Arrays.asList(new ConjunctionImpl<>(Arrays.asList(headLiteral)))),
 				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
 	}
 
@@ -342,6 +344,17 @@ public final class Expressions {
 	 * @return a {@link Rule} corresponding to the input
 	 */
 	public static Rule makeRule(final Conjunction<PositiveLiteral> head, final Conjunction<Literal> body) {
+		return new RuleImpl(head, body);
+	}
+
+	/**
+	 * Creates a {@code Rule}.
+	 *
+	 * @param head disjunction of conjunctions of positive (non-negated) literals
+	 * @param body conjunction of literals (negated or not)
+	 * @return a {@link Rule} corresponding to the input
+	 */
+	public static Rule makeRule(final Disjunction<Conjunction<PositiveLiteral>> head, final Conjunction<Literal> body) {
 		return new RuleImpl(head, body);
 	}
 
