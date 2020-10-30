@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.reasoner.vlog;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import java.util.List;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.Constant;
+import org.semanticweb.rulewerk.core.model.api.Disjunction;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.NamedNull;
@@ -126,8 +127,17 @@ final class ModelToVLogConverter {
 	}
 
 	static karmaresearch.vlog.Rule toVLogRule(final Rule rule) {
-		final karmaresearch.vlog.Atom[] vLogHead = toVLogAtomArray(rule.getHead());
-		final karmaresearch.vlog.Atom[] vLogBody = toVLogAtomArray(rule.getBody());
+		// TODO: what to do for disjunctions?
+		final Disjunction<?> headDisjunction = rule.getHead();
+		final Disjunction<?> bodyDisjunction = rule.getBody();
+		if (!(headDisjunction instanceof Conjunction<?>) || !(bodyDisjunction instanceof Conjunction<?>)) {
+			throw new IllegalArgumentException("Disjunctions are currently not supported for vlog bindings.");
+		}
+		final Conjunction<?> headConjunction = (Conjunction<?>) headDisjunction;
+		final Conjunction<?> bodyConjunction = (Conjunction<?>) bodyDisjunction;
+
+		final karmaresearch.vlog.Atom[] vLogHead = toVLogAtomArray(headConjunction);
+		final karmaresearch.vlog.Atom[] vLogBody = toVLogAtomArray(bodyConjunction);
 		return new karmaresearch.vlog.Rule(vLogHead, vLogBody);
 	}
 

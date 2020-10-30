@@ -90,7 +90,7 @@ public class RuleParserParseFactTest implements ParserTestUtils {
 	public void parseRule_namedNullInHead_succeeds() throws ParsingException {
 		String input = "q(_:head) :- p(\"a\") .";
 		Rule result = RuleParser.parseRule(input);
-		Literal literal = result.getHead().getLiterals().get(0);
+		Literal literal = result.getHead().getConjunctions().get(0).getLiterals().get(0);
 		assertArgumentIsNamedNull(literal, 1);
 	}
 }
