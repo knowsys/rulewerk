@@ -22,7 +22,6 @@ package org.semanticweb.rulewerk.asp.implementation;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.apache.commons.lang3.Validate;
-import org.semanticweb.rulewerk.asp.model.AspReasoner;
 import org.semanticweb.rulewerk.asp.model.Grounder;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
@@ -44,24 +43,28 @@ public class AspifGrounder implements Grounder {
 	private final KnowledgeBase knowledgeBase;
 	private final Reasoner reasoner;
 	private final BufferedWriter writer;
+	private final Set<Predicate> overApproximatedPredicates;
 
 	private int ruleIndex = 1;
 
 	/**
 	 * Constructor.
-	 *
 	 * @param knowledgeBase the knowledge base to ground
-	 * @param reasoner      the reasoner for inferring an over-approximation
-	 * @param writer		the writer to write the grounding
+	 * @param reasoner the reasoner for inferring an over-approximation
+	 * @param writer the writer to write the grounding
+	 * @param overApproximatedPredicates the set of over-approximated predicates
 	 */
-	public AspifGrounder(KnowledgeBase knowledgeBase, Reasoner reasoner, BufferedWriter writer) {
+	public AspifGrounder(KnowledgeBase knowledgeBase, Reasoner reasoner, BufferedWriter writer, Set<Predicate> overApproximatedPredicates) {
 		Validate.notNull(knowledgeBase);
 		Validate.notNull(reasoner);
 		Validate.notNull(writer);
+		Validate.notNull(overApproximatedPredicates);
+		Validate.noNullElements(overApproximatedPredicates);
 
 		this.knowledgeBase = knowledgeBase;
 		this.reasoner = reasoner;
 		this.writer = writer;
+		this.overApproximatedPredicates = overApproximatedPredicates;
 	}
 
 	@Override
@@ -71,6 +74,7 @@ public class AspifGrounder implements Grounder {
 			writer.write("asp 1 0 0");
 			writer.newLine();
 
+			ruleIndex = 1;
 			for (Statement statement : knowledgeBase.getStatements()) {
 				boolean successful = statement.accept(this);
 				if (!successful) {
@@ -108,29 +112,33 @@ public class AspifGrounder implements Grounder {
 
 	@Override
 	public Boolean visit(Fact statement) {
-		try {
-			writer.write("1 0 1 " + AspifIdentifier.getAspifValue(statement, statement.getArguments()) + " 0 0");
-			writer.newLine();
-		} catch (IOException ioException) {
-			ioException.printStackTrace();
-			return false;
+		if (overApproximatedPredicates.contains(statement.getPredicate())) {
+			try {
+				writer.write("1 0 1 " + AspifIdentifier.getAspifValue(statement, statement.getArguments()) + " 0 0");
+				writer.newLine();
+			} catch (IOException ioException) {
+				ioException.printStackTrace();
+				return false;
+			}
 		}
 		return true;
 	}
 
 	@Override
 	public Boolean visit(Rule statement) {
-		PositiveLiteral query = AspReasonerImpl.getBodyVariablesLiteral(statement, ruleIndex++);
-		QueryResultIterator answers = reasoner.answerQuery(query, false);
-		RuleAspifTemplate ruleTemplate = new RuleAspifTemplate(statement, writer, query);
-		try {
-			while (answers.hasNext()) {
-				List<Term> answerTerms = answers.next().getTerms();
-				ruleTemplate.writeGroundInstances(answerTerms);
+		if (statement.getHead().getLiterals().stream().map(Literal::getPredicate).anyMatch(overApproximatedPredicates::contains)) {
+			PositiveLiteral query = AspReasonerImpl.getBodyVariablesLiteral(statement, ruleIndex++);
+			QueryResultIterator answers = reasoner.answerQuery(query, false);
+			RuleAspifTemplate ruleTemplate = new RuleAspifTemplate(statement, writer, query, overApproximatedPredicates);
+			try {
+				while (answers.hasNext()) {
+					List<Term> answerTerms = answers.next().getTerms();
+					ruleTemplate.writeGroundInstances(answerTerms);
+				}
+			} catch (IOException ioException) {
+				ioException.printStackTrace();
+				return false;
 			}
-		} catch (IOException ioException) {
-			ioException.printStackTrace();
-			return false;
 		}
 
 		return true;
@@ -138,21 +146,23 @@ public class AspifGrounder implements Grounder {
 
 	@Override
 	public Boolean visit(DataSourceDeclaration statement) {
-		Predicate dataSourcePredicate = statement.getPredicate();
-		List<Term> dataSourceQueryVariables = new ArrayList<>();
-		for (int i=0; i<dataSourcePredicate.getArity(); i++) {
-			dataSourceQueryVariables.add(Expressions.makeUniversalVariable("var" + i));
-		}
-		PositiveLiteral dataSourceQueryLiteral = Expressions.makePositiveLiteral(dataSourcePredicate, dataSourceQueryVariables);
-		QueryResultIterator answers = reasoner.answerQuery(dataSourceQueryLiteral, false);
-		try {
-			while (answers.hasNext()) {
-				writer.write("1 0 1 " + AspifIdentifier.getAspifValue(dataSourceQueryLiteral, answers.next().getTerms()) + " 0 0");
-				writer.newLine();
+		if (overApproximatedPredicates.contains(statement.getPredicate())) {
+			Predicate dataSourcePredicate = statement.getPredicate();
+			List<Term> dataSourceQueryVariables = new ArrayList<>();
+			for (int i=0; i<dataSourcePredicate.getArity(); i++) {
+				dataSourceQueryVariables.add(Expressions.makeUniversalVariable("var" + i));
 			}
-		} catch (IOException ioException) {
-			ioException.printStackTrace();
-			return false;
+			PositiveLiteral dataSourceQueryLiteral = Expressions.makePositiveLiteral(dataSourcePredicate, dataSourceQueryVariables);
+			QueryResultIterator answers = reasoner.answerQuery(dataSourceQueryLiteral, false);
+			try {
+				while (answers.hasNext()) {
+					writer.write("1 0 1 " + AspifIdentifier.getAspifValue(dataSourceQueryLiteral, answers.next().getTerms()) + " 0 0");
+					writer.newLine();
+				}
+			} catch (IOException ioException) {
+				ioException.printStackTrace();
+				return false;
+			}
 		}
 
 		return true;

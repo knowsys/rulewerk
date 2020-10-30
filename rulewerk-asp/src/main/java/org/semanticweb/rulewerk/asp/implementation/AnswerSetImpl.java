@@ -38,20 +38,22 @@ import java.util.stream.IntStream;
  */
 public class AnswerSetImpl implements AnswerSet {
 
-	private Map<Predicate, Set<Literal>> answerSet;
+	private final Map<Predicate, Set<Literal>> answerSet;
 
 	/**
-	 * Constructor. Takes a string representation of an answer set, i.e., an space separated list of integers, and a map
-	 * that resolves the integers to the corresponding literals.
+	 * Constructor. Takes a map of literals per predicates and extend its by the string representation of an answer set,
+	 * i.e., an space separated list of integers, and a map that resolves the integers to the corresponding literals.
 	 *
+	 * @param core a map of literals per predicates
 	 * @param answerSetString   the string representation of an answer set
 	 * @param integerLiteralMap a integer-to-literal map
 	 */
-	public AnswerSetImpl(String answerSetString, Map<Integer, Literal> integerLiteralMap) {
+	public AnswerSetImpl(Map<Predicate, Set<Literal>> core, String answerSetString, Map<Integer, Literal> integerLiteralMap) {
 		Validate.notNull(answerSetString, "The string representation of an answer set cannot be null");
 		Validate.notNull(integerLiteralMap);
+		Validate.notNull(core);
 
-		answerSet = new HashMap<>();
+		answerSet = new HashMap<>(core);
 		if (!answerSetString.isEmpty()) {
 			for (String integerString : answerSetString.trim().split(" ")) {
 				Integer literalInteger = Integer.parseInt(integerString);

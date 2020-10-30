@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.asp.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import org.semanticweb.rulewerk.asp.model.AnswerSet;
 import org.semanticweb.rulewerk.asp.model.AnswerSetIterator;
 import org.semanticweb.rulewerk.asp.model.AspReasoningState;
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,9 +33,11 @@ import java.util.*;
 
 public class AnswerSetIteratorImpl implements AnswerSetIterator {
 
-	Iterator<String> answerSetStringIterator;
-	AspReasoningState reasoningState;
-	Map<Integer, Literal> integerLiteralMap;
+	private final Iterator<String> answerSetStringIterator;
+	private AspReasoningState reasoningState;
+	private final Map<Integer, Literal> integerLiteralMap;
+
+	private final Map<Predicate, Set<Literal>> core;
 
 	/**
 	 * Static function to create an answer set iterator that represents an erroneous computation.
@@ -47,13 +50,16 @@ public class AnswerSetIteratorImpl implements AnswerSetIterator {
 	/**
 	 * The constructor.
 	 *
+	 * @param core a map of literals per predicate that are part of every answer set
 	 * @param reader the reader containing the answer sets
 	 * @param integerLiteralMap map of integers to the literals they represent
 	 * @throws IOException an IO exception
 	 */
-	public AnswerSetIteratorImpl(BufferedReader reader, Map<Integer, Literal> integerLiteralMap) throws IOException {
+	public AnswerSetIteratorImpl(Map<Predicate, Set<Literal>> core, BufferedReader reader, Map<Integer, Literal> integerLiteralMap) throws IOException {
 		Validate.notNull(reader);
 		Validate.notNull(integerLiteralMap);
+		Validate.notNull(core);
+		this.core = core;
 
 		String line;
 		List<String> answerSetStrings = new ArrayList<>();
@@ -80,6 +86,7 @@ public class AnswerSetIteratorImpl implements AnswerSetIterator {
 		answerSetStringIterator = Collections.emptyIterator();
 		reasoningState = AspReasoningState.ERROR;
 		integerLiteralMap = null;
+		core = null;
 	}
 
 	@Override
@@ -89,7 +96,7 @@ public class AnswerSetIteratorImpl implements AnswerSetIterator {
 
 	@Override
 	public AnswerSet next() {
-		return new AnswerSetImpl(answerSetStringIterator.next(), integerLiteralMap);
+		return new AnswerSetImpl(core, answerSetStringIterator.next(), integerLiteralMap);
 	}
 
 	@Override

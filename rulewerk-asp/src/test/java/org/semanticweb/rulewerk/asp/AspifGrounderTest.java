@@ -38,8 +38,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -52,16 +51,19 @@ public class AspifGrounderTest {
 
 	final Fact fact = Expressions.makeFact("p", d, c);
 	final Fact fact2 = Expressions.makeFact("p", c, c);
+	final Fact fact3 = Expressions.makeFact("q", c, d);
 
 	@Test
 	public void visitFactTest() throws IOException {
+		Set<Predicate> approximatedPredicates = new HashSet<>();
+		approximatedPredicates.add(Expressions.makePredicate("p", 2));
 		AspifIdentifier.reset();
 		KnowledgeBase kb = new KnowledgeBase();
-		kb.addStatements(fact, fact2);
+		kb.addStatements(fact, fact2, fact3);
 		Reasoner reasoner = new VLogReasoner(kb);
 		StringWriter writer = new StringWriter();
 		BufferedWriter bufferedWriter = new BufferedWriter(writer);
-		Grounder grounder = new AspifGrounder(kb, reasoner, bufferedWriter);
+		Grounder grounder = new AspifGrounder(kb, reasoner, bufferedWriter, approximatedPredicates);
 		grounder.ground();
 		bufferedWriter.flush();
 		assertEquals("asp 1 0 0\n" +
@@ -78,13 +80,21 @@ public class AspifGrounderTest {
 
 	@Test
 	public void visitRuleTest() throws IOException {
+		Set<Predicate> approximatedPredicates = new HashSet<>();
+		approximatedPredicates.add(Expressions.makePredicate("r", 1));
+		approximatedPredicates.add(Expressions.makePredicate("s", 1));
+		approximatedPredicates.add(Expressions.makePredicate("p", 3));
+		approximatedPredicates.add(Expressions.makePredicate("q", 1));
+
 		AspifIdentifier.reset();
 		KnowledgeBase knowledgeBase = new KnowledgeBase();
 		Fact fact = Expressions.makeFact("r", c);
 		Fact fact2 = Expressions.makeFact("r", d);
 		Fact fact3 = Expressions.makeFact("s", c);
 		Fact fact4 = Expressions.makeFact("s", d);
-		knowledgeBase.addStatements(fact, fact2, fact3, fact4);
+		Fact fact5 = Expressions.makeFact("t", c);
+		Fact fact6 = Expressions.makeFact("t", d);
+		knowledgeBase.addStatements(fact, fact2, fact3, fact4, fact5, fact6);
 
 		Conjunction<PositiveLiteral> head = Expressions.makeConjunction(Arrays.asList(
 			Expressions.makePositiveLiteral("p", c, x, d),
@@ -92,14 +102,19 @@ public class AspifGrounderTest {
 		));
 		Conjunction<Literal> body = Expressions.makeConjunction(Arrays.asList(
 			Expressions.makePositiveLiteral("r", x),
+			Expressions.makePositiveLiteral("t", x),
 			Expressions.makeNegativeLiteral("s", x)
 		));
 		knowledgeBase.addStatement(Expressions.makeRule(head, body));
+		knowledgeBase.addStatement(Expressions.makeRule(
+			Expressions.makeConjunction(Collections.singletonList(Expressions.makePositiveLiteral("s", x))),
+			Expressions.makeConjunction(Expressions.makeNegativeLiteral("s", x), Expressions.makePositiveLiteral("s", x))
+		));
 		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
 		Reasoner reasoner = new VLogReasoner(aspReasoner.getDatalogKnowledgeBase());
 		StringWriter writer = new StringWriter();
 		BufferedWriter bufferedWriter = new BufferedWriter(writer);
-		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, bufferedWriter);
+		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, bufferedWriter, approximatedPredicates);
 		grounder.ground();
 		bufferedWriter.flush();
 
@@ -112,6 +127,8 @@ public class AspifGrounderTest {
 			"1 0 1 6 0 2 1 -3\n" +
 			"1 0 1 7 0 2 2 -4\n" +
 			"1 0 1 6 0 2 2 -4\n" +
+			"1 0 1 3 0 2 -3 3\n" +
+			"1 0 1 4 0 2 -4 4\n" +
 			"4 1 2 1 2\n" +
 			"4 1 6 1 6\n" +
 			"4 1 4 1 4\n" +
@@ -134,14 +151,17 @@ public class AspifGrounderTest {
 	@Test
 	public void visitDataSourceDeclarationTest() throws IOException {
 		AspifIdentifier.reset();
-		Predicate predicate = Expressions.makePredicate("p", 2);
+		Predicate approximatedPredicate = Expressions.makePredicate("p", 2);
+		Predicate predicate = Expressions.makePredicate("q", 2);
 		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatements(new DataSourceDeclarationImpl(approximatedPredicate, new CsvFileDataSource("src/test/data/input/binaryFacts.csv")));
 		knowledgeBase.addStatements(new DataSourceDeclarationImpl(predicate, new CsvFileDataSource("src/test/data/input/binaryFacts.csv")));
+
 		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
 		Reasoner reasoner = new VLogReasoner(aspReasoner.getDatalogKnowledgeBase());
 		StringWriter writer = new StringWriter();
 		BufferedWriter bufferedWriter = new BufferedWriter(writer);
-		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, bufferedWriter);
+		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, bufferedWriter, new HashSet<>(Collections.singletonList(approximatedPredicate)));
 		grounder.ground();
 		bufferedWriter.flush();
 
@@ -170,8 +190,48 @@ public class AspifGrounderTest {
 		Reasoner reasoner = new VLogReasoner(aspReasoner.getDatalogKnowledgeBase());
 		StringWriter writer = new StringWriter();
 		BufferedWriter bufferedWriter = new BufferedWriter(writer);
-		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, bufferedWriter);
+		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, bufferedWriter, Collections.emptySet());
 		bufferedWriter.close();
 		grounder.ground();
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void knowledgeBaseNotNull() {
+		new AspifGrounder(null,
+			new VLogReasoner(new KnowledgeBase()),
+			new BufferedWriter(new StringWriter()),
+			new HashSet<>());
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void reasonerNotNull() {
+		new AspifGrounder(new KnowledgeBase(),
+			null,
+			new BufferedWriter(new StringWriter()),
+			new HashSet<>());
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void writerNotNull() {
+		new AspifGrounder(new KnowledgeBase(),
+			new VLogReasoner(new KnowledgeBase()),
+			null,
+			new HashSet<>());
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void approximatedPredicatesNotNull() {
+		new AspifGrounder(new KnowledgeBase(),
+			new VLogReasoner(new KnowledgeBase()),
+			new BufferedWriter(new StringWriter()),
+			null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void approximatedPredicatesNoNullElements() {
+		new AspifGrounder(new KnowledgeBase(),
+			new VLogReasoner(new KnowledgeBase()),
+			new BufferedWriter(new StringWriter()),
+			new HashSet<>(Collections.singletonList(null)));
 	}
 }

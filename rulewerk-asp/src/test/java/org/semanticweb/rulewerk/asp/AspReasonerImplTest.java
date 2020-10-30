@@ -54,7 +54,11 @@ public class AspReasonerImplTest {
 	final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
 	final PositiveLiteral atom3 = Expressions.makePositiveLiteral("p", c, z);
 	final PositiveLiteral atom4 = Expressions.makePositiveLiteral("q", x, y2, z);
+	final PositiveLiteral atom5 = Expressions.makePositiveLiteral("q", x, x, c);
+	final PositiveLiteral atom6 = Expressions.makePositiveLiteral("r", x, d);
 	final NegativeLiteral negativeLiteral = Expressions.makeNegativeLiteral("r", x, d);
+	final NegativeLiteral negativeLiteral2 = Expressions.makeNegativeLiteral("q", x, c, d);
+	final NegativeLiteral negativeLiteral3 = Expressions.makeNegativeLiteral("p", x, c);
 
 	@Test
 	public void overApproximateFact() {
@@ -83,23 +87,24 @@ public class AspReasonerImplTest {
 
 	@Test
 	public void overApproximateRule() {
-		List<Literal> bodyList = Arrays.asList(atom1, negativeLiteral, atom4);
-		Conjunction<Literal> body = Expressions.makeConjunction(bodyList);
-		List<PositiveLiteral> headList = Collections.singletonList(atom2);
-		Conjunction<PositiveLiteral> head = Expressions.makeConjunction(headList);
-		Rule rule = Expressions.makeRule(head, body);
+		Rule rule = Expressions.makeRule(
+			Expressions.makeConjunction(Collections.singletonList(atom6)),
+			Expressions.makeConjunction(atom2, negativeLiteral2));
+		Rule rule2 = Expressions.makeRule(
+			Expressions.makeConjunction(Collections.singletonList(atom5)),
+			Expressions.makeConjunction(atom6, negativeLiteral3));
+
 		KnowledgeBase knowledgeBase = new KnowledgeBase();
-		knowledgeBase.addStatement(rule);
+		knowledgeBase.addStatements(rule, rule2);
 		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
 		KnowledgeBase overApproximatedKnowledgeBase = aspReasoner.getDatalogKnowledgeBase();
 
-		Conjunction<Literal> positiveBodyConjunction = Expressions.makeConjunction(atom1, atom4);
-		Conjunction<PositiveLiteral> bodyLiteralConjunction = Expressions.makeConjunction(
-			Collections.singletonList(AspReasonerImpl.getBodyVariablesLiteral(rule, 1)));
-		Conjunction<Literal> bodyLiteralConjunction2 = Expressions.makeConjunction(
-			Collections.singletonList(AspReasonerImpl.getBodyVariablesLiteral(rule, 1)));
-		Rule expectedRule1 = Expressions.makeRule(bodyLiteralConjunction, positiveBodyConjunction);
-		Rule expectedRule2 = Expressions.makeRule(rule.getHead(), bodyLiteralConjunction2);
+		Rule expectedRule1 = Expressions.makeRule(
+			Expressions.makeConjunction(Arrays.asList(atom6, AspReasonerImpl.getBodyVariablesLiteral(rule, 1))),
+			Expressions.makeConjunction(atom2));
+		Rule expectedRule2 = Expressions.makeRule(
+			Expressions.makeConjunction(Arrays.asList(atom5, AspReasonerImpl.getBodyVariablesLiteral(rule2, 2))),
+			Expressions.makeConjunction(atom6, negativeLiteral3));
 
 		assertEquals(2, overApproximatedKnowledgeBase.getStatements().size());
 		assertTrue(overApproximatedKnowledgeBase.getStatements().contains(expectedRule1));
@@ -112,6 +117,18 @@ public class AspReasonerImplTest {
 		List<Literal> bodyList = Arrays.asList(atom1, negativeLiteral, atom4);
 		Conjunction<Literal> body = Expressions.makeConjunction(bodyList);
 		List<PositiveLiteral> headList = Collections.singletonList(literalExistential);
+		Conjunction<PositiveLiteral> head = Expressions.makeConjunction(headList);
+		Rule rule = Expressions.makeRule(head, body);
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatement(rule);
+		new AspReasonerImpl(knowledgeBase);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void allVariablesOccurInPositiveBodyLiteral() {
+		List<Literal> bodyList = Collections.singletonList(negativeLiteral);
+		Conjunction<Literal> body = Expressions.makeConjunction(bodyList);
+		List<PositiveLiteral> headList = Collections.singletonList(atom1);
 		Conjunction<PositiveLiteral> head = Expressions.makeConjunction(headList);
 		Rule rule = Expressions.makeRule(head, body);
 		KnowledgeBase knowledgeBase = new KnowledgeBase();
@@ -208,14 +225,23 @@ public class AspReasonerImplTest {
 		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", x);
 		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", x);
 		PositiveLiteral atomC = Expressions.makePositiveLiteral("r", x);
+
 		KnowledgeBase kb = new KnowledgeBase();
 		Rule ruleA = Expressions.makeRule(atomA, atomNegB, atomC);
 		Rule ruleB = Expressions.makeRule(atomB, atomNegA, atomC);
 		kb.addStatements(ruleA);
 		AspReasoner reasoner = new AspReasonerImpl(kb);
 		kb.addStatement(ruleB);
-		List<Statement> expectedList = new ArrayList<>(overApproximatedRule(ruleA, 1));
-		expectedList.addAll(overApproximatedRule(ruleB, 2));
+
+		List<Statement> expectedList = new ArrayList<>();
+		expectedList.add(Expressions.makeRule(
+			Expressions.makeConjunction(Arrays.asList(atomA, AspReasonerImpl.getBodyVariablesLiteral(ruleA, 1))),
+			Expressions.makeConjunction(atomC)
+		));
+		expectedList.add(Expressions.makeRule(
+			Expressions.makeConjunction(Arrays.asList(atomB, AspReasonerImpl.getBodyVariablesLiteral(ruleB, 2))),
+			Expressions.makeConjunction(atomC)
+		));
 		assertEquals(expectedList, reasoner.getDatalogKnowledgeBase().getRules());
 	}
 
@@ -226,14 +252,23 @@ public class AspReasonerImplTest {
 		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", x);
 		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", x);
 		PositiveLiteral atomC = Expressions.makePositiveLiteral("r", x);
+
 		KnowledgeBase kb = new KnowledgeBase();
 		Rule ruleA = Expressions.makeRule(atomA, atomNegB, atomC);
 		Rule ruleB = Expressions.makeRule(atomB, atomNegA, atomC);
 		kb.addStatements(ruleA);
 		AspReasoner reasoner = new AspReasonerImpl(kb);
 		kb.addStatements(ruleB, ruleA);
-		List<Statement> expectedList = new ArrayList<>(overApproximatedRule(ruleA, 1));
-		expectedList.addAll(overApproximatedRule(ruleB, 2));
+
+		List<Statement> expectedList = new ArrayList<>();
+		expectedList.add(Expressions.makeRule(
+			Expressions.makeConjunction(Arrays.asList(atomA, AspReasonerImpl.getBodyVariablesLiteral(ruleA, 1))),
+			Expressions.makeConjunction(atomC)
+		));
+		expectedList.add(Expressions.makeRule(
+			Expressions.makeConjunction(Arrays.asList(atomB, AspReasonerImpl.getBodyVariablesLiteral(ruleB, 2))),
+			Expressions.makeConjunction(atomC)
+		));
 		assertEquals(expectedList, reasoner.getDatalogKnowledgeBase().getRules());
 	}
 
@@ -244,16 +279,20 @@ public class AspReasonerImplTest {
 		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", x);
 		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", x);
 		PositiveLiteral atomC = Expressions.makePositiveLiteral("r", x);
+
 		KnowledgeBase kb = new KnowledgeBase();
 		Rule ruleA = Expressions.makeRule(atomA, atomNegB, atomC);
 		Rule ruleB = Expressions.makeRule(atomB, atomNegA, atomC);
 		kb.addStatements(ruleA, ruleB);
 		AspReasoner reasoner = new AspReasonerImpl(kb);
-		kb.removeStatement(ruleA);
-		assertEquals(
-			reasoner.getDatalogKnowledgeBase().getRules(),
-			overApproximatedRule(ruleB, 1)
-		);
+		kb.removeStatement(ruleB);
+
+		List<Statement> expectedList = new ArrayList<>();
+		expectedList.add(Expressions.makeRule(
+			Expressions.makeConjunction(Collections.singletonList(atomA)),
+			Expressions.makeConjunction(atomNegB, atomC)
+		));
+		assertEquals(expectedList, reasoner.getDatalogKnowledgeBase().getRules());
 	}
 
 	@Test
@@ -263,16 +302,20 @@ public class AspReasonerImplTest {
 		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", x);
 		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", x);
 		PositiveLiteral atomC = Expressions.makePositiveLiteral("r", x);
+
 		KnowledgeBase kb = new KnowledgeBase();
 		Rule ruleA = Expressions.makeRule(atomA, atomNegB, atomC);
 		Rule ruleB = Expressions.makeRule(atomB, atomNegA, atomC);
-		kb.addStatements(ruleA, ruleB, ruleA);
+		kb.addStatements(ruleA, ruleB);
 		AspReasoner reasoner = new AspReasonerImpl(kb);
-		kb.removeStatements(ruleA);
-		assertEquals(
-			overApproximatedRule(ruleB, 1),
-			reasoner.getDatalogKnowledgeBase().getRules()
-		);
+		kb.removeStatements(ruleB);
+
+		List<Statement> expectedList = new ArrayList<>();
+		expectedList.add(Expressions.makeRule(
+			Expressions.makeConjunction(Collections.singletonList(atomA)),
+			Expressions.makeConjunction(atomNegB, atomC)
+		));
+		assertEquals(expectedList, reasoner.getDatalogKnowledgeBase().getRules());
 	}
 
 	@Test

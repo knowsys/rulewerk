@@ -48,13 +48,19 @@ public class AnswerSetImplTest {
 	final PositiveLiteral atom3 = Expressions.makePositiveLiteral("q", d, c);
 
 	@Test(expected = NullPointerException.class)
+	public void coreNotNull() {
+		new AnswerSetImpl(null,"1", Collections.emptyMap());
+
+	}
+
+	@Test(expected = NullPointerException.class)
 	public void answerSetRepresentationNotNull() {
-		new AnswerSetImpl(null, Collections.emptyMap());
+		new AnswerSetImpl(Collections.emptyMap(),null, Collections.emptyMap());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void integerLiteralMapNotNull() {
-		new AnswerSetImpl("1", null);
+		new AnswerSetImpl(Collections.emptyMap(),"1", null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -63,7 +69,7 @@ public class AnswerSetImplTest {
 		integerLiteralMap.put(1, atom1);
 		integerLiteralMap.put(2, atom2);
 		integerLiteralMap.put(3, atom3);
-		new AnswerSetImpl("1 2 3 4", integerLiteralMap);
+		new AnswerSetImpl(Collections.emptyMap(),"1 2 3 4", integerLiteralMap);
 	}
 
 	@Test(expected = NumberFormatException.class)
@@ -72,7 +78,7 @@ public class AnswerSetImplTest {
 		integerLiteralMap.put(1, atom1);
 		integerLiteralMap.put(2, atom2);
 		integerLiteralMap.put(3, atom3);
-		new AnswerSetImpl("1 2 3 a", integerLiteralMap);
+		new AnswerSetImpl(Collections.emptyMap(),"1 2 3 a", integerLiteralMap);
 	}
 
 	@Test
@@ -81,7 +87,7 @@ public class AnswerSetImplTest {
 		integerLiteralMap.put(1, atom1);
 		integerLiteralMap.put(2, atom2);
 		integerLiteralMap.put(3, atom3);
-		AnswerSet answerSet = new AnswerSetImpl("1 2 3", integerLiteralMap);
+		AnswerSet answerSet = new AnswerSetImpl(Collections.emptyMap(),"1 2 3", integerLiteralMap);
 		QueryResultIterator queryResultIterator = answerSet.getQueryResults(Expressions.makePredicate("p", 2));
 		Set<List<Term>> expectedQueryResults = new HashSet<>(Arrays.asList(atom1.getArguments(), atom2.getArguments()));
 		int answerCounter = 0;
@@ -98,7 +104,25 @@ public class AnswerSetImplTest {
 		integerLiteralMap.put(1, atom1);
 		integerLiteralMap.put(2, atom2);
 		integerLiteralMap.put(3, atom3);
-		AnswerSet answerSet = new AnswerSetImpl("2 1 3", integerLiteralMap);
+		AnswerSet answerSet = new AnswerSetImpl(Collections.emptyMap(),"2 1 3", integerLiteralMap);
+		Set<Literal> expectedLiterals = new HashSet<>(Arrays.asList(atom1, atom2, atom3));
+		Set<Literal> actualLiterals = answerSet.getLiterals();
+		int answerCounter = 0;
+		for (Literal literal : actualLiterals) {
+			answerCounter++;
+			assertTrue(expectedLiterals.contains(literal));
+		}
+		assertEquals(3, answerCounter);
+	}
+
+	@Test
+	public void getLiteralsWithCoreTest() {
+		Map<Predicate, Set<Literal>> core = new HashMap<>();
+		core.put(atom1.getPredicate(), new HashSet<>(Collections.singletonList(atom1)));
+		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
+		integerLiteralMap.put(2, atom2);
+		integerLiteralMap.put(3, atom3);
+		AnswerSet answerSet = new AnswerSetImpl(core,"2 3", integerLiteralMap);
 		Set<Literal> expectedLiterals = new HashSet<>(Arrays.asList(atom1, atom2, atom3));
 		Set<Literal> actualLiterals = answerSet.getLiterals();
 		int answerCounter = 0;
@@ -115,7 +139,7 @@ public class AnswerSetImplTest {
 		integerLiteralMap.put(1, atom1);
 		integerLiteralMap.put(2, atom2);
 		integerLiteralMap.put(3, atom3);
-		AnswerSet answerSet = new AnswerSetImpl("1 2 3", integerLiteralMap);
+		AnswerSet answerSet = new AnswerSetImpl(Collections.emptyMap(),"1 2 3", integerLiteralMap);
 		Set<Literal> expectedLiterals = new HashSet<>(Collections.singletonList(atom3));
 		Set<Literal> actualLiterals = answerSet.getLiterals(Expressions.makePredicate("q", 2));
 		int answerCounter = 0;
@@ -132,7 +156,7 @@ public class AnswerSetImplTest {
 		integerLiteralMap.put(1, atom1);
 		integerLiteralMap.put(2, atom2);
 		integerLiteralMap.put(3, atom3);
-		AnswerSet answerSet = new AnswerSetImpl("1 2 3", integerLiteralMap);
+		AnswerSet answerSet = new AnswerSetImpl(Collections.emptyMap(),"1 2 3", integerLiteralMap);
 		answerSet.getLiterals(Expressions.makePredicate("q", 2)).add(atom1);
 	}
 
@@ -142,7 +166,7 @@ public class AnswerSetImplTest {
 		integerLiteralMap.put(1, atom1);
 		integerLiteralMap.put(2, atom2);
 		integerLiteralMap.put(3, atom3);
-		AnswerSet answerSet = new AnswerSetImpl("1 2 3", integerLiteralMap);
+		AnswerSet answerSet = new AnswerSetImpl(Collections.emptyMap(),"1 2 3", integerLiteralMap);
 
 		PositiveLiteral query = Expressions.makePositiveLiteral("p", x, y);
 		QueryResultIterator queryResultIterator = answerSet.getQueryResults(query);
@@ -161,7 +185,7 @@ public class AnswerSetImplTest {
 		integerLiteralMap.put(1, atom1);
 		integerLiteralMap.put(2, atom2);
 		integerLiteralMap.put(3, atom3);
-		AnswerSet answerSet = new AnswerSetImpl("1 2 3", integerLiteralMap);
+		AnswerSet answerSet = new AnswerSetImpl(Collections.emptyMap(), "1 2 3", integerLiteralMap);
 
 		PositiveLiteral query = Expressions.makePositiveLiteral("p", d, y);
 		QueryResultIterator queryResultIterator = answerSet.getQueryResults(query);

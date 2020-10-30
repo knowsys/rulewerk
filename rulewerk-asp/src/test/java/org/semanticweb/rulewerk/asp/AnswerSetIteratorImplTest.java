@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.asp;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,6 +28,7 @@ import org.semanticweb.rulewerk.asp.model.AspReasoningState;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 import java.io.BufferedReader;
@@ -51,17 +52,22 @@ public class AnswerSetIteratorImplTest {
 	Set<Literal> set13 = new HashSet<>(Arrays.asList(atom1, atom3));
 
 	@Test(expected = NullPointerException.class)
+	public void coreNotNull() throws IOException {
+		new AnswerSetIteratorImpl(null,new BufferedReader(new StringReader("")), new HashMap<>());
+	}
+
+	@Test(expected = NullPointerException.class)
 	public void readerNotNull() throws IOException {
 		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
 		integerLiteralMap.put(1, atom1);
 		integerLiteralMap.put(2, atom2);
 		integerLiteralMap.put(3, atom3);
-		new AnswerSetIteratorImpl(null, integerLiteralMap);
+		new AnswerSetIteratorImpl(Collections.emptyMap(),null, integerLiteralMap);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void mapNotNull() throws IOException {
-		new AnswerSetIteratorImpl(new BufferedReader(new StringReader("")), null);
+		new AnswerSetIteratorImpl(Collections.emptyMap(), new BufferedReader(new StringReader("")), null);
 	}
 
 	@Test
@@ -74,7 +80,7 @@ public class AnswerSetIteratorImplTest {
 			"\n" +
 			"UNSATISFIABLE\n" +
 			"Final remarks");
-		AnswerSetIterator answerSetIterator = new AnswerSetIteratorImpl(new BufferedReader(reader), integerLiteralMap);
+		AnswerSetIterator answerSetIterator = new AnswerSetIteratorImpl(Collections.emptyMap(), new BufferedReader(reader), integerLiteralMap);
 		assertFalse(answerSetIterator.hasNext());
 		assertEquals(AspReasoningState.UNSATISFIABLE, answerSetIterator.getReasoningState());
 	}
@@ -94,7 +100,33 @@ public class AnswerSetIteratorImplTest {
 			"Answer: 2\n" +
 			"1 3\n" +
 			"Final remarks");
-		AnswerSetIterator answerSetIterator = new AnswerSetIteratorImpl(new BufferedReader(reader), integerLiteralMap);
+		AnswerSetIterator answerSetIterator = new AnswerSetIteratorImpl(Collections.emptyMap(), new BufferedReader(reader), integerLiteralMap);
+		AnswerSet answerSet1 = answerSetIterator.next();
+		AnswerSet answerSet2 = answerSetIterator.next();
+		assertFalse(answerSetIterator.hasNext());
+		assertEquals(answerSet1.getLiterals(), set12);
+		assertEquals(answerSet2.getLiterals(), set13);
+		assertEquals(AspReasoningState.SATISFIABLE, answerSetIterator.getReasoningState());
+	}
+
+	@Test
+	public void satisfiableAspProgramWithCoreTest() throws IOException {
+		Map<Predicate, Set<Literal>> core = new HashMap<>();
+		core.put(atom1.getPredicate(), new HashSet<>(Collections.singletonList(atom1)));
+
+		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
+		integerLiteralMap.put(2, atom2);
+		integerLiteralMap.put(3, atom3);
+
+		StringReader reader = new StringReader("Introduction\n" +
+			"\n" +
+			"SATISFIABLE\n" +
+			"Answer: 1\n" +
+			"2\n" +
+			"Answer: 2\n" +
+			"3\n" +
+			"Final remarks");
+		AnswerSetIterator answerSetIterator = new AnswerSetIteratorImpl(core, new BufferedReader(reader), integerLiteralMap);
 		AnswerSet answerSet1 = answerSetIterator.next();
 		AnswerSet answerSet2 = answerSetIterator.next();
 		assertFalse(answerSetIterator.hasNext());
@@ -115,7 +147,7 @@ public class AnswerSetIteratorImplTest {
 			"INTERRUPTED\n" +
 			"Answer: 1\n" +
 			"1 2\n");
-		AnswerSetIterator answerSetIterator = new AnswerSetIteratorImpl(new BufferedReader(reader), integerLiteralMap);
+		AnswerSetIterator answerSetIterator = new AnswerSetIteratorImpl(Collections.emptyMap(), new BufferedReader(reader), integerLiteralMap);
 		AnswerSet answerSet1 = answerSetIterator.next();
 		assertFalse(answerSetIterator.hasNext());
 		assertEquals(answerSet1.getLiterals(), set12);

@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.asp.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,6 +27,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Class that provides templates of a rule w.r.t. a specific query.
@@ -40,12 +41,12 @@ public class RuleAspifTemplate extends RuleImpl {
 
 	/**
 	 * Constructor.
-	 *
-	 * @param rule   the rule
+	 *  @param rule   the rule
 	 * @param writer the writer
 	 * @param query  the query that will be used to ground the rule
+	 * @param overApproximatedPredicates set of over-approximated {@link Predicate}s
 	 */
-	public RuleAspifTemplate(Rule rule, BufferedWriter writer, PositiveLiteral query) {
+	public RuleAspifTemplate(Rule rule, BufferedWriter writer, PositiveLiteral query, Set<Predicate> overApproximatedPredicates) {
 		super(rule.getHead(), rule.getBody());
 		this.writer = writer;
 
@@ -56,7 +57,9 @@ public class RuleAspifTemplate extends RuleImpl {
 
 		bodyTemplates = new ArrayList<>();
 		for (Literal literal : rule.getBody()) {
-			bodyTemplates.add(new LiteralQueryTemplate(literal, query));
+			if (overApproximatedPredicates.contains(literal.getPredicate())) {
+				bodyTemplates.add(new LiteralQueryTemplate(literal, query));
+			}
 		}
 	}
 
