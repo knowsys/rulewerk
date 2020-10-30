@@ -21,6 +21,7 @@ package org.semanticweb.rulewerk.asp;
  */
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.semanticweb.rulewerk.asp.implementation.AspReasonerImpl;
 import org.semanticweb.rulewerk.asp.implementation.AspifGrounder;
 import org.semanticweb.rulewerk.asp.implementation.AspifIdentifier;
@@ -34,13 +35,15 @@ import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class AspifGrounderTest {
 
@@ -193,6 +196,62 @@ public class AspifGrounderTest {
 		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, bufferedWriter, Collections.emptySet());
 		bufferedWriter.close();
 		grounder.ground();
+	}
+
+	@Test
+	public void visitRuleWithIOExceptionTest() throws IOException {
+		Set<Predicate> approximatedPredicates = new HashSet<>();
+		approximatedPredicates.add(Expressions.makePredicate("s", 1));
+
+		AspifIdentifier.reset();
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		Fact fact = Expressions.makeFact("r", c);
+		knowledgeBase.addStatements(fact);
+
+		knowledgeBase.addStatement(Expressions.makeRule(
+			Expressions.makePositiveLiteral("s", x),
+			Expressions.makeNegativeLiteral("s", x),
+			Expressions.makePositiveLiteral("r", x)
+		));
+		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
+		Reasoner reasoner = new VLogReasoner(aspReasoner.getDatalogKnowledgeBase());
+
+		BufferedWriter mockedWriter = Mockito.mock(BufferedWriter.class);
+		doNothing().doThrow(new IOException()).when(mockedWriter).write(anyString());
+		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, mockedWriter, approximatedPredicates);
+		assertFalse(grounder.ground());
+	}
+
+	@Test
+	public void visitFactWithIOExceptionTest() throws IOException {
+		AspifIdentifier.reset();
+
+		Predicate predicate = Expressions.makePredicate("p", 2);
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatements(Expressions.makeFact("p", c, d));
+		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
+		Reasoner reasoner = new VLogReasoner(aspReasoner.getDatalogKnowledgeBase());
+
+		BufferedWriter mockedWriter = Mockito.mock(BufferedWriter.class);
+		doNothing().doThrow(new IOException()).when(mockedWriter).write(anyString());
+		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, mockedWriter, Collections.singleton(predicate));
+		assertFalse(grounder.ground());
+	}
+
+	@Test
+	public void visitDataSourceDeclarationWithIOExceptionTest() throws IOException {
+		AspifIdentifier.reset();
+		Predicate predicate = Expressions.makePredicate("p", 2);
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatements(new DataSourceDeclarationImpl(predicate, new CsvFileDataSource("src/test/data/input/binaryFacts.csv")));
+
+		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
+		Reasoner reasoner = new VLogReasoner(aspReasoner.getDatalogKnowledgeBase());
+
+		BufferedWriter mockedWriter = Mockito.mock(BufferedWriter.class);
+		doNothing().doThrow(new IOException()).when(mockedWriter).write(anyString());
+		Grounder grounder = new AspifGrounder(knowledgeBase, reasoner, mockedWriter, Collections.singleton(predicate));
+		assertFalse(grounder.ground());
 	}
 
 	@Test(expected = NullPointerException.class)
