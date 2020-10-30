@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,12 +27,13 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
+import org.semanticweb.rulewerk.core.model.api.Disjunction;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.Term;
 
 /**
  * Simple implementation of {@link Conjunction}.
- * 
+ *
  * @author Markus Krötzsch
  */
 public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
@@ -41,7 +42,7 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param literals a non-null list of literals, that cannot contain null
 	 *                 elements.
 	 */
@@ -62,7 +63,9 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 
 	@Override
 	public int hashCode() {
-		return this.literals.hashCode();
+		return this.literals.size() == 1
+			? this.literals.get(0).hashCode()
+			: this.literals.hashCode();
 	}
 
 	@Override
@@ -73,8 +76,14 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Conjunction<?>)) {
+		if (!(obj instanceof Disjunction<?>)) {
 			return false;
+		}
+		if (!(obj instanceof Conjunction<?>)) {
+			// final Disjunction<Conjunction<?>> disjunction = (Disjunction<Conjunction<?>>) obj;
+			// final List<Conjunction<?>> disjuncts = disjunction.getConjunctions();
+			// return disjuncts.size() == 1 && this.equals(disjuncts.get(0));
+			return obj.equals(this);
 		}
 		final Conjunction<?> other = (Conjunction<?>) obj;
 		return this.literals.equals(other.getLiterals());

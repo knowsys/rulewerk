@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Validate;
+import org.semanticweb.rulewerk.core.model.api.Disjunction;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Term;
@@ -38,8 +39,9 @@ import org.semanticweb.rulewerk.core.model.api.Term;
  *
  * @author david.carral@tu-dresden.de
  * @author Markus Krötzsch
+ * @author Lukas Gerlach
  */
-public abstract class AbstractLiteralImpl implements Literal {
+public abstract class AbstractLiteralImpl<T extends Literal> implements Literal<T> {
 
 	private final Predicate predicate;
 	private final List<Term> terms;
@@ -82,8 +84,11 @@ public abstract class AbstractLiteralImpl implements Literal {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Literal)) {
+		if (!(obj instanceof Disjunction<?>)) {
 			return false;
+		}
+		if (!(obj instanceof Literal)) {
+			return obj.equals(this);
 		}
 		final Literal other = (Literal) obj;
 

@@ -304,6 +304,26 @@ public final class Expressions {
 	}
 
 	/**
+	 * Creates a {@link Disjunction} of {@code T} ({@link Conjunction} type) objects.
+	 *
+	 * @param conjunctions list of non-null conjunctions
+	 * @return a {@link Disjunction} corresponding to the input
+	 */
+	public static <T extends Conjunction<?>> Disjunction<T> makeDisjunction(final List<T> conjunctions) {
+		return new DisjunctionImpl<>(conjunctions);
+	}
+
+	/**
+	 * Creates a {@code Disjunction} of {@link Conjunction} objects.
+	 *
+	 * @param conjunctions list of non-null conjunctions
+	 * @return a {@link Disjunction} corresponding to the input
+	 */
+	public static <T extends Conjunction<?>> Disjunction<T> makeDisjunction(final T... conjunctions) {
+		return new DisjunctionImpl<>(Arrays.asList(conjunctions));
+	}
+
+	/**
 	 * Creates a {@code Conjunction} of {@code T} ({@link PositiveLiteral} type)
 	 * objects.
 	 *
@@ -332,19 +352,7 @@ public final class Expressions {
 	 * @return a {@link Rule} corresponding to the input
 	 */
 	public static Rule makeRule(final PositiveLiteral headLiteral, final Literal... bodyLiterals) {
-		return new RuleImpl(new DisjunctionImpl<>(Arrays.asList(new ConjunctionImpl<>(Arrays.asList(headLiteral)))),
-				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
-	}
-
-	/**
-	 * Creates a {@code Rule}.
-	 *
-	 * @param head conjunction of positive (non-negated) literals
-	 * @param body conjunction of literals (negated or not)
-	 * @return a {@link Rule} corresponding to the input
-	 */
-	public static Rule makeRule(final Conjunction<PositiveLiteral> head, final Conjunction<Literal> body) {
-		return new RuleImpl(head, body);
+		return new RuleImpl(headLiteral, new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
 	}
 
 	/**
@@ -354,7 +362,7 @@ public final class Expressions {
 	 * @param body conjunction of literals (negated or not)
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static Rule makeRule(final Disjunction<Conjunction<PositiveLiteral>> head, final Conjunction<Literal> body) {
+	public static Rule makeRule(final Disjunction<Conjunction<PositiveLiteral>> head, final Disjunction<Conjunction<Literal>> body) {
 		return new RuleImpl(head, body);
 	}
 

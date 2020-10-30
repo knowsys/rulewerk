@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.api;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,8 @@ package org.semanticweb.rulewerk.core.model.api;
  */
 
 import java.util.List;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * Interface for literals. A positive literal is simply an atomic formula, i.e.,
@@ -30,14 +32,18 @@ import java.util.List;
  *
  * @author david.carral@tu-dresden.de
  * @author Irina Dragoste
+ * @author Lukas Gerlach
  */
-public interface Literal extends SyntaxObject {
+
+// TODO: this is not ideal since PositiveLiteral now also extends Conjunction<Literal>
+// while it should really extend Conjunction<PositiveLiteral> (but maybe this is not too much of an issue...)
+public interface Literal<T extends Literal> extends Conjunction<T> {
 
 	boolean isNegated();
 
 	/**
 	 * The literal predicate.
-	 * 
+	 *
 	 * @return the literal predicate.
 	 */
 	Predicate getPredicate();
@@ -49,5 +55,15 @@ public interface Literal extends SyntaxObject {
 	 *         {@link Predicate} arity.
 	 */
 	List<Term> getArguments();
+
+	// @Override
+	// default List<T> getLiterals() {
+	// 	return Arrays.asList(this);
+	// }
+
+	@Override
+	default Iterator<T> iterator() {
+		return getLiterals().iterator();
+	}
 
 }

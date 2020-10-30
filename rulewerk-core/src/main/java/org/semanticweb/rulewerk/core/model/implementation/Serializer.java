@@ -304,7 +304,7 @@ public class Serializer {
 	private void writeRuleNoStatment(Rule rule) throws IOException {
 		writeDisjunction(rule.getHead());
 		writer.write(" :- ");
-		writeLiteralConjunction(rule.getBody());
+		writeDisjunction(rule.getBody());
 	}
 
 	/**
@@ -392,7 +392,7 @@ public class Serializer {
 				first = false;
 			} else {
 				// TODO: think about notation again
-				writer.write("; ");
+				writer.write(" | ");
 			}
 			writeLiteralConjunction(conjunction);
 		}

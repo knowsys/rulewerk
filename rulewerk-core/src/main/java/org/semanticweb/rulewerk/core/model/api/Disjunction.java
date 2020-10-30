@@ -28,7 +28,8 @@ import java.util.List;
  * @author Lukas Gerlach
  *
  */
-public interface Disjunction<T extends Conjunction<?>> extends Iterable<T>, SyntaxObject {
+// TODO: extend iterable over conjunctions too? (conflicts with Conjunction because this extends Iterable for Literal)
+public interface Disjunction<T extends Conjunction<?>> extends SyntaxObject {
 
 	/**
 	 * Returns the list of conjunctions that are part of this disjunction.

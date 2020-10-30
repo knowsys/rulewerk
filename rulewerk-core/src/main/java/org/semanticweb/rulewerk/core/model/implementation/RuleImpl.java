@@ -46,22 +46,8 @@ import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
  */
 public class RuleImpl implements Rule {
 
-	final Conjunction<Literal> body;
+	final Disjunction<Conjunction<Literal>> body;
 	final Disjunction<Conjunction<PositiveLiteral>> head;
-
-	/**
-	 * Creates a Rule with a non-empty body and an non-empty head. All variables in
-	 * the body must be universally quantified; all variables in the head that do
-	 * not occur in the body must be existentially quantified.
-	 *
-	 * @param head list of Literals (negated or non-negated) representing the rule
-	 *             body conjuncts.
-	 * @param body list of positive (non-negated) Literals representing the rule
-	 *             head conjuncts.
-	 */
-	public RuleImpl(final Conjunction<PositiveLiteral> head, final Conjunction<Literal> body) {
-		this(new DisjunctionImpl<>(Arrays.asList(head)), body);
-	}
 
 	/**
 	 * Creates a Rule with a non-empty body and an non-empty head. All variables in
@@ -73,10 +59,11 @@ public class RuleImpl implements Rule {
 	 * @param body list of positive (non-negated) Literals representing the rule
 	 *             head conjuncts.
 	 */
-	public RuleImpl(final Disjunction<Conjunction<PositiveLiteral>> head, final Conjunction<Literal> body) {
+	public RuleImpl(final Disjunction<Conjunction<PositiveLiteral>> head, final Disjunction<Conjunction<Literal>> body) {
 		Validate.notNull(head);
 		Validate.notNull(body);
-		Validate.notEmpty(body.getLiterals(),
+		// Validate.notEmpty(body.getLiterals(),
+		Validate.notEmpty(body.getConjunctions().stream().flatMap(c -> c.getLiterals().stream()).collect(Collectors.toList()),
 				"Empty rule body not supported. Use Fact objects to assert unconditionally true atoms.");
 		// Validate.notEmpty(head.getConjunctions(),
 		// 		"Empty rule head not supported. To capture integrity constraints, use a dedicated predicate that represents a contradiction.");
@@ -134,7 +121,7 @@ public class RuleImpl implements Rule {
 	}
 
 	@Override
-	public Conjunction<Literal> getBody() {
+	public Disjunction<Conjunction<Literal>> getBody() {
 		return this.body;
 	}
 

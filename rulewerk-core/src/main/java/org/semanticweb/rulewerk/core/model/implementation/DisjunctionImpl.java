@@ -64,7 +64,9 @@ public class DisjunctionImpl<T extends Conjunction<?>> implements Disjunction<T>
 
 	@Override
 	public int hashCode() {
-		return this.conjunctions.hashCode();
+		return this.conjunctions.size() == 1
+			? this.conjunctions.get(0).hashCode()
+			: this.conjunctions.hashCode();
 	}
 
 	@Override
@@ -82,10 +84,10 @@ public class DisjunctionImpl<T extends Conjunction<?>> implements Disjunction<T>
 		return this.conjunctions.equals(other.getConjunctions());
 	}
 
-	@Override
-	public Iterator<T> iterator() {
-		return getConjunctions().iterator();
-	}
+	// @Override
+	// public Iterator<T> iterator() {
+	// 	return getConjunctions().iterator();
+	// }
 
 	@Override
 	public String toString() {

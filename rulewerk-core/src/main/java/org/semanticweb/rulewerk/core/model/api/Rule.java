@@ -45,6 +45,6 @@ public interface Rule extends SyntaxObject, Statement {
 	 *
 	 * @return conjunction of literals
 	 */
-	Conjunction<Literal> getBody();
+	Disjunction<Conjunction<Literal>> getBody();
 
 }
