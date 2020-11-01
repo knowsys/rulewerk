@@ -21,20 +21,17 @@ package org.semanticweb.rulewerk.asp.implementation;
  */
 
 import org.apache.commons.lang3.Validate;
-import org.semanticweb.rulewerk.asp.model.AnswerSet;
-import org.semanticweb.rulewerk.asp.model.AnswerSetIterator;
-import org.semanticweb.rulewerk.asp.model.AspReasoner;
-import org.semanticweb.rulewerk.asp.model.Grounder;
+import org.semanticweb.rulewerk.asp.model.*;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.model.implementation.FactImpl;
 import org.semanticweb.rulewerk.core.reasoner.*;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -44,12 +41,13 @@ import java.util.stream.Collectors;
  */
 public class AspReasonerImpl implements AspReasoner {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AspReasonerImpl.class);
+
 	final private KnowledgeBase knowledgeBase;
 	private Set<Predicate> overApproximatedPredicates;
 
 	final private KnowledgeBase datalogKnowledgeBase;
 	final private Reasoner datalogReasoner;
-	private OverApproximationStatementVisitor visitor;
 
 	private AnswerSet cautiousAnswerSet;
 	private Map<Predicate, Set<Literal>> answerSetCore;
@@ -200,42 +198,24 @@ public class AspReasonerImpl implements AspReasoner {
 
 	@Override
 	public boolean reason() throws IOException {
-		if (cautiousAnswerSet == null) {
-			Process clasp = Runtime.getRuntime().exec("clasp -e cautious");
-			BufferedWriter writerToClasp = new BufferedWriter(new OutputStreamWriter(clasp.getOutputStream()));
-
-			Grounder grounder = new AspifGrounder(knowledgeBase, datalogReasoner, writerToClasp, overApproximatedPredicates);
-			boolean successful = grounder.ground();
-			writerToClasp.close();
-			if (!successful) {
-				clasp.destroy();
-				return false;
-			}
-
-			try {
-				if (getReasoningTimeout() == null) {
-					clasp.waitFor();
-				} else {
-					clasp.waitFor(getReasoningTimeout(), TimeUnit.SECONDS);
-				}
-			} catch (InterruptedException interruptedException) {
-				interruptedException.printStackTrace();
-				clasp.destroy();
-				return false;
-			}
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(clasp.getInputStream()));
-			try {
-				cautiousAnswerSet = getLastAnswerSet(reader, grounder.getIntegerLiteralMap());
-			} catch (NoSuchElementException noSuchElementException) {
-				noSuchElementException.printStackTrace();
-				clasp.destroy();
-				reader.close();
-				return false;
-			}
-			reader.close();
-			clasp.destroy();
+		if (cautiousAnswerSet != null) {
+			return true;
 		}
+
+		try (AspSolver solver = instantiateSolver(true, 0)) {
+			Grounder grounder = instantiateGrounder(solver);
+			if (!grounder.ground()) {
+				return false;
+			}
+
+			solver.solve();
+			cautiousAnswerSet = getLastAnswerSet(solver.getReaderFromSolver(), grounder.getIntegerLiteralMap());
+
+		} catch (InterruptedException interruptedException) {
+			interruptedException.printStackTrace();
+			return false;
+		}
+
 		return true;
 	}
 
@@ -322,32 +302,32 @@ public class AspReasonerImpl implements AspReasoner {
 	public AnswerSetIterator getAnswerSets(int maximum) throws IOException {
 		Validate.isTrue(maximum >= 0);
 
-		Process clasp = Runtime.getRuntime().exec("clasp -n " + maximum);
-		BufferedWriter writerToClasp = new BufferedWriter(new OutputStreamWriter(clasp.getOutputStream()));
-
-		Grounder grounder = new AspifGrounder(knowledgeBase, datalogReasoner, writerToClasp, overApproximatedPredicates);
-		boolean successful = grounder.ground();
-		writerToClasp.close();
-		if (!successful) {
-			clasp.destroy();
-			return AnswerSetIteratorImpl.getErrorAnswerSetIterator();
-		}
-
-		try {
-			if (getReasoningTimeout() == null) {
-				clasp.waitFor();
-			} else {
-				clasp.waitFor(getReasoningTimeout(), TimeUnit.SECONDS);
+		try (AspSolver solver = instantiateSolver(false, maximum)) {
+			Grounder grounder = instantiateGrounder(solver);
+			if (!grounder.ground()) {
+				LOGGER.error("An error occurred while grounding the ASP knowledge base.");
+				return AnswerSetIteratorImpl.getErrorAnswerSetIterator();
 			}
-		} catch (InterruptedException interruptedException) {
-			interruptedException.printStackTrace();
-		}
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(clasp.getInputStream()));
-		AnswerSetIterator answerSetIterator = new AnswerSetIteratorImpl(getAnswerSetCore(), reader, grounder.getIntegerLiteralMap());
-		reader.close();
-		clasp.destroy();
-		return answerSetIterator;
+			try {
+				solver.solve();
+			} catch (InterruptedException interruptedException) {
+				LOGGER.warn("Clasp was interrupted while computing the answer sets.");
+				interruptedException.printStackTrace();
+			}
+
+			return new AnswerSetIteratorImpl(getAnswerSetCore(), solver.getReaderFromSolver(), grounder.getIntegerLiteralMap());
+		}
+	}
+
+	@Override
+	public AspSolver instantiateSolver(boolean cautious, int maximumAnswerSets) throws IOException {
+		return new Clasp(cautious, maximumAnswerSets, getReasoningTimeout());
+	}
+
+	@Override
+	public Grounder instantiateGrounder(AspSolver aspSolver) {
+		return new AspifGrounder(knowledgeBase, datalogReasoner, aspSolver.getWriterToSolver(), overApproximatedPredicates);
 	}
 
 	@Override
@@ -376,7 +356,7 @@ public class AspReasonerImpl implements AspReasoner {
 		this.datalogKnowledgeBase.removeStatements(new ArrayList<>(this.datalogKnowledgeBase.getStatements()));
 		KnowledgeBaseAnalyser analyser = new KnowledgeBaseAnalyser(this.knowledgeBase);
 		overApproximatedPredicates = analyser.getOverApproximatedPredicates();
-		visitor = new OverApproximationStatementVisitor(overApproximatedPredicates);
+		OverApproximationStatementVisitor visitor = new OverApproximationStatementVisitor(overApproximatedPredicates);
 
 		for (Statement statement : knowledgeBase.getStatements()) {
 			this.datalogKnowledgeBase.addStatements(statement.accept(visitor));

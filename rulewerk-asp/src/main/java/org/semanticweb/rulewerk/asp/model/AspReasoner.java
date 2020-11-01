@@ -70,4 +70,23 @@ public interface AspReasoner extends Reasoner {
 	 * @throws IOException an IO exception
 	 */
 	AnswerSetIterator getAnswerSets(int maximum) throws IOException;
+
+	/**
+	 * Creates an {@link AspSolver} for a single reasoning task.
+	 *
+	 * @param cautious whether reasoning should be cautious
+	 * @param answerSetMaximum determines the maximum number of answer sets (if this is set to 0, all answer sets are returned)
+	 *
+	 * @return an asp solver
+	 * @throws IOException an IO exception
+	 */
+	AspSolver instantiateSolver(boolean cautious, int maximumAnswerSets) throws IOException;
+
+	/**
+	 * Creates a {@link Grounder} to ground the knowledge base for an {@link AspSolver}.
+	 *
+	 * @param aspSolver the asp solver that will receive the grounding
+	 * @return an grounder
+	 */
+	Grounder instantiateGrounder(AspSolver aspSolver);
 }

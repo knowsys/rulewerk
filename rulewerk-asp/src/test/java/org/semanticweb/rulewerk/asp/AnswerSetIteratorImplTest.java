@@ -136,6 +136,28 @@ public class AnswerSetIteratorImplTest {
 	}
 
 	@Test
+	public void emptyAnswerSetTest() throws IOException {
+		Map<Predicate, Set<Literal>> core = new HashMap<>();
+		core.put(atom1.getPredicate(), new HashSet<>(Collections.singletonList(atom1)));
+
+		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
+		integerLiteralMap.put(2, atom2);
+		integerLiteralMap.put(3, atom3);
+
+		StringReader reader = new StringReader("Introduction\n" +
+			"\n" +
+			"SATISFIABLE\n" +
+			"Answer: 1\n" +
+			"\n" +
+			"Final remarks");
+		AnswerSetIterator answerSetIterator = new AnswerSetIteratorImpl(core, new BufferedReader(reader), integerLiteralMap);
+		AnswerSet answerSet = answerSetIterator.next();
+		assertFalse(answerSetIterator.hasNext());
+		assertEquals(Collections.singleton(atom1), answerSet.getLiterals());
+		assertEquals(AspReasoningState.SATISFIABLE, answerSetIterator.getReasoningState());
+	}
+
+	@Test
 	public void interruptedAspProgramTest() throws IOException {
 		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
 		integerLiteralMap.put(1, atom1);

@@ -20,12 +20,11 @@ package org.semanticweb.rulewerk.asp;
  * #L%
  */
 
-import org.junit.After;
 import org.junit.Test;
 import org.semanticweb.rulewerk.asp.implementation.AspReasonerImpl;
-import org.semanticweb.rulewerk.asp.model.AnswerSet;
-import org.semanticweb.rulewerk.asp.model.AnswerSetIterator;
-import org.semanticweb.rulewerk.asp.model.AspReasoner;
+import org.semanticweb.rulewerk.asp.implementation.Clasp;
+import org.semanticweb.rulewerk.asp.model.*;
+import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
@@ -39,6 +38,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class AspReasonerImplTest {
 
@@ -160,6 +160,94 @@ public class AspReasonerImplTest {
 	}
 
 	@Test
+	public void reasonWithClaspInterrupted() throws InterruptedException, IOException {
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		AspReasoner spiedReasoner = spy(new AspReasonerImpl(knowledgeBase));
+		AspSolver mockedClasp = mock(Clasp.class);
+		doThrow(new InterruptedException()).when(mockedClasp).solve();
+		when(mockedClasp.getWriterToSolver()).thenReturn(mock(BufferedWriter.class));
+		when(spiedReasoner.instantiateSolver(anyBoolean(), anyInt())).thenReturn(mockedClasp);
+		assertFalse(spiedReasoner.reason());
+	}
+
+	@Test
+	public void reasonWithFailedGrounding() throws IOException {
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		AspReasoner spiedReasoner = spy(new AspReasonerImpl(knowledgeBase));
+		Grounder mockedGrounder = mock(Grounder.class);
+		when(mockedGrounder.ground()).thenReturn(false);
+		doReturn(mockedGrounder).when(spiedReasoner).instantiateGrounder(any());
+		assertFalse(spiedReasoner.reason());
+	}
+
+	@Test(expected = NoSuchElementException.class)
+	public void reasonReturnsNoAnswerSet() throws IOException {
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		AspReasoner spiedReasoner = spy(new AspReasonerImpl(knowledgeBase));
+		AspSolver mockedClasp = mock(Clasp.class);
+		BufferedReader reader = new BufferedReader(new StringReader("clasp -n 0 _delete_me\n" +
+			"clasp version 3.3.5\n" +
+			"Reading from _delete_me\n" +
+			"Solving..."));
+		when(mockedClasp.getReaderFromSolver()).thenReturn(reader);
+		when(mockedClasp.getWriterToSolver()).thenReturn(mock(BufferedWriter.class));
+		when(spiedReasoner.instantiateSolver(anyBoolean(), anyInt())).thenReturn(mockedClasp);
+		spiedReasoner.reason();
+	}
+
+	@Test
+	public void reasonCallsSolverOnlyIfNeeded() throws IOException {
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatement(Expressions.makeFact("p", c, d));
+		AspReasoner spiedReasoner = spy(new AspReasonerImpl(knowledgeBase));
+
+		spiedReasoner.reason();
+		verify(spiedReasoner, times(1)).instantiateSolver(anyBoolean(), anyInt());
+		spiedReasoner.reason();
+		verify(spiedReasoner, times(1)).instantiateSolver(anyBoolean(), anyInt());
+		spiedReasoner.resetReasoner();
+		spiedReasoner.reason();
+		verify(spiedReasoner, times(2)).instantiateSolver(anyBoolean(), anyInt());
+	}
+
+	@Test
+	public void getAnswerSetsWithInterruptedSolving() throws IOException, InterruptedException {
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		AspReasoner spiedReasoner = spy(new AspReasonerImpl(knowledgeBase));
+		AspSolver mockedClasp = mock(Clasp.class);
+		doThrow(new InterruptedException()).when(mockedClasp).solve();
+		BufferedReader reader = new BufferedReader(new StringReader("clasp -n 0 _delete_me\n" +
+			"clasp version 3.3.5\n" +
+			"Reading from _delete_me\n" +
+			"Solving...\n" +
+			"Answer: 1\n" +
+			"2\n" +
+			"*** Info : (clingo): INTERRUPTED by signal!\n" +
+			"SATISFIABLE\n" +
+			"\n" +
+			"INTERRUPTED  : 1\n" +
+			"Models       : 1+\n"));
+		when(mockedClasp.getReaderFromSolver()).thenReturn(reader);
+		when(mockedClasp.getWriterToSolver()).thenReturn(mock(BufferedWriter.class));
+		when(spiedReasoner.instantiateSolver(anyBoolean(), anyInt())).thenReturn(mockedClasp);
+		AnswerSetIterator answerSetIterator = spiedReasoner.getAnswerSets();
+		assertTrue(answerSetIterator.hasNext());
+		assertEquals(AspReasoningState.INTERRUPTED, answerSetIterator.getReasoningState());
+	}
+
+	@Test
+	public void getAnswerSetsWithFailedGrounding() throws IOException {
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		AspReasoner spiedReasoner = spy(new AspReasonerImpl(knowledgeBase));
+		Grounder mockedGrounder = mock(Grounder.class);
+		when(mockedGrounder.ground()).thenReturn(false);
+		doReturn(mockedGrounder).when(spiedReasoner).instantiateGrounder(any());
+		AnswerSetIterator answerSetIterator = spiedReasoner.getAnswerSets();
+		assertEquals(AspReasoningState.ERROR, answerSetIterator.getReasoningState());
+		assertFalse(answerSetIterator.hasNext());
+	}
+
+	@Test
 	public void answerQueryWithIntermediateAnswerSets() {
 		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", c);
 		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", d);
@@ -177,6 +265,15 @@ public class AspReasonerImplTest {
 			countResults++;
 		}
 		assertEquals(0, countResults);
+	}
+
+	@Test(expected = RulewerkRuntimeException.class)
+	public void answerQueryWithException() throws IOException {
+		KnowledgeBase kb = new KnowledgeBase();
+		AspReasoner reasoner = spy(new AspReasonerImpl(kb));
+		doThrow(new IOException()).when(reasoner).reason();
+		PositiveLiteral query = Expressions.makePositiveLiteral("p", x);
+		reasoner.answerQuery(query, true);
 	}
 
 	@Test
@@ -216,6 +313,13 @@ public class AspReasonerImplTest {
 		KnowledgeBase kb = new KnowledgeBase();
 		AspReasoner reasoner = new AspReasonerImpl(kb);
 		reasoner.getAnswerSets(-1);
+	}
+
+	@Test()
+	public void getKnowledgeBaseTest() {
+		KnowledgeBase kb = new KnowledgeBase();
+		AspReasoner reasoner = new AspReasonerImpl(kb);
+		assertEquals(kb, reasoner.getKnowledgeBase());
 	}
 
 	@Test
