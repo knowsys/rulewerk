@@ -21,7 +21,6 @@ package org.semanticweb.rulewerk.core.model.implementation;
  */
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -83,11 +82,6 @@ public class DisjunctionImpl<T extends Conjunction<?>> implements Disjunction<T>
 		final Disjunction<?> other = (Disjunction<?>) obj;
 		return this.conjunctions.equals(other.getConjunctions());
 	}
-
-	// @Override
-	// public Iterator<T> iterator() {
-	// 	return getConjunctions().iterator();
-	// }
 
 	@Override
 	public String toString() {

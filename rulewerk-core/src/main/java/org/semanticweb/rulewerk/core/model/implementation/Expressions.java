@@ -23,6 +23,7 @@ package org.semanticweb.rulewerk.core.model.implementation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
@@ -304,26 +305,6 @@ public final class Expressions {
 	}
 
 	/**
-	 * Creates a {@link Disjunction} of {@code T} ({@link Conjunction} type) objects.
-	 *
-	 * @param conjunctions list of non-null conjunctions
-	 * @return a {@link Disjunction} corresponding to the input
-	 */
-	public static <T extends Conjunction<?>> Disjunction<T> makeDisjunction(final List<T> conjunctions) {
-		return new DisjunctionImpl<>(conjunctions);
-	}
-
-	/**
-	 * Creates a {@code Disjunction} of {@link Conjunction} objects.
-	 *
-	 * @param conjunctions list of non-null conjunctions
-	 * @return a {@link Disjunction} corresponding to the input
-	 */
-	public static <T extends Conjunction<?>> Disjunction<T> makeDisjunction(final T... conjunctions) {
-		return new DisjunctionImpl<>(Arrays.asList(conjunctions));
-	}
-
-	/**
 	 * Creates a {@code Conjunction} of {@code T} ({@link PositiveLiteral} type)
 	 * objects.
 	 *
@@ -359,7 +340,7 @@ public final class Expressions {
 	 * Creates a {@code Rule}.
 	 *
 	 * @param head disjunction of conjunctions of positive (non-negated) literals
-	 * @param body conjunction of literals (negated or not)
+	 * @param body disjunction of conjunctions of literals (negated or not)
 	 * @return a {@link Rule} corresponding to the input
 	 */
 	public static Rule makeRule(final Disjunction<Conjunction<PositiveLiteral>> head, final Disjunction<Conjunction<Literal>> body) {
@@ -373,11 +354,19 @@ public final class Expressions {
 	 * @param body conjunction of positive (non-negated) literals
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head,
-			final Conjunction<PositiveLiteral> body) {
-		final List<Literal> bodyLiteralList = new ArrayList<>(body.getLiterals());
-		final Conjunction<Literal> literalsBody = makeConjunction(bodyLiteralList);
-		return new RuleImpl(head, literalsBody);
+	public static Rule makePositiveLiteralsRule(final Disjunction<Conjunction<PositiveLiteral>> head,
+			final Disjunction<Conjunction<PositiveLiteral>> body) {
+
+		// TODO: can we find a better solution?
+		// already spent quite some time here, though...
+		// one idea was to make Rule Generic, but this is not really nice it seems...
+		final List<Conjunction<?>> bodyDisjuncts = body.getConjunctions().stream()
+			.map(c -> makeConjunction(c.getLiterals()))
+			.collect(Collectors.toList());
+
+		final Disjunction<Conjunction<Literal>> bodyDisjunction = new DisjunctionImpl(bodyDisjuncts);
+
+		return makeRule(head, bodyDisjunction);
 
 	}
 

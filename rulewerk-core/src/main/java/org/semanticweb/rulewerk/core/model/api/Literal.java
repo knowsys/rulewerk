@@ -35,8 +35,16 @@ import java.util.Iterator;
  * @author Lukas Gerlach
  */
 
-// TODO: this is not ideal since PositiveLiteral now also extends Conjunction<Literal>
+// this would also be possible (including other changes)
+// but it is not ideal since PositiveLiteral now also extends Conjunction<Literal>
 // while it should really extend Conjunction<PositiveLiteral> (but maybe this is not too much of an issue...)
+//
+// public interface Literal extends Conjunction<Literal> {
+
+// this produces a so called RawType when used without type argument, which seems to be generally considered
+// bad practice because some type checking is not done for such types
+// maybe this would not be an issue for us...
+// what we actually would need is a self referential type that we can pass to Conjunction...
 public interface Literal<T extends Literal> extends Conjunction<T> {
 
 	boolean isNegated();
@@ -55,11 +63,6 @@ public interface Literal<T extends Literal> extends Conjunction<T> {
 	 *         {@link Predicate} arity.
 	 */
 	List<Term> getArguments();
-
-	// @Override
-	// default List<T> getLiterals() {
-	// 	return Arrays.asList(this);
-	// }
 
 	@Override
 	default Iterator<T> iterator() {

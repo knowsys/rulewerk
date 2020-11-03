@@ -23,12 +23,11 @@ package org.semanticweb.rulewerk.core.model.api;
 import java.util.List;
 
 /**
- * Interface for representing disjunctions of {@link Conjunctions}s.
+ * Interface for representing disjunctions of {@link Conjunction}s.
  *
  * @author Lukas Gerlach
  *
  */
-// TODO: extend iterable over conjunctions too? (conflicts with Conjunction because this extends Iterable for Literal)
 public interface Disjunction<T extends Conjunction<?>> extends SyntaxObject {
 
 	/**

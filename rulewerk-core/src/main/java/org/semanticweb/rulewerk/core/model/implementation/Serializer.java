@@ -387,7 +387,7 @@ public class Serializer {
 	 */
 	public void writeDisjunction(final Disjunction<? extends Conjunction> conjunctions) throws IOException {
 		boolean first = true;
-		for (final Conjunction conjunction : conjunctions.getConjunctions()) {
+		for (final Conjunction<?> conjunction : conjunctions.getConjunctions()) {
 			if (first) {
 				first = false;
 			} else {

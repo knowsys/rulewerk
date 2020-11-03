@@ -55,9 +55,9 @@ public class RuleImpl implements Rule {
 	 * not occur in the body must be existentially quantified.
 	 *
 	 * @param head list of conjunctions of Literals (negated or non-negated) representing the rule
-	 *             body conjuncts.
-	 * @param body list of positive (non-negated) Literals representing the rule
 	 *             head conjuncts.
+	 * @param body list of conjunctions of positive (non-negated) Literals representing the rule
+	 *             body conjuncts.
 	 */
 	public RuleImpl(final Disjunction<Conjunction<PositiveLiteral>> head, final Disjunction<Conjunction<Literal>> body) {
 		Validate.notNull(head);

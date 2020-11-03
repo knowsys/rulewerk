@@ -20,6 +20,9 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
+import java.util.List;
+import java.util.Arrays;
+
 public interface NegativeLiteral extends Literal<NegativeLiteral> {
 
 	@Override
@@ -27,4 +30,8 @@ public interface NegativeLiteral extends Literal<NegativeLiteral> {
 		return true;
 	}
 
+	@Override
+	default List<NegativeLiteral> getLiterals() {
+		return Arrays.asList(this);
+	}
 }

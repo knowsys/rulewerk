@@ -21,7 +21,6 @@ package org.semanticweb.rulewerk.core.model.implementation;
  */
 
 import java.util.List;
-import java.util.Arrays;
 
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
@@ -31,10 +30,5 @@ public class PositiveLiteralImpl extends AbstractLiteralImpl<PositiveLiteral> im
 
 	public PositiveLiteralImpl(final Predicate predicate, final List<Term> terms) {
 		super(predicate, terms);
-	}
-
-	@Override
-	public List<PositiveLiteral> getLiterals() {
-		return Arrays.asList(this);
 	}
 }

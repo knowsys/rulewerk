@@ -20,10 +20,18 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
+import java.util.List;
+import java.util.Arrays;
+
 public interface PositiveLiteral extends Literal<PositiveLiteral> {
 
 	@Override
 	default boolean isNegated() {
 		return false;
+	}
+
+	@Override
+	default List<PositiveLiteral> getLiterals() {
+		return Arrays.asList(this);
 	}
 }

@@ -36,14 +36,14 @@ public interface Rule extends SyntaxObject, Statement {
 	/**
 	 * Returns the disjunction of conjunctions of head literals (the consequence of the rule).
 	 *
-	 * @return conjunction of literals
+	 * @return disjunction of conjunctions of positive literals
 	 */
 	Disjunction<Conjunction<PositiveLiteral>> getHead();
 
 	/**
-	 * Returns the conjunction of body literals (the premise of the rule).
+	 * Returns the disjunction of conjunctions of body literals (the premise of the rule).
 	 *
-	 * @return conjunction of literals
+	 * @return disjunction of conjunctions of literals
 	 */
 	Disjunction<Conjunction<Literal>> getBody();
 

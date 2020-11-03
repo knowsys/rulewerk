@@ -80,9 +80,6 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 			return false;
 		}
 		if (!(obj instanceof Conjunction<?>)) {
-			// final Disjunction<Conjunction<?>> disjunction = (Disjunction<Conjunction<?>>) obj;
-			// final List<Conjunction<?>> disjuncts = disjunction.getConjunctions();
-			// return disjuncts.size() == 1 && this.equals(disjuncts.get(0));
 			return obj.equals(this);
 		}
 		final Conjunction<?> other = (Conjunction<?>) obj;
