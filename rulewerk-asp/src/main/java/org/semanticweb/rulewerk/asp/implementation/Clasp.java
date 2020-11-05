@@ -1,5 +1,25 @@
 package org.semanticweb.rulewerk.asp.implementation;
 
+/*-
+ * #%L
+ * Rulewerk ASP Components
+ * %%
+ * Copyright (C) 2018 - 2020 Rulewerk Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import org.semanticweb.rulewerk.asp.model.AspSolver;
 
 import java.io.*;
@@ -16,7 +36,7 @@ public class Clasp implements AspSolver {
 	private BufferedWriter writer;
 
 	/**
-	 * Constructor. Creates a process via {@link Runtime} that runs clasp.
+	 * Constructor. Creates a representation of a clasp process.
 	 *
 	 * @param cautious whether reasoning should be cautious
 	 * @param answerSetMaximum determines the maximum number of answer sets (if this is set to 0, all answer sets are returned)
@@ -28,15 +48,10 @@ public class Clasp implements AspSolver {
 		this.answerSetMaximum = answerSetMaximum;
 		this.cautious = cautious;
 		this.timeout = timeout;
-		execute();
 	}
 
-	/**
-	 * Executes the clasp command via {@link Runtime}.
-	 *
-	 * @throws IOException an IO exception
-	 */
-	private void execute() throws IOException {
+	@Override
+	public void exec() throws IOException {
 		StringBuilder command = new StringBuilder("clasp");
 		if (cautious) {
 			command.append(" -e cautious");

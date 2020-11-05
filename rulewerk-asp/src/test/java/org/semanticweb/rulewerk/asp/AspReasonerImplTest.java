@@ -20,8 +20,10 @@ package org.semanticweb.rulewerk.asp;
  * #L%
  */
 
+import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.rulewerk.asp.implementation.AspReasonerImpl;
+import org.semanticweb.rulewerk.asp.implementation.AspifIdentifier;
 import org.semanticweb.rulewerk.asp.implementation.Clasp;
 import org.semanticweb.rulewerk.asp.model.*;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
@@ -59,6 +61,11 @@ public class AspReasonerImplTest {
 	final NegativeLiteral negativeLiteral = Expressions.makeNegativeLiteral("r", x, d);
 	final NegativeLiteral negativeLiteral2 = Expressions.makeNegativeLiteral("q", x, c, d);
 	final NegativeLiteral negativeLiteral3 = Expressions.makeNegativeLiteral("p", x, c);
+
+	@Before
+	public void setUp() {
+		AspifIdentifier.reset();
+	}
 
 	@Test
 	public void overApproximateFact() {
@@ -144,7 +151,11 @@ public class AspReasonerImplTest {
 		knowledgeBase.addStatement(Expressions.makeFact("p", c, d));
 		knowledgeBase.addStatement(Expressions.makeFact("p", d, c));
 		knowledgeBase.addStatement(Expressions.makeFact("q", d, d));
-		AspReasoner aspReasoner = new AspReasonerImpl(knowledgeBase);
+
+		BufferedReader reader = new BufferedReader(new StringReader(mockClaspAnswer(Collections.singletonList(""), AspReasoningState.SATISFIABLE)));
+		StringWriter stringWriter = new StringWriter();
+		BufferedWriter writer = new BufferedWriter(stringWriter);
+		AspReasoner aspReasoner = mockClasp(new AspReasonerImpl(knowledgeBase), reader, writer);
 
 		assertTrue(aspReasoner.reason());
 		QueryResultIterator queryResultIterator = aspReasoner.answerQuery(query, false);
@@ -157,6 +168,10 @@ public class AspReasonerImplTest {
 			assertTrue(expectedQueryResults.contains(queryResultIterator.next().getTerms()));
 		}
 		assertEquals(2, answerCounter);
+
+		writer.flush();
+		assertEquals("asp 1 0 0\n" +
+			"0\n", stringWriter.toString());
 	}
 
 	@Test
@@ -173,7 +188,8 @@ public class AspReasonerImplTest {
 	@Test
 	public void reasonWithFailedGrounding() throws IOException {
 		KnowledgeBase knowledgeBase = new KnowledgeBase();
-		AspReasoner spiedReasoner = spy(new AspReasonerImpl(knowledgeBase));
+		AspReasoner spiedReasoner = mockClasp(new AspReasonerImpl(knowledgeBase), mock(BufferedReader.class), mock(BufferedWriter.class));
+
 		Grounder mockedGrounder = mock(Grounder.class);
 		when(mockedGrounder.ground()).thenReturn(false);
 		doReturn(mockedGrounder).when(spiedReasoner).instantiateGrounder(any());
@@ -199,15 +215,24 @@ public class AspReasonerImplTest {
 	public void reasonCallsSolverOnlyIfNeeded() throws IOException {
 		KnowledgeBase knowledgeBase = new KnowledgeBase();
 		knowledgeBase.addStatement(Expressions.makeFact("p", c, d));
-		AspReasoner spiedReasoner = spy(new AspReasonerImpl(knowledgeBase));
 
-		spiedReasoner.reason();
-		verify(spiedReasoner, times(1)).instantiateSolver(anyBoolean(), anyInt());
-		spiedReasoner.reason();
-		verify(spiedReasoner, times(1)).instantiateSolver(anyBoolean(), anyInt());
-		spiedReasoner.resetReasoner();
+		Clasp clasp = mock(Clasp.class);
+		when(clasp.getWriterToSolver()).thenReturn(mock(BufferedWriter.class));
+		AspReasoner spiedReasoner = spy(new AspReasonerImpl(knowledgeBase));
+		when(spiedReasoner.instantiateSolver(anyBoolean(), anyInt())).thenReturn(clasp);
+
+		when(clasp.getReaderFromSolver()).thenReturn(new BufferedReader(new StringReader(mockClaspAnswer(Collections.singletonList(""), AspReasoningState.SATISFIABLE))));
 		spiedReasoner.reason();
 		verify(spiedReasoner, times(2)).instantiateSolver(anyBoolean(), anyInt());
+
+		when(clasp.getReaderFromSolver()).thenReturn(new BufferedReader(new StringReader(mockClaspAnswer(Collections.singletonList(""), AspReasoningState.SATISFIABLE))));
+		spiedReasoner.reason();
+		verify(spiedReasoner, times(2)).instantiateSolver(anyBoolean(), anyInt());
+
+		when(clasp.getReaderFromSolver()).thenReturn(new BufferedReader(new StringReader(mockClaspAnswer(Collections.singletonList(""), AspReasoningState.SATISFIABLE))));
+		spiedReasoner.resetReasoner();
+		spiedReasoner.reason();
+		verify(spiedReasoner, times(3)).instantiateSolver(anyBoolean(), anyInt());
 	}
 
 	@Test
@@ -216,8 +241,7 @@ public class AspReasonerImplTest {
 		AspReasoner spiedReasoner = spy(new AspReasonerImpl(knowledgeBase));
 		AspSolver mockedClasp = mock(Clasp.class);
 		doThrow(new InterruptedException()).when(mockedClasp).solve();
-		BufferedReader reader = new BufferedReader(new StringReader("clasp -n 0 _delete_me\n" +
-			"clasp version 3.3.5\n" +
+		BufferedReader reader = new BufferedReader(new StringReader("clasp version 3.3.5\n" +
 			"Reading from _delete_me\n" +
 			"Solving...\n" +
 			"Answer: 1\n" +
@@ -242,13 +266,15 @@ public class AspReasonerImplTest {
 		Grounder mockedGrounder = mock(Grounder.class);
 		when(mockedGrounder.ground()).thenReturn(false);
 		doReturn(mockedGrounder).when(spiedReasoner).instantiateGrounder(any());
+		doReturn(mock(AspSolver.class)).when(spiedReasoner).instantiateSolver(anyBoolean(), anyInt());
+
 		AnswerSetIterator answerSetIterator = spiedReasoner.getAnswerSets();
 		assertEquals(AspReasoningState.ERROR, answerSetIterator.getReasoningState());
 		assertFalse(answerSetIterator.hasNext());
 	}
 
 	@Test
-	public void answerQueryWithIntermediateAnswerSets() {
+	public void answerQueryWithIntermediateAnswerSets() throws IOException {
 		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", c);
 		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", d);
 		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", c);
@@ -256,7 +282,27 @@ public class AspReasonerImplTest {
 		KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(Expressions.makeRule(atomA, atomNegB), Expressions.makeRule(atomB, atomNegA));
 
-		AspReasoner reasoner = new AspReasonerImpl(kb);
+		BufferedReader reader = new BufferedReader(new StringReader("clasp version 3.3.5\n" +
+			"Reading from .delete_me\n" +
+			"Solving...\n" +
+			"Answer: 1\n" +
+			"2\n" +
+			"Consequences: [0;1]\n" +
+			"Answer: 2\n" +
+			"\n" +
+			"Consequences: [0;0]\n" +
+			"SATISFIABLE\n" +
+			"\n" +
+			"Models       : 2\n" +
+			"  Cautious   : yes\n" +
+			"Consequences : 0\n" +
+			"Calls        : 1\n" +
+			"Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)\n" +
+			"CPU Time     : 0.000s"));
+		StringWriter stringWriter = new StringWriter();
+		BufferedWriter writer = new BufferedWriter(stringWriter);
+		AspReasoner reasoner = mockClasp(new AspReasonerImpl(kb), reader, writer);
+
 		PositiveLiteral query = Expressions.makePositiveLiteral("p", x);
 		QueryResultIterator queryResultIterator = reasoner.answerQuery(query, true);
 		int countResults = 0;
@@ -265,6 +311,14 @@ public class AspReasonerImplTest {
 			countResults++;
 		}
 		assertEquals(0, countResults);
+
+		writer.flush();
+		assertEquals("asp 1 0 0\n" +
+			"1 0 1 2 0 1 -1\n" +
+			"1 0 1 1 0 1 -2\n" +
+			"4 1 2 1 2\n" +
+			"4 1 1 1 1\n" +
+			"0\n", stringWriter.toString());
 	}
 
 	@Test(expected = RulewerkRuntimeException.class)
@@ -284,13 +338,26 @@ public class AspReasonerImplTest {
 		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", d);
 		KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(Expressions.makeRule(atomA, atomNegB), Expressions.makeRule(atomB, atomNegA));
-		AspReasoner reasoner = new AspReasonerImpl(kb);
+
+		BufferedReader reader = new BufferedReader(new StringReader(mockClaspAnswer(Arrays.asList("2", "1"), AspReasoningState.SATISFIABLE)));
+		StringWriter stringWriter = new StringWriter();
+		BufferedWriter writer = new BufferedWriter(stringWriter);
+		AspReasoner reasoner = mockClasp(new AspReasonerImpl(kb), reader, writer);
+
 		AnswerSetIterator answerSetIterator = reasoner.getAnswerSets();
 		AnswerSet answerSet1 = answerSetIterator.next();
 		AnswerSet answerSet2 = answerSetIterator.next();
 		assertFalse(answerSetIterator.hasNext());
 		assertEquals(answerSet1.getLiterals(), Collections.singleton(atomA));
 		assertEquals(answerSet2.getLiterals(), Collections.singleton(atomB));
+
+		writer.flush();
+		assertEquals("asp 1 0 0\n" +
+			"1 0 1 2 0 1 -1\n" +
+			"1 0 1 1 0 1 -2\n" +
+			"4 1 2 1 2\n" +
+			"4 1 1 1 1\n" +
+			"0\n", stringWriter.toString());
 	}
 
 	@Test
@@ -301,11 +368,24 @@ public class AspReasonerImplTest {
 		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", d);
 		KnowledgeBase kb = new KnowledgeBase();
 		kb.addStatements(Expressions.makeRule(atomA, atomNegB), Expressions.makeRule(atomB, atomNegA));
-		AspReasoner reasoner = new AspReasonerImpl(kb);
+
+		BufferedReader reader = new BufferedReader(new StringReader(mockClaspAnswer(Collections.singletonList("2"), AspReasoningState.SATISFIABLE)));
+		StringWriter stringWriter = new StringWriter();
+		BufferedWriter writer = new BufferedWriter(stringWriter);
+		AspReasoner reasoner = mockClasp(new AspReasonerImpl(kb), reader, writer);
+
 		AnswerSetIterator answerSetIterator = reasoner.getAnswerSets(1);
 		AnswerSet answerSet1 = answerSetIterator.next();
 		assertFalse(answerSetIterator.hasNext());
 		assertEquals(answerSet1.getLiterals(), Collections.singleton(atomA));
+
+		writer.flush();
+		assertEquals("asp 1 0 0\n" +
+			"1 0 1 2 0 1 -1\n" +
+			"1 0 1 1 0 1 -2\n" +
+			"4 1 2 1 2\n" +
+			"4 1 1 1 1\n" +
+			"0\n", stringWriter.toString());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -499,5 +579,36 @@ public class AspReasonerImplTest {
 		}
 		rules.add(Expressions.makePositiveLiteralsRule(statement.getHead(), bodyVariablesLiteralConjunction));
 		return rules;
+	}
+
+	private AspReasoner mockClasp(AspReasoner reasoner, BufferedReader reader, BufferedWriter writer) throws IOException {
+		Clasp clasp = mock(Clasp.class);
+		when(clasp.getReaderFromSolver()).thenReturn(reader);
+		when(clasp.getWriterToSolver()).thenReturn(writer);
+
+		AspReasoner spiedReasoner = spy(reasoner);
+		when(spiedReasoner.instantiateSolver(anyBoolean(), anyInt())).thenReturn(clasp);
+		return spiedReasoner;
+	}
+
+	private String mockClaspAnswer(List<String> answerSetStrings, AspReasoningState state) {
+		StringBuilder builder = new StringBuilder("clasp version 3.3.5\n" +
+		"Reading from .delete_me\n" +
+		"Solving...\n");
+
+		int counter = 1;
+		for (String answerSet : answerSetStrings) {
+			builder.append("Answer: ").append(counter).append("\n");
+			builder.append(answerSet).append("\n");
+			counter++;
+		}
+
+		builder.append(state.name()).append("\n");
+		builder.append("\n" +
+			"Models       : 1+\n" +
+			"Calls        : 1\n" +
+			"Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)\n" +
+			"CPU Time     : 0.000s\n");
+		return builder.toString();
 	}
 }

@@ -203,6 +203,7 @@ public class AspReasonerImpl implements AspReasoner {
 		}
 
 		try (AspSolver solver = instantiateSolver(true, 0)) {
+			solver.exec();
 			Grounder grounder = instantiateGrounder(solver);
 			if (!grounder.ground()) {
 				return false;
@@ -303,6 +304,7 @@ public class AspReasonerImpl implements AspReasoner {
 		Validate.isTrue(maximum >= 0);
 
 		try (AspSolver solver = instantiateSolver(false, maximum)) {
+			solver.exec();
 			Grounder grounder = instantiateGrounder(solver);
 			if (!grounder.ground()) {
 				LOGGER.error("An error occurred while grounding the ASP knowledge base.");
