@@ -392,45 +392,39 @@ public class AspReasonerImpl implements AspReasoner {
 		}
 	}
 
-	// start: dummy implementations
-	@Override
-	public Correctness forEachInference(InferenceAction action) throws IOException {
-		return null;
-	}
-
-	@Override
-	public Correctness getCorrectness() {
-		return null;
-	}
-
 	@Override
 	public CyclicityResult checkForCycles() {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean isJA() {
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean isRJA() {
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean isMFA() {
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean isRMFA() {
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean isMFC() {
-		return false;
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Correctness getCorrectness() {
+		return datalogReasoner.getCorrectness();
 	}
 
 	@Override
@@ -442,5 +436,4 @@ public class AspReasonerImpl implements AspReasoner {
 	public Correctness exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeNulls) throws IOException {
 		return null;
 	}
-	// end: dummy implementations
 }

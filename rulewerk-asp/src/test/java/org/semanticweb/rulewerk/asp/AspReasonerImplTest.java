@@ -51,6 +51,7 @@ public class AspReasonerImplTest {
 
 	final Constant c = Expressions.makeAbstractConstant("c");
 	final Constant d = Expressions.makeAbstractConstant("d");
+	final Constant e = Expressions.makeAbstractConstant("e");
 
 	final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
 	final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
@@ -552,6 +553,60 @@ public class AspReasonerImplTest {
 		assertEquals(RuleRewriteStrategy.NONE, aspReasoner.getRuleRewriteStrategy());
 		aspReasoner.setRuleRewriteStrategy(RuleRewriteStrategy.SPLIT_HEAD_PIECES);
 		assertEquals(RuleRewriteStrategy.SPLIT_HEAD_PIECES, aspReasoner.getRuleRewriteStrategy());
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void isJAUnsupported() {
+		AspReasoner aspReasoner = new AspReasonerImpl(new KnowledgeBase());
+		aspReasoner.isJA();
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void isRJAUnsupported() {
+		AspReasoner aspReasoner = new AspReasonerImpl(new KnowledgeBase());
+		aspReasoner.isRJA();
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void isMFAUnsupported() {
+		AspReasoner aspReasoner = new AspReasonerImpl(new KnowledgeBase());
+		aspReasoner.isMFA();
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void isMFCUnsupported() {
+		AspReasoner aspReasoner = new AspReasonerImpl(new KnowledgeBase());
+		aspReasoner.isMFC();
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void isRMFAUnsupported() {
+		AspReasoner aspReasoner = new AspReasonerImpl(new KnowledgeBase());
+		aspReasoner.isRMFA();
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void checkForCyclesUnsupported() {
+		AspReasoner aspReasoner = new AspReasonerImpl(new KnowledgeBase());
+		aspReasoner.checkForCycles();
+	}
+
+	@Test
+	public void getCorrectnessTest() throws IOException {
+		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", c);
+		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", d);
+		NegativeLiteral atomNegA = Expressions.makeNegativeLiteral("p", c);
+		NegativeLiteral atomNegB = Expressions.makeNegativeLiteral("q", d);
+		KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(Expressions.makeRule(atomA, atomNegB), Expressions.makeRule(atomB, atomNegA));
+
+		BufferedReader reader = new BufferedReader(new StringReader(mockClaspAnswer(Collections.singletonList("2"), AspReasoningState.SATISFIABLE)));
+		StringWriter stringWriter = new StringWriter();
+		BufferedWriter writer = new BufferedWriter(stringWriter);
+		AspReasoner reasoner = mockClasp(new AspReasonerImpl(kb), reader, writer);
+
+		reasoner.reason();
+		assertEquals(Correctness.SOUND_AND_COMPLETE, reasoner.getCorrectness());
 	}
 
 	/**
