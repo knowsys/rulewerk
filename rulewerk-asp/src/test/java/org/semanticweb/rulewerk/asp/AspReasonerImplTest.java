@@ -609,6 +609,66 @@ public class AspReasonerImplTest {
 		assertEquals(Correctness.SOUND_AND_COMPLETE, reasoner.getCorrectness());
 	}
 
+	@Test
+	public void countQueryAnswersTest() throws IOException {
+		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", x, y2);
+		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", x, y2);
+		KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(Expressions.makeRule(atomA, atomB),
+			Expressions.makeFact("p", c, c),
+			Expressions.makeFact("p", c, d)
+		);
+
+		BufferedReader reader = new BufferedReader(new StringReader(mockClaspAnswer(Collections.singletonList(""), AspReasoningState.SATISFIABLE)));
+		StringWriter stringWriter = new StringWriter();
+		BufferedWriter writer = new BufferedWriter(stringWriter);
+		AspReasoner reasoner = mockClasp(new AspReasonerImpl(kb), reader, writer);
+
+		QueryAnswerCount queryAnswerCount = reasoner.countQueryAnswers(Expressions.makePositiveLiteral("p", x, c), false);
+		assertEquals(Correctness.SOUND_AND_COMPLETE, queryAnswerCount.getCorrectness());
+		assertEquals(1, queryAnswerCount.getCount());
+	}
+
+	@Test(expected = RulewerkRuntimeException.class)
+	public void countQueryAnswersWithExceptionTest() throws IOException {
+		AspReasoner aspReasoner = spy(new AspReasonerImpl(new KnowledgeBase()));
+		doThrow(new IOException()).when(aspReasoner).reason();
+		aspReasoner.countQueryAnswers(Expressions.makePositiveLiteral("p", x), false);
+	}
+
+	@Test(expected = RulewerkRuntimeException.class)
+	public void exportQueryAnswersToCsvWithExceptionTest() throws IOException {
+		AspReasoner aspReasoner = spy(new AspReasonerImpl(new KnowledgeBase()));
+		doThrow(new IOException()).when(aspReasoner).reason();
+		aspReasoner.exportQueryAnswersToCsv(Expressions.makePositiveLiteral("p", x), "file.csv", false);
+	}
+
+	@Test
+	public void exportQueryAnswersToCsv() throws IOException {
+		PositiveLiteral atomA = Expressions.makePositiveLiteral("p", x, y2);
+		PositiveLiteral atomB = Expressions.makePositiveLiteral("q", x, y2);
+		KnowledgeBase kb = new KnowledgeBase();
+		kb.addStatements(Expressions.makeRule(atomA, atomB),
+			Expressions.makeFact("p", c, d, d),
+			Expressions.makeFact("p", c, e, e),
+			Expressions.makeFact("p", d, e, e),
+			Expressions.makeFact("p", c, d, e)
+		);
+
+		BufferedReader reader = new BufferedReader(new StringReader(mockClaspAnswer(Collections.singletonList(""), AspReasoningState.SATISFIABLE)));
+		StringWriter stringWriter = new StringWriter();
+		BufferedWriter writer = new BufferedWriter(stringWriter);
+		AspReasoner reasoner = mockClasp(new AspReasonerImpl(kb), reader, writer);
+
+		String csvFile = FileDataSourceTestUtils.OUTPUT_FOLDER + FileDataSourceTestUtils.ternaryFacts + ".csv";
+		reasoner.exportQueryAnswersToCsv(Expressions.makePositiveLiteral("p", c, x, x), csvFile, true);
+
+		List<List<String>> fileContent = FileDataSourceTestUtils.getCSVContent(csvFile);
+		assertEquals(2, fileContent.size());
+		assertTrue(fileContent.contains(Arrays.asList(c.toString(), d.toString(), d.toString())));
+		assertTrue(fileContent.contains(Arrays.asList(c.toString(), e.toString(), e.toString())));
+	}
+
 	/**
 	 * Utility function to over-approximate a rule.
 	 * Re-implements the functionality of the private over-approximation visitor from the ASP reasoner implementation

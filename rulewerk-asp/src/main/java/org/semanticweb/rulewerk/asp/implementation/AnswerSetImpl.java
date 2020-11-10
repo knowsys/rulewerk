@@ -22,12 +22,11 @@ package org.semanticweb.rulewerk.asp.implementation;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.asp.model.AnswerSet;
-import org.semanticweb.rulewerk.core.model.api.Literal;
-import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
-import org.semanticweb.rulewerk.core.model.api.Predicate;
-import org.semanticweb.rulewerk.core.model.api.Term;
+import org.semanticweb.rulewerk.core.model.api.*;
+import org.semanticweb.rulewerk.core.reasoner.Correctness;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -76,15 +75,24 @@ public class AnswerSetImpl implements AnswerSet {
 
 	@Override
 	public QueryResultIterator getQueryResults(PositiveLiteral query) {
-		if (query.getArguments().stream().noneMatch(Term::isConstant)) {
-			return getQueryResults(query.getPredicate());
-		}
-
 		Set<Literal> answers = new HashSet<>();
 		List<Term> queryTerms = query.getArguments();
+		Map<Term, Integer> firstOccurences = new HashMap<>();
+		for (int idx = 0; idx < queryTerms.size(); idx++) {
+			Term term = queryTerms.get(idx);
+			firstOccurences.putIfAbsent(term, idx);
+		}
+
 		for (Literal literal : getLiterals(query.getPredicate())) {
-			if (IntStream.range(0, queryTerms.size()).allMatch(i -> !queryTerms.get(i).isConstant()
-				|| (queryTerms.get(i).equals(literal.getArguments().get(i))))) {
+			if (IntStream.range(0, queryTerms.size()).allMatch(idx -> {
+				Term term = queryTerms.get(idx);
+				if (term.isConstant()) {
+					return queryTerms.get(idx).equals(literal.getArguments().get(idx));
+				} else {
+					return firstOccurences.get(term).equals(idx)
+						|| literal.getArguments().get(idx).equals(literal.getArguments().get(firstOccurences.get(term)));
+				}
+			})) {
 				answers.add(literal);
 			};
 		}
@@ -103,5 +111,28 @@ public class AnswerSetImpl implements AnswerSet {
 	@Override
 	public Set<Literal> getLiterals(Predicate predicate) {
 		return Collections.unmodifiableSet(answerSet.getOrDefault(predicate, Collections.emptySet()));
+	}
+
+	@Override
+	public void exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath) throws IOException {
+		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
+		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
+
+		QueryResultIterator queryResultIterator = getQueryResults(query);
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csvFilePath)));
+		while (queryResultIterator.hasNext()) {
+			boolean first = true;
+			for (Term term : queryResultIterator.next().getTerms()) {
+				if (first) {
+					first = false;
+				} else {
+					writer.write(",");
+				}
+
+				writer.write(term.toString());
+			}
+			writer.newLine();
+		}
+		writer.close();
 	}
 }

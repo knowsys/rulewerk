@@ -20,11 +20,11 @@ package org.semanticweb.rulewerk.asp.model;
  * #L%
  */
 
-import org.semanticweb.rulewerk.core.model.api.Literal;
-import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
-import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.*;
+import org.semanticweb.rulewerk.core.reasoner.Correctness;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -65,4 +65,19 @@ public interface AnswerSet {
 	 * @return list of literals
 	 */
 	Set<Literal> getLiterals(Predicate predicate);
+
+	/**
+	 * Writes the literals of the answer sets that match the given query to the specified csv file.
+	 *
+	 * @param query        a {@link PositiveLiteral} representing the query to be
+	 *                     answered.
+	 * @param csvFilePath  path to a <i><b>.csv</b></i> file where the query answers
+	 *                     will be written. Each line of the <i><b>.csv</b></i> file
+	 *                     represents a query answer, and it will contain the fact
+	 *                     term names as columns.
+	 *
+	 * @throws IOException if an I/O error occurs regarding given file
+	 *                     ({@code csvFilePath)}.
+	 */
+	void exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath) throws IOException;
 }

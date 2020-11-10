@@ -26,6 +26,7 @@ import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.*;
+import org.semanticweb.rulewerk.core.reasoner.implementation.QueryAnswerCountImpl;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -429,11 +430,47 @@ public class AspReasonerImpl implements AspReasoner {
 
 	@Override
 	public QueryAnswerCount countQueryAnswers(PositiveLiteral query, boolean includeNulls) {
-		return null;
+		if (cautiousAnswerSet == null) {
+			try {
+				reason();
+			} catch (IOException ioException) {
+				throw new RulewerkRuntimeException("Cautious answer set could not be computed");
+			}
+		}
+
+		long count = 0;
+		match:
+		for (Literal literal : cautiousAnswerSet.getLiterals(query.getPredicate())) {
+			List<Term> terms = query.getArguments();
+			int idx = 0;
+			while (idx < terms.size()) {
+				if (terms.get(idx).isConstant() && !terms.get(idx).equals(literal.getArguments().get(idx))) {
+					continue match;
+				}
+				idx++;
+			}
+			count++;
+		}
+		return new QueryAnswerCountImpl(getCorrectness(), count);
 	}
 
 	@Override
 	public Correctness exportQueryAnswersToCsv(PositiveLiteral query, String csvFilePath, boolean includeNulls) throws IOException {
+		if (cautiousAnswerSet == null) {
+			try {
+				reason();
+			} catch (IOException ioException) {
+				throw new RulewerkRuntimeException("Cautious answer set could not be computed");
+			}
+		}
+
+		cautiousAnswerSet.exportQueryAnswersToCsv(query, csvFilePath);
+		return getCorrectness();
+	}
+
+	@Override
+	public Correctness forEachInference(InferenceAction action) throws IOException {
+		// TODO
 		return null;
 	}
 }

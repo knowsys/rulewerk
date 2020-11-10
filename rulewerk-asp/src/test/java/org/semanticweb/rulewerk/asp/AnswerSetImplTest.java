@@ -29,7 +29,9 @@ import org.semanticweb.rulewerk.asp.model.AspReasoningState;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
+import org.semanticweb.rulewerk.core.reasoner.implementation.FileDataSource;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -203,5 +205,55 @@ public class AnswerSetImplTest {
 		AnswerSetIterator answerSetIterator = AnswerSetIteratorImpl.getErrorAnswerSetIterator();
 		assertFalse(answerSetIterator.hasNext());
 		assertEquals(AspReasoningState.ERROR, answerSetIterator.getReasoningState());
+	}
+
+	@Test
+	public void exportQueryAnswersToCsv() throws IOException {
+		Map<Predicate, Set<Literal>> core = new HashMap<>();
+		core.put(atom1.getPredicate(), new HashSet<>(Collections.singletonList(atom1)));
+		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
+		integerLiteralMap.put(2, atom2);
+		integerLiteralMap.put(3, atom3);
+		AnswerSet answerSet = new AnswerSetImpl(core,"2 3", integerLiteralMap);
+		String csvFile = FileDataSourceTestUtils.OUTPUT_FOLDER + FileDataSourceTestUtils.binaryFacts + ".csv";
+		answerSet.exportQueryAnswersToCsv(Expressions.makePositiveLiteral("p", x, y), csvFile);
+
+		List<List<String>> fileContent = FileDataSourceTestUtils.getCSVContent(csvFile);
+		assertEquals(2, fileContent.size());
+		assertTrue(fileContent.contains(Arrays.asList(d.toString(), c.toString())));
+		assertTrue(fileContent.contains(Arrays.asList(e.toString(), c.toString())));
+	}
+
+	@Test
+	public void exportQueryAnswersToCsvWithConstant() throws IOException {
+		Map<Predicate, Set<Literal>> core = new HashMap<>();
+		core.put(atom1.getPredicate(), new HashSet<>(Collections.singletonList(atom1)));
+		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
+		integerLiteralMap.put(2, atom2);
+		integerLiteralMap.put(3, atom3);
+		AnswerSet answerSet = new AnswerSetImpl(core,"2 3", integerLiteralMap);
+		String csvFile = FileDataSourceTestUtils.OUTPUT_FOLDER + FileDataSourceTestUtils.binaryFacts + ".csv";
+		answerSet.exportQueryAnswersToCsv(Expressions.makePositiveLiteral("p", d, x), csvFile);
+
+		List<List<String>> fileContent = FileDataSourceTestUtils.getCSVContent(csvFile);
+		assertEquals(1, fileContent.size());
+		assertTrue(fileContent.contains(Arrays.asList(d.toString(), c.toString())));
+	}
+
+	@Test
+	public void exportQueryAnswersToCsvWithSameVariable() throws IOException {
+		Map<Predicate, Set<Literal>> core = new HashMap<>();
+		core.put(atom1.getPredicate(), new HashSet<>(Collections.singletonList(atom1)));
+		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
+		integerLiteralMap.put(2, atom2);
+		integerLiteralMap.put(3, atom3);
+		integerLiteralMap.put(4, Expressions.makePositiveLiteral("p", c, c));
+		AnswerSet answerSet = new AnswerSetImpl(core,"2 3 4", integerLiteralMap);
+		String csvFile = FileDataSourceTestUtils.OUTPUT_FOLDER + FileDataSourceTestUtils.binaryFacts + ".csv";
+		answerSet.exportQueryAnswersToCsv(Expressions.makePositiveLiteral("p", x, x), csvFile);
+
+		List<List<String>> fileContent = FileDataSourceTestUtils.getCSVContent(csvFile);
+		assertEquals(1, fileContent.size());
+		assertTrue(fileContent.contains(Arrays.asList(c.toString(), c.toString())));
 	}
 }
