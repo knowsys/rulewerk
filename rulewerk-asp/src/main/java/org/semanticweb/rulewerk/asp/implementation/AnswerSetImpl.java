@@ -20,6 +20,8 @@ package org.semanticweb.rulewerk.asp.implementation;
  * #L%
  */
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.asp.model.AnswerSet;
 import org.semanticweb.rulewerk.core.model.api.*;
@@ -118,21 +120,14 @@ public class AnswerSetImpl implements AnswerSet {
 		Validate.notNull(csvFilePath, "File to export query answer to must not be null!");
 		Validate.isTrue(csvFilePath.endsWith(".csv"), "Expected .csv extension for file [%s]!", csvFilePath);
 
-		QueryResultIterator queryResultIterator = getQueryResults(query);
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csvFilePath)));
-		while (queryResultIterator.hasNext()) {
-			boolean first = true;
-			for (Term term : queryResultIterator.next().getTerms()) {
-				if (first) {
-					first = false;
-				} else {
-					writer.write(",");
-				}
 
-				writer.write(term.toString());
-			}
-			writer.newLine();
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csvFilePath)));
+		CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+		QueryResultIterator queryResultIterator = getQueryResults(query);
+
+		while (queryResultIterator.hasNext()) {
+			printer.printRecord(queryResultIterator.next().getTerms());
 		}
-		writer.close();
+		printer.close();
 	}
 }

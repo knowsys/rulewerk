@@ -231,13 +231,17 @@ public class AnswerSetImplTest {
 		Map<Integer, Literal> integerLiteralMap = new HashMap<>();
 		integerLiteralMap.put(2, atom2);
 		integerLiteralMap.put(3, atom3);
-		AnswerSet answerSet = new AnswerSetImpl(core,"2 3", integerLiteralMap);
+		DatatypeConstant datatypeConstant = Expressions.makeDatatypeConstant("1", PrefixDeclarationRegistry.XSD_INT);
+		integerLiteralMap.put(4, Expressions.makePositiveLiteral("p", d, datatypeConstant));
+		AnswerSet answerSet = new AnswerSetImpl(core,"2 3 4", integerLiteralMap);
 		String csvFile = FileDataSourceTestUtils.OUTPUT_FOLDER + FileDataSourceTestUtils.binaryFacts + ".csv";
 		answerSet.exportQueryAnswersToCsv(Expressions.makePositiveLiteral("p", d, x), csvFile);
 
 		List<List<String>> fileContent = FileDataSourceTestUtils.getCSVContent(csvFile);
-		assertEquals(1, fileContent.size());
+		assertEquals(2, fileContent.size());
 		assertTrue(fileContent.contains(Arrays.asList(d.toString(), c.toString())));
+		assertTrue(fileContent.contains(Arrays.asList(d.toString(), datatypeConstant.toString())));
+
 	}
 
 	@Test
