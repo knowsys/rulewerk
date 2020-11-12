@@ -32,20 +32,35 @@ import org.semanticweb.rulewerk.core.model.api.TermType;
 
 public class VariableRenamer {
 
-	static private Term rename(Term term, int idx1) {
+	/**
+	 * If the term is an universal or existential variable, then rename it adding
+	 * "000" and a suffix.
+	 * 
+	 * @param term to be renamed
+	 * @param idx  suffix to concatenate to the variable names (after "000")
+	 * @return a renamed Term, if it is variable, or a constant with the same name.
+	 */
+	static private Term rename(Term term, int idx) {
 		if (term.getType() == TermType.UNIVERSAL_VARIABLE) {
-			return Expressions.makeUniversalVariable(term.getName() + "000" + idx1);
+			return Expressions.makeUniversalVariable(term.getName() + "000" + idx);
 		} else if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
-			return Expressions.makeExistentialVariable(term.getName() + "000" + idx1);
+			return Expressions.makeExistentialVariable(term.getName() + "000" + idx);
 		} else {
 			return term;
 		}
 	}
 
-	static private Literal rename(Literal literal, int idx1) {
+	/**
+	 * Rename all the variables present in literal with the sufix "000" + idx.
+	 * 
+	 * @param literal which its variables are going to be renamed.
+	 * @param idx     suffix to concatenate to the variable names (after "000")
+	 * @return a new Literal with renamed variables.
+	 */
+	static private Literal rename(Literal literal, int idx) {
 		List<Term> newTerms = new ArrayList<>();
 		for (Term term : literal.getArguments()) {
-			newTerms.add(rename(term, idx1));
+			newTerms.add(rename(term, idx));
 		}
 		if (literal.isNegated()) {
 			return Expressions.makeNegativeLiteral(literal.getPredicate(), newTerms);
@@ -54,6 +69,13 @@ public class VariableRenamer {
 		}
 	}
 
+	/**
+	 * Rename all the variables in the rule by concatenating "000" and idx.
+	 * 
+	 * @param rule which its variables are going to be renamed.
+	 * @param idx  suffix to concatenate to the variable names (after "000")
+	 * @return new Rule with renamed variable names.
+	 */
 	static public Rule rename(Rule rule, int idx) {
 		List<Literal> newBody = new ArrayList<>();
 		rule.getBody().forEach(literal -> newBody.add(rename(literal, idx)));
