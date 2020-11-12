@@ -102,8 +102,12 @@ public class Reliance {
 //		System.out.println(base);
 //	}
 
-	/*
-	 * @return True if rule2 positively relies in rule1 $\arule_1\rpos\arule_2$
+	/**
+	 * Checker for positive reliance relation.
+	 * 
+	 * @param rule1
+	 * @param rule2
+	 * @return True if rule2 positively relies on rule1.
 	 */
 	static public boolean positively(Rule rule1, Rule rule2) {
 		Rule renamedRule1 = VariableRenamer.rename(rule1, 1);
