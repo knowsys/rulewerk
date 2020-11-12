@@ -31,20 +31,22 @@ import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 public class Unifier {
+	// TODO: check if this way of unification can be transformed into another one.
+	// s.t. we unify atoms into another ones, instead of using new things.
 	final HashMap<Term, Term> unifier;
 	boolean success;
 
 	public String toString() {
 		String result = success + ", {";
-		
+
 		for (Term t : unifier.keySet()) {
-			result += t + ": " + unifier.get(t) + ", "; 
+			result += t + ": " + unifier.get(t) + ", ";
 		}
-		
+
 		result += "}";
 		return result;
 	}
-	
+
 	public Unifier(List<Literal> atomsInBody2, List<Literal> atomsInHead1, int[] assignment) {
 		unifier = new HashMap<>();
 		success = true;
@@ -96,8 +98,7 @@ public class Unifier {
 		if (term1.isConstant() && term2.isConstant()) {
 			if (term1.equals(term2)) {
 				return;
-			}
-			else {
+			} else {
 				success = false;
 			}
 		} else if (term1.isConstant() && term2.isVariable()) {
