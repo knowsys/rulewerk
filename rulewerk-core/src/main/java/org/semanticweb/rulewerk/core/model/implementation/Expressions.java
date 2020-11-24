@@ -305,6 +305,19 @@ public final class Expressions {
 	}
 
 	/**
+	 * Creates a {@link Disjunction} of {@link Conjunction}s of {@code T} ({@link Literal} type) objects.
+	 *
+	 * @param literals list of lists of non-null literals
+	 * @return a {@link Disjunction} corresponding to the input
+	 */
+	public static <T extends Literal> Disjunction<Conjunction<T>> makeDisjunction(final List<List<T>> literals) {
+		final List<Conjunction<T>> disjuncts = literals.stream()
+			.map(c -> makeConjunction(c))
+			.collect(Collectors.toList());
+		return new DisjunctionImpl<>(disjuncts);
+	}
+
+	/**
 	 * Creates a {@code Conjunction} of {@code T} ({@link PositiveLiteral} type)
 	 * objects.
 	 *

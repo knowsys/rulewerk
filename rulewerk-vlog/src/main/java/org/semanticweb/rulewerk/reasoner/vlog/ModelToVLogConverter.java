@@ -130,11 +130,11 @@ final class ModelToVLogConverter {
 		// TODO: what to do for disjunctions?
 		final Disjunction<?> headDisjunction = rule.getHead();
 		final Disjunction<?> bodyDisjunction = rule.getBody();
-		if (!(headDisjunction instanceof Conjunction<?>) || !(bodyDisjunction instanceof Conjunction<?>)) {
+		if (headDisjunction.getConjunctions().size() != 1 || bodyDisjunction.getConjunctions().size() != 1) {
 			throw new IllegalArgumentException("Disjunctions are currently not supported for vlog bindings.");
 		}
-		final Conjunction<?> headConjunction = (Conjunction<?>) headDisjunction;
-		final Conjunction<?> bodyConjunction = (Conjunction<?>) bodyDisjunction;
+		final Conjunction<?> headConjunction = headDisjunction.getConjunctions().get(0);
+		final Conjunction<?> bodyConjunction = bodyDisjunction.getConjunctions().get(0);
 
 		final karmaresearch.vlog.Atom[] vLogHead = toVLogAtomArray(headConjunction);
 		final karmaresearch.vlog.Atom[] vLogBody = toVLogAtomArray(bodyConjunction);
