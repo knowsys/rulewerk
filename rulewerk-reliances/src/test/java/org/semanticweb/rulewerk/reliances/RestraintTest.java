@@ -64,14 +64,83 @@ public class RestraintTest {
 	}
 
 	@Test
-	public void simpleSelfRestraining() throws Exception {
+	public void simpleSelfRestrainingTest() throws Exception {
 		Rule rule1 = RuleParser.parseRule("b(!Y) :- a(?X) .");
 
 		assertTrue(Restraint.restraint(rule1, rule1));
 	}
 
 	@Test
-	public void MarkussExample() throws Exception {
+	public void successorPredecesorTest() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(!Y,?X), q(?X,!Z) :- p(?X) .");
+		Rule rule2 = RuleParser.parseRule("q(?X,!Y) :- r(?X) .");
+
+		assertFalse(Restraint.restraint(rule1, rule1));
+		assertTrue(Restraint.restraint(rule1, rule2));
+		assertFalse(Restraint.restraint(rule2, rule1));
+		assertFalse(Restraint.restraint(rule2, rule2));
+	}
+
+	@Test
+	public void successorPredecesorWithExtraAtomTest() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(!Y,?X), q(?X,!Z) :- p(?X) .");
+		Rule rule2 = RuleParser.parseRule("q(?X,!Y), s(!Y) :- r(?X) .");
+
+		assertFalse(Restraint.restraint(rule1, rule1));
+		assertFalse(Restraint.restraint(rule1, rule2));
+		assertFalse(Restraint.restraint(rule2, rule1));
+		assertFalse(Restraint.restraint(rule2, rule2));
+	}
+
+	@Test
+	public void successorPredecesorWithExtraAtomToUniversalVarTest() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(!Y,?X), q(?X,?Z) :- p(?X,?Z) .");
+		Rule rule2 = RuleParser.parseRule("q(?X,!Y), s(!Y) :- r(?X) .");
+
+		assertFalse(Restraint.restraint(rule1, rule1));
+		assertTrue(Restraint.restraint(rule1, rule2));
+		assertFalse(Restraint.restraint(rule2, rule1));
+		assertFalse(Restraint.restraint(rule2, rule2));
+	}
+
+	@Test
+	public void unifyTwoAtomsIntoOneTest() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(?X,!Y) :- r(?X) .");
+		Rule rule2 = RuleParser.parseRule("q(?X,!Z), q(?Y,!Z) :- p(?X,?Y) .");
+
+		assertFalse(Restraint.restraint(rule1, rule1));
+		assertFalse(Restraint.restraint(rule1, rule2));
+		assertFalse(Restraint.restraint(rule2, rule1));
+		assertTrue(Restraint.restraint(rule2, rule2));
+	}
+
+	@Test
+	public void independentPieces01Test() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(!Y) :- p(?X) .");
+
+		assertTrue(Restraint.restraint(rule1, rule1));
+	}
+
+	@Test
+	public void independentPieces02Test() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(?X),r(!Y) :- p(?X) .");
+
+		assertTrue(Restraint.restraint(rule1, rule1));
+	}
+
+	@Test
+	public void blockingRestraintTest() throws Exception {
+		Rule rule1 = RuleParser.parseRule("b(?X,!Y,!Y),c(!Y,!Z) :- a(?X) .");
+		Rule rule2 = RuleParser.parseRule("b(?X,!Y,!Z),c(!Z,!Z) :- a(?X) .");
+
+		assertFalse(Restraint.restraint(rule1, rule1));
+		assertFalse(Restraint.restraint(rule1, rule2));
+		assertFalse(Restraint.restraint(rule2, rule1));
+		assertFalse(Restraint.restraint(rule2, rule2));
+	}
+
+	@Test
+	public void MarkussExampleTest() throws Exception {
 		Rule rule1 = RuleParser.parseRule("r(?X,!V,!W), r(?X,?X,!W), a(!V) :- b(?X) .");
 
 		assertTrue(Restraint.restraint(rule1, rule1));
