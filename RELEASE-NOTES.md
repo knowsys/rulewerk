@@ -7,6 +7,7 @@ Rulewerk v0.8.0
 Bugfixes:
 * Encoding of RDF strings corrected to make sure VLog succeeds joining on strings
 * Fixed handling of trident databases that are not a direct child of the current working directory
+* Fixed encoding of language-tagged strings that are used in Rulewerk facts, which had caused an exception
 
 Rulewerk v0.7.0
 ---------------

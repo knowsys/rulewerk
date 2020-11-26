@@ -111,6 +111,7 @@ public class ModelToVLogConverterTest {
 
 		assertEquals(expectedVLogTerm, vLogTerm);
 		assertEquals(expectedVLogTerm.getName(), TermToVLogConverter.getVLogNameForConstantName(constant.getName()));
+		assertEquals(expectedVLogTerm.getName(), TermToVLogConverter.getVLogNameForConstant(constant));
 	}
 
 	@Test
