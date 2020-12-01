@@ -24,14 +24,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Assignment implements Iterable<int[]> {
+public class AssignmentIterable implements Iterable<int[]> {
 
-	MatchIterator assignmentIterator;
+	AssignmentIterator assignmentIterator;
 
-	private class MatchIterator implements Iterator<int[]> {
+	private class AssignmentIterator implements Iterator<int[]> {
 		NumbersInBaseAndLengthFromMinusOne numbers; // base to count
 
-		public MatchIterator(int assign, int assignTo) {
+		public AssignmentIterator(int assign, int assignTo) {
 			numbers = new NumbersInBaseAndLengthFromMinusOne(assignTo, assign);
 		}
 
@@ -59,8 +59,8 @@ public class Assignment implements Iterable<int[]> {
 		}
 	}
 
-	public Assignment(int assign, int assignTo) {
-		assignmentIterator = new MatchIterator(assign, assignTo);
+	public AssignmentIterable(int assign, int assignTo) {
+		assignmentIterator = new AssignmentIterator(assign, assignTo);
 	}
 
 	@Override
@@ -78,25 +78,25 @@ public class Assignment implements Iterable<int[]> {
 		return result;
 	}
 
-	public static List<Integer> head11Idx(int headSize, int[] match) {
+	public static List<Integer> head11Idx(int headSize, int[] assignment) {
 		List<Integer> result = new ArrayList<>();
-		for (int i = 0; i < match.length; i++) {
-			if (!result.contains(match[i]) && match[i] != -1) {
-				result.add(match[i]);
+		for (int i = 0; i < assignment.length; i++) {
+			if (!result.contains(assignment[i]) && assignment[i] != -1) {
+				result.add(assignment[i]);
 			}
 		}
 		return result;
 	}
 
-	public static List<Integer> head12Idx(int headSize, int[] match) {
-		return complement(headSize, head11Idx(headSize, match));
+	public static List<Integer> head12Idx(int headSize, int[] assignment) {
+		return complement(headSize, head11Idx(headSize, assignment));
 	}
 
-	public static List<Integer> body21Idx(int bodySize, int[] match) {
+	public static List<Integer> body21Idx(int bodySize, int[] assignment) {
 		List<Integer> result = new ArrayList<>();
 
 		for (int i = 0; i < bodySize; i++) {
-			if (match[i] != -1) {
+			if (assignment[i] != -1) {
 				result.add(i);
 			}
 		}
@@ -104,8 +104,8 @@ public class Assignment implements Iterable<int[]> {
 		return result;
 	}
 
-	public static List<Integer> body22Idx(int bodySize, int[] match) {
-		return complement(bodySize, body21Idx(bodySize, match));
+	public static List<Integer> body22Idx(int bodySize, int[] assignment) {
+		return complement(bodySize, body21Idx(bodySize, assignment));
 	}
 
 }
