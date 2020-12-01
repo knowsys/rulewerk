@@ -26,12 +26,12 @@ import java.util.List;
 
 public class Assignment implements Iterable<int[]> {
 
-	AssignmentIterator assignmentIterator;
+	MatchIterator assignmentIterator;
 
-	private class AssignmentIterator implements Iterator<int[]> {
+	private class MatchIterator implements Iterator<int[]> {
 		NumbersInBaseAndLengthFromMinusOne numbers; // base to count
 
-		public AssignmentIterator(int assign, int assignTo) {
+		public MatchIterator(int assign, int assignTo) {
 			numbers = new NumbersInBaseAndLengthFromMinusOne(assignTo, assign);
 		}
 
@@ -50,7 +50,7 @@ public class Assignment implements Iterable<int[]> {
 		}
 
 		private boolean valid(int[] representation) {
-			for (int i=0; i<representation.length; i++) {
+			for (int i = 0; i < representation.length; i++) {
 				if (representation[i] != -1) {
 					return true;
 				}
@@ -60,7 +60,7 @@ public class Assignment implements Iterable<int[]> {
 	}
 
 	public Assignment(int assign, int assignTo) {
-		assignmentIterator = new AssignmentIterator(assign, assignTo);
+		assignmentIterator = new MatchIterator(assign, assignTo);
 	}
 
 	@Override
@@ -70,17 +70,17 @@ public class Assignment implements Iterable<int[]> {
 
 	private static List<Integer> complement(int size, List<Integer> of) {
 		List<Integer> result = new ArrayList<>();
-		for (int i=0; i<size; i++) {
+		for (int i = 0; i < size; i++) {
 			if (!of.contains(i)) {
 				result.add(i);
 			}
 		}
 		return result;
 	}
-	
+
 	public static List<Integer> head11Idx(int headSize, int[] match) {
 		List<Integer> result = new ArrayList<>();
-		for (int i=0; i<match.length; i++) {
+		for (int i = 0; i < match.length; i++) {
 			if (!result.contains(match[i]) && match[i] != -1) {
 				result.add(match[i]);
 			}
@@ -95,12 +95,12 @@ public class Assignment implements Iterable<int[]> {
 	public static List<Integer> body21Idx(int bodySize, int[] match) {
 		List<Integer> result = new ArrayList<>();
 
-		for (int i=0; i<bodySize; i++) {
+		for (int i = 0; i < bodySize; i++) {
 			if (match[i] != -1) {
 				result.add(i);
 			}
 		}
-		
+
 		return result;
 	}
 
