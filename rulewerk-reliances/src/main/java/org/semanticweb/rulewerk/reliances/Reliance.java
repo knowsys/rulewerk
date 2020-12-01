@@ -120,10 +120,10 @@ public class Reliance {
 
 		List<Literal> positiveBodyLiterals1 = renamedRule1.getPositiveBodyLiterals();
 //		List<Literal> negativeBodyLiterals1 = renamedRule1.getNegativeBodyLiterals();
-		List<Literal> headLiterals1 = renamedRule1.getHeadLiterals();
+		List<Literal> headLiterals1 = renamedRule1.getHeadAtoms();
 		List<Literal> positiveBodyLiterals2 = renamedRule2.getPositiveBodyLiterals();
 //		List<Literal> negativeBodyLiterals2 = renamedRule2.getNegativeBodyLiterals();
-		List<Literal> headLiterals2 = renamedRule2.getHeadLiterals();
+		List<Literal> headLiterals2 = renamedRule2.getHeadAtoms();
 
 //		print("positiveBodyLiterals1: ", positiveBodyLiterals1);
 //		print("negativeBodyLiterals1: ", negativeBodyLiterals1);

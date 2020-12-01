@@ -48,7 +48,7 @@ public interface Rule extends SyntaxObject, Statement {
 	 */
 	Conjunction<Literal> getBody();
 
-	List<Literal> getHeadLiterals();
+	List<Literal> getHeadAtoms();
 
 	List<Literal> getBodyLiterals();
 

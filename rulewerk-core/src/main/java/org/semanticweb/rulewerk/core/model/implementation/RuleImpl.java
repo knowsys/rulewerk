@@ -130,7 +130,7 @@ public class RuleImpl implements Rule {
 		return Stream.concat(this.body.getTerms(), this.head.getTerms()).distinct();
 	}
 
-	public List<Literal> getHeadLiterals() {
+	public List<Literal> getHeadAtoms() {
 		List<Literal> headLiterals = new ArrayList<>();
 		this.getHead().forEach(literal -> headLiterals.add(literal));
 		return headLiterals;
