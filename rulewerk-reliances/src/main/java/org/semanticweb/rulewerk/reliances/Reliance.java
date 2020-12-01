@@ -1,5 +1,6 @@
 package org.semanticweb.rulewerk.reliances;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,30 +79,6 @@ public class Reliance {
 		return !copyHeadLiterals2.isEmpty();
 	}
 
-//	static private <T> void print(String name, List<T> objects) {
-//		String result = name + ": [";
-//		for (T o : objects)
-//			result += o + ", ";
-//		result += "]";
-//		System.out.println(result);
-//	}
-//
-//	static private void print(String name, Set<Literal> literals) {
-//		String result = name + ": ";
-//		for (Literal literal : literals)
-//			result += literal + ", ";
-//		System.out.println(result);
-//	}
-//
-//	static private void print(String name, int[] intArray) {
-//		String base = name + ": [";
-//		for (int i = 0; i < intArray.length; i++) {
-//			base += intArray[i] + ",";
-//		}
-//		base += "]";
-//		System.out.println(base);
-//	}
-
 	/**
 	 * Checker for positive reliance relation.
 	 * 
@@ -113,10 +90,10 @@ public class Reliance {
 		Rule renamedRule1 = VariableRenamer.rename(rule1, 1);
 		Rule renamedRule2 = VariableRenamer.rename(rule2, 2);
 
-//		System.out.println("rule 1: " + rule1);
-//		System.out.println("rule 2: " + rule2);
-//		System.out.println("rule 1 renamed: " + renamedRule1);
-//		System.out.println("rule 2 renamed: " + renamedRule2);
+		System.out.println("Rule 1: " + rule1);
+		System.out.println("Rule 2: " + rule2);
+		System.out.println("Renamed rule 1: " + renamedRule1);
+		System.out.println("Renamed rule 2: " + renamedRule2);
 
 		List<Literal> positiveBodyLiterals1 = renamedRule1.getPositiveBodyLiterals();
 //		List<Literal> negativeBodyLiterals1 = renamedRule1.getNegativeBodyLiterals();
@@ -125,12 +102,12 @@ public class Reliance {
 //		List<Literal> negativeBodyLiterals2 = renamedRule2.getNegativeBodyLiterals();
 		List<Literal> headLiterals2 = renamedRule2.getHeadAtoms();
 
-//		print("positiveBodyLiterals1: ", positiveBodyLiterals1);
-//		print("negativeBodyLiterals1: ", negativeBodyLiterals1);
-//		print("headLiterals1: ", headLiterals1);
-//		print("positiveBodyLiterals2", positiveBodyLiterals2);
-//		print("negativeBodyLiterals2", negativeBodyLiterals2);
-//		print("headLiterals2: ", headLiterals2);
+//		System.out.println("positiveBodyLiterals1: " + Arrays.toString(positiveBodyLiterals1.toArray()));
+//		System.out.println("negativeBodyLiterals1: " + Arrays.toString(negativeBodyLiterals1.toArray()));
+//		System.out.println("headLiterals1: " + Arrays.toString(headLiterals1.toArray()));
+//		System.out.println("positiveBodyLiterals2" + Arrays.toString(positiveBodyLiterals2.toArray()));
+//		System.out.println("negativeBodyLiterals2" + Arrays.toString(negativeBodyLiterals2.toArray()));
+//		System.out.println("headLiterals2: " + Arrays.toString(headLiterals2.toArray()));
 
 		int sizeHead1 = headLiterals1.size();
 		int sizePositiveBody2 = positiveBodyLiterals2.size();
@@ -139,7 +116,7 @@ public class Reliance {
 
 		for (int[] match : assignment) {
 //			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-//			print("match", match);
+//			System.out.println("Match" + Arrays.toString(match));
 
 			// this could be improved
 			List<Integer> headLiterals11Idx = Assignment.head11Idx(sizeHead1, match);
@@ -147,10 +124,10 @@ public class Reliance {
 			List<Integer> positiveBodyLiterals21Idx = Assignment.body21Idx(sizePositiveBody2, match);
 			List<Integer> positiveBodyLiterals22Idx = Assignment.body22Idx(sizePositiveBody2, match);
 
-//			print("headLiterals11Idx: ", headLiterals11Idx);
-//			print("headLiterals12Idx: ", headLiterals12Idx);
-//			print("positiveBodyLiterals21Idx: ", positiveBodyLiterals21Idx);
-//			print("positiveBodyLiterals22Idx: ", positiveBodyLiterals22Idx);
+//			System.out.println("headLiterals11Idx: " + Arrays.toString(headLiterals11Idx.toArray()));
+//			System.out.println("headLiterals12Idx: " + Arrays.toString(headLiterals12Idx.toArray()));
+//			System.out.println("positiveBodyLiterals21Idx: " + Arrays.toString(positiveBodyLiterals21Idx.toArray()));
+//			System.out.println("positiveBodyLiterals22Idx: " + Arrays.toString(positiveBodyLiterals22Idx.toArray()));
 
 			Unifier unifier = new Unifier(positiveBodyLiterals2, headLiterals1, match);
 //			System.out.println(unifier);
@@ -176,12 +153,12 @@ public class Reliance {
 				Set<Literal> positiveBodyLiterals22 = new HashSet<>();
 				positiveBodyLiterals22Idx.forEach(idx -> positiveBodyLiterals22.add(positiveBodyLiterals2RWU.get(idx)));
 
-//				print("positiveBodyLiterals1: ", positiveBodyLiterals1RWU);
-//				print("headLiterals11: ", headLiterals11);
-//				print("headLiterals12: ", headLiterals12);
-//				print("positiveBodyLiterals21: ", positiveBodyLiterals21);
-//				print("positiveBodyLiterals22: ", positiveBodyLiterals22);
-//				print("headLiterals2RWU: ", headLiterals2RWU);
+//				System.out.println("positiveBodyLiterals1: " + Arrays.toString(positiveBodyLiterals1RWU.toArray()));
+//				System.out.println("headLiterals11: " + Arrays.toString(headLiterals11.toArray()));
+//				System.out.println("headLiterals12: " + Arrays.toString(headLiterals12.toArray()));
+//				System.out.println("positiveBodyLiterals21: " + Arrays.toString(positiveBodyLiterals21.toArray()));
+//				System.out.println("positiveBodyLiterals22: " + Arrays.toString(positiveBodyLiterals22.toArray()));
+//				System.out.println("headLiterals2RWU: " + Arrays.toString(headLiterals2RWU.toArray()));
 
 //				System.out.println(!shareAnyExistentialVariable(headLiterals11, positiveBodyLiterals22));
 //				System.out.println(
