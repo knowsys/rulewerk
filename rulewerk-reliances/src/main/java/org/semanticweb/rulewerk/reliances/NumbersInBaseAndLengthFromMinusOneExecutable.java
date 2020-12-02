@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.reliances;
 
+import java.util.Arrays;
+
 /*-
  * #%L
  * Rulewerk Reliances
@@ -22,17 +24,11 @@ package org.semanticweb.rulewerk.reliances;
 
 public class NumbersInBaseAndLengthFromMinusOneExecutable {
 
-	static private void print(int[] toprint) {
-		System.out.print("[");
-		for (int i = 0; i < toprint.length; i++)
-			System.out.print(toprint[i] + ",");
-		System.out.println("]");
-	}
-
 	static public void main(String args[]) {
 		NumbersInBaseAndLengthFromMinusOne iterator = new NumbersInBaseAndLengthFromMinusOne(3, 3);
 		while (iterator.hasNext()) {
-			print(iterator.next());
+			int[] helper = iterator.next();
+			System.out.println(Arrays.toString(helper));
 		}
 	}
 
