@@ -94,51 +94,54 @@ public class Reliance {
 		System.out.println("Renamed rule 1: " + renamedRule1);
 		System.out.println("Renamed rule 2: " + renamedRule2);
 
-		List<Literal> positiveBodyLiterals1 = renamedRule1.getPositiveBodyLiterals();
-//		List<Literal> negativeBodyLiterals1 = renamedRule1.getNegativeBodyLiterals();
-		List<Literal> headLiterals1 = renamedRule1.getHeadAtoms();
-		List<Literal> positiveBodyLiterals2 = renamedRule2.getPositiveBodyLiterals();
-//		List<Literal> negativeBodyLiterals2 = renamedRule2.getNegativeBodyLiterals();
-		List<Literal> headLiterals2 = renamedRule2.getHeadAtoms();
+		List<Literal> positiveBodyLiteralsRule1 = renamedRule1.getPositiveBodyLiterals();
+//		List<Literal> negativeBodyLiteralsRule1 = renamedRule1.getNegativeBodyLiterals();
+		List<Literal> headAtomsRule1 = renamedRule1.getHeadAtoms();
+		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals();
+//		List<Literal> negativeBodyLiteralsRule2 = renamedRule2.getNegativeBodyLiterals();
+		List<Literal> headAtomsRule2 = renamedRule2.getHeadAtoms();
 
-//		System.out.println("positiveBodyLiterals1: " + Arrays.toString(positiveBodyLiterals1.toArray()));
-//		System.out.println("negativeBodyLiterals1: " + Arrays.toString(negativeBodyLiterals1.toArray()));
-//		System.out.println("headLiterals1: " + Arrays.toString(headLiterals1.toArray()));
-//		System.out.println("positiveBodyLiterals2" + Arrays.toString(positiveBodyLiterals2.toArray()));
-//		System.out.println("negativeBodyLiterals2" + Arrays.toString(negativeBodyLiterals2.toArray()));
-//		System.out.println("headLiterals2: " + Arrays.toString(headLiterals2.toArray()));
+//		System.out.println("positiveBodyLiteralsRule1: " + Arrays.toString(positiveBodyLiteralsRule1.toArray()));
+//		System.out.println("negativeBodyLiteralsRule1: " + Arrays.toString(negativeBodyLiteralsRule1.toArray()));
+//		System.out.println("headLiteralsRule1: " + Arrays.toString(headAtomsRule1.toArray()));
+//		System.out.println("positiveBodyLiteralsRule2" + Arrays.toString(positiveBodyLiteralsRule2.toArray()));
+//		System.out.println("negativeBodyLiteralsRule2" + Arrays.toString(negativeBodyLiteralsRule2.toArray()));
+//		System.out.println("headLiteralsRule2: " + Arrays.toString(headAtomsRule2.toArray()));
 
-		int sizeHead1 = headLiterals1.size();
-		int sizePositiveBody2 = positiveBodyLiterals2.size();
+		int sizeHead1 = headAtomsRule1.size();
+		int sizePositiveBody2 = positiveBodyLiteralsRule2.size();
 
-		AssignmentIterable assignment = new AssignmentIterable(sizePositiveBody2, sizeHead1);
+		/**
+		 * Given two
+		 */
+		AssignmentIterable assignmentIterable = new AssignmentIterable(sizePositiveBody2, sizeHead1);
 
-		for (int[] match : assignment) {
+		for (Assignment assignment : assignmentIterable) {
 //			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-//			System.out.println("Match" + Arrays.toString(match));
+//			System.out.println("Assignment" + assignment);
 
-			// this could be improved
-			List<Integer> headLiterals11Idx = AssignmentIterable.head11Idx(sizeHead1, match);
-			List<Integer> headLiterals12Idx = AssignmentIterable.head12Idx(sizeHead1, match);
-			List<Integer> positiveBodyLiterals21Idx = AssignmentIterable.body21Idx(sizePositiveBody2, match);
-			List<Integer> positiveBodyLiterals22Idx = AssignmentIterable.body22Idx(sizePositiveBody2, match);
+			List<Integer> headLiterals11Idx = assignment.indexesInAssignedListToBeUnified();
+			List<Integer> headLiterals12Idx = assignment.indexesInAssignedListToBeIgnored();
+			List<Integer> positiveBodyLiterals21Idx = assignment.indexesInAssigneeListToBeUnified();
+			List<Integer> positiveBodyLiterals22Idx = assignment.indexesInAssigneeListToBeIgnored();
 
 //			System.out.println("headLiterals11Idx: " + Arrays.toString(headLiterals11Idx.toArray()));
 //			System.out.println("headLiterals12Idx: " + Arrays.toString(headLiterals12Idx.toArray()));
 //			System.out.println("positiveBodyLiterals21Idx: " + Arrays.toString(positiveBodyLiterals21Idx.toArray()));
 //			System.out.println("positiveBodyLiterals22Idx: " + Arrays.toString(positiveBodyLiterals22Idx.toArray()));
 
-			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(positiveBodyLiterals2, headLiterals1, match);
+			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(positiveBodyLiteralsRule2, headAtomsRule1,
+					assignment);
 //			System.out.println(unifier);
 
 			// RWU = renamed with unifier
 			if (unifier.success) {
-				List<Literal> positiveBodyLiterals1RWU = VariableRenamer.rename(positiveBodyLiterals1, unifier);
-//				List<Literal> negativeBodyLiterals1RWU = VariableRenamer.rename(negativeBodyLiterals1, unifier);
-				List<Literal> headLiterals1RWU = VariableRenamer.rename(headLiterals1, unifier);
-				List<Literal> positiveBodyLiterals2RWU = VariableRenamer.rename(positiveBodyLiterals2, unifier);
-//				List<Literal> negativeBodyLiterals2RWU = VariableRenamer.rename(negativeBodyLiterals2, unifier);
-				List<Literal> headLiterals2RWU = VariableRenamer.rename(headLiterals2, unifier);
+				List<Literal> positiveBodyLiterals1RWU = VariableRenamer.rename(positiveBodyLiteralsRule1, unifier);
+//				List<Literal> negativeBodyLiterals1RWU = VariableRenamer.rename(negativeBodyLiteralsRule1, unifier);
+				List<Literal> headLiterals1RWU = VariableRenamer.rename(headAtomsRule1, unifier);
+				List<Literal> positiveBodyLiterals2RWU = VariableRenamer.rename(positiveBodyLiteralsRule2, unifier);
+//				List<Literal> negativeBodyLiterals2RWU = VariableRenamer.rename(negativeBodyLiteralsRule2, unifier);
+				List<Literal> headLiterals2RWU = VariableRenamer.rename(headAtomsRule2, unifier);
 
 				Set<Literal> headLiterals11 = new HashSet<>();
 				headLiterals11Idx.forEach(idx -> headLiterals11.add(headLiterals1RWU.get(idx)));
