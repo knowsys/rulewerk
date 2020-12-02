@@ -171,7 +171,7 @@ public class Reliance {
 //				System.out.println(thereIsSomethingNew(headAtomsRule2RWU, positiveBodyLiteralsRule1RWU, headAtomsRule1RWU));
 				if (!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22)
 						&& !universalVariableInPositionOfExistentialVariable(headAtoms11, positiveBodyLiterals22)
-						&& thereIsSomethingNew(headAtomsRuleRule2RWU, positiveBodyLiteralsRule1RWU, headAtomsRule1RWU)) {
+						&& thereIsSomethingNew(headAtomsRule2RWU, positiveBodyLiteralsRule1RWU, headAtomsRule1RWU)) {
 					return true;
 				}
 			}
