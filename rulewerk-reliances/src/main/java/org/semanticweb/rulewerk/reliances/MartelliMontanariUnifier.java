@@ -30,12 +30,26 @@ import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
+/**
+ * An implementation of the Martelli & Montanari unification algorithm.
+ * 
+ * @note check for other unification algorithms.
+ * @author Larry Gonzalez
+ *
+ */
 public class MartelliMontanariUnifier {
-	// TODO: check if this way of unification can be transformed into another one.
-	// s.t. we unify atoms into another ones, instead of using new things.
 	final HashMap<Term, Term> unifier;
 	boolean success;
 
+	public Term getUnifiedTerm(Term t) {
+		if (unifier.containsKey(t)) {
+			return getUnifiedTerm(unifier.get(t));
+		} else {
+			return t;
+		}
+	}
+
+	// TODO use a cleverer way to print the unifier
 	public String toString() {
 		String result = success + ", {";
 
@@ -65,40 +79,100 @@ public class MartelliMontanariUnifier {
 		}
 	}
 
+	public MartelliMontanariUnifier(Literal first, Literal second) {
+		unifier = new HashMap<>();
+		success = true;
+		unify(first, second);
+	}
+
 	private String getNewFreshVariableName() {
-		return "NewFreshVariable-" + unifier.size();
+		return "FN-" + unifier.size();
 	}
 
 	private void unify(Variable var, Constant cons) {
-		if (unifier.containsKey(var) && !cons.equals(unifier.get(var))) {
-			success = false;
+		if (unifier.containsKey(var)) {
+			Term rep = getUnifiedTerm(var);
+			if (rep.getType() == TermType.EXISTENTIAL_VARIABLE || rep.getType() == TermType.UNIVERSAL_VARIABLE) {
+				// rep is at the end of the chain in the unifier
+				unifier.putIfAbsent(rep, cons);
+			} else {
+				// both should be the same
+				if (!rep.equals(cons)) {
+					success = false;
+				}
+			}
 		} else {
-			unifier.putIfAbsent(var, cons);
+			unifier.put(var, cons);
+		}
+
+	}
+
+	// var1 and var2 are new
+	private void unify(Variable var1, Variable var2) {
+
+		Term rep1 = null;
+		Term rep2 = null;
+		if (unifier.containsKey(var1)) {
+			rep1 = getUnifiedTerm(var1);
+		}
+		if (unifier.containsKey(var2)) {
+			rep2 = getUnifiedTerm(var2);
+		}
+		// both variables have a representative
+		if (rep1 != null && rep2 != null) {
+			if (rep1.isVariable() && rep2.isVariable()) {
+				if (!rep1.getName().equals(rep2.getName())) {
+					insertNewVariableUnification(rep1, rep2);
+				}
+			} else if (rep1.isConstant() && rep2.isVariable()) {
+				unifier.put(rep2, rep1);
+			} else if (rep1.isVariable() && rep2.isConstant()) {
+				unifier.put(rep1, rep2);
+			} else if (rep1.isConstant() && rep2.isConstant()) {
+				if (!rep1.getName().equals(rep2.getName())) {
+					success = false;
+				}
+			}
+		}
+		// var1 has a representative, but var2 does not. we know that var2 is variable
+		else if (rep1 != null && rep2 == null) {
+			if (rep1.isVariable()) {
+				if (!rep1.getName().equals(var2.getName())) {
+					insertNewVariableUnification(rep1, var2);
+				}
+			} else if (rep1.isConstant()) {
+				unifier.put(var2, rep1);
+			}
+		}
+		// var1 does not have a representative, but var2 does.
+		else if (rep1 == null && rep2 != null) {
+			if (rep2.isVariable()) {
+				if (!rep2.getName().equals(var1.getName())) {
+					insertNewVariableUnification(var1, rep2);
+				}
+			} else if (rep2.isConstant()) {
+				unifier.put(var1, rep2);
+			}
+		}
+		// both var1 and var2 does not have a representative
+		else if (rep1 == null && rep2 == null) {
+			insertNewVariableUnification(var1, var2);
 		}
 	}
 
-	// there may be errors here because of existential and universal variables
-	private void unify(Variable var1, Variable var2) {
-		if (unifier.containsKey(var1) && unifier.containsKey(var2)) {
-			if (!unifier.get(var1).equals(unifier.get(var2))) {
-				success = false;
-			}
-		} else if (!unifier.containsKey(var1) && unifier.containsKey(var2)) {
-			unifier.put(var1, unifier.get(var2));
-		} else if (unifier.containsKey(var1) && !unifier.containsKey(var2)) {
-			unifier.put(var2, unifier.get(var1));
+	private void insertNewVariableUnification(Term var1, Term var2) {
+		assert var1.isVariable();
+		assert var2.isVariable();
+		String newVarName = getNewFreshVariableName();
+		if (var1.getType() == TermType.EXISTENTIAL_VARIABLE) {
+			unifier.put(var1, Expressions.makeExistentialVariable(newVarName));
 		} else {
-			String newVarName = getNewFreshVariableName();
-			if (var1.getType() == TermType.EXISTENTIAL_VARIABLE) {
-				unifier.put(var1, Expressions.makeExistentialVariable(newVarName));
-			} else {
-				unifier.put(var1, Expressions.makeUniversalVariable(newVarName));
-			}
-			if (var2.getType() == TermType.EXISTENTIAL_VARIABLE) {
-				unifier.put(var2, Expressions.makeExistentialVariable(newVarName));
-			} else {
-				unifier.put(var2, Expressions.makeUniversalVariable(newVarName));
-			}
+			unifier.put(var1, Expressions.makeUniversalVariable(newVarName));
+		}
+		if (var2.getType() == TermType.EXISTENTIAL_VARIABLE) {
+			unifier.put(var2, Expressions.makeExistentialVariable(newVarName));
+		} else {
+			unifier.put(var2, Expressions.makeUniversalVariable(newVarName));
 		}
 	}
 

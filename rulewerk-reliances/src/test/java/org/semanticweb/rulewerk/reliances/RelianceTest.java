@@ -110,32 +110,32 @@ public class RelianceTest {
 	}
 
 	@Test
-    public void recursiveRuleTest() throws Exception {
-        Rule rule1 = RuleParser.parseRule("P(?Y,!Z) :- P(?X,?Y) .");
+	public void recursiveRuleTest() throws Exception {
+		Rule rule1 = RuleParser.parseRule("P(?Y,!Z) :- P(?X,?Y) .");
 
-        assertTrue(Reliance.positively(rule1, rule1));
-    }
+		assertTrue(Reliance.positively(rule1, rule1));
+	}
 
-    @Test
-    public void transitiveClosure1Test() throws Exception {
-        Rule rule1 = RuleParser.parseRule("Q(?X,?Y) :- P(?X,?Y) .");
-        Rule rule2 = RuleParser.parseRule("Q(?X,?Z) :- Q(?X,?Y), Q(?Y,?Z) .");
+	@Test
+	public void transitiveClosure1Test() throws Exception {
+		Rule rule1 = RuleParser.parseRule("Q(?X,?Y) :- P(?X,?Y) .");
+		Rule rule2 = RuleParser.parseRule("Q(?X,?Z) :- Q(?X,?Y), Q(?Y,?Z) .");
 
-        assertFalse(Reliance.positively(rule1, rule1));
-        assertTrue(Reliance.positively(rule1, rule2));
-        assertFalse(Reliance.positively(rule2, rule1));
-        assertTrue(Reliance.positively(rule2, rule2));
-    }
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertTrue(Reliance.positively(rule1, rule2));
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertTrue(Reliance.positively(rule2, rule2));
+	}
 
-    @Test
-    public void transitiveClosure2Test() throws Exception {
-        Rule rule1 = RuleParser.parseRule("Q(?X,?Y) :- P(?X,?Y) .");
-        Rule rule2 = RuleParser.parseRule("Q(?X,?Z) :- P(?X,?Y), Q(?Y,?Z) .");
+	@Test
+	public void transitiveClosure2Test() throws Exception {
+		Rule rule1 = RuleParser.parseRule("Q(?X,?Y) :- P(?X,?Y) .");
+		Rule rule2 = RuleParser.parseRule("Q(?X,?Z) :- P(?X,?Y), Q(?Y,?Z) .");
 
-        assertFalse(Reliance.positively(rule1, rule1));
-        assertTrue(Reliance.positively(rule1, rule2));
-        assertFalse(Reliance.positively(rule2, rule1));
-        assertTrue(Reliance.positively(rule2, rule2));
-    }
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertTrue(Reliance.positively(rule1, rule2));
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertTrue(Reliance.positively(rule2, rule2));
+	}
 
 }

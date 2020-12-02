@@ -1,5 +1,6 @@
 package org.semanticweb.rulewerk.reliances;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,8 +87,8 @@ public class Reliance {
 	 * @return True if rule2 positively relies on rule1.
 	 */
 	static public boolean positively(Rule rule1, Rule rule2) {
-		Rule renamedRule1 = VariableRenamer.rename(rule1, 1);
-		Rule renamedRule2 = VariableRenamer.rename(rule2, 2);
+		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, 1);
+		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, 2);
 
 //		System.out.println("Rule 1: " + rule1);
 //		System.out.println("Rule 2: " + rule2);
@@ -111,14 +112,11 @@ public class Reliance {
 		int sizeHead1 = headAtomsRule1.size();
 		int sizePositiveBody2 = positiveBodyLiteralsRule2.size();
 
-		/**
-		 * Given two
-		 */
 		AssignmentIterable assignmentIterable = new AssignmentIterable(sizePositiveBody2, sizeHead1);
 
 		for (Assignment assignment : assignmentIterable) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("Assignment: " + assignment);
+//			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+//			System.out.println("Assignment: " + assignment);
 
 			List<Integer> headAtoms11Idx = assignment.indexesInAssignedListToBeUnified();
 			List<Integer> headAtoms12Idx = assignment.indexesInAssignedListToBeIgnored();
@@ -136,12 +134,13 @@ public class Reliance {
 
 			// RWU = renamed with unifier
 			if (unifier.success) {
-				List<Literal> positiveBodyLiterals1RWU = VariableRenamer.rename(positiveBodyLiteralsRule1, unifier);
-//				List<Literal> negativeBodyLiterals1RWU = VariableRenamer.rename(negativeBodyLiteralsRule1, unifier);
-				List<Literal> headAtoms1RWU = VariableRenamer.rename(headAtomsRule1, unifier);
-				List<Literal> positiveBodyLiterals2RWU = VariableRenamer.rename(positiveBodyLiteralsRule2, unifier);
-//				List<Literal> negativeBodyLiterals2RWU = VariableRenamer.rename(negativeBodyLiteralsRule2, unifier);
-				List<Literal> headAtoms2RWU = VariableRenamer.rename(headAtomsRule2, unifier);
+				UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, true);
+				List<Literal> positiveBodyLiterals1RWU = renamer.rename(positiveBodyLiteralsRule1);
+//				List<Literal> negativeBodyLiterals1RWU = renamer.rename(negativeBodyLiteralsRule1);
+				List<Literal> headAtoms1RWU = renamer.rename(headAtomsRule1);
+				List<Literal> positiveBodyLiterals2RWU = renamer.rename(positiveBodyLiteralsRule2);
+//				List<Literal> negativeBodyLiterals2RWU = renamer.rename(negativeBodyLiteralsRule2);
+				List<Literal> headAtoms2RWU = renamer.rename(headAtomsRule2);
 
 				Set<Literal> headAtoms11 = new HashSet<>();
 				headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtoms1RWU.get(idx)));
