@@ -196,7 +196,7 @@ public class MartelliMontanariUnifier {
 
 	@Override
 	public String toString() {
-		return unifier + ", " + success;
+		return success + ", " + unifier;
 	}
 
 }
