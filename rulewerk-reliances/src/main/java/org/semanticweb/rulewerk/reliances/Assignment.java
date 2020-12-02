@@ -2,26 +2,30 @@ package org.semanticweb.rulewerk.reliances;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Assignment {
-	int[] representation;
+	List<Match> matches;
 	int assignedLength;
 	int assigneeLength;
 
 	public Assignment(int[] assignment, int assignedLength, int assigneeLength) {
-		this.representation = Arrays.copyOf(assignment, assignment.length);
+
+		matches = new ArrayList<>();
+		for (int i = 0; i < assignment.length; i++) {
+			if (assignment[i] != -1) {
+				matches.add(new Match(i, assignment[i]));
+			}
+		}
+
 		this.assignedLength = assignedLength;
 		this.assigneeLength = assigneeLength;
 	}
 
 	boolean isValid() {
-		for (int i = 0; i < this.representation.length; i++) {
-			if (this.representation[i] != -1) {
-				return true;
-			}
-		}
-		return false;
+		return matches.size() > 0;
 	}
 
 	/**
@@ -31,13 +35,11 @@ public class Assignment {
 	 *         the unification process.
 	 */
 	List<Integer> indexesInAssignedListToBeUnified() {
-		List<Integer> result = new ArrayList<>();
-		for (int i = 0; i < this.representation.length; i++) {
-			if (!result.contains(this.representation[i]) && this.representation[i] != -1) {
-				result.add(this.representation[i]);
-			}
+		Set<Integer> result = new HashSet<>();
+		for (Match match : matches) {
+			result.add(match.getDestination());
 		}
-		return result;
+		return new ArrayList<>(result);
 	}
 
 	List<Integer> indexesInAssignedListToBeIgnored() {
@@ -45,13 +47,11 @@ public class Assignment {
 	}
 
 	List<Integer> indexesInAssigneeListToBeUnified() {
-		List<Integer> result = new ArrayList<>();
-		for (int i = 0; i < assignedLength; i++) {
-			if (this.representation[i] != -1) {
-				result.add(i);
-			}
+		Set<Integer> result = new HashSet<>();
+		for (Match match : matches) {
+			result.add(match.getOrigin());
 		}
-		return result;
+		return new ArrayList<>(result);
 	}
 
 	List<Integer> indexesInAssigneeListToBeIgnored() {
@@ -59,9 +59,13 @@ public class Assignment {
 
 	}
 
+	public List<Match> getMatches() {
+		return matches;
+	}
+
 	@Override
 	public String toString() {
-		return Arrays.toString(representation) + ", " + assignedLength + ", " + assigneeLength;
+		return Arrays.toString(matches.toArray()) + ", " + assignedLength + ", " + assigneeLength;
 	}
 
 	private List<Integer> complement(int size, List<Integer> of) {
