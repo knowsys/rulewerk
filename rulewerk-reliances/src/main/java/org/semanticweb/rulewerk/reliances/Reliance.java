@@ -137,16 +137,16 @@ public class Reliance {
 				UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, true);
 				List<Literal> positiveBodyLiterals1RWU = renamer.rename(positiveBodyLiteralsRule1);
 //				List<Literal> negativeBodyLiterals1RWU = renamer.rename(negativeBodyLiteralsRule1);
-				List<Literal> headAtoms1RWU = renamer.rename(headAtomsRule1);
+				List<Literal> headAtomsRule1RWU = renamer.rename(headAtomsRule1);
 				List<Literal> positiveBodyLiterals2RWU = renamer.rename(positiveBodyLiteralsRule2);
 //				List<Literal> negativeBodyLiterals2RWU = renamer.rename(negativeBodyLiteralsRule2);
-				List<Literal> headAtoms2RWU = renamer.rename(headAtomsRule2);
+				List<Literal> headAtomsRule2RWU = renamer.rename(headAtomsRule2);
 
 				Set<Literal> headAtoms11 = new HashSet<>();
-				headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtoms1RWU.get(idx)));
+				headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtomsRule1RWU.get(idx)));
 
 				Set<Literal> headAtoms12 = new HashSet<>();
-				headAtoms12Idx.forEach(idx -> headAtoms12.add(headAtoms1RWU.get(idx)));
+				headAtoms12Idx.forEach(idx -> headAtoms12.add(headAtomsRule1RWU.get(idx)));
 
 				Set<Literal> positiveBodyLiterals21 = new HashSet<>();
 				positiveBodyLiterals21Idx.forEach(idx -> positiveBodyLiterals21.add(positiveBodyLiterals2RWU.get(idx)));
@@ -162,16 +162,16 @@ public class Reliance {
 //				System.out.println("Rule2: ");
 //				System.out.println("positiveBodyLiterals21: " + Arrays.toString(positiveBodyLiterals21.toArray()));
 //				System.out.println("positiveBodyLiterals22: " + Arrays.toString(positiveBodyLiterals22.toArray()));
-//				System.out.println("headAtoms2RWU: " + Arrays.toString(headAtoms2RWU.toArray()));
+//				System.out.println("headAtoms2RWU: " + Arrays.toString(headAtomsRule2RWU.toArray()));
 //				System.out.println();
 //
 //				System.out.println(!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22));
 //				System.out.println(
 //						!universalVariableInPositionOfExistentialVariable(headAtoms11, positiveBodyLiterals22));
-//				System.out.println(thereIsSomethingNew(headAtoms2RWU, positiveBodyLiterals1RWU, headAtoms1RWU));
+//				System.out.println(thereIsSomethingNew(headAtomsRule2RWU, positiveBodyLiterals1RWU, headAtomsRule1RWU));
 				if (!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22)
 						&& !universalVariableInPositionOfExistentialVariable(headAtoms11, positiveBodyLiterals22)
-						&& thereIsSomethingNew(headAtoms2RWU, positiveBodyLiterals1RWU, headAtoms1RWU)) {
+						&& thereIsSomethingNew(headAtomsRule2RWU, positiveBodyLiterals1RWU, headAtomsRule1RWU)) {
 					return true;
 				}
 			}
