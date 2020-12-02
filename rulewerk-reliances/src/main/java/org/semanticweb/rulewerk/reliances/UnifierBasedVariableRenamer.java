@@ -28,9 +28,11 @@ import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
+import org.semanticweb.rulewerk.core.model.api.TermType;
 
 /**
  * TODO add documentation
+ * 
  * @author Larry Gonzalez
  *
  */
@@ -40,12 +42,23 @@ public class UnifierBasedVariableRenamer {
 	boolean renameExistentials;
 
 	UnifierBasedVariableRenamer(MartelliMontanariUnifier unifier, boolean renameExistentials) {
+		assert unifier.success;
 		this.unifier = unifier;
 		this.renameExistentials = renameExistentials;
 	}
 
 	private Term rename(Term term) {
-		return unifier.getUnifiedTerm(term);
+		if (term.getType() == TermType.UNIVERSAL_VARIABLE) {
+			return unifier.getUnifiedTerm(term);
+		} else if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
+			if (renameExistentials) {
+				return unifier.getUnifiedTerm(term);
+			} else {
+				return term;
+			}
+		} else {
+			return term;
+		}
 	}
 
 	public Literal rename(Literal literal) {
@@ -60,10 +73,8 @@ public class UnifierBasedVariableRenamer {
 		}
 	}
 
-	public Rule rename(Rule rule) throws Exception {
-		if (!unifier.success) {
-			throw new Exception("unifier did not success");
-		}
+	public Rule rename(Rule rule) {
+		assert unifier.success;
 		List<Literal> newBody = new ArrayList<>();
 		rule.getBody().forEach(literal -> newBody.add(rename(literal)));
 
