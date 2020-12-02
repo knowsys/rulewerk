@@ -49,18 +49,6 @@ public class MartelliMontanariUnifier {
 		}
 	}
 
-	// TODO use a cleverer way to print the unifier
-	public String toString() {
-		String result = success + ", {";
-
-		for (Term t : unifier.keySet()) {
-			result += t + ": " + unifier.get(t) + ", ";
-		}
-
-		result += "}";
-		return result;
-	}
-
 	/**
 	 * An implementation of the Martelli & Montanari unification algorithm. @note
 	 * that this algorithm is commutative.
@@ -204,6 +192,11 @@ public class MartelliMontanariUnifier {
 				unify(terms1.get(i), terms2.get(i));
 			}
 		}
+	}
+
+	@Override
+	public String toString() {
+		return unifier + ", " + success;
 	}
 
 }
