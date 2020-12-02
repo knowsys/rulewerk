@@ -27,14 +27,14 @@ public class AssignmentIterable implements Iterable<Assignment> {
 	AssignmentIterator assignmentIterator;
 
 	private class AssignmentIterator implements Iterator<Assignment> {
-		int assignedLength;
-		int assigneeLength;
+		int originLength;
+		int destinationLength;
 		NumbersInBaseAndLengthFromMinusOne numbers; // base to count
 
-		public AssignmentIterator(int assignedLength, int assigneeLength) {
-			this.assignedLength = assignedLength;
-			this.assigneeLength = assigneeLength;
-			numbers = new NumbersInBaseAndLengthFromMinusOne(assigneeLength, assignedLength);
+		public AssignmentIterator(int originLength, int destinationLength) {
+			this.originLength = originLength;
+			this.destinationLength = destinationLength;
+			numbers = new NumbersInBaseAndLengthFromMinusOne(destinationLength, originLength);
 		}
 
 		@Override
@@ -51,9 +51,9 @@ public class AssignmentIterable implements Iterable<Assignment> {
 		 */
 		@Override
 		public Assignment next() {
-			Assignment assignment = new Assignment(numbers.next(), assignedLength, assigneeLength);
+			Assignment assignment = new Assignment(numbers.next(), originLength, destinationLength);
 			while (!assignment.isValid()) {
-				assignment = new Assignment(numbers.next(), assignedLength, assigneeLength);
+				assignment = new Assignment(numbers.next(), originLength, destinationLength);
 			}
 			return assignment;
 		}
@@ -61,16 +61,15 @@ public class AssignmentIterable implements Iterable<Assignment> {
 	}
 
 	/**
-	 * Given two int's that represent the number of elements in an assigned and
-	 * assignee lists, an Assignment is an array of int's s.t. the position in the
-	 * array indicates the position of the element in the assigned list, and the
-	 * value indicates the position in the assignee list.
+	 * Given two int's that represent the number of elements in an origin and
+	 * destination lists, an Assignment is a List of Matches s.t each match maps
+	 * indexes of the origin list into indexes of the destination list.
 	 * 
-	 * @param assignedLenght number of assigned objects
-	 * @param assigneeLenght number of assignee objects
+	 * @param originLength      number of assigned objects
+	 * @param destinationLength number of assignee objects
 	 */
-	public AssignmentIterable(int assignedLength, int assigneeLength) {
-		assignmentIterator = new AssignmentIterator(assignedLength, assigneeLength);
+	public AssignmentIterable(int originLength, int destinationLength) {
+		assignmentIterator = new AssignmentIterator(originLength, destinationLength);
 	}
 
 	@Override

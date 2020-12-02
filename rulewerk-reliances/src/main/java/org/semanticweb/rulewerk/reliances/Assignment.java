@@ -29,8 +29,6 @@ public class Assignment {
 	}
 
 	/**
-	 * @param firstContainerLenght is used in the method complement.
-	 * @param assignment
 	 * @return list of positions in the first container that are going to be used in
 	 *         the unification process.
 	 */
@@ -59,6 +57,11 @@ public class Assignment {
 
 	}
 
+	/**
+	 * Getter of matches
+	 * 
+	 * @return list of Matches
+	 */
 	public List<Match> getMatches() {
 		return matches;
 	}
