@@ -20,19 +20,21 @@ package org.semanticweb.rulewerk.reliances;
  * #L%
  */
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-public class AssignmentIterable implements Iterable<int[]> {
+public class AssignmentIterable implements Iterable<Assignment> {
 
 	AssignmentIterator assignmentIterator;
 
-	private class AssignmentIterator implements Iterator<int[]> {
+	private class AssignmentIterator implements Iterator<Assignment> {
+		int assignedLength;
+		int assigneeLength;
 		NumbersInBaseAndLengthFromMinusOne numbers; // base to count
 
-		public AssignmentIterator(int assign, int assignTo) {
-			numbers = new NumbersInBaseAndLengthFromMinusOne(assignTo, assign);
+		public AssignmentIterator(int assignedLength, int assigneeLength) {
+			this.assignedLength = assignedLength;
+			this.assigneeLength = assigneeLength;
+			numbers = new NumbersInBaseAndLengthFromMinusOne(assigneeLength, assignedLength);
 		}
 
 		@Override
@@ -40,72 +42,40 @@ public class AssignmentIterable implements Iterable<int[]> {
 			return !numbers.stop;
 		}
 
+		/**
+		 * Returns an Assignment of the positions in the second container to the
+		 * positions in the first container. The position in the array ([i]) represents
+		 * the location in the second container (what is being mapped). The value in the
+		 * array at a given position (array[i]) represents the location in the first
+		 * container (what is mapped to).
+		 */
 		@Override
-		public int[] next() {
-			int[] helper = numbers.next();
-			while (!valid(helper)) {
-				helper = numbers.next();
+		public Assignment next() {
+			Assignment assignment = new Assignment(numbers.next(), assignedLength, assigneeLength);
+			while (!assignment.isValid()) {
+				assignment = new Assignment(numbers.next(), assignedLength, assigneeLength);
 			}
-			return helper;
+			return assignment;
 		}
 
-		private boolean valid(int[] representation) {
-			for (int i = 0; i < representation.length; i++) {
-				if (representation[i] != -1) {
-					return true;
-				}
-			}
-			return false;
-		}
 	}
 
-	public AssignmentIterable(int assign, int assignTo) {
-		assignmentIterator = new AssignmentIterator(assign, assignTo);
+	/**
+	 * Given two int's that represent the number of elements in an assigned and
+	 * assignee lists, an Assignment is an array of int's s.t. the position in the
+	 * array indicates the position of the element in the assigned list, and the
+	 * value indicates the position in the assignee list.
+	 * 
+	 * @param assignedLenght number of assigned objects
+	 * @param assigneeLenght number of assignee objects
+	 */
+	public AssignmentIterable(int assignedLength, int assigneeLength) {
+		assignmentIterator = new AssignmentIterator(assignedLength, assigneeLength);
 	}
 
 	@Override
-	public Iterator<int[]> iterator() {
+	public Iterator<Assignment> iterator() {
 		return assignmentIterator;
-	}
-
-	private static List<Integer> complement(int size, List<Integer> of) {
-		List<Integer> result = new ArrayList<>();
-		for (int i = 0; i < size; i++) {
-			if (!of.contains(i)) {
-				result.add(i);
-			}
-		}
-		return result;
-	}
-
-	public static List<Integer> head11Idx(int headSize, int[] assignment) {
-		List<Integer> result = new ArrayList<>();
-		for (int i = 0; i < assignment.length; i++) {
-			if (!result.contains(assignment[i]) && assignment[i] != -1) {
-				result.add(assignment[i]);
-			}
-		}
-		return result;
-	}
-
-	public static List<Integer> head12Idx(int headSize, int[] assignment) {
-		return complement(headSize, head11Idx(headSize, assignment));
-	}
-
-	public static List<Integer> body21Idx(int bodySize, int[] assignment) {
-		List<Integer> result = new ArrayList<>();
-
-		for (int i = 0; i < bodySize; i++) {
-			if (assignment[i] != -1) {
-				result.add(i);
-			}
-		}
-
-		return result;
-	}
-
-	public static List<Integer> body22Idx(int bodySize, int[] assignment) {
-		return complement(bodySize, body21Idx(bodySize, assignment));
 	}
 
 }

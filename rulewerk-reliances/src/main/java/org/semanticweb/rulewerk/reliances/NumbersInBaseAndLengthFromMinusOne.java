@@ -23,15 +23,25 @@ package org.semanticweb.rulewerk.reliances;
 import java.util.Arrays;
 import java.util.Iterator;
 
+/**
+ * A class to iterate over all possible combination of numbers ([-1,
+ * maxValue-1]) of size length. As an example, these are all the combinations of
+ * numbers up to 3 of length 2: [-1, -1], [0, -1], [1, -1], [2, -1], [-1, 0],
+ * [0, 0], [1, 0], [2, 0], [-1, 1], [0, 1], [1, 1], [2, 1], [-1, 2], [0, 2], [1,
+ * 2], [2, 2]
+ * 
+ * @author Larry Gonzalez
+ *
+ */
 public class NumbersInBaseAndLengthFromMinusOne implements Iterator<int[]> {
-	int base;
+	int maxValue;
 	int length;
 	int[] representation;
 	int[] start;
 	boolean stop;
 
-	public NumbersInBaseAndLengthFromMinusOne(int base, int length) {
-		this.base = base;
+	public NumbersInBaseAndLengthFromMinusOne(int maxValue, int length) {
+		this.maxValue = maxValue;
 		this.length = length;
 		this.representation = new int[length];
 		this.start = new int[length];
@@ -56,7 +66,7 @@ public class NumbersInBaseAndLengthFromMinusOne implements Iterator<int[]> {
 
 	private void addOneToPointer(int idx) {
 		if (idx < length) {
-			if (representation[idx] == base - 1) {
+			if (representation[idx] == maxValue - 1) {
 				representation[idx] = -1;
 				addOneToPointer(idx + 1);
 			} else {
