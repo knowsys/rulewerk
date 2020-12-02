@@ -111,24 +111,24 @@ public class Reliance {
 		int sizeHead1 = headLiterals1.size();
 		int sizePositiveBody2 = positiveBodyLiterals2.size();
 
-		Assignment assignment = new Assignment(sizePositiveBody2, sizeHead1);
+		AssignmentIterable assignment = new AssignmentIterable(sizePositiveBody2, sizeHead1);
 
 		for (int[] match : assignment) {
 //			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 //			System.out.println("Match" + Arrays.toString(match));
 
 			// this could be improved
-			List<Integer> headLiterals11Idx = Assignment.head11Idx(sizeHead1, match);
-			List<Integer> headLiterals12Idx = Assignment.head12Idx(sizeHead1, match);
-			List<Integer> positiveBodyLiterals21Idx = Assignment.body21Idx(sizePositiveBody2, match);
-			List<Integer> positiveBodyLiterals22Idx = Assignment.body22Idx(sizePositiveBody2, match);
+			List<Integer> headLiterals11Idx = AssignmentIterable.head11Idx(sizeHead1, match);
+			List<Integer> headLiterals12Idx = AssignmentIterable.head12Idx(sizeHead1, match);
+			List<Integer> positiveBodyLiterals21Idx = AssignmentIterable.body21Idx(sizePositiveBody2, match);
+			List<Integer> positiveBodyLiterals22Idx = AssignmentIterable.body22Idx(sizePositiveBody2, match);
 
 //			System.out.println("headLiterals11Idx: " + Arrays.toString(headLiterals11Idx.toArray()));
 //			System.out.println("headLiterals12Idx: " + Arrays.toString(headLiterals12Idx.toArray()));
 //			System.out.println("positiveBodyLiterals21Idx: " + Arrays.toString(positiveBodyLiterals21Idx.toArray()));
 //			System.out.println("positiveBodyLiterals22Idx: " + Arrays.toString(positiveBodyLiterals22Idx.toArray()));
 
-			Unifier unifier = new Unifier(positiveBodyLiterals2, headLiterals1, match);
+			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(positiveBodyLiterals2, headLiterals1, match);
 //			System.out.println(unifier);
 
 			// RWU = renamed with unifier

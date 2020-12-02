@@ -30,7 +30,7 @@ import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
-public class Unifier {
+public class MartelliMontanariUnifier {
 	// TODO: check if this way of unification can be transformed into another one.
 	// s.t. we unify atoms into another ones, instead of using new things.
 	final HashMap<Term, Term> unifier;
@@ -47,12 +47,22 @@ public class Unifier {
 		return result;
 	}
 
-	public Unifier(List<Literal> atomsInBody2, List<Literal> atomsInHead1, int[] assignment) {
+	/**
+	 * An implementation of the Martelli & Montanari unification algorithm. @note
+	 * that this algorithm is commutative.
+	 * 
+	 * @param first      List of Literals to be unified
+	 * @param second     List of Literals to be unified
+	 * @param assignment of Literal positions where [i] is the location in the first
+	 *                   list while assignment[i] is the location in the second
+	 *                   list. @see AssignmentIterable.AssignmentIterarot.next
+	 */
+	public MartelliMontanariUnifier(List<Literal> first, List<Literal> second, int[] assignment) {
 		unifier = new HashMap<>();
 		success = true;
 		for (int i = 0; i < assignment.length; i++) {
 			if (assignment[i] != -1) {
-				unify(atomsInBody2.get(i), atomsInHead1.get(assignment[i]));
+				unify(first.get(i), second.get(assignment[i]));
 			}
 		}
 	}
@@ -124,5 +134,4 @@ public class Unifier {
 		}
 	}
 
-	// what other methods an unifier should have?
 }

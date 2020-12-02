@@ -87,7 +87,7 @@ public class VariableRenamer {
 	}
 
 	// this is wrong, I need to close it over
-	static private Term rename(Term term, Unifier unifier) {
+	static private Term rename(Term term, MartelliMontanariUnifier unifier) {
 		if (unifier.unifier.containsKey(term)) {
 			Term value = unifier.unifier.get(term);
 			if (unifier.unifier.containsKey(value)) {
@@ -100,7 +100,7 @@ public class VariableRenamer {
 		}
 	}
 
-	static public Literal rename(Literal literal, Unifier unifier) {
+	static public Literal rename(Literal literal, MartelliMontanariUnifier unifier) {
 		List<Term> newTerms = new ArrayList<>();
 		for (Term term : literal.getArguments()) {
 			newTerms.add(rename(term, unifier));
@@ -112,7 +112,7 @@ public class VariableRenamer {
 		}
 	}
 
-	static public Rule rename(Rule rule, Unifier unifier) throws Exception {
+	static public Rule rename(Rule rule, MartelliMontanariUnifier unifier) throws Exception {
 		if (!unifier.success) {
 			throw new Exception("unifier did not success");
 		}
@@ -125,7 +125,7 @@ public class VariableRenamer {
 		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
 	}
 
-	static public List<Literal> rename(List<Literal> literals, Unifier unifier) {
+	static public List<Literal> rename(List<Literal> literals, MartelliMontanariUnifier unifier) {
 		List<Literal> result = new ArrayList<>();
 		literals.forEach(literal -> result.add(rename(literal, unifier)));
 		return result;
