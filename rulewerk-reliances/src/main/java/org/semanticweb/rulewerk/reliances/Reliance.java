@@ -71,10 +71,10 @@ public class Reliance {
 
 	}
 
-	static private boolean thereIsSomethingNew(List<Literal> headAtoms2, List<Literal> positiveLiterals1,
+	static private boolean isThereSomethingNew(List<Literal> headAtoms2, List<Literal> positiveBodyLiterals1,
 			List<Literal> headAtoms1) {
 		Set<Literal> copyHeadAtoms2 = new HashSet<>(headAtoms2);
-		positiveLiterals1.forEach(literal -> copyHeadAtoms2.remove(literal));
+		positiveBodyLiterals1.forEach(literal -> copyHeadAtoms2.remove(literal));
 		headAtoms1.forEach(literal -> copyHeadAtoms2.remove(literal));
 		return !copyHeadAtoms2.isEmpty();
 	}
@@ -149,29 +149,31 @@ public class Reliance {
 				headAtoms12Idx.forEach(idx -> headAtoms12.add(headAtomsRule1RWU.get(idx)));
 
 				Set<Literal> positiveBodyLiterals21 = new HashSet<>();
-				positiveBodyLiterals21Idx.forEach(idx -> positiveBodyLiterals21.add(positiveBodyLiteralsRule2RWU.get(idx)));
+				positiveBodyLiterals21Idx
+						.forEach(idx -> positiveBodyLiterals21.add(positiveBodyLiteralsRule2RWU.get(idx)));
 
 				Set<Literal> positiveBodyLiterals22 = new HashSet<>();
-				positiveBodyLiterals22Idx.forEach(idx -> positiveBodyLiterals22.add(positiveBodyLiteralsRule2RWU.get(idx)));
+				positiveBodyLiterals22Idx
+						.forEach(idx -> positiveBodyLiterals22.add(positiveBodyLiteralsRule2RWU.get(idx)));
 
 //				System.out.println("Rule1: ");
-//				System.out.println("positiveBodyLiterals1: " + Arrays.toString(positiveBodyLiteralsRule1RWU.toArray()));
+//				System.out.println("positiveBodyLiteralsRule1: " + Arrays.toString(positiveBodyLiteralsRule1RWU.toArray()));
 //				System.out.println("headAtoms11: " + Arrays.toString(headAtoms11.toArray()));
 //				System.out.println("headAtoms12: " + Arrays.toString(headAtoms12.toArray()));
 //				System.out.println();
 //				System.out.println("Rule2: ");
 //				System.out.println("positiveBodyLiterals21: " + Arrays.toString(positiveBodyLiterals21.toArray()));
 //				System.out.println("positiveBodyLiterals22: " + Arrays.toString(positiveBodyLiterals22.toArray()));
-//				System.out.println("headAtoms2RWU: " + Arrays.toString(headAtomsRule2RWU.toArray()));
+//				System.out.println("headAtomRules2RWU: " + Arrays.toString(headAtomsRule2RWU.toArray()));
 //				System.out.println();
 //
 //				System.out.println(!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22));
 //				System.out.println(
 //						!universalVariableInPositionOfExistentialVariable(headAtoms11, positiveBodyLiterals22));
-//				System.out.println(thereIsSomethingNew(headAtomsRule2RWU, positiveBodyLiteralsRule1RWU, headAtomsRule1RWU));
+//				System.out.println(isThereSomethingNew(headAtomsRule2RWU, positiveBodyLiteralsRule1RWU, headAtomsRule1RWU));
 				if (!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22)
 						&& !universalVariableInPositionOfExistentialVariable(headAtoms11, positiveBodyLiterals22)
-						&& thereIsSomethingNew(headAtomsRule2RWU, positiveBodyLiteralsRule1RWU, headAtomsRule1RWU)) {
+						&& isThereSomethingNew(headAtomsRule2RWU, positiveBodyLiteralsRule1RWU, headAtomsRule1RWU)) {
 					return true;
 				}
 			}
