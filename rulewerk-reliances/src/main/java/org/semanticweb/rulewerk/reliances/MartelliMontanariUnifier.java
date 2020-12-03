@@ -41,12 +41,31 @@ public class MartelliMontanariUnifier {
 	final HashMap<Term, Term> unifier;
 	boolean success;
 
-	public Term getUnifiedTerm(Term t) {
-		if (unifier.containsKey(t)) {
-			return getUnifiedTerm(unifier.get(t));
+	/**
+	 * 
+	 * @param key to search in the unifier
+	 * @return the leaf of the key
+	 */
+	Term getValue(Term key) {
+		if (unifier.containsKey(key)) {
+			return getValue(unifier.get(key));
 		} else {
-			return t;
+			return key;
 		}
+	}
+
+	/**
+	 * 
+	 * @param value to search in the unifier
+	 * @return the root key of the value
+	 */
+	Term getKey(Term value) {
+		for (Term key : unifier.keySet()) {
+			if (unifier.get(key) == value) {
+				return getKey(key);
+			}
+		}
+		return value;
 	}
 
 	/**
@@ -79,7 +98,7 @@ public class MartelliMontanariUnifier {
 
 	private void unify(Variable var, Constant cons) {
 		if (unifier.containsKey(var)) {
-			Term rep = getUnifiedTerm(var);
+			Term rep = getValue(var);
 			if (rep.getType() == TermType.EXISTENTIAL_VARIABLE || rep.getType() == TermType.UNIVERSAL_VARIABLE) {
 				// rep is at the end of the chain in the unifier
 				unifier.putIfAbsent(rep, cons);
@@ -101,10 +120,10 @@ public class MartelliMontanariUnifier {
 		Term rep1 = null;
 		Term rep2 = null;
 		if (unifier.containsKey(var1)) {
-			rep1 = getUnifiedTerm(var1);
+			rep1 = getValue(var1);
 		}
 		if (unifier.containsKey(var2)) {
-			rep2 = getUnifiedTerm(var2);
+			rep2 = getValue(var2);
 		}
 		// both variables have a representative
 		if (rep1 != null && rep2 != null) {
@@ -126,7 +145,8 @@ public class MartelliMontanariUnifier {
 		else if (rep1 != null && rep2 == null) {
 			if (rep1.isVariable()) {
 				if (!rep1.getName().equals(var2.getName())) {
-					insertNewVariableUnification(rep1, var2);
+//					insertNewVariableUnification(rep1, var2);
+					insertUnification(var2, rep1);
 				}
 			} else if (rep1.isConstant()) {
 				unifier.put(var2, rep1);
@@ -136,7 +156,8 @@ public class MartelliMontanariUnifier {
 		else if (rep1 == null && rep2 != null) {
 			if (rep2.isVariable()) {
 				if (!rep2.getName().equals(var1.getName())) {
-					insertNewVariableUnification(var1, rep2);
+//					insertNewVariableUnification(var1, rep2);
+					insertUnification(var1, rep2);
 				}
 			} else if (rep2.isConstant()) {
 				unifier.put(var1, rep2);
@@ -164,7 +185,19 @@ public class MartelliMontanariUnifier {
 		}
 	}
 
+	private void insertUnification(Term var, Term rep) {
+		assert var.isVariable();
+		assert rep.isVariable();
+		if (var.getType() == TermType.EXISTENTIAL_VARIABLE) {
+			unifier.put(var, Expressions.makeExistentialVariable(rep.getName()));
+		} else {
+			unifier.put(var, Expressions.makeUniversalVariable(rep.getName()));
+		}
+	}
+
 	private void unify(Term term1, Term term2) {
+//		System.out.println(term1.getClass() + " " + term1);
+//		System.out.println(term2.getClass() + " " + term2);
 		if (term1.isConstant() && term2.isConstant()) {
 			if (term1.equals(term2)) {
 				return;
