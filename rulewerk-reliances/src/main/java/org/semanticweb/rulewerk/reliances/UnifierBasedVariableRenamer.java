@@ -49,10 +49,10 @@ public class UnifierBasedVariableRenamer {
 
 	private Term rename(Term term) {
 		if (term.getType() == TermType.UNIVERSAL_VARIABLE) {
-			return unifier.getUnifiedTerm(term);
+			return unifier.getValue(term);
 		} else if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
 			if (renameExistentials) {
-				return unifier.getUnifiedTerm(term);
+				return unifier.getValue(term);
 			} else {
 				return term;
 			}
