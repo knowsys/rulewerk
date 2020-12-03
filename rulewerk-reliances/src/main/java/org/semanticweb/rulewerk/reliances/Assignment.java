@@ -28,6 +28,10 @@ public class Assignment {
 		return matches.size() > 0;
 	}
 
+	boolean isValidForBCQ() {
+		return matches.size() == assignedLength;
+	}
+
 	/**
 	 * @return list of positions in the first container that are going to be used in
 	 *         the unification process.
