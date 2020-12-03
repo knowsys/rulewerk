@@ -42,9 +42,9 @@ public class SuffixBasedVariableRenamer {
 	 */
 	static private Term rename(Term term, String suffix) {
 		if (term.getType() == TermType.UNIVERSAL_VARIABLE) {
-			return Expressions.makeUniversalVariable(term.getName() + "000" + suffix);
+			return Expressions.makeUniversalVariable(term.getName() + "." + suffix);
 		} else if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
-			return Expressions.makeExistentialVariable(term.getName() + "000" + suffix);
+			return Expressions.makeExistentialVariable(term.getName() + "." + suffix);
 		} else {
 			return term;
 		}
