@@ -64,8 +64,15 @@ public class RestraintTest {
 	}
 
 	@Test
-	public void simpleSelfRestrainingTest() throws Exception {
+	public void singleUnconnectedPieceTest() throws Exception {
 		Rule rule1 = RuleParser.parseRule("b(!Y) :- a(?X) .");
+
+		assertFalse(Restraint.restraint(rule1, rule1));
+	}
+
+	@Test
+	public void unconnectedPieceTest() throws Exception {
+		Rule rule1 = RuleParser.parseRule("b(?X),c(!Y) :- a(?X) .");
 
 		assertTrue(Restraint.restraint(rule1, rule1));
 	}
@@ -88,7 +95,7 @@ public class RestraintTest {
 
 		assertFalse(Restraint.restraint(rule1, rule1));
 		assertFalse(Restraint.restraint(rule1, rule2));
-		assertFalse(Restraint.restraint(rule2, rule1));
+		assertTrue(Restraint.restraint(rule2, rule1));
 		assertFalse(Restraint.restraint(rule2, rule2));
 	}
 
@@ -97,8 +104,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("q(!Y,?X), q(?X,?Z) :- p(?X,?Z) .");
 		Rule rule2 = RuleParser.parseRule("q(?X,!Y), s(!Y) :- r(?X) .");
 
-		assertFalse(Restraint.restraint(rule1, rule1));
-		assertTrue(Restraint.restraint(rule1, rule2));
+		assertTrue(Restraint.restraint(rule1, rule1));
+		assertFalse(Restraint.restraint(rule1, rule2));
 		assertFalse(Restraint.restraint(rule2, rule1));
 		assertFalse(Restraint.restraint(rule2, rule2));
 	}
@@ -110,22 +117,8 @@ public class RestraintTest {
 
 		assertFalse(Restraint.restraint(rule1, rule1));
 		assertFalse(Restraint.restraint(rule1, rule2));
-		assertFalse(Restraint.restraint(rule2, rule1));
+		assertTrue(Restraint.restraint(rule2, rule1));
 		assertTrue(Restraint.restraint(rule2, rule2));
-	}
-
-	@Test
-	public void independentPieces01Test() throws Exception {
-		Rule rule1 = RuleParser.parseRule("q(!Y) :- p(?X) .");
-
-		assertTrue(Restraint.restraint(rule1, rule1));
-	}
-
-	@Test
-	public void independentPieces02Test() throws Exception {
-		Rule rule1 = RuleParser.parseRule("q(?X),r(!Y) :- p(?X) .");
-
-		assertTrue(Restraint.restraint(rule1, rule1));
 	}
 
 	@Test
