@@ -82,9 +82,8 @@ public class SelfRestraint {
 	 * @return True if the rule restraints itself.
 	 */
 	static public boolean restraint(Rule rule) {
-
-		System.out.println("Rule : " + rule);
-		System.out.println();
+//		System.out.println("Rule : " + rule);
+//		System.out.println();
 
 		List<Literal> headAtoms = rule.getHeadAtoms();
 		int headSize = headAtoms.size();
