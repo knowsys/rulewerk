@@ -33,28 +33,47 @@ import org.semanticweb.rulewerk.core.model.api.TermType;
 public class SuffixBasedVariableRenamer {
 
 	/**
-	 * If the term is an universal or existential variable, then rename it adding
-	 * "000" and a suffix.
-	 * 
-	 * @param term to be renamed
-	 * @param suffix to concatenate to the variable names (after "000")
-	 * @return a renamed Term, if it is variable, or a constant with the same name.
+	 * String to concatenate the old variable name with the suffix.
 	 */
-	static private Term rename(Term term, String suffix) {
-		if (term.getType() == TermType.UNIVERSAL_VARIABLE) {
-			return Expressions.makeUniversalVariable(term.getName() + "." + suffix);
-		} else if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
-			return Expressions.makeExistentialVariable(term.getName() + "." + suffix);
-		} else {
-			return term;
-		}
+	static String splitter = "-";
+
+	/**
+	 * Rename all the variables in the rule by concatenating the old variable name
+	 * with {@code splitter} and suffix.
+	 * 
+	 * @param rule which its variables are going to be renamed.
+	 * @param idx  suffix to concatenate to the variable names
+	 * @return new Rule with renamed variable names.
+	 */
+	static public Rule rename(Rule rule, int suffix) {
+		return rename(rule, String.valueOf(suffix));
 	}
 
 	/**
-	 * Rename all the variables present in literal with the sufix "000" and suffix.
+	 * Rename all the variables in the rule with the concatenation of old variable
+	 * name, {@code splitter}, and suffix.
+	 * 
+	 * @param rule which its variables are going to be renamed.
+	 * @param idx  suffix to concatenate to the variable names
+	 * @return new Rule with renamed variable names.
+	 */
+	static public Rule rename(Rule rule, String suffix) {
+		List<Literal> newBody = new ArrayList<>();
+		rule.getBody().forEach(literal -> newBody.add(rename(literal, suffix)));
+
+		List<PositiveLiteral> newHead = new ArrayList<>();
+		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) rename(literal, suffix)));
+
+		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
+	}
+
+	/**
+	 * Rename all the variables present in literal with the concatenation of old
+	 * variable name, {@code splitter}, and suffix.
 	 * 
 	 * @param literal which its variables are going to be renamed.
-	 * @param suffix to concatenate to the variable names (after "000")
+	 * @param idx     suffix to concatenate to the variable names (after
+	 *                {@code splitter})
 	 * @return a new Literal with renamed variables.
 	 */
 	static private Literal rename(Literal literal, String suffix) {
@@ -69,25 +88,22 @@ public class SuffixBasedVariableRenamer {
 		}
 	}
 
-	static public Rule rename(Rule rule, int suffix) {
-		return rename(rule, String.valueOf(suffix));
-	}
-	
 	/**
-	 * Rename all the variables in the rule by concatenating "000" and suffix.
+	 * If the term is a variable, then rename it with the concatenation of old name,
+	 * {@code splitter}, and suffix.
 	 * 
-	 * @param rule which its variables are going to be renamed.
-	 * @param idx  suffix to concatenate to the variable names (after "000")
-	 * @return new Rule with renamed variable names.
+	 * @param term to be renamed
+	 * @param idx  suffix to concatenate to the variable names
+	 * @return a renamed Term, if it is variable, or a constant with the same name.
 	 */
-	static public Rule rename(Rule rule, String suffix) {
-		List<Literal> newBody = new ArrayList<>();
-		rule.getBody().forEach(literal -> newBody.add(rename(literal, suffix)));
-
-		List<PositiveLiteral> newHead = new ArrayList<>();
-		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) rename(literal, suffix)));
-
-		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
+	static private Term rename(Term term, String suffix) {
+		if (term.getType() == TermType.UNIVERSAL_VARIABLE) {
+			return Expressions.makeUniversalVariable(term.getName() + splitter + suffix);
+		} else if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
+			return Expressions.makeExistentialVariable(term.getName() + splitter + suffix);
+		} else {
+			return term;
+		}
 	}
 
 }
