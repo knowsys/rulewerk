@@ -1,6 +1,6 @@
 package org.semanticweb.rulewerk.core.model.api;
 
-import java.util.List;
+import java.util.Set;
 
 /*-
  * #%L
@@ -53,6 +53,6 @@ public interface Rule extends SyntaxObject, Statement {
 	 *
 	 * @return List of Piece
 	 */
-	List<Piece> getPieces();
+	Set<Piece> getPieces();
 
 }

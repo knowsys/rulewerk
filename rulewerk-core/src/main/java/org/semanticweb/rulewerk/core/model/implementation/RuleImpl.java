@@ -135,7 +135,7 @@ public class RuleImpl implements Rule {
 	}
 
 	@Override
-	public List<Piece> getPieces() {
+	public Set<Piece> getPieces() {
 
 		List<PositiveLiteral> literals = getHead().getLiterals();
 
@@ -158,13 +158,13 @@ public class RuleImpl implements Rule {
 			}
 		}
 
-		List<Piece> result = new ArrayList<>();
+		Set<Piece> result = new HashSet<>();
 		Set<PositiveLiteral> visitedLiterals = new HashSet<>();
 
 		for (PositiveLiteral literal : literals) {
 			if (!visitedLiterals.contains(literal)) {
 				Set<PositiveLiteral> closure = g.getReachableNodes(literal);
-				result.add(new PieceImpl(new ConjunctionImpl<PositiveLiteral>(literals)));
+				result.add(new PieceImpl(new ConjunctionImpl<PositiveLiteral>(new ArrayList<>(closure))));
 				visitedLiterals.addAll(closure);
 			}
 		}
