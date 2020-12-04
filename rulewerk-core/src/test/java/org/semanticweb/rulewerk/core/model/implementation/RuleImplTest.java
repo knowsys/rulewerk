@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
@@ -57,6 +58,7 @@ public class RuleImplTest {
 	final LanguageStringConstantImpl strConTen = new LanguageStringConstantImpl("T", "en");
 
 	final PositiveLiteral posLitPUniX = Expressions.makePositiveLiteral("p", uniX);
+	final PositiveLiteral posLitQUniX = Expressions.makePositiveLiteral("q", uniX);
 	final PositiveLiteral posLitQUniY = Expressions.makePositiveLiteral("q", uniY);
 	final PositiveLiteral posLitRUniX = Expressions.makePositiveLiteral("r", uniX);
 
@@ -167,29 +169,46 @@ public class RuleImplTest {
 	}
 
 	@Test
+	public void getPieces00() {
+
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniX);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitQUniX);
+
+		final Rule rule = new RuleImpl(head, body);
+
+		Set<Piece> pieces = rule.getPieces();
+		System.out.println(pieces);
+		assertEquals(pieces.size(), 1);
+		assertTrue(pieces.contains(new PieceImpl(head)));
+	}
+
+	@Test
 	public void getPieces01() {
 
 		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniXExtY, posLitQUniXExtY);
 
-		final Rule rule1 = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
+		final Rule rule = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
 
-		assertEquals(rule1.getPieces().get(0), new PieceImpl(head));
-
+		Set<Piece> pieces = rule.getPieces();
+		System.out.println(pieces);
+		assertEquals(pieces.size(), 1);
+		assertTrue(pieces.contains(new PieceImpl(head)));
 	}
-	
+
 	@Test
 	public void getPieces02() {
 
 		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniXExtY, posLitPUniXExtZ);
 
-		final Rule rule1 = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
+		final Rule rule = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
 
 		Piece piece1 = new PieceImpl(Expressions.makePositiveConjunction(posLitPUniXExtY));
 		Piece piece2 = new PieceImpl(Expressions.makePositiveConjunction(posLitPUniXExtZ));
-		
-		assertTrue(rule1.getPieces().contains(piece1));
-		assertTrue(rule1.getPieces().contains(piece2));
 
+		Set<Piece> pieces = rule.getPieces();
+		assertEquals(pieces.size(), 2);
+		assertTrue(pieces.contains(piece1));
+		assertTrue(pieces.contains(piece2));
 	}
 
 }
