@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.utils;
+package org.semanticweb.rulewerk.core.utils;
 
 /*-
  * #%L
@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.semanticweb.rulewerk.utils.Graph;
+import org.semanticweb.rulewerk.core.utils.Graph;
 
 public class GraphTest {
 

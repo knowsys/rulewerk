@@ -26,7 +26,6 @@
 		<module>rulewerk-commands</module>
 		<module>rulewerk-examples</module>
 		<module>rulewerk-client</module>
-		<module>rulewerk-utils</module>
 		<module>coverage</module>
 	</modules>
 

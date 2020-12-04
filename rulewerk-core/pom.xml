@@ -15,11 +15,4 @@
 
 	<name>Rulewerk Core Components</name>
 	<description>Core components of Rulewerk: reasoner interface and model</description>
-	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>rulewerk-utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
 </project>

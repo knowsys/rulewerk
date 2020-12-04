@@ -38,7 +38,7 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.StatementVisitor;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
-import org.semanticweb.rulewerk.utils.Graph;
+import org.semanticweb.rulewerk.core.utils.Graph;
 
 /**
  * Implementation for {@link Rule}. Represents rules with non-empty heads and
