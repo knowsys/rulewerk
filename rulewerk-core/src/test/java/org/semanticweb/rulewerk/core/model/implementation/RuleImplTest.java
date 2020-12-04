@@ -33,6 +33,7 @@ import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.NegativeLiteral;
+import org.semanticweb.rulewerk.core.model.api.Piece;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Variable;
@@ -48,6 +49,7 @@ public class RuleImplTest {
 	final Variable uniZ = Expressions.makeUniversalVariable("Z");
 
 	final Variable extY = Expressions.makeExistentialVariable("Y");
+	final Variable extZ = Expressions.makeExistentialVariable("Z");
 
 	final Constant absConC = Expressions.makeAbstractConstant("c");
 	final Constant absConD = Expressions.makeAbstractConstant("d");
@@ -61,6 +63,7 @@ public class RuleImplTest {
 	final PositiveLiteral posLitPUniXUniZ = Expressions.makePositiveLiteral("p", uniX, uniZ);
 	final PositiveLiteral posLitPUniYUniX = Expressions.makePositiveLiteral("p", uniY, uniX);
 	final PositiveLiteral posLitPUniXExtY = Expressions.makePositiveLiteral("p", uniX, extY);
+	final PositiveLiteral posLitPUniXExtZ = Expressions.makePositiveLiteral("p", uniX, extZ);
 	final PositiveLiteral posLitQUniXExtY = Expressions.makePositiveLiteral("q", uniX, extY);
 
 	final PositiveLiteral posLitPUniXAbsConC = Expressions.makePositiveLiteral("p", uniX, absConC);
@@ -171,6 +174,21 @@ public class RuleImplTest {
 		final Rule rule1 = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
 
 		assertEquals(rule1.getPieces().get(0), new PieceImpl(head));
+
+	}
+	
+	@Test
+	public void getPieces02() {
+
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniXExtY, posLitPUniXExtZ);
+
+		final Rule rule1 = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
+
+		Piece piece1 = new PieceImpl(Expressions.makePositiveConjunction(posLitPUniXExtY));
+		Piece piece2 = new PieceImpl(Expressions.makePositiveConjunction(posLitPUniXExtZ));
+		
+		assertTrue(rule1.getPieces().contains(piece1));
+		assertTrue(rule1.getPieces().contains(piece2));
 
 	}
 
