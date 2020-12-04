@@ -1,5 +1,8 @@
 package org.semanticweb.rulewerk.core.model.implementation;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,12 +30,15 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
+import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.Piece;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.StatementVisitor;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
+import org.semanticweb.rulewerk.utils.Graph;
 
 /**
  * Implementation for {@link Rule}. Represents rules with non-empty heads and
@@ -126,6 +132,45 @@ public class RuleImpl implements Rule {
 	@Override
 	public Stream<Term> getTerms() {
 		return Stream.concat(this.body.getTerms(), this.head.getTerms()).distinct();
+	}
+
+	@Override
+	public List<Piece> getPieces() {
+
+		List<PositiveLiteral> literals = getHead().getLiterals();
+
+		Graph<PositiveLiteral> g = new Graph<>();
+		for (int i = 0; i < literals.size() - 1; i++) {
+			for (int j = i + 1; j < literals.size(); j++) {
+				System.out.println(i + " " + j);
+				PositiveLiteral first = literals.get(i);
+				PositiveLiteral second = literals.get(j);
+
+				Set<ExistentialVariable> existentialVariablesInFirst = new HashSet<>();
+				first.getExistentialVariables().forEach(extVar -> existentialVariablesInFirst.add(extVar));
+
+				Set<ExistentialVariable> existentialVariablesInSecond = new HashSet<>();
+				second.getExistentialVariables().forEach(extVar -> existentialVariablesInSecond.add(extVar));
+
+				existentialVariablesInFirst.retainAll(existentialVariablesInSecond);
+				if (existentialVariablesInFirst.size() > 0) {
+					g.addEdge(first, second);
+				}
+			}
+		}
+
+		List<Piece> result = new ArrayList<>();
+		Set<PositiveLiteral> visitedLiterals = new HashSet<>();
+
+		for (PositiveLiteral literal : literals) {
+			if (!visitedLiterals.contains(literal)) {
+				Set<PositiveLiteral> closure = g.getReachableNodes(literal);
+				result.add(new PieceImpl(new ConjunctionImpl<PositiveLiteral>(literals)));
+				visitedLiterals.addAll(closure);
+			}
+		}
+
+		return result;
 	}
 
 }

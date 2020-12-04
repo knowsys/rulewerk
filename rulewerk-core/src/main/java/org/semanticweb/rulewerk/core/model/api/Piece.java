@@ -1,7 +1,5 @@
 package org.semanticweb.rulewerk.core.model.api;
 
-import java.util.List;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -29,30 +27,16 @@ import java.util.List;
  * quantified; all variables in the head that do not occur in the body are
  * considered existentially quantified.
  * 
- * @author Markus Krötzsch
+ * @author Larry Gonzalez
  *
  */
-public interface Rule extends SyntaxObject, Statement {
+public interface Piece extends SyntaxObject {
 
 	/**
 	 * Returns the conjunction of head literals (the consequence of the rule).
 	 *
 	 * @return conjunction of literals
 	 */
-	Conjunction<PositiveLiteral> getHead();
-
-	/**
-	 * Returns the conjunction of body literals (the premise of the rule).
-	 *
-	 * @return conjunction of literals
-	 */
-	Conjunction<Literal> getBody();
-
-	/**
-	 * Returns the list of pieces in the head of the rule.
-	 *
-	 * @return List of Piece
-	 */
-	List<Piece> getPieces();
+	Conjunction<PositiveLiteral> getLiterals();
 
 }
