@@ -79,8 +79,6 @@ public class Restraint {
 		rule2RWU.getPositiveBodyLiterals().forEach(literal -> instance.add(instantiate(literal)));
 		rule2RWU.getHeadAtoms().forEach(literal -> instance.add(instantiate(literal)));
 
-//		System.out.println("instance: " + instance);
-//		System.out.println("query:    " + query);
 		return !SBCQ.query(instance, query);
 	}
 
@@ -90,8 +88,6 @@ public class Restraint {
 		headAtoms11.forEach(literal -> instance.add(instantiate(literal)));
 		headAtoms21.forEach(literal -> query.add(instantiateQuery(literal)));
 
-//		System.out.println("instance: " + instance);
-//		System.out.println("query:    " + query);
 		return SBCQ.query(instance, query);
 	}
 
@@ -112,17 +108,6 @@ public class Restraint {
 						&& fromHead1.get(i).getType() == TermType.EXISTENTIAL_VARIABLE) {
 					return true;
 				}
-			}
-		}
-		return false;
-	}
-
-	static private boolean existentialInHead21AppearsInHead22(List<Literal> headAtoms21, List<Literal> headAtoms22) {
-		Set<ExistentialVariable> existentialVariablesInHeadAtoms22 = getExistentialVariables(headAtoms22);
-
-		for (ExistentialVariable var : getExistentialVariables(headAtoms21)) {
-			if (existentialVariablesInHeadAtoms22.contains(var)) {
-				return true;
 			}
 		}
 		return false;
@@ -320,7 +305,6 @@ public class Restraint {
 //				System.out.println();
 //				System.out.println(isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21));
 //				
-
 				boolean c1 = isRule1Applicable(rule1RWU, rule2RWU);
 				boolean c2 = !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, assignment);
 				boolean c3 = conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
@@ -335,8 +319,6 @@ public class Restraint {
 				if (c1 && c2 && c3 && c4) {
 					return true;
 				}
-
-//				&& !existentialInHead21AppearsInHead22(headAtoms21, headAtoms22)
 
 			}
 			System.out.println();

@@ -90,24 +90,10 @@ public class Reliance {
 		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, 1);
 		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, 2);
 
-//		System.out.println("Rule 1: " + rule1);
-//		System.out.println("Rule 2: " + rule2);
-//		System.out.println("Renamed rule 1: " + renamedRule1);
-//		System.out.println("Renamed rule 2: " + renamedRule2);
-
 		List<Literal> positiveBodyLiteralsRule1 = renamedRule1.getPositiveBodyLiterals();
-//		List<Literal> negativeBodyLiteralsRule1 = renamedRule1.getNegativeBodyLiterals();
 		List<Literal> headAtomsRule1 = renamedRule1.getHeadAtoms();
 		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals();
-//		List<Literal> negativeBodyLiteralsRule2 = renamedRule2.getNegativeBodyLiterals();
 		List<Literal> headAtomsRule2 = renamedRule2.getHeadAtoms();
-
-//		System.out.println("positiveBodyLiteralsRule1: " + Arrays.toString(positiveBodyLiteralsRule1.toArray()));
-//		System.out.println("negativeBodyLiteralsRule1: " + Arrays.toString(negativeBodyLiteralsRule1.toArray()));
-//		System.out.println("headAtomsRule1: " + Arrays.toString(headAtomsRule1.toArray()));
-//		System.out.println("positiveBodyLiteralsRule2" + Arrays.toString(positiveBodyLiteralsRule2.toArray()));
-//		System.out.println("negativeBodyLiteralsRule2" + Arrays.toString(negativeBodyLiteralsRule2.toArray()));
-//		System.out.println("headAtomsRule2: " + Arrays.toString(headAtomsRule2.toArray()));
 
 		int sizeHead1 = headAtomsRule1.size();
 		int sizePositiveBody2 = positiveBodyLiteralsRule2.size();
@@ -115,31 +101,21 @@ public class Reliance {
 		AssignmentIterable assignmentIterable = new AssignmentIterable(sizePositiveBody2, sizeHead1);
 
 		for (Assignment assignment : assignmentIterable) {
-//			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-//			System.out.println("Assignment: " + assignment);
 
 			List<Integer> headAtoms11Idx = assignment.indexesInAssignedListToBeUnified();
 			List<Integer> headAtoms12Idx = assignment.indexesInAssignedListToBeIgnored();
 			List<Integer> positiveBodyLiterals21Idx = assignment.indexesInAssigneeListToBeUnified();
 			List<Integer> positiveBodyLiterals22Idx = assignment.indexesInAssigneeListToBeIgnored();
 
-//			System.out.println("headAtoms11Idx: " + Arrays.toString(headAtoms11Idx.toArray()));
-//			System.out.println("headAtoms12Idx: " + Arrays.toString(headAtoms12Idx.toArray()));
-//			System.out.println("positiveBodyLiterals21Idx: " + Arrays.toString(positiveBodyLiterals21Idx.toArray()));
-//			System.out.println("positiveBodyLiterals22Idx: " + Arrays.toString(positiveBodyLiterals22Idx.toArray()));
-
 			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(positiveBodyLiteralsRule2, headAtomsRule1,
 					assignment);
-//			System.out.println(unifier);
 
 			// RWU = renamed with unifier
 			if (unifier.success) {
 				UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, true);
 				List<Literal> positiveBodyLiteralsRule1RWU = renamer.rename(positiveBodyLiteralsRule1);
-//				List<Literal> negativeBodyLiteralsRule1RWU = renamer.rename(negativeBodyLiteralsRule1);
 				List<Literal> headAtomsRule1RWU = renamer.rename(headAtomsRule1);
 				List<Literal> positiveBodyLiteralsRule2RWU = renamer.rename(positiveBodyLiteralsRule2);
-//				List<Literal> negativeBodyLiteralsRule2RWU = renamer.rename(negativeBodyLiteralsRule2);
 				List<Literal> headAtomsRule2RWU = renamer.rename(headAtomsRule2);
 
 				Set<Literal> headAtoms11 = new HashSet<>();
@@ -156,21 +132,6 @@ public class Reliance {
 				positiveBodyLiterals22Idx
 						.forEach(idx -> positiveBodyLiterals22.add(positiveBodyLiteralsRule2RWU.get(idx)));
 
-//				System.out.println("Rule1: ");
-//				System.out.println("positiveBodyLiteralsRule1: " + Arrays.toString(positiveBodyLiteralsRule1RWU.toArray()));
-//				System.out.println("headAtoms11: " + Arrays.toString(headAtoms11.toArray()));
-//				System.out.println("headAtoms12: " + Arrays.toString(headAtoms12.toArray()));
-//				System.out.println();
-//				System.out.println("Rule2: ");
-//				System.out.println("positiveBodyLiterals21: " + Arrays.toString(positiveBodyLiterals21.toArray()));
-//				System.out.println("positiveBodyLiterals22: " + Arrays.toString(positiveBodyLiterals22.toArray()));
-//				System.out.println("headAtomRules2RWU: " + Arrays.toString(headAtomsRule2RWU.toArray()));
-//				System.out.println();
-//
-//				System.out.println(!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22));
-//				System.out.println(
-//						!universalVariableInPositionOfExistentialVariable(headAtoms11, positiveBodyLiterals22));
-//				System.out.println(isThereSomethingNew(headAtomsRule2RWU, positiveBodyLiteralsRule1RWU, headAtomsRule1RWU));
 				if (!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22)
 						&& !universalVariableInPositionOfExistentialVariable(headAtoms11, positiveBodyLiterals22)
 						&& isThereSomethingNew(headAtomsRule2RWU, positiveBodyLiteralsRule1RWU, headAtomsRule1RWU)) {
