@@ -190,7 +190,6 @@ public class RuleImplTest {
 		final Rule rule = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
 
 		Set<Piece> pieces = rule.getPieces();
-		System.out.println(pieces);
 		assertEquals(pieces.size(), 1);
 		assertTrue(pieces.contains(new PieceImpl(head)));
 	}
