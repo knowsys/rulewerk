@@ -20,6 +20,7 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * #L%
  */
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
@@ -55,9 +56,11 @@ public class RuleImplTest {
 
 	final PositiveLiteral posLitPUniX = Expressions.makePositiveLiteral("p", uniX);
 	final PositiveLiteral posLitQUniY = Expressions.makePositiveLiteral("q", uniY);
+	final PositiveLiteral posLitRUniX = Expressions.makePositiveLiteral("r", uniX);
 
 	final PositiveLiteral posLitPUniXUniZ = Expressions.makePositiveLiteral("p", uniX, uniZ);
 	final PositiveLiteral posLitPUniYUniX = Expressions.makePositiveLiteral("p", uniY, uniX);
+	final PositiveLiteral posLitPUniXExtY = Expressions.makePositiveLiteral("p", uniX, extY);
 	final PositiveLiteral posLitQUniXExtY = Expressions.makePositiveLiteral("q", uniX, extY);
 
 	final PositiveLiteral posLitPUniXAbsConC = Expressions.makePositiveLiteral("p", uniX, absConC);
@@ -158,6 +161,17 @@ public class RuleImplTest {
 		final Rule rule2 = new RuleImpl(headPositiveLiterals, bodyConjunction);
 		assertEquals("q(?X, !Y) :- p(?X, c), p(?X, ?Z) .", rule1.toString());
 		assertEquals("q(?X, !Y) :- p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, \"T\"@en) .", rule2.toString());
+	}
+
+	@Test
+	public void getPieces01() {
+
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniXExtY, posLitQUniXExtY);
+
+		final Rule rule1 = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
+
+		assertEquals(rule1.getPieces().get(0), new PieceImpl(head));
+
 	}
 
 }
