@@ -1,6 +1,7 @@
 package org.semanticweb.rulewerk.reliances;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,9 +59,15 @@ public class Restraint {
 		return Expressions.makePositiveLiteral(literal.getPredicate(), newTerms);
 	}
 
-	static private Set<ExistentialVariable> getExistentialVariables(Set<Literal> literals) {
+	static private Set<ExistentialVariable> getExistentialVariables(List<Literal> literals) {
 		Set<ExistentialVariable> result = new HashSet<>();
 		literals.forEach(literal -> literal.getExistentialVariables().forEach(extVar -> result.add(extVar)));
+		return result;
+	}
+
+	static private List<ExistentialVariable> getExistentialVariablesList(List<Literal> literals) {
+		List<ExistentialVariable> result = new ArrayList<>();
+		getExistentialVariables(literals).forEach(extVar -> result.add(extVar));
 		return result;
 	}
 
@@ -77,7 +84,7 @@ public class Restraint {
 		return !SBCQ.query(instance, query);
 	}
 
-	static private boolean isheadAtoms21mappableToheadAtoms11(Set<Literal> headAtoms11, Set<Literal> headAtoms21) {
+	static private boolean isheadAtoms21mappableToheadAtoms11(List<Literal> headAtoms11, List<Literal> headAtoms21) {
 		List<Literal> instance = new ArrayList<>();
 		List<Literal> query = new ArrayList<>();
 		headAtoms11.forEach(literal -> instance.add(instantiate(literal)));
@@ -110,11 +117,82 @@ public class Restraint {
 		return false;
 	}
 
-	static private boolean existentialInHead21AppearsInHead22(Set<Literal> headAtoms21, Set<Literal> headAtoms22) {
+	static private boolean existentialInHead21AppearsInHead22(List<Literal> headAtoms21, List<Literal> headAtoms22) {
 		Set<ExistentialVariable> existentialVariablesInHeadAtoms22 = getExistentialVariables(headAtoms22);
 
 		for (ExistentialVariable var : getExistentialVariables(headAtoms21)) {
 			if (existentialVariablesInHeadAtoms22.contains(var)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	static List<ExistentialVariable> filter(List<ExistentialVariable> original, int[] combination) {
+		List<ExistentialVariable> result = new ArrayList<>();
+		for (int i = 0; i < combination.length; i++) {
+			if (combination[i] == 1) {
+				result.add(original.get(i));
+			}
+		}
+		return result;
+	}
+
+	// this must be true to have a restrain
+	static private boolean conditionForExistentialVariables(List<Literal> headAtomsRule2, List<Literal> headAtomsRule1,
+			List<Literal> headAtoms22, List<Literal> headAtoms21, Assignment assignment) {
+		System.out.println(headAtomsRule2);
+		System.out.println(headAtomsRule1);
+		System.out.println(headAtoms22);
+		System.out.println(headAtoms21);
+//		System.out.println(assignment);
+
+		Set<ExistentialVariable> extVarsIn22 = getExistentialVariables(headAtoms22);
+		List<ExistentialVariable> extVarsIn21 = getExistentialVariablesList(headAtoms21);
+
+		System.out.println();
+		System.out.println(Arrays.toString(extVarsIn22.toArray()));
+		System.out.println(Arrays.toString(extVarsIn21.toArray()));
+
+		PowerSet powerSet = new PowerSet(extVarsIn21.size());
+
+		while (powerSet.hasNext()) {
+
+			List<ExistentialVariable> toTest = filter(extVarsIn21, powerSet.next());
+
+			if (toTest.size() > 0) {
+				System.out.println("XXXXX");
+				System.out.println(Arrays.toString(toTest.toArray()));
+				for (Match match : assignment.getMatches()) {
+
+					System.out.println("ori: " + headAtomsRule2.get(match.getOrigin()));
+					System.out.println("des: " + headAtomsRule1.get(match.getDestination()));
+
+					List<Term> origin = headAtomsRule2.get(match.getOrigin()).getArguments();
+					List<Term> destination = headAtomsRule1.get(match.getDestination()).getArguments();
+
+					boolean local = true;
+					for (int i = 0; i < origin.size(); i++) {
+						System.out.println("    " + i + " " + origin.get(i) + " " + destination.get(i));
+						if (origin.get(i).getType() == TermType.EXISTENTIAL_VARIABLE && toTest.contains(origin.get(i))
+								&& destination.get(i).getType() == TermType.EXISTENTIAL_VARIABLE
+								&& extVarsIn22.contains(origin.get(i))) {
+							local = false;
+						}
+					}
+					if (local) {
+						return local;
+					}
+				}
+			}
+
+		}
+		return false;
+	}
+
+	static boolean containsAnyExistential(List<Term> first, List<ExistentialVariable> second) {
+		for (Term t : second) {
+			if (first.contains(t)) {
 				return true;
 			}
 		}
@@ -130,19 +208,16 @@ public class Restraint {
 	 */
 	static public boolean restraint(Rule rule1, Rule rule2) {
 
-		if (rule1.equals(rule2) && SelfRestraint.restraint(rule1)) {
-			return true;
+//		if (rule1.equals(rule2) && SelfRestraint.restraint(rule1)) {
+//		return true;
+//	}
+		if (rule1.equals(rule2)) {
+			System.out.println("CALLING SELF RESTRAINT");
+			return SelfRestraint.restraint(rule1);
 		}
 
 		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, 1);
 		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, 2);
-
-//		System.out.println("Rule 1: " + rule1);
-//		System.out.println("Rule 2: " + rule2);
-//		System.out.println();
-//		System.out.println("Renamed Rule 1: " + renamedRule1);
-//		System.out.println("Renamed Rule 2: " + renamedRule2);
-//		System.out.println();
 
 		/* Get the list of Literals/Atoms from the rules. */
 //		List<Literal> positiveBodyLiteralsRule1 = renamedRule1.getPositiveBodyLiterals();
@@ -173,7 +248,7 @@ public class Restraint {
 		AssignmentIterable assignmentIterable = new AssignmentIterable(headSizeRule2, headSizeRule1);
 
 		for (Assignment assignment : assignmentIterable) {
-//			System.out.println("Assignment: " + assignment);
+			System.out.println("Assignment: " + assignment);
 
 			List<Integer> headAtoms11Idx = assignment.indexesInAssignedListToBeUnified();
 			List<Integer> headAtoms12Idx = assignment.indexesInAssignedListToBeIgnored();
@@ -186,7 +261,7 @@ public class Restraint {
 //			System.out.println("headAtoms22Idx: " + Arrays.toString(headAtoms22Idx.toArray()));
 
 			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2, headAtomsRule1, assignment);
-//			System.out.println("Unifier: " + unifier);
+			System.out.println("Unifier: " + unifier);
 
 			// RWU = renamed with unifier
 			if (unifier.success) {
@@ -195,8 +270,8 @@ public class Restraint {
 				// rename everything
 				Rule rule1RWU = renamer.rename(renamedRule1);
 				Rule rule2RWU = renamer.rename(renamedRule2);
-//				System.out.println("RWU Rule1: " + rule1RWU);
-//				System.out.println("RWU Rule2: " + rule2RWU);
+				System.out.println("RWU Rule1: " + rule1RWU);
+				System.out.println("RWU Rule2: " + rule2RWU);
 
 //				List<Literal> positiveBodyLiteralsRule1RWU = renamer.rename(positiveBodyLiteralsRule1);
 //				List<Literal> negativeBodyLiteralsRule1RWU = renamer.rename(negativeBodyLiteralsRule2);
@@ -206,16 +281,16 @@ public class Restraint {
 				List<Literal> headAtomsRule2RWU = renamer.rename(headAtomsRule2);
 
 				// check if we can use Lists here
-				Set<Literal> headAtoms11 = new HashSet<>();
+				List<Literal> headAtoms11 = new ArrayList<>();
 				headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtomsRule1RWU.get(idx)));
 
-				Set<Literal> headAtoms12 = new HashSet<>();
+				List<Literal> headAtoms12 = new ArrayList<>();
 				headAtoms12Idx.forEach(idx -> headAtoms12.add(headAtomsRule1RWU.get(idx)));
 
-				Set<Literal> headAtoms21 = new HashSet<>();
+				List<Literal> headAtoms21 = new ArrayList<>();
 				headAtoms21Idx.forEach(idx -> headAtoms21.add(headAtomsRule2RWU.get(idx)));
 
-				Set<Literal> headAtoms22 = new HashSet<>();
+				List<Literal> headAtoms22 = new ArrayList<>();
 				headAtoms22Idx.forEach(idx -> headAtoms22.add(headAtomsRule2RWU.get(idx)));
 
 //				System.out.println("Rule1: ");
@@ -225,7 +300,7 @@ public class Restraint {
 //						"negativeBodyLiteralsRule1: " + Arrays.toString(negativeBodyLiteralsRule1RWU.toArray()));
 //				System.out.println("headAtoms11: " + Arrays.toString(headAtoms11.toArray()));
 //				System.out.println("headAtoms12: " + Arrays.toString(headAtoms12.toArray()));
-//				System.out.println();
+//				System.out.printl)n();
 //				System.out.println("Rule2: ");
 //				System.out.println(
 //						"positiveBodyLiteralsRule2: " + Arrays.toString(positiveBodyLiteralsRule2RWU.toArray()));
@@ -235,20 +310,36 @@ public class Restraint {
 //				System.out.println("headAtoms22: " + Arrays.toString(headAtoms22.toArray()));
 //				System.out.println();
 
-				if (isRule1Applicable(rule1RWU, rule2RWU)
-						&& !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, assignment)
-						&& !existentialInHead21AppearsInHead22(headAtoms21, headAtoms22)
-						&& isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21)) {
-//					System.out.println(Arrays.toString(headAtoms11.toArray()));
-//					System.out.println(Arrays.toString(headAtoms12.toArray()));
-//					System.out.println(Arrays.toString(headAtoms21.toArray()));
-//					System.out.println(Arrays.toString(headAtoms22.toArray()));
-//					System.out.println(unifier);
+//				System.out.println(isRule1Applicable(rule1RWU, rule2RWU));
+//				System.out.println(!mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, assignment));
+//				// BUT THIS EXISTENTIAL COULD BE MAPPED INTO AN UNIVERSAL
+////				System.out.println(!existentialInHead21AppearsInHead22(headAtoms21, headAtoms22));
+//				System.out.println();
+//				System.out.println(conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
+//						headAtoms21, assignment));
+//				System.out.println();
+//				System.out.println(isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21));
+//				
+
+				boolean c1 = isRule1Applicable(rule1RWU, rule2RWU);
+				boolean c2 = !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, assignment);
+				boolean c3 = conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
+						headAtoms21, assignment);
+				boolean c4 = isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21);
+
+				System.out.println(c1);
+				System.out.println(c2);
+				System.out.println(c3);
+				System.out.println(c4);
+
+				if (c1 && c2 && c3 && c4) {
 					return true;
 				}
 
+//				&& !existentialInHead21AppearsInHead22(headAtoms21, headAtoms22)
+
 			}
-//			System.out.println();
+			System.out.println();
 		}
 
 		return false;
