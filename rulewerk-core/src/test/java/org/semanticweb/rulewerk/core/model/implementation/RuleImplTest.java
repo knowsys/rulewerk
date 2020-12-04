@@ -177,7 +177,6 @@ public class RuleImplTest {
 		final Rule rule = new RuleImpl(head, body);
 
 		Set<Piece> pieces = rule.getPieces();
-		System.out.println(pieces);
 		assertEquals(pieces.size(), 1);
 		assertTrue(pieces.contains(new PieceImpl(head)));
 	}
