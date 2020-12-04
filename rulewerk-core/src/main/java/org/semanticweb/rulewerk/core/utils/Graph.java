@@ -42,6 +42,7 @@ public class Graph<T> {
 
 	public Set<T> getReachableNodes(T node) {
 		Set<T> result = new HashSet<>();
+		result.add(node);
 		List<T> toVisit = new ArrayList<>();
 		toVisit.add(node);
 		Set<T> visited = new HashSet<>();
