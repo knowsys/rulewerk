@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -13,7 +15,7 @@
 	<url>https://github.com/knowsys/rulewerk</url>
 
 	<modules>
-		<!-- when adding a module, make sure to also add it as a dependency in
+		<!-- when adding a module, make sure to also add it as a dependency in 
 			the coverage module, otherwise it will not be included in the coverage report -->
 		<module>rulewerk-core</module>
 		<module>rulewerk-vlog</module>
@@ -26,7 +28,7 @@
 		<module>rulewerk-client</module>
 		<module>rulewerk-reliances</module>
 		<module>coverage</module>
-  </modules>
+	</modules>
 
 	<licenses>
 		<license>
@@ -132,7 +134,7 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
 					<version>1.14</version>
-					<configuration/>
+					<configuration />
 					<executions>
 						<execution>
 							<id>first</id>
@@ -156,7 +158,7 @@
 					</executions>
 				</plugin>
 				<plugin>
-					<!-- This plugin's configuration is used to store Eclipse m2e settings
+					<!-- This plugin's configuration is used to store Eclipse m2e settings 
 						only. It has no influence on the Maven build. -->
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -175,7 +177,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 
@@ -190,7 +192,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute/>
+										<execute />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -232,7 +234,7 @@
 				<artifactId>license-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<!-- Used to set JRE version; will be used by IDEs like Eclipse as the
+				<!-- Used to set JRE version; will be used by IDEs like Eclipse as the 
 					target JRE (default is 1.5) -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -295,8 +297,8 @@
 						</goals>
 						<phase>test</phase>
 						<configuration>
-							<!-- use a non-standard output directory so the coveralls plugin will
-								not try to aggregate this into the final coverage report, since we want to
+							<!-- use a non-standard output directory so the coveralls plugin will 
+								not try to aggregate this into the final coverage report, since we want to 
 								control aggregation ourselves. -->
 							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
 						</configuration>
@@ -304,7 +306,7 @@
 				</executions>
 				<configuration>
 					<excludes>
-						<!-- Do not consider generated source code. Plugin fails for these
+						<!-- Do not consider generated source code. Plugin fails for these 
 							files. -->
 						<exclude>**/javacc/JavaCCParser.class</exclude>
 						<exclude>**/javacc/JavaCCParserConstants.class</exclude>
@@ -318,7 +320,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- Plugin for creating Javadocs; goal for preparing docs for upload
+				<!-- Plugin for creating Javadocs; goal for preparing docs for upload 
 					to github: javadoc:aggregate -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>

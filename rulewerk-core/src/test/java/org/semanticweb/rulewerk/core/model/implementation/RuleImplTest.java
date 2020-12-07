@@ -20,17 +20,21 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * #L%
  */
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.Constant;
+import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.NegativeLiteral;
+import org.semanticweb.rulewerk.core.model.api.Piece;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Variable;
@@ -41,19 +45,42 @@ import org.semanticweb.rulewerk.core.model.implementation.RuleImpl;
 
 public class RuleImplTest {
 
+	final Variable uniX = Expressions.makeUniversalVariable("X");
+	final Variable uniY = Expressions.makeUniversalVariable("Y");
+	final Variable uniZ = Expressions.makeUniversalVariable("Z");
+
+	final Variable extY = Expressions.makeExistentialVariable("Y");
+	final Variable extZ = Expressions.makeExistentialVariable("Z");
+
+	final Constant absConC = Expressions.makeAbstractConstant("c");
+	final Constant absConD = Expressions.makeAbstractConstant("d");
+
+	final LanguageStringConstantImpl strConTen = new LanguageStringConstantImpl("T", "en");
+
+	final PositiveLiteral posLitPUniX = Expressions.makePositiveLiteral("p", uniX);
+	final PositiveLiteral posLitQUniX = Expressions.makePositiveLiteral("q", uniX);
+	final PositiveLiteral posLitQUniY = Expressions.makePositiveLiteral("q", uniY);
+	final PositiveLiteral posLitRUniX = Expressions.makePositiveLiteral("r", uniX);
+
+	final PositiveLiteral posLitPUniXUniZ = Expressions.makePositiveLiteral("p", uniX, uniZ);
+	final PositiveLiteral posLitPUniYUniX = Expressions.makePositiveLiteral("p", uniY, uniX);
+	final PositiveLiteral posLitPUniXExtY = Expressions.makePositiveLiteral("p", uniX, extY);
+	final PositiveLiteral posLitPUniXExtZ = Expressions.makePositiveLiteral("p", uniX, extZ);
+	final PositiveLiteral posLitQUniXExtY = Expressions.makePositiveLiteral("q", uniX, extY);
+
+	final PositiveLiteral posLitPUniXAbsConC = Expressions.makePositiveLiteral("p", uniX, absConC);
+	final PositiveLiteral posLitQUniXAbsConD = Expressions.makePositiveLiteral("q", uniX, absConD);
+	final PositiveLiteral posLitRUniXAbsConD = Expressions.makePositiveLiteral("r", uniX, absConD);
+
+	final NegativeLiteral negLitRUniXAbsConD = Expressions.makeNegativeLiteral("r", uniX, absConD);
+
+	final Fact factSAbsConCStrConTen = Expressions.makeFact("s", absConC, strConTen);
+
 	@Test
 	public void testGetters() {
-		final Variable x = Expressions.makeUniversalVariable("X");
-		final Variable y = Expressions.makeExistentialVariable("Y");
-		final Variable z = Expressions.makeUniversalVariable("Z");
-		final Constant c = Expressions.makeAbstractConstant("c");
-		final Constant d = Expressions.makeAbstractConstant("d");
-		final Literal atom1 = Expressions.makePositiveLiteral("p", x, c);
-		final Literal atom2 = Expressions.makePositiveLiteral("p", x, z);
-		final PositiveLiteral atom3 = Expressions.makePositiveLiteral("q", x, y);
-		final PositiveLiteral atom4 = Expressions.makePositiveLiteral("r", x, d);
-		final Conjunction<Literal> body = Expressions.makeConjunction(atom1, atom2);
-		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(atom3, atom4);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitPUniXAbsConC, posLitPUniXUniZ);
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitQUniXExtY,
+				posLitRUniXAbsConD);
 		final Rule rule = Expressions.makeRule(head, body);
 
 		assertEquals(body, rule.getBody());
@@ -62,25 +89,16 @@ public class RuleImplTest {
 
 	@Test
 	public void testEquals() {
-		final Variable x = Expressions.makeUniversalVariable("X");
-		final Variable y = Expressions.makeExistentialVariable("Y");
-		final Variable z = Expressions.makeUniversalVariable("Z");
-		final Constant c = Expressions.makeAbstractConstant("c");
+		final Conjunction<Literal> bodyLiterals = Expressions.makeConjunction(posLitPUniXAbsConC, posLitPUniXUniZ);
+		final Conjunction<PositiveLiteral> headPositiveLiterals = Expressions.makePositiveConjunction(posLitQUniXExtY);
 
-		final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
-		final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
-		final PositiveLiteral headAtom1 = Expressions.makePositiveLiteral("q", x, y);
-
-		final Conjunction<Literal> bodyLiterals = Expressions.makeConjunction(atom1, atom2);
-		final Conjunction<PositiveLiteral> headPositiveLiterals = Expressions.makePositiveConjunction(headAtom1);
-
-		final Conjunction<PositiveLiteral> bodyPositiveLiterals = Expressions.makePositiveConjunction(atom1, atom2);
+		final Conjunction<PositiveLiteral> bodyPositiveLiterals = Expressions
+				.makePositiveConjunction(posLitPUniXAbsConC, posLitPUniXUniZ);
 
 		final Rule rule1 = new RuleImpl(headPositiveLiterals, bodyLiterals);
-		final Rule rule2 = Expressions.makeRule(headAtom1, atom1, atom2);
-
-		final Rule rule6 = Expressions.makeRule(headAtom1, atom1, atom2);
-		final Rule rule7 = Expressions.makeRule(headAtom1, atom1, atom2);
+		final Rule rule2 = Expressions.makeRule(posLitQUniXExtY, posLitPUniXAbsConC, posLitPUniXUniZ);
+		final Rule rule6 = Expressions.makeRule(posLitQUniXExtY, posLitPUniXAbsConC, posLitPUniXUniZ);
+		final Rule rule7 = Expressions.makeRule(posLitQUniXExtY, posLitPUniXAbsConC, posLitPUniXUniZ);
 		final Rule rule8 = Expressions.makePositiveLiteralsRule(headPositiveLiterals, bodyPositiveLiterals);
 
 		assertEquals(rule1, rule1);
@@ -100,77 +118,95 @@ public class RuleImplTest {
 		assertNotEquals(rule4, rule1);
 		assertNotEquals(rule5, rule1);
 		assertFalse(rule1.equals(null));
-		assertFalse(rule1.equals(c));
+		assertFalse(rule1.equals(absConC));
 
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void bodyNonEmpty() {
-		Expressions.makeRule(Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X")));
+		Expressions.makeRule(posLitPUniX);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void bodyNotNull() {
-		final Conjunction<PositiveLiteral> head = Expressions
-				.makePositiveConjunction(Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X")));
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniX);
 		Expressions.makeRule(head, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void headNonEmpty() {
-		final Literal literal = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X"));
-		final Conjunction<Literal> body = Expressions.makeConjunction(literal);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitPUniX);
 		Expressions.makeRule(Expressions.makePositiveConjunction(), body);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void headNotNull() {
-		final Literal literal = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X"));
-		final Conjunction<Literal> body = Expressions.makeConjunction(literal);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitPUniX);
 		Expressions.makeRule(null, body);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void noExistentialInBody() {
-		final Literal literal1 = Expressions.makePositiveLiteral("p", Expressions.makeExistentialVariable("X"));
-		final PositiveLiteral literal2 = Expressions.makePositiveLiteral("q", Expressions.makeUniversalVariable("Y"));
-		Expressions.makeRule(literal2, literal1);
+		Expressions.makeRule(posLitQUniY, posLitPUniX);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void noUnsafeVariables() {
-		final PositiveLiteral literal1 = Expressions.makePositiveLiteral("p", Expressions.makeUniversalVariable("X"));
-		final Literal literal2 = Expressions.makePositiveLiteral("q", Expressions.makeUniversalVariable("Y"));
-		Expressions.makeRule(literal1, literal2);
+		Expressions.makeRule(posLitPUniX, posLitQUniY);
 	}
 
 	@Test
 	public void ruleToStringTest() {
-		final Variable x = Expressions.makeUniversalVariable("X");
-		final Variable y = Expressions.makeExistentialVariable("Y");
-		final Variable z = Expressions.makeUniversalVariable("Z");
-		final Variable y2 = Expressions.makeUniversalVariable("Y");
-		final Constant d = Expressions.makeAbstractConstant("d");
-		final Constant c = Expressions.makeAbstractConstant("c");
-		final LanguageStringConstantImpl s = new LanguageStringConstantImpl("Test", "en");
-		final PositiveLiteral atom1 = Expressions.makePositiveLiteral("p", x, c);
-		final PositiveLiteral atom2 = Expressions.makePositiveLiteral("p", x, z);
-		final PositiveLiteral headAtom1 = Expressions.makePositiveLiteral("q", x, y);
-		final PositiveLiteral positiveLiteral1 = Expressions.makePositiveLiteral("p", x, c);
-		final PositiveLiteral positiveLiteral2 = Expressions.makePositiveLiteral("p", y2, x);
-		final PositiveLiteral positiveLiteral3 = Expressions.makePositiveLiteral("q", x, d);
-		final NegativeLiteral NegativeLiteral = Expressions.makeNegativeLiteral("r", x, d);
-		final PositiveLiteral PositiveLiteral4 = Expressions.makePositiveLiteral("s", c, s);
-		final List<Literal> LiteralList = Arrays.asList(positiveLiteral1, positiveLiteral2, positiveLiteral3,
-				NegativeLiteral, PositiveLiteral4);
-		final Conjunction<Literal> bodyLiterals = Expressions.makeConjunction(atom1, atom2);
-		final Conjunction<PositiveLiteral> headPositiveLiterals = Expressions.makePositiveConjunction(headAtom1);
+		final List<Literal> LiteralList = Arrays.asList(posLitPUniXAbsConC, posLitPUniYUniX, posLitQUniXAbsConD,
+				negLitRUniXAbsConD, factSAbsConCStrConTen);
+		final Conjunction<Literal> bodyLiterals = Expressions.makeConjunction(posLitPUniXAbsConC, posLitPUniXUniZ);
+		final Conjunction<PositiveLiteral> headPositiveLiterals = Expressions.makePositiveConjunction(posLitQUniXExtY);
 		final Conjunction<Literal> bodyConjunction = new ConjunctionImpl<>(LiteralList);
 		final Rule rule1 = new RuleImpl(headPositiveLiterals, bodyLiterals);
 		final Rule rule2 = new RuleImpl(headPositiveLiterals, bodyConjunction);
 		assertEquals("q(?X, !Y) :- p(?X, c), p(?X, ?Z) .", rule1.toString());
-		assertEquals("q(?X, !Y) :- p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, \"Test\"@en) .", rule2.toString());
+		assertEquals("q(?X, !Y) :- p(?X, c), p(?Y, ?X), q(?X, d), ~r(?X, d), s(c, \"T\"@en) .", rule2.toString());
+	}
 
+	@Test
+	public void getPieces00() {
+
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniX);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitQUniX);
+
+		final Rule rule = new RuleImpl(head, body);
+
+		Set<Piece> pieces = rule.getPieces();
+		assertEquals(pieces.size(), 1);
+		assertTrue(pieces.contains(new PieceImpl(head)));
+	}
+
+	@Test
+	public void getPieces01() {
+
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniXExtY, posLitQUniXExtY);
+
+		final Rule rule = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
+
+		Set<Piece> pieces = rule.getPieces();
+		assertEquals(pieces.size(), 1);
+		assertTrue(pieces.contains(new PieceImpl(head)));
+	}
+
+	@Test
+	public void getPieces02() {
+
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniXExtY, posLitPUniXExtZ);
+
+		final Rule rule = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
+
+		Piece piece1 = new PieceImpl(Expressions.makePositiveConjunction(posLitPUniXExtY));
+		Piece piece2 = new PieceImpl(Expressions.makePositiveConjunction(posLitPUniXExtZ));
+
+		Set<Piece> pieces = rule.getPieces();
+		assertEquals(pieces.size(), 2);
+		assertTrue(pieces.contains(piece1));
+		assertTrue(pieces.contains(piece2));
 	}
 
 }
