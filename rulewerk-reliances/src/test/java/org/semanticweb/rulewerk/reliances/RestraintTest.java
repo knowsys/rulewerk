@@ -98,8 +98,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("b(?X,!Y,!Y),c(!Y,!Z) :- a(?X) .");
 		Rule rule2 = RuleParser.parseRule("b(?X,!Y,!Z),c(!Z,!Z) :- a(?X) .");
 
-//		assertFalse(Restraint.restraint(rule1, rule2)); // DOES NOT WORK
-//		assertFalse(Restraint.restraint(rule2, rule1)); // DOES NOT WORK
+		assertFalse(Restraint.restraint(rule1, rule2));
+		assertFalse(Restraint.restraint(rule2, rule1));
 	}
 
 	@Test

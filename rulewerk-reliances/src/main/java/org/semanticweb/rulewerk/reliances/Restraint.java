@@ -1,7 +1,6 @@
 package org.semanticweb.rulewerk.reliances;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,12 +67,6 @@ public class Restraint {
 		return result;
 	}
 
-	static private List<ExistentialVariable> getExistentialVariablesList(List<Literal> literals) {
-		List<ExistentialVariable> result = new ArrayList<>();
-		getExistentialVariables(literals).forEach(extVar -> result.add(extVar));
-		return result;
-	}
-
 	static private boolean isRule1Applicable(Rule rule1RWU, Rule rule2RWU) {
 		List<Literal> instance = new ArrayList<>();
 		List<Literal> query = new ArrayList<>();
@@ -126,56 +119,41 @@ public class Restraint {
 		return result;
 	}
 
-	// this must be true to have a restrain
-	static private boolean conditionForExistentialVariables(List<Literal> headAtomsRule2, List<Literal> headAtomsRule1,
-			List<Literal> headAtoms22, List<Literal> headAtoms21, Assignment assignment) {
-		System.out.println(headAtomsRule2);
-		System.out.println(headAtomsRule1);
-		System.out.println(headAtoms22);
-		System.out.println(headAtoms21);
-//		System.out.println(assignment);
+	static List<Literal> literalsContainingVariables(List<Literal> literals, List<ExistentialVariable> variables) {
+		List<Literal> result = new ArrayList<>();
 
-		Set<ExistentialVariable> extVarsIn22 = getExistentialVariables(headAtoms22);
-		List<ExistentialVariable> extVarsIn21 = getExistentialVariablesList(headAtoms21);
-
-		System.out.println();
-		System.out.println(Arrays.toString(extVarsIn22.toArray()));
-		System.out.println(Arrays.toString(extVarsIn21.toArray()));
-
-		PowerSet powerSet = new PowerSet(extVarsIn21.size());
-
-		while (powerSet.hasNext()) {
-
-			List<ExistentialVariable> toTest = filter(extVarsIn21, powerSet.next());
-
-			if (toTest.size() > 0) {
-				System.out.println("XXXXX");
-				System.out.println(Arrays.toString(toTest.toArray()));
-				for (Match match : assignment.getMatches()) {
-
-					System.out.println("ori: " + headAtomsRule2.get(match.getOrigin()));
-					System.out.println("des: " + headAtomsRule1.get(match.getDestination()));
-
-					List<Term> origin = headAtomsRule2.get(match.getOrigin()).getArguments();
-					List<Term> destination = headAtomsRule1.get(match.getDestination()).getArguments();
-
-					boolean local = true;
-					for (int i = 0; i < origin.size(); i++) {
-						System.out.println("    " + i + " " + origin.get(i) + " " + destination.get(i));
-						if (origin.get(i).getType() == TermType.EXISTENTIAL_VARIABLE && toTest.contains(origin.get(i))
-								&& destination.get(i).getType() == TermType.EXISTENTIAL_VARIABLE
-								&& extVarsIn22.contains(origin.get(i))) {
-							local = false;
-						}
-					}
-					if (local) {
-						return local;
-					}
+		for (Literal literal : literals) {
+			for (ExistentialVariable extVar : variables) {
+				if (literal.getExistentialVariables().anyMatch(containedVar -> containedVar.equals(extVar))) {
+					result.add(literal);
+					break;
 				}
 			}
-
 		}
-		return false;
+		return result;
+	}
+
+	// this must be true to have a restrain
+	static private boolean conditionForExistentialVariables(List<Literal> headAtomsRule2, List<Literal> headAtomsRule1,
+			List<Literal> headAtoms22, Assignment assignment) {
+
+		Set<ExistentialVariable> extVarsIn22 = getExistentialVariables(headAtoms22);
+
+		for (Match match : assignment.getMatches()) {
+
+			List<Term> origin = headAtomsRule2.get(match.getOrigin()).getArguments();
+			List<Term> destination = headAtomsRule1.get(match.getDestination()).getArguments();
+
+			for (int i = 0; i < origin.size(); i++) {
+				if (origin.get(i).getType() == TermType.EXISTENTIAL_VARIABLE
+						&& destination.get(i).getType() == TermType.EXISTENTIAL_VARIABLE
+						&& extVarsIn22.contains(origin.get(i))) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	static boolean containsAnyExistential(List<Term> first, List<ExistentialVariable> second) {
@@ -221,20 +199,13 @@ public class Restraint {
 		AssignmentIterable assignmentIterable = new AssignmentIterable(headSizeRule2, headSizeRule1);
 
 		for (Assignment assignment : assignmentIterable) {
-			System.out.println("Assignment: " + assignment);
 
 			List<Integer> headAtoms11Idx = assignment.indexesInAssignedListToBeUnified();
 			List<Integer> headAtoms12Idx = assignment.indexesInAssignedListToBeIgnored();
 			List<Integer> headAtoms21Idx = assignment.indexesInAssigneeListToBeUnified();
 			List<Integer> headAtoms22Idx = assignment.indexesInAssigneeListToBeIgnored();
 
-//			System.out.println("headAtoms11Idx: " + Arrays.toString(headAtoms11Idx.toArray()));
-//			System.out.println("headAtoms12Idx: " + Arrays.toString(headAtoms12Idx.toArray()));
-//			System.out.println("headAtoms21Idx: " + Arrays.toString(headAtoms21Idx.toArray()));
-//			System.out.println("headAtoms22Idx: " + Arrays.toString(headAtoms22Idx.toArray()));
-
 			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2, headAtomsRule1, assignment);
-			System.out.println("Unifier: " + unifier);
 
 			// RWU = renamed with unifier
 			if (unifier.success) {
@@ -243,8 +214,6 @@ public class Restraint {
 				// rename everything
 				Rule rule1RWU = renamer.rename(renamedRule1);
 				Rule rule2RWU = renamer.rename(renamedRule2);
-				System.out.println("RWU Rule1: " + rule1RWU);
-				System.out.println("RWU Rule2: " + rule2RWU);
 
 				List<Literal> headAtomsRule1RWU = new ArrayList<>();
 				headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
@@ -264,50 +233,15 @@ public class Restraint {
 				List<Literal> headAtoms22 = new ArrayList<>();
 				headAtoms22Idx.forEach(idx -> headAtoms22.add(headAtomsRule2RWU.get(idx)));
 
-//				System.out.println("Rule1: ");
-//				System.out.println(
-//						"positiveBodyLiteralsRule1: " + Arrays.toString(positiveBodyLiteralsRule1RWU.toArray()));
-//				System.out.println(
-//						"negativeBodyLiteralsRule1: " + Arrays.toString(negativeBodyLiteralsRule1RWU.toArray()));
-//				System.out.println("headAtoms11: " + Arrays.toString(headAtoms11.toArray()));
-//				System.out.println("headAtoms12: " + Arrays.toString(headAtoms12.toArray()));
-//				System.out.printl)n();
-//				System.out.println("Rule2: ");
-//				System.out.println(
-//						"positiveBodyLiteralsRule2: " + Arrays.toString(positiveBodyLiteralsRule2RWU.toArray()));
-//				System.out.println(
-//						"negativeBodyLiteralsRule2: " + Arrays.toString(negativeBodyLiteralsRule2RWU.toArray()));
-//				System.out.println("headAtoms21: " + Arrays.toString(headAtoms21.toArray()));
-//				System.out.println("headAtoms22: " + Arrays.toString(headAtoms22.toArray()));
-//				System.out.println();
-
-//				System.out.println(isRule1Applicable(rule1RWU, rule2RWU));
-//				System.out.println(!mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, assignment));
-//				// BUT THIS EXISTENTIAL COULD BE MAPPED INTO AN UNIVERSAL
-////				System.out.println(!existentialInHead21AppearsInHead22(headAtoms21, headAtoms22));
-//				System.out.println();
-//				System.out.println(conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
-//						headAtoms21, assignment));
-//				System.out.println();
-//				System.out.println(isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21));
-//				
-				boolean c1 = isRule1Applicable(rule1RWU, rule2RWU);
-				boolean c2 = !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, assignment);
-				boolean c3 = conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
-						headAtoms21, assignment);
-				boolean c4 = isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21);
-
-				System.out.println(c1);
-				System.out.println(c2);
-				System.out.println(c3);
-				System.out.println(c4);
-
-				if (c1 && c2 && c3 && c4) {
+				if (isRule1Applicable(rule1RWU, rule2RWU)
+						&& !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, assignment)
+						&& conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
+								assignment)
+						&& isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21)) {
 					return true;
 				}
 
 			}
-			System.out.println();
 		}
 
 		return false;
