@@ -59,7 +59,6 @@ public class Graph<T> {
 			}
 			visited.add(current);
 		}
-
 		return result;
 	}
 
@@ -71,7 +70,5 @@ public class Graph<T> {
 			newSet.add(destination);
 			this.edges.put(origin, newSet);
 		}
-
 	}
-
 }
