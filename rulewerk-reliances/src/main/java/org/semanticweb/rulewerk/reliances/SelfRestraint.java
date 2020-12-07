@@ -1,9 +1,7 @@
 package org.semanticweb.rulewerk.reliances;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
 
@@ -62,17 +60,17 @@ public class SelfRestraint {
 
 			List<Integer> positions = predToLiterals.get(pred);
 
-			List<Integer> rest = complement(positions, headSize);
+			List<Integer> rest = Filter.complement(positions, headSize);
 
 			if (positions.size() > 0) {
 				SubsetIterable<Integer> subsetIterable = new SubsetIterable<>(positions);
 
 				for (List<Integer> subset : subsetIterable) {
-					List<Integer> complement = complement(positions, subset);
+					List<Integer> complement = Filter.complement(positions, subset);
 
 					if (subset.size() > 0 && complement.size() > 0) {
-						List<Integer> head1Idx = join(rest, subset);
-						List<Integer> head2Idx = join(rest, complement);
+						List<Integer> head1Idx = Filter.join(rest, subset);
+						List<Integer> head2Idx = Filter.join(rest, complement);
 
 						List<PositiveLiteral> headAtoms1 = Filter.indexBased(headAtoms, head1Idx);
 						List<PositiveLiteral> headAtoms2 = Filter.indexBased(headAtoms, head2Idx);
@@ -91,37 +89,6 @@ public class SelfRestraint {
 			}
 		}
 		return false;
-	}
-
-	static private List<Integer> complement(List<Integer> indexes, int length) {
-		List<Integer> result = new ArrayList<>();
-		for (int i = 0; i < length; i++) {
-			if (!indexes.contains(i)) {
-				result.add(i);
-			}
-		}
-		return result;
-	}
-
-	static private List<Integer> complement(List<Integer> set, List<Integer> subset) {
-
-		List<Integer> result = new ArrayList<>();
-		for (int element : set) {
-			if (!subset.contains(element)) {
-				result.add(element);
-			}
-		}
-		return result;
-	}
-
-	static private List<Integer> join(List<Integer> first, List<Integer> second) {
-
-		List<Integer> result = new ArrayList<>();
-		result.addAll(first);
-		result.addAll(second);
-
-		List<Integer> sorted = result.stream().sorted().collect(Collectors.toList());
-		return sorted;
 	}
 
 }

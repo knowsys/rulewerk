@@ -22,6 +22,7 @@ package org.semanticweb.rulewerk.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Filter {
 	static public <T> List<T> combinationBased(List<T> original, int[] combination) {
@@ -40,5 +41,36 @@ public class Filter {
 			result.add(original.get(index));
 		}
 		return result;
+	}
+	
+	static public List<Integer> complement(List<Integer> indexes, int length) {
+		List<Integer> result = new ArrayList<>();
+		for (int i = 0; i < length; i++) {
+			if (!indexes.contains(i)) {
+				result.add(i);
+			}
+		}
+		return result;
+	}
+
+	static public List<Integer> complement(List<Integer> set, List<Integer> subset) {
+
+		List<Integer> result = new ArrayList<>();
+		for (int element : set) {
+			if (!subset.contains(element)) {
+				result.add(element);
+			}
+		}
+		return result;
+	}
+
+	static public List<Integer> join(List<Integer> first, List<Integer> second) {
+
+		List<Integer> result = new ArrayList<>();
+		result.addAll(first);
+		result.addAll(second);
+
+		List<Integer> sorted = result.stream().sorted().collect(Collectors.toList());
+		return sorted;
 	}
 }
