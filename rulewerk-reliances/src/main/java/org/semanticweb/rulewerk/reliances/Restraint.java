@@ -1,7 +1,6 @@
 package org.semanticweb.rulewerk.reliances;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,48 +31,17 @@ import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
-import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.utils.LiteralList;
 
 public class Restraint {
-
-	// TODO create class to instantiate rule and unify.
-	// TODO unify this with SelfRestraint
-	static private Literal instantiate(Literal literal) {
-		assert !literal.isNegated();
-		List<Term> newTerms = new ArrayList<>();
-		for (Term term : literal.getArguments()) {
-			newTerms.add(Expressions.makeAbstractConstant(term.getName()));
-		}
-		return Expressions.makePositiveLiteral(literal.getPredicate(), newTerms);
-	}
-
-	static private Literal instantiateQuery(Literal literal) {
-		assert !literal.isNegated();
-		List<Term> newTerms = new ArrayList<>();
-		for (Term term : literal.getArguments()) {
-			if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
-				newTerms.add(term);
-			} else {
-				newTerms.add(Expressions.makeAbstractConstant(term.getName()));
-			}
-
-		}
-		return Expressions.makePositiveLiteral(literal.getPredicate(), newTerms);
-	}
-
-	static private Set<ExistentialVariable> getExistentialVariables(List<Literal> literals) {
-		Set<ExistentialVariable> result = new HashSet<>();
-		literals.forEach(literal -> literal.getExistentialVariables().forEach(extVar -> result.add(extVar)));
-		return result;
-	}
 
 	static private boolean isRule1Applicable(Rule rule1RWU, Rule rule2RWU) {
 		List<Literal> instance = new ArrayList<>();
 		List<Literal> query = new ArrayList<>();
-		rule1RWU.getPositiveBodyLiterals().forEach(literal -> instance.add(instantiate(literal)));
-		rule1RWU.getHead().getLiterals().forEach(literal -> query.add(instantiateQuery(literal)));
-		rule2RWU.getPositiveBodyLiterals().forEach(literal -> instance.add(instantiate(literal)));
-		rule2RWU.getHead().getLiterals().forEach(literal -> instance.add(instantiate(literal)));
+		rule1RWU.getPositiveBodyLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
+		rule1RWU.getHead().getLiterals().forEach(literal -> query.add(Instantiator.instantiateQuery(literal)));
+		rule2RWU.getPositiveBodyLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
+		rule2RWU.getHead().getLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
 
 		return !SBCQ.query(instance, query);
 	}
@@ -81,8 +49,8 @@ public class Restraint {
 	static private boolean isheadAtoms21mappableToheadAtoms11(List<Literal> headAtoms11, List<Literal> headAtoms21) {
 		List<Literal> instance = new ArrayList<>();
 		List<Literal> query = new ArrayList<>();
-		headAtoms11.forEach(literal -> instance.add(instantiate(literal)));
-		headAtoms21.forEach(literal -> query.add(instantiateQuery(literal)));
+		headAtoms11.forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
+		headAtoms21.forEach(literal -> query.add(Instantiator.instantiateQuery(literal)));
 
 		return SBCQ.query(instance, query);
 	}
@@ -109,16 +77,6 @@ public class Restraint {
 		return false;
 	}
 
-	static List<ExistentialVariable> filter(List<ExistentialVariable> original, int[] combination) {
-		List<ExistentialVariable> result = new ArrayList<>();
-		for (int i = 0; i < combination.length; i++) {
-			if (combination[i] == 1) {
-				result.add(original.get(i));
-			}
-		}
-		return result;
-	}
-
 	static List<Literal> literalsContainingVariables(List<Literal> literals, List<ExistentialVariable> variables) {
 		List<Literal> result = new ArrayList<>();
 
@@ -137,7 +95,7 @@ public class Restraint {
 	static private boolean conditionForExistentialVariables(List<Literal> headAtomsRule2, List<Literal> headAtomsRule1,
 			List<Literal> headAtoms22, Assignment assignment) {
 
-		Set<ExistentialVariable> extVarsIn22 = getExistentialVariables(headAtoms22);
+		Set<ExistentialVariable> extVarsIn22 = LiteralList.getExistentialVariables(headAtoms22);
 
 		for (Match match : assignment.getMatches()) {
 
@@ -152,7 +110,6 @@ public class Restraint {
 				}
 			}
 		}
-
 		return true;
 	}
 
@@ -174,7 +131,6 @@ public class Restraint {
 	 */
 	// TODO change the assignment algorithm
 	static public boolean restraint(Rule rule1, Rule rule2) {
-
 		// if rule2 is Datalog, it can not be restrained
 		if (rule2.getExistentialVariables().count() == 0) {
 			return false;

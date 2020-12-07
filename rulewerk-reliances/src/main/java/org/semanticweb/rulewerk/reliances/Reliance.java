@@ -32,30 +32,20 @@ import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Variable;
+import org.semanticweb.rulewerk.utils.LiteralList;
 
 public class Reliance {
 
-	static private Set<String> getExistentialVariableNames(Set<Literal> literals) {
-		Set<String> result = new HashSet<>();
-		literals.forEach(literal -> literal.getExistentialVariables().forEach(extVar -> result.add(extVar.getName())));
-		return result;
-	}
-
-	static private Set<String> getUniversalVariableNames(Set<Literal> literals) {
-		Set<String> result = new HashSet<>();
-		literals.forEach(literal -> literal.getUniversalVariables().forEach(uniVar -> result.add(uniVar.getName())));
-		return result;
-	}
-
-	static private boolean shareAnyExistentialVariable(Set<Literal> head11, Set<Literal> body22) {
-		Set<String> vars1 = getExistentialVariableNames(head11);
-		Set<String> vars2 = getUniversalVariableNames(body22);
+	static private boolean shareAnyExistentialVariable(List<Literal> head11, List<Literal> body22) {
+		Set<String> vars1 = LiteralList.getExistentialVariableNames(head11);
+		Set<String> vars2 = LiteralList.getUniversalVariableNames(body22);
 		Set<String> intersection = new HashSet<>(vars1); // copy constructor
 		intersection.retainAll(vars2);
 		return !intersection.isEmpty();
 	}
 
-	static private boolean universalVariableInPositionOfExistentialVariable(Set<Literal> head11, Set<Literal> body22) {
+	static private boolean universalVariableInPositionOfExistentialVariable(List<Literal> head11,
+			List<Literal> body22) {
 		Set<Predicate> predicatesWithExistentialVariables = new HashSet<>();
 		for (Literal literal : head11) {
 			Set<Variable> existentialVariables = literal.getExistentialVariables().collect(Collectors.toSet());
@@ -115,30 +105,30 @@ public class Reliance {
 			// RWU = renamed with unifier
 			if (unifier.success) {
 				UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, true);
-				
-                List<Literal> positiveBodyLiteralsRule1RWU = new ArrayList<>();
-                positiveBodyLiteralsRule1.forEach(literal -> positiveBodyLiteralsRule1RWU.add(renamer.rename(literal)));
 
-                List<Literal> headAtomsRule1RWU = new ArrayList<>();
-                headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
+				List<Literal> positiveBodyLiteralsRule1RWU = new ArrayList<>();
+				positiveBodyLiteralsRule1.forEach(literal -> positiveBodyLiteralsRule1RWU.add(renamer.rename(literal)));
 
-                List<Literal> positiveBodyLiteralsRule2RWU = new ArrayList<>();
-                positiveBodyLiteralsRule2.forEach(literal -> positiveBodyLiteralsRule2RWU.add(renamer.rename(literal)));
+				List<Literal> headAtomsRule1RWU = new ArrayList<>();
+				headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
 
-                List<Literal> headAtomsRule2RWU = new ArrayList<>();
-                headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
+				List<Literal> positiveBodyLiteralsRule2RWU = new ArrayList<>();
+				positiveBodyLiteralsRule2.forEach(literal -> positiveBodyLiteralsRule2RWU.add(renamer.rename(literal)));
 
-				Set<Literal> headAtoms11 = new HashSet<>();
+				List<Literal> headAtomsRule2RWU = new ArrayList<>();
+				headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
+
+				List<Literal> headAtoms11 = new ArrayList<>();
 				headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtomsRule1RWU.get(idx)));
 
-				Set<Literal> headAtoms12 = new HashSet<>();
+				List<Literal> headAtoms12 = new ArrayList<>();
 				headAtoms12Idx.forEach(idx -> headAtoms12.add(headAtomsRule1RWU.get(idx)));
 
-				Set<Literal> positiveBodyLiterals21 = new HashSet<>();
+				List<Literal> positiveBodyLiterals21 = new ArrayList<>();
 				positiveBodyLiterals21Idx
 						.forEach(idx -> positiveBodyLiterals21.add(positiveBodyLiteralsRule2RWU.get(idx)));
 
-				Set<Literal> positiveBodyLiterals22 = new HashSet<>();
+				List<Literal> positiveBodyLiterals22 = new ArrayList<>();
 				positiveBodyLiterals22Idx
 						.forEach(idx -> positiveBodyLiterals22.add(positiveBodyLiteralsRule2RWU.get(idx)));
 

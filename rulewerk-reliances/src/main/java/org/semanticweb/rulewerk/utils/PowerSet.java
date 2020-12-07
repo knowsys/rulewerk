@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.reliances;
+package org.semanticweb.rulewerk.utils;
 
 /*-
  * #%L
@@ -24,11 +24,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * A class to iterate over all possible combination of numbers ([-1,
- * maxValue-1]) of size length. As an example, these are all the combinations of
- * numbers up to 3 of length 2: [-1, -1], [0, -1], [1, -1], [2, -1], [-1, 0],
- * [0, 0], [1, 0], [2, 0], [-1, 1], [0, 1], [1, 1], [2, 1], [-1, 2], [0, 2], [1,
- * 2], [2, 2]
+ * A class to iterate over all possible subsets of a set.
  * 
  * @author Larry Gonzalez
  *
@@ -48,6 +44,18 @@ public class PowerSet implements Iterator<int[]> {
 			start[i] = 0;
 		}
 		stop = false;
+	}
+
+	static public int[] complement(int[] combination) {
+		int[] result = new int[combination.length];
+		for (int i = 0; i < combination.length; i++) {
+			if (combination[i] == 0) {
+				result[i] = 1;
+			} else {
+				result[i] = 0;
+			}
+		}
+		return result;
 	}
 
 	@Override
