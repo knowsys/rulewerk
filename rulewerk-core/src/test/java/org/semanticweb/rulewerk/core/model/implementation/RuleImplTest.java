@@ -62,6 +62,9 @@ public class RuleImplTest {
 	final PositiveLiteral posLitQUniY = Expressions.makePositiveLiteral("q", uniY);
 	final PositiveLiteral posLitRUniX = Expressions.makePositiveLiteral("r", uniX);
 
+	final PositiveLiteral posLitPExtY = Expressions.makePositiveLiteral("p", extY);
+	final PositiveLiteral posLitRUniY = Expressions.makePositiveLiteral("r", uniY);
+
 	final PositiveLiteral posLitPUniXUniZ = Expressions.makePositiveLiteral("p", uniX, uniZ);
 	final PositiveLiteral posLitPUniYUniX = Expressions.makePositiveLiteral("p", uniY, uniX);
 	final PositiveLiteral posLitPUniXExtY = Expressions.makePositiveLiteral("p", uniX, extY);
@@ -170,9 +173,9 @@ public class RuleImplTest {
 
 	@Test
 	public void getPieces00() {
-
-		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniX);
-		final Conjunction<Literal> body = Expressions.makeConjunction(posLitQUniX);
+		// q(?X):- p(?X) .
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitQUniX);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitPUniX);
 
 		final Rule rule = new RuleImpl(head, body);
 
@@ -183,10 +186,11 @@ public class RuleImplTest {
 
 	@Test
 	public void getPieces01() {
-
+		// p(?X,!Y),q(?X,!Y):- r(?X) .
 		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniXExtY, posLitQUniXExtY);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitRUniX);
 
-		final Rule rule = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
+		final Rule rule = new RuleImpl(head, body);
 
 		Set<Piece> pieces = rule.getPieces();
 		assertEquals(pieces.size(), 1);
@@ -195,10 +199,11 @@ public class RuleImplTest {
 
 	@Test
 	public void getPieces02() {
-
+		// p(?X,!Y),q(?X,!Z):- r(?X) .
 		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniXExtY, posLitPUniXExtZ);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitRUniX);
 
-		final Rule rule = new RuleImpl(head, new ConjunctionImpl<>(Arrays.asList(posLitRUniX)));
+		final Rule rule = new RuleImpl(head, body);
 
 		Piece piece1 = new PieceImpl(Expressions.makePositiveConjunction(posLitPUniXExtY));
 		Piece piece2 = new PieceImpl(Expressions.makePositiveConjunction(posLitPUniXExtZ));
@@ -209,4 +214,47 @@ public class RuleImplTest {
 		assertTrue(pieces.contains(piece2));
 	}
 
+	@Test
+	public void unconnectedPiece01() {
+		// q(?X):- p(?X) .
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitQUniX);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitPUniX);
+
+		final Rule rule = new RuleImpl(head, body);
+
+		assertFalse(rule.containsUnconnectedPieces());
+	}
+
+	@Test
+	public void unconnectedPiece02() {
+		// p(?X,!Y),q(?X,!Y):- r(?X) .
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPUniXExtY, posLitQUniXExtY);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitRUniX);
+
+		final Rule rule = new RuleImpl(head, body);
+
+		assertFalse(rule.containsUnconnectedPieces());
+	}
+
+	@Test
+	public void unconnectedPiece03() {
+		// p(!Y):- p(?X) .
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitPExtY);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitPUniX);
+
+		final Rule rule = new RuleImpl(head, body);
+
+		assertTrue(rule.containsUnconnectedPieces());
+	}
+
+	@Test
+	public void unconnectedPiece04() {
+		// q(?X,!Y), r(!Y):- p(?X) .
+		final Conjunction<PositiveLiteral> head = Expressions.makePositiveConjunction(posLitQUniXExtY, posLitRUniX);
+		final Conjunction<Literal> body = Expressions.makeConjunction(posLitPUniX);
+
+		final Rule rule = new RuleImpl(head, body);
+
+		assertFalse(rule.containsUnconnectedPieces());
+	}
 }
