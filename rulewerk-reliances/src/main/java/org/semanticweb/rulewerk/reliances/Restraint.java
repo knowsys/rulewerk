@@ -194,11 +194,12 @@ public class Restraint {
 	 */
 	static public boolean restraint(Rule rule1, Rule rule2) {
 
-//		if (rule1.equals(rule2) && SelfRestraint.restraint(rule1)) {
-//		return true;
-//	}
+		// if rule2 is Datalog, it can not be restrained
+		if (rule2.getExistentialVariables().count() > 0) {
+			return false;
+		}
+
 		if (rule1.equals(rule2)) {
-			System.out.println("CALLING SELF RESTRAINT");
 			return SelfRestraint.restraint(rule1);
 		}
 
