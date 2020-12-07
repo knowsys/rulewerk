@@ -44,6 +44,15 @@ public class Assignment {
 		this.assigneeLength = assigneeLength;
 	}
 
+	public Assignment(Assignment old, List<Integer> previousIndexes, int previousAssignedLengnth) {
+		matches = new ArrayList<>();
+		for (Match oldMatch : old.getMatches()) {
+			matches.add(new Match(previousIndexes.get(oldMatch.origin), oldMatch.destination));
+		}
+		this.assignedLength = previousAssignedLengnth;
+		this.assigneeLength = old.assigneeLength;
+	}
+
 	boolean isValid() {
 		return matches.size() > 0;
 	}
