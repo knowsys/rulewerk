@@ -68,7 +68,6 @@ public class LiteralList {
 
 		for (int i = 0; i < literals.size(); i++) {
 			Predicate pred = literals.get(i).getPredicate();
-			System.out.println(pred);
 			if (result.containsKey(pred)) {
 				result.get(pred).add(i);
 			} else {
