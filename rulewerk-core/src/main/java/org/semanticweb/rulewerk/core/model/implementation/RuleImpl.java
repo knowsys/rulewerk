@@ -140,36 +140,37 @@ public class RuleImpl implements Rule {
 
 		List<PositiveLiteral> literals = getHead().getLiterals();
 
-		Graph<PositiveLiteral> g = new Graph<>();
+		Graph<Integer> g = new Graph<>();
 		for (int i = 0; i < literals.size() - 1; i++) {
 			for (int j = i + 1; j < literals.size(); j++) {
 				PositiveLiteral first = literals.get(i);
 				PositiveLiteral second = literals.get(j);
 
-				Set<ExistentialVariable> existentialVariablesInFirst = new HashSet<>();
-				first.getExistentialVariables().forEach(extVar -> existentialVariablesInFirst.add(extVar));
-
-				Set<ExistentialVariable> existentialVariablesInSecond = new HashSet<>();
-				second.getExistentialVariables().forEach(extVar -> existentialVariablesInSecond.add(extVar));
+				Set<ExistentialVariable> existentialVariablesInFirst = first.getExistentialVariables()
+						.collect(Collectors.toCollection(HashSet::new));
+				Set<ExistentialVariable> existentialVariablesInSecond = second.getExistentialVariables()
+						.collect(Collectors.toCollection(HashSet::new));
 
 				existentialVariablesInFirst.retainAll(existentialVariablesInSecond);
 				if (existentialVariablesInFirst.size() > 0) {
-					g.addEdge(first, second);
+					g.addEdge(i, j);
 				}
 			}
 		}
 
 		Set<Piece> result = new HashSet<>();
-		Set<PositiveLiteral> visitedLiterals = new HashSet<>();
+		Set<Integer> visitedLiterals = new HashSet<>();
 
-		for (PositiveLiteral literal : literals) {
-			if (!visitedLiterals.contains(literal)) {
-				Set<PositiveLiteral> closure = g.getReachableNodes(literal);
-				result.add(new PieceImpl(new ConjunctionImpl<PositiveLiteral>(new ArrayList<>(closure))));
-				visitedLiterals.addAll(closure);
+		for (int i = 0; i < literals.size(); i++) {
+			if (!visitedLiterals.contains(i)) {
+				List<Integer> reachableNodes = g.getReachableNodes(i).stream().sorted().collect(Collectors.toList());
+				List<PositiveLiteral> reachableLiterals = new ArrayList<>();
+				reachableNodes.forEach(idx -> reachableLiterals.add(literals.get(idx)));
+
+				result.add(new PieceImpl(new ConjunctionImpl<PositiveLiteral>(reachableLiterals)));
+				visitedLiterals.addAll(reachableNodes);
 			}
 		}
-
 		return result;
 	}
 
