@@ -172,6 +172,7 @@ public class Restraint {
 	 * @param rule2
 	 * @return True if rule1 restraints rule1.
 	 */
+	// TODO change the assignment algorithm
 	static public boolean restraint(Rule rule1, Rule rule2) {
 
 		// if rule2 is Datalog, it can not be restrained
