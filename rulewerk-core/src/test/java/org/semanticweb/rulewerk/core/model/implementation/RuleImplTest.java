@@ -192,11 +192,10 @@ public class RuleImplTest {
 
 		final Rule rule = new RuleImpl(head, body);
 
-		Piece piece1 = new PieceImpl(head);
 		Set<Piece> pieces = rule.getPieces();
 
 		assertEquals(pieces.size(), 1);
-		assertTrue(pieces.contains(piece1));
+		assertTrue(pieces.contains(new PieceImpl(head)));
 	}
 
 	@Test
