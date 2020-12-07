@@ -35,10 +35,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("q(?X,!Y) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("q(?X,!Y) :- r(?X) .");
 
-		assertFalse(Restraint.restraint(rule1, rule1));
 		assertFalse(Restraint.restraint(rule1, rule2));
 		assertFalse(Restraint.restraint(rule2, rule1));
-		assertFalse(Restraint.restraint(rule2, rule2));
 	}
 
 	@Test
@@ -46,10 +44,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("q(?X,?Y) :- p(?X,?Y) .");
 		Rule rule2 = RuleParser.parseRule("q(?X,!Y) :- r(?X) .");
 
-		assertFalse(Restraint.restraint(rule1, rule1));
 		assertTrue(Restraint.restraint(rule1, rule2));
 		assertFalse(Restraint.restraint(rule2, rule1));
-		assertFalse(Restraint.restraint(rule2, rule2));
 	}
 
 	@Test
@@ -57,24 +53,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("b(?X,!Y,!Y) :- a(?X) .");
 		Rule rule2 = RuleParser.parseRule("b(?X,!Y,!Z) :- a(?X) .");
 
-		assertFalse(Restraint.restraint(rule1, rule1));
 		assertTrue(Restraint.restraint(rule1, rule2));
 		assertFalse(Restraint.restraint(rule2, rule1));
-		assertFalse(Restraint.restraint(rule2, rule2));
-	}
-
-	@Test
-	public void singleUnconnectedPieceTest() throws Exception {
-		Rule rule1 = RuleParser.parseRule("b(!Y) :- a(?X) .");
-
-		assertFalse(Restraint.restraint(rule1, rule1));
-	}
-
-	@Test
-	public void unconnectedPieceTest() throws Exception {
-		Rule rule1 = RuleParser.parseRule("b(?X),c(!Y) :- a(?X) .");
-
-		assertTrue(Restraint.restraint(rule1, rule1));
 	}
 
 	@Test
@@ -82,10 +62,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("q(!Y,?X), q(?X,!Z) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("q(?X,!Y) :- r(?X) .");
 
-		assertFalse(Restraint.restraint(rule1, rule1));
 		assertTrue(Restraint.restraint(rule1, rule2));
 		assertFalse(Restraint.restraint(rule2, rule1));
-		assertFalse(Restraint.restraint(rule2, rule2));
 	}
 
 	@Test
@@ -93,10 +71,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("q(!Y,?X), q(?X,!Z) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("q(?X,!Y), s(!Y) :- r(?X) .");
 
-		assertFalse(Restraint.restraint(rule1, rule1));
 		assertFalse(Restraint.restraint(rule1, rule2));
 		assertTrue(Restraint.restraint(rule2, rule1));
-		assertFalse(Restraint.restraint(rule2, rule2));
 	}
 
 	@Test
@@ -104,10 +80,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("q(!Y,?X), q(?X,?Z) :- p(?X,?Z) .");
 		Rule rule2 = RuleParser.parseRule("q(?X,!Y), s(!Y) :- r(?X) .");
 
-		assertTrue(Restraint.restraint(rule1, rule1));
 		assertTrue(Restraint.restraint(rule1, rule2));
 		assertFalse(Restraint.restraint(rule2, rule1));
-		assertFalse(Restraint.restraint(rule2, rule2));
 	}
 
 	@Test
@@ -115,10 +89,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("q(?X,!Y) :- r(?X) .");
 		Rule rule2 = RuleParser.parseRule("q(?X,!Z), q(?Y,!Z) :- p(?X,?Y) .");
 
-		assertFalse(Restraint.restraint(rule1, rule1));
 		assertFalse(Restraint.restraint(rule1, rule2));
 		assertTrue(Restraint.restraint(rule2, rule1));
-		assertTrue(Restraint.restraint(rule2, rule2));
 	}
 
 	@Test
@@ -126,17 +98,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("b(?X,!Y,!Y),c(!Y,!Z) :- a(?X) .");
 		Rule rule2 = RuleParser.parseRule("b(?X,!Y,!Z),c(!Z,!Z) :- a(?X) .");
 
-		assertFalse(Restraint.restraint(rule1, rule1));
 //		assertFalse(Restraint.restraint(rule1, rule2)); // DOES NOT WORK
 //		assertFalse(Restraint.restraint(rule2, rule1)); // DOES NOT WORK
-		assertFalse(Restraint.restraint(rule2, rule2));
-	}
-
-	@Test
-	public void MarkussExampleTest() throws Exception {
-		Rule rule1 = RuleParser.parseRule("r(?X,!V,!W), r(?X,?X,!W), a(!V) :- b(?X) .");
-
-		assertTrue(Restraint.restraint(rule1, rule1));
 	}
 
 	@Test
@@ -144,10 +107,8 @@ public class RestraintTest {
 		Rule rule1 = RuleParser.parseRule("b(?X,?X) :- a(?X) .");
 		Rule rule2 = RuleParser.parseRule("b(?X,!Y), c(!Y) :- a(?X) .");
 
-		assertFalse(Restraint.restraint(rule1, rule1));
 		assertTrue(Restraint.restraint(rule1, rule2));
 		assertFalse(Restraint.restraint(rule2, rule1));
-		assertFalse(Restraint.restraint(rule2, rule2));
 	}
 
 }
