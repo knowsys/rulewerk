@@ -101,15 +101,6 @@ public class Restraint {
 		return true;
 	}
 
-	static boolean containsAnyExistential(List<Term> first, List<ExistentialVariable> second) {
-		for (Term t : second) {
-			if (first.contains(t)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * Checker for restraining relation.
 	 * 
@@ -154,7 +145,6 @@ public class Restraint {
 					// We transform the assignment to keep the old indexes
 					Assignment transformed = new Assignment(assignment, literaltoUnifyIdx, headAtomsRule2.size());
 
-
 					List<Integer> headAtoms11Idx = transformed.indexesInAssignedListToBeUnified();
 					List<Integer> headAtoms12Idx = transformed.indexesInAssignedListToBeIgnored();
 					List<Integer> headAtoms21Idx = transformed.indexesInAssigneeListToBeUnified();
@@ -189,13 +179,11 @@ public class Restraint {
 						List<Literal> headAtoms22 = new ArrayList<>();
 						headAtoms22Idx.forEach(idx -> headAtoms22.add(headAtomsRule2RWU.get(idx)));
 
-						boolean c1 = isRule1Applicable(rule1RWU, rule2RWU);
-						boolean c2 = !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, transformed);
-						boolean c3 = conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
-								transformed);
-						boolean c4 = isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21);
-
-						if (c1 && c2 && c3 && c4) {
+						if (isRule1Applicable(rule1RWU, rule2RWU)
+								&& !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, transformed)
+								&& conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
+										transformed)
+								&& isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21)) {
 							return true;
 						}
 
