@@ -32,6 +32,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 public class SelfRestraint {
 
+	// TODO create class to instantiate query
 	static private Literal instantiate(Literal literal) {
 		assert !literal.isNegated();
 		List<Term> newTerms = new ArrayList<>();
@@ -55,6 +56,7 @@ public class SelfRestraint {
 		return Expressions.makePositiveLiteral(literal.getPredicate(), newTerms);
 	}
 
+	// TODO create util class for the combination
 	static private int[] complement(int[] combination) {
 		int[] result = new int[combination.length];
 		for (int i = 0; i < combination.length; i++) {
@@ -67,6 +69,7 @@ public class SelfRestraint {
 		return result;
 	}
 
+	// TODO create util class for the filtering
 	static <T> List<T> filter(List<T> original, int[] combination) {
 		List<T> result = new ArrayList<>();
 		for (int i = 0; i < combination.length; i++) {
@@ -83,8 +86,9 @@ public class SelfRestraint {
 	 * @return True if the rule restraints itself.
 	 */
 	static public boolean restraint(Rule rule) {
-//		System.out.println("Rule : " + rule);
-//		System.out.println();
+		if (rule.containsUnconnectedPieces()) {
+			return true;
+		}
 
 		List<PositiveLiteral> headAtoms = rule.getHead().getLiterals();
 		int headSize = headAtoms.size();
@@ -95,20 +99,12 @@ public class SelfRestraint {
 			int[] toAssignIdx = powerSet.next();
 			int[] assigneeIdx = complement(toAssignIdx);
 
-//			System.out.println(Arrays.toString(toAssignIdx));
-//			System.out.println(Arrays.toString(assigneeIdx));
-
 			List<PositiveLiteral> headAtomsToAssign = filter(headAtoms, toAssignIdx);
 			List<PositiveLiteral> headAtomsAssignee = filter(headAtoms, assigneeIdx);
 
 			if (headAtomsToAssign.size() > 0 && headAtomsAssignee.size() > 0) {
 				List<Literal> instance = new ArrayList<>();
 				List<Literal> query = new ArrayList<>();
-
-//				System.out.println(Arrays.toString(headAtomsToAssign.toArray()));
-//				System.out.println(Arrays.toString(headAtomsAssignee.toArray()));
-//				System.out.println(Arrays.toString(instance.toArray()));
-//				System.out.println(Arrays.toString(query.toArray()));
 
 				headAtomsAssignee.forEach(literal -> instance.add(instantiate(literal)));
 				headAtomsToAssign.forEach(literal -> query.add(instantiateQuery(literal)));
