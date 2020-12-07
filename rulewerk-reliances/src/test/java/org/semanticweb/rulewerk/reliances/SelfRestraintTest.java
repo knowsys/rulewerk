@@ -179,14 +179,14 @@ public class SelfRestraintTest {
 	}
 
 	@Test
-	public void unifyTwoAtomsIntoOneTest01() throws Exception {
+	public void existentialRule16() throws Exception {
 		Rule rule = RuleParser.parseRule("q(?X,!U,!V), q(?Y,!V,!U), q(?Z,!V,!W) :- p(?X,?Y,?Z) .");
 
 		assertTrue(SelfRestraint.restraint(rule));
 	}
 
 	@Test
-	public void unifyTwoAtomsIntoOneTest02() throws Exception {
+	public void existentialRule17() throws Exception {
 		Rule rule = RuleParser.parseRule("q(?X,?Y), q(?X,!U), q(?Y,!U) :- p(?X,?Y) .");
 
 		assertTrue(Restraint.restraint(rule, rule));
