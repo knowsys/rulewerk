@@ -13,4 +13,12 @@ public class Filter {
 		}
 		return result;
 	}
+
+	static public <T> List<T> indexBased(List<T> original, List<Integer> positions) {
+		List<T> result = new ArrayList<>();
+		for (int index : positions) {
+			result.add(original.get(index));
+		}
+		return result;
+	}
 }
