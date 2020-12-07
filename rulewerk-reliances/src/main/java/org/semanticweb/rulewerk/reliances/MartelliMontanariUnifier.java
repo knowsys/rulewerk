@@ -78,11 +78,11 @@ public class MartelliMontanariUnifier {
 	 *                   list while assignment[i] is the location in the second
 	 *                   list. @see AssignmentIterable.AssignmentIterarot.next
 	 */
-	public MartelliMontanariUnifier(List<Literal> first, List<Literal> second, Assignment assignment) {
+	public <T1, T2> MartelliMontanariUnifier(List<T1> first, List<T2> second, Assignment assignment) {
 		unifier = new HashMap<>();
 		success = true;
 		for (Match match : assignment.getMatches()) {
-			unify(first.get(match.getOrigin()), second.get(match.getDestination()));
+			unify((Literal) first.get(match.getOrigin()), (Literal) second.get(match.getDestination()));
 		}
 	}
 

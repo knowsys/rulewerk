@@ -29,6 +29,7 @@ import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
  */
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
@@ -75,9 +76,9 @@ public class Restraint {
 		List<Literal> instance = new ArrayList<>();
 		List<Literal> query = new ArrayList<>();
 		rule1RWU.getPositiveBodyLiterals().forEach(literal -> instance.add(instantiate(literal)));
-		rule1RWU.getHeadAtoms().forEach(literal -> query.add(instantiateQuery(literal)));
+		rule1RWU.getHead().getLiterals().forEach(literal -> query.add(instantiateQuery(literal)));
 		rule2RWU.getPositiveBodyLiterals().forEach(literal -> instance.add(instantiate(literal)));
-		rule2RWU.getHeadAtoms().forEach(literal -> instance.add(instantiate(literal)));
+		rule2RWU.getHead().getLiterals().forEach(literal -> instance.add(instantiate(literal)));
 
 		return !SBCQ.query(instance, query);
 	}
@@ -96,8 +97,8 @@ public class Restraint {
 	 * @return true if an universal variable from head21 is being mapped into an
 	 *         existential variable from head11, which makes the unifier invalid.
 	 */
-	static private boolean mappingUniversalintoExistential(List<Literal> headAtomsRule2, List<Literal> headAtomsRule1,
-			Assignment assignment) {
+	static private boolean mappingUniversalintoExistential(List<PositiveLiteral> headAtomsRule2,
+			List<PositiveLiteral> headAtomsRule1, Assignment assignment) {
 
 		for (Match match : assignment.getMatches()) {
 			List<Term> fromHead2 = headAtomsRule2.get(match.getOrigin()).getArguments();
@@ -204,13 +205,8 @@ public class Restraint {
 		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, 1);
 		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, 2);
 
-		/* Get the list of Literals/Atoms from the rules. */
-//		List<Literal> positiveBodyLiteralsRule1 = renamedRule1.getPositiveBodyLiterals();
-//		List<Literal> negativeBodyLiteralsRule1 = renamedRule1.getNegativeBodyLiterals();
-		List<Literal> headAtomsRule1 = renamedRule1.getHeadAtoms();
-//		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals();
-//		List<Literal> negativeBodyLiteralsRule2 = renamedRule2.getNegativeBodyLiterals();
-		List<Literal> headAtomsRule2 = renamedRule2.getHeadAtoms();
+		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
+		List<PositiveLiteral> headAtomsRule2 = renamedRule2.getHead().getLiterals();
 
 //		System.out.println("Rule1: ");
 //		System.out.println("positiveBodyLiteralsRule1: " + Arrays.toString(positiveBodyLiteralsRule1.toArray()));
@@ -258,12 +254,11 @@ public class Restraint {
 				System.out.println("RWU Rule1: " + rule1RWU);
 				System.out.println("RWU Rule2: " + rule2RWU);
 
-//				List<Literal> positiveBodyLiteralsRule1RWU = renamer.rename(positiveBodyLiteralsRule1);
-//				List<Literal> negativeBodyLiteralsRule1RWU = renamer.rename(negativeBodyLiteralsRule2);
-				List<Literal> headAtomsRule1RWU = renamer.rename(headAtomsRule1);
-//				List<Literal> positiveBodyLiteralsRule2RWU = renamer.rename(positiveBodyLiteralsRule2);
-//				List<Literal> negativeBodyLiteralsRule2RWU = renamer.rename(negativeBodyLiteralsRule2);
-				List<Literal> headAtomsRule2RWU = renamer.rename(headAtomsRule2);
+				List<Literal> headAtomsRule1RWU = new ArrayList<>();
+				headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
+
+				List<Literal> headAtomsRule2RWU = new ArrayList<>();
+				headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
 
 				// check if we can use Lists here
 				List<Literal> headAtoms11 = new ArrayList<>();

@@ -24,6 +24,7 @@ import java.util.List;
  */
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
@@ -66,8 +67,8 @@ public class SelfRestraint {
 		return result;
 	}
 
-	static List<Literal> filter(List<Literal> original, int[] combination) {
-		List<Literal> result = new ArrayList<>();
+	static <T> List<T> filter(List<T> original, int[] combination) {
+		List<T> result = new ArrayList<>();
 		for (int i = 0; i < combination.length; i++) {
 			if (combination[i] == 1) {
 				result.add(original.get(i));
@@ -85,20 +86,20 @@ public class SelfRestraint {
 //		System.out.println("Rule : " + rule);
 //		System.out.println();
 
-		List<Literal> headAtoms = rule.getHeadAtoms();
+		List<PositiveLiteral> headAtoms = rule.getHead().getLiterals();
 		int headSize = headAtoms.size();
 
 		PowerSet powerSet = new PowerSet(headSize);
 
 		while (powerSet.hasNext()) {
 			int[] toAssignIdx = powerSet.next();
-			int[] assigneeIdx = complement(toAssignIdx);			
-			
+			int[] assigneeIdx = complement(toAssignIdx);
+
 //			System.out.println(Arrays.toString(toAssignIdx));
 //			System.out.println(Arrays.toString(assigneeIdx));
 
-			List<Literal> headAtomsToAssign = filter(headAtoms, toAssignIdx);
-			List<Literal> headAtomsAssignee = filter(headAtoms, assigneeIdx);
+			List<PositiveLiteral> headAtomsToAssign = filter(headAtoms, toAssignIdx);
+			List<PositiveLiteral> headAtomsAssignee = filter(headAtoms, assigneeIdx);
 
 			if (headAtomsToAssign.size() > 0 && headAtomsAssignee.size() > 0) {
 				List<Literal> instance = new ArrayList<>();

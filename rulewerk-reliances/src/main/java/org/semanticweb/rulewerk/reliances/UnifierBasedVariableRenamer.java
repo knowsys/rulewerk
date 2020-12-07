@@ -84,9 +84,4 @@ public class UnifierBasedVariableRenamer {
 		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
 	}
 
-	public List<Literal> rename(List<Literal> literals) {
-		List<Literal> result = new ArrayList<>();
-		literals.forEach(literal -> result.add(rename(literal)));
-		return result;
-	}
 }

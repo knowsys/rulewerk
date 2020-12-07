@@ -1,5 +1,6 @@
 package org.semanticweb.rulewerk.reliances;
 
+import java.util.ArrayList;
 //import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  */
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Variable;
@@ -91,9 +93,9 @@ public class Reliance {
 		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, 2);
 
 		List<Literal> positiveBodyLiteralsRule1 = renamedRule1.getPositiveBodyLiterals();
-		List<Literal> headAtomsRule1 = renamedRule1.getHeadAtoms();
+		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
 		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals();
-		List<Literal> headAtomsRule2 = renamedRule2.getHeadAtoms();
+		List<PositiveLiteral> headAtomsRule2 = renamedRule2.getHead().getLiterals();
 
 		int sizeHead1 = headAtomsRule1.size();
 		int sizePositiveBody2 = positiveBodyLiteralsRule2.size();
@@ -113,10 +115,18 @@ public class Reliance {
 			// RWU = renamed with unifier
 			if (unifier.success) {
 				UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, true);
-				List<Literal> positiveBodyLiteralsRule1RWU = renamer.rename(positiveBodyLiteralsRule1);
-				List<Literal> headAtomsRule1RWU = renamer.rename(headAtomsRule1);
-				List<Literal> positiveBodyLiteralsRule2RWU = renamer.rename(positiveBodyLiteralsRule2);
-				List<Literal> headAtomsRule2RWU = renamer.rename(headAtomsRule2);
+				
+                List<Literal> positiveBodyLiteralsRule1RWU = new ArrayList<>();
+                positiveBodyLiteralsRule1.forEach(literal -> positiveBodyLiteralsRule1RWU.add(renamer.rename(literal)));
+
+                List<Literal> headAtomsRule1RWU = new ArrayList<>();
+                headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
+
+                List<Literal> positiveBodyLiteralsRule2RWU = new ArrayList<>();
+                positiveBodyLiteralsRule2.forEach(literal -> positiveBodyLiteralsRule2RWU.add(renamer.rename(literal)));
+
+                List<Literal> headAtomsRule2RWU = new ArrayList<>();
+                headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
 
 				Set<Literal> headAtoms11 = new HashSet<>();
 				headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtomsRule1RWU.get(idx)));
