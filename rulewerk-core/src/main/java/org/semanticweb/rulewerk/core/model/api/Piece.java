@@ -39,4 +39,12 @@ public interface Piece extends SyntaxObject {
 	 */
 	Conjunction<PositiveLiteral> getLiterals();
 
+	/**
+	 * An unconnected piece is a piece s.t. no universally quantified variable
+	 * occurs into it.
+	 * 
+	 * @return True if the piece is unconnected
+	 */
+	boolean isUnconnected();
+
 }

@@ -45,6 +45,7 @@ import org.semanticweb.rulewerk.core.utils.Graph;
  * bodies.
  * 
  * @author Irina Dragoste
+ * @author Larry Gonzalez
  *
  */
 public class RuleImpl implements Rule {
@@ -196,6 +197,16 @@ public class RuleImpl implements Rule {
 		}
 
 		return result;
+	}
+
+	@Override
+	public boolean containsUnconnectedPieces() {
+		for (Piece p : getPieces()) {
+			if (p.isUnconnected()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

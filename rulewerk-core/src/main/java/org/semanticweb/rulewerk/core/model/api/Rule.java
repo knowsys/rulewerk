@@ -31,6 +31,7 @@ import java.util.Set;
  * considered existentially quantified.
  * 
  * @author Markus Krötzsch
+ * @author Larry Gonzalez
  *
  */
 public interface Rule extends SyntaxObject, Statement {
@@ -58,5 +59,12 @@ public interface Rule extends SyntaxObject, Statement {
 	 * @return List of Piece
 	 */
 	Set<Piece> getPieces();
+
+	/**
+	 * @see {@code Piece.isUnconnected}
+	 *
+	 * @return True if the rule contains an unconnected piece.
+	 */
+	boolean containsUnconnectedPieces();
 
 }

@@ -1,6 +1,5 @@
 package org.semanticweb.rulewerk.core.model.implementation;
 
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -95,6 +94,17 @@ public class PieceImpl implements Piece {
 	@Override
 	public Stream<Term> getTerms() {
 		return this.literals.getTerms().distinct();
+	}
+
+	@Override
+	public boolean isUnconnected() {
+		for (PositiveLiteral literal : this.literals) {
+			if (literal.getUniversalVariables().count() > 0) {
+				return false;
+			}
+		}
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 }
