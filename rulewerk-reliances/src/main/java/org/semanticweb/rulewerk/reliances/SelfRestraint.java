@@ -90,5 +90,4 @@ public class SelfRestraint {
 		}
 		return false;
 	}
-
 }
