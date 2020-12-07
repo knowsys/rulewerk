@@ -37,6 +37,8 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 public class Restraint {
 
+	// TODO create class to instantiate rule and unify.
+	// TODO unify this with SelfRestraint
 	static private Literal instantiate(Literal literal) {
 		assert !literal.isNegated();
 		List<Term> newTerms = new ArrayList<>();
@@ -195,7 +197,7 @@ public class Restraint {
 	static public boolean restraint(Rule rule1, Rule rule2) {
 
 		// if rule2 is Datalog, it can not be restrained
-		if (rule2.getExistentialVariables().count() > 0) {
+		if (rule2.getExistentialVariables().count() == 0) {
 			return false;
 		}
 
@@ -208,17 +210,6 @@ public class Restraint {
 
 		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
 		List<PositiveLiteral> headAtomsRule2 = renamedRule2.getHead().getLiterals();
-
-//		System.out.println("Rule1: ");
-//		System.out.println("positiveBodyLiteralsRule1: " + Arrays.toString(positiveBodyLiteralsRule1.toArray()));
-//		System.out.println("negativeBodyLiteralsRule1: " + Arrays.toString(negativeBodyLiteralsRule1.toArray()));
-//		System.out.println("headAtomsRule1: " + Arrays.toString(headAtomsRule1.toArray()));
-//		System.out.println();
-//		System.out.println("Rule2: ");
-//		System.out.println("positiveBodyLiteralsRule2: " + Arrays.toString(positiveBodyLiteralsRule2.toArray()));
-//		System.out.println("negativeBodyLiteralsRule2: " + Arrays.toString(negativeBodyLiteralsRule2.toArray()));
-//		System.out.println("headAtomsRule2: " + Arrays.toString(headAtomsRule2.toArray()));
-//		System.out.println();
 
 		/* In order to decide what to match with what, get the size of each head. */
 		int headSizeRule1 = headAtomsRule1.size();
@@ -261,7 +252,6 @@ public class Restraint {
 				List<Literal> headAtomsRule2RWU = new ArrayList<>();
 				headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
 
-				// check if we can use Lists here
 				List<Literal> headAtoms11 = new ArrayList<>();
 				headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtomsRule1RWU.get(idx)));
 
