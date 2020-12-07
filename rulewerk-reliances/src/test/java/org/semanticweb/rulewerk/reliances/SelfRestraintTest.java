@@ -126,7 +126,7 @@ public class SelfRestraintTest {
 	public void existentialRule08() throws Exception {
 		Rule rule = RuleParser.parseRule("q(!Y,?X), q(?X,?Z) :- p(?X,?Z) .");
 
-		assertFalse(SelfRestraint.restraint(rule));
+		assertTrue(SelfRestraint.restraint(rule));
 	}
 
 	@Test
@@ -173,14 +173,7 @@ public class SelfRestraintTest {
 
 	@Test
 	public void existentialRule15() throws Exception {
-		Rule rule = RuleParser.parseRule("r(?X, !U, !V), r(?X, !W, ?V), s(!U, !V, !W) :- b(?X,?Y) .");
-
-		assertFalse(SelfRestraint.restraint(rule));
-	}
-
-	@Test
-	public void existentialRule16() throws Exception {
-		Rule rule = RuleParser.parseRule("r(?X, !U, !V), r(?X, !W, ?V), s(!U, !V, !W) :- b(?X,?Y) .");
+		Rule rule = RuleParser.parseRule("r(?X, !U, !V), r(?X, !W, !V), s(!U, !V, !W) :- b(?X) .");
 
 		assertFalse(SelfRestraint.restraint(rule));
 	}
@@ -191,25 +184,11 @@ public class SelfRestraintTest {
 
 		assertTrue(SelfRestraint.restraint(rule));
 	}
-	
+
 	@Test
 	public void unifyTwoAtomsIntoOneTest02() throws Exception {
-		//UP TO THIS POINT THIS IS TRUE BY THE WRONG ARGUMENT
 		Rule rule = RuleParser.parseRule("q(?X,?Y), q(?X,!U), q(?Y,!U) :- p(?X,?Y) .");
-		/**
-		 * Can I create two rules and call Restraint()?
-		 * for example with
-		 * Rule rule1 = RuleParser.parseRule("q(?X,?Y), :- p(?X,?Y) .");
-		 * Rule rule2 = RuleParser.parseRule("q(?X,!U), q(?Y,!U) :- p(?X,?Y) .");
-		 * 
-		 * But it could be that we are creating an unconnected piece in R2
-		 * Well that case occurs only when R1 = R2, so it should not happen again
-		 * 
-		 * Also, this separation should go by all sets of literals that share an existentially quantified variable.
-		 */
-		
 
-		assertTrue(SelfRestraint.restraint(rule));
-		
+		assertTrue(Restraint.restraint(rule, rule));
 	}
 }

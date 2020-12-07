@@ -111,4 +111,22 @@ public class RestraintTest {
 		assertFalse(Restraint.restraint(rule2, rule1));
 	}
 
+	@Test
+	public void existentialRule08() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(?X,?Z) :- p(?X,?Z) .");
+		Rule rule2 = RuleParser.parseRule("q(!Y,?X) :- p(?X,?Z) .");
+
+		assertTrue(Restraint.restraint(rule1, rule2));
+		assertFalse(Restraint.restraint(rule2, rule1));
+	}
+
+	@Test
+	public void existentialRule15() throws Exception {
+		Rule rule1 = RuleParser.parseRule("r(?X, !W, !V), s(!U, !V, !W) :- b(?X) .");
+		Rule rule2 = RuleParser.parseRule("r(?X, !U, !V), s(!U, !V, !W) :- b(?X) .");
+
+		assertFalse(Restraint.restraint(rule1, rule2));
+		assertFalse(Restraint.restraint(rule2, rule1));
+	}
+
 }
