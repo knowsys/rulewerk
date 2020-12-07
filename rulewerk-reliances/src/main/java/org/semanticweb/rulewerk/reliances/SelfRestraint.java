@@ -2,6 +2,10 @@ package org.semanticweb.rulewerk.reliances;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.semanticweb.rulewerk.core.model.api.Conjunction;
 
 /*-
  * #%L
@@ -23,11 +27,14 @@ import java.util.List;
  * #L%
  */
 
-import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.model.implementation.RuleImpl;
 import org.semanticweb.rulewerk.utils.Filter;
-import org.semanticweb.rulewerk.utils.PowerSet;
+import org.semanticweb.rulewerk.utils.LiteralList;
+import org.semanticweb.rulewerk.utils.SubsetIterable;
 
 public class SelfRestraint {
 
@@ -49,33 +56,72 @@ public class SelfRestraint {
 		List<PositiveLiteral> headAtoms = rule.getHead().getLiterals();
 		int headSize = headAtoms.size();
 
-		PowerSet powerSet = new PowerSet(headSize);
+		Map<Predicate, List<Integer>> predToLiterals = LiteralList.getPredicatePositions(headAtoms);
 
-		while (powerSet.hasNext()) {
-			int[] toAssignIdx = powerSet.next();
-			int[] assigneeIdx = PowerSet.complement(toAssignIdx);
+		for (Predicate pred : predToLiterals.keySet()) {
 
-			List<PositiveLiteral> headAtomsToAssign = Filter.combinationBased(headAtoms, toAssignIdx);
-			List<PositiveLiteral> headAtomsAssignee = Filter.combinationBased(headAtoms, assigneeIdx);
+			List<Integer> positions = predToLiterals.get(pred);
 
-			if (headAtomsToAssign.size() > 0 && headAtomsAssignee.size() > 0) {
-				List<Literal> instance = new ArrayList<>();
-				List<Literal> query = new ArrayList<>();
+			List<Integer> rest = complement(positions, headSize);
 
-				headAtomsAssignee.forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
-				headAtomsToAssign.forEach(literal -> query.add(Instantiator.instantiateQuery(literal)));
+			if (positions.size() > 0) {
+				SubsetIterable<Integer> subsetIterable = new SubsetIterable<>(positions);
 
-				System.out.println("  instance: " + instance);
-				System.out.println("  query:    " + query);
+				for (List<Integer> subset : subsetIterable) {
+					List<Integer> complement = complement(positions, subset);
 
-				if (SBCQ.query(instance, query)) {
-					return true;
+					if (subset.size() > 0 && complement.size() > 0) {
+						List<Integer> head1Idx = join(rest, subset);
+						List<Integer> head2Idx = join(rest, complement);
+
+						List<PositiveLiteral> headAtoms1 = Filter.indexBased(headAtoms, head1Idx);
+						List<PositiveLiteral> headAtoms2 = Filter.indexBased(headAtoms, head2Idx);
+
+						Conjunction<PositiveLiteral> head1 = Expressions.makeConjunction(headAtoms1);
+						Conjunction<PositiveLiteral> head2 = Expressions.makeConjunction(headAtoms2);
+
+						Rule rule1 = new RuleImpl(head1, rule.getBody());
+						Rule rule2 = new RuleImpl(head2, rule.getBody());
+
+						if (Restraint.restraint(rule1, rule2)) {
+							return true;
+						}
+					}
 				}
 			}
-
 		}
 		return false;
+	}
 
+	static private List<Integer> complement(List<Integer> indexes, int length) {
+		List<Integer> result = new ArrayList<>();
+		for (int i = 0; i < length; i++) {
+			if (!indexes.contains(i)) {
+				result.add(i);
+			}
+		}
+		return result;
+	}
+
+	static private List<Integer> complement(List<Integer> set, List<Integer> subset) {
+
+		List<Integer> result = new ArrayList<>();
+		for (int element : set) {
+			if (!subset.contains(element)) {
+				result.add(element);
+			}
+		}
+		return result;
+	}
+
+	static private List<Integer> join(List<Integer> first, List<Integer> second) {
+
+		List<Integer> result = new ArrayList<>();
+		result.addAll(first);
+		result.addAll(second);
+
+		List<Integer> sorted = result.stream().sorted().collect(Collectors.toList());
+		return sorted;
 	}
 
 }

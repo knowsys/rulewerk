@@ -3,6 +3,7 @@ package org.semanticweb.rulewerk.reliances;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
 
@@ -32,6 +33,7 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.utils.LiteralList;
+import org.semanticweb.rulewerk.utils.SubsetIterable;
 
 public class Restraint {
 
@@ -75,20 +77,6 @@ public class Restraint {
 			}
 		}
 		return false;
-	}
-
-	static List<Literal> literalsContainingVariables(List<Literal> literals, List<ExistentialVariable> variables) {
-		List<Literal> result = new ArrayList<>();
-
-		for (Literal literal : literals) {
-			for (ExistentialVariable extVar : variables) {
-				if (literal.getExistentialVariables().anyMatch(containedVar -> containedVar.equals(extVar))) {
-					result.add(literal);
-					break;
-				}
-			}
-		}
-		return result;
 	}
 
 	// this must be true to have a restrain
@@ -146,61 +134,75 @@ public class Restraint {
 		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
 		List<PositiveLiteral> headAtomsRule2 = renamedRule2.getHead().getLiterals();
 
-		/* In order to decide what to match with what, get the size of each head. */
-		int headSizeRule1 = headAtomsRule1.size();
-		int headSizeRule2 = headAtomsRule2.size();
+		List<ExistentialVariable> existentialVariables = renamedRule2.getExistentialVariables()
+				.collect(Collectors.toList());
 
-		/*
-		 * Mapping from atom indexes in head(rule2) to atom indexes in head(rule1).
-		 */
-		AssignmentIterable assignmentIterable = new AssignmentIterable(headSizeRule2, headSizeRule1);
+		// Iterate over all subsets of existentialVariables
+		for (List<ExistentialVariable> extVarComb : new SubsetIterable<ExistentialVariable>(existentialVariables)) {
+//			System.out.println("extVarComb" + extVarComb);
 
-		for (Assignment assignment : assignmentIterable) {
+			List<Integer> literalsContainingExtVarsIdxs = LiteralList
+					.idxOfLiteralsContainingExistentialVariables(headAtomsRule2, extVarComb);
+			// Iterate over all subsets of literalsContainingExtVarsIdxs
+			for (List<Integer> literaltoUnifyIdx : new SubsetIterable<Integer>(literalsContainingExtVarsIdxs)) {
 
-			List<Integer> headAtoms11Idx = assignment.indexesInAssignedListToBeUnified();
-			List<Integer> headAtoms12Idx = assignment.indexesInAssignedListToBeIgnored();
-			List<Integer> headAtoms21Idx = assignment.indexesInAssigneeListToBeUnified();
-			List<Integer> headAtoms22Idx = assignment.indexesInAssigneeListToBeIgnored();
+				AssignmentIterable assignmentIterable = new AssignmentIterable(literaltoUnifyIdx.size(),
+						headAtomsRule1.size());
+				// Iterate over all possible assignments of those Literals
+				for (Assignment assignment : assignmentIterable) {
 
-			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2, headAtomsRule1, assignment);
+					// We transform the assignment to keep the old indexes
+					Assignment transformed = new Assignment(assignment, literaltoUnifyIdx, headAtomsRule2.size());
 
-			// RWU = renamed with unifier
-			if (unifier.success) {
-				UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, false);
 
-				// rename everything
-				Rule rule1RWU = renamer.rename(renamedRule1);
-				Rule rule2RWU = renamer.rename(renamedRule2);
+					List<Integer> headAtoms11Idx = transformed.indexesInAssignedListToBeUnified();
+					List<Integer> headAtoms12Idx = transformed.indexesInAssignedListToBeIgnored();
+					List<Integer> headAtoms21Idx = transformed.indexesInAssigneeListToBeUnified();
+					List<Integer> headAtoms22Idx = transformed.indexesInAssigneeListToBeIgnored();
 
-				List<Literal> headAtomsRule1RWU = new ArrayList<>();
-				headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
+					MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2, headAtomsRule1,
+							transformed);
 
-				List<Literal> headAtomsRule2RWU = new ArrayList<>();
-				headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
+					// RWU = renamed with unifier
+					if (unifier.success) {
+						UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, false);
 
-				List<Literal> headAtoms11 = new ArrayList<>();
-				headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtomsRule1RWU.get(idx)));
+						// rename everything
+						Rule rule1RWU = renamer.rename(renamedRule1);
+						Rule rule2RWU = renamer.rename(renamedRule2);
 
-				List<Literal> headAtoms12 = new ArrayList<>();
-				headAtoms12Idx.forEach(idx -> headAtoms12.add(headAtomsRule1RWU.get(idx)));
+						List<Literal> headAtomsRule1RWU = new ArrayList<>();
+						headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
 
-				List<Literal> headAtoms21 = new ArrayList<>();
-				headAtoms21Idx.forEach(idx -> headAtoms21.add(headAtomsRule2RWU.get(idx)));
+						List<Literal> headAtomsRule2RWU = new ArrayList<>();
+						headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
 
-				List<Literal> headAtoms22 = new ArrayList<>();
-				headAtoms22Idx.forEach(idx -> headAtoms22.add(headAtomsRule2RWU.get(idx)));
+						List<Literal> headAtoms11 = new ArrayList<>();
+						headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtomsRule1RWU.get(idx)));
 
-				if (isRule1Applicable(rule1RWU, rule2RWU)
-						&& !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, assignment)
-						&& conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
-								assignment)
-						&& isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21)) {
-					return true;
+						List<Literal> headAtoms12 = new ArrayList<>();
+						headAtoms12Idx.forEach(idx -> headAtoms12.add(headAtomsRule1RWU.get(idx)));
+
+						List<Literal> headAtoms21 = new ArrayList<>();
+						headAtoms21Idx.forEach(idx -> headAtoms21.add(headAtomsRule2RWU.get(idx)));
+
+						List<Literal> headAtoms22 = new ArrayList<>();
+						headAtoms22Idx.forEach(idx -> headAtoms22.add(headAtomsRule2RWU.get(idx)));
+
+						boolean c1 = isRule1Applicable(rule1RWU, rule2RWU);
+						boolean c2 = !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, transformed);
+						boolean c3 = conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
+								transformed);
+						boolean c4 = isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21);
+
+						if (c1 && c2 && c3 && c4) {
+							return true;
+						}
+
+					}
 				}
-
 			}
 		}
-
 		return false;
 	}
 
