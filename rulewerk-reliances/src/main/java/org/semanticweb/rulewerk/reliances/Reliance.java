@@ -32,6 +32,7 @@ import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Variable;
+import org.semanticweb.rulewerk.utils.Filter;
 import org.semanticweb.rulewerk.utils.LiteralList;
 
 public class Reliance {
@@ -95,8 +96,8 @@ public class Reliance {
 		for (Assignment assignment : assignmentIterable) {
 
 			List<Integer> headAtoms11Idx = assignment.indexesInAssignedListToBeUnified();
-			List<Integer> headAtoms12Idx = assignment.indexesInAssignedListToBeIgnored();
-			List<Integer> positiveBodyLiterals21Idx = assignment.indexesInAssigneeListToBeUnified();
+//			List<Integer> headAtoms12Idx = assignment.indexesInAssignedListToBeIgnored();
+//			List<Integer> positiveBodyLiterals21Idx = assignment.indexesInAssigneeListToBeUnified();
 			List<Integer> positiveBodyLiterals22Idx = assignment.indexesInAssigneeListToBeIgnored();
 
 			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(positiveBodyLiteralsRule2, headAtomsRule1,
@@ -118,19 +119,12 @@ public class Reliance {
 				List<Literal> headAtomsRule2RWU = new ArrayList<>();
 				headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
 
-				List<Literal> headAtoms11 = new ArrayList<>();
-				headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtomsRule1RWU.get(idx)));
-
-				List<Literal> headAtoms12 = new ArrayList<>();
-				headAtoms12Idx.forEach(idx -> headAtoms12.add(headAtomsRule1RWU.get(idx)));
-
-				List<Literal> positiveBodyLiterals21 = new ArrayList<>();
-				positiveBodyLiterals21Idx
-						.forEach(idx -> positiveBodyLiterals21.add(positiveBodyLiteralsRule2RWU.get(idx)));
-
-				List<Literal> positiveBodyLiterals22 = new ArrayList<>();
-				positiveBodyLiterals22Idx
-						.forEach(idx -> positiveBodyLiterals22.add(positiveBodyLiteralsRule2RWU.get(idx)));
+				List<Literal> headAtoms11 = Filter.indexBased(headAtomsRule1RWU, headAtoms11Idx);
+//				List<Literal> headAtoms12 = Filter.indexBased(headAtomsRule1RWU, headAtoms12Idx);
+//				List<Literal> positiveBodyLiterals21 = Filter.indexBased(positiveBodyLiteralsRule2RWU,
+//						positiveBodyLiterals21Idx);
+				List<Literal> positiveBodyLiterals22 = Filter.indexBased(positiveBodyLiteralsRule2RWU,
+						positiveBodyLiterals22Idx);
 
 				if (!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22)
 						&& !universalVariableInPositionOfExistentialVariable(headAtoms11, positiveBodyLiterals22)

@@ -32,6 +32,7 @@ import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
+import org.semanticweb.rulewerk.utils.Filter;
 import org.semanticweb.rulewerk.utils.LiteralList;
 import org.semanticweb.rulewerk.utils.SubsetIterable;
 
@@ -130,7 +131,6 @@ public class Restraint {
 
 		// Iterate over all subsets of existentialVariables
 		for (List<ExistentialVariable> extVarComb : new SubsetIterable<ExistentialVariable>(existentialVariables)) {
-//			System.out.println("extVarComb" + extVarComb);
 
 			List<Integer> literalsContainingExtVarsIdxs = LiteralList
 					.idxOfLiteralsContainingExistentialVariables(headAtomsRule2, extVarComb);
@@ -146,7 +146,7 @@ public class Restraint {
 					Assignment transformed = new Assignment(assignment, literaltoUnifyIdx, headAtomsRule2.size());
 
 					List<Integer> headAtoms11Idx = transformed.indexesInAssignedListToBeUnified();
-					List<Integer> headAtoms12Idx = transformed.indexesInAssignedListToBeIgnored();
+//					List<Integer> headAtoms12Idx = transformed.indexesInAssignedListToBeIgnored();
 					List<Integer> headAtoms21Idx = transformed.indexesInAssigneeListToBeUnified();
 					List<Integer> headAtoms22Idx = transformed.indexesInAssigneeListToBeIgnored();
 
@@ -167,17 +167,10 @@ public class Restraint {
 						List<Literal> headAtomsRule2RWU = new ArrayList<>();
 						headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
 
-						List<Literal> headAtoms11 = new ArrayList<>();
-						headAtoms11Idx.forEach(idx -> headAtoms11.add(headAtomsRule1RWU.get(idx)));
-
-						List<Literal> headAtoms12 = new ArrayList<>();
-						headAtoms12Idx.forEach(idx -> headAtoms12.add(headAtomsRule1RWU.get(idx)));
-
-						List<Literal> headAtoms21 = new ArrayList<>();
-						headAtoms21Idx.forEach(idx -> headAtoms21.add(headAtomsRule2RWU.get(idx)));
-
-						List<Literal> headAtoms22 = new ArrayList<>();
-						headAtoms22Idx.forEach(idx -> headAtoms22.add(headAtomsRule2RWU.get(idx)));
+						List<Literal> headAtoms11 = Filter.indexBased(headAtomsRule1RWU, headAtoms11Idx);
+//						List<Literal> headAtoms12 = Filter.indexBased(headAtomsRule1RWU, headAtoms12Idx);
+						List<Literal> headAtoms21 = Filter.indexBased(headAtomsRule2RWU, headAtoms21Idx);
+						List<Literal> headAtoms22 = Filter.indexBased(headAtomsRule2RWU, headAtoms22Idx);
 
 						if (isRule1Applicable(rule1RWU, rule2RWU)
 								&& !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, transformed)
