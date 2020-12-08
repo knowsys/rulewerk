@@ -34,6 +34,7 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.utils.Filter;
 import org.semanticweb.rulewerk.utils.LiteralList;
+import org.semanticweb.rulewerk.utils.RuleUtil;
 
 public class Reliance {
 
@@ -64,14 +65,6 @@ public class Reliance {
 
 	}
 
-	static private boolean isThereSomethingNew(List<Literal> headAtoms2, List<Literal> positiveBodyLiterals1,
-			List<Literal> headAtoms1) {
-		Set<Literal> copyHeadAtoms2 = new HashSet<>(headAtoms2);
-		positiveBodyLiterals1.forEach(literal -> copyHeadAtoms2.remove(literal));
-		headAtoms1.forEach(literal -> copyHeadAtoms2.remove(literal));
-		return !copyHeadAtoms2.isEmpty();
-	}
-
 	/**
 	 * Checker for positive reliance relation.
 	 * 
@@ -94,7 +87,6 @@ public class Reliance {
 		AssignmentIterable assignmentIterable = new AssignmentIterable(sizePositiveBody2, sizeHead1);
 
 		for (Assignment assignment : assignmentIterable) {
-
 			List<Integer> headAtoms11Idx = assignment.indexesInAssignedListToBeUnified();
 			List<Integer> positiveBodyLiterals22Idx = assignment.indexesInAssigneeListToBeIgnored();
 
@@ -102,7 +94,7 @@ public class Reliance {
 					assignment);
 
 			// RWU = renamed with unifier
-			if (unifier.success) {
+			if (unifier.getSuccess()) {
 				UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, true);
 
 				List<Literal> positiveBodyLiteralsRule1RWU = new ArrayList<>();
@@ -121,9 +113,12 @@ public class Reliance {
 				List<Literal> positiveBodyLiterals22 = Filter.indexBased(positiveBodyLiteralsRule2RWU,
 						positiveBodyLiterals22Idx);
 
+				Rule rule1RWU = renamer.rename(renamedRule1);
+				Rule rule2RWU = renamer.rename(renamedRule2);
+
 				if (!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22)
 						&& !universalVariableInPositionOfExistentialVariable(headAtoms11, positiveBodyLiterals22)
-						&& isThereSomethingNew(headAtomsRule2RWU, positiveBodyLiteralsRule1RWU, headAtomsRule1RWU)) {
+						&& RuleUtil.isRule1Applicable(rule2RWU, rule1RWU)) {
 					return true;
 				}
 			}

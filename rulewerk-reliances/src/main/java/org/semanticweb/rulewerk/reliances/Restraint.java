@@ -37,20 +37,10 @@ import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.utils.Filter;
 import org.semanticweb.rulewerk.utils.LiteralList;
+import org.semanticweb.rulewerk.utils.RuleUtil;
 import org.semanticweb.rulewerk.utils.SubsetIterable;
 
 public class Restraint {
-
-	static private boolean isRule1Applicable(Rule rule1RWU, Rule rule2RWU) {
-		List<Literal> instance = new ArrayList<>();
-		List<Literal> query = new ArrayList<>();
-		rule1RWU.getPositiveBodyLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
-		rule1RWU.getHead().getLiterals().forEach(literal -> query.add(Instantiator.instantiateQuery(literal)));
-		rule2RWU.getPositiveBodyLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
-		rule2RWU.getHead().getLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
-
-		return !SBCQ.query(instance, query);
-	}
 
 	/**
 	 * 
@@ -174,7 +164,7 @@ public class Restraint {
 								MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2,
 										headAtomsRule1, transformed);
 
-								if (unifier.success) {
+								if (unifier.getSuccess()) {
 									UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier,
 											false);
 
@@ -190,7 +180,7 @@ public class Restraint {
 
 									List<Literal> headAtoms22 = Filter.indexBased(headAtomsRule2RWU, headAtoms22Idx);
 
-									if (isRule1Applicable(rule1RWU, rule2RWU)
+									if (RuleUtil.isRule1Applicable(rule1RWU, rule2RWU)
 											&& !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1,
 													transformed)
 											&& mapExt2ExtOrExt2Uni(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,

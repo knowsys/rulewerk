@@ -42,7 +42,7 @@ public class UnifierBasedVariableRenamer {
 	boolean renameExistentials;
 
 	UnifierBasedVariableRenamer(MartelliMontanariUnifier unifier, boolean renameExistentials) {
-		assert unifier.success;
+		assert unifier.getSuccess();
 		this.unifier = unifier;
 		this.renameExistentials = renameExistentials;
 	}
@@ -74,7 +74,7 @@ public class UnifierBasedVariableRenamer {
 	}
 
 	public Rule rename(Rule rule) {
-		assert unifier.success;
+		assert unifier.getSuccess();
 		List<Literal> newBody = new ArrayList<>();
 		rule.getBody().forEach(literal -> newBody.add(rename(literal)));
 

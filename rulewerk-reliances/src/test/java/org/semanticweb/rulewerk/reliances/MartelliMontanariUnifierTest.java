@@ -34,9 +34,8 @@ public class MartelliMontanariUnifierTest {
 		Literal literal2 = RuleParser.parseLiteral("q(!X2,!X2)");
 
 		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
-		System.out.println(unifier);
 
-		assertTrue(unifier.success);
+		assertTrue(unifier.getSuccess());
 	}
 
 	@Test
@@ -45,9 +44,8 @@ public class MartelliMontanariUnifierTest {
 		Literal literal2 = RuleParser.parseLiteral("q(?X2,c)");
 
 		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
-		System.out.println(unifier);
 
-		assertTrue(unifier.success);
+		assertTrue(unifier.getSuccess());
 	}
 
 	@Test
@@ -56,9 +54,8 @@ public class MartelliMontanariUnifierTest {
 		Literal literal2 = RuleParser.parseLiteral("r(c, ?X20002, ?Y20002)");
 
 		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
-		System.out.println(unifier);
 
-		assertTrue(unifier.success);
+		assertTrue(unifier.getSuccess());
 	}
 
 }

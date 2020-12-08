@@ -38,8 +38,8 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
  *
  */
 public class MartelliMontanariUnifier {
-	final HashMap<Term, Term> unifier;
-	boolean success;
+	final private HashMap<Term, Term> unifier;
+	private boolean success;
 
 	/**
 	 * 
@@ -66,6 +66,10 @@ public class MartelliMontanariUnifier {
 			}
 		}
 		return value;
+	}
+
+	public boolean getSuccess() {
+		return success;
 	}
 
 	/**

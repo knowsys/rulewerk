@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.reliances;
+package org.semanticweb.rulewerk.utils;
 
 /*-
  * #%L
@@ -28,7 +28,6 @@ import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
-// TODO unify this with SelfRestraint
 public class Instantiator {
 
 	/**

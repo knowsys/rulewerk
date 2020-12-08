@@ -57,8 +57,8 @@ public class Assignment {
 		return matches.size() > 0;
 	}
 
-	boolean isValidForBCQ() {
-		return matches.size() == assignedLength;
+	public int size() {
+		return matches.size();
 	}
 
 	/**

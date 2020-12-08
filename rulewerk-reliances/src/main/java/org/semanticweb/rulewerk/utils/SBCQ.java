@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.reliances;
+package org.semanticweb.rulewerk.utils;
 
 /*-
  * #%L
@@ -23,6 +23,9 @@ package org.semanticweb.rulewerk.reliances;
 import java.util.List;
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.reliances.Assignment;
+import org.semanticweb.rulewerk.reliances.AssignmentIterable;
+import org.semanticweb.rulewerk.reliances.MartelliMontanariUnifier;
 
 /**
  * A class to implement a simple boolean conjunctive query.
@@ -37,13 +40,13 @@ public class SBCQ {
 		AssignmentIterable assignmentIterable = new AssignmentIterable(query.size(), instance.size());
 		for (Assignment assignment : assignmentIterable) {
 
-			if (assignment.isValidForBCQ()) {
+			if (assignment.size() == query.size()) {
 				MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(query, instance, assignment);
 
 //				System.out.println("    Assignment: " + assignment);
 //				System.out.println("    Unifier:    " + unifier);
 
-				if (unifier.success) {
+				if (unifier.getSuccess()) {
 					return true;
 				}
 			}
