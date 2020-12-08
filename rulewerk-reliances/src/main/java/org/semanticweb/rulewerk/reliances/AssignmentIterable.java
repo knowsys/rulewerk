@@ -52,7 +52,7 @@ public class AssignmentIterable implements Iterable<Assignment> {
 		@Override
 		public Assignment next() {
 			Assignment assignment = new Assignment(numbers.next(), originLength, destinationLength);
-			while (!assignment.isValid()) {
+			if (assignment.size() == 0) {
 				assignment = new Assignment(numbers.next(), originLength, destinationLength);
 			}
 			return assignment;

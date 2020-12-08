@@ -61,10 +61,6 @@ public class Assignment {
 		this.assigneeLength = old.assigneeLength;
 	}
 
-	boolean isValid() {
-		return matches.size() > 0;
-	}
-
 	public int size() {
 		return matches.size();
 	}

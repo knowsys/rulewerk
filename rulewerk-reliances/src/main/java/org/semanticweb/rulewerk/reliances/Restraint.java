@@ -97,7 +97,22 @@ public class Restraint {
 		return true;
 	}
 
-	// must be true
+	/**
+	 * Check that the existentially quantified variables occurring in mapping
+	 * literals from head2 are mapped to the same. Consider the following atoms
+	 * p(a,b), and p(!X,!X). We can not unify it. This is a shortcoming of the
+	 * application of Martelli & Montanari unification algorithm to our case,
+	 * specially when we unify existential variables.
+	 * 
+	 * If its value is false, then the alternative match is not valid anymore.
+	 * 
+	 * @note we are not renaming the existentially quantified variables in the rules
+	 * 
+	 * @param headRule2  rule2.head (renamed, unified, and renamed again)
+	 * @param headRule1  rule1.head (renamed, unified, and renamed again)
+	 * @param assignment see {@code Assignment}
+	 * @return true if the alternative match is still a valid candidate
+	 */
 	static private boolean mapExistentialsToTheSame(List<Literal> headRule2, List<Literal> headRule1,
 			Assignment assignment) {
 		Map<ExistentialVariable, Term> map = new HashMap<>();

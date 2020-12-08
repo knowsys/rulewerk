@@ -155,4 +155,22 @@ public class RestraintTest {
 		assertTrue(Restraint.restraint(rule1, rule2));
 		assertTrue(Restraint.restraint(rule2, rule1));
 	}
+
+	@Test
+	public void latest01() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(?X,!Y,!Y), r(?X) :- p(?X) .");
+		Rule rule2 = RuleParser.parseRule("q(?X,!Y,!Z) :- p(?X) .");
+
+		assertTrue(Restraint.restraint(rule1, rule2));
+		assertFalse(Restraint.restraint(rule2, rule1));
+	}
+
+	@Test
+	public void latest02() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(?X,!Y,!Z), r(?X) :- p(?X) .");
+		Rule rule2 = RuleParser.parseRule("q(?X,!Y,!Y) :- p(?X) .");
+
+		assertFalse(Restraint.restraint(rule1, rule2));
+		assertTrue(Restraint.restraint(rule2, rule1));
+	}
 }
