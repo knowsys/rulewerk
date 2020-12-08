@@ -29,19 +29,9 @@ import java.util.Set;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
-import org.semanticweb.rulewerk.utils.Filter;
-import org.semanticweb.rulewerk.utils.LiteralList;
 import org.semanticweb.rulewerk.utils.RuleUtil;
 
 public class Reliance {
-
-	static private boolean shareAnyExistentialVariable(List<Literal> head11, List<Literal> body22) {
-		Set<String> vars1 = LiteralList.getExistentialVariableNames(head11);
-		Set<String> vars2 = LiteralList.getUniversalVariableNames(body22);
-		Set<String> intersection = new HashSet<>(vars1); // copy constructor
-		intersection.retainAll(vars2);
-		return !intersection.isEmpty();
-	}
 
 	/**
 	 * Checker for positive reliance relation.
@@ -54,10 +44,8 @@ public class Reliance {
 		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, 1);
 		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, 2);
 
-		List<Literal> positiveBodyLiteralsRule1 = renamedRule1.getPositiveBodyLiterals();
 		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
 		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals();
-		List<PositiveLiteral> headAtomsRule2 = renamedRule2.getHead().getLiterals();
 
 		int sizeHead1 = headAtomsRule1.size();
 		int sizePositiveBody2 = positiveBodyLiteralsRule2.size();
@@ -65,9 +53,6 @@ public class Reliance {
 		AssignmentIterable assignmentIterable = new AssignmentIterable(sizePositiveBody2, sizeHead1);
 
 		for (Assignment assignment : assignmentIterable) {
-			List<Integer> headAtoms11Idx = assignment.indexesInAssignedListToBeUnified();
-			List<Integer> positiveBodyLiterals22Idx = assignment.indexesInAssigneeListToBeIgnored();
-
 			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(positiveBodyLiteralsRule2, headAtomsRule1,
 					assignment);
 
@@ -75,27 +60,10 @@ public class Reliance {
 			if (unifier.getSuccess()) {
 				UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, true);
 
-				List<Literal> positiveBodyLiteralsRule1RWU = new ArrayList<>();
-				positiveBodyLiteralsRule1.forEach(literal -> positiveBodyLiteralsRule1RWU.add(renamer.rename(literal)));
-
-				List<Literal> headAtomsRule1RWU = new ArrayList<>();
-				headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
-
-				List<Literal> positiveBodyLiteralsRule2RWU = new ArrayList<>();
-				positiveBodyLiteralsRule2.forEach(literal -> positiveBodyLiteralsRule2RWU.add(renamer.rename(literal)));
-
-				List<Literal> headAtomsRule2RWU = new ArrayList<>();
-				headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
-
-				List<Literal> headAtoms11 = Filter.indexBased(headAtomsRule1RWU, headAtoms11Idx);
-				List<Literal> positiveBodyLiterals22 = Filter.indexBased(positiveBodyLiteralsRule2RWU,
-						positiveBodyLiterals22Idx);
-
 				Rule rule1RWU = renamer.rename(renamedRule1);
 				Rule rule2RWU = renamer.rename(renamedRule2);
 
-				if (!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22)
-						&& RuleUtil.isRule1Applicable(rule2RWU, rule1RWU)) {
+				if (RuleUtil.isRule1Applicable(rule2RWU, rule1RWU)) {
 					return true;
 				}
 			}

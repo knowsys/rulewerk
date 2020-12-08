@@ -76,10 +76,8 @@ public class RelianceTest {
 
 	@Test
 	public void test02() throws Exception {
-		Rule rule1 = RuleParser.parseRule(
-				"cancerDisease(?Xdoid) :- diseaseHierarchy(?X, ?Y), doid(?Y, \"DOID:162\"), doid(?X, ?Xdoid) .");
-		Rule rule2 = RuleParser.parseRule(
-				"humansWhoDiedOfNoncancer(?X) :- deathCause(?X, ?Y), diseaseId(?Y, ?Z), ~cancerDisease(?Z) .");
+		Rule rule1 = RuleParser.parseRule("cd(?Xdoid) :- dh(?X, ?Y), doid(?Y, \"DOID:162\"), doid(?X, ?Xdoid) .");
+		Rule rule2 = RuleParser.parseRule("hwdonc(?X) :- dc(?X, ?Y), id(?Y, ?Z), ~cD(?Z) .");
 
 		assertFalse(Reliance.positively(rule1, rule1));
 		assertFalse(Reliance.positively(rule1, rule2));
@@ -147,6 +145,24 @@ public class RelianceTest {
 		assertTrue(Reliance.positively(rule1, rule2));
 		assertFalse(Reliance.positively(rule2, rule1));
 		assertTrue(Reliance.positively(rule2, rule2));
+	}
+
+	@Test
+	public void test05() throws Exception {
+		Rule rule1 = RuleParser.parseRule("Q(?X,?Y) :- Q(?X,?Y) .");
+
+		assertFalse(Reliance.positively(rule1, rule1));
+	}
+
+	@Test
+	public void test06() throws Exception {
+		Rule rule1 = RuleParser.parseRule("Q(?X,?Y) :- P(?X,?Y) .");
+		Rule rule2 = RuleParser.parseRule("P(?X,!Z) :- Q(?X,?Y) .");
+
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertFalse(Reliance.positively(rule1, rule2));
+		assertTrue(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
 	}
 
 }
