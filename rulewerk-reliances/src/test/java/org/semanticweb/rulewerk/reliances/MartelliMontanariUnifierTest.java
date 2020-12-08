@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.reliances;
 
+import static org.junit.Assert.assertFalse;
+
 /*-
  * #%L
  * Rulewerk Reliances
@@ -56,6 +58,46 @@ public class MartelliMontanariUnifierTest {
 		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
 
 		assertTrue(unifier.getSuccess());
+	}
+
+	@Test
+	public void test04() throws Exception {
+		Literal literal1 = RuleParser.parseLiteral("p(?X)");
+		Literal literal2 = RuleParser.parseLiteral("q(?X)");
+
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+
+		assertFalse(unifier.getSuccess());
+	}
+
+	@Test
+	public void test05() throws Exception {
+		Literal literal1 = RuleParser.parseLiteral("p(?Y,?X)");
+		Literal literal2 = RuleParser.parseLiteral("p(?X,?Y)");
+
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+
+		assertTrue(unifier.getSuccess());
+	}
+
+	@Test
+	public void test06() throws Exception {
+		Literal literal1 = RuleParser.parseLiteral("p(!Y,!X)");
+		Literal literal2 = RuleParser.parseLiteral("p(!X,!Y)");
+
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+
+		assertTrue(unifier.getSuccess());
+	}
+
+	@Test
+	public void test07() throws Exception {
+		Literal literal1 = RuleParser.parseLiteral("p(?x1,?x1,?x1)");
+		Literal literal2 = RuleParser.parseLiteral("p(?x2,c1,c2)");
+
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+
+		assertFalse(unifier.getSuccess());
 	}
 
 }
