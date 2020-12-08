@@ -94,6 +94,15 @@ public class RestraintTest {
 	}
 
 	@Test
+	public void unifyTwoAtomsIntoOneTest02() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(?X,!U), q(?Y,!U) :- p(?X,?Y) .");
+		Rule rule2 = RuleParser.parseRule("q(?X,!Z), q(?Y,!Z) :- p(?X,?Y) .");
+
+		assertTrue(Restraint.restraint(rule1, rule2));
+		assertTrue(Restraint.restraint(rule2, rule1));
+	}
+
+	@Test
 	public void blockingRestraintTest() throws Exception {
 		Rule rule1 = RuleParser.parseRule("b(?X,!Y,!Y),c(!Y,!Z) :- a(?X) .");
 		Rule rule2 = RuleParser.parseRule("b(?X,!Y,!Z),c(!Z,!Z) :- a(?X) .");

@@ -32,6 +32,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.model.implementation.RuleImpl;
 import org.semanticweb.rulewerk.utils.Filter;
 import org.semanticweb.rulewerk.utils.LiteralList;
+import org.semanticweb.rulewerk.utils.RuleUtil;
 import org.semanticweb.rulewerk.utils.SubsetIterable;
 
 public class SelfRestraint {
@@ -47,7 +48,16 @@ public class SelfRestraint {
 			return false;
 		}
 
+		if (!RuleUtil.isRuleApplicable(rule)) {
+			return false;
+		}
+
 		if (rule.containsUnconnectedPieces()) {
+			return true;
+		}
+
+		Rule renamedRule = SuffixBasedVariableRenamer.rename(rule, rule.hashCode() + 1);
+		if (Restraint.restraint(rule, renamedRule)) {
 			return true;
 		}
 

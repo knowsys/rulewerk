@@ -120,12 +120,20 @@ public class Restraint {
 			return false;
 		}
 
+		if (!RuleUtil.isRuleApplicable(rule2)) {
+			return false;
+		}
+
+		if (rule2.containsUnconnectedPieces()) {
+			return true;
+		}
+
 		if (rule1.equals(rule2)) {
 			return SelfRestraint.restraint(rule1);
 		}
 
-		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, 1);
-		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, 2);
+		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, rule1.hashCode() + 1);
+		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, rule2.hashCode() + 2);
 
 		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
 		List<PositiveLiteral> headAtomsRule2 = renamedRule2.getHead().getLiterals();
@@ -160,14 +168,11 @@ public class Restraint {
 								testedAssignment.add(transformed);
 
 								List<Integer> headAtoms22Idx = transformed.indexesInAssigneeListToBeIgnored();
-
 								MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2,
 										headAtomsRule1, transformed);
-
 								if (unifier.getSuccess()) {
 									UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier,
 											false);
-
 									// rename universal variables (RWU = renamed with unifier)
 									Rule rule1RWU = renamer.rename(renamedRule1);
 									Rule rule2RWU = renamer.rename(renamedRule2);

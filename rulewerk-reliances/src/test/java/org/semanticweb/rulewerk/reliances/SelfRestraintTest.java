@@ -133,7 +133,7 @@ public class SelfRestraintTest {
 	public void existentialRule09() throws Exception {
 		Rule rule = RuleParser.parseRule("q(?X,!Z), q(?Y,!Z) :- p(?X,?Y) .");
 
-		assertFalse(SelfRestraint.restraint(rule));
+		assertTrue(SelfRestraint.restraint(rule));
 	}
 
 	@Test
@@ -189,6 +189,27 @@ public class SelfRestraintTest {
 	public void existentialRule17() throws Exception {
 		Rule rule = RuleParser.parseRule("q(?X,?Y), q(?X,!U), q(?Y,!U) :- p(?X,?Y) .");
 
-		assertTrue(Restraint.restraint(rule, rule));
+		assertTrue(SelfRestraint.restraint(rule));
+	}
+
+	@Test
+	public void existentialRule18() throws Exception {
+		Rule rule = RuleParser.parseRule("p(!U,!V) :- p(?X,?Y) .");
+
+		assertFalse(SelfRestraint.restraint(rule));
+	}
+
+	@Test
+	public void existentialRule19() throws Exception {
+		Rule rule = RuleParser.parseRule("p(?X,!Z) :- p(?X,?Y) .");
+
+		assertFalse(SelfRestraint.restraint(rule));
+	}
+
+	@Test
+	public void existentialRule20() throws Exception {
+		Rule rule = RuleParser.parseRule("p(?X,!U), q(?Y) :- p(?X,?Y) .");
+
+		assertTrue(SelfRestraint.restraint(rule));
 	}
 }

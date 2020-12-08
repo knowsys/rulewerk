@@ -37,4 +37,13 @@ public class RuleUtil {
 
 		return !SBCQ.query(instance, query);
 	}
+
+	static public boolean isRuleApplicable(Rule rule) {
+		List<Literal> instance = new ArrayList<>();
+		List<Literal> query = new ArrayList<>();
+		rule.getPositiveBodyLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
+		rule.getHead().getLiterals().forEach(literal -> query.add(Instantiator.instantiateQuery(literal)));
+
+		return !SBCQ.query(instance, query);
+	}
 }
