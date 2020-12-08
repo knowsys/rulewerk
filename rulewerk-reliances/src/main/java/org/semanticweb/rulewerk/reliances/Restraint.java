@@ -174,12 +174,11 @@ public class Restraint {
 								MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2,
 										headAtomsRule1, transformed);
 
-								// RWU = renamed with unifier
 								if (unifier.success) {
 									UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier,
 											false);
 
-									// rename everything
+									// rename universal variables (RWU = renamed with unifier)
 									Rule rule1RWU = renamer.rename(renamedRule1);
 									Rule rule2RWU = renamer.rename(renamedRule2);
 
