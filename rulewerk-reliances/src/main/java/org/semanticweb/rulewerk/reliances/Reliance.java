@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /*-
  * #%L
@@ -29,9 +28,7 @@ import java.util.stream.Collectors;
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
-import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
-import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.utils.Filter;
 import org.semanticweb.rulewerk.utils.LiteralList;
 import org.semanticweb.rulewerk.utils.RuleUtil;
@@ -44,25 +41,6 @@ public class Reliance {
 		Set<String> intersection = new HashSet<>(vars1); // copy constructor
 		intersection.retainAll(vars2);
 		return !intersection.isEmpty();
-	}
-
-	static private boolean universalVariableInPositionOfExistentialVariable(List<Literal> head11,
-			List<Literal> body22) {
-		Set<Predicate> predicatesWithExistentialVariables = new HashSet<>();
-		for (Literal literal : head11) {
-			Set<Variable> existentialVariables = literal.getExistentialVariables().collect(Collectors.toSet());
-			if (!existentialVariables.isEmpty()) {
-				predicatesWithExistentialVariables.add(literal.getPredicate());
-			}
-		}
-
-		for (Literal literal : body22) {
-			if (predicatesWithExistentialVariables.contains(literal.getPredicate())) {
-				return true;
-			}
-		}
-		return false;
-
 	}
 
 	/**
@@ -117,7 +95,6 @@ public class Reliance {
 				Rule rule2RWU = renamer.rename(renamedRule2);
 
 				if (!shareAnyExistentialVariable(headAtoms11, positiveBodyLiterals22)
-						&& !universalVariableInPositionOfExistentialVariable(headAtoms11, positiveBodyLiterals22)
 						&& RuleUtil.isRule1Applicable(rule2RWU, rule1RWU)) {
 					return true;
 				}
