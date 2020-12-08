@@ -53,12 +53,7 @@ public class SubsetIterable<T> implements Iterable<List<T>> {
 
 		@Override
 		public List<T1> next() {
-			List<T1> result = Filter.combinationBased(this.elements, iterator.next());
-			if (result.size() > 0) {
-				return result;
-			} else {
-				return next();
-			}
+			return Filter.combinationBased(this.elements, iterator.next());
 		}
 
 	}
