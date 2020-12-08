@@ -61,22 +61,6 @@ public class Assignment {
 		return matches.size();
 	}
 
-	/**
-	 * @return list of positions in the first container that are going to be used in
-	 *         the unification process.
-	 */
-	List<Integer> indexesInAssignedListToBeUnified() {
-		Set<Integer> result = new HashSet<>();
-		for (Match match : matches) {
-			result.add(match.getDestination());
-		}
-		return new ArrayList<>(result);
-	}
-
-	List<Integer> indexesInAssignedListToBeIgnored() {
-		return complement(this.assigneeLength, indexesInAssignedListToBeUnified());
-	}
-
 	List<Integer> indexesInAssigneeListToBeUnified() {
 		Set<Integer> result = new HashSet<>();
 		for (Match match : matches) {

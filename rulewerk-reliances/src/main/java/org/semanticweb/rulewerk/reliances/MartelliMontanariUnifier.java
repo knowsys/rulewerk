@@ -54,20 +54,6 @@ public class MartelliMontanariUnifier {
 		}
 	}
 
-	/**
-	 * 
-	 * @param value to search in the unifier
-	 * @return the root key of the value
-	 */
-	Term getKey(Term value) {
-		for (Term key : unifier.keySet()) {
-			if (unifier.get(key) == value) {
-				return getKey(key);
-			}
-		}
-		return value;
-	}
-
 	public boolean getSuccess() {
 		return success;
 	}
@@ -149,7 +135,6 @@ public class MartelliMontanariUnifier {
 		else if (rep1 != null && rep2 == null) {
 			if (rep1.isVariable()) {
 				if (!rep1.getName().equals(var2.getName())) {
-//					insertNewVariableUnification(rep1, var2);
 					insertUnification(var2, rep1);
 				}
 			} else if (rep1.isConstant()) {
@@ -160,7 +145,6 @@ public class MartelliMontanariUnifier {
 		else if (rep1 == null && rep2 != null) {
 			if (rep2.isVariable()) {
 				if (!rep2.getName().equals(var1.getName())) {
-//					insertNewVariableUnification(var1, rep2);
 					insertUnification(var1, rep2);
 				}
 			} else if (rep2.isConstant()) {
@@ -200,8 +184,6 @@ public class MartelliMontanariUnifier {
 	}
 
 	private void unify(Term term1, Term term2) {
-//		System.out.println(term1.getClass() + " " + term1);
-//		System.out.println(term2.getClass() + " " + term2);
 		if (term1.isConstant() && term2.isConstant()) {
 			if (term1.equals(term2)) {
 				return;
