@@ -54,7 +54,7 @@ public class SelfRestraint {
 		List<PositiveLiteral> headAtoms = rule.getHead().getLiterals();
 		int headSize = headAtoms.size();
 
-		Map<Predicate, List<Integer>> predToLiterals = LiteralList.getPredicatePositions(headAtoms);
+		Map<Predicate, List<Integer>> predToLiterals = LiteralList.getPredicate2Literals(headAtoms);
 
 		for (Predicate pred : predToLiterals.keySet()) {
 

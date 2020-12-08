@@ -83,7 +83,13 @@ public class LiteralList {
 		return result;
 	}
 
-	static public Map<Predicate, List<Integer>> getPredicatePositions(List<PositiveLiteral> literals) {
+	/**
+	 * Returns a map from predicate to literals having that predicate.
+	 * 
+	 * @param literals List of literals
+	 * @return map {predicate -> [literals]}
+	 */
+	static public Map<Predicate, List<Integer>> getPredicate2Literals(List<PositiveLiteral> literals) {
 		Map<Predicate, List<Integer>> result = new HashMap<>();
 
 		for (int i = 0; i < literals.size(); i++) {
