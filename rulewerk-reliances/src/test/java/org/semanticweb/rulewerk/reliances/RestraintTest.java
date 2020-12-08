@@ -113,8 +113,17 @@ public class RestraintTest {
 
 	@Test
 	public void freeInstantiationofExistentialVariableInHead22() throws Exception {
-		Rule rule1 = RuleParser.parseRule("b(?X,?X) :- a(?X) .");
-		Rule rule2 = RuleParser.parseRule("b(?X,!Y), c(!Y) :- a(?X) .");
+		Rule rule1 = RuleParser.parseRule("b(?X,!Y), c(!Y) :- a(?X) .");
+		Rule rule2 = RuleParser.parseRule("b(?X,?X) :- a(?X) .");
+
+		assertFalse(Restraint.restraint(rule1, rule2));
+		assertTrue(Restraint.restraint(rule2, rule1));
+	}
+
+	@Test
+	public void freeInstantiationofExistentialVariableInHead22_02() throws Exception {
+		Rule rule1 = RuleParser.parseRule("b(?X,?Y,?Y) :- a(?X,?Y) .");
+		Rule rule2 = RuleParser.parseRule("b(?X,!Y,!Z), d(!Z) :- c(?X) .");
 
 		assertTrue(Restraint.restraint(rule1, rule2));
 		assertFalse(Restraint.restraint(rule2, rule1));

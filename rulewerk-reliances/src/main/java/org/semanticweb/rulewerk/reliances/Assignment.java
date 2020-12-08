@@ -26,13 +26,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * A class to store a list of matches. An assignment represent a mapping between
+ * the elements of two arrays/lists.
+ * 
+ * @note that the assignment does not need to be complete.
+ * 
+ * @author Larry Gonzalez
+ *
+ */
 public class Assignment {
 	List<Match> matches;
 	int assignedLength;
 	int assigneeLength;
 
 	public Assignment(int[] assignment, int assignedLength, int assigneeLength) {
-
 		matches = new ArrayList<>();
 		for (int i = 0; i < assignment.length; i++) {
 			if (assignment[i] != -1) {

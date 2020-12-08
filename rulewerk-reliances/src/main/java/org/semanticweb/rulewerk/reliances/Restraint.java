@@ -44,8 +44,9 @@ public class Restraint {
 
 	/**
 	 * 
-	 * @return true if an universal variable from head21 is being mapped into an
-	 *         existential variable from head11, which makes the unifier invalid.
+	 * @return true if an universal variable occurring in a literal in head21 is
+	 *         being mapped into an existential variable occurring in its mapped
+	 *         literal from head11, which makes the alternative match invalid.
 	 */
 	static private boolean mappingUniversalintoExistential(List<PositiveLiteral> headAtomsRule2,
 			List<PositiveLiteral> headAtomsRule1, Assignment assignment) {
@@ -64,7 +65,20 @@ public class Restraint {
 		return false;
 	}
 
-	// must be true
+	/**
+	 * If we map an extVar (occurring in a literal in head21) into another extVar
+	 * (occurring in a literal in head11), that first extVar can not occur in
+	 * head22. If it occurs in head22, we don't have an alternative match because we
+	 * can not drop all occurrences of the extVar, nor instantiate it with a
+	 * constant.
+	 * 
+	 * @param headAtomsRule2 rule2.head (renamed, unified, and renamed again)
+	 * @param headAtomsRule1 rule1.head (renamed, unified, and renamed again)
+	 * @param headAtoms22    atoms from rule2.head that were not unified, but
+	 *                       renamed
+	 * @param assignment     see {@code Assignment}
+	 * @return true if the alternative match is still a valid candidate
+	 */
 	static private boolean mapExt2ExtOrExt2Uni(List<Literal> headAtomsRule2, List<Literal> headAtomsRule1,
 			List<Literal> headAtoms22, Assignment assignment) {
 		Set<ExistentialVariable> extVarsIn22 = LiteralList.getExistentialVariables(headAtoms22);
@@ -93,9 +107,7 @@ public class Restraint {
 			for (int i = 0; i < origin.size(); i++) {
 				if (origin.get(i).getType() == TermType.EXISTENTIAL_VARIABLE) {
 					if (map.containsKey(origin.get(i))) {
-						if (map.get(origin.get(i)).equals(destination.get(i))) {
-							//
-						} else {
+						if (!map.get(origin.get(i)).equals(destination.get(i))) {
 							return false;
 						}
 					} else {

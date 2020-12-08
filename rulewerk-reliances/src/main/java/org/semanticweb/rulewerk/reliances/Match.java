@@ -21,8 +21,10 @@ package org.semanticweb.rulewerk.reliances;
  */
 
 /**
- * A class to represent a match from an origin into a destination. Origin and
- * destination should be indexes (list or arrays)
+ * A class to represent a match from an origin into a destination. Both origin
+ * and destination should be indexes in an array or a list. A Match [i,j]
+ * represent a map between the element [i] of an origin array/list, and the
+ * element [j] of a destination array/list.
  * 
  * @author Larry Gonzalez
  *
