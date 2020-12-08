@@ -114,4 +114,35 @@ public class Assignment {
 		return result;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + assignedLength;
+		result = prime * result + assigneeLength;
+		result = prime * result + ((matches == null) ? 0 : matches.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Assignment other = (Assignment) obj;
+		if (assignedLength != other.assignedLength)
+			return false;
+		if (assigneeLength != other.assigneeLength)
+			return false;
+		if (matches == null) {
+			if (other.matches != null)
+				return false;
+		} else if (!matches.equals(other.matches))
+			return false;
+		return true;
+	}
+
 }
