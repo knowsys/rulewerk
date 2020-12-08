@@ -1,7 +1,10 @@
 package org.semanticweb.rulewerk.reliances;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,15 +52,6 @@ public class Restraint {
 		return !SBCQ.query(instance, query);
 	}
 
-	static private boolean isheadAtoms21mappableToheadAtoms11(List<Literal> headAtoms11, List<Literal> headAtoms21) {
-		List<Literal> instance = new ArrayList<>();
-		List<Literal> query = new ArrayList<>();
-		headAtoms11.forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
-		headAtoms21.forEach(literal -> query.add(Instantiator.instantiateQuery(literal)));
-
-		return SBCQ.query(instance, query);
-	}
-
 	/**
 	 * 
 	 * @return true if an universal variable from head21 is being mapped into an
@@ -80,14 +74,11 @@ public class Restraint {
 		return false;
 	}
 
-	// this must be true to have a restrain
-	static private boolean conditionForExistentialVariables(List<Literal> headAtomsRule2, List<Literal> headAtomsRule1,
+	// must be true
+	static private boolean mapExt2ExtOrExt2Uni(List<Literal> headAtomsRule2, List<Literal> headAtomsRule1,
 			List<Literal> headAtoms22, Assignment assignment) {
-
 		Set<ExistentialVariable> extVarsIn22 = LiteralList.getExistentialVariables(headAtoms22);
-
 		for (Match match : assignment.getMatches()) {
-
 			List<Term> origin = headAtomsRule2.get(match.getOrigin()).getArguments();
 			List<Term> destination = headAtomsRule1.get(match.getDestination()).getArguments();
 
@@ -96,6 +87,30 @@ public class Restraint {
 						&& destination.get(i).getType() == TermType.EXISTENTIAL_VARIABLE
 						&& extVarsIn22.contains(origin.get(i))) {
 					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	// must be true
+	static private boolean mapExistentialsToTheSame(List<Literal> headRule2, List<Literal> headRule1,
+			Assignment assignment) {
+		Map<ExistentialVariable, Term> map = new HashMap<>();
+		for (Match match : assignment.getMatches()) {
+			List<Term> origin = headRule2.get(match.getOrigin()).getArguments();
+			List<Term> destination = headRule1.get(match.getDestination()).getArguments();
+			for (int i = 0; i < origin.size(); i++) {
+				if (origin.get(i).getType() == TermType.EXISTENTIAL_VARIABLE) {
+					if (map.containsKey(origin.get(i))) {
+						if (map.get(origin.get(i)).equals(destination.get(i))) {
+							//
+						} else {
+							return false;
+						}
+					} else {
+						map.put((ExistentialVariable) origin.get(i), destination.get(i));
+					}
 				}
 			}
 		}
@@ -128,6 +143,9 @@ public class Restraint {
 		List<ExistentialVariable> existentialVariables = renamedRule2.getExistentialVariables()
 				.collect(Collectors.toList());
 
+		// to avoid duplicate computation
+		Set<Assignment> testedAssignment = new HashSet<>();
+
 		// Iterate over all subsets of existentialVariables
 		for (List<ExistentialVariable> extVarComb : new SubsetIterable<ExistentialVariable>(existentialVariables)) {
 
@@ -148,37 +166,40 @@ public class Restraint {
 							Assignment transformed = new Assignment(assignment, literaltoUnifyIdx,
 									headAtomsRule2.size());
 
-							List<Integer> headAtoms11Idx = transformed.indexesInAssignedListToBeUnified();
-							List<Integer> headAtoms21Idx = transformed.indexesInAssigneeListToBeUnified();
-							List<Integer> headAtoms22Idx = transformed.indexesInAssigneeListToBeIgnored();
+							if (!testedAssignment.contains(transformed)) {
+								testedAssignment.add(transformed);
 
-							MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2,
-									headAtomsRule1, transformed);
+								List<Integer> headAtoms22Idx = transformed.indexesInAssigneeListToBeIgnored();
 
-							// RWU = renamed with unifier
-							if (unifier.success) {
-								UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, false);
+								MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2,
+										headAtomsRule1, transformed);
 
-								// rename everything
-								Rule rule1RWU = renamer.rename(renamedRule1);
-								Rule rule2RWU = renamer.rename(renamedRule2);
+								// RWU = renamed with unifier
+								if (unifier.success) {
+									UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier,
+											false);
 
-								List<Literal> headAtomsRule1RWU = new ArrayList<>();
-								headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
+									// rename everything
+									Rule rule1RWU = renamer.rename(renamedRule1);
+									Rule rule2RWU = renamer.rename(renamedRule2);
 
-								List<Literal> headAtomsRule2RWU = new ArrayList<>();
-								headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
+									List<Literal> headAtomsRule1RWU = new ArrayList<>();
+									headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
 
-								List<Literal> headAtoms11 = Filter.indexBased(headAtomsRule1RWU, headAtoms11Idx);
-								List<Literal> headAtoms21 = Filter.indexBased(headAtomsRule2RWU, headAtoms21Idx);
-								List<Literal> headAtoms22 = Filter.indexBased(headAtomsRule2RWU, headAtoms22Idx);
+									List<Literal> headAtomsRule2RWU = new ArrayList<>();
+									headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
 
-								if (isRule1Applicable(rule1RWU, rule2RWU)
-										&& !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, transformed)
-										&& conditionForExistentialVariables(headAtomsRule2RWU, headAtomsRule1RWU,
-												headAtoms22, transformed)
-										&& isheadAtoms21mappableToheadAtoms11(headAtoms11, headAtoms21)) {
-									return true;
+									List<Literal> headAtoms22 = Filter.indexBased(headAtomsRule2RWU, headAtoms22Idx);
+
+									if (isRule1Applicable(rule1RWU, rule2RWU)
+											&& !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1,
+													transformed)
+											&& mapExt2ExtOrExt2Uni(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
+													transformed)
+											&& mapExistentialsToTheSame(headAtomsRule2RWU, headAtomsRule1RWU,
+													transformed)) {
+										return true;
+									}
 								}
 							}
 						}
