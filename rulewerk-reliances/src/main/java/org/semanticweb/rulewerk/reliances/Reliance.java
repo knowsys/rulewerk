@@ -96,8 +96,6 @@ public class Reliance {
 		for (Assignment assignment : assignmentIterable) {
 
 			List<Integer> headAtoms11Idx = assignment.indexesInAssignedListToBeUnified();
-//			List<Integer> headAtoms12Idx = assignment.indexesInAssignedListToBeIgnored();
-//			List<Integer> positiveBodyLiterals21Idx = assignment.indexesInAssigneeListToBeUnified();
 			List<Integer> positiveBodyLiterals22Idx = assignment.indexesInAssigneeListToBeIgnored();
 
 			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(positiveBodyLiteralsRule2, headAtomsRule1,
@@ -120,9 +118,6 @@ public class Reliance {
 				headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
 
 				List<Literal> headAtoms11 = Filter.indexBased(headAtomsRule1RWU, headAtoms11Idx);
-//				List<Literal> headAtoms12 = Filter.indexBased(headAtomsRule1RWU, headAtoms12Idx);
-//				List<Literal> positiveBodyLiterals21 = Filter.indexBased(positiveBodyLiteralsRule2RWU,
-//						positiveBodyLiterals21Idx);
 				List<Literal> positiveBodyLiterals22 = Filter.indexBased(positiveBodyLiteralsRule2RWU,
 						positiveBodyLiterals22Idx);
 
