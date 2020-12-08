@@ -42,6 +42,17 @@ public class RelianceTest {
 	}
 
 	@Test
+	public void cyclicDependency() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(?X) :- p(?X) .");
+		Rule rule2 = RuleParser.parseRule("p(?X) :- q(?X) .");
+
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertFalse(Reliance.positively(rule1, rule2));
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
+	}
+
+	@Test
 	public void simpleExistentialRuleTest() throws Exception {
 		Rule rule1 = RuleParser.parseRule("q(?X,!Y) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("r(?X,?Y) :- q(?X,?Y) .");
@@ -109,19 +120,10 @@ public class RelianceTest {
 
 	@Test
 	public void recursiveRuleTest() throws Exception {
-		Rule rule1 = RuleParser.parseRule("P(?Y,!Z) :- P(?X,?Y) .");
+		Rule rule1 = RuleParser.parseRule("p(?Y,!Z) :- p(?X,?Y) .");
+		Rule rule2 = RuleParser.parseRule("p(?X,!Z) :- p(?X,?Y) .");
 
 		assertTrue(Reliance.positively(rule1, rule1));
-	}
-
-	@Test
-	public void cyclicDependency() throws Exception {
-		Rule rule1 = RuleParser.parseRule("Q(?X) :- P(?X) .");
-		Rule rule2 = RuleParser.parseRule("P(?X) :- Q(?X) .");
-
-		assertFalse(Reliance.positively(rule1, rule1));
-		assertFalse(Reliance.positively(rule1, rule2));
-		assertFalse(Reliance.positively(rule2, rule1));
 		assertFalse(Reliance.positively(rule2, rule2));
 	}
 
@@ -165,4 +167,87 @@ public class RelianceTest {
 		assertFalse(Reliance.positively(rule2, rule2));
 	}
 
+	@Test
+	public void test07() throws Exception {
+		Rule rule1 = RuleParser.parseRule("P(?X,!Z) :- P(?X,?Y) .");
+
+		assertFalse(Reliance.positively(rule1, rule1));
+	}
+
+	@Test
+	public void test08() throws Exception {
+		Rule rule1 = RuleParser.parseRule("P(?X,!U), P(!U,!V) :- P(?X,?Y) .");
+		Rule rule2 = RuleParser.parseRule("P(?X,!U), P(!U,!V) :- Q(?X,?Y) .");
+
+		assertTrue(Reliance.positively(rule1, rule1));
+		assertFalse(Reliance.positively(rule1, rule2));
+		assertTrue(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
+	}
+
+	@Test
+	public void test09() throws Exception {
+		Rule rule1 = RuleParser.parseRule("P(!U,?Y,?Z) :- P(?X,?Y,?Z) .");
+		Rule rule2 = RuleParser.parseRule("P(?X,!U,?Z) :- P(?X,?Y,?Z) .");
+		Rule rule3 = RuleParser.parseRule("P(?X,?Y,!U) :- P(?X,?Y,?Z) .");
+
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertFalse(Reliance.positively(rule1, rule2));
+		assertFalse(Reliance.positively(rule1, rule3));
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
+		assertFalse(Reliance.positively(rule2, rule3));
+		assertFalse(Reliance.positively(rule3, rule1));
+		assertFalse(Reliance.positively(rule3, rule2));
+		assertFalse(Reliance.positively(rule3, rule3));
+	}
+
+	@Test
+	public void test10() throws Exception {
+		Rule rule1 = RuleParser.parseRule("P(!U,?Z,?Y) :- P(?X,?Y,?Z) .");
+		Rule rule2 = RuleParser.parseRule("P(?Z,!U,?X) :- P(?X,?Y,?Z) .");
+		Rule rule3 = RuleParser.parseRule("P(?Y,?X,!U) :- P(?X,?Y,?Z) .");
+
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertTrue(Reliance.positively(rule1, rule2));
+		assertTrue(Reliance.positively(rule1, rule3));
+		assertTrue(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
+		assertTrue(Reliance.positively(rule2, rule3));
+		assertTrue(Reliance.positively(rule3, rule1));
+		assertTrue(Reliance.positively(rule3, rule2));
+		assertFalse(Reliance.positively(rule3, rule3));
+	}
+
+	@Test
+	public void test11() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(?X,!U,!V), q(?Y,!V,!U), q(?Z,!V,!W) :- q(?X,?Y,?Z) .");
+
+		assertTrue(Reliance.positively(rule1, rule1));
+	}
+
+	@Test
+	public void test12() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(!U,!V,!W) :- q(?X,?Y,?Z) .");
+
+		assertFalse(Reliance.positively(rule1, rule1));
+	}
+
+	@Test
+	public void test13() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(!Y) :- q(?X) .");
+
+		assertFalse(Reliance.positively(rule1, rule1));
+	}
+
+	@Test
+	public void test14() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(?X) :- p(?X) .");
+		Rule rule2 = RuleParser.parseRule("r(!Y) :- q(c) .");
+
+		assertFalse(Reliance.positively(rule1, rule1));
+		assertTrue(Reliance.positively(rule1, rule2));
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
+	}
 }

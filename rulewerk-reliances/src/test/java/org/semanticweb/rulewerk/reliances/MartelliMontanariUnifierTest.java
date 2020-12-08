@@ -100,4 +100,22 @@ public class MartelliMontanariUnifierTest {
 		assertFalse(unifier.getSuccess());
 	}
 
+	@Test
+	public void test08() throws Exception {
+		Literal literal1 = RuleParser.parseLiteral("p(c)");
+
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal1);
+
+		assertTrue(unifier.getSuccess());
+	}
+
+	@Test
+	public void test09() throws Exception {
+		Literal literal1 = RuleParser.parseLiteral("p(c)");
+		Literal literal2 = RuleParser.parseLiteral("p(d)");
+
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+
+		assertFalse(unifier.getSuccess());
+	}
 }
