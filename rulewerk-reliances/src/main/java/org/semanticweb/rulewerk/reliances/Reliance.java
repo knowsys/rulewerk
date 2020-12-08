@@ -66,5 +66,4 @@ public class Reliance {
 		}
 		return false;
 	}
-
 }
