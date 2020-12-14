@@ -147,6 +147,10 @@ public class Restraint {
 			return false;
 		}
 
+		if (!RuleUtil.isRuleApplicable(rule1)) {
+			return false;
+		}
+
 		if (!RuleUtil.isRuleApplicable(rule2)) {
 			return false;
 		}
