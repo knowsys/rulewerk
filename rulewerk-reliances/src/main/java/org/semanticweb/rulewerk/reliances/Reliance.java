@@ -37,8 +37,8 @@ public class Reliance {
 	 * @return True if rule2 positively relies on rule1.
 	 */
 	static public boolean positively(Rule rule1, Rule rule2) {
-		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, 1);
-		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, 2);
+		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, rule2.hashCode() + 1);
+		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, rule1.hashCode() + 2);
 
 		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
 		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals();

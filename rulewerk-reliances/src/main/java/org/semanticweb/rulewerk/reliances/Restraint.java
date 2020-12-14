@@ -151,16 +151,12 @@ public class Restraint {
 			return false;
 		}
 
-		if (rule2.containsUnconnectedPieces()) {
-			return true;
-		}
-
 		if (rule1.equals(rule2)) {
 			return SelfRestraint.restraint(rule1);
 		}
 
-		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, rule1.hashCode() + 1);
-		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, rule2.hashCode() + 2);
+		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, rule2.hashCode() + 1);
+		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, rule1.hashCode() + 2);
 
 		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
 		List<PositiveLiteral> headAtomsRule2 = renamedRule2.getHead().getLiterals();
