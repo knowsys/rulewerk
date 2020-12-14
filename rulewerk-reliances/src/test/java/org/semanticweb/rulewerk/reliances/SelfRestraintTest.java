@@ -226,4 +226,18 @@ public class SelfRestraintTest {
 
 		assertTrue(SelfRestraint.restraint(rule));
 	}
+
+	@Test
+	public void existentialRule23() throws Exception {
+		Rule rule = RuleParser.parseRule("q(?Y,!Z),r(?X,?Y),r(?Y,?X) :- p(?X,?Y) .");
+
+		assertTrue(SelfRestraint.restraint(rule));
+	}
+
+	@Test
+	public void existentialRule24() throws Exception {
+		Rule rule = RuleParser.parseRule("q(?Y,!Z),r(?X,?X),r(?X,?Y),r(?Y,?X),r(?Y,?Y) :- p(?X,?Y) .");
+
+		assertTrue(SelfRestraint.restraint(rule));
+	}
 }
