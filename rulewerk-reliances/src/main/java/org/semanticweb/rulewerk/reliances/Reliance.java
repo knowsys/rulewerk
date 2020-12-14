@@ -37,6 +37,14 @@ public class Reliance {
 	 * @return True if rule2 positively relies on rule1.
 	 */
 	static public boolean positively(Rule rule1, Rule rule2) {
+		if (!RuleUtil.isRuleApplicable(rule1)) {
+			return false;
+		}
+
+		if (!RuleUtil.isRuleApplicable(rule2)) {
+			return false;
+		}
+
 		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, rule2.hashCode() + 1);
 		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, rule1.hashCode() + 2);
 
