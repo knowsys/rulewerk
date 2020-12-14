@@ -175,7 +175,7 @@ public class RestraintTest {
 	}
 
 	@Test
-	public void latest03() throws Exception {
+	public void trueNegativeTest() throws Exception {
 		Rule rule1 = RuleParser.parseRule("q(?X,!Y), r(?X) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("r(?X), s(?X,!Y) :- p(?X) .");
 
