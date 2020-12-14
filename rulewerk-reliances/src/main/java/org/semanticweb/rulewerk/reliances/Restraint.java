@@ -147,6 +147,10 @@ public class Restraint {
 			return false;
 		}
 
+		if (!RuleUtil.isRuleApplicable(rule1)) {
+			return false;
+		}
+
 		if (!RuleUtil.isRuleApplicable(rule2)) {
 			return false;
 		}
@@ -161,67 +165,34 @@ public class Restraint {
 		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
 		List<PositiveLiteral> headAtomsRule2 = renamedRule2.getHead().getLiterals();
 
-		List<ExistentialVariable> existentialVariables = renamedRule2.getExistentialVariables()
-				.collect(Collectors.toList());
+		AssignmentIterable assignmentIterable = new AssignmentIterable(headAtomsRule2.size(), headAtomsRule1.size());
 
-		// to avoid duplicate computation
-		Set<Assignment> testedAssignment = new HashSet<>();
+		for (Assignment assignment : assignmentIterable) {
+			List<Integer> headAtoms22Idx = assignment.indexesInAssigneeListToBeIgnored();
+			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2, headAtomsRule1, assignment);
 
-		// Iterate over all subsets of existentialVariables
-		for (List<ExistentialVariable> extVarComb : new SubsetIterable<ExistentialVariable>(existentialVariables)) {
+			// RWU = renamed with unifier
+			if (unifier.getSuccess()) {
+				UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, false);
 
-			if (extVarComb.size() > 0) {
-				List<Integer> literalsContainingExtVarsIdxs = LiteralList
-						.idxOfLiteralsContainingExistentialVariables(headAtomsRule2, extVarComb);
-				// Iterate over all subsets of literalsContainingExtVarsIdxs. Because it could
-				// be that we need to match only one of the literals
-				for (List<Integer> literaltoUnifyIdx : new SubsetIterable<Integer>(literalsContainingExtVarsIdxs)) {
+				Rule rule1RWU = renamer.rename(renamedRule1);
+				Rule rule2RWU = renamer.rename(renamedRule2);
 
-					if (literaltoUnifyIdx.size() > 0) {
-						AssignmentIterable assignmentIterable = new AssignmentIterable(literaltoUnifyIdx.size(),
-								headAtomsRule1.size());
-						// Iterate over all possible assignments of those Literals
-						for (Assignment assignment : assignmentIterable) {
+				List<Literal> headAtomsRule1RWU = new ArrayList<>();
+				headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
 
-							// We transform the assignment to keep the old indexes
-							Assignment transformed = new Assignment(assignment, literaltoUnifyIdx,
-									headAtomsRule2.size());
+				List<Literal> headAtomsRule2RWU = new ArrayList<>();
+				headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
 
-							if (!testedAssignment.contains(transformed)) {
-								testedAssignment.add(transformed);
+				List<Literal> headAtoms22 = Filter.indexBased(headAtomsRule2RWU, headAtoms22Idx);
 
-								List<Integer> headAtoms22Idx = transformed.indexesInAssigneeListToBeIgnored();
-								MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2,
-										headAtomsRule1, transformed);
-								if (unifier.getSuccess()) {
-									UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier,
-											false);
-									// rename universal variables (RWU = renamed with unifier)
-									Rule rule1RWU = renamer.rename(renamedRule1);
-									Rule rule2RWU = renamer.rename(renamedRule2);
-
-									List<Literal> headAtomsRule1RWU = new ArrayList<>();
-									headAtomsRule1.forEach(literal -> headAtomsRule1RWU.add(renamer.rename(literal)));
-
-									List<Literal> headAtomsRule2RWU = new ArrayList<>();
-									headAtomsRule2.forEach(literal -> headAtomsRule2RWU.add(renamer.rename(literal)));
-
-									List<Literal> headAtoms22 = Filter.indexBased(headAtomsRule2RWU, headAtoms22Idx);
-
-									if (RuleUtil.isRule1Applicable(rule1RWU, rule2RWU)
-											&& !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1,
-													transformed)
-											&& mapExt2ExtOrExt2Uni(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22,
-													transformed)
-											&& mapExistentialsToTheSame(headAtomsRule2RWU, headAtomsRule1RWU,
-													transformed)) {
-										return true;
-									}
-								}
-							}
-						}
-					}
+				if (RuleUtil.isRule1Applicable(rule1RWU, rule2RWU)
+						&& !mappingUniversalintoExistential(headAtomsRule2, headAtomsRule1, assignment)
+						&& mapExt2ExtOrExt2Uni(headAtomsRule2RWU, headAtomsRule1RWU, headAtoms22, assignment)
+						&& mapExistentialsToTheSame(headAtomsRule2RWU, headAtomsRule1RWU, assignment)) {
+					return true;
 				}
+
 			}
 		}
 		return false;
