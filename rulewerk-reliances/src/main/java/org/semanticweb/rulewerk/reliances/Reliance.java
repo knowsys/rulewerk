@@ -49,7 +49,7 @@ public class Reliance {
 		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, rule1.hashCode() + 2);
 
 		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
-		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals();
+		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals().getLiterals();
 
 		int sizeHead1 = headAtomsRule1.size();
 		int sizePositiveBody2 = positiveBodyLiteralsRule2.size();

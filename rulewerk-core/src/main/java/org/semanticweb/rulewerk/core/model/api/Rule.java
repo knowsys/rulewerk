@@ -1,6 +1,5 @@
 package org.semanticweb.rulewerk.core.model.api;
 
-import java.util.List;
 import java.util.Set;
 
 /*-
@@ -31,7 +30,7 @@ import java.util.Set;
  * considered existentially quantified.
  * 
  * @author Markus Krötzsch
- * @author Larry Gonzalez
+ * @author Larry González
  *
  */
 public interface Rule extends SyntaxObject, Statement {
@@ -50,9 +49,20 @@ public interface Rule extends SyntaxObject, Statement {
 	 */
 	Conjunction<Literal> getBody();
 
-	List<Literal> getPositiveBodyLiterals();
+	/**
+	 * Returns the conjunction of positive body literals.
+	 *
+	 * @return conjunction of literals
+	 */
+	Conjunction<Literal> getPositiveBodyLiterals();
 
-	List<Literal> getNegativeBodyLiterals();
+	/**
+	 * Returns the conjunction of negative body literals.
+	 *
+	 * @return conjunction of literals
+	 */
+	Conjunction<Literal> getNegativeBodyLiterals();
+
 	/**
 	 * Returns the list of pieces in the head of the rule.
 	 *

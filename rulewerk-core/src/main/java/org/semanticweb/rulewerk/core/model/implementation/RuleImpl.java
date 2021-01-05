@@ -135,30 +135,14 @@ public class RuleImpl implements Rule {
 		return Stream.concat(this.body.getTerms(), this.head.getTerms()).distinct();
 	}
 
-	public List<Literal> getBodyLiterals() {
-		List<Literal> bodyLiterals = new ArrayList<>();
-		this.getBody().forEach(literal -> bodyLiterals.add(literal));
-		return bodyLiterals;
+	public Conjunction<Literal> getPositiveBodyLiterals() {
+		return new ConjunctionImpl<Literal>(
+				this.getBody().getLiterals().stream().filter(lit -> !lit.isNegated()).collect(Collectors.toList()));
 	}
 
-	public List<Literal> getPositiveBodyLiterals() {
-		List<Literal> positiveBodyLiterals = new ArrayList<>();
-		for (Literal literal : this.getBody()) {
-			if (!literal.isNegated()) {
-				positiveBodyLiterals.add(literal);
-			}
-		}
-		return positiveBodyLiterals;
-	}
-
-	public List<Literal> getNegativeBodyLiterals() {
-		List<Literal> negativeBodyLiterals = new ArrayList<>();
-		for (Literal literal : this.getBody()) {
-			if (literal.isNegated()) {
-				negativeBodyLiterals.add(literal);
-			}
-		}
-		return negativeBodyLiterals;
+	public Conjunction<Literal> getNegativeBodyLiterals() {
+		return new ConjunctionImpl<Literal>(
+				this.getBody().getLiterals().stream().filter(lit -> lit.isNegated()).collect(Collectors.toList()));
 	}
 
 	@Override
