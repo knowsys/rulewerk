@@ -49,11 +49,11 @@ public class Restraint {
 	 *         literal from head11, which makes the alternative match invalid.
 	 */
 	static private boolean mappingUniversalintoExistential(List<PositiveLiteral> headAtomsRule2,
-			List<PositiveLiteral> headAtomsRule1, Assignment assignment) {
+			List<PositiveLiteral> headAtomsRule1, PartialMapping assignment) {
 
-		for (Match match : assignment.getMatches()) {
-			List<Term> fromHead2 = headAtomsRule2.get(match.getOrigin()).getArguments();
-			List<Term> fromHead1 = headAtomsRule1.get(match.getDestination()).getArguments();
+		for (Image match : assignment.getImages()) {
+			List<Term> fromHead2 = headAtomsRule2.get(match.getX()).getArguments();
+			List<Term> fromHead1 = headAtomsRule1.get(match.getY()).getArguments();
 
 			for (int i = 0; i < fromHead2.size(); i++) {
 				if (fromHead2.get(i).getType() == TermType.UNIVERSAL_VARIABLE
@@ -80,11 +80,11 @@ public class Restraint {
 	 * @return true if the alternative match is still a valid candidate
 	 */
 	static private boolean mapExt2ExtOrExt2Uni(List<Literal> headAtomsRule2, List<Literal> headAtomsRule1,
-			List<Literal> headAtoms22, Assignment assignment) {
+			List<Literal> headAtoms22, PartialMapping assignment) {
 		Set<ExistentialVariable> extVarsIn22 = LiteralList.getExistentialVariables(headAtoms22);
-		for (Match match : assignment.getMatches()) {
-			List<Term> origin = headAtomsRule2.get(match.getOrigin()).getArguments();
-			List<Term> destination = headAtomsRule1.get(match.getDestination()).getArguments();
+		for (Image match : assignment.getImages()) {
+			List<Term> origin = headAtomsRule2.get(match.getX()).getArguments();
+			List<Term> destination = headAtomsRule1.get(match.getY()).getArguments();
 
 			for (int i = 0; i < origin.size(); i++) {
 				if (origin.get(i).getType() == TermType.EXISTENTIAL_VARIABLE
@@ -114,11 +114,11 @@ public class Restraint {
 	 * @return true if the alternative match is still a valid candidate
 	 */
 	static private boolean mapExistentialsToTheSame(List<Literal> headRule2, List<Literal> headRule1,
-			Assignment assignment) {
+			PartialMapping assignment) {
 		Map<ExistentialVariable, Term> map = new HashMap<>();
-		for (Match match : assignment.getMatches()) {
-			List<Term> origin = headRule2.get(match.getOrigin()).getArguments();
-			List<Term> destination = headRule1.get(match.getDestination()).getArguments();
+		for (Image match : assignment.getImages()) {
+			List<Term> origin = headRule2.get(match.getX()).getArguments();
+			List<Term> destination = headRule1.get(match.getY()).getArguments();
 			for (int i = 0; i < origin.size(); i++) {
 				if (origin.get(i).getType() == TermType.EXISTENTIAL_VARIABLE) {
 					if (map.containsKey(origin.get(i))) {
@@ -169,7 +169,7 @@ public class Restraint {
 				.collect(Collectors.toList());
 
 		// to avoid duplicate computation
-		Set<Assignment> testedAssignment = new HashSet<>();
+		Set<PartialMapping> testedAssignment = new HashSet<>();
 
 		// Iterate over all subsets of existentialVariables
 		for (List<ExistentialVariable> extVarComb : new SubsetIterable<ExistentialVariable>(existentialVariables)) {
@@ -182,19 +182,19 @@ public class Restraint {
 				for (List<Integer> literaltoUnifyIdx : new SubsetIterable<Integer>(literalsContainingExtVarsIdxs)) {
 
 					if (literaltoUnifyIdx.size() > 0) {
-						AssignmentIterable assignmentIterable = new AssignmentIterable(literaltoUnifyIdx.size(),
+						PartialMappingIterable assignmentIterable = new PartialMappingIterable(literaltoUnifyIdx.size(),
 								headAtomsRule1.size());
 						// Iterate over all possible assignments of those Literals
-						for (Assignment assignment : assignmentIterable) {
+						for (PartialMapping assignment : assignmentIterable) {
 
 							// We transform the assignment to keep the old indexes
-							Assignment transformed = new Assignment(assignment, literaltoUnifyIdx,
+							PartialMapping transformed = new PartialMapping(assignment, literaltoUnifyIdx,
 									headAtomsRule2.size());
 
 							if (!testedAssignment.contains(transformed)) {
 								testedAssignment.add(transformed);
 
-								List<Integer> headAtoms22Idx = transformed.indexesInAssigneeListToBeIgnored();
+								List<Integer> headAtoms22Idx = transformed.inactiveDomain();
 								MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(headAtomsRule2,
 										headAtomsRule1, transformed);
 								if (unifier.getSuccess()) {

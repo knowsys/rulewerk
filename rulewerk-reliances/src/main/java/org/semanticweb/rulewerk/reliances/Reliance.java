@@ -51,12 +51,10 @@ public class Reliance {
 		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
 		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals().getLiterals();
 
-		int sizeHead1 = headAtomsRule1.size();
-		int sizePositiveBody2 = positiveBodyLiteralsRule2.size();
+		PartialMappingIterable assignmentIterable = new PartialMappingIterable(positiveBodyLiteralsRule2.size(),
+				headAtomsRule1.size());
 
-		AssignmentIterable assignmentIterable = new AssignmentIterable(sizePositiveBody2, sizeHead1);
-
-		for (Assignment assignment : assignmentIterable) {
+		for (PartialMapping assignment : assignmentIterable) {
 			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(positiveBodyLiteralsRule2, headAtomsRule1,
 					assignment);
 

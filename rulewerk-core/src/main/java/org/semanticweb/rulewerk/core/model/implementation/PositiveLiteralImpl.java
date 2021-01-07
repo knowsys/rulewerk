@@ -25,10 +25,22 @@ import java.util.List;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Term;
+import org.semanticweb.rulewerk.core.model.api.TermType;
 
 public class PositiveLiteralImpl extends AbstractLiteralImpl implements PositiveLiteral {
 
 	public PositiveLiteralImpl(final Predicate predicate, final List<Term> terms) {
 		super(predicate, terms);
 	}
+
+	@Override
+	public boolean containsExistentialVariables() {
+		for (Term term : getArguments()) {
+			if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

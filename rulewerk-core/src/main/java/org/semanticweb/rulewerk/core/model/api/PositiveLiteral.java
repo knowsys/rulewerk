@@ -26,4 +26,12 @@ public interface PositiveLiteral extends Literal {
 	default boolean isNegated() {
 		return false;
 	}
+
+	/**
+	 *
+	 * @return true if the literal contain at least one existential quantified
+	 *         variable.
+	 */
+	boolean containsExistentialVariables();
+
 }

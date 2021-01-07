@@ -68,11 +68,11 @@ public class MartelliMontanariUnifier {
 	 *                   list while assignment[i] is the location in the second
 	 *                   list. @see AssignmentIterable.AssignmentIterarot.next
 	 */
-	public <T1, T2> MartelliMontanariUnifier(List<T1> first, List<T2> second, Assignment assignment) {
+	public <T1, T2> MartelliMontanariUnifier(List<T1> first, List<T2> second, PartialMapping assignment) {
 		unifier = new HashMap<>();
 		success = true;
-		for (Match match : assignment.getMatches()) {
-			unify((Literal) first.get(match.getOrigin()), (Literal) second.get(match.getDestination()));
+		for (Image match : assignment.getImages()) {
+			unify((Literal) first.get(match.getX()), (Literal) second.get(match.getY()));
 		}
 	}
 

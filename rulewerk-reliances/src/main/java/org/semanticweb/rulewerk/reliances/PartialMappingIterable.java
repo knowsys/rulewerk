@@ -22,19 +22,19 @@ package org.semanticweb.rulewerk.reliances;
 
 import java.util.Iterator;
 
-public class AssignmentIterable implements Iterable<Assignment> {
+public class PartialMappingIterable implements Iterable<PartialMapping> {
 
-	AssignmentIterator assignmentIterator;
+	MappingIterator mappingIterator;
 
-	private class AssignmentIterator implements Iterator<Assignment> {
-		int originLength;
-		int destinationLength;
+	private class MappingIterator implements Iterator<PartialMapping> {
+		int domineSize;
+		int codomineSize;
 		NumbersInBaseAndLengthFromMinusOne numbers; // base to count
 
-		public AssignmentIterator(int originLength, int destinationLength) {
-			this.originLength = originLength;
-			this.destinationLength = destinationLength;
-			numbers = new NumbersInBaseAndLengthFromMinusOne(destinationLength, originLength);
+		public MappingIterator(int domineSize, int codomineSize) {
+			this.domineSize = domineSize;
+			this.codomineSize = codomineSize;
+			numbers = new NumbersInBaseAndLengthFromMinusOne(codomineSize, domineSize);
 		}
 
 		@Override
@@ -50,14 +50,13 @@ public class AssignmentIterable implements Iterable<Assignment> {
 		 * container (what is mapped to).
 		 */
 		@Override
-		public Assignment next() {
-			Assignment assignment = new Assignment(numbers.next(), originLength, destinationLength);
+		public PartialMapping next() {
+			PartialMapping assignment = new PartialMapping(numbers.next(), domineSize, codomineSize);
 			if (assignment.size() == 0) {
-				assignment = new Assignment(numbers.next(), originLength, destinationLength);
+				assignment = new PartialMapping(numbers.next(), domineSize, codomineSize);
 			}
 			return assignment;
 		}
-
 	}
 
 	/**
@@ -65,16 +64,16 @@ public class AssignmentIterable implements Iterable<Assignment> {
 	 * destination lists, an Assignment is a List of Matches s.t each match maps
 	 * indexes of the origin list into indexes of the destination list.
 	 * 
-	 * @param originLength      number of assigned objects
-	 * @param destinationLength number of assignee objects
+	 * @param domainSize   number of objects in the domine
+	 * @param codomineSize number of objects in the codomine
 	 */
-	public AssignmentIterable(int originLength, int destinationLength) {
-		assignmentIterator = new AssignmentIterator(originLength, destinationLength);
+	public PartialMappingIterable(int domainSize, int codomineSize) {
+		mappingIterator = new MappingIterator(domainSize, codomineSize);
 	}
 
 	@Override
-	public Iterator<Assignment> iterator() {
-		return assignmentIterator;
+	public Iterator<PartialMapping> iterator() {
+		return mappingIterator;
 	}
 
 }

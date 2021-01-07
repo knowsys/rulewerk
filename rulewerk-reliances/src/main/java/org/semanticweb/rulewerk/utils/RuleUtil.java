@@ -22,11 +22,15 @@ package org.semanticweb.rulewerk.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 public class RuleUtil {
+
 	static public boolean isRule1Applicable(Rule rule1, Rule rule2) {
 		List<Literal> instance = new ArrayList<>();
 		List<Literal> query = new ArrayList<>();
@@ -45,5 +49,23 @@ public class RuleUtil {
 		rule.getHead().getLiterals().forEach(literal -> query.add(Instantiator.instantiateQuery(literal)));
 
 		return !SBCQ.query(instance, query);
+	}
+
+	static public Rule moveLiteralsWithExistentialVariablesToTheFront(Rule rule) {
+		List<PositiveLiteral> headAtomsWithExistentials = new ArrayList<>();
+		List<PositiveLiteral> headAtomsWithoutExistentials = new ArrayList<>();
+		for (PositiveLiteral atom : rule.getHead().getLiterals()) {
+			if (atom.containsExistentialVariables()) {
+				headAtomsWithExistentials.add(atom);
+			} else {
+				headAtomsWithoutExistentials.add(atom);
+			}
+		}
+
+		List<PositiveLiteral> newHead = new ArrayList<>();
+		Stream.of(headAtomsWithExistentials, headAtomsWithoutExistentials).forEach(newHead::addAll);
+
+		return Expressions.makeRule(Expressions.makeConjunction(newHead), rule.getBody());
+
 	}
 }

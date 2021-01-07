@@ -21,58 +21,61 @@ package org.semanticweb.rulewerk.reliances;
  */
 
 /**
- * A class to represent a match from an origin into a destination. Both origin
- * and destination should be indexes in an array or a list. A Match [i,j]
- * represent a map between the element [i] of an origin array/list, and the
- * element [j] of a destination array/list.
+ * A class to store the image index {@code y} of a value index {@code x} under a
+ * partial mapping. Both {@code x} and {@code y} must be indexes in two arrays
+ * or lists that represent the domain and codomain of the partial mapping
+ * respectively.
  * 
- * @author Larry Gonzalez
+ * @note that {@code Image} stores the indexes of {@code x} and {@code y}, not
+ *       the actual values.
+ * 
+ * @author Larry González
  *
  */
-public class Match {
-	int origin;
-	int destination;
+public class Image {
+	int x;
+	int y;
 
 	/**
-	 * Constructor of a Match.
+	 * Constructor of an Image.
 	 * 
-	 * @param origin      index in the origin container
-	 * @param destination index in the destination container
+	 * @param x index in the domain array/list
+	 * @param y index in the codomain array/list
 	 */
-	public Match(int origin, int destination) {
-		this.origin = origin;
-		this.destination = destination;
+	public Image(int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	@Override
 	public String toString() {
-		return "[" + origin + ", " + destination + "]";
+		return "[" + x + ", " + y + "]";
 	}
 
 	/**
-	 * Getter of origin
+	 * Getter of x
 	 * 
-	 * @return int origin
+	 * @return x
 	 */
-	public int getOrigin() {
-		return origin;
+	public int getX() {
+		return x;
 	}
 
 	/**
-	 * Getter of destination
+	 * Getter of y
 	 * 
-	 * @return int destination
+	 * @return y
 	 */
-	public int getDestination() {
-		return destination;
+	public int getY() {
+		return y;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + destination;
-		result = prime * result + origin;
+		result = prime * result + y;
+		result = prime * result + x;
 		return result;
 	}
 
@@ -84,10 +87,10 @@ public class Match {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Match other = (Match) obj;
-		if (destination != other.destination)
+		Image other = (Image) obj;
+		if (y != other.y)
 			return false;
-		if (origin != other.origin)
+		if (x != other.x)
 			return false;
 		return true;
 	}
