@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -104,7 +104,7 @@ public class MergingPrefixDeclarationRegistryTest {
 		assertEquals(BASE, prefixDeclarations.getPrefixIri("eg:"));
 		assertEquals(2, StreamSupport.stream(prefixDeclarations.spliterator(), false).count());
 	}
-	
+
 	@Test
 	public void clearPrefix_succeeds() throws PrefixDeclarationException {
 		prefixDeclarations.setPrefixIri("eg:", BASE);
@@ -112,7 +112,7 @@ public class MergingPrefixDeclarationRegistryTest {
 		prefixDeclarations.clear();
 		assertEquals(0, StreamSupport.stream(prefixDeclarations.spliterator(), false).count());
 	}
-	
+
 	@Test
 	public void setPrefixIri_setSamePrefix_succeeds() throws PrefixDeclarationException {
 		prefixDeclarations.setPrefixIri("eg:", BASE);
@@ -228,5 +228,11 @@ public class MergingPrefixDeclarationRegistryTest {
 
 		assertNotEquals(RELATIVE, resolvedIri);
 		assertEquals("rw_gen0:" + RELATIVE, resolvedIri);
+	}
+
+	@Test
+	public void unresolveAbsoluteIri_relativeIriAfterClear_succeeds() throws PrefixDeclarationException {
+		prefixDeclarations.clear();
+		assertEquals(RELATIVE, prefixDeclarations.unresolveAbsoluteIri(RELATIVE, true));
 	}
 }

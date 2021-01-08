@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -115,7 +115,7 @@ public abstract class AbstractPrefixDeclarationRegistry implements PrefixDeclara
 		if (addIriBrackets) {
 			if (!iri.contains(":") && iri.matches(REGEXP_LOCNAME)) {
 				shortestIri = iri;
-				if (!PrefixDeclarationRegistry.EMPTY_BASE.equals(baseIri)) {
+				if (baseIri != null && !PrefixDeclarationRegistry.EMPTY_BASE.equals(baseIri)) {
 					throw new RulewerkRuntimeException("Relative IRIs cannot be serialized when a base is declared.");
 				}
 			} else {
