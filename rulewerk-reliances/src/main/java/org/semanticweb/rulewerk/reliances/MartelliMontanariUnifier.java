@@ -22,6 +22,7 @@ package org.semanticweb.rulewerk.reliances;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.Literal;
@@ -31,14 +32,15 @@ import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 /**
- * An implementation of the Martelli & Montanari unification algorithm.
+ * An implementation of the Martelli & Montanari unification algorithm for
+ * predicate logic without function symbols.
  * 
  * @note check for other unification algorithms.
- * @author Larry Gonzalez
+ * @author Larry González
  *
  */
 public class MartelliMontanariUnifier {
-	final private HashMap<Term, Term> unifier;
+	final private Map<Term, Term> unifier;
 	private boolean success;
 
 	/**
@@ -59,20 +61,21 @@ public class MartelliMontanariUnifier {
 	}
 
 	/**
-	 * An implementation of the Martelli & Montanari unification algorithm. @note
-	 * that this algorithm is commutative.
+	 * An implementation of the Martelli & Montanari unification algorithm for
+	 * predicate logic without function symbols.
 	 * 
-	 * @param first      List of Literals to be unified
-	 * @param second     List of Literals to be unified
-	 * @param assignment of Literal positions where [i] is the location in the first
-	 *                   list while assignment[i] is the location in the second
-	 *                   list. @see AssignmentIterable.AssignmentIterarot.next
+	 * @note that this algorithm is commutative.
+	 *
+	 * @param first          List of Literals to be unified
+	 * @param second         List of Literals to be unified
+	 * @param partialMapping a partial mapping of indexes from {@code first} to
+	 *                       {@code second}.
 	 */
-	public <T1, T2> MartelliMontanariUnifier(List<T1> first, List<T2> second, PartialMapping assignment) {
+	public <T1, T2> MartelliMontanariUnifier(List<T1> first, List<T2> second, PartialMapping partialMapping) {
 		unifier = new HashMap<>();
 		success = true;
-		for (Image match : assignment.getImages()) {
-			unify((Literal) first.get(match.getX()), (Literal) second.get(match.getY()));
+		for (Image image : partialMapping.getImages()) {
+			unify((Literal) first.get(image.getX()), (Literal) second.get(image.getY()));
 		}
 	}
 
@@ -82,14 +85,38 @@ public class MartelliMontanariUnifier {
 		unify(first, second);
 	}
 
-	private String getNewFreshVariableName() {
-		return "FN-" + unifier.size();
+	private void unify(Literal first, Literal second) {
+		if (success) {
+			if (!first.getPredicate().equals(second.getPredicate())) {
+				success = false;
+				return;
+			}
+			List<Term> terms1 = first.getArguments();
+			List<Term> terms2 = second.getArguments();
+			for (int i = 0; i < terms1.size(); i++) {
+				unify(terms1.get(i), terms2.get(i));
+			}
+		}
+	}
+
+	private void unify(Term first, Term second) {
+		if (first.isConstant() && second.isConstant()) {
+			if (!first.equals(second)) {
+				success = false;
+			}
+		} else if (first.isConstant() && second.isVariable()) {
+			unify((Variable) second, (Constant) first);
+		} else if (first.isVariable() && second.isConstant()) {
+			unify((Variable) first, (Constant) second);
+		} else {
+			unify((Variable) first, (Variable) second);
+		}
 	}
 
 	private void unify(Variable var, Constant cons) {
 		if (unifier.containsKey(var)) {
 			Term rep = getValue(var);
-			if (rep.getType() == TermType.EXISTENTIAL_VARIABLE || rep.getType() == TermType.UNIVERSAL_VARIABLE) {
+			if (rep.isVariable()) {
 				// rep is at the end of the chain in the unifier
 				unifier.putIfAbsent(rep, cons);
 			} else {
@@ -101,115 +128,83 @@ public class MartelliMontanariUnifier {
 		} else {
 			unifier.put(var, cons);
 		}
-
 	}
 
-	// var1 and var2 are new
-	private void unify(Variable var1, Variable var2) {
-
+	private void unify(Variable first, Variable second) {
 		Term rep1 = null;
 		Term rep2 = null;
-		if (unifier.containsKey(var1)) {
-			rep1 = getValue(var1);
+		if (unifier.containsKey(first)) {
+			rep1 = getValue(first);
 		}
-		if (unifier.containsKey(var2)) {
-			rep2 = getValue(var2);
+		if (unifier.containsKey(second)) {
+			rep2 = getValue(second);
 		}
 		// both variables have a representative
 		if (rep1 != null && rep2 != null) {
 			if (rep1.isVariable() && rep2.isVariable()) {
 				if (!rep1.getName().equals(rep2.getName())) {
-					insertNewVariableUnification(rep1, rep2);
+					putTwoNewVariables((Variable) rep1, (Variable) rep2);
 				}
 			} else if (rep1.isConstant() && rep2.isVariable()) {
 				unifier.put(rep2, rep1);
 			} else if (rep1.isVariable() && rep2.isConstant()) {
 				unifier.put(rep1, rep2);
-			} else if (rep1.isConstant() && rep2.isConstant()) {
+			} else {
 				if (!rep1.getName().equals(rep2.getName())) {
 					success = false;
 				}
 			}
 		}
-		// var1 has a representative, but var2 does not. we know that var2 is variable
+		// first has a representative, but second does not. we know that second is
+		// variable
 		else if (rep1 != null && rep2 == null) {
 			if (rep1.isVariable()) {
-				if (!rep1.getName().equals(var2.getName())) {
-					insertUnification(var2, rep1);
+				if (!rep1.getName().equals(second.getName())) {
+					putOnewNewVariable(second, (Variable) rep1);
 				}
-			} else if (rep1.isConstant()) {
-				unifier.put(var2, rep1);
+			} else {
+				unifier.put(second, rep1);
 			}
 		}
-		// var1 does not have a representative, but var2 does.
+		// first does not have a representative, but second does.
 		else if (rep1 == null && rep2 != null) {
 			if (rep2.isVariable()) {
-				if (!rep2.getName().equals(var1.getName())) {
-					insertUnification(var1, rep2);
+				if (!rep2.getName().equals(first.getName())) {
+					putOnewNewVariable(first, (Variable) rep2);
 				}
-			} else if (rep2.isConstant()) {
-				unifier.put(var1, rep2);
-			}
-		}
-		// both var1 and var2 does not have a representative
-		else if (rep1 == null && rep2 == null) {
-			insertNewVariableUnification(var1, var2);
-		}
-	}
-
-	private void insertNewVariableUnification(Term var1, Term var2) {
-		assert var1.isVariable();
-		assert var2.isVariable();
-		String newVarName = getNewFreshVariableName();
-		if (var1.getType() == TermType.EXISTENTIAL_VARIABLE) {
-			unifier.put(var1, Expressions.makeExistentialVariable(newVarName));
-		} else {
-			unifier.put(var1, Expressions.makeUniversalVariable(newVarName));
-		}
-		if (var2.getType() == TermType.EXISTENTIAL_VARIABLE) {
-			unifier.put(var2, Expressions.makeExistentialVariable(newVarName));
-		} else {
-			unifier.put(var2, Expressions.makeUniversalVariable(newVarName));
-		}
-	}
-
-	private void insertUnification(Term var, Term rep) {
-		assert var.isVariable();
-		assert rep.isVariable();
-		if (var.getType() == TermType.EXISTENTIAL_VARIABLE) {
-			unifier.put(var, Expressions.makeExistentialVariable(rep.getName()));
-		} else {
-			unifier.put(var, Expressions.makeUniversalVariable(rep.getName()));
-		}
-	}
-
-	private void unify(Term term1, Term term2) {
-		if (term1.isConstant() && term2.isConstant()) {
-			if (term1.equals(term2)) {
-				return;
 			} else {
-				success = false;
+				unifier.put(first, rep2);
 			}
-		} else if (term1.isConstant() && term2.isVariable()) {
-			unify((Variable) term2, (Constant) term1);
-		} else if (term1.isVariable() && term2.isConstant()) {
-			unify((Variable) term1, (Constant) term2);
-		} else {
-			unify((Variable) term1, (Variable) term2);
+		}
+		// both first and second does not have a representative
+		else {
+			putTwoNewVariables(first, second);
 		}
 	}
 
-	public void unify(Literal literal1, Literal literal2) {
-		if (success) {
-			if (!literal1.getPredicate().equals(literal2.getPredicate())) {
-				success = false;
-				return;
-			}
-			List<Term> terms1 = literal1.getArguments();
-			List<Term> terms2 = literal2.getArguments();
-			for (int i = 0; i < terms1.size(); i++) {
-				unify(terms1.get(i), terms2.get(i));
-			}
+	private String getNewFreshVariableName() {
+		return "FN-" + unifier.size();
+	}
+
+	private void putTwoNewVariables(Variable first, Variable second) {
+		String newVarName = getNewFreshVariableName();
+		if (first.getType() == TermType.EXISTENTIAL_VARIABLE) {
+			unifier.put(first, Expressions.makeExistentialVariable(newVarName));
+		} else {
+			unifier.put(first, Expressions.makeUniversalVariable(newVarName));
+		}
+		if (second.getType() == TermType.EXISTENTIAL_VARIABLE) {
+			unifier.put(second, Expressions.makeExistentialVariable(newVarName));
+		} else {
+			unifier.put(second, Expressions.makeUniversalVariable(newVarName));
+		}
+	}
+
+	private void putOnewNewVariable(Variable newVariable, Variable presentVariable) {
+		if (newVariable.getType() == TermType.EXISTENTIAL_VARIABLE) {
+			unifier.put(newVariable, Expressions.makeExistentialVariable(presentVariable.getName()));
+		} else {
+			unifier.put(newVariable, Expressions.makeUniversalVariable(presentVariable.getName()));
 		}
 	}
 
