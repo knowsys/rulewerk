@@ -52,7 +52,9 @@ public abstract class FileDataSource implements ReasonerDataSource {
 	 *
 	 * @param filePath           path to a file that will serve as storage for fact
 	 *                           terms.
-	 * @param possibleExtensions a list of extensions that the files could have
+	 * @param possibleExtensions a list of extensions that the files could have.
+	 *                           Extensions are tried in the given order, no extension
+	 *                           in the list can be a suffix of a later extension.
 	 * @throws IOException              if the path of the given {@code file} is
 	 *                                  invalid.
 	 * @throws IllegalArgumentException if the extension of the given {@code file}
@@ -70,7 +72,9 @@ public abstract class FileDataSource implements ReasonerDataSource {
 	}
 
 	private String getValidExtension(final String fileName, final Iterable<String> possibleExtensions) {
-		final Stream<String> extensionsStream = StreamSupport.stream(possibleExtensions.spliterator(), true);
+		// use a sequential stream here to avoid a potential race
+		// condition with extensions that are suffixes of one another.
+		final Stream<String> extensionsStream = StreamSupport.stream(possibleExtensions.spliterator(), false);
 		final Optional<String> potentialExtension = extensionsStream.filter(fileName::endsWith).findFirst();
 
 		if (!potentialExtension.isPresent()) {
@@ -127,7 +131,7 @@ public abstract class FileDataSource implements ReasonerDataSource {
 	/**
 	 * Returns the name of the predicate that is used to define a declaration of
 	 * this data source.
-	 * 
+	 *
 	 * @return
 	 */
 	abstract String getDeclarationPredicateName();
