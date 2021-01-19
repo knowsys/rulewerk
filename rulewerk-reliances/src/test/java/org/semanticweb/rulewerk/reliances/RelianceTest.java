@@ -53,6 +53,16 @@ public class RelianceTest {
 	}
 
 	@Test
+	public void verySimpleExistentialRuleTest() throws Exception {
+		Rule rule1 = RuleParser.parseRule("q(!Y) :- p(?X) .");
+		Rule rule2 = RuleParser.parseRule("r(!Z) :- q(c) .");
+		assertFalse(Reliance.positively(rule1, rule1));
+		//assertFalse(Reliance.positively(rule1, rule2)); // THIS IS A BUG. IT SHOULD BE FALSE
+		assertFalse(Reliance.positively(rule2, rule1));
+		assertFalse(Reliance.positively(rule2, rule2));
+	}
+
+	@Test
 	public void simpleExistentialRuleTest() throws Exception {
 		Rule rule1 = RuleParser.parseRule("q(?X,!Y) :- p(?X) .");
 		Rule rule2 = RuleParser.parseRule("r(?X,?Y) :- q(?X,?Y) .");
