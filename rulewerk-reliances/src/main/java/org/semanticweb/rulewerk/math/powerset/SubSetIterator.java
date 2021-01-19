@@ -1,5 +1,9 @@
 package org.semanticweb.rulewerk.math.powerset;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /*-
  * #%L
  * Rulewerk Reliances
@@ -20,27 +24,32 @@ package org.semanticweb.rulewerk.math.powerset;
  * #L%
  */
 
-import java.util.Iterator;
-import java.util.List;
-
 /**
- * Given a set, iterate over all subsets in its power set over an Iterable.
+ * Given a set, iterate over all subsets in its power set over an Iterator.
  * 
  * @author Larry González
  *
  */
-public class SubSetIterable<T> implements Iterable<List<T>> {
+class SubSetIterator<T> implements Iterator<List<T>> {
+	List<T> elements;
+	SubSetIndexIterator iter;
 
-	SubSetIterator<T> subsetIterator;
-
-	public SubSetIterable(List<T> elements) {
-		subsetIterator = new SubSetIterator<T>(elements);
-
+	public SubSetIterator(List<T> elements) {
+		this.elements = elements;
+		iter = new SubSetIndexIterator(elements.size());
 	}
 
 	@Override
-	public Iterator<List<T>> iterator() {
-		return subsetIterator;
+	public boolean hasNext() {
+		return iter.hasNext();
 	}
 
+	@Override
+	public List<T> next() {
+		List<T> subset = new ArrayList<>();
+		for (int i : iter.next()) {
+			subset.add(elements.get(i));
+		}
+		return subset;
+	}
 }

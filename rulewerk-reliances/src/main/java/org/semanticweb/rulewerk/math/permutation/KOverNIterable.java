@@ -1,10 +1,12 @@
-package org.semanticweb.rulewerk.math.powerset;
+package org.semanticweb.rulewerk.math.permutation;
+
+import java.util.BitSet;
 
 /*-
  * #%L
  * Rulewerk Reliances
  * %%
- * Copyright (C) 2018 - 2020 Rulewerk Developers
+ * Copyright (C) 2018 - 2021 Rulewerk Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,26 +23,25 @@ package org.semanticweb.rulewerk.math.powerset;
  */
 
 import java.util.Iterator;
-import java.util.List;
 
 /**
- * Given a set, iterate over all subsets in its power set over an Iterable.
- * 
- * @author Larry González
+ * A class to iterate over all combinations of choosing k elements from n,
+ * represented as set indexes in a BitSet, over an Iterable.
  *
+ * @author Larry González
+ * 
  */
-public class SubSetIterable<T> implements Iterable<List<T>> {
+public class KOverNIterable implements Iterable<BitSet> {
 
-	SubSetIterator<T> subsetIterator;
+	KOverNIterator kOverNIterator;
 
-	public SubSetIterable(List<T> elements) {
-		subsetIterator = new SubSetIterator<T>(elements);
-
+	public KOverNIterable(int n, int k) {
+		kOverNIterator = new KOverNIterator(n, k);
 	}
 
 	@Override
-	public Iterator<List<T>> iterator() {
-		return subsetIterator;
+	public Iterator<BitSet> iterator() {
+		return kOverNIterator;
 	}
 
 }

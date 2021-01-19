@@ -1,10 +1,10 @@
-package org.semanticweb.rulewerk.math.powerset;
+package org.semanticweb.rulewerk.math.permutation;
 
 /*-
  * #%L
  * Rulewerk Reliances
  * %%
- * Copyright (C) 2018 - 2020 Rulewerk Developers
+ * Copyright (C) 2018 - 2021 Rulewerk Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,27 +20,29 @@ package org.semanticweb.rulewerk.math.powerset;
  * #L%
  */
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.BitSet;
 
-/**
- * Given a set, iterate over all subsets in its power set over an Iterable.
- * 
- * @author Larry González
- *
- */
-public class SubSetIterable<T> implements Iterable<List<T>> {
+public class KOverNIteratorExec {
 
-	SubSetIterator<T> subsetIterator;
+	static public void main(String args[]) {
+		for (int n = 0; n < 6; n++) {
+			for (int k = 0; k <=n; k++) {
+				System.out.println(n + " " + k);
+				KOverNIterator iter = new KOverNIterator(n, k);
 
-	public SubSetIterable(List<T> elements) {
-		subsetIterator = new SubSetIterator<T>(elements);
-
+				while (iter.hasNext()) {
+					print(iter.next(), n);
+				}
+				System.out.println();
+			}
+		}
 	}
 
-	@Override
-	public Iterator<List<T>> iterator() {
-		return subsetIterator;
+	static private void print(BitSet b, int n) {
+		for (int i = 0; i < n; i++) {
+			System.out.print(b.get(i) ? 1 : 0);
+		}
+		System.out.println();
 	}
 
 }

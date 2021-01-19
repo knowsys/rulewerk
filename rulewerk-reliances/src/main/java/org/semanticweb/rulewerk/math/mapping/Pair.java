@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.reliances;
+package org.semanticweb.rulewerk.math.mapping;
 
 /*-
  * #%L
@@ -21,28 +21,22 @@ package org.semanticweb.rulewerk.reliances;
  */
 
 /**
- * A class to store the image index {@code y} of a value index {@code x} under a
- * partial mapping. Both {@code x} and {@code y} must be indexes in two arrays
- * or lists that represent the domain and codomain of the partial mapping
- * respectively.
- * 
- * @note that {@code Image} stores the indexes of {@code x} and {@code y}, not
- *       the actual values.
+ * A class to store a pair of objects.
  * 
  * @author Larry González
  *
  */
-public class Image {
-	int x;
-	int y;
+public class Pair<T1, T2> {
+	private T1 x;
+	private T2 y;
 
 	/**
-	 * Constructor of an Image.
+	 * Constructor of an Pair.
 	 * 
-	 * @param x index in the domain array/list
-	 * @param y index in the codomain array/list
+	 * @param x first element of the pair
+	 * @param y second element of the pair
 	 */
-	public Image(int x, int y) {
+	public Pair(T1 x, T2 y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -53,11 +47,29 @@ public class Image {
 	}
 
 	/**
+	 * Setter of x
+	 * 
+	 * @param x the x to set
+	 */
+	public void setX(T1 x) {
+		this.x = x;
+	}
+
+	/**
+	 * Setter of y
+	 * 
+	 * @param y the y to set
+	 */
+	public void setY(T2 y) {
+		this.y = y;
+	}
+
+	/**
 	 * Getter of x
 	 * 
 	 * @return x
 	 */
-	public int getX() {
+	public T1 getX() {
 		return x;
 	}
 
@@ -66,7 +78,7 @@ public class Image {
 	 * 
 	 * @return y
 	 */
-	public int getY() {
+	public T2 getY() {
 		return y;
 	}
 
@@ -74,8 +86,8 @@ public class Image {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + y;
-		result = prime * result + x;
+		result = prime * result + ((x == null) ? 0 : x.hashCode());
+		result = prime * result + ((y == null) ? 0 : y.hashCode());
 		return result;
 	}
 
@@ -87,12 +99,17 @@ public class Image {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Image other = (Image) obj;
-		if (y != other.y)
+		Pair<?, ?> other = (Pair<?, ?>) obj;
+		if (x == null) {
+			if (other.x != null)
+				return false;
+		} else if (!x.equals(other.x))
 			return false;
-		if (x != other.x)
+		if (y == null) {
+			if (other.y != null)
+				return false;
+		} else if (!y.equals(other.y))
 			return false;
 		return true;
 	}
-
 }

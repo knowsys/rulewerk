@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.reliances;
+package org.semanticweb.rulewerk.math.mapping;
 
 /*-
  * #%L
@@ -25,21 +25,24 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A class to store a list of {@code Image}s x → y of a partial mapping.
+ * A class to store a list of mappings (or images) indexes represented by
+ * {@code Pair}s of integers. The integers represent the position, or index, of
+ * the objects in a list or array.
  * 
  * @author Larry González
- *
+ * @TODO is a set better here?
  */
-public class PartialMapping {
-	List<Image> images;
+public class PartialMappingIdx {
+	List<Pair<Integer, Integer>> mappings;
 	int domineSize;
 	int codomineSize;
 
-	public PartialMapping(int[] assignment, int domineSize, int codomineSize) {
-		images = new ArrayList<>();
+	// TODO where is this called?
+	public PartialMappingIdx(int[] assignment, int domineSize, int codomineSize) {
+		mappings = new ArrayList<>();
 		for (int i = 0; i < assignment.length; i++) {
 			if (assignment[i] != -1) {
-				images.add(new Image(i, assignment[i]));
+				mappings.add(new Pair<Integer, Integer>(i, assignment[i]));
 			}
 		}
 
@@ -47,29 +50,31 @@ public class PartialMapping {
 		this.codomineSize = codomineSize;
 	}
 
-	private PartialMapping(List<Image> images, int domineSize, int codomineSize) {
-		this.images = new ArrayList<>(images);
+	// TODO where is this called? is this necesary?
+	private PartialMappingIdx(List<Pair<Integer, Integer>> mappings, int domineSize, int codomineSize) {
+		this.mappings = new ArrayList<>(mappings);
 
 		this.domineSize = domineSize;
 		this.codomineSize = codomineSize;
 	}
 
-	static public PartialMapping composition(PartialMapping f, PartialMapping g) {
-		List<Image> newImages = new ArrayList<>();
+	// TODO where is this called? is this necessary? is this name correct?
+	static public PartialMappingIdx composition(PartialMappingIdx f, PartialMappingIdx g) {
+		List<Pair<Integer, Integer>> newMappings = new ArrayList<>();
 
-		for (Image image : f.getImages()) {
+		for (Pair<Integer, Integer> image : f.getImages()) {
 			if (g.getImage(image.getY()) >= 0) {
-				newImages.add(new Image(image.getX(), g.getImage(image.getY())));
+				newMappings.add(new Pair<Integer, Integer>(image.getX(), g.getImage(image.getY())));
 			}
 		}
-		return new PartialMapping(newImages, f.domineSize, g.codomineSize);
+		return new PartialMappingIdx(newMappings, f.domineSize, g.codomineSize);
 	}
 
-	// TODO this should be a composition of mappings
-	public PartialMapping(PartialMapping old, List<Integer> previousIndexes, int oldDomineSize) {
-		images = new ArrayList<>();
-		for (Image oldMatch : old.getImages()) {
-			images.add(new Image(previousIndexes.get(oldMatch.x), oldMatch.y));
+	// TODO this should be a composition of mappings. 19.01.2021 I dno't think so.
+	public PartialMappingIdx(PartialMappingIdx old, List<Integer> previousIndexes, int oldDomineSize) {
+		mappings = new ArrayList<>();
+		for (Pair<Integer, Integer> oldMatch : old.getImages()) {
+			mappings.add(new Pair<Integer, Integer>(previousIndexes.get(oldMatch.getX()), oldMatch.getY()));
 		}
 		this.domineSize = oldDomineSize;
 		this.codomineSize = old.codomineSize;
@@ -80,7 +85,7 @@ public class PartialMapping {
 	 * @return the number of images in the partial mapping.
 	 */
 	public int size() {
-		return images.size();
+		return mappings.size();
 	}
 
 	/**
@@ -89,7 +94,7 @@ public class PartialMapping {
 	 */
 	public List<Integer> activeDomain() {
 		List<Integer> result = new ArrayList<>();
-		images.forEach(image -> result.add(image.getX()));
+		mappings.forEach(image -> result.add(image.getX()));
 		return result;
 	}
 
@@ -116,7 +121,7 @@ public class PartialMapping {
 	 */
 	public List<Integer> range() {
 		List<Integer> result = new ArrayList<>();
-		images.forEach(image -> result.add(image.getY()));
+		mappings.forEach(image -> result.add(image.getY()));
 		return result;
 	}
 
@@ -141,7 +146,7 @@ public class PartialMapping {
 	 * @return the image index of the domain element index x or -1, if not present
 	 */
 	public int getImage(int x) {
-		for (Image image : images) {
+		for (Pair<Integer, Integer> image : mappings) {
 			if (image.getX() == x) {
 				return image.getY();
 			}
@@ -154,13 +159,13 @@ public class PartialMapping {
 	 *
 	 * @return list of Images
 	 */
-	public List<Image> getImages() {
-		return images;
+	public List<Pair<Integer, Integer>> getImages() {
+		return mappings;
 	}
 
 	@Override
 	public String toString() {
-		return Arrays.toString(images.toArray()) + ", " + domineSize + ", " + codomineSize;
+		return Arrays.toString(mappings.toArray()) + ", " + domineSize + ", " + codomineSize;
 	}
 
 	@Override
@@ -169,7 +174,7 @@ public class PartialMapping {
 		int result = 1;
 		result = prime * result + domineSize;
 		result = prime * result + codomineSize;
-		result = prime * result + ((images == null) ? 0 : images.hashCode());
+		result = prime * result + ((mappings == null) ? 0 : mappings.hashCode());
 		return result;
 	}
 
@@ -181,15 +186,15 @@ public class PartialMapping {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PartialMapping other = (PartialMapping) obj;
+		PartialMappingIdx other = (PartialMappingIdx) obj;
 		if (domineSize != other.domineSize)
 			return false;
 		if (codomineSize != other.codomineSize)
 			return false;
-		if (images == null) {
-			if (other.images != null)
+		if (mappings == null) {
+			if (other.mappings != null)
 				return false;
-		} else if (!images.equals(other.images))
+		} else if (!mappings.equals(other.mappings))
 			return false;
 		return true;
 	}

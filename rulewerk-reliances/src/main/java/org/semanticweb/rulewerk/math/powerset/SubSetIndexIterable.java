@@ -24,23 +24,23 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Given a set, iterate over all subsets in its power set over an Iterable.
+ * Given a set, iterate over all subsets in its power set, represented by a list
+ * of indexes, over an Iterable.
  * 
  * @author Larry González
  *
  */
-public class SubSetIterable<T> implements Iterable<List<T>> {
+public class SubSetIndexIterable implements Iterable<List<Integer>> {
 
-	SubSetIterator<T> subsetIterator;
+	SubSetIndexIterator iter;
 
-	public SubSetIterable(List<T> elements) {
-		subsetIterator = new SubSetIterator<T>(elements);
-
+	public SubSetIndexIterable(int n) {
+		iter = new SubSetIndexIterator(n);
 	}
 
 	@Override
-	public Iterator<List<T>> iterator() {
-		return subsetIterator;
+	public Iterator<List<Integer>> iterator() {
+		return iter;
 	}
 
 }
