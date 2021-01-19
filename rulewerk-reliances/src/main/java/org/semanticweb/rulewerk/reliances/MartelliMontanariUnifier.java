@@ -30,6 +30,8 @@ import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.math.mapping.Pair;
+import org.semanticweb.rulewerk.math.mapping.PartialMappingIdx;
 
 /**
  * An implementation of the Martelli & Montanari unification algorithm for
@@ -71,10 +73,10 @@ public class MartelliMontanariUnifier {
 	 * @param partialMapping a partial mapping of indexes from {@code first} to
 	 *                       {@code second}.
 	 */
-	public <T1, T2> MartelliMontanariUnifier(List<T1> first, List<T2> second, PartialMapping partialMapping) {
+	public <T1, T2> MartelliMontanariUnifier(List<T1> first, List<T2> second, PartialMappingIdx partialMapping) {
 		unifier = new HashMap<>();
 		success = true;
-		for (Image image : partialMapping.getImages()) {
+		for (Pair<Integer, Integer> image : partialMapping.getImages()) {
 			unify((Literal) first.get(image.getX()), (Literal) second.get(image.getY()));
 		}
 	}

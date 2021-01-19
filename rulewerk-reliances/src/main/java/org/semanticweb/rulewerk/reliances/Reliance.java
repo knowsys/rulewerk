@@ -25,6 +25,8 @@ import java.util.List;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.math.mapping.PartialMappingIdx;
+import org.semanticweb.rulewerk.math.mapping.PartialMappingIterable;
 import org.semanticweb.rulewerk.utils.RuleUtil;
 
 public class Reliance {
@@ -51,12 +53,12 @@ public class Reliance {
 		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
 		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals().getLiterals();
 
-		PartialMappingIterable assignmentIterable = new PartialMappingIterable(positiveBodyLiteralsRule2.size(),
+		PartialMappingIterable partialMappingIterable = new PartialMappingIterable(positiveBodyLiteralsRule2.size(),
 				headAtomsRule1.size());
 
-		for (PartialMapping assignment : assignmentIterable) {
+		for (PartialMappingIdx partialMapping : partialMappingIterable) {
 			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(positiveBodyLiteralsRule2, headAtomsRule1,
-					assignment);
+					partialMapping);
 
 			// RWU = renamed with unifier
 			if (unifier.getSuccess()) {

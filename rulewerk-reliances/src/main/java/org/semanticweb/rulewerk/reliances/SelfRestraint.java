@@ -30,10 +30,10 @@ import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.model.implementation.RuleImpl;
+import org.semanticweb.rulewerk.math.powerset.SubSetIterable;
 import org.semanticweb.rulewerk.utils.Filter;
 import org.semanticweb.rulewerk.utils.LiteralList;
 import org.semanticweb.rulewerk.utils.RuleUtil;
-import org.semanticweb.rulewerk.utils.SubsetIterable;
 
 public class SelfRestraint {
 
@@ -73,7 +73,7 @@ public class SelfRestraint {
 			List<Integer> rest = Filter.complement(positions, headSize);
 
 			if (positions.size() > 0) {
-				SubsetIterable<Integer> subsetIterable = new SubsetIterable<>(positions);
+				SubSetIterable<Integer> subsetIterable = new SubSetIterable<>(positions);
 
 				for (List<Integer> subset : subsetIterable) {
 					List<Integer> complement = Filter.complement(positions, subset);
