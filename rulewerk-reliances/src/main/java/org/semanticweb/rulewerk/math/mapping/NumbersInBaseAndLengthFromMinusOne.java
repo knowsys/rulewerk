@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.reliances;
+package org.semanticweb.rulewerk.math.mapping;
 
 /*-
  * #%L
@@ -30,7 +30,7 @@ import java.util.Iterator;
  * [0, 0], [1, 0], [2, 0], [-1, 1], [0, 1], [1, 1], [2, 1], [-1, 2], [0, 2], [1,
  * 2], [2, 2]
  * 
- * @author Larry Gonzalez
+ * @author Larry González
  *
  */
 public class NumbersInBaseAndLengthFromMinusOne implements Iterator<int[]> {

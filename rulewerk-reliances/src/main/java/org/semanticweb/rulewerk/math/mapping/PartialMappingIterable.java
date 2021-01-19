@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.reliances;
+package org.semanticweb.rulewerk.math.mapping;
 
 /*-
  * #%L
@@ -22,16 +22,23 @@ package org.semanticweb.rulewerk.reliances;
 
 import java.util.Iterator;
 
-public class PartialMappingIterable implements Iterable<PartialMapping> {
+/**
+ * A class to iterate over all partial mappings (represented as
+ * {@code PartialMappingIdx} of two sets.
+ * 
+ * @author Larry González
+ *
+ */
+public class PartialMappingIterable implements Iterable<PartialMappingIdx> {
 
 	MappingIterator mappingIterator;
 
-	private class MappingIterator implements Iterator<PartialMapping> {
+	private class MappingIterator implements Iterator<PartialMappingIdx> {
 		int domineSize;
 		int codomineSize;
 		NumbersInBaseAndLengthFromMinusOne numbers; // base to count
 
-		public MappingIterator(int domineSize, int codomineSize) {
+		MappingIterator(int domineSize, int codomineSize) {
 			this.domineSize = domineSize;
 			this.codomineSize = codomineSize;
 			numbers = new NumbersInBaseAndLengthFromMinusOne(codomineSize, domineSize);
@@ -50,10 +57,10 @@ public class PartialMappingIterable implements Iterable<PartialMapping> {
 		 * container (what is mapped to).
 		 */
 		@Override
-		public PartialMapping next() {
-			PartialMapping assignment = new PartialMapping(numbers.next(), domineSize, codomineSize);
+		public PartialMappingIdx next() {
+			PartialMappingIdx assignment = new PartialMappingIdx(numbers.next(), domineSize, codomineSize);
 			if (assignment.size() == 0) {
-				assignment = new PartialMapping(numbers.next(), domineSize, codomineSize);
+				assignment = new PartialMappingIdx(numbers.next(), domineSize, codomineSize);
 			}
 			return assignment;
 		}
@@ -72,7 +79,7 @@ public class PartialMappingIterable implements Iterable<PartialMapping> {
 	}
 
 	@Override
-	public Iterator<PartialMapping> iterator() {
+	public Iterator<PartialMappingIdx> iterator() {
 		return mappingIterator;
 	}
 
