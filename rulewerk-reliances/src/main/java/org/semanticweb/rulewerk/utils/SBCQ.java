@@ -23,14 +23,14 @@ package org.semanticweb.rulewerk.utils;
 import java.util.List;
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
-import org.semanticweb.rulewerk.reliances.PartialMapping;
-import org.semanticweb.rulewerk.reliances.PartialMappingIterable;
+import org.semanticweb.rulewerk.math.mapping.PartialMappingIdx;
+import org.semanticweb.rulewerk.math.mapping.PartialMappingIterable;
 import org.semanticweb.rulewerk.reliances.MartelliMontanariUnifier;
 
 /**
  * A class to implement a simple boolean conjunctive query.
  * 
- * @author Larry Gonzalez
+ * @author Larry González
  *
  */
 public class SBCQ {
@@ -38,13 +38,10 @@ public class SBCQ {
 	static boolean query(List<Literal> instance, List<Literal> query) {
 
 		PartialMappingIterable assignmentIterable = new PartialMappingIterable(query.size(), instance.size());
-		for (PartialMapping assignment : assignmentIterable) {
+		for (PartialMappingIdx assignment : assignmentIterable) {
 
 			if (assignment.size() == query.size()) {
 				MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(query, instance, assignment);
-
-//				System.out.println("    Assignment: " + assignment);
-//				System.out.println("    Unifier:    " + unifier);
 
 				if (unifier.getSuccess()) {
 					return true;
