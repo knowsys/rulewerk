@@ -54,7 +54,7 @@ public interface Rule extends SyntaxObject, Statement {
 	 *
 	 * @return conjunction of literals
 	 */
-	Conjunction<Literal> getPositiveBodyLiterals();
+	Conjunction<PositiveLiteral> getPositiveBodyLiterals();
 
 	/**
 	 * Returns the conjunction of negative body literals.
