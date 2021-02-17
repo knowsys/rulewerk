@@ -18,4 +18,4 @@ jobs:
         BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
       run: echo "name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
     - run: echo "name=PR_NUMBER::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
-    - run: nix-shell --run "mvn --no-transfer-progress test jacoco:report && mvn --no-transfer-progress coveralls:report -D repoToken=${{ secrets.COVERALLS_TOKEN }} -D serviceName=github -D serviceBuildUrl=https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks -D branch=$BRANCH_NAME -D pullRequest=$PR_NUMBER"
+    - run: nix-shell --run "mvn --no-transfer-progress test jacoco:report && mvn --no-transfer-progress coveralls:report -D repoToken=${{ secrets.COVERALLS_TOKEN }} -D serviceBuildUrl=https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks -D branch=$BRANCH_NAME -D pullRequest=$PR_NUMBER"
