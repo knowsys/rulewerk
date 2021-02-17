@@ -56,3 +56,4 @@ rulewerk-rdf/src/main/data/output/*
 rulewerk-vlog/src/test/data/output/*
 /build-vlog/vlog/
 /TAGS
+/vlog/result*
