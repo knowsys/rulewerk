@@ -29,6 +29,9 @@ nbactions.xml
 out/
 target/
 
+# local jvlog
+/rulewerk-vlog/lib/
+
 # Don't apply the above to src/ where Java requires
 # subdirectories named according to package names.
 # We do not want to forbid things like "dumpfiles" in
