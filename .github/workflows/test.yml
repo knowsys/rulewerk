@@ -14,7 +14,9 @@ jobs:
       with:
         name: knowsys
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix-shell --run "mvn test jacoco:report"
-    - uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+    - env:
+        BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
+      run: echo "::set-env name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}"
+    - run: |
+        echo "::set-env name=PR_NUMBER::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")"
+    - run: nix-shell --run "mvn --no-transfer-progress test jacoco:report && mvn coveralls:report -D repoToken=${{ secrets.COVERALLS_TOKEN }} -D serviceName=github -D serviceBuildUrl=https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks -D branch=$BRANCH_NAME -D pullRequest=$PR_NUMBER"

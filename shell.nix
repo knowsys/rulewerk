@@ -8,7 +8,7 @@ in pkgs.mkShell {
 	shellHook = '''
 	  mkdir -p rulewerk-vlog/lib/
 	  ln -sf ${dependencies.vlog.dev}/jvlog.jar rulewerk-vlog/lib/jvlog-local.jar
-	  mvn initialize -Pdevelopment
-	  mvn install -DskipTests
+	  mvn --no-transfer-progress initialize -Pdevelopment
+	  mvn --no-transfer-progress install -DskipTests
 	'';
 }
