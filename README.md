@@ -1,6 +1,6 @@
 Rulewerk
 ======
-[![Build Status](https://travis-ci.org/knowsys/rulewerk.png?branch=master)](https://travis-ci.org/knowsys/rulewerk)
+[![Build Status](https://github.com/knowsys/rulewerk/workflows/test/badge.svg?branch=master)](https://github.com/knowsys/rulewerk/actions?query=workflow:test)
 [![Coverage Status](https://coveralls.io/repos/github/knowsys/rulewerk/badge.svg?branch=master)](https://coveralls.io/github/knowsys/rulewerk?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.semanticweb.rulewerk/rulewerk-parent/badge.svg)](http://search.maven.org/#search|ga|1|g%3A%22org.semanticweb.rulewerk%22)
 
