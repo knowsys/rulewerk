@@ -62,3 +62,4 @@ Use the script `build-vlog-library.sh` [as shown here](#anchor-build-vlog) to cr
 
 * Users of Eclipse should install the [JavaCC Eclipse Plug-in](https://marketplace.eclipse.org/content/javacc-eclipse-plug) to generate the parser sources. After [installing](https://marketplace.eclipse.org/content/javacc-eclipse-plug/help) the plugin, right-click on the file `JavaCCParser.jj` in `org.semanticweb.rulewerk.parser.javacc`, and select "compile with javacc". This step needs to be repeated when the file changes.
 * To build the standalone client jar, run `mvn install -Pclient`. This generates `standalone-rulewerk-client-[VERSION].jar` in `rulewerk-client/target`.
+* The CI setup is [documented here](https://github.com/knowsys/rulewerk/wiki/CI-Setup).
