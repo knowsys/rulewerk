@@ -24,28 +24,23 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * A class to iterate over all possible combination of numbers ([-1,
- * maxValue-1]) of size length. As an example, these are all the combinations of
- * numbers up to 3 of length 2: [-1, -1], [0, -1], [1, -1], [2, -1], [-1, 0],
- * [0, 0], [1, 0], [2, 0], [-1, 1], [0, 1], [1, 1], [2, 1], [-1, 2], [0, 2], [1,
- * 2], [2, 2]
+ * An iterator class to iterate over all {@code PartialMapping}s. 
  * 
  * @author Larry González
- *
  */
-public class NumbersInBaseAndLengthFromMinusOne implements Iterator<int[]> {
-	int maxValue;
-	int length;
+public class PartialMappingIterator implements Iterator<PartialMapping> {
+	int domineSize;
+	int codomineSize;
 	int[] representation;
 	int[] start;
 	boolean stop;
 
-	public NumbersInBaseAndLengthFromMinusOne(int maxValue, int length) {
-		this.maxValue = maxValue;
-		this.length = length;
-		this.representation = new int[length];
-		this.start = new int[length];
-		for (int i = 0; i < length; i++) {
+	public PartialMappingIterator(int domineSize, int codomineSize) {
+		this.domineSize = domineSize;
+		this.codomineSize = codomineSize;
+		this.representation = new int[domineSize];
+		this.start = new int[domineSize];
+		for (int i = 0; i < domineSize; i++) {
 			representation[i] = -1;
 			start[i] = -1;
 		}
@@ -58,15 +53,15 @@ public class NumbersInBaseAndLengthFromMinusOne implements Iterator<int[]> {
 	}
 
 	@Override
-	public int[] next() {
-		int[] helper = representation.clone();
+	public PartialMapping next() {
+		PartialMapping pm = new PartialMapping(representation.clone(), codomineSize);
 		addOneToPointer(0);
-		return helper;
+		return pm;
 	}
 
 	private void addOneToPointer(int idx) {
-		if (idx < length) {
-			if (representation[idx] == maxValue - 1) {
+		if (idx < domineSize) {
+			if (representation[idx] == codomineSize - 1) {
 				representation[idx] = -1;
 				addOneToPointer(idx + 1);
 			} else {

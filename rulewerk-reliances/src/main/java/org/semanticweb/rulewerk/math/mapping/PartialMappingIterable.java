@@ -23,64 +23,28 @@ package org.semanticweb.rulewerk.math.mapping;
 import java.util.Iterator;
 
 /**
- * A class to iterate over all partial mappings (represented as
- * {@code PartialMappingIdx} of two sets.
+ * A class to iterate over all non-empty {@code PartialMapping}s
  * 
  * @author Larry González
  *
  */
-public class PartialMappingIterable implements Iterable<PartialMappingIdx> {
+public class PartialMappingIterable implements Iterable<PartialMapping> {
 
-	MappingIterator mappingIterator;
-
-	private class MappingIterator implements Iterator<PartialMappingIdx> {
-		int domineSize;
-		int codomineSize;
-		NumbersInBaseAndLengthFromMinusOne numbers; // base to count
-
-		MappingIterator(int domineSize, int codomineSize) {
-			this.domineSize = domineSize;
-			this.codomineSize = codomineSize;
-			numbers = new NumbersInBaseAndLengthFromMinusOne(codomineSize, domineSize);
-		}
-
-		@Override
-		public boolean hasNext() {
-			return !numbers.stop;
-		}
-
-		/**
-		 * Returns an Assignment of the positions in the second container to the
-		 * positions in the first container. The position in the array ([i]) represents
-		 * the location in the second container (what is being mapped). The value in the
-		 * array at a given position (array[i]) represents the location in the first
-		 * container (what is mapped to).
-		 */
-		@Override
-		public PartialMappingIdx next() {
-			PartialMappingIdx assignment = new PartialMappingIdx(numbers.next(), domineSize, codomineSize);
-			if (assignment.size() == 0) {
-				assignment = new PartialMappingIdx(numbers.next(), domineSize, codomineSize);
-			}
-			return assignment;
-		}
-	}
+	PartialMappingIterator partialMappingIterator;
 
 	/**
-	 * Given two int's that represent the number of elements in an origin and
-	 * destination lists, an Assignment is a List of Matches s.t each match maps
-	 * indexes of the origin list into indexes of the destination list.
+	 * Constructor of PartialMappintIterable
 	 * 
-	 * @param domainSize   number of objects in the domine
-	 * @param codomineSize number of objects in the codomine
+	 * @param domainSize   number of objects in the domine list
+	 * @param codomineSize number of objects in the codomine list
 	 */
 	public PartialMappingIterable(int domainSize, int codomineSize) {
-		mappingIterator = new MappingIterator(domainSize, codomineSize);
+		partialMappingIterator = new PartialMappingIterator(domainSize, codomineSize);
 	}
 
 	@Override
-	public Iterator<PartialMappingIdx> iterator() {
-		return mappingIterator;
+	public Iterator<PartialMapping> iterator() {
+		return partialMappingIterator;
 	}
 
 }
