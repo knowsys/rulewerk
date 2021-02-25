@@ -64,6 +64,24 @@ public interface Term extends Entity {
 	}
 
 	/**
+	 * Returns true if the term represents an existential variable.
+	 *
+	 * @return true if term is an instance of {@code ExistentialVariable}
+	 */
+	default boolean isExistentialVariable() {
+		return this.getType() == TermType.EXISTENTIAL_VARIABLE;
+	}
+
+	/**
+	 * Returns true if the term represents an universal variable.
+	 *
+	 * @return true if term is an instance of {@code UniversalVariable}
+	 */
+	default boolean isUniversalVariable() {
+		return this.getType() == TermType.UNIVERSAL_VARIABLE;
+	}
+
+	/**
 	 * Accept a {@link TermVisitor} and return its output.
 	 *
 	 * @param termVisitor the TermVisitor
