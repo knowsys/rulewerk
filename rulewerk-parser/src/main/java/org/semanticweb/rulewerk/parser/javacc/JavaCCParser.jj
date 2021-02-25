@@ -321,16 +321,24 @@ Term term(FormulaContext context) throws PrefixDeclarationException : {
   | c = RDFLiteral() { return c; }
   | t = < UNIVAR > {
         s = t.image.substring(1);
-        if (context == FormulaContext.HEAD)
+        if (context == FormulaContext.HEAD) {
+            if (headExiVars.contains(s)) {
+                throw new ParseException("Universal variables can not appear as Existential variable. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
+                }
             headUniVars.add(s);
+            }
         else if (context == FormulaContext.BODY)
             bodyVars.add(s);
         return createUniversalVariable(s);
     }
   | t = < EXIVAR > {
         s = t.image.substring(1);
-        if (context == FormulaContext.HEAD)
+        if (context == FormulaContext.HEAD) {
+            if (headUniVars.contains(s)) {
+                throw new ParseException("Existential variables can not appear as Universal variable. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
+                }
             headExiVars.add(s);
+            }
         if (context == FormulaContext.BODY)
             throw new ParseException("Existentialy quantified variables can not appear in the body. Line: " + t.beginLine + ", Column: "+ t.beginColumn);
         return createExistentialVariable(s);

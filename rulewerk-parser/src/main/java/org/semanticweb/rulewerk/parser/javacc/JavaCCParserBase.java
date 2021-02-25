@@ -22,6 +22,7 @@ package org.semanticweb.rulewerk.parser.javacc;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
@@ -72,15 +73,15 @@ public class JavaCCParserBase {
 	/**
 	 * "Local" variable to remember (universal) body variables during parsing.
 	 */
-	protected final HashSet<String> bodyVars = new HashSet<String>();
+	protected final Set<String> bodyVars = new HashSet<String>();
 	/**
 	 * "Local" variable to remember existential head variables during parsing.
 	 */
-	protected final HashSet<String> headExiVars = new HashSet<String>();
+	protected final Set<String> headExiVars = new HashSet<String>();
 	/**
 	 * "Local" variable to remember universal head variables during parsing.
 	 */
-	protected final HashSet<String> headUniVars = new HashSet<String>();
+	protected final Set<String> headUniVars = new HashSet<String>();
 
 	/**
 	 * Defines the context for parsing sub-formulas.
