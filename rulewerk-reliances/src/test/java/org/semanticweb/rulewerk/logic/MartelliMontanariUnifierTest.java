@@ -1,6 +1,4 @@
-package org.semanticweb.rulewerk.reliances;
-
-import static org.junit.Assert.assertFalse;
+package org.semanticweb.rulewerk.logic;
 
 /*-
  * #%L
@@ -23,98 +21,126 @@ import static org.junit.Assert.assertFalse;
  */
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.math.mapping.PartialMapping;
 import org.semanticweb.rulewerk.parser.RuleParser;
 
 public class MartelliMontanariUnifierTest {
 
+	PartialMapping pm = new PartialMapping(new int[] { 0 }, 1);
+	List<Literal> l1 = new ArrayList<>();
+	List<Literal> l2 = new ArrayList<>();
+
 	@Test
 	public void test01() throws Exception {
-		Literal literal1 = RuleParser.parseLiteral("q(?X1,?X1)");
-		Literal literal2 = RuleParser.parseLiteral("q(!X2,!X2)");
+		l1.clear();
+		l2.clear();
+		l1.add(RuleParser.parseLiteral("q(?X1,?X1)"));
+		l2.add(RuleParser.parseLiteral("q(!X2,!X2)"));
 
-		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(l1, l2, pm);
 
 		assertTrue(unifier.getSuccess());
 	}
 
 	@Test
 	public void test02() throws Exception {
-		Literal literal1 = RuleParser.parseLiteral("q(?X1,?X1)");
-		Literal literal2 = RuleParser.parseLiteral("q(?X2,c)");
+		l1.clear();
+		l2.clear();
+		l1.add(RuleParser.parseLiteral("q(?X1,?X1)"));
+		l2.add(RuleParser.parseLiteral("q(?X2,c)"));
 
-		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(l1, l2, pm);
 
 		assertTrue(unifier.getSuccess());
 	}
 
 	@Test
 	public void test03() throws Exception {
-		Literal literal1 = RuleParser.parseLiteral("r(?X10001, !Y10001, !Z10001)");
-		Literal literal2 = RuleParser.parseLiteral("r(c, ?X20002, ?Y20002)");
+		l1.clear();
+		l2.clear();
+		l1.add(RuleParser.parseLiteral("r(?X10001, !Y10001, !Z10001)"));
+		l2.add(RuleParser.parseLiteral("r(c, ?X20002, ?Y20002)"));
 
-		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(l1, l2, pm);
 
 		assertTrue(unifier.getSuccess());
 	}
 
 	@Test
 	public void test04() throws Exception {
-		Literal literal1 = RuleParser.parseLiteral("p(?X)");
-		Literal literal2 = RuleParser.parseLiteral("q(?X)");
+		l1.clear();
+		l2.clear();
+		l1.add(RuleParser.parseLiteral("p(?X)"));
+		l2.add(RuleParser.parseLiteral("q(?X)"));
 
-		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(l1, l2, pm);
 
 		assertFalse(unifier.getSuccess());
 	}
 
 	@Test
 	public void test05() throws Exception {
-		Literal literal1 = RuleParser.parseLiteral("p(?Y,?X)");
-		Literal literal2 = RuleParser.parseLiteral("p(?X,?Y)");
+		l1.clear();
+		l2.clear();
+		l1.add(RuleParser.parseLiteral("p(?Y,?X)"));
+		l2.add(RuleParser.parseLiteral("p(?X,?Y)"));
 
-		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(l1, l2, pm);
 
 		assertTrue(unifier.getSuccess());
 	}
 
 	@Test
 	public void test06() throws Exception {
-		Literal literal1 = RuleParser.parseLiteral("p(!Y,!X)");
-		Literal literal2 = RuleParser.parseLiteral("p(!X,!Y)");
+		l1.clear();
+		l2.clear();
+		l1.add(RuleParser.parseLiteral("p(!Y,!X)"));
+		l2.add(RuleParser.parseLiteral("p(!X,!Y)"));
 
-		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(l1, l2, pm);
 
 		assertTrue(unifier.getSuccess());
 	}
 
 	@Test
 	public void test07() throws Exception {
-		Literal literal1 = RuleParser.parseLiteral("p(?x1,?x1,?x1)");
-		Literal literal2 = RuleParser.parseLiteral("p(?x2,c1,c2)");
+		l1.clear();
+		l2.clear();
+		l1.add(RuleParser.parseLiteral("p(?x1,?x1,?x1)"));
+		l2.add(RuleParser.parseLiteral("p(?x2,c1,c2)"));
 
-		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(l1, l2, pm);
 
 		assertFalse(unifier.getSuccess());
 	}
 
 	@Test
 	public void test08() throws Exception {
-		Literal literal1 = RuleParser.parseLiteral("p(c)");
+		l1.clear();
+		l2.clear();
+		l1.add(RuleParser.parseLiteral("p(c)"));
+		l2.add(RuleParser.parseLiteral("p(c)"));
 
-		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal1);
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(l1, l2, pm);
 
 		assertTrue(unifier.getSuccess());
 	}
 
 	@Test
 	public void test09() throws Exception {
-		Literal literal1 = RuleParser.parseLiteral("p(c)");
-		Literal literal2 = RuleParser.parseLiteral("p(d)");
+		l1.clear();
+		l2.clear();
+		l1.add(RuleParser.parseLiteral("p(c)"));
+		l2.add(RuleParser.parseLiteral("p(d)"));
 
-		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(literal1, literal2);
+		MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(l1, l2, pm);
 
 		assertFalse(unifier.getSuccess());
 	}

@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.reliances;
+package org.semanticweb.rulewerk.logic;
 
 /*-
  * #%L
@@ -31,26 +31,21 @@ import org.semanticweb.rulewerk.core.model.api.TermType;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.math.mapping.Pair;
-import org.semanticweb.rulewerk.math.mapping.PartialMappingIdx;
+import org.semanticweb.rulewerk.math.mapping.PartialMapping;
 
 /**
  * An implementation of the Martelli & Montanari unification algorithm for
  * predicate logic without function symbols.
  * 
- * @note check for other unification algorithms.
  * @author Larry González
  *
  */
-public class MartelliMontanariUnifier {
+public class MartelliMontanariUnifier implements Unifier {
 	final private Map<Term, Term> unifier;
 	private boolean success;
 
-	/**
-	 * 
-	 * @param key to search in the unifier
-	 * @return the leaf of the key
-	 */
-	Term getValue(Term key) {
+	@Override
+	public Term getValue(Term key) {
 		if (unifier.containsKey(key)) {
 			return getValue(unifier.get(key));
 		} else {
@@ -58,6 +53,7 @@ public class MartelliMontanariUnifier {
 		}
 	}
 
+	@Override
 	public boolean getSuccess() {
 		return success;
 	}
@@ -73,18 +69,12 @@ public class MartelliMontanariUnifier {
 	 * @param partialMapping a partial mapping of indexes from {@code first} to
 	 *                       {@code second}.
 	 */
-	public <T1, T2> MartelliMontanariUnifier(List<T1> first, List<T2> second, PartialMappingIdx partialMapping) {
+	public MartelliMontanariUnifier(List<Literal> first, List<Literal> second, PartialMapping partialMapping) {
 		unifier = new HashMap<>();
 		success = true;
 		for (Pair<Integer, Integer> image : partialMapping.getImages()) {
 			unify((Literal) first.get(image.getX()), (Literal) second.get(image.getY()));
 		}
-	}
-
-	public MartelliMontanariUnifier(Literal first, Literal second) {
-		unifier = new HashMap<>();
-		success = true;
-		unify(first, second);
 	}
 
 	private void unify(Literal first, Literal second) {
