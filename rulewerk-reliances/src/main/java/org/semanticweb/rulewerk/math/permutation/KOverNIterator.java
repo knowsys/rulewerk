@@ -48,9 +48,6 @@ public class KOverNIterator implements Iterator<BitSet> {
 	 * @return
 	 */
 	public KOverNIterator(int n, int k) {
-//		assert k >= 0 : "KOverNIterator error: k must be greater or equal than 0";
-//		assert n > 0 : "KOverNIterator error: n must be greater than 0";
-//		assert n >= k : "KOverNIterator error: n must be greater or equal to k";
 		this.n = n;
 		this.k = k;
 		this.combination = new BitSet(n + 1);
