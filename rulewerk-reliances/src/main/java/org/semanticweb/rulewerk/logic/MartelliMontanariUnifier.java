@@ -79,7 +79,7 @@ public class MartelliMontanariUnifier implements Unifier {
 
 	private void unify(Literal first, Literal second) {
 		if (success) {
-			if (!first.getPredicate().equals(second.getPredicate())) {
+			if (!first.getPredicate().equals(second.getPredicate()) || first.isNegated() != second.isNegated()) {
 				success = false;
 				return;
 			}
