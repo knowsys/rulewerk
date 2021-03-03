@@ -34,19 +34,19 @@ import org.semanticweb.rulewerk.core.model.api.Predicate;
 
 public class LiteralList {
 
-	static public Set<ExistentialVariable> getExistentialVariables(List<Literal> literals) {
+	static public Set<ExistentialVariable> getExistentialVariables(List<? extends Literal> literals) {
 		Set<ExistentialVariable> result = new HashSet<>();
 		literals.forEach(literal -> literal.getExistentialVariables().forEach(extVar -> result.add(extVar)));
 		return result;
 	}
 
-	static public Set<String> getExistentialVariableNames(List<Literal> literals) {
+	static public Set<String> getExistentialVariableNames(List<? extends Literal> literals) {
 		Set<String> result = new HashSet<>();
 		literals.forEach(literal -> literal.getExistentialVariables().forEach(extVar -> result.add(extVar.getName())));
 		return result;
 	}
 
-	static public Set<String> getUniversalVariableNames(List<Literal> literals) {
+	static public Set<String> getUniversalVariableNames(List<? extends Literal> literals) {
 		Set<String> result = new HashSet<>();
 		literals.forEach(literal -> literal.getUniversalVariables().forEach(uniVar -> result.add(uniVar.getName())));
 		return result;
