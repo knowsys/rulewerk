@@ -72,4 +72,8 @@ public class RuleUtilTest {
 
 		assertFalse(RuleUtil.isRuleApplicable(qx_qx));
 	}
+
+	// TODO add tests for isRule1Applicable
+	// TODO add tests for cleanRepeatedAtoms
+	// TODO add tests for containsRepeatedAtoms
 }
