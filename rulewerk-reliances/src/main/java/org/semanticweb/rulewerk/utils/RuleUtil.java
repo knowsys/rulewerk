@@ -21,8 +21,10 @@ package org.semanticweb.rulewerk.utils;
  */
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
@@ -39,33 +41,44 @@ public class RuleUtil {
 		rule2.getPositiveBodyLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
 		rule2.getHead().getLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
 
-		return !SBCQ.query(instance, query);
+		return !BCQ.query(instance, query);
 	}
 
+	// TODO This should be in RuleImpl
 	static public boolean isRuleApplicable(Rule rule) {
 		List<Literal> instance = new ArrayList<>();
 		List<Literal> query = new ArrayList<>();
 		rule.getPositiveBodyLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
 		rule.getHead().getLiterals().forEach(literal -> query.add(Instantiator.instantiateQuery(literal)));
 
-		return !SBCQ.query(instance, query);
+		return !BCQ.query(instance, query);
 	}
 
-	static public Rule moveLiteralsWithExistentialVariablesToTheFront(Rule rule) {
-		List<PositiveLiteral> headAtomsWithExistentials = new ArrayList<>();
-		List<PositiveLiteral> headAtomsWithoutExistentials = new ArrayList<>();
-		for (PositiveLiteral atom : rule.getHead().getLiterals()) {
-			if (atom.containsExistentialVariables()) {
-				headAtomsWithExistentials.add(atom);
-			} else {
-				headAtomsWithoutExistentials.add(atom);
+	/*
+	 * Remove head atoms that appear (positively) in the body of the same rule.
+	 *
+	 * TODO This should be in RuleImpl and/or RuleParser.
+	 *
+	 * @see containsRepeatedAtoms
+	 */
+	static public Rule cleanRepeatedAtoms(Rule rule) {
+		Set<PositiveLiteral> positiveBody = new HashSet<>(rule.getPositiveBodyLiterals().getLiterals());
+		return Expressions.makeRule(Expressions.makeConjunction(rule.getHead().getLiterals().stream()
+				.filter(x -> !positiveBody.contains(x)).collect(Collectors.toList())), rule.getBody());
+	}
+
+	/*
+	 * True if a head atom appears (positively) in the body of the same rule.
+	 *
+	 * TODO This should be in RuleImpl and/or RuleParser.
+	 */
+	static public boolean containsRepeatedAtoms(Rule rule) {
+		Set<PositiveLiteral> positiveBody = new HashSet<>(rule.getPositiveBodyLiterals().getLiterals());
+		for (PositiveLiteral literal : rule.getHead().getLiterals()) {
+			if (positiveBody.contains(literal)) {
+				return true;
 			}
 		}
-
-		List<PositiveLiteral> newHead = new ArrayList<>();
-		Stream.of(headAtomsWithExistentials, headAtomsWithoutExistentials).forEach(newHead::addAll);
-
-		return Expressions.makeRule(Expressions.makeConjunction(newHead), rule.getBody());
-
+		return false;
 	}
 }
