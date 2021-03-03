@@ -31,17 +31,16 @@ import org.semanticweb.rulewerk.math.mapping.PartialMappingIterable;
  * A class to implement a (very simple) boolean conjunctive query.
  * 
  * @author Larry González
- * @TODO:
- * * create a more efficient unifier that assumes no variables in instance.
+ * TODO explore other unifiers.
  */
 public class BCQ {
 
 	static boolean query(List<Literal> instance, List<Literal> query) {
 
-		for (PartialMapping assignment : new PartialMappingIterable(instance.size(), query.size())) {
+		for (PartialMapping partialMapping : new PartialMappingIterable(instance.size(), query.size())) {
 
-			if (assignment.size() == query.size()) {
-				MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(query, instance, assignment);
+			if (partialMapping.getDomineSize() == query.size()) {
+				MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(query, instance, partialMapping);
 
 				if (unifier.getSuccess()) {
 					return true;
