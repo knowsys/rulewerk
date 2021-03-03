@@ -35,7 +35,7 @@ import org.semanticweb.rulewerk.math.permutation.KOverNIterator;
  * @author Larry González
  *
  */
-class SubSetIndexIterator implements Iterator<List<Integer>> {
+public class SubSetIndexIterator implements Iterator<List<Integer>> {
 	int n;
 	int i;
 	KOverNIterator iter;
