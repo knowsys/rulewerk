@@ -72,10 +72,9 @@ public class RespectingUnifier implements Unifier {
 	 * @param partialMapping a partial mapping of indexes from {@code first} to
 	 *                       {@code second}.
 	 */
-	public RespectingUnifier(List<Literal> first, List<Literal> second, PartialMapping partialMapping) {
+	public RespectingUnifier(List<? extends Literal> first, List<? extends Literal> second, PartialMapping partialMapping) {
 		Validate.isTrue(LiteralList.getExistentialVariables(first).isEmpty());
 		this.unifier = new HashMap<>();
-//		this.respecting = LiteralList.getExistentialVariables(second);
 		this.success = true;
 		for (Pair<Integer, Integer> pair : partialMapping.getImages()) {
 			unify(first.get(pair.getX()), second.get(pair.getY()));
