@@ -30,7 +30,7 @@ import java.util.List;
  * @author Larry González
  *
  */
-class SubSetIterator<T> implements Iterator<List<T>> {
+public class SubSetIterator<T> implements Iterator<List<T>> {
 	List<T> elements;
 	SubSetIndexIterator iter;
 
