@@ -20,6 +20,7 @@ package org.semanticweb.rulewerk.utils;
  * #L%
  */
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,27 +30,47 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 
+// TODO add more complex tests
 public class BCQTest {
-
-	Literal pa;
-	Literal px;
-
-	List<Literal> instance;
-	List<Literal> query;
-
-	public void init() throws ParsingException {
-		pa = RuleParser.parseLiteral("p(a)");
-		px = RuleParser.parseLiteral("p(?X)");
-
-		instance = new ArrayList<>();
-		query = new ArrayList<>();
-	}
 
 	@Test
 	public void test001() throws ParsingException {
-		init();
-		instance.add(pa);
-		query.add(px);
+		List<Literal> instance = new ArrayList<>();
+		List<Literal> query = new ArrayList<>();
+
+		instance.add(RuleParser.parseLiteral("p(a)"));
+		query.add(RuleParser.parseLiteral("p(?X)"));
 		assertTrue(BCQ.query(instance, query));
 	}
+
+	@Test
+	public void test002() throws ParsingException {
+		List<Literal> instance = new ArrayList<>();
+		List<Literal> query = new ArrayList<>();
+
+		instance.add(RuleParser.parseLiteral("p(a)"));
+		query.add(RuleParser.parseLiteral("p(!X)"));
+		assertTrue(BCQ.query(instance, query));
+	}
+
+	@Test
+	public void test003() throws ParsingException {
+		List<Literal> instance = new ArrayList<>();
+		List<Literal> query = new ArrayList<>();
+
+		instance.add(RuleParser.parseLiteral("p(a)"));
+		query.add(RuleParser.parseLiteral("q(?X)"));
+		assertFalse(BCQ.query(instance, query));
+	}
+
+	@Test
+	public void test004() throws ParsingException {
+		List<Literal> instance = new ArrayList<>();
+		List<Literal> query = new ArrayList<>();
+
+		instance.add(RuleParser.parseLiteral("p(a)"));
+		query.add(RuleParser.parseLiteral("q(!X)"));
+		assertFalse(BCQ.query(instance, query));
+	}
+
 }
