@@ -31,10 +31,10 @@ import org.semanticweb.rulewerk.math.mapping.PartialMappingIterable;
  * A class to implement a (very simple) boolean conjunctive query.
  * 
  * @author Larry González
- * TODO explore other unifiers.
  */
 public class BCQ {
 
+	// TODO explore other unifiers.
 	static boolean query(List<Literal> instance, List<Literal> query) {
 
 		for (PartialMapping partialMapping : new PartialMappingIterable(instance.size(), query.size())) {
