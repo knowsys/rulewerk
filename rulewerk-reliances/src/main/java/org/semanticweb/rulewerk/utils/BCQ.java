@@ -23,9 +23,9 @@ package org.semanticweb.rulewerk.utils;
 import java.util.List;
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.logic.MartelliMontanariUnifier;
 import org.semanticweb.rulewerk.math.mapping.PartialMapping;
 import org.semanticweb.rulewerk.math.mapping.PartialMappingIterable;
-import org.semanticweb.rulewerk.reliances.MartelliMontanariUnifier;
 
 /**
  * A class to implement a (very simple) boolean conjunctive query.
