@@ -23,6 +23,7 @@ package org.semanticweb.rulewerk.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.TermType;
@@ -40,7 +41,7 @@ public class Instantiator {
 	 * @return a ground instantiation of the literal.
 	 */
 	static public Literal instantiateFact(Literal literal) {
-		assert !literal.isNegated();
+		Validate.isTrue(!literal.isNegated());
 		List<Term> newTerms = new ArrayList<>();
 		for (Term term : literal.getArguments()) {
 			newTerms.add(Expressions.makeAbstractConstant(term.getName()));
@@ -59,7 +60,7 @@ public class Instantiator {
 	 * @return a transformed positiveLiteral
 	 */
 	static public Literal instantiateQuery(Literal literal) {
-		assert !literal.isNegated();
+		Validate.isTrue(!literal.isNegated());
 		List<Term> newTerms = new ArrayList<>();
 		for (Term term : literal.getArguments()) {
 			if (term.getType() == TermType.EXISTENTIAL_VARIABLE) {
@@ -67,7 +68,6 @@ public class Instantiator {
 			} else {
 				newTerms.add(Expressions.makeAbstractConstant(term.getName()));
 			}
-
 		}
 		return Expressions.makePositiveLiteral(literal.getPredicate(), newTerms);
 	}
