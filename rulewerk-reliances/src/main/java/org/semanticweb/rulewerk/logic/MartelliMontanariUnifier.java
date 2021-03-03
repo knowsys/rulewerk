@@ -69,7 +69,7 @@ public class MartelliMontanariUnifier implements Unifier {
 	 * @param partialMapping a partial mapping of indexes from {@code first} to
 	 *                       {@code second}.
 	 */
-	public MartelliMontanariUnifier(List<Literal> first, List<Literal> second, PartialMapping partialMapping) {
+	public MartelliMontanariUnifier(List<? extends Literal> first, List<? extends Literal> second, PartialMapping partialMapping) {
 		unifier = new HashMap<>();
 		success = true;
 		for (Pair<Integer, Integer> image : partialMapping.getImages()) {
