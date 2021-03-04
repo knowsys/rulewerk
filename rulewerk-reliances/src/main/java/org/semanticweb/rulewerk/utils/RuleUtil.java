@@ -33,6 +33,7 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 public class RuleUtil {
 
+	// TODO this might be incomplete
 	static public boolean isRule1Applicable(Rule rule1, Rule rule2) {
 		List<Literal> instance = new ArrayList<>();
 		List<Literal> query = new ArrayList<>();
