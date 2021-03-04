@@ -73,4 +73,39 @@ public class BCQTest {
 		assertFalse(BCQ.query(instance, query));
 	}
 
+	@Test
+	public void test_005() throws ParsingException {
+		List<Literal> instance = new ArrayList<>();
+		List<Literal> query = new ArrayList<>();
+
+		instance.add(RuleParser.parseLiteral("p(a)"));
+		query.add(RuleParser.parseLiteral("q(a)"));
+
+		assertFalse(BCQ.query(instance, query));
+	}
+
+	@Test
+	public void test_006() throws ParsingException {
+		List<Literal> instance = new ArrayList<>();
+		List<Literal> query = new ArrayList<>();
+
+		instance.add(RuleParser.parseLiteral("p(a)"));
+		instance.add(RuleParser.parseLiteral("p(b)"));
+		query.add(RuleParser.parseLiteral("q(a)"));
+
+		assertFalse(BCQ.query(instance, query));
+	}
+
+	@Test
+	public void test_007() throws ParsingException {
+		List<Literal> instance = new ArrayList<>();
+		List<Literal> query = new ArrayList<>();
+
+		instance.add(RuleParser.parseLiteral("p(a)"));
+		instance.add(RuleParser.parseLiteral("p(b)"));
+		instance.add(RuleParser.parseLiteral("p(c)"));
+		query.add(RuleParser.parseLiteral("q(a)"));
+
+		assertFalse(BCQ.query(instance, query));
+	}
 }

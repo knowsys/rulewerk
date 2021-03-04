@@ -73,6 +73,15 @@ public class RuleUtilTest {
 		assertFalse(RuleUtil.isRuleApplicable(qx_qx));
 	}
 
+	@Test
+	public void isRule1Applicable_001() throws ParsingException {
+		Rule qx_px = RuleParser.parseRule("q(?X) :- p(?X) .");
+		Rule rx_qx = RuleParser.parseRule("r(?X) :- q(?X) .");
+
+		assertTrue(RuleUtil.isRule1Applicable(qx_px, rx_qx));
+		assertTrue(RuleUtil.isRule1Applicable(rx_qx, qx_px));
+	}
+
 	// TODO add tests for isRule1Applicable
 	// TODO add tests for cleanRepeatedAtoms
 	// TODO add tests for containsRepeatedAtoms
