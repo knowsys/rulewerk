@@ -12,9 +12,17 @@ import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 
 public class Substitution {
 
+	/*
+	 * We do not replace universals with existentials.
+	 */
 	static public Term apply(Unifier unifier, Term term) {
 		Validate.isTrue(unifier.getSuccess());
-		return unifier.getValue(term);
+
+		Term value = unifier.getValue(term);
+		if (term.isUniversalVariable() && value.isExistentialVariable()) {
+			return Expressions.makeUniversalVariable(value.getName());
+		}
+		return value;
 	}
 
 	static public Literal apply(Unifier unifier, Literal literal) {
