@@ -22,36 +22,46 @@ package org.semanticweb.rulewerk.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
+import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
+import org.semanticweb.rulewerk.core.model.api.Variable;
 
 public class LiteralList {
 
-	static public Set<ExistentialVariable> getExistentialVariables(List<? extends Literal> literals) {
-		Set<ExistentialVariable> result = new HashSet<>();
-		literals.forEach(literal -> literal.getExistentialVariables().forEach(extVar -> result.add(extVar)));
+	static public List<ExistentialVariable> getExistentialVariables(List<? extends Literal> literals) {
+		List<ExistentialVariable> result = new ArrayList<>();
+		literals.forEach(literal -> result.addAll(literal.getExistentialVariables().collect(Collectors.toList())));
 		return result;
 	}
 
-	static public Set<String> getExistentialVariableNames(List<? extends Literal> literals) {
-		Set<String> result = new HashSet<>();
-		literals.forEach(literal -> literal.getExistentialVariables().forEach(extVar -> result.add(extVar.getName())));
+	static public List<UniversalVariable> getUniversalVariables(List<? extends Literal> literals) {
+		List<UniversalVariable> result = new ArrayList<>();
+		literals.forEach(literal -> result.addAll(literal.getUniversalVariables().collect(Collectors.toList())));
 		return result;
 	}
 
-	static public Set<String> getUniversalVariableNames(List<? extends Literal> literals) {
-		Set<String> result = new HashSet<>();
-		literals.forEach(literal -> literal.getUniversalVariables().forEach(uniVar -> result.add(uniVar.getName())));
+	static public List<Variable> getVariables(List<? extends Literal> literals) {
+		List<Variable> result = new ArrayList<>();
+		literals.forEach(literal -> result.addAll(literal.getVariables().collect(Collectors.toList())));
 		return result;
 	}
 
+	static public List<String> getExistentialVariableNames(List<? extends Literal> literals) {
+		return getExistentialVariables(literals).stream().map(var -> var.getName()).collect(Collectors.toList());
+	}
+
+	static public List<String> getUniversalVariableNames(List<? extends Literal> literals) {
+		return getUniversalVariables(literals).stream().map(var -> var.getName()).collect(Collectors.toList());
+	}
+
+	// TODO this should be in filter
 	static public List<PositiveLiteral> filterLiteralsByExistentialVariables(List<PositiveLiteral> literals,
 			List<ExistentialVariable> existentialVariables) {
 		List<PositiveLiteral> result = new ArrayList<>();
