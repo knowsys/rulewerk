@@ -22,6 +22,7 @@ package org.semanticweb.rulewerk.utils;
 
 import java.util.List;
 
+import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.logic.MartelliMontanariUnifier;
 import org.semanticweb.rulewerk.math.mapping.PartialMapping;
@@ -36,10 +37,11 @@ public class BCQ {
 
 	// TODO explore other unifiers.
 	static boolean query(List<Literal> instance, List<Literal> query) {
+		Validate.isTrue(LiteralList.getVariables(instance).isEmpty());
 
-		for (PartialMapping partialMapping : new PartialMappingIterable(instance.size(), query.size())) {
+		for (PartialMapping partialMapping : new PartialMappingIterable(query.size(), instance.size())) {
 
-			if (partialMapping.getDomineSize() == query.size()) {
+			if (!partialMapping.isEmpty() && partialMapping.getDomineSize() == query.size()) {
 				MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(query, instance, partialMapping);
 
 				if (unifier.getSuccess()) {
@@ -49,5 +51,4 @@ public class BCQ {
 		}
 		return false;
 	}
-
 }
