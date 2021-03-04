@@ -23,6 +23,7 @@ package org.semanticweb.rulewerk.math.mapping;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A class to represent a partial mapping between two lists. The partial mapping
@@ -47,7 +48,24 @@ public class PartialMapping {
 		this.codomineSize = codomineSize;
 	}
 
-// TODO where is this called? is this necessary?
+	/*
+	 * Composition of two partial mappings
+	 */
+	public PartialMapping(PartialMapping f, PartialMapping g) {
+		int[] newMapping = new int[f.size()];
+
+		for (int i = 0; i < f.size(); i++) {
+			if (0 <= f.getImage(i) && f.getImage(i) < g.size()) {
+				newMapping[i] = g.getImage(f.getImage(i));
+			} else {
+				newMapping[i] = -1;
+			}
+		}
+		this.mapping = newMapping;
+		this.codomineSize = g.getCodomineSize();
+	}
+	
+	// TODO is this used in restrain?
 //	private PartialMapping(List<Pair<Integer, Integer>> mappings, int domineSize, int codomineSize) {
 //		this.mappings = new ArrayList<>(mappings);
 //
@@ -55,21 +73,8 @@ public class PartialMapping {
 //		this.codomineSize = codomineSize;
 //	}
 
-	static public PartialMapping compose(PartialMapping f, PartialMapping g) {
-		int[] newMapping = new int[f.size()];
-		
-		for (int i=0; i<f.size(); i++) {
-			if (0 <= f.getImage(i) &&  f.getImage(i) < g.size()) {
-				newMapping[i] = g.getImage(f.getImage(i));
-			} else {
-				newMapping[i] = -1;
-			}
-		}
-		return new PartialMapping(newMapping, g.getCodomineSize());
-	}
-
-// TODO should this be a composition of mappings. 19.01.2021 I don't think so. 23.02.2021 I think so.
-//	public PartialMappingIdx(PartialMapping old, List<Integer> previousIndexes, int oldDomineSize) {
+// TODO is this used in restrain?
+//	public PartialMapping(PartialMapping old, List<Integer> previousIndexes, int oldDomineSize) {
 //		mappings = new ArrayList<>();
 //		for (Pair<Integer, Integer> oldMatch : old.getImages()) {
 //			mappings.add(new Pair<Integer, Integer>(previousIndexes.get(oldMatch.getX()), oldMatch.getY()));
@@ -78,20 +83,29 @@ public class PartialMapping {
 //		this.codomineSize = old.codomineSize;
 //	}
 
+
+
 	/**
 	 * @return the number of images in the partial mapping.
 	 */
 	public int size() {
 		return mapping.length;
 	}
-	
+
+	/**
+	 * @return true if the partial mapping is empty
+	 */
+	public boolean isEmpty() {
+		return activeDomain().size() == 0;
+	}
+
 	/**
 	 * @return the number of images in the partial mapping.
 	 */
 	public int getDomineSize() {
 		return activeDomain().size();
 	}
-	
+
 	/**
 	 * @return the number of images in the partial mapping.
 	 */
@@ -178,7 +192,7 @@ public class PartialMapping {
 
 	@Override
 	public String toString() {
-		return Arrays.toString(mapping) + ", codomine size = " + codomineSize;
+		return "[" + getImages().stream().map(p -> p.toString()).collect(Collectors.joining(",")) + "]";
 	}
 
 	@Override
