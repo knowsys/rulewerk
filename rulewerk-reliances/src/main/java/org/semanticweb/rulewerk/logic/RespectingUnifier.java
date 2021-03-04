@@ -169,19 +169,6 @@ public class RespectingUnifier implements Unifier {
 
 		// both variables have a representative
 		if (rep1 != null && rep2 != null) {
-//			if (rep1.isVariable() && rep2.isVariable()) {
-//				if (!rep1.getName().equals(rep2.getName())) {
-//					putTwoNewVariables((Variable) rep1, (Variable) rep2);
-//				}
-//			} else if (rep1.isConstant() && rep2.isVariable()) {
-//				unifier.put(rep2, rep1);
-//			} else if (rep1.isVariable() && rep2.isConstant()) {
-//				unifier.put(rep1, rep2);
-//			} else {
-//				if (!rep1.getName().equals(rep2.getName())) {
-//					success = false;
-//				}
-//			}
 			if (rep1.isConstant()) {
 				if (rep2.isConstant()) {
 					doUnify((Constant) rep1, (Constant) rep2);
