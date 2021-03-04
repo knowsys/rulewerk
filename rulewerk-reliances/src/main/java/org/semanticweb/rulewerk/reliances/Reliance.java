@@ -1,7 +1,5 @@
 package org.semanticweb.rulewerk.reliances;
 
-import java.util.List;
-
 /*-
  * #%L
  * Rulewerk Reliances
@@ -22,10 +20,12 @@ import java.util.List;
  * #L%
  */
 
-import org.semanticweb.rulewerk.core.model.api.Literal;
+import java.util.List;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
-import org.semanticweb.rulewerk.math.mapping.PartialMappingIdx;
+import org.semanticweb.rulewerk.logic.RespectingUnifier;
+import org.semanticweb.rulewerk.logic.Substitution;
+import org.semanticweb.rulewerk.math.mapping.PartialMapping;
 import org.semanticweb.rulewerk.math.mapping.PartialMappingIterable;
 import org.semanticweb.rulewerk.utils.RuleUtil;
 
@@ -38,7 +38,10 @@ public class Reliance {
 	 * @param rule2
 	 * @return True if rule2 positively relies on rule1.
 	 */
-	static public boolean positively(Rule rule1, Rule rule2) {
+	static public boolean positively(Rule first, Rule second) {
+		Rule rule1 = RuleUtil.containsRepeatedAtoms(first) ? RuleUtil.cleanRepeatedAtoms(first) : first;
+		Rule rule2 = RuleUtil.containsRepeatedAtoms(second) ? RuleUtil.cleanRepeatedAtoms(second) : second;
+
 		if (!RuleUtil.isRuleApplicable(rule1)) {
 			return false;
 		}
@@ -50,25 +53,22 @@ public class Reliance {
 		Rule renamedRule1 = SuffixBasedVariableRenamer.rename(rule1, rule2.hashCode() + 1);
 		Rule renamedRule2 = SuffixBasedVariableRenamer.rename(rule2, rule1.hashCode() + 2);
 
-		List<PositiveLiteral> headAtomsRule1 = renamedRule1.getHead().getLiterals();
-		List<Literal> positiveBodyLiteralsRule2 = renamedRule2.getPositiveBodyLiterals().getLiterals();
+		List<PositiveLiteral> head1 = renamedRule1.getHead().getLiterals();
+		List<PositiveLiteral> body2 = renamedRule2.getPositiveBodyLiterals().getLiterals();
 
-		PartialMappingIterable partialMappingIterable = new PartialMappingIterable(positiveBodyLiteralsRule2.size(),
-				headAtomsRule1.size());
+		for (PartialMapping partialMapping : new PartialMappingIterable(body2.size(), head1.size())) {
 
-		for (PartialMappingIdx partialMapping : partialMappingIterable) {
-			MartelliMontanariUnifier unifier = new MartelliMontanariUnifier(positiveBodyLiteralsRule2, headAtomsRule1,
-					partialMapping);
+			if (!partialMapping.isEmpty()) {
 
-			// RWU = renamed with unifier
-			if (unifier.getSuccess()) {
-				UnifierBasedVariableRenamer renamer = new UnifierBasedVariableRenamer(unifier, true);
+				RespectingUnifier unifier = new RespectingUnifier(body2, head1, partialMapping);
+				if (unifier.getSuccess()) {
+					// RWU = renamed with unifier
+					Rule rule1RWU = Substitution.apply(unifier, renamedRule1);
+					Rule rule2RWU = Substitution.apply(unifier, renamedRule2);
 
-				Rule rule1RWU = renamer.rename(renamedRule1);
-				Rule rule2RWU = renamer.rename(renamedRule2);
-
-				if (RuleUtil.isRule1Applicable(rule2RWU, rule1RWU)) {
-					return true;
+					if (RuleUtil.isRule1Applicable(rule2RWU, rule1RWU)) {
+						return true;
+					}
 				}
 			}
 		}
