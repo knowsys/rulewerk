@@ -48,6 +48,7 @@ Documentation
 * The GitHub project **[Rulewerk Example](https://github.com/knowsys/rulewerk-example)** shows how to use Rulewerk in own Maven projects and can be used as a skeleton for own projects
 * [JavaDoc](https://knowsys.github.io/rulewerk/) is available online and through the Maven packages.
 * A Rulewerk [Wiki](https://github.com/knowsys/rulewerk/wiki) is available online, with detailed information about rulewerk usage, the supported rule language [examples](https://github.com/knowsys/rulewerk/wiki/Rule-syntax-by-examples) and [grammar](https://github.com/knowsys/rulewerk/wiki/Rule-syntax-grammar), and related publications.
+* You can contact developers and other users about usage and or development on our [support channel](https://matrix.to/#/#rulewerk-support:tu-dresden.de).
 
 Development
 -----------
