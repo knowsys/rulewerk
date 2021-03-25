@@ -176,7 +176,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
 	 * @throws FileNotFoundException
-	 * @deprecated Use {@link KnowledgeBase#writeInferences(Writer)} instead. The
+	 * @deprecated Use {@link Reasoner#writeInferences(Writer)} instead. The
 	 *             method will disappear.
 	 */
 	@Deprecated
