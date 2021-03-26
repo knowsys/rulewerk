@@ -1,7 +1,5 @@
 package org.semanticweb.rulewerk.core.model.api;
 
-import java.util.Set;
-
 /*-
  * #%L
  * Rulewerk Core Components
@@ -29,38 +27,24 @@ import java.util.Set;
  * quantified; all variables in the head that do not occur in the body are
  * considered existentially quantified.
  * 
- * @author Markus Krötzsch
  * @author Larry Gonzalez
  *
  */
-public interface Rule extends SyntaxObject, Statement {
+public interface Piece extends SyntaxObject {
 
 	/**
 	 * Returns the conjunction of head literals (the consequence of the rule).
 	 *
 	 * @return conjunction of literals
 	 */
-	Conjunction<PositiveLiteral> getHead();
+	Conjunction<PositiveLiteral> getLiterals();
 
 	/**
-	 * Returns the conjunction of body literals (the premise of the rule).
-	 *
-	 * @return conjunction of literals
+	 * An unconnected piece is a piece s.t. no universally quantified variable
+	 * occurs into it.
+	 * 
+	 * @return True if the piece is unconnected
 	 */
-	Conjunction<Literal> getBody();
-
-	/**
-	 * Returns the list of pieces in the head of the rule.
-	 *
-	 * @return List of Piece
-	 */
-	Set<Piece> getPieces();
-
-	/**
-	 * @see {@code Piece.isUnconnected}
-	 *
-	 * @return True if the rule contains an unconnected piece.
-	 */
-	boolean containsUnconnectedPieces();
+	boolean isUnconnected();
 
 }
