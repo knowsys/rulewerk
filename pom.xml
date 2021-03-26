@@ -24,8 +24,9 @@
 		<module>rulewerk-commands</module>
 		<module>rulewerk-examples</module>
 		<module>rulewerk-client</module>
+		<module>rulewerk-asp</module>
 		<module>coverage</module>
-  </modules>
+    </modules>
 
 	<licenses>
 		<license>

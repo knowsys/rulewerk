@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<dependencies>
+		<dependency>
+			<groupId>org.semanticweb.rulewerk</groupId>
+			<artifactId>rulewerk-core</artifactId>
+			<version>0.8.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.semanticweb.rulewerk</groupId>
+			<artifactId>rulewerk-vlog</artifactId>
+			<version>0.8.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.unimi.dsi</groupId>
+			<artifactId>fastutil</artifactId>
+			<version>8.3.1</version>
+		</dependency>
+	</dependencies>
+
+	<parent>
+		<groupId>org.semanticweb.rulewerk</groupId>
+		<artifactId>rulewerk-parent</artifactId>
+		<version>0.8.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>rulewerk-asp</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Rulewerk ASP Components</name>
+	<description>ASP components of Rulewerk: ASP reasoner interface</description>
+</project>

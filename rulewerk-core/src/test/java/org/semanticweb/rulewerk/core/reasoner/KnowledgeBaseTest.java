@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,10 +36,12 @@ import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
 import org.semanticweb.rulewerk.core.model.implementation.MergingPrefixDeclarationRegistry;
+import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
 import org.semanticweb.rulewerk.core.reasoner.implementation.SparqlQueryResultDataSource;
 
 public class KnowledgeBaseTest {
@@ -164,5 +168,23 @@ public class KnowledgeBaseTest {
 		this.kb.writeKnowledgeBase(writer);
 		assertEquals("@source S[1]: sparql(<" + sparqlIri + ">, \"?X\", \"" + sparqlBgp
 				+ "\") .\n\nP(c) .\nP(d) .\nQ(c) .\n\nP(?X) :- Q(?X) .\n", writer.toString());
+	}
+
+	@Test
+	public void getPredicatesTest() throws IOException {
+		KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatement(rule);
+		knowledgeBase.addStatement(Expressions.makeFact("R", Expressions.makeAbstractConstant("c")));
+		knowledgeBase.addStatement(new DataSourceDeclarationImpl(
+			Expressions.makePredicate("S", 2),
+			new CsvFileDataSource("dummy.csv")
+		));
+
+		Set<Predicate> expectedPredicates = new HashSet<>(Arrays.asList(
+			Expressions.makePredicate("P", 1),
+			Expressions.makePredicate("Q", 1),
+			Expressions.makePredicate("R", 1),
+			Expressions.makePredicate("S", 2)));
+		assertEquals(expectedPredicates, knowledgeBase.getPredicates());
 	}
 }

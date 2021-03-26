@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.reasoner;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,18 +39,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkException;
-import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
-import org.semanticweb.rulewerk.core.model.api.Fact;
-import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
-import org.semanticweb.rulewerk.core.model.api.Predicate;
-import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
-import org.semanticweb.rulewerk.core.model.api.Rule;
-import org.semanticweb.rulewerk.core.model.api.Statement;
-import org.semanticweb.rulewerk.core.model.api.StatementVisitor;
+import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.MergingPrefixDeclarationRegistry;
 import org.semanticweb.rulewerk.core.model.implementation.Serializer;
 
@@ -512,7 +506,7 @@ public class KnowledgeBase implements Iterable<Statement> {
 
 	/**
 	 * Returns the {@link PrefixDeclarationRegistry} used by this knowledge base.
-	 * 
+	 *
 	 * @return registry for prefix declarations
 	 */
 	public PrefixDeclarationRegistry getPrefixDeclarationRegistry() {
@@ -636,5 +630,25 @@ public class KnowledgeBase implements Iterable<Statement> {
 		try (Writer writer = new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
 			this.writeKnowledgeBase(writer);
 		}
+	}
+
+	/**
+	 * Returns all {@link Predicate}s used in the knowledge base.
+	 *
+	 * @return a set of {@link Predicate}s
+	 */
+	public Set<Predicate> getPredicates() {
+		Set<Predicate> predicates = new HashSet<>(factsByPredicate.keySet());
+
+		for (Rule rule : getRules()) {
+			predicates.addAll(rule.getHead().getLiterals().stream().map(Literal::getPredicate).collect(Collectors.toList()));
+			predicates.addAll(rule.getBody().getLiterals().stream().map(Literal::getPredicate).collect(Collectors.toList()));
+		}
+
+		for (DataSourceDeclaration dataSourceDeclaration : getDataSourceDeclarations()) {
+			predicates.add(dataSourceDeclaration.getPredicate());
+		}
+
+		return predicates;
 	}
 }
