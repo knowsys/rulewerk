@@ -33,6 +33,11 @@ import java.util.List;
  */
 public interface Literal extends SyntaxObject {
 
+	/**
+	 * 
+	 * @return true if the literal is a NegativeLiteral, or false if it is a
+	 *         PositiveLiteral
+	 */
 	boolean isNegated();
 
 	/**

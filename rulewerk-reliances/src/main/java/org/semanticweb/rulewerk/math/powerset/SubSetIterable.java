@@ -1,8 +1,8 @@
-package org.semanticweb.rulewerk.core.model.api;
+package org.semanticweb.rulewerk.math.powerset;
 
 /*-
  * #%L
- * Rulewerk Core Components
+ * Rulewerk Reliances
  * %%
  * Copyright (C) 2018 - 2020 Rulewerk Developers
  * %%
@@ -20,18 +20,27 @@ package org.semanticweb.rulewerk.core.model.api;
  * #L%
  */
 
-public interface PositiveLiteral extends Literal {
+import java.util.Iterator;
+import java.util.List;
 
-	@Override
-	default boolean isNegated() {
-		return false;
+/**
+ * Given a set, iterate over all subsets in its power set over an Iterable.
+ * 
+ * @author Larry González
+ *
+ */
+public class SubSetIterable<T> implements Iterable<List<T>> {
+
+	SubSetIterator<T> subsetIterator;
+
+	public SubSetIterable(List<T> elements) {
+		subsetIterator = new SubSetIterator<T>(elements);
+
 	}
 
-	/**
-	 *
-	 * @return true if the literal contain at least one existential quantified
-	 *         variable.
-	 */
-	boolean containsExistentialVariables();
+	@Override
+	public Iterator<List<T>> iterator() {
+		return subsetIterator;
+	}
 
 }
