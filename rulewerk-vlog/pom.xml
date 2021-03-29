@@ -28,6 +28,11 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rulewerk-parser</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<!-- Useful for integrating the jar containing the JNI to VLog -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>${karmaresearch.vlog.artifactId}</artifactId>
@@ -38,8 +43,8 @@
 	<profiles>
 		<profile>
 			<id>development</id>
-			<!-- For development phase, using unreleased snapshots of karmaresearch
-				vlog jar, create a "lib" directory with the same parent dir as this pom (rulewerk-core
+			<!-- For development phase, using unreleased snapshots of karmaresearch 
+				vlog jar, create a "lib" directory with the same parent dir as this pom (rulewerk-core 
 				pom), and place jar dependency there. -->
 			<build>
 				<plugins>
