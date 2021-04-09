@@ -20,8 +20,8 @@ package org.semanticweb.rulewerk.integrationtests.vlogissues;
  * #L%
  */
 
-class VLogIssue {
+abstract class VLogIssue {
 
-	final String RESOURCES = "src/test/resources/vlogissues/";;
+	final String RESOURCES = "src/test/resources/vlogissues/";
 
 }
