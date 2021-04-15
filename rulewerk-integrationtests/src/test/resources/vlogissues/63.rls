@@ -1,0 +1,3 @@
+%https://github.com/karmaresearch/vlog/issues/61
+p(a).
+q(?X):-~p(?X).
