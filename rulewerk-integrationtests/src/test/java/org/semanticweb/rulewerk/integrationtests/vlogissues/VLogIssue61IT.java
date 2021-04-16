@@ -48,7 +48,7 @@ public class VLogIssue61IT extends VLogIssue {
 			reasoner.reason();
 
 			PositiveLiteral query = RuleParser.parsePositiveLiteral("q(?X,?Y,?Z)");
-			assertEquals(1, reasoner.countQueryAnswers(query, true).getCount());
+			assertEquals(2, reasoner.countQueryAnswers(query, true).getCount());
 		}
 	}
 }
