@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.integrationtests.vlogissues;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,26 +20,35 @@ package org.semanticweb.rulewerk.integrationtests.vlogissues;
  * #L%
  */
 
-import java.io.FileInputStream;
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
 import org.junit.Test;
-import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
-import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
-import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
-public class VLogIssue63 extends VLogIssue {
+public class VLogIssue61IT extends VLogIssue {
 
-	@Test(expected = RulewerkRuntimeException.class)
-	public void test() throws ParsingException, IOException {
-		KnowledgeBase kb = RuleParser.parse(new FileInputStream(RESOURCES + "63.rls"));
+	@Test
+	public void ruleset01_succeeds() throws ParsingException, IOException {
+		try (final Reasoner reasoner = getReasonerWithKbFromResource("vlog/61-1.rls")) {
+			reasoner.reason();
 
-		Reasoner reasoner = new VLogReasoner(kb);
-		reasoner.reason();
+			PositiveLiteral query = RuleParser.parsePositiveLiteral("q(?X,?Y,?Z)");
+			assertEquals(2, reasoner.countQueryAnswers(query, true).getCount());
+		}
+	}
 
-		reasoner.close();
+	@Test
+	public void ruleset02_succeeds() throws ParsingException, IOException {
+		try (final Reasoner reasoner = getReasonerWithKbFromResource("vlog/61-2.rls")) {
+			reasoner.reason();
+
+			PositiveLiteral query = RuleParser.parsePositiveLiteral("q(?X,?Y,?Z)");
+			assertEquals(1, reasoner.countQueryAnswers(query, true).getCount());
+		}
 	}
 }

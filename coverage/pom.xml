@@ -54,11 +54,12 @@
 			<artifactId>rulewerk-client</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>rulewerk-integrationtests</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+		<!-- exclude integration tests from contributing to the code coverage -->
+		<!-- <dependency> -->
+		<!-- 	<groupId>${project.groupId}</groupId> -->
+		<!-- 	<artifactId>rulewerk-integrationtests</artifactId> -->
+		<!-- 	<version>${project.version}</version> -->
+		<!-- </dependency> -->
 	</dependencies>
 
 	<build>

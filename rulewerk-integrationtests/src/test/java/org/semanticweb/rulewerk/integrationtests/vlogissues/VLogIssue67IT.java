@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.integrationtests.vlogissues;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,30 +22,23 @@ package org.semanticweb.rulewerk.integrationtests.vlogissues;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
-import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
-import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
-public class VLogIssue67 extends VLogIssue{
+public class VLogIssue67IT extends VLogIssue {
 
 	@Test
 	public void test() throws ParsingException, IOException {
-		KnowledgeBase kb = RuleParser.parse(new FileInputStream(RESOURCES + "67.rls"));
+		try (final Reasoner reasoner = getReasonerWithKbFromResource("vlog/67.rls")) {
+			reasoner.reason();
 
-		Reasoner reasoner = new VLogReasoner(kb);
-		reasoner.reason();
-
-		PositiveLiteral query = RuleParser.parsePositiveLiteral("true(a)");
-		assertEquals(1, reasoner.countQueryAnswers(query, true).getCount());
-
-		reasoner.close();
+			PositiveLiteral query = RuleParser.parsePositiveLiteral("true(a)");
+			assertEquals(1, reasoner.countQueryAnswers(query, true).getCount());
+		}
 	}
-
 }
