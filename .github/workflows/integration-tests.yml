@@ -1,7 +1,9 @@
 name: "Rulewerk Integration Tests"
 on:
-  pull_request:
-  push:
+    workflow_run:
+        workflows: ["Rulewerk Unit Tests"]
+        types:
+            - completed
 jobs:
   tests:
     runs-on: ubuntu-latest
