@@ -1,10 +1,10 @@
 { pkgs, lz4, git, zlib, cmake, cacert, sparsehash, kognac, ... }:
 pkgs.stdenv.mkDerivation {
-	name = "trident-unstable-2021-02-05";
+	name = "trident-unstable-2021-04-01";
 	src = pkgs.fetchgit {
 		url = "git://github.com/karmaresearch/trident";
-		rev = "53630ea83460b5e78851b753f245efaefbcaa57f";
-		sha256 = "1irjdzjxzwakgalliry23vcl5iqf0w5bm82wra91mlyqmgirnk2x";
+		rev = "087e90509434f84e927251c0aa8f1dd91dbb64c7";
+		sha256 = "01qw93b0hvvr7vgk24d550mvrcj7lb5chrkh0y68x1mr01di2a87";
 	};
 
 	buildInputs = [ zlib sparsehash lz4 ];

@@ -3,8 +3,8 @@ pkgs.stdenv.mkDerivation {
 	name = "vlog";
 	src = pkgs.fetchgit {
 		url = "git://github.com/karmaresearch/vlog";
-		rev = "c20fa48fc284b333ce03e63ca3ad97dc51701542";
-		sha256 = "0y1zv4bwb84rv09ihc8jc11hxxffrspk8v01s28cv2nymg2306q4";
+		rev = "7356ed98db064ee30300950441716545b819f3a1";
+		sha256 = "127jykvgvikyv8nw4ih73qs6cin6ck5bfc0p53svv7hh9zn7vaj2";
 	};
 
 	buildInputs = [ kognac trident sparsehash jdk curl lz4 ];
