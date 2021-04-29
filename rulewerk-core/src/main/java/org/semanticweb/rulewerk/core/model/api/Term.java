@@ -55,6 +55,15 @@ public interface Term extends Entity {
 	}
 
 	/**
+	 * Returns true if the term represents some kind of a null.
+	 *
+	 * @return true if term is null
+	 */
+	default boolean isNull() {
+		return this.getType() == TermType.NAMED_NULL;
+	}
+
+	/**
 	 * Returns true if the term represents some kind of variable.
 	 *
 	 * @return true if term is variable
