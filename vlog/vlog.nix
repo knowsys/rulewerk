@@ -1,10 +1,11 @@
 { pkgs, lz4, git, jdk, curl, zlib, cmake, cacert, sparsehash, kognac, trident, ... }:
 pkgs.stdenv.mkDerivation {
 	name = "vlog";
+	version = "1.35";
 	src = pkgs.fetchgit {
 		url = "git://github.com/karmaresearch/vlog";
-		rev = "7356ed98db064ee30300950441716545b819f3a1";
-		sha256 = "127jykvgvikyv8nw4ih73qs6cin6ck5bfc0p53svv7hh9zn7vaj2";
+		rev = "ca0669424963765d08a63a29a0d89e27cf33ef51";
+		sha256 = "10xkc8qfarz3garn2x88p064mx109vqayiijk6zslhmn4r7j465k";
 	};
 
 	buildInputs = [ kognac trident sparsehash jdk curl lz4 ];

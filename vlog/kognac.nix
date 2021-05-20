@@ -1,6 +1,7 @@
 { pkgs, lz4, git, zlib, cmake, cacert, sparsehash, ...}:
 pkgs.stdenv.mkDerivation {
-	name = "kognac-unstable-2020-12-01";
+	name = "kognac-unstable";
+	version = "2020-12-01";
 	src = pkgs.fetchgit {
 		url = "git://github.com/karmaresearch/kognac";
 		rev = "8430b081f8d76b11fa6858f3ec31a9ea5a5cf6a9";
