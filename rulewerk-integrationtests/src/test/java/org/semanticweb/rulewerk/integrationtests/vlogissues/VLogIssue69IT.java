@@ -34,7 +34,7 @@ public class VLogIssue69IT extends VLogIssue {
 
 	@Test
 	public void ruleset_succeeds() throws ParsingException, IOException {
-		try (final Reasoner reasoner = getReasonerWithKbFromResource("vlog/67.rls")) {
+		try (final Reasoner reasoner = getReasonerWithKbFromResource("vlog/69.rls")) {
 			reasoner.reason();
 
 			PositiveLiteral query1 = RuleParser.parsePositiveLiteral("prec(?X,?Y)");
