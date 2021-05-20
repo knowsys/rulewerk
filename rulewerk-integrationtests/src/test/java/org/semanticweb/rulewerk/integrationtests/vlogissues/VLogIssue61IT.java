@@ -20,17 +20,35 @@ package org.semanticweb.rulewerk.integrationtests.vlogissues;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+import org.semanticweb.rulewerk.core.model.api.QueryResult;
+import org.semanticweb.rulewerk.core.model.api.Term;
+import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
 
 public class VLogIssue61IT extends VLogIssue {
+
+	boolean hasCorrectAnswers(QueryResultIterator answers) {
+		int numAnswers = 0;
+		boolean hasEqualNullsAnswer = false;
+
+		while (answers.hasNext()) {
+			++numAnswers;
+
+			List<Term> terms = answers.next().getTerms();
+			hasEqualNullsAnswer = hasEqualNullsAnswer || (terms.get(1).equals(terms.get(2)));
+		}
+
+		return hasEqualNullsAnswer && numAnswers <= 2;
+	}
 
 	@Test
 	public void ruleset01_succeeds() throws ParsingException, IOException {
@@ -38,7 +56,7 @@ public class VLogIssue61IT extends VLogIssue {
 			reasoner.reason();
 
 			PositiveLiteral query = RuleParser.parsePositiveLiteral("q(?X,?Y,?Z)");
-			assertEquals(2, reasoner.countQueryAnswers(query, true).getCount());
+			assertTrue(hasCorrectAnswers(reasoner.answerQuery(query, true)));
 		}
 	}
 
@@ -48,7 +66,7 @@ public class VLogIssue61IT extends VLogIssue {
 			reasoner.reason();
 
 			PositiveLiteral query = RuleParser.parsePositiveLiteral("q(?X,?Y,?Z)");
-			assertEquals(2, reasoner.countQueryAnswers(query, true).getCount());
+			assertTrue(hasCorrectAnswers(reasoner.answerQuery(query, true)));
 		}
 	}
 }
