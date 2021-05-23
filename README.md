@@ -34,6 +34,8 @@ You need to use Java 1.8 or above. Available source modules include:
 * **rulewerk-commands**: support for running commands, as done by the client
 * **rulewerk-vlog**: support for using [VLog](https://github.com/karmaresearch/vlog) as a reasoning backend for Rulewerk.
 
+Test module **rulewerk-integrationtests** contains integration tests that verify the correctness of the backend reasoners for various complex reasoning problems.
+
 <a name="anchor-build-vlog">The released **rulewerk-vlog** packages use [`vlog-java`](https://search.maven.org/search?q=a:vlog-java), which packages system-dependent [VLog](https://github.com/karmaresearch/vlog) binaries for Linux, macOS, and Windows, and should work out of the box with current versions of these systems (for Linux, you will need at least libstdc++-v3.4.22; for macOS, you will need at least macOS 10.14). In case of problems, or if you are using the current development version, own binaries can be compiled as follows:
 * (Optional) It is recommended to increase the version of `vlog-java` (in `rulewerk-vlog/pom.xml`) before executing the next steps.
 * Delete (if existing) previous local builds (`local_builds` directory).
