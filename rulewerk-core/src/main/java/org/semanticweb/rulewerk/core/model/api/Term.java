@@ -65,8 +65,9 @@ public interface Term extends Entity {
 
 	/**
 	 * Accept a {@link TermVisitor} and return its output.
-	 *
+	 * 
 	 * @param termVisitor the TermVisitor
+	 * @param <T>         type associated to the given TermVisitor
 	 * @return output of the visitor
 	 */
 	<T> T accept(TermVisitor<T> termVisitor);

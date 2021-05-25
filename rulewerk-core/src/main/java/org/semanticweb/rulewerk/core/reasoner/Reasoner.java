@@ -117,10 +117,10 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @return the correctness of the inferences, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 */
-	default Correctness unsafeForEachInference(BiConsumer<Predicate, List<Term>> action) {
+	default Correctness unsafeForEachInference(final BiConsumer<Predicate, List<Term>> action) {
 		try {
-			return forEachInference(action::accept);
-		} catch (IOException e) {
+			return this.forEachInference(action::accept);
+		} catch (final IOException e) {
 			throw new RulewerkRuntimeException(e);
 		}
 	}
@@ -129,18 +129,18 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * Exports all the (explicit and implicit) facts inferred during reasoning of
 	 * the knowledge base to an OutputStream.
 	 *
-	 * @param stream an OutputStream for the facts to be written to.
+	 * @param writer the {@link Writer} used to write inferences.
 	 * @return the correctness of the query answers, depending on the state of the
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
 	 */
-	default Correctness writeInferences(Writer writer) throws IOException {
-		final PrefixDeclarationRegistry prefixDeclarationRegistry = getKnowledgeBase().getPrefixDeclarationRegistry();
+	default Correctness writeInferences(final Writer writer) throws IOException {
+		final PrefixDeclarationRegistry prefixDeclarationRegistry = this.getKnowledgeBase().getPrefixDeclarationRegistry();
 		final Serializer serializer = new Serializer(writer, prefixDeclarationRegistry);
 
 		serializer.writePrefixDeclarationRegistry(prefixDeclarationRegistry);
 
-		return forEachInference((predicate, termList) -> {
+		return this.forEachInference((predicate, termList) -> {
 			serializer.writePositiveLiteral(predicate, termList);
 			writer.write(" .\n");
 		});
@@ -153,8 +153,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         inferences.
 	 */
 	default Stream<Fact> getInferences() {
-		Stream.Builder<Fact> builder = Stream.builder();
-		unsafeForEachInference((predicate, termList) -> builder.accept(Expressions.makeFact(predicate, termList)));
+		final Stream.Builder<Fact> builder = Stream.builder();
+		this.unsafeForEachInference((predicate, termList) -> builder.accept(Expressions.makeFact(predicate, termList)));
 
 		return builder.build();
 	}
@@ -180,7 +180,7 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *             method will disappear.
 	 */
 	@Deprecated
-	default Correctness writeInferences(String filePath) throws FileNotFoundException, IOException {
+	default Correctness writeInferences(final String filePath) throws FileNotFoundException, IOException {
 		try (Writer writer = new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
 			return this.writeInferences(writer);
 		}

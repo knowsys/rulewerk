@@ -33,7 +33,7 @@ public interface DataSourceConfigurationVisitor {
 	 * Configure the reasoner for a {@link CsvFileDataSource}.
 	 *
 	 * @param dataSource the data source to configure
-	 * @throws IOexception when an IO error occurs during configuration
+	 * @throws IOException when an IO error occurs during configuration
 	 */
 	public void visit(CsvFileDataSource dataSource) throws IOException;
 
@@ -41,7 +41,7 @@ public interface DataSourceConfigurationVisitor {
 	 * Configure the reasoner for a {@link RdfFileDataSource}.
 	 *
 	 * @param dataSource the data source to configure
-	 * @throws IOexception when an IO error occurs during configuration
+	 * @throws IOException when an IO error occurs during configuration
 	 */
 	public void visit(RdfFileDataSource dataSource) throws IOException;
 
@@ -49,7 +49,7 @@ public interface DataSourceConfigurationVisitor {
 	 * Configure the reasoner for a {@link TridentDataSource}.
 	 *
 	 * @param dataSource the data source to configure
-	 * @throws IOexception when an IO error occurs during configuration
+	 * @throws IOException when an IO error occurs during configuration
 	 */
 	public void visit(TridentDataSource dataSource) throws IOException;
 

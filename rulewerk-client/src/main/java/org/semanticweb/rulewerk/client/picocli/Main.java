@@ -52,12 +52,12 @@ public class Main {
 	 * Launches the client application for Rulewerk. The functionality depends on
 	 * the given command-line args ({@code args}):
 	 * <ul>
-	 * <li>empty args (<b>""</b>) or argument <b>"shell"</b></li> launch an
-	 * interactive shell.
+	 * <li>empty args (<b>""</b>) or argument <b>"shell"</b> launch an interactive
+	 * shell.</li>
 	 * <li>argument "materialize" can be used with different options to complete
 	 * several materialization and querying tasks from the command line.</li>
-	 * </ul>
 	 * <li>help</li>
+	 * </ul>
 	 * 
 	 * @param args
 	 * 
@@ -92,7 +92,7 @@ public class Main {
 
 	/**
 	 * Configures {@link Logger} settings. Messages are logged to the console. Log
-	 * level is set to {@link Level.FATAL}.
+	 * level is set to {@link Level#FATAL}.
 	 */
 	public static void configureLogging() {
 		// Create the appender that will write log messages to the console.

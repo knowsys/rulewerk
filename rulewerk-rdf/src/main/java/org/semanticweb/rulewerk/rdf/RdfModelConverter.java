@@ -31,10 +31,10 @@ import org.openrdf.model.Namespace;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.exceptions.PrefixDeclarationException;
 import org.semanticweb.rulewerk.core.model.api.Constant;
 import org.semanticweb.rulewerk.core.model.api.Fact;
+import org.semanticweb.rulewerk.core.model.api.NamedNull;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.PrefixDeclarationRegistry;
@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
  * given {@code rdfModel} into an {@link PositiveLiteral} of the form
  * {@code TRIPLE(subject, predicate, object)}. The ternary predicate used for
  * all literals generated from RDF triples is
- * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}. Subject, predicate and object
- * {@link Value}s are converted to corresponding {@link Term}s:
+ * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE_NAME}. Subject, predicate and
+ * object {@link Value}s are converted to corresponding {@link Term}s:
  * <ul>
  * <li>{@link URI}s are converted to {@link Constant}s with the escaped URI
  * String as name.</li>
@@ -103,7 +103,7 @@ public final class RdfModelConverter {
 	 *                            to store RDF triples; or null to generate binary
 	 *                            predicates from the predicates of RDF triples
 	 */
-	public RdfModelConverter(boolean skolemize, String triplePredicateName) {
+	public RdfModelConverter(final boolean skolemize, final String triplePredicateName) {
 		this.rdfValueToTermConverter = new RdfValueToTermConverter(skolemize);
 		if (triplePredicateName != null) {
 			this.triplePredicate = Expressions.makePredicate(triplePredicateName, 3);
@@ -116,8 +116,8 @@ public final class RdfModelConverter {
 	 * Converts each {@code <subject, predicate, object>} triple statement of the
 	 * given {@code rdfModel} into a {@link Fact} of the form
 	 * {@code TRIPLE(subject, predicate, object)}. See
-	 * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE}, the ternary predicate used
-	 * for all literals generated from RDF triples.
+	 * {@link RdfModelConverter#RDF_TRIPLE_PREDICATE_NAME}, the ternary predicate
+	 * name used for all literals generated from RDF triples.
 	 *
 	 * @param model a {@link Model} of an RDF document, containing triple statements
 	 *              that will be converter to facts.
@@ -125,7 +125,7 @@ public final class RdfModelConverter {
 	 *         {@code rdfModel}.
 	 */
 	public Set<Fact> rdfModelToFacts(final Model model) {
-		return model.stream().map((statement) -> rdfStatementToFact(statement)).collect(Collectors.toSet());
+		return model.stream().map((statement) -> this.rdfStatementToFact(statement)).collect(Collectors.toSet());
 	}
 
 	/**
@@ -135,9 +135,9 @@ public final class RdfModelConverter {
 	 * @param knowledgeBase the {@link KnowledgeBase} to add to
 	 * @param model         the {@link Model} with the RDF data
 	 */
-	public void addAll(KnowledgeBase knowledgeBase, Model model) {
-		addPrefixes(knowledgeBase, model);
-		addFacts(knowledgeBase, model);
+	public void addAll(final KnowledgeBase knowledgeBase, final Model model) {
+		this.addPrefixes(knowledgeBase, model);
+		this.addFacts(knowledgeBase, model);
 	}
 
 	/**
@@ -147,9 +147,9 @@ public final class RdfModelConverter {
 	 * @param knowledgeBase the {@link KnowledgeBase} to add {@link Fact}s to
 	 * @param model         the {@link Model} with the RDF data
 	 */
-	public void addFacts(KnowledgeBase knowledgeBase, Model model) {
+	public void addFacts(final KnowledgeBase knowledgeBase, final Model model) {
 		model.stream().forEach((statement) -> {
-			knowledgeBase.addStatement(rdfStatementToFact(statement));
+			knowledgeBase.addStatement(this.rdfStatementToFact(statement));
 		});
 	}
 
@@ -161,12 +161,12 @@ public final class RdfModelConverter {
 	 * @param knowledgeBase the {@link KnowledgeBase} to add prefix declarations to
 	 * @param model         the {@link Model} with the RDF data
 	 */
-	public void addPrefixes(KnowledgeBase knowledgeBase, Model model) {
-		for (Namespace namespace : model.getNamespaces()) {
+	public void addPrefixes(final KnowledgeBase knowledgeBase, final Model model) {
+		for (final Namespace namespace : model.getNamespaces()) {
 			try {
 				knowledgeBase.getPrefixDeclarationRegistry().setPrefixIri(namespace.getPrefix() + ":",
 						namespace.getName());
-			} catch (PrefixDeclarationException e) {
+			} catch (final PrefixDeclarationException e) {
 				LOGGER.warn("Failed to set prefix \"" + namespace.getPrefix() + "\" from RDF model: " + e.getMessage());
 			}
 		}
@@ -179,19 +179,19 @@ public final class RdfModelConverter {
 	 * @return
 	 */
 	Fact rdfStatementToFact(final Statement statement) {
-		final Term subject = rdfValueToTermConverter.convertValue(statement.getSubject());
-		final Term object = rdfValueToTermConverter.convertValue(statement.getObject());
+		final Term subject = this.rdfValueToTermConverter.convertValue(statement.getSubject());
+		final Term object = this.rdfValueToTermConverter.convertValue(statement.getObject());
 
-		if (triplePredicate != null) {
-			final Term predicate = rdfValueToTermConverter.convertUri(statement.getPredicate());
-			return Expressions.makeFact(triplePredicate, Arrays.asList(subject, predicate, object));
+		if (this.triplePredicate != null) {
+			final Term predicate = this.rdfValueToTermConverter.convertUri(statement.getPredicate());
+			return Expressions.makeFact(this.triplePredicate, Arrays.asList(subject, predicate, object));
 		} else {
 			if (PrefixDeclarationRegistry.RDF_TYPE.equals(statement.getPredicate().stringValue())
 					&& statement.getObject() instanceof URI) {
-				Predicate classPredicate = rdfValueToTermConverter.convertUriToPredicate((URI) statement.getObject(), 1);
+				final Predicate classPredicate = this.rdfValueToTermConverter.convertUriToPredicate((URI) statement.getObject(), 1);
 				return Expressions.makeFact(classPredicate, Arrays.asList(subject));
 			} else {
-				Predicate factPredicate = rdfValueToTermConverter.convertUriToPredicate(statement.getPredicate(), 2);
+				final Predicate factPredicate = this.rdfValueToTermConverter.convertUriToPredicate(statement.getPredicate(), 2);
 				return Expressions.makeFact(factPredicate, Arrays.asList(subject, object));
 			}
 		}

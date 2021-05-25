@@ -66,8 +66,8 @@ public class Skolemization {
 	 * @return a {@link RenamedNamedNull} with a new name that is specific to this
 	 *         instance and {@code name}.
 	 */
-	public RenamedNamedNull getRenamedNamedNull(String name) {
-		return new RenamedNamedNull(getFreshName(name));
+	public RenamedNamedNull getRenamedNamedNull(final String name) {
+		return new RenamedNamedNull(this.getFreshName(name));
 	}
 
 	/**
@@ -80,8 +80,8 @@ public class Skolemization {
 	 * @return a {@link AbstractConstant} with an IRI that is specific to this
 	 *         instance and {@code name}.
 	 */
-	public AbstractConstant getSkolemConstant(String name, TermFactory termFactory) {
-		return termFactory.makeAbstractConstant(getSkolemConstantName(name));
+	public AbstractConstant getSkolemConstant(final String name, final TermFactory termFactory) {
+		return termFactory.makeAbstractConstant(this.getSkolemConstantName(name));
 	}
 
 	/**
@@ -95,8 +95,8 @@ public class Skolemization {
 	 * @return a {@link AbstractConstant} with an IRI that is specific to this
 	 *         instance and {@code namedNull}.
 	 */
-	public AbstractConstant getSkolemConstant(NamedNull namedNull, TermFactory termFactory) {
-		return termFactory.makeAbstractConstant(getSkolemConstantName(namedNull));
+	public AbstractConstant getSkolemConstant(final NamedNull namedNull, final TermFactory termFactory) {
+		return termFactory.makeAbstractConstant(this.getSkolemConstantName(namedNull));
 
 	}
 
@@ -108,8 +108,8 @@ public class Skolemization {
 	 *             other string for which to create a unique renaming)
 	 * @return string that is an IRI for a skolem constant
 	 */
-	public String getSkolemConstantName(String name) {
-		return getSkolemConstantNameFromUniqueName(getFreshName(name).toString());
+	public String getSkolemConstantName(final String name) {
+		return this.getSkolemConstantNameFromUniqueName(this.getFreshName(name).toString());
 	}
 
 	/**
@@ -117,15 +117,15 @@ public class Skolemization {
 	 * named {@link NamedNull}. The method ensures that a new unique name is
 	 * generated unless the given object is already a {@link RenamedNamedNull}.
 	 * 
-	 * @param name the name of the {@link NamedNull} to be renamed here (or any
-	 *             other string for which to create a unique renaming)
+	 * @param namedNull the name of the {@link NamedNull} to be renamed here (or any
+	 *                  other string for which to create a unique renaming)
 	 * @return string that is an IRI for a skolem constant
 	 */
-	public String getSkolemConstantName(NamedNull namedNull) {
+	public String getSkolemConstantName(final NamedNull namedNull) {
 		if (namedNull instanceof RenamedNamedNull) {
-			return getSkolemConstantNameFromUniqueName(namedNull.getName());
+			return this.getSkolemConstantNameFromUniqueName(namedNull.getName());
 		} else {
-			return getSkolemConstantName(namedNull.getName());
+			return this.getSkolemConstantName(namedNull.getName());
 		}
 	}
 
@@ -135,7 +135,7 @@ public class Skolemization {
 	 * @param name local id of skolem constant
 	 * @return IRI string
 	 */
-	private String getSkolemConstantNameFromUniqueName(String name) {
+	private String getSkolemConstantNameFromUniqueName(final String name) {
 		return SKOLEM_IRI_PREFIX + SKOLEM_UUID_START + name;
 	}
 
@@ -147,10 +147,10 @@ public class Skolemization {
 	 * @param name the string to be renamed
 	 * @return a UUID for the new name
 	 */
-	public UUID getFreshName(String name) {
-		byte[] nameBytes = name.getBytes();
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		stream.write(namedNullNamespace, 0, namedNullNamespace.length);
+	public UUID getFreshName(final String name) {
+		final byte[] nameBytes = name.getBytes();
+		final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		stream.write(this.namedNullNamespace, 0, this.namedNullNamespace.length);
 		stream.write(nameBytes, 0, nameBytes.length);
 		return UUID.nameUUIDFromBytes(stream.toByteArray());
 	}
