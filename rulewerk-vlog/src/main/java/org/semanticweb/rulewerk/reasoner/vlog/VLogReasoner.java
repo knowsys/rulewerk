@@ -32,6 +32,7 @@ import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.exceptions.IncompatiblePredicateArityException;
 import org.semanticweb.rulewerk.core.exceptions.ReasonerStateException;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
+import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Fact;
@@ -429,7 +430,7 @@ public class VLogReasoner implements Reasoner {
 
 	/**
 	 * Utility method copied from {@link karmaresearch.vlog.VLog}.
-	 * 
+	 *
 	 * @FIXME This should be provided by VLog and made visible to us rather than
 	 *        being copied here.
 	 * @param terms
@@ -677,8 +678,10 @@ public class VLogReasoner implements Reasoner {
 	Set<Predicate> getKnowledgeBasePredicates() {
 		final Set<Predicate> toBeQueriedHeadPredicates = new HashSet<>();
 		for (final Rule rule : this.knowledgeBase.getRules()) {
-			for (final Literal literal : rule.getHead()) {
-				toBeQueriedHeadPredicates.add(literal.getPredicate());
+			for (final Conjunction<?> conjunction : rule.getHead().getConjunctions()) {
+				for (final Literal literal : conjunction) {
+					toBeQueriedHeadPredicates.add(literal.getPredicate());
+				}
 			}
 		}
 		for (final DataSourceDeclaration dataSourceDeclaration : this.knowledgeBase.getDataSourceDeclarations()) {

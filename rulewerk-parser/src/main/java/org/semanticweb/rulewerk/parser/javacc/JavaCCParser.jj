@@ -174,7 +174,7 @@ Command command() throws PrefixDeclarationException : {
     | LOOKAHEAD(predicateName() < ARITY >) predicateName = predicateName() arity = < ARITY > < COLON > arguments = Arguments() < DOT > {
 	  		arguments.addFirst(Argument.term(Expressions.makeDatatypeConstant(predicateName + "[" + arity.image + "]:", PrefixDeclarationRegistry.XSD_STRING)));
 	  		return new Command(name.image,arguments);
-	  	}  	
+	  	}
     | arguments = Arguments() < DOT > { return new Command(name.image,arguments); }
 	| pn = < PNAME_NS > arguments = Arguments() < DOT > {
 	  		arguments.addFirst(Argument.term(Expressions.makeDatatypeConstant(pn.image, PrefixDeclarationRegistry.XSD_STRING)));
@@ -204,10 +204,10 @@ Rule rule() throws PrefixDeclarationException : {
 }
 
 Rule ruleNoDot() throws PrefixDeclarationException : {
-    List < PositiveLiteral > head;
-    List < Literal > body;
+    List < List < PositiveLiteral > > head;
+    List < List < Literal > > body;
 } {
-    head = listOfPositiveLiterals(FormulaContext.HEAD) < ARROW > body = listOfLiterals(FormulaContext.BODY) {
+    head = listOfPositiveConjunctions(FormulaContext.HEAD) < ARROW > body = listOfConjunctions(FormulaContext.BODY) {
         // check that the intersection between headExiVars and BodyVars is empty
         for (String variable : headExiVars) {
           if (bodyVars.contains(variable))
@@ -220,8 +220,26 @@ Rule ruleNoDot() throws PrefixDeclarationException : {
             throw new ParseException("Unsafe rule " + head + " :- " + body  + "\nUniversal variable " + variable + " occurs in head but not in body.");
         }
 
-        return Expressions.makeRule(Expressions.makePositiveConjunction(head), Expressions.makeConjunction(body));
+        return Expressions.makeRule(Expressions.makeDisjunction(head), Expressions.makeDisjunction(body));
     }
+}
+
+List < List < PositiveLiteral > > listOfPositiveConjunctions(FormulaContext context) throws PrefixDeclarationException : {
+    List < PositiveLiteral > l;
+    List < List < PositiveLiteral > > list = new ArrayList < List < PositiveLiteral > > ();
+} {
+	l = listOfPositiveLiterals(context) { list.add(l); } ( < LOGICAL_OR > l = listOfPositiveLiterals(context) { list.add(l); } )* {
+		return list;
+	}
+}
+
+List < List < Literal > > listOfConjunctions(FormulaContext context) throws PrefixDeclarationException : {
+    List < Literal > l;
+    List < List < Literal > > list = new ArrayList < List < Literal > > ();
+} {
+	l = listOfLiterals(context) { list.add(l); } ( < LOGICAL_OR > l = listOfLiterals(context) { list.add(l); } )* {
+		return list;
+	}
 }
 
 List < PositiveLiteral > listOfPositiveLiterals(FormulaContext context) throws PrefixDeclarationException : {
@@ -555,6 +573,10 @@ MORE : {
 
 < DEFAULT, BODY, DIRECTIVE_ARGUMENTS > TOKEN : {
   < ARROW : ":-" >
+}
+
+< DEFAULT, BODY > TOKEN : {
+  < LOGICAL_OR : "|" >
 }
 
 < DEFAULT, BODY, DIRECTIVE_ARGUMENTS > TOKEN : {

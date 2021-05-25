@@ -21,51 +21,51 @@ package org.semanticweb.rulewerk.core.model.implementation;
  */
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
-import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.Disjunction;
+import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.Term;
 
 /**
- * Simple implementation of {@link Conjunction}.
+ * Simple implementation of {@link Disjunction}.
  *
- * @author Markus Krötzsch
+ * @author Lukas Gerlach
  */
-public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
+public class DisjunctionImpl<T extends Conjunction<?>> implements Disjunction<T> {
 
-	final List<? extends T> literals;
+	final List<? extends T> conjunctions;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param literals a non-null list of literals, that cannot contain null
-	 *                 elements.
+	 * @param conjunctions a non-null list of conjunctions, that cannot contain null
+	 *                     elements.
 	 */
-	public ConjunctionImpl(List<? extends T> literals) {
-		Validate.noNullElements(literals);
-		this.literals = literals;
+	public DisjunctionImpl(List<? extends T> conjunctions) {
+		Validate.noNullElements(conjunctions);
+		this.conjunctions = conjunctions;
 	}
 
 	@Override
-	public List<T> getLiterals() {
-		return Collections.unmodifiableList(this.literals);
+	public List<T> getConjunctions() {
+		return Collections.unmodifiableList(this.conjunctions);
 	}
 
 	@Override
 	public Stream<Term> getTerms() {
-		return this.literals.stream().flatMap(l -> l.getTerms()).distinct();
+		return this.conjunctions.stream().flatMap(c -> c.getTerms()).distinct();
 	}
 
 	@Override
 	public int hashCode() {
-		return this.literals.size() == 1
-			? this.literals.get(0).hashCode()
-			: this.literals.hashCode();
+		return this.conjunctions.size() == 1
+			? this.conjunctions.get(0).hashCode()
+			: this.conjunctions.hashCode();
 	}
 
 	@Override
@@ -79,21 +79,13 @@ public class ConjunctionImpl<T extends Literal> implements Conjunction<T> {
 		if (!(obj instanceof Disjunction<?>)) {
 			return false;
 		}
-		if (!(obj instanceof Conjunction<?>)) {
-			return obj.equals(this);
-		}
-		final Conjunction<?> other = (Conjunction<?>) obj;
-		return this.literals.equals(other.getLiterals());
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return getLiterals().iterator();
+		final Disjunction<?> other = (Disjunction<?>) obj;
+		return this.conjunctions.equals(other.getConjunctions());
 	}
 
 	@Override
 	public String toString() {
-		return Serializer.getSerialization(serializer -> serializer.writeLiteralConjunction(this));
+		return Serializer.getSerialization(serializer -> serializer.writeDisjunction(this));
 	}
 
 }

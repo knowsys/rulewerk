@@ -9,9 +9,9 @@ package org.semanticweb.rulewerk.core.model.implementation;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,9 +23,11 @@ package org.semanticweb.rulewerk.core.model.implementation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.semanticweb.rulewerk.core.model.api.AbstractConstant;
 import org.semanticweb.rulewerk.core.model.api.Conjunction;
+import org.semanticweb.rulewerk.core.model.api.Disjunction;
 import org.semanticweb.rulewerk.core.model.api.DatatypeConstant;
 import org.semanticweb.rulewerk.core.model.api.ExistentialVariable;
 import org.semanticweb.rulewerk.core.model.api.Fact;
@@ -43,6 +45,7 @@ import org.semanticweb.rulewerk.core.model.api.UniversalVariable;
  * in Rulewerk.
  *
  * @author Markus Krötzsch
+ * @author Lukas Gerlach
  *
  */
 
@@ -302,6 +305,19 @@ public final class Expressions {
 	}
 
 	/**
+	 * Creates a {@link Disjunction} of {@link Conjunction}s of {@code T} ({@link Literal} type) objects.
+	 *
+	 * @param literals list of lists of non-null literals
+	 * @return a {@link Disjunction} corresponding to the input
+	 */
+	public static <T extends Literal> Disjunction<Conjunction<T>> makeDisjunction(final List<List<T>> literals) {
+		final List<Conjunction<T>> disjuncts = literals.stream()
+			.map(c -> makeConjunction(c))
+			.collect(Collectors.toList());
+		return new DisjunctionImpl<>(disjuncts);
+	}
+
+	/**
 	 * Creates a {@code Conjunction} of {@code T} ({@link PositiveLiteral} type)
 	 * objects.
 	 *
@@ -330,18 +346,17 @@ public final class Expressions {
 	 * @return a {@link Rule} corresponding to the input
 	 */
 	public static Rule makeRule(final PositiveLiteral headLiteral, final Literal... bodyLiterals) {
-		return new RuleImpl(new ConjunctionImpl<>(Arrays.asList(headLiteral)),
-				new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
+		return new RuleImpl(headLiteral, new ConjunctionImpl<>(Arrays.asList(bodyLiterals)));
 	}
 
 	/**
 	 * Creates a {@code Rule}.
 	 *
-	 * @param head conjunction of positive (non-negated) literals
-	 * @param body conjunction of literals (negated or not)
+	 * @param head disjunction of conjunctions of positive (non-negated) literals
+	 * @param body disjunction of conjunctions of literals (negated or not)
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static Rule makeRule(final Conjunction<PositiveLiteral> head, final Conjunction<Literal> body) {
+	public static Rule makeRule(final Disjunction<Conjunction<PositiveLiteral>> head, final Disjunction<Conjunction<Literal>> body) {
 		return new RuleImpl(head, body);
 	}
 
@@ -352,11 +367,19 @@ public final class Expressions {
 	 * @param body conjunction of positive (non-negated) literals
 	 * @return a {@link Rule} corresponding to the input
 	 */
-	public static Rule makePositiveLiteralsRule(final Conjunction<PositiveLiteral> head,
-			final Conjunction<PositiveLiteral> body) {
-		final List<Literal> bodyLiteralList = new ArrayList<>(body.getLiterals());
-		final Conjunction<Literal> literalsBody = makeConjunction(bodyLiteralList);
-		return new RuleImpl(head, literalsBody);
+	public static Rule makePositiveLiteralsRule(final Disjunction<Conjunction<PositiveLiteral>> head,
+			final Disjunction<Conjunction<PositiveLiteral>> body) {
+
+		// TODO: can we find a better solution?
+		// already spent quite some time here, though...
+		// one idea was to make Rule Generic, but this is not really nice it seems...
+		final List<Conjunction<?>> bodyDisjuncts = body.getConjunctions().stream()
+			.map(c -> makeConjunction(c.getLiterals()))
+			.collect(Collectors.toList());
+
+		final Disjunction<Conjunction<Literal>> bodyDisjunction = new DisjunctionImpl(bodyDisjuncts);
+
+		return makeRule(head, bodyDisjunction);
 
 	}
 

@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
+import org.semanticweb.rulewerk.core.model.api.Conjunction;
 import org.semanticweb.rulewerk.core.model.api.DataSource;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
 import org.semanticweb.rulewerk.core.model.api.Fact;
@@ -193,14 +194,16 @@ public class VLogKnowledgeBase {
 		@Override
 		public Void visit(final Rule statement) {
 			VLogKnowledgeBase.this.rules.add(statement);
-			for (final PositiveLiteral positiveLiteral : statement.getHead()) {
-				final Predicate predicate = positiveLiteral.getPredicate();
-				if (!VLogKnowledgeBase.this.idbPredicates.contains(predicate)) {
-					if (VLogKnowledgeBase.this.edbPredicates.containsKey(predicate)) {
-						addEdbAlias(VLogKnowledgeBase.this.edbPredicates.get(predicate));
-						VLogKnowledgeBase.this.edbPredicates.remove(predicate);
+			for (final Conjunction<PositiveLiteral> conjunction : statement.getHead().getConjunctions()) {
+				for (final PositiveLiteral positiveLiteral : conjunction) {
+					final Predicate predicate = positiveLiteral.getPredicate();
+					if (!VLogKnowledgeBase.this.idbPredicates.contains(predicate)) {
+						if (VLogKnowledgeBase.this.edbPredicates.containsKey(predicate)) {
+							addEdbAlias(VLogKnowledgeBase.this.edbPredicates.get(predicate));
+							VLogKnowledgeBase.this.edbPredicates.remove(predicate);
+						}
+						VLogKnowledgeBase.this.idbPredicates.add(predicate);
 					}
-					VLogKnowledgeBase.this.idbPredicates.add(predicate);
 				}
 			}
 			return null;

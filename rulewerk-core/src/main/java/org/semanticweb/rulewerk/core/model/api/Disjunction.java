@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.core.model.implementation;
+package org.semanticweb.rulewerk.core.model.api;
 
 /*-
  * #%L
@@ -22,13 +22,19 @@ package org.semanticweb.rulewerk.core.model.implementation;
 
 import java.util.List;
 
-import org.semanticweb.rulewerk.core.model.api.NegativeLiteral;
-import org.semanticweb.rulewerk.core.model.api.Predicate;
-import org.semanticweb.rulewerk.core.model.api.Term;
+/**
+ * Interface for representing disjunctions of {@link Conjunction}s.
+ *
+ * @author Lukas Gerlach
+ *
+ */
+public interface Disjunction<T extends Conjunction<?>> extends SyntaxObject {
 
-public class NegativeLiteralImpl extends AbstractLiteralImpl<NegativeLiteral> implements NegativeLiteral {
+	/**
+	 * Returns the list of conjunctions that are part of this disjunction.
+	 *
+	 * @return list of conjunctions
+	 */
+	List<T> getConjunctions();
 
-	public NegativeLiteralImpl(final Predicate predicate, final List<Term> terms) {
-		super(predicate, terms);
-	}
 }
