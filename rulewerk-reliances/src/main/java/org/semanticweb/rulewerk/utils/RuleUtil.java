@@ -1,5 +1,14 @@
 package org.semanticweb.rulewerk.utils;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.semanticweb.rulewerk.core.model.api.Fact;
+import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
+
 /*-
  * #%L
  * Rulewerk Reliances
@@ -20,66 +29,60 @@ package org.semanticweb.rulewerk.utils;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.semanticweb.rulewerk.core.model.api.Literal;
-import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.logic.Substitution;
+import org.semanticweb.rulewerk.parser.ParsingException;
+import org.semanticweb.rulewerk.logic.Substitute;
 
 public class RuleUtil {
 
-	// TODO this might be incomplete
-	static public boolean isRule1Applicable(Rule rule1, Rule rule2) {
-		List<Literal> instance = new ArrayList<>();
-		List<Literal> query = new ArrayList<>();
-		rule1.getPositiveBodyLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
-		rule1.getHead().getLiterals().forEach(literal -> query.add(Instantiator.instantiateQuery(literal)));
-		rule2.getPositiveBodyLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
-		rule2.getHead().getLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
-
-		return !BCQ.query(instance, query);
-	}
-
-	// TODO This should be in RuleImpl
-	static public boolean isRuleApplicable(Rule rule) {
-		List<Literal> instance = new ArrayList<>();
-		List<Literal> query = new ArrayList<>();
-		rule.getPositiveBodyLiterals().forEach(literal -> instance.add(Instantiator.instantiateFact(literal)));
-		rule.getHead().getLiterals().forEach(literal -> query.add(Instantiator.instantiateQuery(literal)));
-
-		return !BCQ.query(instance, query);
+	static public boolean isApplicable(Rule rule) throws ParsingException, IOException {
+		List<Fact> instance = Transform.intoFacts(Transform.uni2cons(rule.getPositiveBodyLiterals().getLiterals()));
+		List<PositiveLiteral> query = Transform
+				.intoPositiveLiterals(Transform.exi2uni(Transform.uni2cons(rule.getHead().getLiterals())));
+		return !BCQA.query2(instance, query);
 	}
 
 	/*
-	 * Remove head atoms that appear (positively) in the body of the same rule.
-	 *
-	 * TODO This should be in RuleImpl and/or RuleParser.
-	 *
-	 * @see containsRepeatedAtoms
-	 */
-	static public Rule cleanRepeatedAtoms(Rule rule) {
-		Set<PositiveLiteral> positiveBody = new HashSet<>(rule.getPositiveBodyLiterals().getLiterals());
-		return Expressions.makeRule(Expressions.makeConjunction(rule.getHead().getLiterals().stream()
-				.filter(x -> !positiveBody.contains(x)).collect(Collectors.toList())), rule.getBody());
-	}
-
-	/*
-	 * True if a head atom appears (positively) in the body of the same rule.
+	 * True if a rule contains any repeated literal
 	 *
 	 * TODO This should be in RuleImpl and/or RuleParser.
 	 */
 	static public boolean containsRepeatedAtoms(Rule rule) {
-		Set<PositiveLiteral> positiveBody = new HashSet<>(rule.getPositiveBodyLiterals().getLiterals());
-		for (PositiveLiteral literal : rule.getHead().getLiterals()) {
-			if (positiveBody.contains(literal)) {
+		Set<Literal> literals = new HashSet<>();
+
+		for (Literal l : rule.getBody().getLiterals()) {
+			if (literals.contains(l)) {
 				return true;
+			} else {
+				literals.add(l);
+			}
+		}
+
+		for (Literal l : rule.getHead().getLiterals()) {
+			if (literals.contains(l)) {
+				return true;
+			} else {
+				literals.add(l);
 			}
 		}
 		return false;
 	}
+
+	/*
+	 * Append a suffix to every variable name. The suffix is a dash and the hashCode
+	 * of the Rule.
+	 */
+	static public Rule renameVariablesWithSufix(Rule rule, int n) {
+		String suffix = "-" + n;
+		Substitution s = new Substitution();
+		rule.getVariables().forEach(var -> {
+			String newName = var.getName() + suffix;
+			s.add(var, var.isExistentialVariable() ? Expressions.makeExistentialVariable(newName)
+					: Expressions.makeUniversalVariable(newName));
+		});
+		return Substitute.rule(s, rule);
+	}
+
 }

@@ -21,6 +21,9 @@ package org.semanticweb.rulewerk.utils;
  */
 
 import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
@@ -32,57 +35,99 @@ import org.semanticweb.rulewerk.parser.RuleParser;
 public class RuleUtilTest {
 
 	@Test
-	public void isRuleApplicable_001() throws ParsingException {
+	public void isApplicable_001() throws ParsingException, IOException {
 		Rule qy_px = RuleParser.parseRule("q(!Y) :- p(?X) .");
-
-		assertTrue(RuleUtil.isRuleApplicable(qy_px));
+		assertTrue(RuleUtil.isApplicable(qy_px));
 	}
 
 	@Test
-	public void isRuleApplicable_002() throws ParsingException {
+	public void isApplicable_002() throws ParsingException, IOException {
 		Rule qc_qc = RuleParser.parseRule("q(c) :- q(c) .");
-
-		assertFalse(RuleUtil.isRuleApplicable(qc_qc));
+		assertFalse(RuleUtil.isApplicable(qc_qc));
 	}
 
 	@Test
-	public void isRuleApplicable_003() throws ParsingException {
+	public void isApplicable_003() throws ParsingException, IOException {
 		Rule qy_qc = RuleParser.parseRule("q(!Y) :- q(c) .");
-
-		assertFalse(RuleUtil.isRuleApplicable(qy_qc));
+		assertFalse(RuleUtil.isApplicable(qy_qc));
 	}
 
 	@Test
-	public void isRuleApplicable_004() throws ParsingException {
+	public void isApplicable_004() throws ParsingException, IOException {
 		Rule qc_qx = RuleParser.parseRule("q(c) :- q(?X) .");
-
-		assertTrue(RuleUtil.isRuleApplicable(qc_qx));
+		assertTrue(RuleUtil.isApplicable(qc_qx));
 	}
 
 	@Test
-	public void isRuleApplicable_005() throws ParsingException {
+	public void isApplicable_005() throws ParsingException, IOException {
 		Rule qy_qx = RuleParser.parseRule("q(!Y) :- q(?X) .");
-
-		assertFalse(RuleUtil.isRuleApplicable(qy_qx));
+		assertFalse(RuleUtil.isApplicable(qy_qx));
 	}
 
 	@Test
-	public void isRuleApplicable_006() throws ParsingException {
+	public void isApplicable_006() throws ParsingException, IOException {
 		Rule qx_qx = RuleParser.parseRule("q(?X) :- q(?X) .");
-
-		assertFalse(RuleUtil.isRuleApplicable(qx_qx));
+		assertFalse(RuleUtil.isApplicable(qx_qx));
 	}
 
 	@Test
-	public void isRule1Applicable_001() throws ParsingException {
-		Rule qx_px = RuleParser.parseRule("q(?X) :- p(?X) .");
-		Rule rx_qx = RuleParser.parseRule("r(?X) :- q(?X) .");
-
-		assertTrue(RuleUtil.isRule1Applicable(qx_px, rx_qx));
-		assertTrue(RuleUtil.isRule1Applicable(rx_qx, qx_px));
+	public void isApplicable_007() throws ParsingException, IOException {
+		Rule pxz_pxy = RuleParser.parseRule("p(?X,!Z) :- p(?X,?Y) .");
+		assertFalse(RuleUtil.isApplicable(pxz_pxy));
 	}
 
-	// TODO add tests for isRule1Applicable
-	// TODO add tests for cleanRepeatedAtoms
-	// TODO add tests for containsRepeatedAtoms
+	@Test
+	public void isApplicable_008() throws ParsingException, IOException {
+		Rule qxy_pxy = RuleParser.parseRule("q(?X,?Y) :- p(?X,?Y) .");
+		assertTrue(RuleUtil.isApplicable(qxy_pxy));
+	}
+
+	@Test
+	public void isApplicable_009() throws ParsingException, IOException {
+		Rule pxz_qxy = RuleParser.parseRule("p(?X,!Z) :- q(?X,?Y) .");
+		assertTrue(RuleUtil.isApplicable(pxz_qxy));
+	}
+
+	@Test
+	public void containsRepeatedAtoms_001() throws ParsingException, IOException {
+		Rule qy_px = RuleParser.parseRule("q(!Y) :- p(?X) .");
+		assertFalse(RuleUtil.containsRepeatedAtoms(qy_px));
+	}
+
+	@Test
+	public void containsRepeatedAtoms_002() throws ParsingException, IOException {
+		Rule qc_qc = RuleParser.parseRule("q(c) :- q(c) .");
+		assertTrue(RuleUtil.containsRepeatedAtoms(qc_qc));
+	}
+
+	@Test
+	public void containsRepeatedAtoms_003() throws ParsingException, IOException {
+		Rule qy_qc = RuleParser.parseRule("q(!Y) :- q(c) .");
+		assertFalse(RuleUtil.containsRepeatedAtoms(qy_qc));
+	}
+
+	@Test
+	public void containsRepeatedAtoms_004() throws ParsingException, IOException {
+		Rule qc_qx = RuleParser.parseRule("q(c) :- q(?X) .");
+		assertFalse(RuleUtil.containsRepeatedAtoms(qc_qx));
+	}
+
+	@Test
+	public void containsRepeatedAtoms_005() throws ParsingException, IOException {
+		Rule qy_qx = RuleParser.parseRule("q(!Y) :- q(?X) .");
+		assertFalse(RuleUtil.containsRepeatedAtoms(qy_qx));
+	}
+
+	@Test
+	public void containsRepeatedAtoms_006() throws ParsingException, IOException {
+		Rule qx_qx = RuleParser.parseRule("q(?X) :- q(?X) .");
+		assertTrue(RuleUtil.containsRepeatedAtoms(qx_qx));
+	}
+
+	@Test
+	public void containsRepeatedAtoms_007() throws ParsingException, IOException {
+		Rule pxz_pxy = RuleParser.parseRule("p(?X,!Z) :- p(?X,?Y) .");
+		assertFalse(RuleUtil.containsRepeatedAtoms(pxz_pxy));
+	}
+
 }
