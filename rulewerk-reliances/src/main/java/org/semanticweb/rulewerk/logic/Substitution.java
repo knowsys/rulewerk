@@ -1,54 +1,57 @@
 package org.semanticweb.rulewerk.logic;
 
-import java.util.ArrayList;
-import java.util.List;
+/*-
+ * #%L
+ * Rulewerk Reliances
+ * %%
+ * Copyright (C) 2018 - 2021 Rulewerk Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
-import org.apache.commons.lang3.Validate;
-import org.semanticweb.rulewerk.core.model.api.Literal;
-import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
-import org.semanticweb.rulewerk.core.model.api.Rule;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.semanticweb.rulewerk.core.model.api.Term;
-import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.model.api.Variable;
 
 public class Substitution {
+	final private Map<Variable, Term> substitution;
 
-	/*
-	 * We do not replace universals with existentials.
-	 */
-	static public Term apply(Unifier unifier, Term term) {
-		Validate.isTrue(unifier.getSuccess());
-
-		Term value = unifier.getValue(term);
-		if (term.isUniversalVariable() && value.isExistentialVariable()) {
-			return Expressions.makeUniversalVariable(value.getName());
-		}
-		return value;
+	public Substitution() {
+		substitution = new HashMap<>();
 	}
 
-	static public Literal apply(Unifier unifier, Literal literal) {
-		Validate.isTrue(unifier.getSuccess());
-
-		List<Term> newTerms = new ArrayList<>();
-		for (Term term : literal.getArguments()) {
-			newTerms.add(apply(unifier, term));
+	public void add(Variable key, Term value) {
+		if (key.equals(value)) {
+			throw new IllegalArgumentException("Pairs key-value should be different in Substutions");
 		}
-		if (literal.isNegated()) {
-			return Expressions.makeNegativeLiteral(literal.getPredicate(), newTerms);
-		} else {
-			return Expressions.makePositiveLiteral(literal.getPredicate(), newTerms);
-		}
+		substitution.put(key, value);
 	}
 
-	static public Rule apply(Unifier unifier, Rule rule) {
-		Validate.isTrue(unifier.getSuccess());
+	public boolean contains(Term key) {
+		return substitution.containsKey(key);
+	}
 
-		List<Literal> newBody = new ArrayList<>();
-		rule.getBody().forEach(literal -> newBody.add(apply(unifier, literal)));
+	public Term getValue(Term key) {
+		return substitution.containsKey(key) ? getValue(substitution.get(key)) : key;
+	}
 
-		List<PositiveLiteral> newHead = new ArrayList<>();
-		rule.getHead().forEach(literal -> newHead.add((PositiveLiteral) apply(unifier, literal)));
-
-		return Expressions.makeRule(Expressions.makeConjunction(newHead), Expressions.makeConjunction(newBody));
+	@Override
+	public String toString() {
+		return substitution.keySet().stream().map(k -> k + ":" + substitution.get(k)).collect(Collectors.joining(","));
 	}
 
 }
