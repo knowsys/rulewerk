@@ -35,9 +35,9 @@ import org.semanticweb.rulewerk.core.model.api.Variable;
 
 public class LiteralList {
 
-	static public List<ExistentialVariable> getExistentialVariables(List<? extends Literal> literals) {
+	static public <T> List<ExistentialVariable> getExistentialVariables(List<T> literals) {
 		List<ExistentialVariable> result = new ArrayList<>();
-		literals.forEach(literal -> result.addAll(literal.getExistentialVariables().collect(Collectors.toList())));
+		literals.forEach(lit -> result.addAll(((Literal) lit).getExistentialVariables().collect(Collectors.toList())));
 		return result;
 	}
 
@@ -53,15 +53,7 @@ public class LiteralList {
 		return result;
 	}
 
-	static public List<String> getExistentialVariableNames(List<? extends Literal> literals) {
-		return getExistentialVariables(literals).stream().map(var -> var.getName()).collect(Collectors.toList());
-	}
-
-	static public List<String> getUniversalVariableNames(List<? extends Literal> literals) {
-		return getUniversalVariables(literals).stream().map(var -> var.getName()).collect(Collectors.toList());
-	}
-
-	// TODO this should be in filter
+	@Deprecated
 	static public List<PositiveLiteral> filterLiteralsByExistentialVariables(List<PositiveLiteral> literals,
 			List<ExistentialVariable> existentialVariables) {
 		List<PositiveLiteral> result = new ArrayList<>();
@@ -78,6 +70,7 @@ public class LiteralList {
 		return result;
 	}
 
+	@Deprecated
 	static public List<Integer> idxOfLiteralsContainingExistentialVariables(List<PositiveLiteral> literals,
 			List<ExistentialVariable> existentialVariables) {
 		List<Integer> result = new ArrayList<>();
@@ -99,6 +92,7 @@ public class LiteralList {
 	 * @param literals List of literals
 	 * @return map {predicate -> [literals]}
 	 */
+	@Deprecated
 	static public Map<Predicate, List<Integer>> getPredicate2Literals(List<PositiveLiteral> literals) {
 		Map<Predicate, List<Integer>> result = new HashMap<>();
 
