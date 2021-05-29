@@ -29,16 +29,24 @@ import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
 /**
- * https://github.com/karmaresearch/vlog/issues/50
+ * https://github.com/karmaresearch/vlog/issues/51
  * 
  * @author Irina Dragoste
  *
  */
-public class VLogIssue50IT extends VLogIssue {
+public class VLogIssue51IT extends VLogIssue {
 
 	@Test
 	public void ruleset1_succeeds_noCrash() throws ParsingException, IOException {
-		try (final Reasoner reasoner = this.getReasonerWithKbFromResource("vlog/50.rls")) {
+		try (final Reasoner reasoner = this.getReasonerWithKbFromResource("vlog/51-1.rls")) {
+			final boolean finished = reasoner.reason();
+			assertTrue(finished);
+		}
+	}
+
+	@Test
+	public void ruleset2_succeeds_noCrash() throws ParsingException, IOException {
+		try (final Reasoner reasoner = this.getReasonerWithKbFromResource("vlog/51-2.rls")) {
 			final boolean finished = reasoner.reason();
 			assertTrue(finished);
 		}
