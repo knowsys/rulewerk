@@ -33,21 +33,21 @@ import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
 /**
- * https://github.com/karmaresearch/vlog/issues/72
+ * https://github.com/karmaresearch/vlog/issues/70
  * 
  * @author Irina Dragoste
  *
  */
-public class VLogIssue70IT extends VLogIssue {
+public class VLogIssue72IT extends VLogIssue {
 
 	@Test
 	public void ruleset_succeeds() throws ParsingException, IOException {
-		try (final Reasoner reasoner = this.getReasonerWithKbFromResource("vlog/72.rls")) {
+		try (final Reasoner reasoner = this.getReasonerWithKbFromResource("vlog/70.rls")) {
 			reasoner.reason();
 
 			final Set<Fact> inferences = reasoner.getInferences().collect(Collectors.toSet());
 			final Set<Fact> expectedInferences = new HashSet<>(
-					this.parseKbFromResource("vlog/72-expected.rls").getFacts());
+					this.parseKbFromResource("vlog/70-expected.rls").getFacts());
 			assertEquals(expectedInferences, inferences);
 		}
 	}

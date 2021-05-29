@@ -1,0 +1,7 @@
+Le(i1500, i2020) . 
+ResultDeg(i0, i0, i0, i0, i0, i0, i2020) .
+
+Le(i1500, i2050) . 
+ResultDeg(i0, i660, i0, i0, i660, i0, i2050) .
+
+Goal(?x0) :- Le(i1500,?x0),ResultDeg(?x1,?x2,?x3,?x4,?x5,?x3,?x0).
