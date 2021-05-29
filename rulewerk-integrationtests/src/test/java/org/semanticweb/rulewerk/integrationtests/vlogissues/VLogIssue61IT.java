@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
-import org.semanticweb.rulewerk.core.model.api.QueryResult;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
@@ -36,14 +35,14 @@ import org.semanticweb.rulewerk.parser.RuleParser;
 
 public class VLogIssue61IT extends VLogIssue {
 
-	boolean hasCorrectAnswers(QueryResultIterator answers) {
+	boolean hasCorrectAnswers(final QueryResultIterator answers) {
 		int numAnswers = 0;
 		boolean hasEqualNullsAnswer = false;
 
 		while (answers.hasNext()) {
 			++numAnswers;
 
-			List<Term> terms = answers.next().getTerms();
+			final List<Term> terms = answers.next().getTerms();
 			hasEqualNullsAnswer = hasEqualNullsAnswer || (terms.get(1).equals(terms.get(2)));
 		}
 
@@ -52,21 +51,21 @@ public class VLogIssue61IT extends VLogIssue {
 
 	@Test
 	public void ruleset01_succeeds() throws ParsingException, IOException {
-		try (final Reasoner reasoner = getReasonerWithKbFromResource("vlog/61-1.rls")) {
+		try (final Reasoner reasoner = this.getReasonerWithKbFromResource("vlog/61-1.rls")) {
 			reasoner.reason();
 
-			PositiveLiteral query = RuleParser.parsePositiveLiteral("q(?X,?Y,?Z)");
-			assertTrue(hasCorrectAnswers(reasoner.answerQuery(query, true)));
+			final PositiveLiteral query = RuleParser.parsePositiveLiteral("q(?X,?Y,?Z)");
+			assertTrue(this.hasCorrectAnswers(reasoner.answerQuery(query, true)));
 		}
 	}
 
 	@Test
 	public void ruleset02_succeeds() throws ParsingException, IOException {
-		try (final Reasoner reasoner = getReasonerWithKbFromResource("vlog/61-2.rls")) {
+		try (final Reasoner reasoner = this.getReasonerWithKbFromResource("vlog/61-2.rls")) {
 			reasoner.reason();
 
-			PositiveLiteral query = RuleParser.parsePositiveLiteral("q(?X,?Y,?Z)");
-			assertTrue(hasCorrectAnswers(reasoner.answerQuery(query, true)));
+			final PositiveLiteral query = RuleParser.parsePositiveLiteral("q(?X,?Y,?Z)");
+			assertTrue(this.hasCorrectAnswers(reasoner.answerQuery(query, true)));
 		}
 	}
 }
