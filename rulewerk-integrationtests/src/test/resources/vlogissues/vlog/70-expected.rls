@@ -1,0 +1,12 @@
+    Leq(i0, i260) .
+    Leq(i0, i13) . 
+    Leq(i13, i260) .
+    Leq(i0, i0) .
+    Le(i0, i260) .
+    Le(i0, i13) .
+    Le(i13, i260) .
+    Eq(i0, i0) .
+    KPa(i0, i0) .
+    KPa(i13, i13) .
+    
+

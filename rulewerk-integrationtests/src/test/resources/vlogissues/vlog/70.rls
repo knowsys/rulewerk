@@ -1,0 +1,8 @@
+Le(i0,i13).  
+Le(i13,i260).  
+Leq(?x0,?x1) :- Le(?x0,?x1).
+KPa(?x0,?x0) :- Leq(i0,?x0),Leq(?x0,i260).
+
+Eq(i0,i0). 
+Le(i0,i260).
+Leq(?x0,?x1) :- Eq(?x0,?x1).
