@@ -1,0 +1,13 @@
+B1_(a, b, c, d, provb1) .
+B2_(a, a, c, provb2) .
+H1_(a, n1_2_0, n1_2_0, n1_3_0, provH1) .
+H2_(n1_3_0, n1_5_0, provH2) .
+H3_(b, provH3) .
+H4_(n1_2_0, provH4) .
+inst(a, b, c, d, i, rule0) .
+conc(i, provH1) .
+conc(i, provH2) .
+conc(i, provH3) .
+conc(i, provH4) .
+prec(provb1, i) .
+prec(provb2, i) .

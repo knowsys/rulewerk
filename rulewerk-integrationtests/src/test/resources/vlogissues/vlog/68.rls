@@ -1,0 +1,17 @@
+B1_(a, b, c, d, provb1) .
+B2_(a, a, c, provb2) .
+H1_(a, n1_2_0, n1_2_0, n1_3_0, provH1) .
+H2_(n1_3_0, n1_5_0, provH2) .
+H3_(b, provH3) .
+H4_(n1_2_0, provH4) .
+inst(a, b, c, d, i, rule0) .
+
+prec(?b1, ?i), prec(?b2, ?i), conc(?i, ?h1), conc(?i, ?h2), conc(?i, ?h3), conc(?i, ?h4) :- B1_(?x1, ?x2, ?y1, ?y2, ?b1), B2_(?x1, ?x1, ?y1, ?b2), H1_(?x1, ?z1, ?z1, ?z2, ?h1), H2_(?z2, ?z3, ?h2), H3_(?x2, ?h3), H4_(?z1, ?h4), inst(?x1, ?x2, ?y1, ?y2, ?i, rule0) .
+
+% Expected new inferences:
+% conc(i, provH1) .
+% conc(i, provH2) .
+% conc(i, provH3) .
+% conc(i, provH4) .
+% prec(provb1, i) .
+% prec(provb2, i) .
