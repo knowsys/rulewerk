@@ -111,12 +111,19 @@ void base() throws PrefixDeclarationException : {
 	}
 }
 
-void prefix() throws PrefixDeclarationException : {
+String prefixName() : {
 	Token pn;
+} {
+	pn = < COLON > { return pn.image; }
+  | pn = < PNAME_NS > { return pn.image; }
+}
+
+void prefix() throws PrefixDeclarationException : {
+	String pn;
 	String iri;
 } {
-	< PREFIX > pn = < PNAME_NS > iri = absoluteIri() < DOT > {
-		setPrefix(pn.image, iri);
+	< PREFIX > pn = prefixName() iri = absoluteIri() < DOT > {
+		setPrefix(pn, iri);
 	}
 }
 
@@ -174,7 +181,7 @@ Command command() throws PrefixDeclarationException : {
     | LOOKAHEAD(predicateName() < ARITY >) predicateName = predicateName() arity = < ARITY > < COLON > arguments = Arguments() < DOT > {
 	  		arguments.addFirst(Argument.term(Expressions.makeDatatypeConstant(predicateName + "[" + arity.image + "]:", PrefixDeclarationRegistry.XSD_STRING)));
 	  		return new Command(name.image,arguments);
-	  	}  	
+	  	}
     | arguments = Arguments() < DOT > { return new Command(name.image,arguments); }
 	| pn = < PNAME_NS > arguments = Arguments() < DOT > {
 	  		arguments.addFirst(Argument.term(Expressions.makeDatatypeConstant(pn.image, PrefixDeclarationRegistry.XSD_STRING)));

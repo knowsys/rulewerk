@@ -1,6 +1,12 @@
 Rulewerk Release Notes
 ======================
 
+Rulewerk v0.9.0
+---------------
+
+Bugfixes:
+* The parser now accepts empty prefixes, as allowed by, e.g., RDF Turtle. (#206)
+
 Rulewerk v0.8.0
 ---------------
 

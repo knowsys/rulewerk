@@ -73,35 +73,35 @@ public class RuleParserTest implements ParserTestUtils {
 	private final Rule rule2 = Expressions.makeRule(this.head, this.body2);
 
 	@Test
-	public void testExplicitIri() throws ParsingException {
+	public void parse_explicitIri_succeeds() throws ParsingException {
 		final String input = "<http://example.org/s>(<http://example.org/c>) .";
 		final ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		assertEquals(Arrays.asList(this.fact1), statements);
 	}
 
 	@Test
-	public void testPrefixResolution() throws ParsingException {
+	public void parse_withPrefix_succeeds() throws ParsingException {
 		final String input = "@prefix ex: <http://example.org/> . ex:s(ex:c) .";
 		final ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		assertEquals(Arrays.asList(this.fact1), statements);
 	}
 
 	@Test
-	public void testBaseRelativeResolution() throws ParsingException {
+	public void parse_withBaseRelative_succeeds() throws ParsingException {
 		final String input = "@base <http://example.org/> . <s>(<c>) .";
 		final ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		assertEquals(Arrays.asList(this.fact1), statements);
 	}
 
 	@Test
-	public void testBaseResolution() throws ParsingException {
+	public void parse_withBase_succeeds() throws ParsingException {
 		final String input = "@base <http://example.org/> . s(c) .";
 		final ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		assertEquals(Arrays.asList(this.fact1), statements);
 	}
 
 	@Test
-	public void testNoBaseRelativeIri() throws ParsingException {
+	public void parse_withoutBaseRelative_succeeds() throws ParsingException {
 		final String input = "s(c) .";
 		final ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
 		final PositiveLiteral atom = Expressions.makePositiveLiteral("s", Expressions.makeAbstractConstant("c"));
@@ -109,21 +109,28 @@ public class RuleParserTest implements ParserTestUtils {
 	}
 
 	@Test(expected = ParsingException.class)
-	public void testPrefixConflict() throws ParsingException {
+	public void parse_prefixConflict_throws() throws ParsingException {
 		final String input = "@prefix ex: <http://example.org/> . @prefix ex: <http://example.org/2/> . s(c) .";
 		RuleParser.parse(input);
 	}
 
 	@Test(expected = ParsingException.class)
-	public void testBaseConflict() throws ParsingException {
+	public void parse_baseConflict_throws() throws ParsingException {
 		final String input = "@base <http://example.org/> . @base <http://example.org/2/> . s(c) .";
 		RuleParser.parse(input);
 	}
 
 	@Test(expected = ParsingException.class)
-	public void testMissingPrefix() throws ParsingException {
+	public void parse_undefinedPrefix_throws() throws ParsingException {
 		final String input = "ex:s(c) .";
 		RuleParser.parse(input);
+	}
+
+	@Test
+	public void parse_emptyPrefix_succeeds() throws ParsingException {
+		final String input = "@prefix : <http://example.org/> . :s(:c) .";
+		final ArrayList<Statement> statements = new ArrayList<>(RuleParser.parse(input).getStatements());
+		assertEquals(Arrays.asList(this.fact1), statements);
 	}
 
 	@Test(expected = ParsingException.class)
