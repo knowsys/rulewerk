@@ -95,7 +95,7 @@ public class VLogReasoner implements Reasoner {
 	 */
 	private boolean reasoningCompleted;
 
-	public VLogReasoner(KnowledgeBase knowledgeBase) {
+	public VLogReasoner(final KnowledgeBase knowledgeBase) {
 		super();
 		this.knowledgeBase = knowledgeBase;
 		this.knowledgeBase.addListener(this);
@@ -121,7 +121,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setReasoningTimeout(Integer seconds) {
+	public void setReasoningTimeout(final Integer seconds) {
 		this.validateNotClosed();
 		if (seconds != null) {
 			Validate.isTrue(seconds > 0, "Only strictly positive timeout period allowed!", seconds);
@@ -135,7 +135,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setRuleRewriteStrategy(RuleRewriteStrategy ruleRewritingStrategy) {
+	public void setRuleRewriteStrategy(final RuleRewriteStrategy ruleRewritingStrategy) {
 		this.validateNotClosed();
 		Validate.notNull(ruleRewritingStrategy, "Rewrite strategy cannot be null!");
 		this.ruleRewriteStrategy = ruleRewritingStrategy;
@@ -272,7 +272,7 @@ public class VLogReasoner implements Reasoner {
 	 * @throws IncompatiblePredicateArityException to indicate a problem
 	 *                                             (non-checked exception)
 	 */
-	void validateDataSourcePredicateArity(Predicate predicate, DataSource dataSource)
+	void validateDataSourcePredicateArity(final Predicate predicate, final DataSource dataSource)
 			throws IncompatiblePredicateArityException {
 		if (dataSource == null) {
 			return;
@@ -383,7 +383,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public QueryResultIterator answerQuery(PositiveLiteral query, boolean includeNulls) {
+	public QueryResultIterator answerQuery(final PositiveLiteral query, final boolean includeNulls) {
 		this.validateBeforeQuerying(query);
 
 		final boolean filterBlanks = !includeNulls;
@@ -436,9 +436,9 @@ public class VLogReasoner implements Reasoner {
 	 * @return
 	 * @throws NotStartedException
 	 */
-	private long[] extractTerms(karmaresearch.vlog.Term[] terms) throws NotStartedException {
-		ArrayList<String> variables = new ArrayList<>();
-		long[] longTerms = new long[terms.length];
+	private long[] extractTerms(final karmaresearch.vlog.Term[] terms) throws NotStartedException {
+		final ArrayList<String> variables = new ArrayList<>();
+		final long[] longTerms = new long[terms.length];
 		for (int i = 0; i < terms.length; i++) {
 			if (terms[i].getTermType() == karmaresearch.vlog.Term.TermType.VARIABLE) {
 				boolean found = false;
@@ -461,7 +461,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public QueryAnswerCount countQueryAnswers(PositiveLiteral query, boolean includeNulls) {
+	public QueryAnswerCount countQueryAnswers(final PositiveLiteral query, final boolean includeNulls) {
 		this.validateBeforeQuerying(query);
 
 		final boolean filterBlanks = !includeNulls;
@@ -470,9 +470,9 @@ public class VLogReasoner implements Reasoner {
 		long result;
 		try {
 			result = this.vLog.querySize(vLogAtom, true, filterBlanks);
-		} catch (NotStartedException e) {
+		} catch (final NotStartedException e) {
 			throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
-		} catch (NonExistingPredicateException e) {
+		} catch (final NonExistingPredicateException e) {
 			return this.createEmptyResultCount(query);
 		}
 		this.logWarningOnCorrectness(this.correctness);
@@ -518,7 +518,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public Correctness forEachInference(InferenceAction action) throws IOException {
+	public Correctness forEachInference(final InferenceAction action) throws IOException {
 		this.validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 			throw new ReasonerStateException(this.reasonerState,
@@ -573,7 +573,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setLogLevel(LogLevel logLevel) {
+	public void setLogLevel(final LogLevel logLevel) {
 		this.validateNotClosed();
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
@@ -586,7 +586,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void setLogFile(String filePath) {
+	public void setLogFile(final String filePath) {
 		this.validateNotClosed();
 		this.vLog.setLogFile(filePath);
 	}
@@ -615,8 +615,11 @@ public class VLogReasoner implements Reasoner {
 	public boolean isMFC() {
 		this.validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Checking rules acyclicity is not allowed before loading!");
+			try {
+				this.load();
+			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/rulewerk/issues/128
+				throw new RulewerkRuntimeException(e);
+			}
 		}
 
 		CyclicCheckResult checkCyclic;
@@ -643,7 +646,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void onStatementsAdded(List<Statement> statementsAdded) {
+	public void onStatementsAdded(final List<Statement> statementsAdded) {
 		// TODO more elaborate materialisation state handling
 
 		this.updateReasonerToKnowledgeBaseChanged();
@@ -653,7 +656,7 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void onStatementAdded(Statement statementAdded) {
+	public void onStatementAdded(final Statement statementAdded) {
 		// TODO more elaborate materialisation state handling
 
 		this.updateReasonerToKnowledgeBaseChanged();
@@ -663,13 +666,13 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public void onStatementRemoved(Statement statementRemoved) {
+	public void onStatementRemoved(final Statement statementRemoved) {
 		this.updateReasonerToKnowledgeBaseChanged();
 		this.updateCorrectnessOnStatementsRemoved();
 	}
 
 	@Override
-	public void onStatementsRemoved(List<Statement> statementsRemoved) {
+	public void onStatementsRemoved(final List<Statement> statementsRemoved) {
 		this.updateReasonerToKnowledgeBaseChanged();
 		this.updateCorrectnessOnStatementsRemoved();
 	}
@@ -755,7 +758,7 @@ public class VLogReasoner implements Reasoner {
 		return this.reasonerState;
 	}
 
-	void setReasonerState(ReasonerState reasonerState) {
+	void setReasonerState(final ReasonerState reasonerState) {
 		this.reasonerState = reasonerState;
 	}
 }
