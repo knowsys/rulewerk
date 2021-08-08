@@ -34,6 +34,7 @@ import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.api.Variable;
 import org.semanticweb.rulewerk.core.model.implementation.PositiveLiteralImpl;
+import org.semanticweb.rulewerk.owlapi.OwlFeatureNotSupportedException.FeatureType;
 
 /**
  * Abstract base class for converters that create rules from OWL class
@@ -215,7 +216,8 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 		}
 		if (converter.head.hasPositiveAtoms()) {
 			if (this.head.hasPositiveAtoms()) {
-				throw new OwlFeatureNotSupportedException("Union in superclass positions is not supported in rules.");
+				throw new OwlFeatureNotSupportedException("Union in superclass positions is not supported in rules.",
+						FeatureType.OBJECT);
 			} else {
 				this.head = converter.head;
 			}

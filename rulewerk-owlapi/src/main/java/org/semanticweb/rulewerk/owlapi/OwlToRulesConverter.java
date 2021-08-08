@@ -29,11 +29,13 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Rule;
+import org.semanticweb.rulewerk.owlapi.OwlFeatureNotSupportedException.FeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for converting OWL ontologies to rules.
+ * Class for converting OWL ontologies to rules. Note that OWL Axioms containing
+ * Data features (data types and data properties) are ignored in the conversion.
  *
  * @author Markus Kroetzsch
  *
@@ -45,7 +47,6 @@ public class OwlToRulesConverter {
 	final OwlAxiomToRulesConverter owlAxiomToRulesConverter = new OwlAxiomToRulesConverter();
 
 	private final boolean failOnUnsupported;
-	private int unsupportedAxiomsCount = 0;
 	private final List<OWLAxiom> unsupportedAxioms = new ArrayList<>();
 
 	/**
@@ -56,7 +57,7 @@ public class OwlToRulesConverter {
 	 *                          encountering axioms that cannot be converted to
 	 *                          rules or facts.
 	 */
-	public OwlToRulesConverter(boolean failOnUnsupported) {
+	public OwlToRulesConverter(final boolean failOnUnsupported) {
 		this.failOnUnsupported = failOnUnsupported;
 	}
 
@@ -71,7 +72,9 @@ public class OwlToRulesConverter {
 
 	/**
 	 * Converts the given OWL ontology to rules and facts, and adds the result to
-	 * the internal buffer of rules and facts for later retrieval.
+	 * the internal buffer of rules and facts for later retrieval. Note that OWL
+	 * Axioms containing Data features (data types and data properties) are ignored
+	 * in the conversion.
 	 *
 	 * @param owlOntology the ontology
 	 */
@@ -80,15 +83,19 @@ public class OwlToRulesConverter {
 		owlOntology.axioms().forEach(owlAxiom -> {
 			try {
 				owlAxiom.accept(this.owlAxiomToRulesConverter);
-			} catch (OwlFeatureNotSupportedException e) {
-				if (failOnUnsupported) {
-					LOGGER.error(e.getMessage());
-					throw e;
+			} catch (final OwlFeatureNotSupportedException e) {
+				if (e.getFeatureType().equals(FeatureType.DATA)) {
+					LOGGER.warn("Ignoring axiom with data features: " + owlAxiom);
 				} else {
-					LOGGER.warn(e.getMessage());
-					unsupportedAxiomsCount++;
-					if (unsupportedAxioms.size() < 10) {
-						unsupportedAxioms.add(owlAxiom);
+
+					if (this.failOnUnsupported) {
+						LOGGER.error(e.getMessage());
+						throw e;
+					} else {
+						LOGGER.warn(e.getMessage());
+//					if (unsupportedAxioms.size() < 10) {
+						this.unsupportedAxioms.add(owlAxiom);
+//					}
 					}
 				}
 			}
@@ -118,25 +125,32 @@ public class OwlToRulesConverter {
 	}
 
 	/**
-	 * Returns the number of OWL axioms that could not be converted into rules. This
-	 * number is only computed if the object is not configured to fail when
-	 * encountering the first unsupported axiom.
+	 * Returns unsupported axioms encountered during the conversion.
 	 * 
-	 * @return total number of unsupported axioms
+	 * @return list of unsupported axioms that were encountered
 	 */
-	public int getUnsupportedAxiomsCount() {
-		return unsupportedAxiomsCount;
+	public List<OWLAxiom> getUnsupportedAxioms() {
+		return this.unsupportedAxioms;
 	}
 
 	/**
-	 * Returns up to 10 unsupported axioms encountered during the conversion. The
-	 * complete number of unsupported axioms can be queried using
-	 * {@link #getUnsupportedAxiomsCount()}.
+	 * Returns the first 10 unsupported axioms encountered during the conversion.
 	 * 
-	 * @return list of first ten unsupported axioms that were encountered
+	 * @return list of unsupported axioms that were encountered
 	 */
 	public List<OWLAxiom> getUnsupportedAxiomsSample() {
-		return unsupportedAxioms;
+		if (this.unsupportedAxioms.size() < 10) {
+			return this.unsupportedAxioms;
+		}
+		final ArrayList<OWLAxiom> sample = new ArrayList<>();
+		for (int i = 0; i < 10; i++) {
+			sample.add(this.unsupportedAxioms.get(0));
+		}
+		return sample;
+	}
+
+	public int getUnsupportedAxiomsCount() {
+		return this.unsupportedAxioms.size();
 	}
 
 }

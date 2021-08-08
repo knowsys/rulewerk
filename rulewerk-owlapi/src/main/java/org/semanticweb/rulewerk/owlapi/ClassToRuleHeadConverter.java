@@ -45,6 +45,7 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.PositiveLiteralImpl;
+import org.semanticweb.rulewerk.owlapi.OwlFeatureNotSupportedException.FeatureType;
 
 /**
  * Helper class for transforming OWL class expressions that occur as
@@ -112,7 +113,7 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectHasValue ce) {
-		final Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller(), parent.skolemization);
+		final Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller(), this.parent.skolemization);
 		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, term, this.head);
 	}
 
@@ -124,20 +125,22 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 			this.handleObjectSomeValues(ce.getProperty(), ce.getFiller());
 		} else {
 			throw new OwlFeatureNotSupportedException(
-					"Min cardinality restrictions with values greater than 1 in superclass positions are not supported in rules.");
+					"Min cardinality restrictions with values greater than 1 in superclass positions are not supported in rules.",
+					FeatureType.OBJECT);
 		}
 	}
 
 	@Override
 	public void visit(final OWLObjectExactCardinality ce) {
 		throw new OwlFeatureNotSupportedException(
-				"Exact cardinality restrictions in superclass positions are not supported in rules.");
+				"Exact cardinality restrictions in superclass positions are not supported in rules.",
+				FeatureType.OBJECT);
 	}
 
 	@Override
 	public void visit(final OWLObjectMaxCardinality ce) {
 		throw new OwlFeatureNotSupportedException(
-				"Max cardinality restrictions in superclass positions are not supported in rules.");
+				"Max cardinality restrictions in superclass positions are not supported in rules.", FeatureType.OBJECT);
 	}
 
 	@Override
@@ -149,37 +152,38 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 	@Override
 	public void visit(final OWLObjectOneOf ce) {
 		throw new OwlFeatureNotSupportedException(
-				"Nominal restrictions in superclass positions are not supported in rules, due to lack of equality support.");
+				"Nominal restrictions in superclass positions are not supported in rules, due to lack of equality support.",
+				FeatureType.OBJECT);
 	}
 
 	@Override
 	public void visit(final OWLDataSomeValuesFrom ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
 	public void visit(final OWLDataAllValuesFrom ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
 	public void visit(final OWLDataHasValue ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
 	public void visit(final OWLDataMinCardinality ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
 	public void visit(final OWLDataExactCardinality ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
 	public void visit(final OWLDataMaxCardinality ce) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 }

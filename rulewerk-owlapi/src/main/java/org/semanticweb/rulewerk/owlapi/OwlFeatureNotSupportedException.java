@@ -31,6 +31,12 @@ import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
  */
 public class OwlFeatureNotSupportedException extends RulewerkRuntimeException {
 
+	private final FeatureType featureType;
+
+	enum FeatureType {
+		DATA, OBJECT
+	}
+
 	/**
 	 *
 	 */
@@ -39,11 +45,15 @@ public class OwlFeatureNotSupportedException extends RulewerkRuntimeException {
 	/**
 	 * Creates a new exception.
 	 *
-	 * @param cause
-	 *            message explaining the error
+	 * @param cause message explaining the error
 	 */
-	public OwlFeatureNotSupportedException(String cause) {
+	public OwlFeatureNotSupportedException(final String cause, final FeatureType featureType) {
 		super(cause);
+		this.featureType = featureType;
+	}
+
+	public FeatureType getFeatureType() {
+		return this.featureType;
 	}
 
 }

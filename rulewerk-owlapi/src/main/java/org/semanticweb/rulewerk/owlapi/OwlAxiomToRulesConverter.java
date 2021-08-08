@@ -83,6 +83,7 @@ import org.semanticweb.rulewerk.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.rulewerk.core.model.implementation.RuleImpl;
 import org.semanticweb.rulewerk.core.model.implementation.UniversalVariableImpl;
 import org.semanticweb.rulewerk.core.reasoner.implementation.Skolemization;
+import org.semanticweb.rulewerk.owlapi.OwlFeatureNotSupportedException.FeatureType;
 
 /**
  * Class for converting OWL axioms to rules.
@@ -107,7 +108,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 * called, but will retain a constant interpretation otherwise.
 	 */
 	public void startNewBlankNodeContext() {
-		skolemization = new Skolemization();
+		this.skolemization = new Skolemization();
 	}
 
 	/**
@@ -172,17 +173,17 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 		}
 	}
 
-	Term replaceTerm(Term term, Term oldTerm, Term newTerm) {
+	Term replaceTerm(final Term term, final Term oldTerm, final Term newTerm) {
 		return term.equals(oldTerm) ? newTerm : term;
 	}
 
-	PositiveLiteralImpl makeTermReplacedLiteral(Literal literal, Term oldTerm, Term newTerm) {
+	PositiveLiteralImpl makeTermReplacedLiteral(final Literal literal, final Term oldTerm, final Term newTerm) {
 		if (literal.isNegated()) {
 			throw new OwlFeatureNotSupportedException(
-					"Nonmonotonic negation of literals is not handled in OWL conversion.");
+					"Nonmonotonic negation of literals is not handled in OWL conversion.", FeatureType.OBJECT);
 		}
 		return new PositiveLiteralImpl(literal.getPredicate(),
-				literal.getTerms().map(term -> replaceTerm(term, oldTerm, newTerm)).collect(Collectors.toList()));
+				literal.getTerms().map(term -> this.replaceTerm(term, oldTerm, newTerm)).collect(Collectors.toList()));
 	}
 
 	/**
@@ -200,13 +201,13 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 * @param body
 	 * @param auxTerm
 	 */
-	void addAuxiliaryRule(List<PositiveLiteral> head, List<? extends Literal> body, Term auxTerm) {
+	void addAuxiliaryRule(final List<PositiveLiteral> head, final List<? extends Literal> body, final Term auxTerm) {
 		if (auxTerm.getType() == TermType.EXISTENTIAL_VARIABLE) {
-			Term newVariable = new UniversalVariableImpl(auxTerm.getName());
-			List<Literal> newBody = new ArrayList<>();
-			List<PositiveLiteral> newHead = new ArrayList<>();
-			body.forEach(literal -> newBody.add(makeTermReplacedLiteral(literal, auxTerm, newVariable)));
-			head.forEach(literal -> newHead.add(makeTermReplacedLiteral(literal, auxTerm, newVariable)));
+			final Term newVariable = new UniversalVariableImpl(auxTerm.getName());
+			final List<Literal> newBody = new ArrayList<>();
+			final List<PositiveLiteral> newHead = new ArrayList<>();
+			body.forEach(literal -> newBody.add(this.makeTermReplacedLiteral(literal, auxTerm, newVariable)));
+			head.forEach(literal -> newHead.add(this.makeTermReplacedLiteral(literal, auxTerm, newVariable)));
 			this.rules.add(new RuleImpl(new ConjunctionImpl<>(newHead), new ConjunctionImpl<>(newBody)));
 		} else {
 			this.rules.add(new RuleImpl(new ConjunctionImpl<>(head), new ConjunctionImpl<>(body)));
@@ -235,7 +236,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	void addSubClassAxiom(final OWLClassExpression subClass, final OWLClassExpression superClass) {
 		if (subClass instanceof OWLObjectOneOf) {
 			final OWLObjectOneOf subClassObjectOneOf = (OWLObjectOneOf) subClass;
-			subClassObjectOneOf.individuals().forEach(individual -> visitClassAssertionAxiom(individual, superClass));
+			subClassObjectOneOf.individuals().forEach(individual -> this.visitClassAssertionAxiom(individual, superClass));
 		} else {
 			this.startAxiomConversion();
 
@@ -255,8 +256,8 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLNegativeObjectPropertyAssertionAxiom axiom) {
-		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject(), skolemization);
-		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject(), skolemization);
+		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject(), this.skolemization);
+		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject(), this.skolemization);
 		final Literal atom = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), subject, object);
 		final PositiveLiteral bot = OwlToRulesConversionHelper.getBottom(subject);
 		this.rules.add(Expressions.makeRule(bot, atom));
@@ -288,7 +289,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLDataPropertyDomainAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
@@ -326,25 +327,26 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLNegativeDataPropertyAssertionAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 
 	}
 
 	@Override
 	public void visit(final OWLDifferentIndividualsAxiom axiom) {
 		throw new OwlFeatureNotSupportedException(
-				"DifferentIndividuals currently not supported, due to lack of equality support.");
+				"DifferentIndividuals currently not supported, due to lack of equality support.", FeatureType.OBJECT);
 	}
 
 	@Override
 	public void visit(final OWLDisjointDataPropertiesAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
 	public void visit(final OWLDisjointObjectPropertiesAxiom axiom) {
 		// TODO Efficient implementation for lists of disjoint properties needed
-
+		throw new OwlFeatureNotSupportedException("OWLDisjointObjectPropertiesAxiom currently not supported.",
+				FeatureType.OBJECT);
 	}
 
 	@Override
@@ -359,15 +361,16 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLObjectPropertyAssertionAxiom axiom) {
-		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject(), skolemization);
-		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject(), skolemization);
+		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject(), this.skolemization);
+		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject(), this.skolemization);
 		this.facts.add(OwlToRulesConversionHelper.getObjectPropertyFact(axiom.getProperty(), subject, object));
 	}
 
 	@Override
 	public void visit(final OWLFunctionalObjectPropertyAxiom axiom) {
 		throw new OwlFeatureNotSupportedException(
-				"FunctionalObjectProperty currently not supported, due to lack of equality support.");
+				"FunctionalObjectProperty currently not supported, due to lack of equality support.",
+				FeatureType.OBJECT);
 	}
 
 	@Override
@@ -385,7 +388,8 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	@Override
 	public void visit(final OWLDisjointUnionAxiom axiom) {
 		throw new OwlFeatureNotSupportedException(
-				"OWL DisjointUnion not supported, since the cases where it would be expressible in disjunction-free rules are not useful.");
+				"OWL DisjointUnion not supported, since the cases where it would be expressible in disjunction-free rules are not useful.",
+				FeatureType.OBJECT);
 	}
 
 	@Override
@@ -402,27 +406,27 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLDataPropertyRangeAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
 	public void visit(final OWLFunctionalDataPropertyAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
 	public void visit(final OWLEquivalentDataPropertiesAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
 	public void visit(final OWLClassAssertionAxiom axiom) {
-		visitClassAssertionAxiom(axiom.getIndividual(), axiom.getClassExpression());
+		this.visitClassAssertionAxiom(axiom.getIndividual(), axiom.getClassExpression());
 	}
 
 	void visitClassAssertionAxiom(final OWLIndividual individual, final OWLClassExpression classExpression) {
 		this.startAxiomConversion();
-		final Term term = OwlToRulesConversionHelper.getIndividualTerm(individual, skolemization);
+		final Term term = OwlToRulesConversionHelper.getIndividualTerm(individual, this.skolemization);
 		final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(term, this);
 		classExpression.accept(headConverter);
 		this.addRule(headConverter);
@@ -450,7 +454,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLDataPropertyAssertionAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
@@ -476,19 +480,20 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLSubDataPropertyOfAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.");
+		throw new OwlFeatureNotSupportedException("OWL datatypes currently not supported in rules.", FeatureType.DATA);
 	}
 
 	@Override
 	public void visit(final OWLInverseFunctionalObjectPropertyAxiom axiom) {
 		throw new OwlFeatureNotSupportedException(
-				"InverseFunctionalObjectProperty currently not supported, due to lack of equality support.");
+				"InverseFunctionalObjectProperty currently not supported, due to lack of equality support.",
+				FeatureType.OBJECT);
 	}
 
 	@Override
 	public void visit(final OWLSameIndividualAxiom axiom) {
 		throw new OwlFeatureNotSupportedException(
-				"SameIndividual currently not supported, due to lack of equality support.");
+				"SameIndividual currently not supported, due to lack of equality support.", FeatureType.OBJECT);
 	}
 
 	@Override
@@ -527,13 +532,13 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLHasKeyAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("HasKey currently not supported, due to lack of equality support.");
+		throw new OwlFeatureNotSupportedException("HasKey currently not supported, due to lack of equality support.",
+				FeatureType.OBJECT);
 	}
 
 	@Override
 	public void visit(final SWRLRule rule) {
-		throw new OwlFeatureNotSupportedException("SWRLRule currently not supported.");
-
+		throw new OwlFeatureNotSupportedException("SWRLRule currently not supported.", FeatureType.OBJECT);
 	}
 
 }
