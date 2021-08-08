@@ -1,14 +1,13 @@
-let pkgs = import <nixpkgs> {};
-
-	maven = pkgs.maven;
-	dependencies = import ./vlog;
-	deps = dependencies.deps // { maven = maven; };
-in pkgs.mkShell {
-	buildInputsNative = [ maven deps.jdk dependencies.vlog ];
-	shellHook = ''
-	  mkdir -p rulewerk-vlog/lib/
-	  ln -sf ${dependencies.vlog.dev}/jvlog.jar rulewerk-vlog/lib/jvlog-local.jar
-	  mvn --no-transfer-progress initialize -Pdevelopment
-	  mvn --no-transfer-progress install -DskipTests
-	'';
-}
+(import
+  (
+    let
+      lock = builtins.fromJSON (builtins.readFile ./flake.lock);
+    in
+    fetchTarball {
+      url = "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
+      sha256 = lock.nodes.flake-compat.locked.narHash;
+    }
+  )
+  {
+    src = ./.;
+  }).shellNix

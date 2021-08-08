@@ -49,6 +49,24 @@
 			<build>
 				<plugins>
 					<plugin>
+						<!-- strip dates and times from the jar to
+						     make the dependencies deterministic -->
+						<groupId>io.github.zlika</groupId>
+						<artifactId>reproducible-build-maven-plugin</artifactId>
+						<version>0.13</version>
+						<executions>
+							<execution>
+								<phase>initialize</phase>
+								<goals>
+									<goal>strip-jar</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>./lib/</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<!-- Useful for integrating the jar containing the JNI to VLog -->
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-install-plugin</artifactId>
