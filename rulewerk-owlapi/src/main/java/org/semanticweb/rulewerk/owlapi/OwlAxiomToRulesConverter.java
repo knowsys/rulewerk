@@ -107,7 +107,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	 * called, but will retain a constant interpretation otherwise.
 	 */
 	public void startNewBlankNodeContext() {
-		skolemization = new Skolemization();
+		this.skolemization = new Skolemization();
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 					"Nonmonotonic negation of literals is not handled in OWL conversion.");
 		}
 		return new PositiveLiteralImpl(literal.getPredicate(),
-				literal.getTerms().map(term -> replaceTerm(term, oldTerm, newTerm)).collect(Collectors.toList()));
+				literal.getTerms().map(term -> this.replaceTerm(term, oldTerm, newTerm)).collect(Collectors.toList()));
 	}
 
 	/**
@@ -205,8 +205,8 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 			Term newVariable = new UniversalVariableImpl(auxTerm.getName());
 			List<Literal> newBody = new ArrayList<>();
 			List<PositiveLiteral> newHead = new ArrayList<>();
-			body.forEach(literal -> newBody.add(makeTermReplacedLiteral(literal, auxTerm, newVariable)));
-			head.forEach(literal -> newHead.add(makeTermReplacedLiteral(literal, auxTerm, newVariable)));
+			body.forEach(literal -> newBody.add(this.makeTermReplacedLiteral(literal, auxTerm, newVariable)));
+			head.forEach(literal -> newHead.add(this.makeTermReplacedLiteral(literal, auxTerm, newVariable)));
 			this.rules.add(new RuleImpl(new ConjunctionImpl<>(newHead), new ConjunctionImpl<>(newBody)));
 		} else {
 			this.rules.add(new RuleImpl(new ConjunctionImpl<>(head), new ConjunctionImpl<>(body)));
@@ -235,7 +235,8 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	void addSubClassAxiom(final OWLClassExpression subClass, final OWLClassExpression superClass) {
 		if (subClass instanceof OWLObjectOneOf) {
 			final OWLObjectOneOf subClassObjectOneOf = (OWLObjectOneOf) subClass;
-			subClassObjectOneOf.individuals().forEach(individual -> visitClassAssertionAxiom(individual, superClass));
+			subClassObjectOneOf.individuals()
+					.forEach(individual -> this.visitClassAssertionAxiom(individual, superClass));
 		} else {
 			this.startAxiomConversion();
 
@@ -255,8 +256,8 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLNegativeObjectPropertyAssertionAxiom axiom) {
-		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject(), skolemization);
-		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject(), skolemization);
+		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject(), this.skolemization);
+		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject(), this.skolemization);
 		final Literal atom = OwlToRulesConversionHelper.getObjectPropertyAtom(axiom.getProperty(), subject, object);
 		final PositiveLiteral bot = OwlToRulesConversionHelper.getBottom(subject);
 		this.rules.add(Expressions.makeRule(bot, atom));
@@ -282,8 +283,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLDisjointClassesAxiom axiom) {
-		// TODO Efficient implementation for lists of disjoint classes needed
-
+		throw new OwlFeatureNotSupportedException("OWLDisjointClassesAxiom not supported yet.");
 	}
 
 	@Override
@@ -343,8 +343,7 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLDisjointObjectPropertiesAxiom axiom) {
-		// TODO Efficient implementation for lists of disjoint properties needed
-
+		throw new OwlFeatureNotSupportedException("OWLDisjointObjectPropertiesAxiom not supported yet.");
 	}
 
 	@Override
@@ -359,8 +358,8 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLObjectPropertyAssertionAxiom axiom) {
-		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject(), skolemization);
-		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject(), skolemization);
+		final Term subject = OwlToRulesConversionHelper.getIndividualTerm(axiom.getSubject(), this.skolemization);
+		final Term object = OwlToRulesConversionHelper.getIndividualTerm(axiom.getObject(), this.skolemization);
 		this.facts.add(OwlToRulesConversionHelper.getObjectPropertyFact(axiom.getProperty(), subject, object));
 	}
 
@@ -417,12 +416,12 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLClassAssertionAxiom axiom) {
-		visitClassAssertionAxiom(axiom.getIndividual(), axiom.getClassExpression());
+		this.visitClassAssertionAxiom(axiom.getIndividual(), axiom.getClassExpression());
 	}
 
 	void visitClassAssertionAxiom(final OWLIndividual individual, final OWLClassExpression classExpression) {
 		this.startAxiomConversion();
-		final Term term = OwlToRulesConversionHelper.getIndividualTerm(individual, skolemization);
+		final Term term = OwlToRulesConversionHelper.getIndividualTerm(individual, this.skolemization);
 		final ClassToRuleHeadConverter headConverter = new ClassToRuleHeadConverter(term, this);
 		classExpression.accept(headConverter);
 		this.addRule(headConverter);
