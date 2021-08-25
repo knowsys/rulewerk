@@ -92,19 +92,33 @@ public class OwlToRulesConversionHelper {
 		return new PredicateImpl(owlObjectProperty.getIRI().toString(), 2);
 	}
 
-	public static Predicate getAuxiliaryClassPredicate(final Collection<OWLClassExpression> owlClassExpressions) {
+	public static Predicate getConjunctionAuxiliaryClassPredicate(final Collection<OWLClassExpression> conjuncts) {
+		return new PredicateImpl(getAuxiliaryClasNameConjuncts(conjuncts), 1);
+	}
+
+	static String getAuxiliaryClasNameConjuncts(final Collection<OWLClassExpression> conjuncts) {
+		return getAuxiliaryClassName("aux-conjunction", conjuncts);
+	}
+
+	static String getAuxiliaryClassNameDisjuncts(final Collection<OWLClassExpression> disjuncts) {
+		return getAuxiliaryClassName("aux-disjunction", disjuncts);
+	}
+
+	private static String getAuxiliaryClassName(final String prefix,
+			final Collection<OWLClassExpression> owlClassExpressions) {
+		final MessageDigest messageDigest;
 		try {
-			final MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			messageDigest = MessageDigest.getInstance("MD5");
 			for (final OWLClassExpression owlClassExpression : owlClassExpressions) {
 				messageDigest.update(owlClassExpression.toString().getBytes("UTF-8"));
 			}
-			final byte[] digest = messageDigest.digest();
-			final BigInteger bigInt = new BigInteger(1, digest);
-			final String hashtext = bigInt.toString(16);
-			return new PredicateImpl("aux-" + hashtext, 1);
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
 			throw new RulewerkRuntimeException("We are missing some core functionality of Java here", e);
 		}
+		final byte[] digest = messageDigest.digest();
+		final BigInteger bigInt = new BigInteger(1, digest);
+		final String hashtext = bigInt.toString(16);
+		return prefix + hashtext;
 	}
 
 	/**

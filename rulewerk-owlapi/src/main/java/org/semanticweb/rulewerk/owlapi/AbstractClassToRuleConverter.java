@@ -281,7 +281,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 				auxAtom = this.handlePositiveConjunct(converter, conjuncts, term, auxAtom);
 			}
 		} else { // make negative (body) auxiliary atom
-			auxAtom = new PositiveLiteralImpl(OwlToRulesConversionHelper.getAuxiliaryClassPredicate(conjuncts),
+			auxAtom = new PositiveLiteralImpl(OwlToRulesConversionHelper.getConjunctionAuxiliaryClassPredicate(conjuncts),
 					Arrays.asList(term));
 			this.body.add(auxAtom);
 			final List<PositiveLiteral> auxHead = Collections.singletonList(auxAtom);
@@ -304,7 +304,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 			final List<Literal> newBody = new ArrayList<>(converter.body.getConjuncts().size() + 1);
 			if (auxiliaryAtom == null) {
 				auxiliaryAtom = new PositiveLiteralImpl(
-						OwlToRulesConversionHelper.getAuxiliaryClassPredicate(auxiliaryExpressions),
+						OwlToRulesConversionHelper.getConjunctionAuxiliaryClassPredicate(auxiliaryExpressions),
 						Arrays.asList(term));
 				this.head.add(auxiliaryAtom);
 			}
