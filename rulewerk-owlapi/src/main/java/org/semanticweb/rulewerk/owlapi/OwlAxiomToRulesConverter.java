@@ -56,6 +56,7 @@ import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
@@ -285,25 +286,29 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLDisjointClassesAxiom axiom) {
-		final List<OWLClassExpression> disjointClassExpressions = axiom.classExpressions().collect(Collectors.toList());
+		final List<OWLClassExpression> disjointClassExpressions = axiom.operands().collect(Collectors.toList());
 		if (disjointClassExpressions.size() < 2) {
 			throw new IllegalArgumentException(
-					"OWLDisjointClassesAxiom " + axiom + " expected to have at least 2 class expressions!");
+					"OWLDisjointClassesAxiom " + axiom + " expected to have at least 2 operands!");
 		}
 
 		while (disjointClassExpressions.size() > 2) {
-			OWLClassExpression a = disjointClassExpressions.get(0);
-			OWLClassExpression b = disjointClassExpressions.get(1);
+			final OWLClassExpression a = this.removeFirst(disjointClassExpressions);
+			final OWLClassExpression b = this.removeFirst(disjointClassExpressions);
 
-			disjointClassExpressions.remove(a);
-			disjointClassExpressions.remove(b);
-
-			OWLClass disjunctionAB = this.disjointClassExpressionsToSubClassOfAuxiliaryDisjunction(a, b);
+			final OWLClass disjunctionAB = this.disjointClassExpressionsToSubClassOfAuxiliaryDisjunction(a, b);
 			disjointClassExpressions.add(disjunctionAB);
 		}
-		OWLObjectIntersectionOf disjointIntersection = owlDataFactory
+
+		final OWLObjectIntersectionOf disjointIntersection = owlDataFactory
 				.getOWLObjectIntersectionOf(disjointClassExpressions.get(0), disjointClassExpressions.get(1));
 		this.addSubClassAxiom(disjointIntersection, owlDataFactory.getOWLNothing());
+	}
+
+	private <T> T removeFirst(final List<? extends T> list) {
+		final T t = list.get(0);
+		list.remove(t);
+		return t;
 	}
 
 	private OWLClass disjointClassExpressionsToSubClassOfAuxiliaryDisjunction(final OWLClassExpression a,
@@ -375,7 +380,63 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLDisjointObjectPropertiesAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("OWLDisjointObjectPropertiesAxiom not supported yet.");
+		if (axiom.operands().count() < 2) {
+			throw new IllegalArgumentException(
+					"OWLDisjointObjectPropertiesAxiom " + axiom + " expected to have at least 2 operands!");
+		}
+		final Term sourceTerm = this.frontierVariable;
+		final Term targetTerm = this.getFreshUniversalVariable();
+
+		if (axiom.operands().anyMatch(prop -> prop.isOWLTopObjectProperty())) {
+			this.toUnsatisfiableObjectProperties(axiom, sourceTerm, targetTerm);
+		} else {
+
+			final List<OWLObjectPropertyExpression> disjointPropertyExpressions = axiom.operands()
+					.collect(Collectors.toList());
+
+			while (disjointPropertyExpressions.size() > 2) {
+				final OWLObjectPropertyExpression a = this.removeFirst(disjointPropertyExpressions);
+				final OWLObjectPropertyExpression b = this.removeFirst(disjointPropertyExpressions);
+
+				final PositiveLiteral literalA = OwlToRulesConversionHelper.getObjectPropertyAtom(a, sourceTerm,
+						targetTerm);
+				final PositiveLiteral literalB = OwlToRulesConversionHelper.getObjectPropertyAtom(a, sourceTerm,
+						targetTerm);
+				this.addUnsatisfiableRule(Expressions.makeConjunction(literalA, literalB), sourceTerm);
+
+				final OWLObjectProperty disjunctionAB = owlDataFactory.getOWLObjectProperty(
+						OwlToRulesConversionHelper.getAuxiliaryPropertyNameDisjuncts(Arrays.asList(a, b)));
+				final PositiveLiteral disjunctionABLiteral = OwlToRulesConversionHelper
+						.getObjectPropertyAtom(disjunctionAB, sourceTerm, targetTerm);
+				this.rules.add(Expressions.makeRule(disjunctionABLiteral, literalA));
+				this.rules.add(Expressions.makeRule(disjunctionABLiteral, literalB));
+
+				disjointPropertyExpressions.add(disjunctionAB);
+			}
+
+			final PositiveLiteral literalA = OwlToRulesConversionHelper
+					.getObjectPropertyAtom(disjointPropertyExpressions.get(0), sourceTerm, targetTerm);
+			final PositiveLiteral literalB = OwlToRulesConversionHelper
+					.getObjectPropertyAtom(disjointPropertyExpressions.get(1), sourceTerm, targetTerm);
+			this.addUnsatisfiableRule(Expressions.makeConjunction(literalA, literalB), sourceTerm);
+		}
+	}
+
+	private void toUnsatisfiableObjectProperties(final OWLDisjointObjectPropertiesAxiom axiom, final Term sourceTerm,
+			final Term targetTerm) {
+		axiom.operands().forEach(prop -> {
+			if (!prop.isOWLTopObjectProperty()) {
+				final Literal propertyLiteral = OwlToRulesConversionHelper.getObjectPropertyAtom(prop, sourceTerm,
+						targetTerm);
+				this.addUnsatisfiableRule(Expressions.makeConjunction(propertyLiteral), sourceTerm);
+			}
+		});
+	}
+
+	void addUnsatisfiableRule(final Conjunction<Literal> body, final Term term) {
+		final Rule ruleConjunctionUnsatisfiable = Expressions
+				.makeRule(Expressions.makePositiveConjunction(OwlToRulesConversionHelper.getBottom(term)), body);
+		this.rules.add(ruleConjunctionUnsatisfiable);
 	}
 
 	@Override

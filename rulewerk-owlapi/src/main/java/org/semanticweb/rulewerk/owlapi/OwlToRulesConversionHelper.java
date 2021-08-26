@@ -105,7 +105,7 @@ public class OwlToRulesConversionHelper {
 		return getAuxiliaryOWLObjectName("aux-class-disjunction", disjuncts);
 	}
 	
-	static String getAuxiliaryPropertyNameDisjuncts(final Collection<OWLObjectProperty> disjuncts) {
+	static String getAuxiliaryPropertyNameDisjuncts(final Collection<OWLObjectPropertyExpression> disjuncts) {
 		return getAuxiliaryOWLObjectName("aux-objectPropery-disjunction", disjuncts);
 	}
 
