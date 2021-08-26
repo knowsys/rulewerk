@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLAxiomVisitor;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -53,6 +54,7 @@ import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
@@ -283,7 +285,37 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(final OWLDisjointClassesAxiom axiom) {
-		throw new OwlFeatureNotSupportedException("OWLDisjointClassesAxiom not supported yet.");
+		final List<OWLClassExpression> disjointClassExpressions = axiom.classExpressions().collect(Collectors.toList());
+		if (disjointClassExpressions.size() < 2) {
+			throw new IllegalArgumentException(
+					"OWLDisjointClassesAxiom " + axiom + " expected to have at least 2 class expressions!");
+		}
+
+		while (disjointClassExpressions.size() > 2) {
+			OWLClassExpression a = disjointClassExpressions.get(0);
+			OWLClassExpression b = disjointClassExpressions.get(1);
+
+			disjointClassExpressions.remove(a);
+			disjointClassExpressions.remove(b);
+
+			OWLClass disjunctionAB = this.disjointClassExpressionsToSubClassOfAuxiliaryDisjunction(a, b);
+			disjointClassExpressions.add(disjunctionAB);
+		}
+		OWLObjectIntersectionOf disjointIntersection = owlDataFactory
+				.getOWLObjectIntersectionOf(disjointClassExpressions.get(0), disjointClassExpressions.get(1));
+		this.addSubClassAxiom(disjointIntersection, owlDataFactory.getOWLNothing());
+	}
+
+	private OWLClass disjointClassExpressionsToSubClassOfAuxiliaryDisjunction(final OWLClassExpression a,
+			final OWLClassExpression b) {
+		this.addSubClassAxiom(owlDataFactory.getOWLObjectIntersectionOf(a, b), owlDataFactory.getOWLNothing());
+
+		final OWLClass auxiliaryClass = owlDataFactory
+				.getOWLClass(OwlToRulesConversionHelper.getAuxiliaryClassNameDisjuncts((Arrays.asList(a, b))));
+		this.addSubClassAxiom(a, auxiliaryClass);
+		this.addSubClassAxiom(b, auxiliaryClass);
+
+		return auxiliaryClass;
 	}
 
 	@Override

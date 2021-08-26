@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,6 +36,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
@@ -43,6 +46,7 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.rulewerk.core.model.api.Fact;
+import org.semanticweb.rulewerk.core.model.api.Literal;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
 import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.Rule;
@@ -205,7 +209,8 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Predicate auxPredicate = OwlToRulesConversionHelper.getAuxiliaryClassPredicate(Arrays.asList(notB, notC));
+		final Predicate auxPredicate = OwlToRulesConversionHelper
+				.getConjunctionAuxiliaryClassPredicate(Arrays.asList(notB, notC));
 
 		final PositiveLiteral atA = Expressions.makePositiveLiteral(nA, Arrays.asList(converter.frontierVariable));
 		final PositiveLiteral atB = Expressions.makePositiveLiteral(nB, Arrays.asList(converter.frontierVariable));
@@ -289,7 +294,8 @@ public class OwlAxiomToRulesConverterTest {
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
 
-		final Predicate auxPredicate = OwlToRulesConversionHelper.getAuxiliaryClassPredicate(Arrays.asList(cA));
+		final Predicate auxPredicate = OwlToRulesConversionHelper
+				.getConjunctionAuxiliaryClassPredicate(Arrays.asList(cA));
 		final Variable secondVariable = Expressions.makeExistentialVariable("Y1");
 		final Variable secondVariableUniversal = Expressions.makeUniversalVariable("Y1");
 
@@ -648,13 +654,121 @@ public class OwlAxiomToRulesConverterTest {
 		axiom.accept(converter);
 	}
 
+	@Test
+	public void testDisjointClassesTwoSimpleClasses() {
+		final OWLDisjointClassesAxiom axiom = df.getOWLDisjointClassesAxiom(cA, cB);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		assertEquals(1, converter.rules.size());
+		final Rule rule = converter.rules.iterator().next();
+
+		final PositiveLiteral expectedHeadLiteral = OwlToRulesConversionHelper.getBottom(converter.frontierVariable);
+		final Literal expectedBodyLiteral1 = Expressions
+				.makePositiveLiteral(OwlToRulesConversionHelper.getClassPredicate(cA), converter.frontierVariable);
+		final Literal expectedBodyLiteral2 = Expressions
+				.makePositiveLiteral(OwlToRulesConversionHelper.getClassPredicate(cB), converter.frontierVariable);
+		final Rule expected = Expressions.makeRule(expectedHeadLiteral, expectedBodyLiteral1, expectedBodyLiteral2);
+		assertEquals(expected, rule);
+	}
+
+	@Test
+	public void testDisjointClassesThreeSimpleClasses() {
+		final OWLDisjointClassesAxiom axiom = df.getOWLDisjointClassesAxiom(cA, cB, cC);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		assertEquals(4, converter.rules.size());
+
+		final PositiveLiteral botX = OwlToRulesConversionHelper.getBottom(converter.frontierVariable);
+		final Literal cAx = Expressions.makePositiveLiteral(OwlToRulesConversionHelper.getClassPredicate(cA),
+				converter.frontierVariable);
+		final Literal cBx = Expressions.makePositiveLiteral(OwlToRulesConversionHelper.getClassPredicate(cB),
+				converter.frontierVariable);
+		final Rule aAndBDisjoint = Expressions.makeRule(botX, cAx, cBx);
+
+		final PositiveLiteral auxX = Expressions.makePositiveLiteral(
+				OwlToRulesConversionHelper.getAuxiliaryClassNameDisjuncts(Arrays.asList(cA, cB)),
+				converter.frontierVariable);
+
+		final Rule aux1 = Expressions.makeRule(auxX, cAx);
+		final Rule aux2 = Expressions.makeRule(auxX, cBx);
+
+		final Literal cCx = Expressions.makePositiveLiteral(OwlToRulesConversionHelper.getClassPredicate(cC),
+				converter.frontierVariable);
+		final Rule cAndAuxDisjoint = Expressions.makeRule(botX, auxX, cCx);
+
+		final Set<Rule> expectedRules = new HashSet<>(Arrays.asList(aAndBDisjoint, aux1, aux2, cAndAuxDisjoint));
+
+		assertEquals(expectedRules, converter.rules);
+	}
+
+	@Test
+	public void testDisjointClassesSimpleClassAndTop() {
+		final OWLDisjointClassesAxiom axiom = df.getOWLDisjointClassesAxiom(cA, df.getOWLThing());
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		assertEquals(1, converter.rules.size());
+
+		final PositiveLiteral expectedHeadLiteral = OwlToRulesConversionHelper.getBottom(converter.frontierVariable);
+		final Literal expectedBodyLiteral = Expressions
+				.makePositiveLiteral(OwlToRulesConversionHelper.getClassPredicate(cA), converter.frontierVariable);
+		final Rule expected = Expressions.makeRule(expectedHeadLiteral, expectedBodyLiteral);
+		assertEquals(new HashSet<>(Arrays.asList(expected)), converter.rules);
+	}
+
+	@Test
+	public void testDisjointClassesSimpleClassAndBot() {
+		final OWLDisjointClassesAxiom axiom = df.getOWLDisjointClassesAxiom(cA, df.getOWLNothing());
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		assertTrue(converter.rules.isEmpty());
+	}
+
+	@Test
+	public void testDisjointClasseSimpleClassAndSomeValuesFrom() {
+		final OWLObjectSomeValuesFrom someValuesFrom = df.getOWLObjectSomeValuesFrom(pR, cB);
+		final OWLDisjointClassesAxiom axiom = df.getOWLDisjointClassesAxiom(cA, someValuesFrom);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		assertEquals(1, converter.rules.size());
+		final Rule rule = converter.rules.iterator().next();
+
+		assertEquals(Expressions.makeConjunction(OwlToRulesConversionHelper.getBottom(converter.frontierVariable)),
+				rule.getHead());
+
+		assertEquals(3, rule.getBody().getLiterals().size());
+		final Literal cAx = Expressions.makePositiveLiteral(OwlToRulesConversionHelper.getClassPredicate(cA),
+				converter.frontierVariable);
+		assertTrue( rule.getBody().getLiterals().contains(cAx));
+	}
+
+	@Test(expected = OwlFeatureNotSupportedException.class)
+	// TODO support this feature
+	public void testDisjointClasseSimpleClassAndOf() {
+		OWLObjectOneOf oneOfb = df.getOWLObjectOneOf(indb);
+		final OWLDisjointClassesAxiom axiom = df.getOWLDisjointClassesAxiom(cA, oneOfb);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+	}
+
 	/*
 	 * {a} \sqsubseteq A
 	 */
 	@Test
 	public void testNominalSubClassOfClass() {
-		OWLObjectOneOf oneOfa = df.getOWLObjectOneOf(inda);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(oneOfa, cA);
+		final OWLObjectOneOf oneOfa = df.getOWLObjectOneOf(inda);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(oneOfa, cA);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
