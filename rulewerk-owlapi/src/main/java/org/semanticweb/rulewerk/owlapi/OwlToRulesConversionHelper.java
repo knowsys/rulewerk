@@ -31,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
@@ -97,19 +98,23 @@ public class OwlToRulesConversionHelper {
 	}
 
 	static String getAuxiliaryClasNameConjuncts(final Collection<OWLClassExpression> conjuncts) {
-		return getAuxiliaryClassName("aux-conjunction", conjuncts);
+		return getAuxiliaryOWLObjectName("aux-class-conjunction", conjuncts);
 	}
 
 	static String getAuxiliaryClassNameDisjuncts(final Collection<OWLClassExpression> disjuncts) {
-		return getAuxiliaryClassName("aux-disjunction", disjuncts);
+		return getAuxiliaryOWLObjectName("aux-class-disjunction", disjuncts);
+	}
+	
+	static String getAuxiliaryPropertyNameDisjuncts(final Collection<OWLObjectProperty> disjuncts) {
+		return getAuxiliaryOWLObjectName("aux-objectPropery-disjunction", disjuncts);
 	}
 
-	private static String getAuxiliaryClassName(final String prefix,
-			final Collection<OWLClassExpression> owlClassExpressions) {
+	private static String getAuxiliaryOWLObjectName(final String prefix,
+			final Collection<? extends OWLObject> owlObjects) {
 		final MessageDigest messageDigest;
 		try {
 			messageDigest = MessageDigest.getInstance("MD5");
-			for (final OWLClassExpression owlClassExpression : owlClassExpressions) {
+			for (final OWLObject owlClassExpression : owlObjects) {
 				messageDigest.update(owlClassExpression.toString().getBytes("UTF-8"));
 			}
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
