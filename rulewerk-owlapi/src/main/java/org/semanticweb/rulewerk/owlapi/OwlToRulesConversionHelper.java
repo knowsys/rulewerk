@@ -43,7 +43,6 @@ import org.semanticweb.rulewerk.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.FactImpl;
 import org.semanticweb.rulewerk.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.rulewerk.core.model.implementation.PredicateImpl;
-import org.semanticweb.rulewerk.core.reasoner.implementation.Skolemization;
 import org.semanticweb.rulewerk.owlapi.AbstractClassToRuleConverter.SimpleConjunction;
 
 /**
@@ -61,11 +60,12 @@ public class OwlToRulesConversionHelper {
 	 * @param owlIndividual the individual to get a term for
 	 * @return a suitable term
 	 */
-	public static Term getIndividualTerm(final OWLIndividual owlIndividual, Skolemization skolemization) {
+	public static Term getIndividualTerm(final OWLIndividual owlIndividual,
+			final ConverterTermFactory converterTermFactory) {
 		if (owlIndividual instanceof OWLNamedIndividual) {
 			return new AbstractConstantImpl(((OWLNamedIndividual) owlIndividual).getIRI().toString());
 		} else if (owlIndividual instanceof OWLAnonymousIndividual) {
-			return skolemization.getRenamedNamedNull(((OWLAnonymousIndividual) owlIndividual).getID().toString());
+			return converterTermFactory.getSkolemization().getRenamedNamedNull(((OWLAnonymousIndividual) owlIndividual).getID().toString());
 		} else {
 			throw new OwlFeatureNotSupportedException(
 					"Could not convert OWL individual '" + owlIndividual.toString() + "' to a term.");

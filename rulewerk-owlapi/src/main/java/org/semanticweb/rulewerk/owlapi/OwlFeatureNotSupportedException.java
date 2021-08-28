@@ -39,8 +39,7 @@ public class OwlFeatureNotSupportedException extends RulewerkRuntimeException {
 	/**
 	 * Creates a new exception.
 	 *
-	 * @param cause
-	 *            message explaining the error
+	 * @param cause message explaining the error
 	 */
 	public OwlFeatureNotSupportedException(String cause) {
 		super(cause);
