@@ -7,6 +7,13 @@ import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
 public class MFCTest extends AcyclicityTest {
+	
+	@Test
+	public void isNotMFC_datalog() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("datalog.rls")) {
+			assertFalse(r.isMFC());
+		}
+	}
 
 	@Test
 	public void isNotMFC_JA_1() throws ParsingException {

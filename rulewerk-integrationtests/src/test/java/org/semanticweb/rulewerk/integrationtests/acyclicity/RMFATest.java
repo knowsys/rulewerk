@@ -8,6 +8,13 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 
 public class RMFATest
 		extends AcyclicityTest {
+	
+	@Test
+	public void isRMFA_datalog() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("datalog.rls")) {
+			assertTrue(r.isRMFA());
+		}
+	}
 
 	@Test
 	public void isRMFA_JA_1() throws ParsingException {
