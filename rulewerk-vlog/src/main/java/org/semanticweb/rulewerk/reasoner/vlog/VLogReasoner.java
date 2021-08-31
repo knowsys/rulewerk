@@ -42,9 +42,10 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Statement;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.reasoner.AcyclicityNotion;
+import org.semanticweb.rulewerk.core.reasoner.Acyclicity;
 import org.semanticweb.rulewerk.core.reasoner.Algorithm;
 import org.semanticweb.rulewerk.core.reasoner.Correctness;
+import org.semanticweb.rulewerk.core.reasoner.Cyclicity;
 import org.semanticweb.rulewerk.core.reasoner.CyclicityResult;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.LogLevel;
@@ -53,6 +54,7 @@ import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.ReasonerState;
 import org.semanticweb.rulewerk.core.reasoner.RuleRewriteStrategy;
+import org.semanticweb.rulewerk.core.reasoner.RulesetCyclicityProperty;
 import org.semanticweb.rulewerk.core.reasoner.implementation.EmptyQueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.implementation.QueryAnswerCountImpl;
 import org.slf4j.Logger;
@@ -593,39 +595,59 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public boolean isJA() {
-		return this.checkAcyclicity(AcyclicityNotion.JA);
+		return this.checkCyclicityProperty(Acyclicity.JA);
 	}
 
 	@Override
 	public boolean isRJA() {
-		return this.checkAcyclicity(AcyclicityNotion.RJA);
+		return this.checkCyclicityProperty(Acyclicity.RJA);
 	}
 
 	@Override
 	public boolean isMFA() {
-		return this.checkAcyclicity(AcyclicityNotion.MFA);
+		return this.checkCyclicityProperty(Acyclicity.MFA);
 	}
 
 	@Override
 	public boolean isRMFA() {
-		return this.checkAcyclicity(AcyclicityNotion.RMFA);
+		return this.checkCyclicityProperty(Acyclicity.RMFA);
 	}
 
 	@Override
 	public boolean isMFC() {
+		return this.checkCyclicityProperty(Cyclicity.MFC);
+	}
+
+	public boolean checkCyclicityProperty(RulesetCyclicityProperty property) {
+
 		this.validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			throw new ReasonerStateException(this.reasonerState,
-					"Checking rules acyclicity is not allowed before loading!");
+			try {
+				this.load();
+			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/rulewerk/issues/128
+				throw new RulewerkRuntimeException(e);
+			}
 		}
 
 		CyclicCheckResult checkCyclic;
 		try {
-			checkCyclic = this.vLog.checkCyclic("MFC");
+			checkCyclic = this.vLog.checkCyclic(property.name());
 		} catch (final NotStartedException e) {
 			throw new RulewerkRuntimeException(e.getMessage(), e); // should be impossible
 		}
-		return checkCyclic.equals(CyclicCheckResult.CYCLIC);
+		if (this.reasoningCompleted) {
+
+		}
+		switch (property.getType()) {
+		case ACYCLIC:
+			return checkCyclic == CyclicCheckResult.NON_CYCLIC;
+
+		case CYCLIC:
+			return checkCyclic == CyclicCheckResult.CYCLIC;
+		default:
+			throw new RulewerkRuntimeException(
+					"Unexpected cyclicity result [" + checkCyclic + "] for property [" + property + " ]!");
+		}
 	}
 
 	@Override
@@ -696,25 +718,6 @@ public class VLogReasoner implements Reasoner {
 			toBeGroundedVariables.add(Expressions.makeUniversalVariable("X" + i));
 		}
 		return Expressions.makePositiveLiteral(predicate, toBeGroundedVariables);
-	}
-
-	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
-		this.validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			try {
-				this.load();
-			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/rulewerk/issues/128
-				throw new RulewerkRuntimeException(e);
-			}
-		}
-
-		CyclicCheckResult checkCyclic;
-		try {
-			checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
-		} catch (final NotStartedException e) {
-			throw new RulewerkRuntimeException(e.getMessage(), e); // should be impossible
-		}
-		return checkCyclic.equals(CyclicCheckResult.NON_CYCLIC);
 	}
 
 	private void updateReasonerToKnowledgeBaseChanged() {

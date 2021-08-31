@@ -19,8 +19,9 @@ package org.semanticweb.rulewerk.core.reasoner;
  * limitations under the License.
  * #L%
  */
+
 //TODO javadoc
-public enum AcyclicityNotion {
+public enum Acyclicity implements RulesetCyclicityProperty {
 	/**
 	 * Joint Acyclicity
 	 */
@@ -36,5 +37,22 @@ public enum AcyclicityNotion {
 	/**
 	 * Restricted Model-Faithful Acyclicity
 	 */
-	RMFA
+	RMFA;
+
+	@Override
+	public Type getType() {
+		return Type.ACYCLIC;
+	}
+
+//	@Override
+//	public boolean isCyclic() {
+//		return false;
+//	}
+//
+//	@Override
+//	public boolean isAcyclic() {
+//		return true;
+//	}
+
+	
 }
