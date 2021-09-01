@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.integrationtests.acyclicity;
 
+import static org.junit.Assert.assertFalse;
+
 /*-
  * #%L
  * Rulewerk Integration Tests
@@ -39,7 +41,7 @@ public class MFATest extends AcyclicityTest {
 	@Test
 	public void isMFA_JA_1() throws ParsingException
 	{
-		try (Reasoner r = this.getReasonerWithKbFromResource("JA-1.rls")) {
+		try (Reasoner r = this.getReasonerWithKbFromResource("non-recursive.rls")) {
 			assertTrue(r.isMFA());
 		}
 	}
@@ -51,7 +53,11 @@ public class MFATest extends AcyclicityTest {
 			assertTrue(r.isMFA());
 		}
 	}
-
-
-
+	
+	@Test
+	public void isNotMFA_MFC_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("MFC-1.rls")) {
+			assertFalse(r.isMFA());
+		}
+	}
 }

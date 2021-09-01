@@ -1,5 +1,7 @@
 package org.semanticweb.rulewerk.integrationtests.acyclicity;
 
+import static org.junit.Assert.assertFalse;
+
 /*-
  * #%L
  * Rulewerk Integration Tests
@@ -23,6 +25,7 @@ package org.semanticweb.rulewerk.integrationtests.acyclicity;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -40,7 +43,7 @@ public class RMFATest
 	@Test
 	public void isRMFA_JA_1() throws ParsingException {
 
-		try (Reasoner r = this.getReasonerWithKbFromResource("JA-1.rls")) {
+		try (Reasoner r = this.getReasonerWithKbFromResource("non-recursive.rls")) {
 			assertTrue(r.isRMFA());
 		}
 	}
@@ -50,6 +53,15 @@ public class RMFATest
 
 		try (Reasoner r = this.getReasonerWithKbFromResource("MFA-1.rls")) {
 			assertTrue(r.isRMFA());
+		}
+	}
+	
+	//FIXME fix RMFA check
+	@Ignore
+	@Test
+	public void isNotRMFA_MFC_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("MFC-1.rls")) {
+			assertFalse(r.isRMFA());
 		}
 	}
 

@@ -39,7 +39,7 @@ public class RJATest extends AcyclicityTest {
 
 	@Test
 	public void isRJA_JA_1() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("JA-1.rls")) {
+		try (Reasoner r = this.getReasonerWithKbFromResource("non-recursive.rls")) {
 			assertTrue(r.isRJA());
 		}
 	}
@@ -47,6 +47,13 @@ public class RJATest extends AcyclicityTest {
 	@Test
 	public void isNotRJA_MFA_1() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("MFA-1.rls")) {
+			assertFalse(r.isRJA());
+		}
+	}
+	
+	@Test
+	public void isNotRJA_MFC_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("MFC-1.rls")) {
 			assertFalse(r.isRJA());
 		}
 	}
