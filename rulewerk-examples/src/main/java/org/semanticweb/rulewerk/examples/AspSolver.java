@@ -22,6 +22,7 @@ package org.semanticweb.rulewerk.examples;
 
 import org.apache.commons.cli.*;
 import org.semanticweb.rulewerk.asp.implementation.AspReasonerImpl;
+import org.semanticweb.rulewerk.asp.implementation.KnowledgeBaseAnalyser;
 import org.semanticweb.rulewerk.asp.model.AnswerSet;
 import org.semanticweb.rulewerk.asp.model.AnswerSetIterator;
 import org.semanticweb.rulewerk.asp.model.AspReasoner;
@@ -41,6 +42,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This example can be used to create a basic ASP solver.
@@ -58,6 +60,8 @@ public class AspSolver {
 		options.addOption(Option.builder("n").hasArg().numberOfArgs(1).desc("Maximal number of answer sets that should be returned").build());
 		options.addOption(Option.builder("e").longOpt("enum-mode").hasArg().numberOfArgs(1).desc("Enumeration mode:\n" +
 			"\tcautious:\t Compute cautious consequences").build());
+		options.addOption(Option.builder("f").longOpt("filter").hasArg().numberOfArgs(2).desc("Filter answer set for given predicate").build());
+		// options.addOption(Option.builder("g").longOpt("ground").desc("Compute the (aspif) grounding only").build());
 
 		// Parse command line arguments
 		CommandLineParser parser = new DefaultParser();
@@ -115,6 +119,12 @@ public class AspSolver {
 		reasoner.setLogFile("vlog.log");
 		reasoner.setLogLevel(LogLevel.DEBUG);
 
+		// Analysis of knowledge base
+		System.out.println("Over-approximated predicates: ");
+		KnowledgeBaseAnalyser knowledgeBaseAnalyser = new KnowledgeBaseAnalyser(reasoner.getDatalogKnowledgeBase());
+		knowledgeBaseAnalyser.getOverApproximatedPredicates().forEach(System.out::println);
+		System.out.println();
+
 		// Over-approximated rules
 		System.out.println("Transformed rules: ");
 		reasoner.getDatalogKnowledgeBase().getRules().forEach(System.out::println);
@@ -154,7 +164,15 @@ public class AspSolver {
 				AnswerSet answerSet = iterator.next();
 				System.out.println("Overall literal count: " + answerSet.getLiterals().size());
 				int resultCount = 1;
-				for (Literal literal : answerSet.getLiterals()) {
+				Set<Literal> literals;
+				if (line.hasOption("f")) {
+					String name = line.getOptionValues("f")[0];
+					int arity = Integer.parseInt(line.getOptionValues("f")[1]);
+					literals = answerSet.getLiterals(Expressions.makePredicate(name, arity));
+				} else {
+					literals = answerSet.getLiterals();
+				}
+				for (Literal literal : literals) {
 					System.out.print(literal + "\t");
 					resultCount++;
 					if (resultCount > 100) {
