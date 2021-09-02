@@ -128,7 +128,7 @@ public class AspifGrounder implements Grounder {
 	public Boolean visit(Rule statement) {
 		if (statement.getHead().getLiterals().stream().map(Literal::getPredicate).anyMatch(overApproximatedPredicates::contains)) {
 			PositiveLiteral query = AspReasonerImpl.getBodyVariablesLiteral(statement, ruleIndex++);
-			QueryResultIterator answers = reasoner.answerQuery(query, false);
+			QueryResultIterator answers = reasoner.answerQuery(query, true);
 			RuleAspifTemplate ruleTemplate = new RuleAspifTemplate(statement, writer, query, overApproximatedPredicates);
 			try {
 				while (answers.hasNext()) {
@@ -153,7 +153,7 @@ public class AspifGrounder implements Grounder {
 				dataSourceQueryVariables.add(Expressions.makeUniversalVariable("var" + i));
 			}
 			PositiveLiteral dataSourceQueryLiteral = Expressions.makePositiveLiteral(dataSourcePredicate, dataSourceQueryVariables);
-			QueryResultIterator answers = reasoner.answerQuery(dataSourceQueryLiteral, false);
+			QueryResultIterator answers = reasoner.answerQuery(dataSourceQueryLiteral, true);
 			try {
 				while (answers.hasNext()) {
 					writer.write("1 0 1 " + AspifIdentifier.getAspifValue(dataSourceQueryLiteral, answers.next().getTerms()) + " 0 0");

@@ -120,19 +120,6 @@ public class AspReasonerImplTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void noExistentialVariables() {
-		PositiveLiteral literalExistential = Expressions.makePositiveLiteral("p", y, x);
-		List<Literal> bodyList = Arrays.asList(atom1, negativeLiteral, atom4);
-		Conjunction<Literal> body = Expressions.makeConjunction(bodyList);
-		List<PositiveLiteral> headList = Collections.singletonList(literalExistential);
-		Conjunction<PositiveLiteral> head = Expressions.makeConjunction(headList);
-		Rule rule = Expressions.makeRule(head, body);
-		KnowledgeBase knowledgeBase = new KnowledgeBase();
-		knowledgeBase.addStatement(rule);
-		new AspReasonerImpl(knowledgeBase);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
 	public void allVariablesOccurInPositiveBodyLiteral() {
 		List<Literal> bodyList = Collections.singletonList(negativeLiteral);
 		Conjunction<Literal> body = Expressions.makeConjunction(bodyList);

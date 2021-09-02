@@ -79,9 +79,9 @@ public class AspReasonerImpl implements AspReasoner {
 
 		@Override
 		public List<Statement> visit(Rule statement) {
-			if (statement.getExistentialVariables().count() > 0) {
-				throw new IllegalArgumentException("ASP features and existential variables are not simultaneously allowed.");
-			}
+//			if (statement.getExistentialVariables().count() > 0) {
+//				throw new IllegalArgumentException("ASP features and existential variables are not simultaneously allowed.");
+//			}
 			Set<UniversalVariable> positiveBodyVariables = statement.getBody().getLiterals().stream()
 				.filter(literal -> !literal.isNegated())
 				.flatMap(Literal::getUniversalVariables)
@@ -271,7 +271,7 @@ public class AspReasonerImpl implements AspReasoner {
 					variables.add(Expressions.makeUniversalVariable("X" + i));
 				}
 				PositiveLiteral query = Expressions.makePositiveLiteral(predicate, variables);
-				QueryResultIterator resultIterator = datalogReasoner.answerQuery(query, false);
+				QueryResultIterator resultIterator = datalogReasoner.answerQuery(query, true);
 
 				Set<Literal> results = new HashSet<>();
 				while (resultIterator.hasNext()) {
