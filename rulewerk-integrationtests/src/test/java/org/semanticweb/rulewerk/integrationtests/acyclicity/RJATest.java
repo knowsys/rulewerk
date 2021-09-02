@@ -95,4 +95,12 @@ public class RJATest extends AcyclicityTest {
 			assertFalse(r.isRJA());
 		}
 	}
+	
+	//FIXME: should not be RJA
+	@Test
+	public void isNotRJA_RMFC_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RMFC-1.rls")) {
+			assertFalse(r.isRJA());
+		}
+	}
 }

@@ -92,4 +92,11 @@ public class MFCTest extends AcyclicityTest {
 			assertTrue(r.isMFC());
 		}
 	}
+	
+	@Test
+	public void isMFC_RMFC_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RMFC-1.rls")) {
+			assertTrue(r.isMFC());
+		}
+	}
 }
