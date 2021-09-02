@@ -22,17 +22,14 @@ import static org.junit.Assert.assertFalse;
  * #L%
  */
 
-
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
-public class RMFATest
-		extends AcyclicityTest {
-	
+public class RMFATest extends AcyclicityTest {
+
 	@Test
 	public void isRMFA_datalog() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("datalog.rls")) {
@@ -41,28 +38,53 @@ public class RMFATest
 	}
 
 	@Test
-	public void isRMFA_JA_1() throws ParsingException {
-
+	public void isRMFA_nonRecursive() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("non-recursive.rls")) {
 			assertTrue(r.isRMFA());
 		}
 	}
 
 	@Test
-	public void isRMFA_MFA_1() throws ParsingException {
-
-		try (Reasoner r = this.getReasonerWithKbFromResource("MFA-1.rls")) {
+	public void isRMFA_JA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("JA-1.rls")) {
 			assertTrue(r.isRMFA());
 		}
 	}
-	
-	//FIXME fix RMFA check
-	@Ignore
+
+	@Test
+	public void isRMFA_RJA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-1.rls")) {
+			assertTrue(r.isRMFA());
+		}
+	}
+
+	@Test
+	public void isRMFA_RJA_2() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-2.rls")) {
+			assertTrue(r.isRMFA());
+		}
+	}
+
+	@Test
+	public void isRMFA_RJA_3() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-3.rls")) {
+			assertTrue(r.isRMFA());
+		}
+	}
+
+	@Test
+	public void isRMFA_RJA_4() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-4.rls")) {
+			assertTrue(r.isRMFA());
+		}
+	}
+
+	// FIXME fix RMFA check
+	// @Ignore
 	@Test
 	public void isNotRMFA_MFC_1() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("MFC-1.rls")) {
 			assertFalse(r.isRMFA());
 		}
 	}
-
 }

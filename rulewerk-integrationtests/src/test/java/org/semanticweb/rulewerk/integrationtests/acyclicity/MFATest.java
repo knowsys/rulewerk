@@ -22,7 +22,6 @@ import static org.junit.Assert.assertFalse;
  * #L%
  */
 
-
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -30,7 +29,7 @@ import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
 public class MFATest extends AcyclicityTest {
-	
+
 	@Test
 	public void isMFA_datalog() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("datalog.rls")) {
@@ -39,21 +38,47 @@ public class MFATest extends AcyclicityTest {
 	}
 
 	@Test
-	public void isMFA_JA_1() throws ParsingException
-	{
+	public void isMFA_nonRecursive() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("non-recursive.rls")) {
 			assertTrue(r.isMFA());
 		}
 	}
 
 	@Test
-	public void isMFA_MFA_1() throws ParsingException
-	{
-		try (Reasoner r = this.getReasonerWithKbFromResource("MFA-1.rls")) {
+	public void isMFA_JA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("JA-1.rls")) {
 			assertTrue(r.isMFA());
 		}
 	}
+
+	@Test
+	public void isMFA_RJA_4() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-4.rls")) {
+			assertTrue(r.isMFA());
+		}
+	}
+
+	@Test
+	public void isNotMFA_RJA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-1.rls")) {
+			assertFalse(r.isMFA());
+		}
+	}
+
+	@Test
+	public void isNotMFA_RJA_2() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-2.rls")) {
+			assertFalse(r.isMFA());
+		}
+	}
 	
+	@Test
+	public void isNotMFA_RJA_3() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-3.rls")) {
+			assertFalse(r.isMFA());
+		}
+	}
+
 	@Test
 	public void isNotMFA_MFC_1() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("MFC-1.rls")) {

@@ -1,0 +1,4 @@
+hP(?x,!u), W(!u) :- B(?x) .
+pO(?x, !v), B(!v) :- W(?x) .
+hP(?x, ?y) :- pO(?y, ?x) .
+pO(?x, ?y) :- hP(?y, ?x) .

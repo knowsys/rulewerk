@@ -38,16 +38,44 @@ public class MFCTest extends AcyclicityTest {
 	}
 
 	@Test
-	public void isNotMFC_JA_1() throws ParsingException {
+	public void isNotMFC_nonRecursive() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("non-recursive.rls")) {
+			assertFalse(r.isMFC());
+		}
+	}
+	
+	@Test
+	public void isNotMFC_JA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("JA-1.rls")) {
 			assertFalse(r.isMFC());
 		}
 	}
 
 	@Test
-	public void isNotMFC_MFA_1() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("MFA-1.rls")) {
+	public void isNotMFC_RJA_4() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-4.rls")) {
 			assertFalse(r.isMFC());
+		}
+	}
+	
+	@Test
+	public void isMFC_RJA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-1.rls")) {
+			assertTrue(r.isMFC());
+		}
+	}
+	
+	@Test
+	public void isMFC_RJA_2() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-2.rls")) {
+			assertTrue(r.isMFC());
+		}
+	}
+	
+	@Test
+	public void isMFC_RJA_3() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-3.rls")) {
+			assertTrue(r.isMFC());
 		}
 	}
 	

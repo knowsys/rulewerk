@@ -38,16 +38,48 @@ public class RJATest extends AcyclicityTest {
 	}
 
 	@Test
-	public void isRJA_JA_1() throws ParsingException {
+	public void isRJA_nonRecursive() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("non-recursive.rls")) {
 			assertTrue(r.isRJA());
 		}
 	}
-
+	
 	@Test
-	public void isNotRJA_MFA_1() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("MFA-1.rls")) {
-			assertFalse(r.isRJA());
+	public void isJRA_JA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("JA-1.rls")) {
+			assertTrue(r.isRJA());
+		}
+	}
+	
+	//FIXME should be RJA
+	@Test
+	public void isRJA_RJA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-1.rls")) {
+			assertTrue(r.isRJA());
+		}
+	}
+
+	//FIXME should be RJA
+	@Test
+	public void isRJA_RJA_2() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-2.rls")) {
+			assertTrue(r.isRJA());
+		}
+	}
+	
+	//FIXME should be RJA
+	@Test
+	public void isRJA_RJA_3() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-3.rls")) {
+			assertTrue(r.isRJA());
+		}
+	}
+
+	// FIXME should be RJA
+	@Test
+	public void isRJA_RJA_4() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-4.rls")) {
+			assertTrue(r.isRJA());
 		}
 	}
 	
