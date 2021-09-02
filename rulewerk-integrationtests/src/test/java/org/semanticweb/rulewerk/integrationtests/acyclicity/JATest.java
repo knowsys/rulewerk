@@ -79,6 +79,13 @@ public class JATest extends AcyclicityTest {
 			assertFalse(r.isJA());
 		}
 	}
+	
+	@Test
+	public void isNotJA_RMFA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RMFA-1.rls")) {
+			assertFalse(r.isJA());
+		}
+	}
 
 	@Test
 	public void isNotJA_MFC_1() throws ParsingException {

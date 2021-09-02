@@ -59,6 +59,13 @@ public class MFCTest extends AcyclicityTest {
 	}
 	
 	@Test
+	public void isMFC_RMFA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RMFA-1.rls")) {
+			assertTrue(r.isMFC());
+		}
+	}
+	
+	@Test
 	public void isMFC_RJA_1() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-1.rls")) {
 			assertTrue(r.isMFC());

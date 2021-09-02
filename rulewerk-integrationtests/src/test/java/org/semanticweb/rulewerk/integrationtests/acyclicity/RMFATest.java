@@ -78,6 +78,14 @@ public class RMFATest extends AcyclicityTest {
 			assertTrue(r.isRMFA());
 		}
 	}
+	
+	//FIXME should be RMFA
+	@Test
+	public void isRMFA_RMFA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("RMFA-1.rls")) {
+			assertTrue(r.isRMFA());
+		}
+	}
 
 	// FIXME fix RMFA check
 	// @Ignore
