@@ -223,7 +223,7 @@ public class KnowledgeBaseAnalyser {
 			if (approximatedPredicates.addAll(adjacencyListMap.get(predicate))) {
 				for (Predicate successor : adjacencyListMap.get(predicate)) {
 					if (!visited.contains(successor) && !newlyApproximated.contains(successor)) {
-						newlyApproximated.add(predicate);
+						newlyApproximated.add(successor);
 					}
 				}
 			}
