@@ -74,8 +74,8 @@ public class JATest extends AcyclicityTest {
 	}
 
 	@Test
-	public void isNotJA_RJA_4() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-4.rls")) {
+	public void isNotJA_MFA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("MFA-1.rls")) {
 			assertFalse(r.isJA());
 		}
 	}

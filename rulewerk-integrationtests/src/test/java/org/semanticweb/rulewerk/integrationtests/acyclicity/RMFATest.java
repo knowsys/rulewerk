@@ -73,8 +73,8 @@ public class RMFATest extends AcyclicityTest {
 	}
 
 	@Test
-	public void isRMFA_RJA_4() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-4.rls")) {
+	public void isRMFA_MFA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("MFA-1.rls")) {
 			assertTrue(r.isRMFA());
 		}
 	}

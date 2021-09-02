@@ -75,11 +75,10 @@ public class RJATest extends AcyclicityTest {
 		}
 	}
 
-	// FIXME should be RJA
 	@Test
-	public void isRJA_RJA_4() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-4.rls")) {
-			assertTrue(r.isRJA());
+	public void isRJA_MFA_1() throws ParsingException {
+		try (Reasoner r = this.getReasonerWithKbFromResource("MFA-1.rls")) {
+			assertFalse(r.isRJA());
 		}
 	}
 	
