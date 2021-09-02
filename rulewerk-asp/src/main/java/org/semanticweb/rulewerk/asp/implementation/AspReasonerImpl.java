@@ -206,10 +206,12 @@ public class AspReasonerImpl implements AspReasoner {
 		try (AspSolver solver = instantiateSolver(true, 0)) {
 			solver.exec();
 			Grounder grounder = instantiateGrounder(solver);
+			System.out.println("Start grounding...");
 			if (!grounder.ground()) {
 				return false;
 			}
 
+			System.out.println("Start solving...");
 			solver.solve();
 			cautiousAnswerSet = getLastAnswerSet(solver.getReaderFromSolver(), grounder.getIntegerLiteralMap());
 
@@ -307,12 +309,14 @@ public class AspReasonerImpl implements AspReasoner {
 		try (AspSolver solver = instantiateSolver(false, maximum)) {
 			solver.exec();
 			Grounder grounder = instantiateGrounder(solver);
+			System.out.println("Start grounding...");
 			if (!grounder.ground()) {
 				LOGGER.error("An error occurred while grounding the ASP knowledge base.");
 				return AnswerSetIteratorImpl.getErrorAnswerSetIterator();
 			}
 
 			try {
+				System.out.println("Start solving...");
 				solver.solve();
 			} catch (InterruptedException interruptedException) {
 				LOGGER.warn("Clasp was interrupted while computing the answer sets.");

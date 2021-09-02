@@ -25,6 +25,7 @@ import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.asp.model.Grounder;
 import org.semanticweb.rulewerk.core.model.api.*;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
+import org.semanticweb.rulewerk.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
@@ -71,6 +72,7 @@ public class AspifGrounder implements Grounder {
 	public boolean ground() {
 		try {
 			this.reasoner.reason();
+			System.out.println("Over-approximation computed");
 			writer.write("asp 1 0 0");
 			writer.newLine();
 
