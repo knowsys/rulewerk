@@ -652,11 +652,11 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public CyclicityResult checkForCycles() {
-		final boolean acyclic = this.isJA() || this.isRJA() || this.isMFA() || this.isRMFA();
+		final boolean acyclic = this.checkCyclicityProperty(Acyclicity.JA) || this.checkCyclicityProperty(Acyclicity.RJA) || this.checkCyclicityProperty(Acyclicity.MFA) || this.checkCyclicityProperty(Acyclicity.RMFA);
 		if (acyclic) {
 			return CyclicityResult.ACYCLIC;
 		} else {
-			final boolean cyclic = this.isMFC();
+			final boolean cyclic = this.checkCyclicityProperty(Cyclicity.MFC);
 			if (cyclic) {
 				return CyclicityResult.CYCLIC;
 			}

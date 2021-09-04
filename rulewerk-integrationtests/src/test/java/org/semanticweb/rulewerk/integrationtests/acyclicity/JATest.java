@@ -33,7 +33,8 @@ public class JATest extends AcyclicityTest {
 	@Test
 	public void isJA_datalog() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("datalog.rls")) {
-			assertTrue(r.isJA());
+			final boolean isJA = r.isJA();
+			assertTrue(isJA);
 		}
 	}
 	
