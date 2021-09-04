@@ -1,4 +1,4 @@
-package org.semanticweb.rulewerk.integrationtests.vlogissues;
+package org.semanticweb.rulewerk.integrationtests.acyclicity;
 
 /*-
  * #%L
@@ -20,12 +20,14 @@ package org.semanticweb.rulewerk.integrationtests.vlogissues;
  * #L%
  */
 
+
 import org.semanticweb.rulewerk.integrationtests.IntegrationTest;
 
-abstract class VLogIssue extends IntegrationTest {
+public abstract class AcyclicityTest extends IntegrationTest {
+
 	@Override
 	protected String getResourcePrefix() {
-		return "/vlogissues/";
+		return "/acyclicity/";
 	}
 
 }
