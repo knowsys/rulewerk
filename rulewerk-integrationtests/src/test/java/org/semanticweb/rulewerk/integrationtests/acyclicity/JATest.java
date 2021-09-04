@@ -44,7 +44,6 @@ public class JATest extends AcyclicityTest {
 	}
 	
 	//FIXME this should be JA
-//	@Ignore
 	@Test
 	public void isJA_JA_1() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("JA-1.rls")) {

@@ -25,6 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.semanticweb.rulewerk.core.reasoner.LogLevel;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
@@ -96,10 +97,12 @@ public class RJATest extends AcyclicityTest {
 		}
 	}
 	
-	//FIXME: should not be RJA
+	//FIXME: https://github.com/karmaresearch/vlog/issues/77
 	@Test
 	public void isNotRJA_RMFC_1() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("RMFC-1.rls")) {
+			r.setLogLevel(LogLevel.DEBUG);
+			r.setLogFile("src/test/debug.out");
 			assertFalse(r.isRJA());
 		}
 	}
