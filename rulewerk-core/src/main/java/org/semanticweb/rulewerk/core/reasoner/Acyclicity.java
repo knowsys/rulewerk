@@ -44,15 +44,4 @@ public enum Acyclicity implements RulesetCyclicityProperty {
 		return Type.ACYCLIC;
 	}
 
-//	@Override
-//	public boolean isCyclic() {
-//		return false;
-//	}
-//
-//	@Override
-//	public boolean isAcyclic() {
-//		return true;
-//	}
-
-	
 }
