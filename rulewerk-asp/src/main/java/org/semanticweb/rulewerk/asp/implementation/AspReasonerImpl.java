@@ -328,6 +328,18 @@ public class AspReasonerImpl implements AspReasoner {
 	}
 
 	@Override
+	public void groundToFile(String file) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+		Grounder grounder = new AspifGrounder(knowledgeBase, datalogReasoner, writer, overApproximatedPredicates);
+		System.out.println("Start grounding...");
+		if (!grounder.ground()) {
+			LOGGER.error("An error occurred while grounding the ASP knowledge base.");
+		}
+		writer.close();
+		System.out.println("Grounding done...");
+	}
+
+	@Override
 	public AspSolver instantiateSolver(boolean cautious, int maximumAnswerSets) throws IOException {
 		return new Clasp(cautious, maximumAnswerSets, getReasoningTimeout());
 	}

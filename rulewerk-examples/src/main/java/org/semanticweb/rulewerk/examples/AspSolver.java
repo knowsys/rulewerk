@@ -53,6 +53,8 @@ public class AspSolver {
 		CommandLine line;
 		String[] programs;
 		boolean cautious = false;
+		boolean groundOnly = false;
+		String groundingFile = null;
 		int limit = 0;
 
 		// Prepare command line options
@@ -61,7 +63,7 @@ public class AspSolver {
 		options.addOption(Option.builder("e").longOpt("enum-mode").hasArg().numberOfArgs(1).desc("Enumeration mode:\n" +
 			"\tcautious:\t Compute cautious consequences").build());
 		options.addOption(Option.builder("f").longOpt("filter").hasArg().numberOfArgs(2).desc("Filter answer set for given predicate").build());
-		// options.addOption(Option.builder("g").longOpt("ground").desc("Compute the (aspif) grounding only").build());
+		options.addOption(Option.builder("g").longOpt("ground").hasArg().desc("Compute the (aspif) grounding only").build());
 
 		// Parse command line arguments
 		CommandLineParser parser = new DefaultParser();
@@ -76,6 +78,11 @@ public class AspSolver {
 					System.out.println("Enumeration mode supports only cautious reasoning: -e cautious");
 					return;
 				}
+			}
+			if (line.hasOption("g")) {
+				groundOnly = true;
+				groundingFile = line.getOptionValue("g");
+
 			}
 			if (line.hasOption("n")) {
 				try {
@@ -145,6 +152,12 @@ public class AspSolver {
 					resultCount++;
 				}
 				System.out.println();
+			}
+		} else if (groundOnly) {
+			try {
+				reasoner.groundToFile(groundingFile);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		} else {
 			System.out.println("Searching for answer sets:");

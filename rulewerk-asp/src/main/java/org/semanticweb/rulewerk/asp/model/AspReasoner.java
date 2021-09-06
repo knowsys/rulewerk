@@ -71,6 +71,8 @@ public interface AspReasoner extends Reasoner {
 	 */
 	AnswerSetIterator getAnswerSets(int maximum) throws IOException;
 
+	void groundToFile(String file) throws IOException;
+
 	/**
 	 * Creates an {@link AspSolver} for a single reasoning task.
 	 *
