@@ -41,6 +41,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -154,8 +155,17 @@ public class AspSolver {
 				System.out.println();
 			}
 		} else if (groundOnly) {
+			Set<Predicate> predicates;
+			if (line.hasOption("f")) {
+				String name = line.getOptionValues("f")[0];
+				int arity = Integer.parseInt(line.getOptionValues("f")[1]);
+				predicates = new HashSet<>();
+				predicates.add(Expressions.makePredicate(name, arity));
+			} else {
+				predicates = kb.getPredicates();
+			}
 			try {
-				reasoner.groundToFile(groundingFile);
+				reasoner.groundToFile(groundingFile, predicates);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

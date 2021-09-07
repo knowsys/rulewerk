@@ -328,11 +328,11 @@ public class AspReasonerImpl implements AspReasoner {
 	}
 
 	@Override
-	public void groundToFile(String file) throws IOException {
+	public void groundToFile(String file, Set<Predicate> predicates) throws IOException {
 		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 		Grounder grounder = new AspifGrounder(knowledgeBase, datalogReasoner, writer, overApproximatedPredicates);
 		System.out.println("Start grounding...");
-		if (!grounder.ground(true)) {
+		if (!grounder.ground(true, predicates)) {
 			LOGGER.error("An error occurred while grounding the ASP knowledge base.");
 		}
 		writer.close();

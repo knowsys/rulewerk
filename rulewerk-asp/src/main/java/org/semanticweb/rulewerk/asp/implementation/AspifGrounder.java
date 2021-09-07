@@ -70,11 +70,11 @@ public class AspifGrounder implements Grounder {
 
 	@Override
 	public boolean ground() {
-		return ground(false);
+		return ground(false, Collections.emptySet());
 	}
 
 	@Override
-	public boolean ground(boolean literalsAsStrings) {
+	public boolean ground(boolean literalsAsStrings, Set<Predicate> predicates) {
 		try {
 			this.reasoner.reason();
 			System.out.println("Over-approximation computed");
@@ -91,6 +91,11 @@ public class AspifGrounder implements Grounder {
 
 			if (literalsAsStrings) {
 				for (Map.Entry<Integer, AspifIdentifier> entry : AspifIdentifier.getIntegerAspifIdentifierMap().entrySet()) {
+					Predicate predicate = entry.getValue().getPositiveLiteral().getPredicate();
+					if (!predicates.contains(predicate)) {
+						continue;
+					}
+
 					Integer aspifValue = entry.getKey();
 					String literalString = entry.getValue().getPositiveLiteral().toString();
 					// We encode a literal in the answer set by its aspif integer, and we transform it back with the help of the

@@ -21,10 +21,12 @@ package org.semanticweb.rulewerk.asp.model;
  */
 
 import org.semanticweb.rulewerk.core.model.api.Literal;
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.model.api.StatementVisitor;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A grounder is used to transform an ASP program with variables into an ground program, i.e., a program without
@@ -45,9 +47,11 @@ public interface Grounder extends StatementVisitor<Boolean> {
 	 * Grounds the knowledge base. Returns true if the grounding was successful.
 	 *
 	 * @param stringRepresentation whether the literals should be written as strings (otherwise integers are used)
+	 * @param predicates the predicates for which the literals should be added to the grounding,
+	 *                      only if stringRepresentation is requested
 	 * @return whether the grounding was successful
 	 */
-	boolean ground(boolean stringRepresentation) throws IOException;
+	boolean ground(boolean stringRepresentation, Set<Predicate> predicates) throws IOException;
 
 	/**
 	 * During grounding integers might be used to represent literals in a short way. This function gets the map that

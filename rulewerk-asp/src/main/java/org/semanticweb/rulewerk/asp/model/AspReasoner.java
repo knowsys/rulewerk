@@ -20,11 +20,13 @@ package org.semanticweb.rulewerk.asp.model;
  * #L%
  */
 
+import org.semanticweb.rulewerk.core.model.api.Predicate;
 import org.semanticweb.rulewerk.core.reasoner.Algorithm;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * Interface that extends the standard reasoner by ASP specific features
@@ -71,13 +73,19 @@ public interface AspReasoner extends Reasoner {
 	 */
 	AnswerSetIterator getAnswerSets(int maximum) throws IOException;
 
-	void groundToFile(String file) throws IOException;
+	/**
+	 * Write the grounding to the file, while only using show statements for literals whose predicates is in predicates
+	 * @param file the file to write to
+	 * @param predicateSet the set of predicates of interest
+	 * @throws IOException an IO exception
+	 */
+	void groundToFile(String file, Set<Predicate> predicateSet) throws IOException;
 
 	/**
 	 * Creates an {@link AspSolver} for a single reasoning task.
 	 *
 	 * @param cautious whether reasoning should be cautious
-	 * @param answerSetMaximum determines the maximum number of answer sets (if this is set to 0, all answer sets are returned)
+	 * @param maximumAnswerSets determines the maximum number of answer sets (if this is set to 0, all answer sets are returned)
 	 *
 	 * @return an asp solver
 	 * @throws IOException an IO exception
