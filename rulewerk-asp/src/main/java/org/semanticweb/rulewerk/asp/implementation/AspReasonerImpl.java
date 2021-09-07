@@ -332,7 +332,7 @@ public class AspReasonerImpl implements AspReasoner {
 		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 		Grounder grounder = new AspifGrounder(knowledgeBase, datalogReasoner, writer, overApproximatedPredicates);
 		System.out.println("Start grounding...");
-		if (!grounder.ground()) {
+		if (!grounder.ground(true)) {
 			LOGGER.error("An error occurred while grounding the ASP knowledge base.");
 		}
 		writer.close();

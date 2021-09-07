@@ -70,6 +70,11 @@ public class AspifGrounder implements Grounder {
 
 	@Override
 	public boolean ground() {
+		return ground(false);
+	}
+
+	@Override
+	public boolean ground(boolean literalsAsStrings) {
 		try {
 			this.reasoner.reason();
 			System.out.println("Over-approximation computed");
@@ -84,13 +89,26 @@ public class AspifGrounder implements Grounder {
 				}
 			}
 
-			for (Integer aspifValue : AspifIdentifier.getIntegerAspifIdentifierMap().keySet()) {
-				// We encode a literal in the answer set by its aspif integer, and we transform it back with the help of the
-				// integer-to-literal map later.
-				writer.write("4 "
-					+ aspifValue.toString().length() + " " + aspifValue.toString()
-					+ " 1 " + aspifValue.toString());
-				writer.newLine();
+			if (literalsAsStrings) {
+				for (Map.Entry<Integer, AspifIdentifier> entry : AspifIdentifier.getIntegerAspifIdentifierMap().entrySet()) {
+					Integer aspifValue = entry.getKey();
+					String literalString = entry.getValue().getPositiveLiteral().toString();
+					// We encode a literal in the answer set by its aspif integer, and we transform it back with the help of the
+					// integer-to-literal map later.
+					writer.write("4 "
+						+ literalString.length() + " " + literalString
+						+ " 1 " + aspifValue.toString());
+					writer.newLine();
+				}
+			} else {
+				for (Integer aspifValue : AspifIdentifier.getIntegerAspifIdentifierMap().keySet()) {
+					// We encode a literal in the answer set by its aspif integer, and we transform it back with the help of the
+					// integer-to-literal map later.
+					writer.write("4 "
+						+ aspifValue.toString().length() + " " + aspifValue.toString()
+						+ " 1 " + aspifValue.toString());
+					writer.newLine();
+				}
 			}
 
 			writer.write("0");

@@ -42,6 +42,14 @@ public interface Grounder extends StatementVisitor<Boolean> {
 	boolean ground() throws IOException;
 
 	/**
+	 * Grounds the knowledge base. Returns true if the grounding was successful.
+	 *
+	 * @param stringRepresentation whether the literals should be written as strings (otherwise integers are used)
+	 * @return whether the grounding was successful
+	 */
+	boolean ground(boolean stringRepresentation) throws IOException;
+
+	/**
 	 * During grounding integers might be used to represent literals in a short way. This function gets the map that
 	 * contains this integer-to-literal mapping, used by the grounder.
 	 *
