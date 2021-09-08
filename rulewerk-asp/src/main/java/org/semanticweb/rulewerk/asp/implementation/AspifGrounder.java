@@ -105,6 +105,26 @@ public class AspifGrounder implements Grounder {
 						+ " 1 " + aspifValue.toString());
 					writer.newLine();
 				}
+
+				for (Predicate predicate : predicates) {
+					if (overApproximatedPredicates.contains(predicate)) {
+						continue;
+					}
+
+					List<Term> variables = new ArrayList<>();
+					for (int i=0; i<predicate.getArity(); i++) {
+						variables.add(Expressions.makeUniversalVariable("X" + i));
+					}
+					PositiveLiteral query = Expressions.makePositiveLiteral(predicate, variables);
+					QueryResultIterator resultIterator = reasoner.answerQuery(query, true);
+
+					while (resultIterator.hasNext()) {
+						String literalString = Expressions.makePositiveLiteral(predicate, resultIterator.next().getTerms()).toString();
+						writer.write("4 "
+							+ literalString.length() + " " + literalString + " 0");
+						writer.newLine();
+					}
+				}
 			} else {
 				for (Integer aspifValue : AspifIdentifier.getIntegerAspifIdentifierMap().keySet()) {
 					// We encode a literal in the answer set by its aspif integer, and we transform it back with the help of the
