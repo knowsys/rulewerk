@@ -1,5 +1,25 @@
 package org.semanticweb.rulewerk.reasoner.vlog;
 
+/*-
+ * #%L
+ * Rulewerk VLog Reasoner Support
+ * %%
+ * Copyright (C) 2018 - 2021 Rulewerk Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import java.io.IOException;
 import java.util.Collection;
 
@@ -20,6 +40,7 @@ import karmaresearch.vlog.VLog.CyclicCheckResult;
 import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 //TODO add javadoc
+//TODO state management
 public class VLogStaticAnalyser implements AutoCloseable {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(VLogStaticAnalyser.class);
@@ -32,11 +53,6 @@ public class VLogStaticAnalyser implements AutoCloseable {
 		super();
 		this.setLogLevel(this.internalLogLevel);
 	}
-
-	// TODO would the Reasoner Rule rewrite strategy influence termination?
-	// vLog.setRules(rules, rewriteStrategy);
-	// vLog.addData(predicate, contents);
-	// vLog.start(edbconfig, isFile);
 
 	public void setLogLevel(final LogLevel logLevel) {
 		// this.validateNotClosed();
@@ -127,19 +143,8 @@ public class VLogStaticAnalyser implements AutoCloseable {
 //	// will not. So there can be a table with facts that never changes, and we can
 //	// load that into the acyclicity check.
 //	// if fact over pred P, introduce aux_P, fact over aux_P and aux_P -> P
-//
-//	// TODO warning if you have negation + restricted chase?
-//
-//	// TODO rename rules to VLog to do the check
-//	static boolean checkProperty(final VLog vLog, final AcyclicityProperty acyclicityProperty) {
-//		CyclicCheckResult checkCyclic;
-//		try {
-//			checkCyclic = vLog.checkCyclic(acyclicityProperty.name());
-//		} catch (final NotStartedException e) {
-//			throw new RuntimeException(e.getMessage(), e); // should be impossible
-//		}
-//		return CyclicCheckResult.NON_CYCLIC == checkCyclic;
-//	}
+
+	// TODO warning if you have negation + restricted chase?
 
 	@Override
 	public void close() {
@@ -147,7 +152,6 @@ public class VLogStaticAnalyser implements AutoCloseable {
 //			LOGGER.info("Reasoner is already closed.");
 //		} else {
 //			this.reasonerState = ReasonerState.CLOSED;
-//			this.knowledgeBase.deleteListener(this);
 		this.vLog.stop();
 		LOGGER.info("Analyser closed.");
 //		}

@@ -19,14 +19,20 @@ package org.semanticweb.rulewerk.core.reasoner;
  * limitations under the License.
  * #L%
  */
-//TODO javadoc
 
+/**
+ * Property that characterizes a set of rules.
+ * 
+ * @author dragoste
+ *
+ */
+//TODO detail javadoc
 public interface RulesCyclicityProperty {
 
 	static enum Type {
 		CYCLIC, ACYCLIC
 	}
-	 
+
 	Type getType();
 
 	String name();

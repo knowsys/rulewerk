@@ -21,7 +21,6 @@ package org.semanticweb.rulewerk.core.reasoner;
  */
 
 //TODO javadoc
-
 public enum Cyclicity implements RulesCyclicityProperty {
 	/**
 	 * Model-Faithful Cyclicity
@@ -31,7 +30,7 @@ public enum Cyclicity implements RulesCyclicityProperty {
 	 * Restricted Model-Faithful Cyclicity
 	 */
 	RMFC;
-	
+
 	@Override
 	public Type getType() {
 		return Type.CYCLIC;

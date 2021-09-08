@@ -1,6 +1,5 @@
 package org.semanticweb.rulewerk.integrationtests.acyclicity;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.reasoner.Cyclicity;
 import org.semanticweb.rulewerk.parser.ParsingException;
@@ -10,7 +9,7 @@ public class RMFCTest extends AcyclicityTest {
 	private void checkIsRMFC(final String resourceName, boolean expected) throws ParsingException {
 		this.checkHasProperty(resourceName, Cyclicity.RMFC, expected);
 	}
-	
+
 	@Test
 	public void isNotRMFC_datalog() throws ParsingException {
 		this.checkIsRMFC("datalog.rls", false);
@@ -31,8 +30,8 @@ public class RMFCTest extends AcyclicityTest {
 		this.checkIsRMFC("MFA_1.rls", false);
 	}
 
-	//TODO should be RMFC
-	@Ignore
+	// TODO should not be RMFC
+//	@Ignore
 	@Test
 	public void isNotRMFC_RMFA_1() throws ParsingException {
 		this.checkIsRMFC("RMFA_1.rls", false);
@@ -53,8 +52,8 @@ public class RMFCTest extends AcyclicityTest {
 		this.checkIsRMFC("RJA_3.rls", false);
 	}
 
-	//TODO should be RMFC
-	@Ignore
+	// TODO should be RMFC
+//	@Ignore
 	@Test
 	public void isRMFC_MFC_1() throws ParsingException {
 		this.checkIsRMFC("MFC_1.rls", true);

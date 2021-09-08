@@ -593,31 +593,6 @@ public class VLogReasoner implements Reasoner {
 		this.vLog.setLogFile(filePath);
 	}
 
-	@Override
-	public boolean isJA() {
-		return this.checkCyclicityProperty(Acyclicity.JA);
-	}
-
-	@Override
-	public boolean isRJA() {
-		return this.checkCyclicityProperty(Acyclicity.RJA);
-	}
-
-	@Override
-	public boolean isMFA() {
-		return this.checkCyclicityProperty(Acyclicity.MFA);
-	}
-
-	@Override
-	public boolean isRMFA() {
-		return this.checkCyclicityProperty(Acyclicity.RMFA);
-	}
-
-	@Override
-	public boolean isMFC() {
-		return this.checkCyclicityProperty(Cyclicity.MFC);
-	}
-
 	public boolean checkCyclicityProperty(RulesCyclicityProperty property) {
 
 		this.validateNotClosed();
@@ -635,7 +610,7 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RulewerkRuntimeException(e.getMessage(), e); // should be impossible
 		}
-		
+
 		switch (property.getType()) {
 		case ACYCLIC:
 			return checkCyclic == CyclicCheckResult.NON_CYCLIC;
@@ -650,7 +625,9 @@ public class VLogReasoner implements Reasoner {
 
 	@Override
 	public CyclicityResult checkForCycles() {
-		final boolean acyclic = this.checkCyclicityProperty(Acyclicity.JA) || this.checkCyclicityProperty(Acyclicity.RJA) || this.checkCyclicityProperty(Acyclicity.MFA) || this.checkCyclicityProperty(Acyclicity.RMFA);
+		final boolean acyclic = this.checkCyclicityProperty(Acyclicity.JA)
+				|| this.checkCyclicityProperty(Acyclicity.RJA) || this.checkCyclicityProperty(Acyclicity.MFA)
+				|| this.checkCyclicityProperty(Acyclicity.RMFA);
 		if (acyclic) {
 			return CyclicityResult.ACYCLIC;
 		} else {
