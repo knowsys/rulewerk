@@ -62,8 +62,6 @@ public class RJATest extends AcyclicityTest {
 		this.checkIsRJA("MFC_1.rls", false);
 	}
 
-	// FIXME: https://github.com/karmaresearch/vlog/issues/77
-	@Ignore
 	@Test
 	public void isNotRJA_RMFC_1() throws ParsingException {
 		this.checkIsRJA("RMFC_1.rls", false);
