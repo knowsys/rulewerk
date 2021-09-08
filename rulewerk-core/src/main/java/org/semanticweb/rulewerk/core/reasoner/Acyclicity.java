@@ -31,6 +31,14 @@ public enum Acyclicity implements RulesCyclicityProperty {
 	 */
 	RJA,
 	/**
+	 * Model-Summarizing Acyclicity
+	 */
+	MSA,
+	/**
+	 * Restricted Model-Summarizing Acyclicity
+	 */
+	RMSA,
+	/**
 	 * Model-Faithful Acyclicity
 	 */
 	MFA,
