@@ -1,5 +1,11 @@
 package org.semanticweb.rulewerk.integrationtests.acyclicity;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.semanticweb.rulewerk.core.reasoner.RulesCyclicityProperty;
+
 /*-
  * #%L
  * Rulewerk Integration Tests
@@ -20,14 +26,28 @@ package org.semanticweb.rulewerk.integrationtests.acyclicity;
  * #L%
  */
 
-
 import org.semanticweb.rulewerk.integrationtests.IntegrationTest;
+import org.semanticweb.rulewerk.parser.ParsingException;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogStaticAnalyser;
 
 public abstract class AcyclicityTest extends IntegrationTest {
 
 	@Override
 	protected String getResourcePrefix() {
 		return "/acyclicity/";
+	}
+
+	protected void checkHasProperty(final String resourceName, RulesCyclicityProperty property, boolean expected)
+			throws ParsingException {
+		final KnowledgeBase knowledgeBase = this.parseKbFromResource(resourceName);
+		try (VLogStaticAnalyser staticAnalyser = new VLogStaticAnalyser()) {
+			boolean hasProperty = staticAnalyser.checkProperty(property, knowledgeBase.getRules());
+			if (expected) {
+				assertTrue(hasProperty);
+			} else {
+				assertFalse(hasProperty);
+			}
+		}
 	}
 
 }

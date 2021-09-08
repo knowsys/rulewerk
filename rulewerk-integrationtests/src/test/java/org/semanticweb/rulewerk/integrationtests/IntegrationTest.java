@@ -90,4 +90,5 @@ public abstract class IntegrationTest {
 	protected Reasoner getReasonerWithKbFromResource(final String resourceName) throws ParsingException {
 		return new VLogReasoner(this.parseKbFromResource(resourceName));
 	}
+	
 }

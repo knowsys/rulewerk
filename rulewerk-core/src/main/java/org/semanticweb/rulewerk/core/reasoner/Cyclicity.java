@@ -22,7 +22,7 @@ package org.semanticweb.rulewerk.core.reasoner;
 
 //TODO javadoc
 
-public enum Cyclicity implements RulesetCyclicityProperty {
+public enum Cyclicity implements RulesCyclicityProperty {
 	/**
 	 * Model-Faithful Cyclicity
 	 */

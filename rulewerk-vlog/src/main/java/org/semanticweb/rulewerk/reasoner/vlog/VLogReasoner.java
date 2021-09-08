@@ -54,7 +54,7 @@ import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.ReasonerState;
 import org.semanticweb.rulewerk.core.reasoner.RuleRewriteStrategy;
-import org.semanticweb.rulewerk.core.reasoner.RulesetCyclicityProperty;
+import org.semanticweb.rulewerk.core.reasoner.RulesCyclicityProperty;
 import org.semanticweb.rulewerk.core.reasoner.implementation.EmptyQueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.implementation.QueryAnswerCountImpl;
 import org.slf4j.Logger;
@@ -618,7 +618,7 @@ public class VLogReasoner implements Reasoner {
 		return this.checkCyclicityProperty(Cyclicity.MFC);
 	}
 
-	public boolean checkCyclicityProperty(RulesetCyclicityProperty property) {
+	public boolean checkCyclicityProperty(RulesCyclicityProperty property) {
 
 		this.validateNotClosed();
 		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
@@ -635,9 +635,7 @@ public class VLogReasoner implements Reasoner {
 		} catch (final NotStartedException e) {
 			throw new RulewerkRuntimeException(e.getMessage(), e); // should be impossible
 		}
-		if (this.reasoningCompleted) {
-
-		}
+		
 		switch (property.getType()) {
 		case ACYCLIC:
 			return checkCyclic == CyclicCheckResult.NON_CYCLIC;

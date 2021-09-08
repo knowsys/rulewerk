@@ -1,105 +1,65 @@
 package org.semanticweb.rulewerk.integrationtests.acyclicity;
 
-/*-
- * #%L
- * Rulewerk Integration Tests
- * %%
- * Copyright (C) 2018 - 2021 Rulewerk Developers
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Ignore;
 import org.junit.Test;
-import org.semanticweb.rulewerk.core.reasoner.Reasoner;
+import org.semanticweb.rulewerk.core.reasoner.Acyclicity;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
 public class JATest extends AcyclicityTest {
 
+	private void checkIsJA(final String resourceName, boolean expected) throws ParsingException {
+		this.checkHasProperty(resourceName, Acyclicity.JA, expected);
+	}
+
 	@Test
 	public void isJA_datalog() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("datalog.rls")) {
-			final boolean isJA = r.isJA();
-			assertTrue(isJA);
-		}
+		this.checkIsJA("datalog.rls", true);
 	}
-	
+
 	@Test
 	public void isJA_nonRecursive() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("non-recursive.rls")) {
-			assertTrue(r.isJA());
-		}
+		this.checkIsJA("nonRecursive.rls", true);
 	}
-	
-	//FIXME this should be JA
+
+	// FIXME this should be JA
 	@Ignore
 	@Test
 	public void isJA_JA_1() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("JA-1.rls")) {
-			assertTrue(r.isJA());
-		}
+		this.checkIsJA("JA_1.rls", true);
 	}
-	
+
 	@Test
 	public void isNotJA_RJA_1() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-1.rls")) {
-			assertFalse(r.isJA());
-		}
+		this.checkIsJA("RJA_1.rls", false);
 	}
-	
+
 	@Test
 	public void isNotJA_RJA_2() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-2.rls")) {
-			assertFalse(r.isJA());
-		}
+		this.checkIsJA("RJA_2.rls", false);
 	}
-	
+
 	@Test
 	public void isNotJA_RJA_3() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("RJA-3.rls")) {
-			assertFalse(r.isJA());
-		}
+		this.checkIsJA("RJA_3.rls", false);
 	}
 
 	@Test
 	public void isNotJA_MFA_1() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("MFA-1.rls")) {
-			assertFalse(r.isJA());
-		}
+		this.checkIsJA("MFA_1.rls", false);
 	}
-	
+
 	@Test
 	public void isNotJA_RMFA_1() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("RMFA-1.rls")) {
-			assertFalse(r.isJA());
-		}
+		this.checkIsJA("RMFA_1.rls", false);
 	}
 
 	@Test
 	public void isNotJA_MFC_1() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("MFC-1.rls")) {
-			assertFalse(r.isJA());
-		}
+		this.checkIsJA("MFC_1.rls", false);
 	}
-	
+
 	@Test
 	public void isNotJA_RMFC_1() throws ParsingException {
-		try (Reasoner r = this.getReasonerWithKbFromResource("RMFC-1.rls")) {
-			assertFalse(r.isJA());
-		}
+		this.checkIsJA("RMFC_1.rls", false);
 	}
 }

@@ -21,7 +21,7 @@ package org.semanticweb.rulewerk.core.reasoner;
  */
 //TODO javadoc
 
-public interface RulesetCyclicityProperty {
+public interface RulesCyclicityProperty {
 
 	static enum Type {
 		CYCLIC, ACYCLIC

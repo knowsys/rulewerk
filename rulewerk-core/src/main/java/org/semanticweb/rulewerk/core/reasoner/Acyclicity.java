@@ -21,7 +21,7 @@ package org.semanticweb.rulewerk.core.reasoner;
  */
 
 //TODO javadoc
-public enum Acyclicity implements RulesetCyclicityProperty {
+public enum Acyclicity implements RulesCyclicityProperty {
 	/**
 	 * Joint Acyclicity
 	 */
