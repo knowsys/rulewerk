@@ -46,7 +46,7 @@ public class RMSATest  extends AcyclicityTest {
 		this.checkIsRMSA("RJA_3.rls", true);
 	}
 	
-	//TODO are the RJA, MFA and RMFA ones MSA? 
+	//TODO are the RJA, MFA and RMFA ones RMSA? 
 
 	@Test
 	public void IsNotRMSA_MFC_1() throws ParsingException {

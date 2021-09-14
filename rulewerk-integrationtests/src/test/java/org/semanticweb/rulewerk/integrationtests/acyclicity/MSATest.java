@@ -25,7 +25,30 @@ public class MSATest extends AcyclicityTest {
 		this.checkIsMSA("JA_1.rls", true);
 	}
 	
-	//TODO are the RJA, MFA and RMFA ones MSA? 
+	@Test
+	public void isNotMSA_RJA_1() throws ParsingException {
+		this.checkIsMSA("RJA_1.rls", false);
+	}
+	
+	@Test
+	public void isNotMSA_RJA_2() throws ParsingException {
+		this.checkIsMSA("RJA_2.rls", false);
+	}
+	
+	@Test
+	public void isNotMSA_RJA_3() throws ParsingException {
+		this.checkIsMSA("RJA_3.rls", false);
+	}
+	
+	@Test
+	public void isNotMSA_MFA_1() throws ParsingException {
+		this.checkIsMSA("MFA_1.rls", false);
+	}
+	
+	@Test
+	public void isNotMSA_RMFA_1() throws ParsingException {
+		this.checkIsMSA("RMFA_1.rls", false);
+	}
 
 	@Test
 	public void isNotMSA_MFC_1() throws ParsingException {

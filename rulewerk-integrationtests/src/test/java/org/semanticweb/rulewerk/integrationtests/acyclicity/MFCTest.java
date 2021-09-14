@@ -26,16 +26,6 @@ public class MFCTest extends AcyclicityTest {
 	}
 
 	@Test
-	public void isNotMFC_MFA_1() throws ParsingException {
-		this.checkIsMFC("MFA_1.rls", false);
-	}
-
-	@Test
-	public void isMFC_RMFA_1() throws ParsingException {
-		this.checkIsMFC("RMFA_1.rls", true);
-	}
-
-	@Test
 	public void isMFC_RJA_1() throws ParsingException {
 		this.checkIsMFC("RJA_1.rls", true);
 	}
@@ -48,6 +38,16 @@ public class MFCTest extends AcyclicityTest {
 	@Test
 	public void isMFC_RJA_3() throws ParsingException {
 		this.checkIsMFC("RJA_3.rls", true);
+	}
+
+	@Test
+	public void isNotMFC_MFA_1() throws ParsingException {
+		this.checkIsMFC("MFA_1.rls", false);
+	}
+
+	@Test
+	public void isMFC_RMFA_1() throws ParsingException {
+		this.checkIsMFC("RMFA_1.rls", true);
 	}
 
 	@Test
