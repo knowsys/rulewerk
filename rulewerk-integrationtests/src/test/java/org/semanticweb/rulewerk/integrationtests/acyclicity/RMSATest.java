@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.semanticweb.rulewerk.core.reasoner.Acyclicity;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
-public class RMSATest  extends AcyclicityTest {
+public class RMSATest extends AcyclicityTest {
 	private void checkIsRMSA(final String resourceName, boolean expected) throws ParsingException {
 		this.checkHasProperty(resourceName, Acyclicity.MSA, expected);
 	}
@@ -25,28 +25,33 @@ public class RMSATest  extends AcyclicityTest {
 		this.checkIsRMSA("JA_1.rls", true);
 	}
 
-	//TODO should be RMSA
+	// TODO should be RMSA
 	@Ignore
 	@Test
 	public void IsRMSA_RJA_1() throws ParsingException {
 		this.checkIsRMSA("RJA_1.rls", true);
 	}
 
-	//TODO should be RMSA
+	// TODO should be RMSA
 	@Ignore
 	@Test
 	public void IsRMSA_RJA_2() throws ParsingException {
 		this.checkIsRMSA("RJA_2.rls", true);
 	}
-	
-	//TODO should be RMSA
+
+	// TODO should be RMSA
 	@Ignore
 	@Test
 	public void IsRMSA_RJA_3() throws ParsingException {
 		this.checkIsRMSA("RJA_3.rls", true);
 	}
+
+	@Test
+	public void IsNotRMSA_MFA_1() throws ParsingException {
+		this.checkIsRMSA("MFA_1.rls", false);
+	}
 	
-	//TODO are the RJA, MFA and RMFA ones RMSA? 
+	// TODO is RMFA-1 RMSA?
 
 	@Test
 	public void IsNotRMSA_MFC_1() throws ParsingException {
