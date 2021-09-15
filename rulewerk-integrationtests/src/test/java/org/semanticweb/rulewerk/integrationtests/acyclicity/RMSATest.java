@@ -50,8 +50,11 @@ public class RMSATest extends AcyclicityTest {
 	public void IsNotRMSA_MFA_1() throws ParsingException {
 		this.checkIsRMSA("MFA_1.rls", false);
 	}
-	
-	// TODO is RMFA-1 RMSA?
+
+	@Test
+	public void IsNotRMSA_RMFA_1() throws ParsingException {
+		this.checkIsRMSA("RMFA_1.rls", false);
+	}
 
 	@Test
 	public void IsNotRMSA_MFC_1() throws ParsingException {
