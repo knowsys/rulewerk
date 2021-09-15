@@ -42,11 +42,8 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Statement;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.reasoner.Acyclicity;
 import org.semanticweb.rulewerk.core.reasoner.Algorithm;
 import org.semanticweb.rulewerk.core.reasoner.Correctness;
-import org.semanticweb.rulewerk.core.reasoner.Cyclicity;
-import org.semanticweb.rulewerk.core.reasoner.CyclicityResult;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.LogLevel;
 import org.semanticweb.rulewerk.core.reasoner.QueryAnswerCount;
@@ -54,7 +51,6 @@ import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.core.reasoner.ReasonerState;
 import org.semanticweb.rulewerk.core.reasoner.RuleRewriteStrategy;
-import org.semanticweb.rulewerk.core.reasoner.RulesCyclicityProperty;
 import org.semanticweb.rulewerk.core.reasoner.implementation.EmptyQueryResultIterator;
 import org.semanticweb.rulewerk.core.reasoner.implementation.QueryAnswerCountImpl;
 import org.slf4j.Logger;
@@ -67,7 +63,6 @@ import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
-import karmaresearch.vlog.VLog.CyclicCheckResult;
 
 /**
  * Reasoner implementation using the VLog backend.
@@ -591,52 +586,6 @@ public class VLogReasoner implements Reasoner {
 	public void setLogFile(final String filePath) {
 		this.validateNotClosed();
 		this.vLog.setLogFile(filePath);
-	}
-
-	public boolean checkCyclicityProperty(RulesCyclicityProperty property) {
-
-		this.validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			try {
-				this.load();
-			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/rulewerk/issues/128
-				throw new RulewerkRuntimeException(e);
-			}
-		}
-
-		CyclicCheckResult checkCyclic;
-		try {
-			checkCyclic = this.vLog.checkCyclic(property.name());
-		} catch (final NotStartedException e) {
-			throw new RulewerkRuntimeException(e.getMessage(), e); // should be impossible
-		}
-
-		switch (property.getType()) {
-		case ACYCLIC:
-			return checkCyclic == CyclicCheckResult.NON_CYCLIC;
-
-		case CYCLIC:
-			return checkCyclic == CyclicCheckResult.CYCLIC;
-		default:
-			throw new RulewerkRuntimeException(
-					"Unexpected cyclicity result [" + checkCyclic + "] for property [" + property + " ]!");
-		}
-	}
-
-	@Override
-	public CyclicityResult checkForCycles() {
-		final boolean acyclic = this.checkCyclicityProperty(Acyclicity.JA)
-				|| this.checkCyclicityProperty(Acyclicity.RJA) || this.checkCyclicityProperty(Acyclicity.MFA)
-				|| this.checkCyclicityProperty(Acyclicity.RMFA);
-		if (acyclic) {
-			return CyclicityResult.ACYCLIC;
-		} else {
-			final boolean cyclic = this.checkCyclicityProperty(Cyclicity.MFC);
-			if (cyclic) {
-				return CyclicityResult.CYCLIC;
-			}
-			return CyclicityResult.UNDETERMINED;
-		}
 	}
 
 	@Override

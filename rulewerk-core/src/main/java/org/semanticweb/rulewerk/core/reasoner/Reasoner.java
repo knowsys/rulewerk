@@ -135,7 +135,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @throws IOException
 	 */
 	default Correctness writeInferences(final Writer writer) throws IOException {
-		final PrefixDeclarationRegistry prefixDeclarationRegistry = this.getKnowledgeBase().getPrefixDeclarationRegistry();
+		final PrefixDeclarationRegistry prefixDeclarationRegistry = this.getKnowledgeBase()
+				.getPrefixDeclarationRegistry();
 		final Serializer serializer = new Serializer(writer, prefixDeclarationRegistry);
 
 		serializer.writePrefixDeclarationRegistry(prefixDeclarationRegistry);
@@ -176,8 +177,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
 	 * @throws FileNotFoundException
-	 * @deprecated Use {@link Reasoner#writeInferences(Writer)} instead. The
-	 *             method will disappear.
+	 * @deprecated Use {@link Reasoner#writeInferences(Writer)} instead. The method
+	 *             will disappear.
 	 */
 	@Deprecated
 	default Correctness writeInferences(final String filePath) throws FileNotFoundException, IOException {
@@ -274,14 +275,6 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *                 to the default system output.
 	 */
 	void setLogFile(String filePath);
-
-	/**
-	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic,
-	 * Cyclic, or cyclicity cannot be determined.
-	 *
-	 * @return the appropriate CyclicityResult.
-	 */
-	CyclicityResult checkForCycles();
 
 	/**
 	 * Performs materialisation on the reasoner {@link KnowledgeBase}, depending on
