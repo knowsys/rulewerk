@@ -28,6 +28,7 @@ import org.apache.commons.lang3.Validate;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
 import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.reasoner.Acyclicity;
+import org.semanticweb.rulewerk.core.reasoner.Algorithm;
 import org.semanticweb.rulewerk.core.reasoner.Cyclicity;
 import org.semanticweb.rulewerk.core.reasoner.CyclicityResult;
 import org.semanticweb.rulewerk.core.reasoner.LogLevel;
@@ -105,18 +106,35 @@ public class VLogStaticAnalyser implements AutoCloseable {
 					"Unexpected cyclicity result [" + checkCyclic + "] for property [" + property + " ]!");
 		}
 	}
-	
-	//TODO change interface for restricted acyclicity or cyclicity
-	/**
-	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic,
-	 * Cyclic, or cyclicity cannot be determined.
-	 *
-	 * @return the appropriate CyclicityResult.
-	 */
-	public CyclicityResult checkForCycles(final Collection<Rule> rules) {
-		final boolean acyclic = this.checkProperty(Acyclicity.JA,rules)
-				|| this.checkProperty(Acyclicity.RJA, rules) || this.checkProperty(Acyclicity.MFA, rules)
-				|| this.checkProperty(Acyclicity.RMFA, rules);
+
+	// TODO add javadoc
+	public CyclicityResult checkForCycles(final Collection<Rule> rules, final Algorithm algorithm) {
+		switch (algorithm) {
+		case RESTRICTED_CHASE:
+			return this.checkForCyclesRestrictedChase(rules);
+		case SKOLEM_CHASE:
+			return this.checkForCyclesSkolemChase(rules);
+		default:
+			throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
+		}
+	}
+
+	CyclicityResult checkForCyclesRestrictedChase(final Collection<Rule> rules) {
+		final boolean acyclic = this.checkProperty(Acyclicity.JA, rules) || this.checkProperty(Acyclicity.RJA, rules)
+				|| this.checkProperty(Acyclicity.MFA, rules) || this.checkProperty(Acyclicity.RMFA, rules);
+		if (acyclic) {
+			return CyclicityResult.ACYCLIC;
+		} else {
+			final boolean cyclic = this.checkProperty(Cyclicity.RMFC, rules);
+			if (cyclic) {
+				return CyclicityResult.CYCLIC;
+			}
+			return CyclicityResult.UNDETERMINED;
+		}
+	}
+
+	CyclicityResult checkForCyclesSkolemChase(final Collection<Rule> rules) {
+		final boolean acyclic = this.checkProperty(Acyclicity.JA, rules) || this.checkProperty(Acyclicity.MFA, rules);
 		if (acyclic) {
 			return CyclicityResult.ACYCLIC;
 		} else {
