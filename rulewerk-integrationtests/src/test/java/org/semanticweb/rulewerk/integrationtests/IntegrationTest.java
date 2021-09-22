@@ -23,8 +23,10 @@ package org.semanticweb.rulewerk.integrationtests;
 import java.io.InputStream;
 
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.semanticweb.rulewerk.core.reasoner.Reasoner;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
 public abstract class IntegrationTest {
 	/**
@@ -45,8 +47,8 @@ public abstract class IntegrationTest {
 	 * @param resourceName the resource name to load
 	 * @return an {@link InputStream} pointing to the resource
 	 */
-	protected InputStream getResourceAsStream(String resourceName) {
-		String prefix = getResourcePrefix();
+	protected InputStream getResourceAsStream(final String resourceName) {
+		String prefix = this.getResourcePrefix();
 
 		if (resourceName.startsWith(prefix)) {
 			prefix = "";
@@ -67,11 +69,25 @@ public abstract class IntegrationTest {
 	 * @return a {@link KnowledgeBase} containing the parsed contents of the named
 	 *         resource
 	 */
-	protected KnowledgeBase parseKbFromResource(String resourceName) throws ParsingException {
-		KnowledgeBase kb = new KnowledgeBase();
+	protected KnowledgeBase parseKbFromResource(final String resourceName) throws ParsingException {
+		final KnowledgeBase kb = new KnowledgeBase();
 
-		RuleParser.parseInto(kb, getResourceAsStream(resourceName));
+		RuleParser.parseInto(kb, this.getResourceAsStream(resourceName));
 
 		return kb;
+	}
+
+	/**
+	 * Obtain a reasoner loaded with the Knowledge Base read from the resource name
+	 *
+	 * @param resourceName the name of the resource to load into the Reasoner
+	 *
+	 * @throws ParsingException when there is an error during parsing
+	 *
+	 * @return a {@link VLogReasoner} containing the parsed contents of the named
+	 *         resource
+	 */
+	protected Reasoner getReasonerWithKbFromResource(final String resourceName) throws ParsingException {
+		return new VLogReasoner(this.parseKbFromResource(resourceName));
 	}
 }

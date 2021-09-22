@@ -22,12 +22,19 @@ package org.semanticweb.rulewerk.reasoner.vlog;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
+import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
+import org.semanticweb.rulewerk.core.model.implementation.PredicateImpl;
+import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.semanticweb.rulewerk.core.reasoner.implementation.CsvFileDataSource;
+import org.semanticweb.rulewerk.core.reasoner.implementation.ReasonerDataSource;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.Atom;
@@ -61,51 +68,57 @@ public class VLogDataFromCsvFileTest {
 	@Test
 	public void testLoadDataFomCsvString() throws AlreadyStartedException, EDBConfigurationException, IOException,
 			NotStartedException, NonExistingPredicateException {
-		final String unaryPredicatesEDBConfig = "EDB0_predname=" + unzippedUnaryPredicateName1 + "\n"
-				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
-				+ "EDB0_param1=" + FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB1_predname="
-				+ unzippedUnaryPredicateName2 + "\n" + "EDB1_type=INMEMORY" + "\n" + "EDB1_param0="
-				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB1_param1="
-				+ FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB2_predname=" + zippedUnaryPredicateName1
-				+ "\n" + "EDB2_type=INMEMORY" + "\n" + "EDB2_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
-				+ "EDB2_param1=" + FileDataSourceTestUtils.zippedUnaryCsvFileRoot + "\n" + "EDB3_predname="
-				+ zippedUnaryPredicateName2 + "\n" + "EDB3_type=INMEMORY" + "\n" + "EDB3_param0="
-				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB3_param1="
-				+ FileDataSourceTestUtils.zippedUnaryCsvFileRoot;
+
+		final String vLogDataSourcesConfigurationString = this.generateVLogDataSourceConfig();
 
 		final VLog vLog = new VLog();
-		vLog.start(unaryPredicatesEDBConfig, false);
+		vLog.start(vLogDataSourcesConfigurationString, false);
 
-		final List<List<Term>> queryResult1 = getUnaryQueryResults(vLog, unzippedUnaryPredicateName1);
-		final List<List<Term>> queryResultZipped1 = getUnaryQueryResults(vLog, zippedUnaryPredicateName1);
+		final List<List<Term>> queryResult1 = getUnaryQueryResults(vLog, unzippedUnaryPredicateName1 + "-1");
+		final List<List<Term>> queryResultZipped1 = getUnaryQueryResults(vLog, zippedUnaryPredicateName1 + "-1");
 		assertEquals(expectedUnaryQueryResult, queryResult1);
 		assertEquals(queryResult1, queryResultZipped1);
 
-		final List<List<Term>> queryResult2 = getUnaryQueryResults(vLog, unzippedUnaryPredicateName2);
-		final List<List<Term>> queryResultZipped2 = getUnaryQueryResults(vLog, zippedUnaryPredicateName2);
+		final List<List<Term>> queryResult2 = getUnaryQueryResults(vLog, unzippedUnaryPredicateName2 + "-1");
+		final List<List<Term>> queryResultZipped2 = getUnaryQueryResults(vLog, zippedUnaryPredicateName2 + "-1");
 		assertEquals(expectedUnaryQueryResult, queryResult2);
 		assertEquals(queryResult2, queryResultZipped2);
 
 		vLog.stop();
 	}
 
+	private String generateVLogDataSourceConfig() throws IOException {
+		final ReasonerDataSource unzippedCSV = new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER,
+				FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + ".csv").getPath());
+		final DataSourceDeclaration unaryUnzippedCSV1 = new DataSourceDeclarationImpl(
+				new PredicateImpl(unzippedUnaryPredicateName1, 1), unzippedCSV);
+		final DataSourceDeclaration unaryUnzippedCSV2 = new DataSourceDeclarationImpl(
+				new PredicateImpl(unzippedUnaryPredicateName2, 1), unzippedCSV);
+
+		final ReasonerDataSource zippedCSV = new CsvFileDataSource(new File(FileDataSourceTestUtils.INPUT_FOLDER,
+				FileDataSourceTestUtils.zippedUnaryCsvFileRoot + ".csv.gz").getPath());
+		final DataSourceDeclaration unaryZippedCSV1 = new DataSourceDeclarationImpl(
+				new PredicateImpl(zippedUnaryPredicateName1, 1), zippedCSV);
+		final DataSourceDeclaration unaryZippedCSV2 = new DataSourceDeclarationImpl(
+				new PredicateImpl(zippedUnaryPredicateName2, 1), zippedCSV);
+
+		final KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatements(unaryUnzippedCSV1, unaryUnzippedCSV2, unaryZippedCSV1, unaryZippedCSV2);
+		final VLogKnowledgeBase vLogKnowledgeBase = new VLogKnowledgeBase(knowledgeBase);
+
+		final String vLogDataSourcesConfigurationString = vLogKnowledgeBase.getVLogDataSourcesConfigurationString();
+		return vLogDataSourcesConfigurationString;
+	}
+
 	@Test(expected = NonExistingPredicateException.class)
 	public void testLoadDataFomCsvStringNonExistingPredicate() throws AlreadyStartedException,
 			EDBConfigurationException, IOException, NotStartedException, NonExistingPredicateException {
-		final String unaryPredicatesEDBConfig = "EDB0_predname=" + unzippedUnaryPredicateName1 + "\n"
-				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
-				+ "EDB0_param1=" + FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB1_predname="
-				+ unzippedUnaryPredicateName2 + "\n" + "EDB1_type=INMEMORY" + "\n" + "EDB1_param0="
-				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB1_param1="
-				+ FileDataSourceTestUtils.unzippedUnaryCsvFileRoot + "\n" + "EDB2_predname=" + zippedUnaryPredicateName1
-				+ "\n" + "EDB2_type=INMEMORY" + "\n" + "EDB2_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
-				+ "EDB2_param1=" + FileDataSourceTestUtils.zippedUnaryCsvFileRoot + "\n" + "EDB3_predname="
-				+ zippedUnaryPredicateName2 + "\n" + "EDB3_type=INMEMORY" + "\n" + "EDB3_param0="
-				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB3_param1="
-				+ FileDataSourceTestUtils.zippedUnaryCsvFileRoot;
+
+		final String vLogDataSourcesConfigurationString = this.generateVLogDataSourceConfig();
+
 		final VLog vLog = new VLog();
 		try {
-			vLog.start(unaryPredicatesEDBConfig, false);
+			vLog.start(vLogDataSourcesConfigurationString, false);
 			getUnaryQueryResults(vLog, emptyUnaryPredicateName);
 		} finally {
 			vLog.stop();
