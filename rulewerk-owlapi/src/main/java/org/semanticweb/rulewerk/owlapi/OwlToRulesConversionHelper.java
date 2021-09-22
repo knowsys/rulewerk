@@ -65,7 +65,8 @@ public class OwlToRulesConversionHelper {
 		if (owlIndividual instanceof OWLNamedIndividual) {
 			return new AbstractConstantImpl(((OWLNamedIndividual) owlIndividual).getIRI().toString());
 		} else if (owlIndividual instanceof OWLAnonymousIndividual) {
-			return converterTermFactory.getSkolemization().getRenamedNamedNull(((OWLAnonymousIndividual) owlIndividual).getID().toString());
+			return converterTermFactory.getSkolemization()
+					.getRenamedNamedNull(((OWLAnonymousIndividual) owlIndividual).getID().toString());
 		} else {
 			throw new OwlFeatureNotSupportedException(
 					"Could not convert OWL individual '" + owlIndividual.toString() + "' to a term.");
@@ -93,6 +94,14 @@ public class OwlToRulesConversionHelper {
 		return new PredicateImpl(owlObjectProperty.getIRI().toString(), 2);
 	}
 
+	/**
+	 * Returns a unary {@link Predicate} to represent a conjunction of given
+	 * {@link OWLClassExpression} collection in rules.
+	 * 
+	 * @param conjuncts a collect of class expressions whose intersection the
+	 *                  returned predicate represents.
+	 * @return a suitable unary predicate.
+	 */
 	public static Predicate getConjunctionAuxiliaryClassPredicate(final Collection<OWLClassExpression> conjuncts) {
 		return new PredicateImpl(getAuxiliaryClasNameConjuncts(conjuncts), 1);
 	}
@@ -104,7 +113,7 @@ public class OwlToRulesConversionHelper {
 	static String getAuxiliaryClassNameDisjuncts(final Collection<OWLClassExpression> disjuncts) {
 		return getAuxiliaryOWLObjectName("aux-class-disjunction", disjuncts);
 	}
-	
+
 	static String getAuxiliaryPropertyNameDisjuncts(final Collection<OWLObjectPropertyExpression> disjuncts) {
 		return getAuxiliaryOWLObjectName("aux-objectPropery-disjunction", disjuncts);
 	}
@@ -114,8 +123,8 @@ public class OwlToRulesConversionHelper {
 		final MessageDigest messageDigest;
 		try {
 			messageDigest = MessageDigest.getInstance("MD5");
-			for (final OWLObject owlClassExpression : owlObjects) {
-				messageDigest.update(owlClassExpression.toString().getBytes("UTF-8"));
+			for (final OWLObject owlObject : owlObjects) {
+				messageDigest.update(owlObject.toString().getBytes("UTF-8"));
 			}
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
 			throw new RulewerkRuntimeException("We are missing some core functionality of Java here", e);
