@@ -46,10 +46,10 @@
               pkgs.curl
               pkgs.lz4
               pkgs.zlib
-              pkgs.rulewerk
+              pkgs.rulewerk-debug
             ];
             shellHook = ''
-              export "PATH=${pkgs.rulewerk}/bin:$PATH"
+              export "PATH=${pkgs.rulewerk-debug}/bin:$PATH"
             '';
           };
       }
