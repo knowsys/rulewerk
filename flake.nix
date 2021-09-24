@@ -48,6 +48,9 @@
               pkgs.zlib
               pkgs.rulewerk
             ];
+            shellHook = ''
+              export "PATH=${pkgs.rulewerk}/bin:$PATH"
+            '';
           };
       }
     ));

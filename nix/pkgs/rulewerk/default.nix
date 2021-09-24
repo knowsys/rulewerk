@@ -53,7 +53,7 @@ stdenv.mkDerivation rec {
 
     cp rulewerk-client/target/standalone-rulewerk-client-${version}.jar $out/share/java
     makeWrapper ${jdk}/bin/java $out/bin/${pname} --add-flags "-jar $out/share/java/standalone-rulewerk-client-${version}.jar"
-    makeWrapper ${maven}/bin/mvn $out/bin/maven --add-flags "--offline -Dmaven.repo.local=${rulewerk-dependencies}/.m2"
+    makeWrapper ${maven}/bin/mvn $out/bin/mvn --add-flags "--offline -Dmaven.repo.local=${rulewerk-dependencies}/.m2"
 
     runHook postInstall
   '';
