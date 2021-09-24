@@ -31,6 +31,8 @@ target/
 
 # local jvlog
 /rulewerk-vlog/lib/
+/build-vlog/
+/local_builds/
 
 # Don't apply the above to src/ where Java requires
 # subdirectories named according to package names.
