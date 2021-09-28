@@ -28,7 +28,7 @@ import org.semanticweb.rulewerk.core.reasoner.RulesCyclicityProperty;
 
 import org.semanticweb.rulewerk.integrationtests.IntegrationTest;
 import org.semanticweb.rulewerk.parser.ParsingException;
-import org.semanticweb.rulewerk.reasoner.vlog.VLogStaticAnalyser;
+import org.semanticweb.rulewerk.reasoner.vlog.VLogRulesAnalyser;
 
 public abstract class AcyclicityTest extends IntegrationTest {
 
@@ -40,7 +40,7 @@ public abstract class AcyclicityTest extends IntegrationTest {
 	protected void checkHasProperty(final String resourceName, RulesCyclicityProperty property, boolean expected)
 			throws ParsingException {
 		final KnowledgeBase knowledgeBase = this.parseKbFromResource(resourceName);
-		try (VLogStaticAnalyser staticAnalyser = new VLogStaticAnalyser()) {
+		try (VLogRulesAnalyser staticAnalyser = new VLogRulesAnalyser()) {
 			boolean hasProperty = staticAnalyser.checkProperty(property, knowledgeBase.getRules());
 			if (expected) {
 				assertTrue(hasProperty);

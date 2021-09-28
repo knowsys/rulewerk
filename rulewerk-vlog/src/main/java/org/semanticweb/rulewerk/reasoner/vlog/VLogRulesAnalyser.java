@@ -45,15 +45,15 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 //TODO add javadoc
 //TODO state management
-public class VLogStaticAnalyser implements AutoCloseable {
+public class VLogRulesAnalyser implements AutoCloseable {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(VLogStaticAnalyser.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(VLogRulesAnalyser.class);
 
 	private final VLog vLog = new VLog();
 
 	private LogLevel internalLogLevel = LogLevel.WARNING;
 
-	public VLogStaticAnalyser() {
+	public VLogRulesAnalyser() {
 		super();
 		this.setLogLevel(this.internalLogLevel);
 	}
@@ -75,12 +75,18 @@ public class VLogStaticAnalyser implements AutoCloseable {
 	}
 
 	public boolean checkProperty(final RulesCyclicityProperty property, final Collection<Rule> rules) {
+// FIXME what if reasoner already started? should it be reset?
+//		this.validateNotClosed();
+
+		// TODO for efficiency, we probably want to expose loadRules method to be only
+		// called once, and not for every check.
+
+		// TODO what happens for one load and subsequent checkProperty calls?
 
 		this.startReasoner();
 
 		this.loadRules(rules);
 
-//		this.validateNotClosed();
 //		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 //			try {
 //				this.load();
@@ -89,7 +95,7 @@ public class VLogStaticAnalyser implements AutoCloseable {
 //			}
 //		}
 
-		CyclicCheckResult checkCyclic;
+		final CyclicCheckResult checkCyclic;
 		try {
 			checkCyclic = this.vLog.checkCyclic(property.name());
 		} catch (final NotStartedException e) {
@@ -196,7 +202,7 @@ public class VLogStaticAnalyser implements AutoCloseable {
 //		} else {
 //			this.reasonerState = ReasonerState.CLOSED;
 		this.vLog.stop();
-		LOGGER.info("Analyser closed.");
+		LOGGER.info("VLog Rules Analyser closed.");
 //		}
 	}
 
