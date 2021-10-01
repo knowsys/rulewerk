@@ -31,9 +31,9 @@ public class ConstantsInCriticalInstanceTest extends AcyclicityTest {
 	}
 
 	@Test
-	public void isMFA_RMFA_constants() throws ParsingException {
+	public void isMFA_MFA_constants() throws ParsingException {
 		// only true if the critical instance is built using all rule set constants
-		this.checkIsMFA("RMFA_constants.rls", true);
+		this.checkIsMFA("MFA_constants.rls", true);
 	}
 
 }

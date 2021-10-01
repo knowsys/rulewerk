@@ -55,8 +55,6 @@ public class RMFCTest extends AcyclicityTest {
 		this.checkIsRMFC("MFA_1.rls", false);
 	}
 
-	// TODO should not be RMFC
-//	@Ignore
 	@Test
 	public void isNotRMFC_RMFA_1() throws ParsingException {
 		this.checkIsRMFC("RMFA_1.rls", false);
@@ -77,8 +75,6 @@ public class RMFCTest extends AcyclicityTest {
 		this.checkIsRMFC("RJA_3.rls", false);
 	}
 
-	// TODO should be RMFC
-//	@Ignore
 	@Test
 	public void isRMFC_MFC_1() throws ParsingException {
 		this.checkIsRMFC("MFC_1.rls", true);
