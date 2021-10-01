@@ -6,6 +6,7 @@ Rulewerk v0.9.0
 
 Bugfixes:
 * The parser now accepts empty prefixes, as allowed by, e.g., RDF Turtle. (#206)
+* [rulewerk-owlapi] Axioms of type DisjointClasses and DisjointObjectProperties are no longer ignored, and are now translated into corresponding rules. (#209)
 
 Rulewerk v0.8.0
 ---------------

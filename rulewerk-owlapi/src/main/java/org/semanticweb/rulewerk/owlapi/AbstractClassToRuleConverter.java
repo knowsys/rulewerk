@@ -182,8 +182,8 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	/**
 	 * Check whether the current rule is a tautology.
 	 *
-	 * @return true if the current rule is a tautology, i.e., has an
-	 * unsatisfiable body or a tautological head.
+	 * @return true if the current rule is a tautology, i.e., has an unsatisfiable
+	 *         body or a tautological head.
 	 */
 	public boolean isTautology() {
 		return this.body.isFalse() || this.head.isTrue();
@@ -192,9 +192,9 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	/**
 	 * Checks whether the current rule is a falsity.
 	 *
-	 * @return true if the current rule represents a falsity, i.e.,
-	 * has a tautological (or non-existent) body and an unsatisfiable
-	 * (or no-existent) head.
+	 * @return true if the current rule represents a falsity, i.e., has a
+	 *         tautological (or non-existent) body and an unsatisfiable (or
+	 *         no-existent) head.
 	 */
 	public boolean isFalsity() {
 		return this.body.isTrueOrEmpty() && this.head.isFalseOrEmpty();
@@ -281,8 +281,8 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 				auxAtom = this.handlePositiveConjunct(converter, conjuncts, term, auxAtom);
 			}
 		} else { // make negative (body) auxiliary atom
-			auxAtom = new PositiveLiteralImpl(OwlToRulesConversionHelper.getConjunctionAuxiliaryClassPredicate(conjuncts),
-					Arrays.asList(term));
+			auxAtom = new PositiveLiteralImpl(
+					OwlToRulesConversionHelper.getConjunctionAuxiliaryClassPredicate(conjuncts), Arrays.asList(term));
 			this.body.add(auxAtom);
 			final List<PositiveLiteral> auxHead = Collections.singletonList(auxAtom);
 			for (final AbstractClassToRuleConverter converter : converters) {
@@ -328,7 +328,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	 * @param filler   the filler class of the expression
 	 */
 	void handleObjectAllValues(final OWLObjectPropertyExpression property, final OWLClassExpression filler) {
-		final Variable variable = this.parent.getFreshUniversalVariable();
+		final Variable variable = this.parent.termFactory.getFreshUniversalVariable();
 		OwlToRulesConversionHelper.addConjunctForPropertyExpression(property, this.mainTerm, variable, this.body);
 		if (!this.body.isFalse()) {
 			this.handleDisjunction(filler, variable);
@@ -342,7 +342,7 @@ public abstract class AbstractClassToRuleConverter implements OWLClassExpression
 	 * @param filler   the filler class of the expression
 	 */
 	void handleObjectSomeValues(final OWLObjectPropertyExpression property, final OWLClassExpression filler) {
-		final Variable variable = this.parent.getFreshExistentialVariable();
+		final Variable variable = this.parent.termFactory.getFreshExistentialVariable();
 		OwlToRulesConversionHelper.addConjunctForPropertyExpression(property, this.mainTerm, variable, this.head);
 		if (!this.head.isFalse()) {
 			this.handleConjunction(Arrays.asList(filler), variable);

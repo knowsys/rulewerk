@@ -249,6 +249,12 @@
 								<version>2.6</version>
 								<repositoryType>PLUGIN</repositoryType>
 							</DynamicDependency>
+							<DynamicDependency>
+								<groupId>io.github.zlika</groupId>
+								<artifactId>reproducible-build-maven-plugin</artifactId>
+								<version>0.13</version>
+								<repositoryType>MAIN</repositoryType>
+							</DynamicDependency>
 						</dynamicDependencies>
 					</configuration>
 				</plugin>

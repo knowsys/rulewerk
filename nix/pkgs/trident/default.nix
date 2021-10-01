@@ -12,12 +12,12 @@
 }:
 stdenv.mkDerivation {
   pname = "trident";
-  version = "unstable-2021-07-07";
+  version = "unstable-2021-09-30";
   src = pkgs.fetchFromGitHub {
     owner = "karmaresearch";
     repo = "trident";
-    rev = "15d8d6754b1021175bd42c7336f2f97f38c516e3";
-    sha256 = "4CC1MyH9vVgAQy1+ATg4sUuRtTrRvhWWfCRqew2ic34=";
+    rev = "6f14e1b57775fd9d347ce85946e6901fd2c15344";
+    sha256 = "x0eb82eUhA2g7h7Cus2ODyhwY4KIdRzvbg5aFa3iUYI=";
   };
 
   buildInputs = [ zlib sparsehash lz4 ];

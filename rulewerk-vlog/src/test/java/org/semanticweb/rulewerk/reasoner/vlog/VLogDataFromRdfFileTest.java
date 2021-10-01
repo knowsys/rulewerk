@@ -22,12 +22,17 @@ package org.semanticweb.rulewerk.reasoner.vlog;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.semanticweb.rulewerk.core.model.implementation.DataSourceDeclarationImpl;
+import org.semanticweb.rulewerk.core.model.implementation.PredicateImpl;
+import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
+import org.semanticweb.rulewerk.core.reasoner.implementation.RdfFileDataSource;
 
 import karmaresearch.vlog.AlreadyStartedException;
 import karmaresearch.vlog.Atom;
@@ -50,7 +55,10 @@ public class VLogDataFromRdfFileTest {
 					VLogExpressions.makeConstant("<http://example.org/c2>")),
 			Arrays.asList(VLogExpressions.makeConstant("<http://example.org/c1>"),
 					VLogExpressions.makeConstant("<http://example.org/q>"),
-					VLogExpressions.makeConstant("\"test string\"^^<http://www.w3.org/2001/XMLSchema#string>")));
+					// TODO: see comments of https://github.com/karmaresearch/vlog/issues/73 for
+					// expected value
+//					VLogExpressions.makeConstant("\"test string\"^^<http://www.w3.org/2001/XMLSchema#string>")
+					VLogExpressions.makeConstant("\"test string\"")));
 
 	private static List<List<Term>> getTernaryQueryResults(final VLog vLog, final String predicateName)
 			throws NotStartedException, NonExistingPredicateException {
@@ -63,22 +71,27 @@ public class VLogDataFromRdfFileTest {
 	}
 
 	@Test
-	public void testLoadDataFromRdfString() throws AlreadyStartedException, EDBConfigurationException, IOException,
-			NotStartedException, NonExistingPredicateException {
-		final String ternaryPredicateEDBConfig = "EDB0_predname=" + unzippedTernaryPredicateName + "\n"
-				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
-				+ "EDB0_param1=" + FileDataSourceTestUtils.unzippedNtFileRoot + "\n" + "EDB1_predname="
-				+ zippedTernaryPredicateName + "\n" + "EDB1_type=INMEMORY" + "\n" + "EDB1_param0="
-				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB1_param1="
-				+ FileDataSourceTestUtils.zippedNtFileRoot;
+	public void testLoadDataFromRdfStringUnzipped() throws AlreadyStartedException, EDBConfigurationException,
+			IOException, NotStartedException, NonExistingPredicateException {
 
 		final VLog vLog = new VLog();
-		vLog.start(ternaryPredicateEDBConfig, false);
+		vLog.start(this.generateVLogDataSourceConfig(), false);
 
-		final List<List<Term>> queryResult = getTernaryQueryResults(vLog, unzippedTernaryPredicateName);
-		final List<List<Term>> queryResultZipped = getTernaryQueryResults(vLog, zippedTernaryPredicateName);
+		final List<List<Term>> queryResult = getTernaryQueryResults(vLog, unzippedTernaryPredicateName + "-3");
 		assertEquals(expectedTernaryQueryResult, queryResult);
-		assertEquals(queryResult, queryResultZipped);
+
+		vLog.stop();
+	}
+
+	@Test
+	public void testLoadDataFromRdfStringZipped() throws AlreadyStartedException, EDBConfigurationException,
+			IOException, NotStartedException, NonExistingPredicateException {
+
+		final VLog vLog = new VLog();
+		vLog.start(this.generateVLogDataSourceConfig(), false);
+
+		final List<List<Term>> queryResultZipped = getTernaryQueryResults(vLog, zippedTernaryPredicateName + "-3");
+		assertEquals(expectedTernaryQueryResult, queryResultZipped);
 
 		vLog.stop();
 	}
@@ -86,20 +99,34 @@ public class VLogDataFromRdfFileTest {
 	@Test(expected = NonExistingPredicateException.class)
 	public void testLoadDataFromRdfStringNonExistingPredicate() throws AlreadyStartedException,
 			EDBConfigurationException, IOException, NotStartedException, NonExistingPredicateException {
-		final String ternaryPredicateEDBConfig = "EDB0_predname=" + unzippedTernaryPredicateName + "\n"
-				+ "EDB0_type=INMEMORY" + "\n" + "EDB0_param0=" + FileDataSourceTestUtils.INPUT_FOLDER + "\n"
-				+ "EDB0_param1=" + FileDataSourceTestUtils.unzippedNtFileRoot + "\n" + "EDB1_predname="
-				+ zippedTernaryPredicateName + "\n" + "EDB1_type=INMEMORY" + "\n" + "EDB1_param0="
-				+ FileDataSourceTestUtils.INPUT_FOLDER + "\n" + "EDB1_param1="
-				+ FileDataSourceTestUtils.zippedNtFileRoot;
 
 		final VLog vLog = new VLog();
 		try {
-			vLog.start(ternaryPredicateEDBConfig, false);
+			vLog.start(this.generateVLogDataSourceConfig(), false);
 			getTernaryQueryResults(vLog, emptyTernaryPredicateName);
 		} finally {
 			vLog.stop();
 		}
+	}
+
+	private String generateVLogDataSourceConfig() throws IOException {
+		final RdfFileDataSource unzippedRDFDataSource = new RdfFileDataSource(
+				new File(FileDataSourceTestUtils.INPUT_FOLDER, FileDataSourceTestUtils.unzippedNtFileRoot + ".nt")
+						.getPath());
+		final DataSourceDeclarationImpl unzippedRDF = new DataSourceDeclarationImpl(
+				new PredicateImpl(unzippedTernaryPredicateName, 3), unzippedRDFDataSource);
+
+		final RdfFileDataSource zippedRDFDataSource = new RdfFileDataSource(
+				new File(FileDataSourceTestUtils.INPUT_FOLDER, FileDataSourceTestUtils.zippedNtFileRoot + ".nt.gz")
+						.getPath());
+		final DataSourceDeclarationImpl zippedRDF = new DataSourceDeclarationImpl(
+				new PredicateImpl(zippedTernaryPredicateName, 3), zippedRDFDataSource);
+
+		final KnowledgeBase knowledgeBase = new KnowledgeBase();
+		knowledgeBase.addStatements(unzippedRDF, zippedRDF);
+		final VLogKnowledgeBase vLogKnowledgeBase = new VLogKnowledgeBase(knowledgeBase);
+		return vLogKnowledgeBase.getVLogDataSourcesConfigurationString();
+
 	}
 
 }

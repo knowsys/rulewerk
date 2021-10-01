@@ -12,12 +12,12 @@
 
 stdenv.mkDerivation {
   pname = "kognac";
-  version = "unstable-2021-07-07";
+  version = "unstable-2021-09-30";
   src = pkgs.fetchFromGitHub {
     owner = "karmaresearch";
     repo = "kognac";
-    rev = "9b75357f87cdbfdb4561437f0000e0a0eb5394e8";
-    sha256 = "+ElTpGVFz4Gqyc2lcFfjA3W0H+FaH3hInsS51tYGk7Y=";
+    rev = "7a909854c471afa0d80c69716321bf363add591a";
+    sha256 = "Cice8nAx7UoFBnqvWexGrSbWJDeiBY6Twio3nBD4TUs=";
   };
 
   buildInputs = [ zlib sparsehash lz4 ];

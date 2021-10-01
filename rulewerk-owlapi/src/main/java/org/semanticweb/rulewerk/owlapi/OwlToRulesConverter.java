@@ -81,14 +81,14 @@ public class OwlToRulesConverter {
 			try {
 				owlAxiom.accept(this.owlAxiomToRulesConverter);
 			} catch (OwlFeatureNotSupportedException e) {
-				if (failOnUnsupported) {
+				if (this.failOnUnsupported) {
 					LOGGER.error(e.getMessage());
 					throw e;
 				} else {
 					LOGGER.warn(e.getMessage());
-					unsupportedAxiomsCount++;
-					if (unsupportedAxioms.size() < 10) {
-						unsupportedAxioms.add(owlAxiom);
+					this.unsupportedAxiomsCount++;
+					if (this.unsupportedAxioms.size() < 10) {
+						this.unsupportedAxioms.add(owlAxiom);
 					}
 				}
 			}
@@ -125,7 +125,7 @@ public class OwlToRulesConverter {
 	 * @return total number of unsupported axioms
 	 */
 	public int getUnsupportedAxiomsCount() {
-		return unsupportedAxiomsCount;
+		return this.unsupportedAxiomsCount;
 	}
 
 	/**
@@ -136,7 +136,7 @@ public class OwlToRulesConverter {
 	 * @return list of first ten unsupported axioms that were encountered
 	 */
 	public List<OWLAxiom> getUnsupportedAxiomsSample() {
-		return unsupportedAxioms;
+		return this.unsupportedAxioms;
 	}
 
 }

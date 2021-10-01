@@ -31,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.rulewerk.core.exceptions.RulewerkRuntimeException;
@@ -42,7 +43,6 @@ import org.semanticweb.rulewerk.core.model.implementation.AbstractConstantImpl;
 import org.semanticweb.rulewerk.core.model.implementation.FactImpl;
 import org.semanticweb.rulewerk.core.model.implementation.PositiveLiteralImpl;
 import org.semanticweb.rulewerk.core.model.implementation.PredicateImpl;
-import org.semanticweb.rulewerk.core.reasoner.implementation.Skolemization;
 import org.semanticweb.rulewerk.owlapi.AbstractClassToRuleConverter.SimpleConjunction;
 
 /**
@@ -60,11 +60,13 @@ public class OwlToRulesConversionHelper {
 	 * @param owlIndividual the individual to get a term for
 	 * @return a suitable term
 	 */
-	public static Term getIndividualTerm(final OWLIndividual owlIndividual, Skolemization skolemization) {
+	public static Term getIndividualTerm(final OWLIndividual owlIndividual,
+			final ConverterTermFactory converterTermFactory) {
 		if (owlIndividual instanceof OWLNamedIndividual) {
 			return new AbstractConstantImpl(((OWLNamedIndividual) owlIndividual).getIRI().toString());
 		} else if (owlIndividual instanceof OWLAnonymousIndividual) {
-			return skolemization.getRenamedNamedNull(((OWLAnonymousIndividual) owlIndividual).getID().toString());
+			return converterTermFactory.getSkolemization()
+					.getRenamedNamedNull(((OWLAnonymousIndividual) owlIndividual).getID().toString());
 		} else {
 			throw new OwlFeatureNotSupportedException(
 					"Could not convert OWL individual '" + owlIndividual.toString() + "' to a term.");
@@ -92,25 +94,37 @@ public class OwlToRulesConversionHelper {
 		return new PredicateImpl(owlObjectProperty.getIRI().toString(), 2);
 	}
 
+	/**
+	 * Returns a unary {@link Predicate} to represent a conjunction of given
+	 * {@link OWLClassExpression} collection in rules.
+	 * 
+	 * @param conjuncts a collect of class expressions whose intersection the
+	 *                  returned predicate represents.
+	 * @return a suitable unary predicate.
+	 */
 	public static Predicate getConjunctionAuxiliaryClassPredicate(final Collection<OWLClassExpression> conjuncts) {
 		return new PredicateImpl(getAuxiliaryClasNameConjuncts(conjuncts), 1);
 	}
 
 	static String getAuxiliaryClasNameConjuncts(final Collection<OWLClassExpression> conjuncts) {
-		return getAuxiliaryClassName("aux-conjunction", conjuncts);
+		return getAuxiliaryOWLObjectName("aux-class-conjunction", conjuncts);
 	}
 
 	static String getAuxiliaryClassNameDisjuncts(final Collection<OWLClassExpression> disjuncts) {
-		return getAuxiliaryClassName("aux-disjunction", disjuncts);
+		return getAuxiliaryOWLObjectName("aux-class-disjunction", disjuncts);
 	}
 
-	private static String getAuxiliaryClassName(final String prefix,
-			final Collection<OWLClassExpression> owlClassExpressions) {
+	static String getAuxiliaryPropertyNameDisjuncts(final Collection<OWLObjectPropertyExpression> disjuncts) {
+		return getAuxiliaryOWLObjectName("aux-objectPropery-disjunction", disjuncts);
+	}
+
+	private static String getAuxiliaryOWLObjectName(final String prefix,
+			final Collection<? extends OWLObject> owlObjects) {
 		final MessageDigest messageDigest;
 		try {
 			messageDigest = MessageDigest.getInstance("MD5");
-			for (final OWLClassExpression owlClassExpression : owlClassExpressions) {
-				messageDigest.update(owlClassExpression.toString().getBytes("UTF-8"));
+			for (final OWLObject owlObject : owlObjects) {
+				messageDigest.update(owlObject.toString().getBytes("UTF-8"));
 			}
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
 			throw new RulewerkRuntimeException("We are missing some core functionality of Java here", e);
