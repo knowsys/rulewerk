@@ -39,6 +39,12 @@ public class ConstantsInCriticalInstanceTest extends AcyclicityTest {
 		// only true if the critical instance is built using all rule set constants
 		this.checkIsMSA("MSA_constants.rls", true);
 	}
+	
+	@Test
+	public void isRMSA_MSA_constants() throws ParsingException {
+		// only true if the critical instance is built using all rule set constants
+		this.checkHasProperty("MSA_constants.rls", Acyclicity.RMSA, true);
+	}
 
 	@Test
 	public void isMFA_MSA_constants() throws ParsingException {
