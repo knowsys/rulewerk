@@ -29,11 +29,27 @@ public class ConstantsInCriticalInstanceTest extends AcyclicityTest {
 	private void checkIsMFA(final String resourceName, boolean expected) throws ParsingException {
 		this.checkHasProperty(resourceName, Acyclicity.MFA, expected);
 	}
+	
+	private void checkIsMSA(final String resourceName, boolean expected) throws ParsingException {
+		this.checkHasProperty(resourceName, Acyclicity.MSA, expected);
+	}
+	
+	@Test
+	public void isMSA_MSA_constants() throws ParsingException {
+		// only true if the critical instance is built using all rule set constants
+		this.checkIsMSA("MSA_constants.rls", true);
+	}
 
 	@Test
-	public void isMFA_MFA_constants() throws ParsingException {
+	public void isMFA_MSA_constants() throws ParsingException {
 		// only true if the critical instance is built using all rule set constants
-		this.checkIsMFA("MFA_constants.rls", true);
+		this.checkIsMFA("MSA_constants.rls", true);
+	}
+
+	@Test
+	public void isRMFA_MSA_constants() throws ParsingException {
+		// only true if the critical instance is built using all rule set constants
+		this.checkHasProperty("MSA_constants.rls", Acyclicity.RMFA, true);
 	}
 
 }

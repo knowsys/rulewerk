@@ -84,4 +84,9 @@ public class MFCTest extends AcyclicityTest {
 	public void isMFC_RMFC_1() throws ParsingException {
 		this.checkIsMFC("RMFC_1.rls", true);
 	}
+	
+	@Test
+	public void isNotMFC_MSA_constants() throws ParsingException {
+		this.checkIsMFC("MSA_constants.rls", false);
+	}
 }

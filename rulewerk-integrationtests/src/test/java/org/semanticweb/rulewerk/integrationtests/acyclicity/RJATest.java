@@ -64,4 +64,9 @@ public class RJATest extends AcyclicityTest {
 	public void isNotRJA_RMFC_1() throws ParsingException {
 		this.checkIsRJA("RMFC_1.rls", false);
 	}
+	
+	@Test
+	public void isNotRJA_MSA_constants() throws ParsingException {
+		this.checkIsRJA("MSA_constants.rls", false);
+	}
 }
