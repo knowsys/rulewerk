@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.semanticweb.rulewerk.core.reasoner.Acyclicity;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
-public class ConstantsInCriticalInstanceTest extends AcyclicityTest {
+public class ConstantsInCriticalInstanceIT extends AcyclicityIT {
 
 	private void checkIsMFA(final String resourceName, boolean expected) throws ParsingException {
 		this.checkHasProperty(resourceName, Acyclicity.MFA, expected);

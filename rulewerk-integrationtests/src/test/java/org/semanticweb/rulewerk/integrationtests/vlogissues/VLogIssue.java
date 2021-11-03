@@ -20,9 +20,9 @@ package org.semanticweb.rulewerk.integrationtests.vlogissues;
  * #L%
  */
 
-import org.semanticweb.rulewerk.integrationtests.IntegrationTest;
+import org.semanticweb.rulewerk.integrationtests.AbstractRulewerkIT;
 
-abstract class VLogIssue extends IntegrationTest {
+abstract class VLogIssue extends AbstractRulewerkIT {
 	@Override
 	protected String getResourcePrefix() {
 		return "/vlogissues/";

@@ -26,11 +26,11 @@ import org.semanticweb.rulewerk.core.reasoner.RulesCyclicityProperty;
  * #L%
  */
 
-import org.semanticweb.rulewerk.integrationtests.IntegrationTest;
+import org.semanticweb.rulewerk.integrationtests.AbstractRulewerkIT;
 import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogRulesAnalyser;
 
-public abstract class AcyclicityTest extends IntegrationTest {
+public abstract class AcyclicityIT extends AbstractRulewerkIT {
 
 	@Override
 	protected String getResourcePrefix() {

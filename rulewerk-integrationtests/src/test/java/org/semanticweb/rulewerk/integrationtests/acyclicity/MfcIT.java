@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.semanticweb.rulewerk.core.reasoner.Cyclicity;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
-public class MFCTest extends AcyclicityTest {
+public class MfcIT extends AcyclicityIT {
 
 	private void checkIsMFC(final String resourceName, boolean expected) throws ParsingException {
 		this.checkHasProperty(resourceName, Cyclicity.MFC, expected);

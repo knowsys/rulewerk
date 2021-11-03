@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.semanticweb.rulewerk.core.reasoner.Acyclicity;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
-public class RMSATest extends AcyclicityTest {
+public class RmsaIT extends AcyclicityIT {
 	private void checkIsRMSA(final String resourceName, boolean expected) throws ParsingException {
 		this.checkHasProperty(resourceName, Acyclicity.MSA, expected);
 	}
