@@ -56,8 +56,8 @@ public class RmfcIT extends AcyclicityIT {
 	}
 
 	@Test
-	public void isNotRMFC_RMFA_1() throws ParsingException {
-		this.checkIsRMFC("RMFA_1.rls", false);
+	public void isNotRMFC_1_depth_RMFA_1() throws ParsingException {
+		this.checkIsRMFC("1_depth_RMFA_1.rls", false);
 	}
 
 	@Test

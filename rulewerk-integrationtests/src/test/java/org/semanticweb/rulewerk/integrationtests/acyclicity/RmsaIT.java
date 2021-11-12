@@ -70,8 +70,8 @@ public class RmsaIT extends AcyclicityIT {
 	}
 
 	@Test
-	public void IsNotRMSA_RMFA_1() throws ParsingException {
-		this.checkIsRMSA("RMFA_1.rls", false);
+	public void IsNotRMSA_1_depth_RMFA_1() throws ParsingException {
+		this.checkIsRMSA("1_depth_RMFA_1.rls", false);
 	}
 
 	@Test

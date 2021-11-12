@@ -71,8 +71,8 @@ public class MfaIT extends AcyclicityIT {
 	}
 
 	@Test
-	public void isNotMFA_RMFA_1() throws ParsingException {
-		this.checkIsMFA("RMFA_1.rls", false);
+	public void isNotMFA_1_depth_RMFA_1() throws ParsingException {
+		this.checkIsMFA("1_depth_RMFA_1.rls", false);
 	}
 
 	@Test

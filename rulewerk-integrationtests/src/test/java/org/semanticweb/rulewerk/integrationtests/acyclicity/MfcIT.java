@@ -71,8 +71,8 @@ public class MfcIT extends AcyclicityIT {
 	}
 
 	@Test
-	public void isMFC_RMFA_1() throws ParsingException {
-		this.checkIsMFC("RMFA_1.rls", true);
+	public void isMFC_1_depth_RMFA_1() throws ParsingException {
+		this.checkIsMFC("1_depth_RMFA_1.rls", true);
 	}
 
 	@Test

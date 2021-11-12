@@ -71,8 +71,8 @@ public class RmfaIT extends AcyclicityIT {
 	}
 
 	@Test
-	public void isRMFA_RMFA_1() throws ParsingException {
-		this.checkIsRMFA("RMFA_1.rls", true);
+	public void isNotRMFA_1_depth_RMFA_1() throws ParsingException {
+		this.checkIsRMFA("1_depth_RMFA_1.rls", false);
 	}
 
 	@Test
