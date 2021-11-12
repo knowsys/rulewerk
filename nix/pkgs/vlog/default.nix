@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     #  rev = "v${version}";
     # 'rev' and 'sha256' point to the latest VLog master branch tag/commit we want to test
     rev = "8676c78200acccdf43da717b9b0d5b1161414652";
-    sha256 = "J000000000000000000000000000000000000000000=";
+    sha256 = "eAmvVUVFCOI27uQwf0KYLIxK8lAwfXsKpXf/1WYdE5w=";
     # pushing an unmatching sha256 value like below will result in a nix error message with the matching value
     # sha256 = "J000000000000000000000000000000000000000000=";
   };
