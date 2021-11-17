@@ -22,10 +22,10 @@ stdenv.mkDerivation rec {
     repo = "vlog";
     #  rev = "v${version}";
     # 'rev' and 'sha256' point to the latest VLog master branch tag/commit we want to test
-    rev = "aa12d3dc53ced2100e8c27e9e594883432ab8ca5";
+    rev = "a5d207b07dd9bc0adb6cddfd079a8fab5c142fe4";
     # pushing an unmatching sha256 value like below will result in a nix error message with the matching value
     # sha256 = "J000000000000000000000000000000000000000000=";
-    sha256 = "sha256-jLX4g5nsBmMxq9PSaaK0uX33keGvPKiNt00y8Q1GKa8=";
+    sha256 = "J000000000000000000000000000000000000000000=";
   };
 
   buildInputs = [ kognac trident sparsehash jdk curl lz4 ];
