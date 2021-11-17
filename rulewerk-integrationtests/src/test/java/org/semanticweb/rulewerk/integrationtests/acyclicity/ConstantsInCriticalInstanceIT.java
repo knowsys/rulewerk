@@ -26,36 +26,28 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 
 public class ConstantsInCriticalInstanceIT extends AcyclicityIT {
 
-	private void checkIsMFA(final String resourceName, boolean expected) throws ParsingException {
-		this.checkHasProperty(resourceName, Acyclicity.MFA, expected);
-	}
-	
-	private void checkIsMSA(final String resourceName, boolean expected) throws ParsingException {
-		this.checkHasProperty(resourceName, Acyclicity.MSA, expected);
-	}
-	
 	@Test
-	public void isMSA_MSA_constants() throws ParsingException {
-		// only true if the critical instance is built using all rule set constants
-		this.checkIsMSA("MSA_constants.rls", true);
-	}
-	
-	@Test
-	public void isRMSA_MSA_constants() throws ParsingException {
-		// only true if the critical instance is built using all rule set constants
-		this.checkHasProperty("MSA_constants.rls", Acyclicity.RMSA, true);
+	public void isNotMSA_constants_1() throws ParsingException {
+		// only MSA if the critical instance is built using all rule set constants
+		this.checkHasProperty("constants_1.rls", Acyclicity.MSA, false);
 	}
 
 	@Test
-	public void isMFA_MSA_constants() throws ParsingException {
-		// only true if the critical instance is built using all rule set constants
-		this.checkIsMFA("MSA_constants.rls", true);
+	public void isNotRMSA_constants_1() throws ParsingException {
+		// only RMSA if the critical instance is built using all rule set constants
+		this.checkHasProperty("constants_1.rls", Acyclicity.RMSA, false);
 	}
 
 	@Test
-	public void isRMFA_MSA_constants() throws ParsingException {
-		// only true if the critical instance is built using all rule set constants
-		this.checkHasProperty("MSA_constants.rls", Acyclicity.RMFA, true);
+	public void isNotMFA_constants_1() throws ParsingException {
+		// only MFA if the critical instance is built using all rule set constants
+		this.checkHasProperty("constants_1.rls", Acyclicity.MFA, false);
+	}
+
+	@Test
+	public void isNotRMFA_constants_1() throws ParsingException {
+		// only RMFA if the critical instance is built using all rule set constants
+		this.checkHasProperty("constants_1.rls", Acyclicity.RMFA, false);
 	}
 
 }

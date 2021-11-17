@@ -86,7 +86,12 @@ public class RjaIT extends AcyclicityIT {
 	}
 	
 	@Test
-	public void isNotRJA_MSA_constants() throws ParsingException {
-		this.checkIsRJA("MSA_constants.rls", false);
+	public void isNotRJA_constants_1() throws ParsingException {
+		this.checkIsRJA("constants_1.rls", false);
+	}
+	
+	@Test
+	public void isNotRJA_bike_wheel_spike() throws ParsingException {
+		this.checkIsRJA("bike_wheel_spike.rls", false);
 	}
 }

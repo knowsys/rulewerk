@@ -86,7 +86,13 @@ public class JaIT extends AcyclicityIT {
 	}
 	
 	@Test
-	public void isNotJA_MSA_constants() throws ParsingException {
-		this.checkIsJA("MSA_constants.rls", false);
+	public void isNotJA_constants_1() throws ParsingException {
+		this.checkIsJA("constants_1.rls", false);
 	}
+	
+	@Test
+	public void isNotJA_bike_wheel_spike() throws ParsingException {
+		this.checkIsJA("bike_wheel_spike.rls", false);
+	}
+	
 }

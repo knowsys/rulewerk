@@ -44,7 +44,7 @@ public class RmfcIT extends AcyclicityIT {
 	public void isNotRMFC_JA_1() throws ParsingException {
 		this.checkIsRMFC("JA_1.rls", false);
 	}
-	
+
 	@Test
 	public void isNotRMFC_MSA_1() throws ParsingException {
 		this.checkIsRMFC("MSA_1.rls", false);
@@ -84,10 +84,10 @@ public class RmfcIT extends AcyclicityIT {
 	public void isRMFC_RMFC_1() throws ParsingException {
 		this.checkIsRMFC("RMFC_1.rls", true);
 	}
-	
+
 	@Test
-	public void isNotRMFC_MSA_constants() throws ParsingException {
-		this.checkIsRMFC("MSA_constants.rls", false);
+	public void isNotRMFC_bike_wheel_spike() throws ParsingException {
+		this.checkIsRMFC("bike_wheel_spike.rls", false);
 	}
 
 }

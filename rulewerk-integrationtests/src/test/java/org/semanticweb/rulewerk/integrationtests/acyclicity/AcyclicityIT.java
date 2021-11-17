@@ -36,7 +36,7 @@ public abstract class AcyclicityIT extends AbstractRulewerkIT {
 	protected String getResourcePrefix() {
 		return "/acyclicity/";
 	}
-
+	
 	protected void checkHasProperty(final String resourceName, RulesCyclicityProperty property, boolean expected)
 			throws ParsingException {
 		final KnowledgeBase knowledgeBase = this.parseKbFromResource(resourceName);

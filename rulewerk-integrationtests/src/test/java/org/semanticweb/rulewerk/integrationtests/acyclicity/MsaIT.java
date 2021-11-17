@@ -84,5 +84,10 @@ public class MsaIT extends AcyclicityIT {
 	public void isNotMSA_RMFC_1() throws ParsingException {
 		this.checkIsMSA("RMFC_1.rls", false);
 	}
+	
+	@Test
+	public void isNotMSA_bike_wheel_spike() throws ParsingException {
+		this.checkIsMSA("bike_wheel_spike.rls", false);
+	}
 
 }

@@ -86,7 +86,7 @@ public class MfcIT extends AcyclicityIT {
 	}
 	
 	@Test
-	public void isNotMFC_MSA_constants() throws ParsingException {
-		this.checkIsMFC("MSA_constants.rls", false);
+	public void isMFC_bike_wheel_spike() throws ParsingException {
+		this.checkIsMFC("bike_wheel_spike.rls", true);
 	}
 }

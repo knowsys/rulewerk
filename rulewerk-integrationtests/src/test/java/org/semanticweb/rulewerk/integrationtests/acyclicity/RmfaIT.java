@@ -84,4 +84,9 @@ public class RmfaIT extends AcyclicityIT {
 	public void isNotRMFA_RMFC_1() throws ParsingException {
 		this.checkIsRMFA("RMFC_1.rls", false);
 	}
+	
+	@Test
+	public void isNotRMFA_bike_wheel_spike() throws ParsingException {
+		this.checkIsRMFA("bike_wheel_spike.rls", false);
+	}
 }
