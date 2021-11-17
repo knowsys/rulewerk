@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     rev = "a5d207b07dd9bc0adb6cddfd079a8fab5c142fe4";
     # pushing an unmatching sha256 value like below will result in a nix error message with the matching value
     # sha256 = "J000000000000000000000000000000000000000000=";
-    sha256 = "J000000000000000000000000000000000000000000=";
+    sha256 = "wu02yMMs+p3KH+w6/ciMR4TzVUGVD94XomNkgtYV6Bc=";
   };
 
   buildInputs = [ kognac trident sparsehash jdk curl lz4 ];
