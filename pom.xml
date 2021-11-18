@@ -287,7 +287,9 @@
 					<argLine>${surefireArgLine}</argLine>
 					<forkCount>1</forkCount>
 					<reuseForks>true</reuseForks>
-					<exclude>org.semanticweb.rulewerk.integrationtests.*</exclude>
+					<excludes>
+						<exclude>org.semanticweb.rulewerk.integrationtests.*</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
