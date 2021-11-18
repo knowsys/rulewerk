@@ -10,18 +10,16 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.4
-    - uses: cachix/install-nix-action@v13
+    - uses: actions/checkout@v2.4.0
+    - uses: cachix/install-nix-action@v15
       with:
-        install_url: https://nixos-nix-install-tests.cachix.org/serve/i6laym9jw3wg9mw6ncyrk6gjx4l34vvx/install
-        install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
         extra_nix_config: |
-          experimental-features = nix-command flakes
           access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-    - uses: cachix/cachix-action@v8
+    - uses: cachix/cachix-action@v10
       with:
         name: knowsys-rulewerk
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+        extraPullNames: nix-community
     - env:
         BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
       run: echo "name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
@@ -31,18 +29,16 @@ jobs:
     needs: unit-tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.4
-    - uses: cachix/install-nix-action@v13
+    - uses: actions/checkout@v2.4.0
+    - uses: cachix/install-nix-action@v15
       with:
-        install_url: https://nixos-nix-install-tests.cachix.org/serve/i6laym9jw3wg9mw6ncyrk6gjx4l34vvx/install
-        install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
         extra_nix_config: |
-          experimental-features = nix-command flakes
           access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-    - uses: cachix/cachix-action@v8
+    - uses: cachix/cachix-action@v10
       with:
         name: knowsys-rulewerk
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+        extraPullNames: nix-community
     - env:
         BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
       run: echo "name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
