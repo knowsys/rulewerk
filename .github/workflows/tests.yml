@@ -1,4 +1,4 @@
-name: "Rulewerk Unit Tests"
+name: "Rulewerk Tests"
 on:
   pull_request:
     branches:
@@ -10,6 +10,7 @@ on:
       - master
 jobs:
   unit-tests:
+    name: "Rulewerk Unit Tests"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2.4.0
@@ -28,6 +29,7 @@ jobs:
     - run: echo "name=PR_NUMBER::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
     - run: nix-shell --pure --run "mvn clean test jacoco:report && mvn coveralls:report -D repoToken=${{ secrets.COVERALLS_TOKEN }} -D serviceBuildUrl=https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks -D branch=$BRANCH_NAME -D pullRequest=$PR_NUMBER"
   integration-tests:
+    name: "Rulewerk Integration Tests"
     needs: unit-tests
     runs-on: ubuntu-latest
     steps:
