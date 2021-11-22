@@ -71,6 +71,16 @@ public class MsaIT extends AcyclicityIT {
 	}
 	
 	@Test
+	public void isNotMSA_RMFA_1() throws ParsingException {
+		this.checkIsMSA("RMFA_1.rls", false);
+	}
+	
+	@Test
+	public void isNotMSA_RMFA_2() throws ParsingException {
+		this.checkIsMSA("RMFA_2.rls", false);
+	}
+	
+	@Test
 	public void isNotMSA_1_depth_RMFA_1() throws ParsingException {
 		this.checkIsMSA("1_depth_RMFA_1.rls", false);
 	}

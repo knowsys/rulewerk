@@ -69,6 +69,16 @@ public class RjaIT extends AcyclicityIT {
 	public void isNotRJA_MFA_1() throws ParsingException {
 		this.checkIsRJA("MFA_1.rls", false);
 	}
+	
+	@Test
+	public void isNotRJA_RMFA_1() throws ParsingException {
+		this.checkIsRJA("RMFA_1.rls", false);
+	}
+	
+	@Test
+	public void isNotRJA_RMFA_2() throws ParsingException {
+		this.checkIsRJA("RMFA_2.rls", false);
+	}
 
 	@Test
 	public void isNotRJA_1_depth_RMFA_1() throws ParsingException {

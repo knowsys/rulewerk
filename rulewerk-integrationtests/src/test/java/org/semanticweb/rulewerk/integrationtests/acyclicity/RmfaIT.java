@@ -59,7 +59,7 @@ public class RmfaIT extends AcyclicityIT {
 	public void isRMFA_RJA_3() throws ParsingException {
 		this.checkIsRMFA("RJA_3.rls", true);
 	}
-	
+
 	@Test
 	public void isRMFA_MSA_1() throws ParsingException {
 		this.checkIsRMFA("MSA_1.rls", true);
@@ -68,6 +68,16 @@ public class RmfaIT extends AcyclicityIT {
 	@Test
 	public void isRMFA_MFA_1() throws ParsingException {
 		this.checkIsRMFA("MFA_1.rls", true);
+	}
+
+	@Test
+	public void isRMFA_RMFA_1() throws ParsingException {
+		this.checkIsRMFA("RMFA_1.rls", true);
+	}
+
+	@Test
+	public void isRMFA_RMFA_2() throws ParsingException {
+		this.checkIsRMFA("RMFA_2.rls", true);
 	}
 
 	@Test
@@ -84,7 +94,7 @@ public class RmfaIT extends AcyclicityIT {
 	public void isNotRMFA_RMFC_1() throws ParsingException {
 		this.checkIsRMFA("RMFC_1.rls", false);
 	}
-	
+
 	@Test
 	public void isNotRMFA_bike_wheel_spike() throws ParsingException {
 		this.checkIsRMFA("bike_wheel_spike.rls", false);

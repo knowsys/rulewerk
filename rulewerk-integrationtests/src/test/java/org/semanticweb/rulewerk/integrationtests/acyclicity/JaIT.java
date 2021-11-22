@@ -69,6 +69,16 @@ public class JaIT extends AcyclicityIT {
 	public void isNotJA_MFA_1() throws ParsingException {
 		this.checkIsJA("MFA_1.rls", false);
 	}
+	
+	@Test
+	public void isNotJA_RMFA_1() throws ParsingException {
+		this.checkIsJA("RMFA_1.rls", false);
+	}
+	
+	@Test
+	public void isNotJA_RMFA_2() throws ParsingException {
+		this.checkIsJA("RMFA_2.rls", false);
+	}
 
 	@Test
 	public void isNotJA_1_depth_RMFA_1() throws ParsingException {
