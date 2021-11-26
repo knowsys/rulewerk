@@ -32,11 +32,11 @@ public class ConstantsInCriticalInstanceIT extends AcyclicityIT {
 		this.checkHasProperty("constants_1.rls", Acyclicity.MSA, false);
 	}
 
-	@Test
-	public void isNotRMSA_constants_1() throws ParsingException {
-		// only RMSA if the critical instance is built using all rule set constants
-		this.checkHasProperty("constants_1.rls", Acyclicity.RMSA, false);
-	}
+//	@Test
+//	public void isNotRMSA_constants_1() throws ParsingException {
+//		// only RMSA if the critical instance is built using all rule set constants
+//		this.checkHasProperty("constants_1.rls", Acyclicity.RMSA, false);
+//	}
 
 	@Test
 	public void isNotMFA_constants_1() throws ParsingException {
@@ -44,10 +44,10 @@ public class ConstantsInCriticalInstanceIT extends AcyclicityIT {
 		this.checkHasProperty("constants_1.rls", Acyclicity.MFA, false);
 	}
 
-	@Test
-	public void isNotRMFA_constants_1() throws ParsingException {
-		// only RMFA if the critical instance is built using all rule set constants
-		this.checkHasProperty("constants_1.rls", Acyclicity.RMFA, false);
-	}
+//	@Test
+//	public void isNotRMFA_constants_1() throws ParsingException {
+//		// only RMFA if the critical instance is built using all rule set constants
+//		this.checkHasProperty("constants_1.rls", Acyclicity.RMFA, false);
+//	}
 
 }
