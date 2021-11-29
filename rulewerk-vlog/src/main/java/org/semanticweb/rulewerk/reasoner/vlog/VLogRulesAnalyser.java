@@ -45,6 +45,8 @@ import karmaresearch.vlog.VLog.RuleRewriteStrategy;
 
 //TODO add javadoc
 //TODO state management
+// TODO warning if you have negation + restricted chase?
+
 public class VLogRulesAnalyser implements AutoCloseable {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(VLogRulesAnalyser.class);
@@ -59,7 +61,7 @@ public class VLogRulesAnalyser implements AutoCloseable {
 	}
 
 	public void setLogLevel(final LogLevel logLevel) {
-		// this.validateNotClosed();
+		// TODO this.validateNotClosed();
 		Validate.notNull(logLevel, "Log level cannot be null!");
 		this.internalLogLevel = logLevel;
 		this.vLog.setLogLevel(ModelToVLogConverter.toVLogLogLevel(this.internalLogLevel));
@@ -70,13 +72,13 @@ public class VLogRulesAnalyser implements AutoCloseable {
 	}
 
 	public void setLogFile(final String filePath) {
-		// this.validateNotClosed();
+		// TODO this.validateNotClosed();
 		this.vLog.setLogFile(filePath);
 	}
 
 	public boolean checkProperty(final RulesCyclicityProperty property, final Collection<Rule> rules) {
 // FIXME what if reasoner already started? should it be reset?
-//		this.validateNotClosed();
+		// TODO this.validateNotClosed();
 
 		// TODO for efficiency, we probably want to expose loadRules method to be only
 		// called once, and not for every check.
@@ -87,7 +89,7 @@ public class VLogRulesAnalyser implements AutoCloseable {
 
 		this.loadRules(rules);
 
-//		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
+// TODO		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
 //			try {
 //				this.load();
 //			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/rulewerk/issues/128
@@ -115,6 +117,8 @@ public class VLogRulesAnalyser implements AutoCloseable {
 
 	// TODO add javadoc
 	public CyclicityResult checkForCycles(final Collection<Rule> rules, final Algorithm algorithm) {
+		// TODO warning if you have negation + restricted chase?
+
 		switch (algorithm) {
 		case RESTRICTED_CHASE:
 			return this.checkForCyclesRestrictedChase(rules);
@@ -170,30 +174,13 @@ public class VLogRulesAnalyser implements AutoCloseable {
 	private void startReasoner() {
 		try {
 			this.vLog.start(StringUtils.EMPTY, false);
+			//TODO state management
 		} catch (final AlreadyStartedException e) {
 			throw new RulewerkRuntimeException("Inconsistent reasoner state.", e);
 		} catch (final EDBConfigurationException | IOException e) {
 			throw new RulewerkRuntimeException("Invalid VLog configuration.", e);
 		}
 	}
-
-//	void getRules(final KnowledgeBase knowledgeBase, final Collection<Predicate> dataVaryingPredicates) {
-//		// if fact over pred P, introduce aux_P, fact over aux_P and aux_P -> P
-//		// what about the dataVaryingPredicates (also if P in dataVaryingPredicates)
-//
-//		// check this corresponds to our rule rewriting and does not influence
-//		// termination
-//		final List<Rule> rules = knowledgeBase.getRules();
-//	}
-
-//	// 1. Do we want EDB acycl checks? (configurable, given set of predicates; by
-//	// default, the ones that have facts in the KB)
-//	// 2. Cool if we can configure, out of the EDBs, which will change, and which
-//	// will not. So there can be a table with facts that never changes, and we can
-//	// load that into the acyclicity check.
-//	// if fact over pred P, introduce aux_P, fact over aux_P and aux_P -> P
-
-	// TODO warning if you have negation + restricted chase?
 
 	@Override
 	public void close() {
