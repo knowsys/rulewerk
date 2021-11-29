@@ -1,7 +1,6 @@
 Rulewerk
 ======
-[![Build Status](https://github.com/knowsys/rulewerk/workflows/Rulewerk%20Unit%20Tests/badge.svg?branch=master)](https://github.com/knowsys/rulewerk/actions?query=workflow:Rulewerk+Unit+Tests)
-[![Integration Test Status](https://github.com/knowsys/rulewerk/workflows/Rulewerk%20Integration%20Tests/badge.svg?branch=master)](https://github.com/knowsys/rulewerk/actions?query=workflow:Rulewerk+Integration+Tests)
+[![Rulewerk Test Status](https://github.com/knowsys/rulewerk/workflows/Rulewerk%20Tests/badge.svg?branch=master)](https://github.com/knowsys/rulewerk/actions?query=workflow:Rulewerk+Tests)
 [![Coverage Status](https://coveralls.io/repos/github/knowsys/rulewerk/badge.svg?branch=master)](https://coveralls.io/github/knowsys/rulewerk?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.semanticweb.rulewerk/rulewerk-parent/badge.svg)](http://search.maven.org/#search|ga|1|g%3A%22org.semanticweb.rulewerk%22)
 

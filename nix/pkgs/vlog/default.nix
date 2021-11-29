@@ -16,7 +16,7 @@
 
 stdenv.mkDerivation rec {
   pname = "vlog";
-  version = "unstable-2021-11-01";
+  version = "unstable-2021-11-17";
   src = pkgs.fetchFromGitHub {
     owner = "karmaresearch";
     repo = "vlog";
