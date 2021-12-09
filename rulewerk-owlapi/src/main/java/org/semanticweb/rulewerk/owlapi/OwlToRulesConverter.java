@@ -40,13 +40,20 @@ import org.slf4j.LoggerFactory;
  */
 public class OwlToRulesConverter {
 
+	/**
+	 * The default value for the maximum number of unssuported axioms to be
+	 * registered during the conversion.
+	 */
+	public static final Integer DEFAULT_MAX_UNSUPPORTED_AXIOMS_SIZE = 10;
+
 	private static Logger LOGGER = LoggerFactory.getLogger(OwlToRulesConverter.class);
 
 	final OwlAxiomToRulesConverter owlAxiomToRulesConverter = new OwlAxiomToRulesConverter();
 
 	private final boolean failOnUnsupported;
+	private final List<OWLAxiom> unsupportedAxiomsSample = new ArrayList<>();
 	private int unsupportedAxiomsCount = 0;
-	private final List<OWLAxiom> unsupportedAxioms = new ArrayList<>();
+	private Integer maxUnsupportedAxiomsSize = DEFAULT_MAX_UNSUPPORTED_AXIOMS_SIZE;
 
 	/**
 	 * Constructor.
@@ -56,7 +63,7 @@ public class OwlToRulesConverter {
 	 *                          encountering axioms that cannot be converted to
 	 *                          rules or facts.
 	 */
-	public OwlToRulesConverter(boolean failOnUnsupported) {
+	public OwlToRulesConverter(final boolean failOnUnsupported) {
 		this.failOnUnsupported = failOnUnsupported;
 	}
 
@@ -80,15 +87,16 @@ public class OwlToRulesConverter {
 		owlOntology.axioms().forEach(owlAxiom -> {
 			try {
 				owlAxiom.accept(this.owlAxiomToRulesConverter);
-			} catch (OwlFeatureNotSupportedException e) {
+			} catch (final OwlFeatureNotSupportedException e) {
 				if (this.failOnUnsupported) {
 					LOGGER.error(e.getMessage());
 					throw e;
 				} else {
 					LOGGER.warn(e.getMessage());
 					this.unsupportedAxiomsCount++;
-					if (this.unsupportedAxioms.size() < 10) {
-						this.unsupportedAxioms.add(owlAxiom);
+					if (this.maxUnsupportedAxiomsSize != null
+							&& this.unsupportedAxiomsSample.size() <= this.maxUnsupportedAxiomsSize) {
+						this.unsupportedAxiomsSample.add(owlAxiom);
 					}
 				}
 			}
@@ -129,14 +137,40 @@ public class OwlToRulesConverter {
 	}
 
 	/**
-	 * Returns up to 10 unsupported axioms encountered during the conversion. The
-	 * complete number of unsupported axioms can be queried using
-	 * {@link #getUnsupportedAxiomsCount()}.
+	 * Returns up to {@link #getMaxUnsupportedAxiomsSize()} unsupported axioms
+	 * encountered during the conversion. If {@link #getMaxUnsupportedAxiomsSize()}
+	 * is {@code null}, then it returns all unsupported axioms encountered during
+	 * the translation. The complete number of unsupported axioms can be queried
+	 * using {@link #getUnsupportedAxiomsCount()}.
 	 * 
 	 * @return list of first ten unsupported axioms that were encountered
 	 */
 	public List<OWLAxiom> getUnsupportedAxiomsSample() {
-		return this.unsupportedAxioms;
+		return this.unsupportedAxiomsSample;
+	}
+
+	/**
+	 * Sets the maximum number of unsupported axioms to be registered during
+	 * conversion. The default value is 10 (see
+	 * {@link DEFAULT_MAX_UNSUPPORTED_AXIOMS_SIZE}). If set to {@code null}, all
+	 * unsupported axioms encountered during conversion are saved.
+	 * 
+	 * @param maxUnsupportedAxiomsSize
+	 */
+	public void setMaxUnsupportedAxiomsSize(final Integer maxUnsupportedAxiomsSize) {
+		this.maxUnsupportedAxiomsSize = maxUnsupportedAxiomsSize;
+	}
+
+	/**
+	 * Getter for the maximum number of unsupported axioms to be registered during
+	 * conversion. The default value is 10 (see
+	 * {@link DEFAULT_MAX_UNSUPPORTED_AXIOMS_SIZE}). If set to {@code null}, all
+	 * unsupported axioms encountered during conversion are saved.
+	 * 
+	 * @return
+	 */
+	public Integer getMaxUnsupportedAxiomsSize() {
+		return this.maxUnsupportedAxiomsSize;
 	}
 
 }
