@@ -94,8 +94,8 @@ public class OwlToRulesConverter {
 				} else {
 					LOGGER.warn(e.getMessage());
 					this.unsupportedAxiomsCount++;
-					if (this.maxUnsupportedAxiomsSize != null
-							&& this.unsupportedAxiomsSample.size() <= this.maxUnsupportedAxiomsSize) {
+					if (this.maxUnsupportedAxiomsSize == null
+							|| this.unsupportedAxiomsSample.size() < this.maxUnsupportedAxiomsSize) {
 						this.unsupportedAxiomsSample.add(owlAxiom);
 					}
 				}
