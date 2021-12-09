@@ -679,8 +679,8 @@ public class OwlAxiomToRulesConverterTest {
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testSubClassOfMaxCardinality() {
 
-		OWLClassExpression maxCard = df.getOWLObjectMaxCardinality(1, pR);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, maxCard);
+		final OWLClassExpression maxCard = df.getOWLObjectMaxCardinality(1, pR);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, maxCard);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -974,8 +974,8 @@ public class OwlAxiomToRulesConverterTest {
 	 */
 	@Test
 	public void testNominalsSubClassOfClass() {
-		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(oneOfab, cA);
+		final OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(oneOfab, cA);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -993,9 +993,9 @@ public class OwlAxiomToRulesConverterTest {
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	// TODO support this feature
 	public void testNominalsInConjunctionLeftSubClassOfClass() {
-		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(oneOfab, cB);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
+		final OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		final OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(oneOfab, cB);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -1007,9 +1007,9 @@ public class OwlAxiomToRulesConverterTest {
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	// TODO support this feature
 	public void testNominalsInConjunctionRightSubClassOfClass() {
-		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(cB, oneOfab);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
+		final OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		final OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(cB, oneOfab);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -1020,9 +1020,9 @@ public class OwlAxiomToRulesConverterTest {
 	 */
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testClassSubClassOfNominalsInConjunctionRight() {
-		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(cB, oneOfab);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, conjunction);
+		final OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		final OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(cB, oneOfab);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, conjunction);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -1033,8 +1033,8 @@ public class OwlAxiomToRulesConverterTest {
 	 */
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testNominalSuperClassOfClass() {
-		OWLObjectOneOf oneOfa = df.getOWLObjectOneOf(inda);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, oneOfa);
+		final OWLObjectOneOf oneOfa = df.getOWLObjectOneOf(inda);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, oneOfa);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -1045,8 +1045,8 @@ public class OwlAxiomToRulesConverterTest {
 	 */
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testNominalsSuperClassOfClass() {
-		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, oneOfab);
+		final OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, oneOfab);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
