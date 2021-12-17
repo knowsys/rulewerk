@@ -51,7 +51,7 @@ public class OwlToRulesConverter {
 	final OwlAxiomToRulesConverter owlAxiomToRulesConverter = new OwlAxiomToRulesConverter();
 
 	private final boolean failOnUnsupported;
-	private final List<OWLAxiom> unsupportedAxiomsSample = new ArrayList<>();
+	private final List<OWLAxiom> unsupportedAxiomsSample = new ArrayList<>(DEFAULT_LIMIT_UNSUPPORTED_AXIOMS_SIZE);
 	private int unsupportedAxiomsCount = 0;
 	private Integer limitUnsupportedAxiomsSize = DEFAULT_LIMIT_UNSUPPORTED_AXIOMS_SIZE;
 
