@@ -4,7 +4,6 @@
 , lib
 , maven
 , stdenv
-, vlog
 }:
 
 stdenv.mkDerivation {
@@ -12,16 +11,10 @@ stdenv.mkDerivation {
   nativeBuildInputs = [ maven ];
   src = gitignoreSource ../../..;
 
-  preBuild = ''
-    mkdir -p rulewerk-vlog/lib/
-    cp ${vlog}/share/java/jvlog.jar rulewerk-vlog/lib/jvlog-local.jar
-    mvn --no-transfer-progress initialize -Pdevelopment -Dmaven.repo.local=$out/.m2
-  '';
-
   buildPhase = ''
     runHook preBuild
 
-    mvn --no-transfer-progress go-offline:resolve-dependencies -Pclient -Dmaven.repo.local=$out/.m2
+    mvn --no-transfer-progress go-offline:resolve-dependencies -DexcludeArtifactIds=org.semanticweb.rulewerk.vlog-java -Pclient -Dmaven.repo.local=$out/.m2
 
     runHook postBuild
   '';
@@ -36,5 +29,5 @@ stdenv.mkDerivation {
 
   outputHashAlgo = "sha256";
   outputHashMode = "recursive";
-  outputHash = "vzLyWvgAlNXvYWocB+hyKm9m9sMS+SMtzys1SdhDLso=";
+  outputHash = "sha256-w9mi8MOXeJo9RUezNSQQmy3GrEWy3HXHgvo9caFpC3U=";
 }

@@ -16,12 +16,14 @@
 
 stdenv.mkDerivation rec {
   pname = "vlog";
-  version = "1.3.5";
+  version = "unstable-2021-11-17";
   src = pkgs.fetchFromGitHub {
     owner = "karmaresearch";
     repo = "vlog";
-    rev = "v${version}";
-    sha256 = "sxgiTya2Qqq/mTJGr/BOIPRKDLgIdWGzeuNn5TBis4M=";
+    #  rev = "v${version}";
+    # 'rev' and 'sha256' point to the latest VLog master branch tag/commit we want to test
+    rev = "a5d207b07dd9bc0adb6cddfd079a8fab5c142fe4";
+    sha256 = "wu02yMMs+p3KH+w6/ciMR4TzVUGVD94XomNkgtYV6Bc=";
   };
 
   buildInputs = [ kognac trident sparsehash jdk curl lz4 ];

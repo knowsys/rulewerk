@@ -113,7 +113,7 @@ public class ClassToRuleHeadConverter extends AbstractClassToRuleConverter imple
 
 	@Override
 	public void visit(final OWLObjectHasValue ce) {
-		final Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller(), this.parent.skolemization);
+		final Term term = OwlToRulesConversionHelper.getIndividualTerm(ce.getFiller(), this.parent.termFactory);
 		OwlToRulesConversionHelper.addConjunctForPropertyExpression(ce.getProperty(), this.mainTerm, term, this.head);
 	}
 
