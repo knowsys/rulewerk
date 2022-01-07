@@ -101,6 +101,14 @@ public class OwlAxiomToRulesConverter implements OWLAxiomVisitor {
 	final Set<Rule> rules = new HashSet<>();
 	final Set<Fact> facts = new HashSet<>();
 
+	public Set<Rule> getRules() {
+		return this.rules;
+	}
+
+	public Set<Fact> getFacts() {
+		return this.facts;
+	}
+
 	/**
 	 * Processes the output of an {@link AbstractClassToRuleConverter} and
 	 * transforms it into a statement that is added. Tautologies are not added but

@@ -33,7 +33,7 @@ public class OwlFeatureNotSupportedException extends RulewerkRuntimeException {
 
 	private final FeatureType featureType;
 
-	enum FeatureType {
+	public enum FeatureType {
 		DATA, OBJECT
 	}
 
