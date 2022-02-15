@@ -679,8 +679,8 @@ public class OwlAxiomToRulesConverterTest {
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testSubClassOfMaxCardinality() {
 
-		OWLClassExpression maxCard = df.getOWLObjectMaxCardinality(1, pR);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, maxCard);
+		final OWLClassExpression maxCard = df.getOWLObjectMaxCardinality(1, pR);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, maxCard);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -974,8 +974,8 @@ public class OwlAxiomToRulesConverterTest {
 	 */
 	@Test
 	public void testNominalsSubClassOfClass() {
-		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(oneOfab, cA);
+		final OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(oneOfab, cA);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -993,9 +993,9 @@ public class OwlAxiomToRulesConverterTest {
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	// TODO support this feature
 	public void testNominalsInConjunctionLeftSubClassOfClass() {
-		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(oneOfab, cB);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
+		final OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		final OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(oneOfab, cB);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -1007,9 +1007,9 @@ public class OwlAxiomToRulesConverterTest {
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	// TODO support this feature
 	public void testNominalsInConjunctionRightSubClassOfClass() {
-		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(cB, oneOfab);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
+		final OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		final OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(cB, oneOfab);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(conjunction, cA);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -1020,9 +1020,9 @@ public class OwlAxiomToRulesConverterTest {
 	 */
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testClassSubClassOfNominalsInConjunctionRight() {
-		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(cB, oneOfab);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, conjunction);
+		final OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		final OWLObjectIntersectionOf conjunction = df.getOWLObjectIntersectionOf(cB, oneOfab);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, conjunction);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -1033,8 +1033,8 @@ public class OwlAxiomToRulesConverterTest {
 	 */
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testNominalSuperClassOfClass() {
-		OWLObjectOneOf oneOfa = df.getOWLObjectOneOf(inda);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, oneOfa);
+		final OWLObjectOneOf oneOfa = df.getOWLObjectOneOf(inda);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, oneOfa);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
@@ -1045,11 +1045,106 @@ public class OwlAxiomToRulesConverterTest {
 	 */
 	@Test(expected = OwlFeatureNotSupportedException.class)
 	public void testNominalsSuperClassOfClass() {
-		OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
-		OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, oneOfab);
+		final OWLObjectOneOf oneOfab = df.getOWLObjectOneOf(inda, indb);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, oneOfab);
 
 		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
 		axiom.accept(converter);
+	}
+
+	/*
+	 * A \sqsubseteq >=1 .R
+	 */
+	@Test
+	public void testSubClassOfMinCardinality_one() {
+
+		final OWLClassExpression minCard = df.getOWLObjectMinCardinality(1, pR);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, minCard);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		final Variable secondVariable = Expressions.makeExistentialVariable("Y1");
+		final PositiveLiteral expectedHead = Expressions.makePositiveLiteral(nR, converter.termFactory.frontierVariable,
+				secondVariable);
+
+		final PositiveLiteral expectedBody = Expressions.makePositiveLiteral(nA,
+				converter.termFactory.frontierVariable);
+		final Rule expectedRule = Expressions.makeRule(expectedHead, expectedBody);
+
+		assertEquals(Collections.singleton(expectedRule), converter.rules);
+	}
+
+	/*
+	 * A \sqsubseteq >=1 .R.B
+	 */
+	@Test
+	public void testSubClassOfMinCardinality_one_filler() {
+
+		final OWLClassExpression minCard = df.getOWLObjectMinCardinality(1, pR, cB);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(cA, minCard);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		final Variable secondVariable = Expressions.makeExistentialVariable("Y1");
+		final PositiveLiteral expectedHead1 = Expressions.makePositiveLiteral(nR,
+				converter.termFactory.frontierVariable, secondVariable);
+		final PositiveLiteral expectedHead2 = Expressions.makePositiveLiteral(nB, secondVariable);
+
+		final PositiveLiteral expectedBody = Expressions.makePositiveLiteral(nA,
+				converter.termFactory.frontierVariable);
+		final Rule expectedRule = Expressions.makeRule(
+				Expressions.makePositiveConjunction(expectedHead1, expectedHead2),
+				Expressions.makeConjunction(expectedBody));
+
+		assertEquals(Collections.singleton(expectedRule), converter.rules);
+	}
+
+	/*
+	 * >=1 .R \sqsubseteq A
+	 */
+	@Test
+	public void testMinCardinality_one_SubClassOf() {
+
+		final OWLClassExpression minCard = df.getOWLObjectMinCardinality(1, pR);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(minCard, cA);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
+		final PositiveLiteral expectedBody = Expressions.makePositiveLiteral(nR, converter.termFactory.frontierVariable,
+				secondVariable);
+
+		final PositiveLiteral expectedHead = Expressions.makePositiveLiteral(nA,
+				converter.termFactory.frontierVariable);
+		final Rule expectedRule = Expressions.makeRule(expectedHead, expectedBody);
+
+		assertEquals(Collections.singleton(expectedRule), converter.rules);
+	}
+
+	/*
+	 * >=1 .R.B \sqsubseteq A
+	 */
+	@Test
+	public void testMinCardinality_one_filler_SubClassOf() {
+
+		final OWLClassExpression minCard = df.getOWLObjectMinCardinality(1, pR, cB);
+		final OWLSubClassOfAxiom axiom = df.getOWLSubClassOfAxiom(minCard, cA);
+
+		final OwlAxiomToRulesConverter converter = new OwlAxiomToRulesConverter();
+		axiom.accept(converter);
+
+		final Variable secondVariable = Expressions.makeUniversalVariable("Y1");
+		final PositiveLiteral expectedBody1 = Expressions.makePositiveLiteral(nR,
+				converter.termFactory.frontierVariable, secondVariable);
+		final PositiveLiteral expectedBody2 = Expressions.makePositiveLiteral(nB, secondVariable);
+
+		final PositiveLiteral expectedHead = Expressions.makePositiveLiteral(nA, converter.termFactory.frontierVariable);
+		final Rule expectedRule = Expressions.makeRule(expectedHead, expectedBody1, expectedBody2);
+
+		assertEquals(Collections.singleton(expectedRule), converter.rules);
 	}
 
 	@Ignore
