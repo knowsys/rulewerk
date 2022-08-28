@@ -38,6 +38,8 @@ import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParser;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParserBase.FormulaContext;
 import org.semanticweb.rulewerk.parser.javacc.ParseException;
+import org.semanticweb.rulewerk.parser.javacc.SimpleNode;
+import org.semanticweb.rulewerk.parser.javacc.Token;
 import org.semanticweb.rulewerk.parser.javacc.TokenMgrError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -253,9 +255,29 @@ public class RuleParser {
 		return parseDataSourceDeclaration(input, null);
 	}
 
+	// TODO: Remove method
+	static void dumpSimpleNode(SimpleNode node, String prefix) {
+		// TODO: Remove method
+		// node.dump(prefix);
+		final Token firstToken = node.jjtGetFirstToken();
+		final Token lastToken = node.jjtGetLastToken();
+
+		System.out.println(prefix + "node " + node.toString() + ": From line " + firstToken.beginLine + ":"
+				+ firstToken.beginColumn + " to line " + lastToken.endLine + ":" + lastToken.endColumn);
+
+		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+			final SimpleNode childNode = (SimpleNode) node.jjtGetChild(i);
+			if (childNode != null) {
+				dumpSimpleNode(childNode, prefix + " ");
+			}
+		}
+	}
+
 	static KnowledgeBase doParse(final JavaCCParser parser) throws ParsingException {
 		try {
-			parser.parse();
+			final SimpleNode simpleNode = parser.parse();
+			// TODO: Expose proper interface
+			dumpSimpleNode(simpleNode, "");
 		} catch (ParseException | PrefixDeclarationException | TokenMgrError e) {
 			LOGGER.error("Error parsing Knowledge Base: " + e.getMessage(), e);
 			throw new ParsingException(e.getMessage(), e);

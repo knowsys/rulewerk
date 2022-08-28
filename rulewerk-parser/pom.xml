@@ -38,7 +38,7 @@
 							<sourceDirectory>${basedir}/src/main/java/org/semanticweb/rulewerk/parser/javacc/</sourceDirectory>
 						</configuration>
 						<goals>
-							<goal>javacc</goal>
+							<goal>jjtree-javacc</goal>
 						</goals>
 					</execution>
 				</executions>

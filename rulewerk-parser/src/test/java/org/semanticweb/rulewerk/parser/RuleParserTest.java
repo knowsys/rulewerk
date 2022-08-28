@@ -607,4 +607,5 @@ public class RuleParserTest implements ParserTestUtils {
 		final List<Fact> result = knowledgeBase.getFacts();
 		assertEquals(expected, result);
 	}
+
 }
