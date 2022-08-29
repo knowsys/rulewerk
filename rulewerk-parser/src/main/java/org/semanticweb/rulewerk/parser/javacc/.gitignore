@@ -6,8 +6,8 @@
 /JavaCCParser.java
 /JavaCCParserConstants.java
 /JavaCCParserTokenManager.java
-/JavaCCParser.jj
 /JavaCCParserTreeConstants.java
 /JJTJavaCCParserState.java
 /Node.java
 /SimpleNode.java
+/JavaCCParser.jj

@@ -519,7 +519,7 @@ public class RuleParserTest implements ParserTestUtils {
 
 	@Test
 	public void parse_importStatement_relativeImport_succeeds() throws ParsingException {
-	final String input = "@import \"src/test/resources/subdir/sibling.rls\" .";
+		final String input = "@import \"src/test/resources/subdir/sibling.rls\" .";
 		final KnowledgeBase knowledgeBase = RuleParser.parse(input);
 		final List<PositiveLiteral> expected = Arrays.asList(this.fact4, this.fact5);
 		final List<Fact> result = knowledgeBase.getFacts();
@@ -528,7 +528,7 @@ public class RuleParserTest implements ParserTestUtils {
 
 	@Test
 	public void parse_importStatement_relativeParentImport_succeeds() throws ParsingException {
-	final String input = "@import \"src/test/resources/subdir/parent.rls\" .";
+		final String input = "@import \"src/test/resources/subdir/parent.rls\" .";
 		final KnowledgeBase knowledgeBase = RuleParser.parse(input);
 		final List<PositiveLiteral> expected = Arrays.asList(this.fact1, this.fact2);
 		final List<Fact> result = knowledgeBase.getFacts();
