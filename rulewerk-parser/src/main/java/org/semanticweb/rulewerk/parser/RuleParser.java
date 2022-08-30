@@ -38,8 +38,6 @@ import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParser;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParserBase.FormulaContext;
 import org.semanticweb.rulewerk.parser.javacc.ParseException;
-import org.semanticweb.rulewerk.parser.javacc.SimpleNode;
-import org.semanticweb.rulewerk.parser.javacc.Token;
 import org.semanticweb.rulewerk.parser.javacc.TokenMgrError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
