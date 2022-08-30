@@ -1,5 +1,26 @@
 package org.semanticweb.rulewerk.parser.input;
 
+/*-
+ * #%L
+ * Rulewerk Parser
+ * %%
+ * Copyright (C) 2018 - 2022 Rulewerk Developers
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -24,10 +45,11 @@ public class InputAwareRuleParser {
 	private InputAwareRuleParser() {
 	}
 
-	public static SimpleNode parse(final KnowledgeBase knowledgeBase, String fileName)
+	public static SimpleNode parse(final KnowledgeBase knowledgeBase, final String input)
 			throws FileNotFoundException, InputAwareParsingException {
+		final InputStream inputStream = new ByteArrayInputStream(input.getBytes());
 
-		final InputStream inputStream = new FileInputStream(fileName);
+//		final InputStream inputStream = new FileInputStream(fileName);
 //		final ParserConfiguration parserConfiguration = new DefaultParserConfiguration()
 //				.setImportBasePath(file.getParent());
 //		RuleParser.parseInto(interpreter.getKnowledgeBase(), inputStream, parserConfiguration);
@@ -47,7 +69,7 @@ public class InputAwareRuleParser {
 			final SimpleNode simpleNode = parser.parse();
 			// TODO: Expose proper interface
 			return simpleNode;
-		} catch (ParseException |ParsingException | PrefixDeclarationException | TokenMgrError e) {
+		} catch (ParseException | ParsingException | PrefixDeclarationException | TokenMgrError e) {
 			// TODO syntax validation
 			System.out.println(e.getMessage());
 
