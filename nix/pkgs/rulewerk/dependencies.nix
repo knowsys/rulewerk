@@ -1,14 +1,14 @@
-{ pkgs
-, gitignoreSource
-, jdk
-, lib
-, maven
-, stdenv
+{
+  pkgs,
+  gitignoreSource,
+  jdk,
+  lib,
+  maven,
+  stdenv,
 }:
-
 stdenv.mkDerivation {
   name = "rulewerk-dependencies";
-  nativeBuildInputs = [ maven ];
+  nativeBuildInputs = [maven];
   src = gitignoreSource ../../..;
 
   buildPhase = ''
@@ -29,5 +29,5 @@ stdenv.mkDerivation {
 
   outputHashAlgo = "sha256";
   outputHashMode = "recursive";
-  outputHash = "sha256-6W4M7ZuYj6Dg36Cir0LFn6YGhbFFVo6aWLXmeAfJPpM=";
+  outputHash = "sha256-5IzMlDHripuGScX+4xn0yHHN+Hcq1jW4P5n72dir7gA=";
 }

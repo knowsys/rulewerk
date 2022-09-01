@@ -1,8 +1,17 @@
+From 5c2da49c2228b16130db7980614fa691003389cb Mon Sep 17 00:00:00 2001
+From: Maximilian Marx <mmarx@wh2.tu-dresden.de>
+Date: Fri, 2 Sep 2022 01:35:35 +0200
+Subject: [PATCH] Patch lz4
+
+---
+ CMakeLists.txt | 33 +++------------------------------
+ 1 file changed, 3 insertions(+), 30 deletions(-)
+
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3a24e70..3079812 100644
+index f59ff5f..41fe741 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -97,30 +97,9 @@ ENDIF()
+@@ -100,36 +100,9 @@ ENDIF()
  
  #LZ4
  # we need it statically included, so download it, not only if it cannot be found!
@@ -10,14 +19,20 @@ index 3a24e70..3079812 100644
 -# find_path (lz4h lz4.h)
 -# IF (${lz4h} STREQUAL "lz4h-NOTFOUND")
 -#    message("Could not find LZ4. I'm going to download it from the GIT repository ...")
--    message("Downloading lz4, static version required")
+-message("Downloading lz4, static version required")
+-IF (DIST AND ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+-    set(MOREFLAGS "-fPIC -arch x86_64 -arch arm64")
+-ELSE()
+-    set(MOREFLAGS "-fPIC")
+-ENDIF()
+-
 -    ExternalProject_Add(git-lz4
 -        DOWNLOAD_COMMAND git clone https://github.com/Cyan4973/lz4.git
 -        DOWNLOAD_DIR external
 -        SOURCE_DIR external/lz4/
 -        CONFIGURE_COMMAND ""
 -        BUILD_IN_SOURCE 1
--        BUILD_COMMAND make -C lib lib MOREFLAGS=-fPIC
+-        BUILD_COMMAND make -C lib lib MOREFLAGS=${MOREFLAGS}
 -        INSTALL_COMMAND ""
 -    )
 -    ExternalProject_Get_Property(git-lz4 SOURCE_DIR)
@@ -36,3 +51,6 @@ index 3a24e70..3079812 100644
  
  #standard include
  include_directories(include/)
+-- 
+2.36.2
+

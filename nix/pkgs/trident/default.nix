@@ -1,27 +1,28 @@
-{ pkgs
-, cacert
-, cmake
-, git
-, kognac
-, lib
-, lz4
-, sparsehash
-, stdenv
-, zlib
-, ...
+{
+  pkgs,
+  cacert,
+  cmake,
+  git,
+  kognac,
+  lib,
+  lz4,
+  sparsehash,
+  stdenv,
+  zlib,
+  ...
 }:
 stdenv.mkDerivation {
   pname = "trident";
-  version = "unstable-2021-09-30";
+  version = "unstable-2022-08-08";
   src = pkgs.fetchFromGitHub {
     owner = "karmaresearch";
     repo = "trident";
-    rev = "6f14e1b57775fd9d347ce85946e6901fd2c15344";
-    sha256 = "x0eb82eUhA2g7h7Cus2ODyhwY4KIdRzvbg5aFa3iUYI=";
+    rev = "2800c197d48c4caf4b726c79072f456a2c54e966";
+    sha256 = "y+y28drGWKws7uZ6J8loF0fzVOvRu3TVtDtg0lAQCoI=";
   };
 
-  buildInputs = [ zlib sparsehash lz4 ];
-  nativeBuildInputs = [ cmake git cacert ];
+  buildInputs = [zlib sparsehash lz4];
+  nativeBuildInputs = [cmake git cacert];
 
   cmakeFlags = [
     "-DSPARQL=1"
@@ -29,7 +30,7 @@ stdenv.mkDerivation {
     "-DKOGNAC_LIB=${kognac}/lib"
     "-DKOGNAC_INC=${kognac}/share/include"
   ];
-  patches = [ ./patches/trident-lz4.patch ];
+  patches = [./patches/trident-lz4.patch];
 
   installPhase = ''
     runHook preInstall
