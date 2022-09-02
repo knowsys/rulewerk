@@ -1,0 +1,159 @@
+[[1;34mINFO[m] Error stacktraces are turned on.
+[[1;34mINFO[m] Scanning for projects...
+[[1;33mWARNING[m] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[[1;33mWARNING[m] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: Failure to find org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36morg.semanticweb.rulewerk:rulewerk-examples[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding Rulewerk Examples 0.9.0-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;33mWARNING[m] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[[1;33mWARNING[m] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: Failure to find org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:1.6.0:java[m [1m(default-cli)[m @ [36mrulewerk-examples[0;1m ---[m
+Answers to query prov(?x4, ?x3) :
+?x4 -> e17, ?x3 -> _:null17_3_0
+?x4 -> e27, ?x3 -> _:null17_3_1
+?x4 -> e51, ?x3 -> _:null17_3_2
+?x4 -> e52, ?x3 -> _:null17_3_3
+?x4 -> e25, ?x3 -> _:null17_3_4
+?x4 -> _:null2_2_0, ?x3 -> _:null17_3_0
+?x4 -> _:null2_2_1, ?x3 -> _:null17_3_1
+?x4 -> _:null16_3_0, ?x3 -> _:null17_3_0
+?x4 -> _:null16_3_1, ?x3 -> _:null17_3_1
+?x4 -> _:null28_3_0, ?x3 -> _:null17_3_5
+?x4 -> _:null28_3_1, ?x3 -> _:null17_3_6
+?x4 -> _:null21_3_2, ?x3 -> _:null17_3_5
+?x4 -> _:null28_3_2, ?x3 -> _:null17_3_7
+Query answers are: sound and complete
+
+Answers to query getSU(?v1, ?k) :
+?v1 -> e17, ?k -> null
+?v1 -> e27, ?k -> null
+?v1 -> e51, ?k -> null
+?v1 -> e52, ?k -> null
+?v1 -> e25, ?k -> null
+?v1 -> e17, ?k -> _:null17_3_0
+?v1 -> e27, ?k -> _:null17_3_1
+?v1 -> e51, ?k -> _:null17_3_0
+?v1 -> e52, ?k -> _:null17_3_1
+?v1 -> e51, ?k -> _:null17_3_5
+?v1 -> e52, ?k -> _:null17_3_6
+?v1 -> e25, ?k -> _:null17_3_5
+?v1 -> e25, ?k -> _:null17_3_7
+Query answers are: sound and complete
+
+Answers to query getU(?var1, ?k) :
+?var1 -> _:null17_3_0, ?k -> _:null17_3_0
+?var1 -> _:null17_3_1, ?k -> _:null17_3_1
+?var1 -> null, ?k -> _:null17_3_0
+?var1 -> null, ?k -> _:null17_3_1
+?var1 -> _:null17_3_2, ?k -> _:null17_3_0
+?var1 -> _:null17_3_3, ?k -> _:null17_3_1
+?var1 -> null, ?k -> _:null17_3_5
+?var1 -> null, ?k -> _:null17_3_6
+?var1 -> _:null17_3_2, ?k -> _:null17_3_5
+?var1 -> _:null17_3_3, ?k -> _:null17_3_6
+?var1 -> _:null17_3_4, ?k -> _:null17_3_5
+?var1 -> null, ?k -> _:null17_3_7
+?var1 -> _:null17_3_4, ?k -> _:null17_3_7
+Query answers are: sound and complete
+
+Answers to query SU(?x, ?U, ?V) :
+?x -> e17, ?U -> null, ?V -> _:null17_3_0
+?x -> e27, ?U -> null, ?V -> _:null17_3_1
+?x -> e51, ?U -> null, ?V -> _:null17_3_2
+?x -> e52, ?U -> null, ?V -> _:null17_3_3
+?x -> e25, ?U -> null, ?V -> _:null17_3_4
+?x -> e17, ?U -> _:null17_3_0, ?V -> _:null17_3_0
+?x -> e27, ?U -> _:null17_3_1, ?V -> _:null17_3_1
+?x -> e51, ?U -> _:null17_3_2, ?V -> _:null17_3_2
+?x -> e52, ?U -> _:null17_3_3, ?V -> _:null17_3_3
+?x -> e25, ?U -> _:null17_3_4, ?V -> _:null17_3_4
+?x -> e51, ?U -> _:null17_3_0, ?V -> _:null17_3_5
+?x -> e52, ?U -> _:null17_3_1, ?V -> _:null17_3_6
+?x -> e51, ?U -> _:null17_3_5, ?V -> _:null17_3_5
+?x -> e52, ?U -> _:null17_3_6, ?V -> _:null17_3_6
+?x -> e17, ?U -> _:null17_3_5, ?V -> _:null17_3_5
+?x -> e27, ?U -> _:null17_3_6, ?V -> _:null17_3_6
+?x -> e25, ?U -> _:null17_3_5, ?V -> _:null17_3_7
+?x -> e25, ?U -> _:null17_3_7, ?V -> _:null17_3_7
+?x -> e17, ?U -> _:null17_3_7, ?V -> _:null17_3_7
+?x -> e51, ?U -> _:null17_3_7, ?V -> _:null17_3_7
+Query answers are: sound and complete
+
+Answers to query edge_p(?x, ?U, ?Z) :
+?x -> 1, ?U -> 7, ?Z -> e17
+?x -> 2, ?U -> 7, ?Z -> e27
+?x -> 2, ?U -> 5, ?Z -> e25
+?x -> 5, ?U -> 1, ?Z -> e51
+?x -> 5, ?U -> 2, ?Z -> e52
+Query answers are: sound and complete
+
+Answers to query iterate(?x) :
+?x -> _:null21_3_2
+?x -> _:null28_3_0
+?x -> _:null28_3_1
+?x -> e51
+?x -> e52
+?x -> _:null16_3_0
+?x -> _:null16_3_1
+?x -> _:null2_2_0
+?x -> _:null2_2_1
+?x -> e17
+?x -> e27
+?x -> _:null28_3_2
+?x -> e25
+Query answers are: sound and complete
+
+Answers to query BAD(?x, ?y) :
+Query answers are: sound and complete
+
+Answers to query reaches(?x, ?x) :
+?x -> _:null21_3_2
+?x -> _:null28_3_1
+?x -> _:null28_3_2
+?x -> _:null16_3_1
+Query answers are: sound and complete
+
+Answers to query rig_edge1(?x, ?y) :
+?x -> e51, ?y -> _:null28_3_0
+?x -> e52, ?y -> _:null28_3_1
+?x -> e17, ?y -> _:null2_2_0
+?x -> e27, ?y -> _:null2_2_1
+?x -> e25, ?y -> _:null28_3_2
+Query answers are: sound and complete
+
+Answers to query rig_edge2(?x, ?y) :
+?x -> _:null16_3_0, ?y -> _:null28_3_0
+?x -> _:null16_3_1, ?y -> _:null28_3_1
+?x -> e17, ?y -> _:null2_2_0
+?x -> e27, ?y -> _:null2_2_1
+?x -> _:null21_3_2, ?y -> _:null28_3_2
+Query answers are: sound and complete
+
+Answers to query idb_edge(?x, ?y) :
+?x -> _:null28_3_0, ?y -> _:null21_3_2
+?x -> _:null28_3_1, ?y -> _:null21_3_2
+?x -> _:null2_2_0, ?y -> _:null16_3_0
+?x -> _:null2_2_1, ?y -> _:null16_3_1
+?x -> _:null28_3_2, ?y -> _:null16_3_1
+Query answers are: sound and complete
+
+Answers to query reaches2_p(?x, ?y, ?Z) :
+?x -> 1, ?y -> 7, ?Z -> _:null16_3_0
+?x -> 2, ?y -> 7, ?Z -> _:null16_3_1
+?x -> 2, ?y -> 5, ?Z -> _:null16_3_2
+?x -> 5, ?y -> 1, ?Z -> _:null16_3_3
+?x -> 5, ?y -> 2, ?Z -> _:null16_3_4
+?x -> 2, ?y -> 1, ?Z -> _:null21_3_0
+?x -> 2, ?y -> 2, ?Z -> _:null21_3_1
+?x -> 5, ?y -> 7, ?Z -> _:null21_3_2
+?x -> 5, ?y -> 5, ?Z -> _:null21_3_3
+Query answers are: sound and complete
+
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  1.499 s
+[[1;34mINFO[m] Finished at: 2022-03-28T12:22:25+02:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m

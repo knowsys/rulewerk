@@ -1,0 +1,107 @@
+[[1;34mINFO[m] Error stacktraces are turned on.
+[[1;34mINFO[m] Scanning for projects...
+[[1;33mWARNING[m] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[[1;33mWARNING[m] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: Failure to find org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36morg.semanticweb.rulewerk:rulewerk-examples[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding Rulewerk Examples 0.9.0-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;33mWARNING[m] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[[1;33mWARNING[m] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: Failure to find org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced
+Downloading from central: https://repo.maven.apache.org/maven2/com/google/guava/guava/maven-metadata.xml
+Downloading from sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/com/google/guava/guava/maven-metadata.xml
+Progress (1): 1.4/4.0 kBProgress (1): 2.7/4.0 kBProgress (1): 4.0 kB                        Downloaded from central: https://repo.maven.apache.org/maven2/com/google/guava/guava/maven-metadata.xml (4.0 kB at 7.8 kB/s)
+Progress (1): 429 B                   Downloaded from sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/com/google/guava/guava/maven-metadata.xml (429 B at 403 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/com/google/code/findbugs/jsr305/maven-metadata.xml
+Downloading from sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/com/google/code/findbugs/jsr305/maven-metadata.xml
+Progress (1): 461 B                   Downloaded from central: https://repo.maven.apache.org/maven2/com/google/code/findbugs/jsr305/maven-metadata.xml (461 B at 8.2 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/maven-metadata.xml
+Downloading from sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/slf4j/slf4j-api/maven-metadata.xml
+Progress (1): 1.4/3.2 kBProgress (1): 2.7/3.2 kBProgress (1): 3.2 kB                        Downloaded from central: https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/maven-metadata.xml (3.2 kB at 53 kB/s)
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:1.6.0:java[m [1m(default-cli)[m @ [36mrulewerk-examples[0;1m ---[m
+[[1;33mWARNING[m] 
+[1;31mjava.io.FileNotFoundException[m: [1;31m/mnt/c/Users/Ali Elhalawati/files/reachability/galen-data/ali.csv (No such file or directory)[m
+    [1mat[m java.io.FileInputStream.open0 ([1mNative Method[m)
+    [1mat[m java.io.FileInputStream.open ([1mFileInputStream.java:213[m)
+    [1mat[m java.io.FileInputStream.<init> ([1mFileInputStream.java:155[m)
+    [1mat[m java.util.Scanner.<init> ([1mScanner.java:639[m)
+    [1mat[m org.semanticweb.rulewerk.examples.SimpleReasoningExample.compute3 ([1mSimpleReasoningExample.java:706[m)
+    [1mat[m org.semanticweb.rulewerk.examples.SimpleReasoningExample.main ([1mSimpleReasoningExample.java:883[m)
+    [1mat[m jdk.internal.reflect.NativeMethodAccessorImpl.invoke0 ([1mNative Method[m)
+    [1mat[m jdk.internal.reflect.NativeMethodAccessorImpl.invoke ([1mNativeMethodAccessorImpl.java:62[m)
+    [1mat[m jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke ([1mDelegatingMethodAccessorImpl.java:43[m)
+    [1mat[m java.lang.reflect.Method.invoke ([1mMethod.java:567[m)
+    [1mat[m org.codehaus.mojo.exec.ExecJavaMojo$1.run ([1mExecJavaMojo.java:282[m)
+    [1mat[m java.lang.Thread.run ([1mThread.java:830[m)
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;31mBUILD FAILURE[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  4.170 s
+[[1;34mINFO[m] Finished at: 2022-09-01T13:29:41+02:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;31mERROR[m] Failed to execute goal [32morg.codehaus.mojo:exec-maven-plugin:1.6.0:java[m [1m(default-cli)[m on project [36mrulewerk-examples[m: [1;31mAn exception occured while executing the Java class. /mnt/c/Users/Ali Elhalawati/files/reachability/galen-data/ali.csv (No such file or directory)[m -> [1m[Help 1][m
+[1;31morg.apache.maven.lifecycle.LifecycleExecutionException[m: [1;31mFailed to execute goal [32morg.codehaus.mojo:exec-maven-plugin:1.6.0:java[m [1m(default-cli)[m on project [36mrulewerk-examples[m: [1;31mAn exception occured while executing the Java class. /mnt/c/Users/Ali Elhalawati/files/reachability/galen-data/ali.csv (No such file or directory)[m[m
+    [1mat[m org.apache.maven.lifecycle.internal.MojoExecutor.execute ([1mMojoExecutor.java:215[m)
+    [1mat[m org.apache.maven.lifecycle.internal.MojoExecutor.execute ([1mMojoExecutor.java:156[m)
+    [1mat[m org.apache.maven.lifecycle.internal.MojoExecutor.execute ([1mMojoExecutor.java:148[m)
+    [1mat[m org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject ([1mLifecycleModuleBuilder.java:117[m)
+    [1mat[m org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject ([1mLifecycleModuleBuilder.java:81[m)
+    [1mat[m org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build ([1mSingleThreadedBuilder.java:56[m)
+    [1mat[m org.apache.maven.lifecycle.internal.LifecycleStarter.execute ([1mLifecycleStarter.java:128[m)
+    [1mat[m org.apache.maven.DefaultMaven.doExecute ([1mDefaultMaven.java:305[m)
+    [1mat[m org.apache.maven.DefaultMaven.doExecute ([1mDefaultMaven.java:192[m)
+    [1mat[m org.apache.maven.DefaultMaven.execute ([1mDefaultMaven.java:105[m)
+    [1mat[m org.apache.maven.cli.MavenCli.execute ([1mMavenCli.java:956[m)
+    [1mat[m org.apache.maven.cli.MavenCli.doMain ([1mMavenCli.java:288[m)
+    [1mat[m org.apache.maven.cli.MavenCli.main ([1mMavenCli.java:192[m)
+    [1mat[m jdk.internal.reflect.NativeMethodAccessorImpl.invoke0 ([1mNative Method[m)
+    [1mat[m jdk.internal.reflect.NativeMethodAccessorImpl.invoke ([1mNativeMethodAccessorImpl.java:62[m)
+    [1mat[m jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke ([1mDelegatingMethodAccessorImpl.java:43[m)
+    [1mat[m java.lang.reflect.Method.invoke ([1mMethod.java:567[m)
+    [1mat[m org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced ([1mLauncher.java:289[m)
+    [1mat[m org.codehaus.plexus.classworlds.launcher.Launcher.launch ([1mLauncher.java:229[m)
+    [1mat[m org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode ([1mLauncher.java:415[m)
+    [1mat[m org.codehaus.plexus.classworlds.launcher.Launcher.main ([1mLauncher.java:356[m)
+[1mCaused by[m: org.apache.maven.plugin.MojoExecutionException: [1;31mAn exception occured while executing the Java class. /mnt/c/Users/Ali Elhalawati/files/reachability/galen-data/ali.csv (No such file or directory)[m
+    [1mat[m org.codehaus.mojo.exec.ExecJavaMojo.execute ([1mExecJavaMojo.java:339[m)
+    [1mat[m org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo ([1mDefaultBuildPluginManager.java:137[m)
+    [1mat[m org.apache.maven.lifecycle.internal.MojoExecutor.execute ([1mMojoExecutor.java:210[m)
+    [1mat[m org.apache.maven.lifecycle.internal.MojoExecutor.execute ([1mMojoExecutor.java:156[m)
+    [1mat[m org.apache.maven.lifecycle.internal.MojoExecutor.execute ([1mMojoExecutor.java:148[m)
+    [1mat[m org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject ([1mLifecycleModuleBuilder.java:117[m)
+    [1mat[m org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject ([1mLifecycleModuleBuilder.java:81[m)
+    [1mat[m org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build ([1mSingleThreadedBuilder.java:56[m)
+    [1mat[m org.apache.maven.lifecycle.internal.LifecycleStarter.execute ([1mLifecycleStarter.java:128[m)
+    [1mat[m org.apache.maven.DefaultMaven.doExecute ([1mDefaultMaven.java:305[m)
+    [1mat[m org.apache.maven.DefaultMaven.doExecute ([1mDefaultMaven.java:192[m)
+    [1mat[m org.apache.maven.DefaultMaven.execute ([1mDefaultMaven.java:105[m)
+    [1mat[m org.apache.maven.cli.MavenCli.execute ([1mMavenCli.java:956[m)
+    [1mat[m org.apache.maven.cli.MavenCli.doMain ([1mMavenCli.java:288[m)
+    [1mat[m org.apache.maven.cli.MavenCli.main ([1mMavenCli.java:192[m)
+    [1mat[m jdk.internal.reflect.NativeMethodAccessorImpl.invoke0 ([1mNative Method[m)
+    [1mat[m jdk.internal.reflect.NativeMethodAccessorImpl.invoke ([1mNativeMethodAccessorImpl.java:62[m)
+    [1mat[m jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke ([1mDelegatingMethodAccessorImpl.java:43[m)
+    [1mat[m java.lang.reflect.Method.invoke ([1mMethod.java:567[m)
+    [1mat[m org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced ([1mLauncher.java:289[m)
+    [1mat[m org.codehaus.plexus.classworlds.launcher.Launcher.launch ([1mLauncher.java:229[m)
+    [1mat[m org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode ([1mLauncher.java:415[m)
+    [1mat[m org.codehaus.plexus.classworlds.launcher.Launcher.main ([1mLauncher.java:356[m)
+[1mCaused by[m: java.io.FileNotFoundException: [1;31m/mnt/c/Users/Ali Elhalawati/files/reachability/galen-data/ali.csv (No such file or directory)[m
+    [1mat[m java.io.FileInputStream.open0 ([1mNative Method[m)
+    [1mat[m java.io.FileInputStream.open ([1mFileInputStream.java:213[m)
+    [1mat[m java.io.FileInputStream.<init> ([1mFileInputStream.java:155[m)
+    [1mat[m java.util.Scanner.<init> ([1mScanner.java:639[m)
+    [1mat[m org.semanticweb.rulewerk.examples.SimpleReasoningExample.compute3 ([1mSimpleReasoningExample.java:706[m)
+    [1mat[m org.semanticweb.rulewerk.examples.SimpleReasoningExample.main ([1mSimpleReasoningExample.java:883[m)
+    [1mat[m jdk.internal.reflect.NativeMethodAccessorImpl.invoke0 ([1mNative Method[m)
+    [1mat[m jdk.internal.reflect.NativeMethodAccessorImpl.invoke ([1mNativeMethodAccessorImpl.java:62[m)
+    [1mat[m jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke ([1mDelegatingMethodAccessorImpl.java:43[m)
+    [1mat[m java.lang.reflect.Method.invoke ([1mMethod.java:567[m)
+    [1mat[m org.codehaus.mojo.exec.ExecJavaMojo$1.run ([1mExecJavaMojo.java:282[m)
+    [1mat[m java.lang.Thread.run ([1mThread.java:830[m)
+[[1;31mERROR[m] 
+[[1;31mERROR[m] Re-run Maven using the [1m-X[m switch to enable full debug logging.
+[[1;31mERROR[m] 
+[[1;31mERROR[m] For more information about the errors and possible solutions, please read the following articles:
+[[1;31mERROR[m] [1m[Help 1][m http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

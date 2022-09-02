@@ -1,0 +1,197 @@
+[[1;34mINFO[m] Error stacktraces are turned on.
+[[1;34mINFO[m] Scanning for projects...
+[[1;33mWARNING[m] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[[1;33mWARNING[m] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: Failure to find org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36morg.semanticweb.rulewerk:rulewerk-examples[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding Rulewerk Examples 0.9.0-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;33mWARNING[m] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[[1;33mWARNING[m] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: Failure to find org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:1.6.0:java[m [1m(default-cli)[m @ [36mrulewerk-examples[0;1m ---[m
+Answers to query prov(?x4, ?x3) :
+?x4 -> _:null35_1_0, ?x3 -> _:null9_3_0
+?x4 -> _:null35_1_1, ?x3 -> _:null9_3_1
+?x4 -> _:null35_1_2, ?x3 -> _:null9_3_2
+?x4 -> _:null35_1_3, ?x3 -> _:null9_3_3
+?x4 -> _:null35_1_4, ?x3 -> _:null9_3_4
+?x4 -> _:null35_1_5, ?x3 -> _:null9_3_5
+?x4 -> _:null35_1_6, ?x3 -> _:null9_3_6
+?x4 -> _:null35_1_7, ?x3 -> _:null9_3_7
+?x4 -> _:null35_1_8, ?x3 -> _:null9_3_8
+?x4 -> _:null35_1_9, ?x3 -> _:null9_3_9
+?x4 -> _:null8_2_0, ?x3 -> _:null9_3_7
+?x4 -> _:null7_3_7, ?x3 -> _:null9_3_7
+?x4 -> _:null20_3_2, ?x3 -> _:null9_3_10
+?x4 -> _:null33_3_2, ?x3 -> _:null9_3_10
+?x4 -> _:null20_3_1, ?x3 -> _:null9_3_12
+?x4 -> _:null20_3_4, ?x3 -> _:null9_3_13
+?x4 -> _:null20_3_6, ?x3 -> _:null9_3_11
+Query answers are: sound and complete
+
+Answers to query SU(?x, ?U, ?V) :
+?x -> _:null35_1_0, ?U -> null, ?V -> _:null9_3_0
+?x -> _:null35_1_1, ?U -> null, ?V -> _:null9_3_1
+?x -> _:null35_1_2, ?U -> null, ?V -> _:null9_3_2
+?x -> _:null35_1_3, ?U -> null, ?V -> _:null9_3_3
+?x -> _:null35_1_4, ?U -> null, ?V -> _:null9_3_4
+?x -> _:null35_1_5, ?U -> null, ?V -> _:null9_3_5
+?x -> _:null35_1_6, ?U -> null, ?V -> _:null9_3_6
+?x -> _:null35_1_7, ?U -> null, ?V -> _:null9_3_7
+?x -> _:null35_1_8, ?U -> null, ?V -> _:null9_3_8
+?x -> _:null35_1_9, ?U -> null, ?V -> _:null9_3_9
+?x -> _:null35_1_0, ?U -> _:null9_3_0, ?V -> _:null9_3_0
+?x -> _:null35_1_1, ?U -> _:null9_3_1, ?V -> _:null9_3_1
+?x -> _:null35_1_2, ?U -> _:null9_3_2, ?V -> _:null9_3_2
+?x -> _:null35_1_3, ?U -> _:null9_3_3, ?V -> _:null9_3_3
+?x -> _:null35_1_4, ?U -> _:null9_3_4, ?V -> _:null9_3_4
+?x -> _:null35_1_5, ?U -> _:null9_3_5, ?V -> _:null9_3_5
+?x -> _:null35_1_6, ?U -> _:null9_3_6, ?V -> _:null9_3_6
+?x -> _:null35_1_7, ?U -> _:null9_3_7, ?V -> _:null9_3_7
+?x -> _:null35_1_8, ?U -> _:null9_3_8, ?V -> _:null9_3_8
+?x -> _:null35_1_9, ?U -> _:null9_3_9, ?V -> _:null9_3_9
+?x -> _:null35_1_5, ?U -> _:null9_3_7, ?V -> _:null9_3_10
+?x -> _:null35_1_5, ?U -> _:null9_3_10, ?V -> _:null9_3_10
+?x -> _:null35_1_7, ?U -> _:null9_3_10, ?V -> _:null9_3_10
+?x -> _:null35_1_1, ?U -> _:null9_3_10, ?V -> _:null9_3_11
+?x -> _:null35_1_6, ?U -> _:null9_3_10, ?V -> _:null9_3_12
+?x -> _:null35_1_8, ?U -> _:null9_3_10, ?V -> _:null9_3_13
+?x -> _:null35_1_1, ?U -> _:null9_3_11, ?V -> _:null9_3_11
+?x -> _:null35_1_6, ?U -> _:null9_3_12, ?V -> _:null9_3_12
+?x -> _:null35_1_8, ?U -> _:null9_3_13, ?V -> _:null9_3_13
+?x -> _:null35_1_5, ?U -> _:null9_3_11, ?V -> _:null9_3_11
+?x -> _:null35_1_5, ?U -> _:null9_3_12, ?V -> _:null9_3_12
+?x -> _:null35_1_5, ?U -> _:null9_3_13, ?V -> _:null9_3_13
+?x -> _:null35_1_7, ?U -> _:null9_3_11, ?V -> _:null9_3_11
+?x -> _:null35_1_7, ?U -> _:null9_3_12, ?V -> _:null9_3_12
+?x -> _:null35_1_7, ?U -> _:null9_3_13, ?V -> _:null9_3_13
+Query answers are: sound and complete
+
+Answers to query edge_p(?x, ?U, ?Z) :
+?x -> 1, ?U -> 5, ?Z -> _:null35_1_0
+?x -> 1, ?U -> 2, ?Z -> _:null35_1_1
+?x -> 1, ?U -> 4, ?Z -> _:null35_1_2
+?x -> 5, ?U -> 4, ?Z -> _:null35_1_3
+?x -> 2, ?U -> 4, ?Z -> _:null35_1_4
+?x -> 2, ?U -> 3, ?Z -> _:null35_1_5
+?x -> 4, ?U -> 2, ?Z -> _:null35_1_6
+?x -> 3, ?U -> 1, ?Z -> _:null35_1_7
+?x -> 3, ?U -> 2, ?Z -> _:null35_1_8
+?x -> 8, ?U -> 4, ?Z -> _:null35_1_9
+Query answers are: sound and complete
+
+Answers to query good(?x) :
+?x -> _:null35_1_0
+?x -> _:null35_1_1
+?x -> _:null35_1_2
+?x -> _:null35_1_3
+?x -> _:null35_1_4
+?x -> _:null35_1_5
+?x -> _:null35_1_6
+?x -> _:null35_1_7
+?x -> _:null35_1_8
+?x -> _:null35_1_9
+?x -> _:null8_2_0
+?x -> _:null20_3_0
+?x -> _:null20_3_2
+Query answers are: sound and complete
+
+Answers to query reaches(?x, ?x) :
+?x -> _:null20_3_1
+?x -> _:null20_3_2
+?x -> _:null20_3_3
+?x -> _:null20_3_4
+?x -> _:null20_3_5
+?x -> _:null20_3_6
+?x -> _:null20_3_7
+?x -> _:null7_3_7
+?x -> _:null33_3_2
+?x -> _:null33_3_10
+?x -> _:null33_3_13
+?x -> _:null20_3_8
+?x -> _:null20_3_9
+?x -> _:null33_3_15
+Query answers are: sound and complete
+
+Answers to query rig_edge1(?x, ?y) :
+?x -> _:null35_1_9, ?y -> _:null20_3_0
+?x -> _:null35_1_6, ?y -> _:null20_3_1
+?x -> _:null35_1_4, ?y -> _:null20_3_3
+?x -> _:null35_1_5, ?y -> _:null20_3_2
+?x -> _:null35_1_7, ?y -> _:null8_2_0
+?x -> _:null35_1_7, ?y -> _:null20_3_5
+?x -> _:null35_1_8, ?y -> _:null20_3_4
+?x -> _:null35_1_0, ?y -> _:null20_3_8
+?x -> _:null35_1_1, ?y -> _:null20_3_6
+?x -> _:null35_1_2, ?y -> _:null20_3_7
+?x -> _:null35_1_3, ?y -> _:null20_3_9
+Query answers are: sound and complete
+
+Answers to query rig_edge2(?x, ?y) :
+?x -> _:null33_3_13, ?y -> _:null20_3_0
+?x -> _:null33_3_2, ?y -> _:null20_3_1
+?x -> _:null7_3_7, ?y -> _:null20_3_2
+?x -> _:null33_3_13, ?y -> _:null20_3_3
+?x -> _:null35_1_7, ?y -> _:null8_2_0
+?x -> _:null33_3_2, ?y -> _:null20_3_4
+?x -> _:null33_3_10, ?y -> _:null20_3_5
+?x -> _:null33_3_2, ?y -> _:null20_3_6
+?x -> _:null33_3_13, ?y -> _:null20_3_7
+?x -> _:null33_3_15, ?y -> _:null20_3_8
+?x -> _:null33_3_13, ?y -> _:null20_3_9
+Query answers are: sound and complete
+
+Answers to query idb_edge(?x, ?y) :
+?x -> _:null20_3_0, ?y -> _:null33_3_17
+?x -> _:null20_3_1, ?y -> _:null33_3_13
+?x -> _:null20_3_2, ?y -> _:null33_3_2
+?x -> _:null20_3_3, ?y -> _:null33_3_2
+?x -> _:null8_2_0, ?y -> _:null7_3_7
+?x -> _:null20_3_4, ?y -> _:null7_3_7
+?x -> _:null20_3_5, ?y -> _:null7_3_7
+?x -> _:null20_3_6, ?y -> _:null33_3_10
+?x -> _:null20_3_7, ?y -> _:null33_3_10
+?x -> _:null20_3_8, ?y -> _:null33_3_10
+?x -> _:null20_3_9, ?y -> _:null33_3_15
+Query answers are: sound and complete
+
+Answers to query reaches2_p(?x, ?y, ?Z) :
+?x -> 1, ?y -> 5, ?Z -> _:null7_3_0
+?x -> 1, ?y -> 2, ?Z -> _:null7_3_1
+?x -> 1, ?y -> 4, ?Z -> _:null7_3_2
+?x -> 5, ?y -> 4, ?Z -> _:null7_3_3
+?x -> 2, ?y -> 4, ?Z -> _:null7_3_4
+?x -> 2, ?y -> 3, ?Z -> _:null7_3_5
+?x -> 4, ?y -> 2, ?Z -> _:null7_3_6
+?x -> 3, ?y -> 1, ?Z -> _:null7_3_7
+?x -> 3, ?y -> 2, ?Z -> _:null7_3_8
+?x -> 8, ?y -> 4, ?Z -> _:null7_3_9
+?x -> 1, ?y -> 3, ?Z -> _:null33_3_0
+?x -> 5, ?y -> 2, ?Z -> _:null33_3_1
+?x -> 2, ?y -> 1, ?Z -> _:null33_3_2
+?x -> 2, ?y -> 2, ?Z -> _:null33_3_3
+?x -> 4, ?y -> 4, ?Z -> _:null33_3_4
+?x -> 4, ?y -> 3, ?Z -> _:null33_3_5
+?x -> 3, ?y -> 5, ?Z -> _:null33_3_6
+?x -> 3, ?y -> 4, ?Z -> _:null33_3_7
+?x -> 3, ?y -> 3, ?Z -> _:null33_3_8
+?x -> 8, ?y -> 2, ?Z -> _:null33_3_9
+?x -> 1, ?y -> 1, ?Z -> _:null33_3_10
+?x -> 5, ?y -> 3, ?Z -> _:null33_3_11
+?x -> 2, ?y -> 5, ?Z -> _:null33_3_12
+?x -> 4, ?y -> 1, ?Z -> _:null33_3_13
+?x -> 8, ?y -> 3, ?Z -> _:null33_3_14
+?x -> 5, ?y -> 1, ?Z -> _:null33_3_15
+?x -> 4, ?y -> 5, ?Z -> _:null33_3_16
+?x -> 8, ?y -> 1, ?Z -> _:null33_3_17
+?x -> 5, ?y -> 5, ?Z -> _:null33_3_18
+?x -> 8, ?y -> 5, ?Z -> _:null33_3_19
+Query answers are: sound and complete
+
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  1.521 s
+[[1;34mINFO[m] Finished at: 2022-03-29T01:21:10+02:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m

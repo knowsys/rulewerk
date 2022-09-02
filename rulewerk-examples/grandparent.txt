@@ -1,0 +1,47 @@
+[[1;34mINFO[m] Error stacktraces are turned on.
+[[1;34mINFO[m] Scanning for projects...
+[[1;33mWARNING[m] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[[1;33mWARNING[m] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: Failure to find org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36morg.semanticweb.rulewerk:rulewerk-examples[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding Rulewerk Examples 0.9.0-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;33mWARNING[m] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[[1;33mWARNING[m] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: Failure to find org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:1.6.0:java[m [1m(default-cli)[m @ [36mrulewerk-examples[0;1m ---[m
+Answers to query grandparent_p(?x0, ?x1, ?x2) :
+?x0 -> ddjoe, ?x1 -> djoe, ?x2 -> _:null109_3_0
+?x0 -> ddjoe, ?x1 -> joe, ?x2 -> _:null43_3_0
+?x0 -> djoe, ?x1 -> joe, ?x2 -> _:null109_3_1
+?x0 -> dmjoe, ?x1 -> mjoe, ?x2 -> _:null109_3_2
+?x0 -> dmjoe, ?x1 -> joe, ?x2 -> _:null107_3_0
+?x0 -> mjoe, ?x1 -> joe, ?x2 -> _:null44_3_0
+?x0 -> dbob, ?x1 -> bob, ?x2 -> _:null109_3_3
+?x0 -> ddbob, ?x1 -> dbob, ?x2 -> _:null109_3_4
+?x0 -> ddbob, ?x1 -> bob, ?x2 -> _:null43_3_1
+?x0 -> dmbob, ?x1 -> bob, ?x2 -> _:null107_3_1
+?x0 -> dmbob, ?x1 -> mbob, ?x2 -> _:null109_3_5
+?x0 -> mbob, ?x1 -> bob, ?x2 -> _:null44_3_1
+?x0 -> mdbob, ?x1 -> dbob, ?x2 -> _:null44_3_2
+?x0 -> mdbob, ?x1 -> bob, ?x2 -> _:null124_3_1
+?x0 -> mdjoe, ?x1 -> djoe, ?x2 -> _:null44_3_3
+?x0 -> mdjoe, ?x1 -> joe, ?x2 -> _:null124_3_0
+?x0 -> mmjoe, ?x1 -> mjoe, ?x2 -> _:null44_3_4
+?x0 -> mmjoe, ?x1 -> joe, ?x2 -> _:null72_3_0
+?x0 -> mmbob, ?x1 -> bob, ?x2 -> _:null72_3_1
+?x0 -> mmbob, ?x1 -> mbob, ?x2 -> _:null44_3_5
+Query answers are: sound and complete
+
+Answers to query prov(?x0, ?x1) :
+Query answers are: sound and complete
+
+Answers to query getSU(?x0, ?x1) :
+Query answers are: sound and complete
+
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  2.529 s
+[[1;34mINFO[m] Finished at: 2022-03-02T23:55:57+01:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m

@@ -1,0 +1,37 @@
+[[1;34mINFO[m] Error stacktraces are turned on.
+[[1;34mINFO[m] Scanning for projects...
+[[1;33mWARNING[m] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[[1;33mWARNING[m] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: Failure to find org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36morg.semanticweb.rulewerk:rulewerk-examples[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding Rulewerk Examples 0.9.0-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;33mWARNING[m] The POM for org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 is missing, no dependency information available
+[[1;33mWARNING[m] Failed to retrieve plugin descriptor for org.eclipse.m2e:lifecycle-mapping:1.0.0: Plugin org.eclipse.m2e:lifecycle-mapping:1.0.0 or one of its dependencies could not be resolved: Failure to find org.eclipse.m2e:lifecycle-mapping:jar:1.0.0 in https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:1.6.0:java[m [1m(default-cli)[m @ [36mrulewerk-examples[0;1m ---[m
+Answers to query prov(?prov0, ?andN) :
+?prov0 -> _:null572_1_2132, ?andN -> _:null881_3_0
+?prov0 -> _:null210_2_0, ?andN -> _:null881_3_0
+?prov0 -> _:null348_2_0, ?andN -> _:null881_3_0
+?prov0 -> _:null443_2_0, ?andN -> _:null881_3_0
+?prov0 -> _:null663_2_0, ?andN -> _:null881_3_0
+?prov0 -> _:null213_5_2132, ?andN -> _:null881_3_0
+?prov0 -> _:null446_3_2132, ?andN -> _:null881_3_0
+?prov0 -> _:null568_5_2132, ?andN -> _:null881_3_0
+?prov0 -> _:null586_4_2132, ?andN -> _:null881_3_0
+?prov0 -> _:null76_3_0, ?andN -> _:null881_3_0
+?prov0 -> _:null76_5_0, ?andN -> _:null881_3_0
+?prov0 -> _:null76_7_0, ?andN -> _:null881_3_0
+?prov0 -> _:null940_11_2639, ?andN -> _:null881_3_0
+Query answers are: sound and complete
+
+Answers to query r206(?prov0, ?andN, ?provH0) :
+Query answers are: sound and complete
+
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  47.649 s
+[[1;34mINFO[m] Finished at: 2022-02-14T15:16:24+01:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
