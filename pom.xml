@@ -255,8 +255,19 @@
 								<version>0.13</version>
 								<repositoryType>MAIN</repositoryType>
 							</DynamicDependency>
+							<DynamicDependency>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-help-plugin</artifactId>
+								<version>3.3.0</version>
+								<repositoryType>PLUGIN</repositoryType>
+							</DynamicDependency>
 						</dynamicDependencies>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-help-plugin</artifactId>
+					<version>3.3.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -502,6 +513,26 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>dependenciesFromNix</id>
+			<activation>
+				<property>
+					<name>dependenciesFromNix.repo</name>
+				</property>
+			</activation>
+			<repositories>
+				<repository>
+					<id>dependencies-from-nix-store</id>
+					<url>file://${dependenciesFromNix.repo}</url>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>dependencies-from-nix-store</id>
+					<url>file://${dependenciesFromNix.repo}</url>
+				</pluginRepository>
+			</pluginRepositories>
 		</profile>
 	</profiles>
 
