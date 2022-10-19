@@ -30,7 +30,6 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.javacc.JavaCCParser;
 import org.semanticweb.rulewerk.parser.javacc.ParseException;
 import org.semanticweb.rulewerk.parser.javacc.SimpleNode;
-import org.semanticweb.rulewerk.parser.javacc.Token;
 import org.semanticweb.rulewerk.parser.javacc.TokenMgrError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,21 +69,21 @@ public class InputAwareRuleParser {
 			return simpleNode;
 		} catch (ParseException | ParsingException | PrefixDeclarationException | TokenMgrError e) {
 			// TODO syntax validation
-			System.out.println(e.getMessage());
-
-			final Token token = parser.token;
-			System.out.println(" Error at Token: " + token.image + " kind: " + token.kind);
-			System.out.println(" from: " + token.beginLine + ":" + token.beginColumn + " to " + token.endLine + ":"
-					+ token.endColumn);
-
-			System.out.println("Special token: " + token.specialToken);
-			System.out.println("Next token: " + token.next);
-
-			System.out.println("parser.jjtNodeName: " + parser.jjtNodeName);
+//			System.out.println(e.getMessage());
+//
+//			final Token token = parser.token;
+//			System.out.println(" Error at Token: " + token.image + " kind: " + token.kind);
+//			System.out.println(" from: " + token.beginLine + ":" + token.beginColumn + " to " + token.endLine + ":"
+//					+ token.endColumn);
+//
+//			System.out.println("Special token: " + token.specialToken);
+//			System.out.println("Next token: " + token.next);
+//
+//			System.out.println("parser.jjtNodeName: " + parser.jjtNodeName);
 
 			// TODO log something from token
 			LOGGER.error("Error parsing Knowledge Base: " + e.getMessage(), e);
-			throw new InputAwareParsingException(token, e.getMessage(), e);
+			throw new InputAwareParsingException(parser.token, e.getMessage(), e);
 		}
 
 	}
