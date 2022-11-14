@@ -54,10 +54,7 @@ public class VLogIssue98IT extends VLogIssue {
 		try (final Reasoner reasoner = this.getReasonerWithKbFromResource("vlog/98.rls")) {
 			reasoner.reason();
 
-			final Set<Fact> inferences = reasoner.getInferences().collect(Collectors.toSet());
-			final Set<Fact> expectedInferences = new HashSet<>(
-					this.parseKbFromResource("vlog/98-expected.rls").getFacts());
-			assertEquals(expectedInferences, inferences);
+			testCorrectness(reasoner);
 		}
 	}
 
