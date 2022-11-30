@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     repo = "vlog";
     #  rev = "v${version}";
     # 'rev' and 'sha256' point to the latest VLog master branch tag/commit we want to test
-    rev = "dd281026041c790a6cce0d54fb34e4e2aaba51fa";
+    rev = "ca63a3c6b32b0c4e5c099b645ff3d51a89212c76";
     sha256 = "s1H9SCzWvA0q4NgREhqsHr3xquc1kckskf7wuILgqoA=";
   };
 
