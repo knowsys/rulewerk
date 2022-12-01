@@ -1,0 +1,30 @@
+name: "Rulewerk Tests"
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  push:
+    branches:
+      - main
+      - master
+jobs:
+  vlog-integration-tests:
+    name: "VLog Integration Tests"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.4.0
+    - uses: cachix/install-nix-action@v15
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+    - uses: cachix/cachix-action@v10
+      with:
+        name: knowsys-rulewerk
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+        extraPullNames: nix-community
+    - env:
+        BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
+      run: echo "name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
+    - run: echo "name=PR_NUMBER::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+    - run: nix-shell --pure --run "mvn clean verify -Dit.test=org.semanticweb.rulewerk.integrationtests.vlogissues.*IT"
