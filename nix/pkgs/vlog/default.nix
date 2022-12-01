@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     #  rev = "v${version}";
     # 'rev' and 'sha256' point to the latest VLog master branch tag/commit we want to test
     rev = "ca63a3c6b32b0c4e5c099b645ff3d51a89212c76";
-    sha256 = "invalid";
+    sha256 = "s1H9SCzWvA0q4NgREhqsHr5xquc1kckskf7wuILgqoA=";
   };
 
   buildInputs = [kognac trident sparsehash jdk curl lz4];
