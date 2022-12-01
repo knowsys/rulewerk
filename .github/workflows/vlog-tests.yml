@@ -1,4 +1,4 @@
-name: "Rulewerk Tests"
+name: "Rulewerk VLog Integration Tests"
 on:
   pull_request:
     branches:
