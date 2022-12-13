@@ -16,7 +16,7 @@
 }:
 stdenv.mkDerivation rec {
   pname = "vlog";
-  version = "unstable-2022-08-29";
+  version = "unstable-2022-11-25";
   src = pkgs.fetchFromGitHub {
     owner = "karmaresearch";
     repo = "vlog";
@@ -33,6 +33,7 @@ stdenv.mkDerivation rec {
     "-DJAVA=1"
     "-DSPARQL=1"
     "-DCMAKE_CXX_FLAGS=-w"
+    "-DCMAKE_SKIP_RPATH=1"
     "-DKOGNAC_LIB=${kognac}/lib"
     "-DKOGNAC_INC=${kognac}/share/include"
     "-DTRIDENT_LIB=${trident}/lib"
