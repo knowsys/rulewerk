@@ -23,7 +23,7 @@ stdenv.mkDerivation {
   buildInputs = [zlib sparsehash lz4];
   nativeBuildInputs = [cmake git cacert];
 
-  cmakeFlags = ["-DCMAKE_CXX_FLAGS=-w"];
+  cmakeFlags = ["-DCMAKE_CXX_FLAGS=-w" "-DCMAKE_SKIP_RPATH=1"];
   patches = [./patches/kognac-lz4.patch];
 
   installPhase = ''
