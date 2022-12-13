@@ -1,5 +1,6 @@
 {
   pkgs,
+  buildMaven,
   gitignoreSource,
   curl,
   jdk,
@@ -11,7 +12,7 @@
   stdenv,
   vlog,
 }: let
-  rulewerk-dependencies = pkgs.callPackage ./dependencies.nix {inherit gitignoreSource jdk maven;};
+  rulewerk-dependencies = (buildMaven ../../../project-info.json).repo;
 in
   stdenv.mkDerivation rec {
     pname = "rulewerk";
@@ -34,10 +35,10 @@ in
     nativeBuildInputs = [maven];
 
     preBuild = ''
-      mkdir -p $out
+      mkdir -p $out/lib
       mkdir -p rulewerk-vlog/lib/
       cp ${vlog}/share/java/jvlog.jar rulewerk-vlog/lib/jvlog-local.jar
-      cp -R ${rulewerk-dependencies}/.m2 $out/lib
+      cp -PR ${rulewerk-dependencies}/* $out/lib
       chmod -R +w $out/lib
       mvn --offline --no-transfer-progress initialize -Pdevelopment -Dmaven.repo.local=$out/lib
     '';
