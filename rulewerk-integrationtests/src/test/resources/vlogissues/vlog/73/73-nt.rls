@@ -1,3 +1,1 @@
- join(?x):- triple(?y, <prop1>, ?x), triple(?y, <prop2>, ?x) .
- 
- 
+ join(?x):- triple(?y, ?prop1, ?x), triple(?y, ?prop2, ?x) .
