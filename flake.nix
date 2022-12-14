@@ -64,7 +64,6 @@
               ${maven}/bin/mvn clean
 
               MAVEN_OPTS="-DskipTests=true -DskipIT=true" \
-              LD_LIBRARY_PATH="''${LD_LIBRARY_PATH:+''${LD_LIBRARY_PATH}:}${pkgs.curl.out}/lib:${pkgs.lz4.out}/lib" \
                 ${pkgs.mvn2nix}/bin/mvn2nix \
                   --jdk ${jdk} \
                   --goals \
@@ -94,7 +93,6 @@
             pkgs.rulewerk-debug
           ];
           shellHook = ''
-            export LD_LIBRARY_PATH="''${LD_LIBRARY_PATH:+''${LD_LIBRARY_PATH}:}${pkgs.curl.out}/lib:${pkgs.lz4.out}/lib"
             export "PATH=${pkgs.rulewerk-debug}/bin:$PATH"
           '';
         };
