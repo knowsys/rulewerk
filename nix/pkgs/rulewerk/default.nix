@@ -1,6 +1,6 @@
 {
   pkgs,
-  buildMaven,
+  buildMavenRepositoryFromLockFile,
   gitignoreSource,
   curl,
   jdk,
@@ -12,7 +12,7 @@
   stdenv,
   vlog,
 }: let
-  rulewerk-dependencies = (buildMaven ../../../project-info.json).repo;
+  rulewerk-dependencies = buildMavenRepositoryFromLockFile {file = ../../../mvn2nix-lock.json;};
 in
   stdenv.mkDerivation rec {
     pname = "rulewerk";
@@ -35,11 +35,54 @@ in
     nativeBuildInputs = [maven];
 
     preBuild = ''
-      mkdir -p $out/lib
+      mkdir -p $out/lib/
       mkdir -p rulewerk-vlog/lib/
       cp ${vlog}/share/java/jvlog.jar rulewerk-vlog/lib/jvlog-local.jar
-      cp -PR ${rulewerk-dependencies}/* $out/lib
-      chmod -R +w $out/lib
+      cp -PR ${rulewerk-dependencies}/* $out/lib/
+
+      chmod -R +w $out/lib/
+      rm -r $out/lib/org/semanticweb/rulewerk/vlog-java
+
+      cat > $out/lib/com/google/guava/guava/maven-metadata-central.xml << EOF
+      <?xml version="1.0" encoding="UTF-8"?>
+      <metadata>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <versioning>
+          <versions>
+            <version>22.0</version>
+          </versions>
+        </versioning>
+      </metadata>
+      EOF
+
+      cat > $out/lib/com/google/code/findbugs/jsr305/maven-metadata-central.xml << EOF
+      <?xml version="1.0" encoding="UTF-8"?>
+      <metadata>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <versioning>
+          <versions>
+            <version>3.0.2</version>
+          </versions>
+        </versioning>
+      </metadata>
+      EOF
+
+      cat > $out/lib/org/slf4j/slf4j-api/maven-metadata-central.xml << EOF
+      <?xml version="1.0" encoding="UTF-8"?>
+      <metadata>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <versioning>
+          <versions>
+            <version>1.7.25</version>
+            <version>1.7.32</version>
+          </versions>
+        </versioning>
+      </metadata>
+      EOF
+
       mvn --offline --no-transfer-progress initialize -Pdevelopment -Dmaven.repo.local=$out/lib
     '';
 
