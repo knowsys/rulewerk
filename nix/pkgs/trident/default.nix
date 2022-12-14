@@ -13,12 +13,12 @@
 }:
 stdenv.mkDerivation {
   pname = "trident";
-  version = "unstable-2022-08-08";
+  version = "unstable-2022-11-25";
   src = pkgs.fetchFromGitHub {
     owner = "karmaresearch";
     repo = "trident";
-    rev = "2800c197d48c4caf4b726c79072f456a2c54e966";
-    sha256 = "y+y28drGWKws7uZ6J8loF0fzVOvRu3TVtDtg0lAQCoI=";
+    rev = "6665f4465451478119721337f65b128f868f2362";
+    sha256 = "kcITwU1dVbB/sov7ZzkknSczLtTxWD9HfyFSIOOx9ak=";
   };
 
   buildInputs = [zlib sparsehash lz4];
@@ -27,6 +27,7 @@ stdenv.mkDerivation {
   cmakeFlags = [
     "-DSPARQL=1"
     "-DCMAKE_CXX_FLAGS=-w"
+    "-DCMAKE_SKIP_RPATH=1"
     "-DKOGNAC_LIB=${kognac}/lib"
     "-DKOGNAC_INC=${kognac}/share/include"
   ];

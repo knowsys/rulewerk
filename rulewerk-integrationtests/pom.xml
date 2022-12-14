@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -43,6 +44,41 @@
 					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
+						<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.0.0-M5</version>
+				<executions>
+					<execution>
+						<id>rulewerk-vlog-integration-tests</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>org.semanticweb.rulewerk.integrationtests.vlogissues.*IT</include>
+							</includes>
+							<summaryFile>${project.build.directory}/failsafe-reports/failsafe-vlog-summary.xml</summaryFile>
+							<testFailureIgnore>true</testFailureIgnore>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<exclude>**/vlogissues/*.java</exclude>
+							</excludes>
+							<testFailureIgnore>false</testFailureIgnore>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 </project>

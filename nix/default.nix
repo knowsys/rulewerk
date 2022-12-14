@@ -1,10 +1,9 @@
 {
   getJdk,
-  gitignoresrc,
+  gitignoreSource,
 }: final: prev: let
   jdk = getJdk final.pkgs;
   maven = prev.maven.override {inherit jdk;};
-  gitignoreSource = (import gitignoresrc {inherit (final.pkgs) lib;}).gitignoreSource;
 in rec {
   kognac = final.pkgs.callPackage ./pkgs/kognac {};
   trident = final.pkgs.callPackage ./pkgs/trident {};
