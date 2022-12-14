@@ -42,6 +42,11 @@ in
 
       chmod -R +w $out/lib/
 
+      # maven needs the metadata files to resolve version ranges,
+      # but `buildMavenRepositoryFromLockFile` does not provide them.
+      # Hack around this be generating the necessary metadata files,
+      # seemingly all for dependencies of owlapi.
+
       cat > $out/lib/com/google/guava/guava/maven-metadata-central.xml << EOF
       <?xml version="1.0" encoding="UTF-8"?>
       <metadata>
