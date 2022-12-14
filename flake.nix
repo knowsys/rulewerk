@@ -76,7 +76,7 @@
                     io.github.zlika:reproducible-build-maven-plugin:help \
                     org.apache.maven.plugins:maven-install-plugin:help \
                     org.apache.maven.plugins:maven-shade-plugin:help \
-                  --verbose > mvn2nix-lock.json
+                  --verbose | ${pkgs.jq}/bin/jq -S > mvn2nix-lock.json
             '';
           };
         };
