@@ -1,0 +1,22 @@
+name: "Update mvn2nix-lock.json"
+on:
+  push:
+    paths:
+      - "**/pom.xml"
+
+jobs:
+  update-lock:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v17
+      - name: Update mvn2nix-lock
+        run: "nix run .#mvn2nix"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4.0.3
+        with:
+          commit-message: Update mvn2nix-lock.json
+          title: Update mvn2nix-lock.json
+          branch: update-mvn2nix-lock
