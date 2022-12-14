@@ -4265,16 +4265,6 @@
       "sha256": "321ddbb7ee6fe4f53dea6b4cd6db74154d6bfa42391c1f763b361b9f485acf05",
       "url": "https://repo.maven.apache.org/maven2/org/ow2/ow2/1.5.1/ow2-1.5.1.pom"
     },
-    "org.semanticweb.rulewerk:vlog-java:jar:1.3.5": {
-      "layout": "org/semanticweb/rulewerk/vlog-java/1.3.5/vlog-java-1.3.5.jar",
-      "sha256": "6eeda44c53d9600505c29d759a0b994727c28de3cacf9bea8d076a063868b77f",
-      "url": "https://repo.maven.apache.org/maven2/org/semanticweb/rulewerk/vlog-java/1.3.5/vlog-java-1.3.5.jar"
-    },
-    "org.semanticweb.rulewerk:vlog-java:pom:1.3.5": {
-      "layout": "org/semanticweb/rulewerk/vlog-java/1.3.5/vlog-java-1.3.5.pom",
-      "sha256": "186f09f711f3b3f549c696ab95a96ade21cdb4de3d8b5a33112ba8acc493bc87",
-      "url": "https://repo.maven.apache.org/maven2/org/semanticweb/rulewerk/vlog-java/1.3.5/vlog-java-1.3.5.pom"
-    },
     "org.slf4j:jcl-over-slf4j:jar:1.7.21": {
       "layout": "org/slf4j/jcl-over-slf4j/1.7.21/jcl-over-slf4j-1.7.21.jar",
       "sha256": "686b9dab357b7b665b969bbbf3dcdc67edd88ee9500699e893b5e70927be5e3f",

@@ -41,7 +41,6 @@ in
       cp -PR ${rulewerk-dependencies}/* $out/lib/
 
       chmod -R +w $out/lib/
-      rm -r $out/lib/org/semanticweb/rulewerk/vlog-java
 
       cat > $out/lib/com/google/guava/guava/maven-metadata-central.xml << EOF
       <?xml version="1.0" encoding="UTF-8"?>

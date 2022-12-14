@@ -75,7 +75,9 @@
                     io.github.zlika:reproducible-build-maven-plugin:help \
                     org.apache.maven.plugins:maven-install-plugin:help \
                     org.apache.maven.plugins:maven-shade-plugin:help \
-                  --verbose | ${pkgs.jq}/bin/jq -S > mvn2nix-lock.json
+                  --verbose \
+                | ${pkgs.jq}/bin/jq -S '{dependencies: .dependencies | with_entries(select(.key|startswith("org.semanticweb.rulewerk") == false))}' \
+                > mvn2nix-lock.json
             '';
           };
         };
