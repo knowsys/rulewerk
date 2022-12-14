@@ -31,6 +31,7 @@ stdenv.mkDerivation {
     "-DKOGNAC_LIB=${kognac}/lib"
     "-DKOGNAC_INC=${kognac}/share/include"
   ];
+  # this patch forces CMake to prefer our provided lz4 library.
   patches = [./patches/trident-lz4.patch];
 
   installPhase = ''

@@ -43,6 +43,7 @@ in
       "-DTRIDENT_LIB=${trident}/lib"
       "-DTRIDENT_INC=${trident}/share/include"
     ];
+    # this patch forces CMake to prefer our provided lz4 library.
     patches = [./patches/vlog-lz4.patch];
 
     postInstall = ''
@@ -53,6 +54,7 @@ in
       cp ./libvlog-core.so $out/lib/
 
       mkdir -p $out/share/java
+      # strip timestamps and other non-reproducible information from the jar
       mvn --offline --no-transfer-progress io.github.zlika:reproducible-build-maven-plugin:0.16:strip-jar \
         -Dreproducible.includes=./jvlog.jar \
         -Dmaven.repo.local=${rulewerk-dependencies}

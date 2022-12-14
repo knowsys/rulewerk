@@ -24,6 +24,7 @@ stdenv.mkDerivation {
   nativeBuildInputs = [cmake git cacert];
 
   cmakeFlags = ["-DCMAKE_CXX_FLAGS=-w" "-DCMAKE_SKIP_RPATH=1"];
+  # this patch forces CMake to prefer our provided lz4 library.
   patches = [./patches/kognac-lz4.patch];
 
   installPhase = ''

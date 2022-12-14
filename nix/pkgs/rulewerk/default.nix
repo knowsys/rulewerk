@@ -34,12 +34,19 @@ in
     buildInputs = [makeWrapper lz4 curl sparsehash];
     nativeBuildInputs = [maven];
 
+    # this prepares a local maven repository with all the dependencies
+    # and our local `vlog-java` jar.
     preBuild = ''
       mkdir -p $out/lib/
+
+      # provide a local `vlog-java` jar. This will be installed below.
       mkdir -p rulewerk-vlog/lib/
       cp ${vlog}/share/java/jvlog.jar rulewerk-vlog/lib/jvlog-local.jar
-      cp -PR ${rulewerk-dependencies}/* $out/lib/
 
+      # create a local maven repository with all the dependencies.
+      # Note that we are copying symbolic links, so this will not use much space.
+      cp -PR ${rulewerk-dependencies}/* $out/lib/
+      # make the local repository writable.
       chmod -R +w $out/lib/
 
       # maven needs the metadata files to resolve version ranges,
@@ -87,9 +94,13 @@ in
       </metadata>
       EOF
 
+      # install our local `vlog-java` jar.
       mvn --offline --no-transfer-progress initialize -Pdevelopment -Dmaven.repo.local=$out/lib
     '';
 
+    # Actually build the rulewerk packages. Skip tests, they are run
+    # as part of `checkPhase`, which we don't need to specify here,
+    # since the default is to invoke `mvn verify`.
     buildPhase = ''
       runHook preBuild
 
@@ -98,6 +109,8 @@ in
       runHook postBuild
     '';
 
+    # Collect built jars into the local repository, and provide
+    # executables for launching rulewerk and maven.
     installPhase = ''
       runHook preInstall
 

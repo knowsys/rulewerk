@@ -29,6 +29,7 @@
     mvn2nix,
     ...
   } @ inputs: let
+    # this selects the JDK version used from a package set.
     getJdk = pkgs: pkgs.jdk8_headless;
   in
     utils.lib.mkFlake rec {
@@ -63,6 +64,12 @@
             drv = pkgs.writeShellScriptBin "mvn2nix" ''
               ${maven}/bin/mvn clean
 
+              # skip the tests here, since we are only interested in
+              # building the dependency graph for rulewerk. Tests will
+              # run later as part of the rulewerk derivation. Also make sure
+              # to invoke all plugins that are executed during build and test,
+              # since we need to have them in the repository as well.
+
               MAVEN_OPTS="-DskipTests=true -DskipIT=true" \
                 ${pkgs.mvn2nix}/bin/mvn2nix \
                   --jdk ${jdk} \
@@ -78,6 +85,17 @@
                   --verbose \
                 | ${pkgs.jq}/bin/jq -S '{dependencies: .dependencies | with_entries(select(.key|startswith("org.semanticweb.rulewerk") == false))}' \
                 > mvn2nix-lock.json
+
+              # the `jq` invocation above serves two purposes:
+              # (i) `-S` sorts the output, so that we don't get spurious
+              # changes where just the order of dependencies in the lock
+              # file is different, but nothing relevant is changed, and
+              # (ii) remove lock entries for `org.semanticweb.rulewerk`,
+              # since those are either jars built as part of rulewerk, or
+              # the `vlog-java` jar. In either case, we always want to use
+              # our local version of that jar instead of something from
+              # maven central. Setting up the local `vlog-java` jar happens
+              # as part of the rulewerk derivation.
             '';
           };
         };
@@ -92,8 +110,14 @@
             pkgs.curl
             pkgs.lz4
             pkgs.zlib
+            # rulewerk-debug is like rulewerk, but with debug symbols
+            # in both VLog and rulewerk enabled
             pkgs.rulewerk-debug
           ];
+          # rulewerk/rulewerk-debug include a wrapper around `mvn`
+          # that automatically provides the local repository with the
+          # dependencies in it, make sure this is at the front of the path,
+          # i.e., before the upstream `mvn`.
           shellHook = ''
             export "PATH=${pkgs.rulewerk-debug}/bin:$PATH"
           '';
