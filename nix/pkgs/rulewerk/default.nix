@@ -16,7 +16,7 @@
 in
   stdenv.mkDerivation rec {
     pname = "rulewerk";
-    version = "0.9.0-SNAPSHOT";
+    version = "0.9.0";
     src = gitignoreSource ../../..;
 
     modules = [
