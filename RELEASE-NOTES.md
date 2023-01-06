@@ -7,6 +7,8 @@ Rulewerk v0.9.0
 Bugfixes:
 * The parser now accepts empty prefixes, as allowed by, e.g., RDF Turtle. (#206)
 * [rulewerk-owlapi] Axioms of type DisjointClasses and DisjointObjectProperties are no longer ignored, and are now translated into corresponding rules. (#209)
+* String constants in long (`"foo"^^<http://www.w3.org/2001/XMLSchema#string>`) and short notation (`"foo"`) and are now interchangeable. 
+* Several reasoning errors in VLog (backend) have been discovered and fixed in the version used now.
 
 Rulewerk v0.8.0
 ---------------
