@@ -9,13 +9,13 @@ A Java library based on the [VLog rule engine](https://github.com/karmaresearch/
 Installation
 ------------
 
-The current release of Rulewerk is version 0.8.0. The easiest way of using the library is with Maven. Maven users must add the following dependency to the dependencies in their pom.xml file:
+The current release of Rulewerk is version [0.9.0](https://github.com/knowsys/rulewerk/releases/tag/v0.9.0). The easiest way of using the library is with Maven. Maven users must add the following dependency to the dependencies in their pom.xml file:
 
 ```
 <dependency>
 	<groupId>org.semanticweb.rulewerk</groupId>
 	<artifactId>rulewerk-core</artifactId>
-	<version>0.8.0</version>
+	<version>0.9.0</version>
 </dependency>
 ```
 
