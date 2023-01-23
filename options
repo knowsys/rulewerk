@@ -13,13 +13,13 @@
 -charset
 'UTF-8'
 -d
-'d:/rulewerk/target/site/apidocs'
+'D:/rulewerk/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
 'Rulewerk 0.10.0-SNAPSHOT API'
 -linkoffline
-'https://docs.oracle.com/javase/8/docs/api' 'd:/rulewerk/target/javadoc-bundle-options'
+'https://docs.oracle.com/javase/8/docs/api' 'D:/rulewerk/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
