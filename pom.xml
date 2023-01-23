@@ -369,7 +369,7 @@
 					<checkinComment>Publishing javadoc for
 						${project.artifactId}:${project.version}</checkinComment>
 					<content>${project.reporting.outputDirectory}/apidocs</content>
-					<pubScmUrl>scm:git:https://github.com/knowsys/rulewerk.git</pubScmUrl>
+					<pubScmUrl>scm:git:https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/knowsys/rulewerk.git</pubScmUrl>
 					<scmBranch>gh-pages</scmBranch>
 				</configuration>
 			</plugin>
