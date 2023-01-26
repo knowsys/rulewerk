@@ -1,0 +1,2 @@
+<abstrConst> <prop1> "foo"^^<http://www.w3.org/2001/XMLSchema#string> .
+<abstrConst> <prop2> "foo" .

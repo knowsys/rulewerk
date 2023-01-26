@@ -1,8 +1,18 @@
+From cb04a5beea80a0a17a19dfc46165430d1fdee6bf Mon Sep 17 00:00:00 2001
+From: Maximilian Marx <mmarx@wh2.tu-dresden.de>
+Date: Fri, 2 Sep 2022 01:37:02 +0200
+Subject: [PATCH] Patch lz4
+
+Signed-off-by: Maximilian Marx <mmarx@wh2.tu-dresden.de>
+---
+ CMakeLists.txt | 32 +++-----------------------------
+ 1 file changed, 3 insertions(+), 29 deletions(-)
+
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 439b296..41dfa66 100644
+index 1340859..cfd943f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -121,19 +121,9 @@ IF (${sparsehash} STREQUAL "sparsehash-NOTFOUND")
+@@ -129,35 +129,9 @@ IF (${sparsehash} STREQUAL "sparsehash-NOTFOUND")
  ENDIF()
  
  #LZ4
@@ -19,9 +29,28 @@ index 439b296..41dfa66 100644
 -# include_directories(lz4h)
 -#    message("-- Found LZ4")
 -# ENDIF()
+-
+-#LZ4
+-# find_library(lz4 lz4)
+-# find_path (lz4h lz4.h)
+-# IF ((${lz4h} STREQUAL "lz4h-NOTFOUND"))
+-    #     message("Could not find LZ4. I'm going to use the version from kognac")
+-    #     message("using the lz4 version from kognac")
+-    # set(LZ4_LIB "${KOGNAC_LIB}/external/lz4/lib")
+-    # include_directories(${LZ4_LIB})
+-    # LINK_DIRECTORIES(${LZ4_LIB})
+-    # add_library(lz4 STATIC IMPORTED)
+-    # set_property(TARGET lz4 PROPERTY IMPORTED_LOCATION "${LZ4_LIB}/${CMAKE_STATIC_LIBRARY_PREFIX}lz4${CMAKE_STATIC_LIBRARY_SUFFIX}")
+-    # ELSE()
+-    # include_directories(lz4h)
+-    # message("-- Found LZ4")
+-# ENDIF()
 +find_library(lz4 ${CMAKE_STATIC_LIBRARY_PREFIX}lz4${CMAKE_STATIC_LIBRARY_SUFFIX})
 +find_path(lz4h lz4.h)
 +include_directories(lz4h)
  
- #LZ4
- # find_library(lz4 lz4)
+ #Create the core library
+ include_directories(include/ rdf3x/include rapidjson/include)
+-- 
+2.36.2
+

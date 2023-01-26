@@ -1,30 +1,31 @@
-{ pkgs
-, cacert
-, cmake
-, git
-, lib
-, lz4
-, sparsehash
-, stdenv
-, zlib
-, ...
+{
+  pkgs,
+  cacert,
+  cmake,
+  git,
+  lib,
+  lz4,
+  sparsehash,
+  stdenv,
+  zlib,
+  ...
 }:
-
 stdenv.mkDerivation {
   pname = "kognac";
-  version = "unstable-2021-09-30";
+  version = "unstable-2022-08-07";
   src = pkgs.fetchFromGitHub {
     owner = "karmaresearch";
     repo = "kognac";
-    rev = "7a909854c471afa0d80c69716321bf363add591a";
-    sha256 = "Cice8nAx7UoFBnqvWexGrSbWJDeiBY6Twio3nBD4TUs=";
+    rev = "ec961644647e2b545cfb859148cde3dff94d317e";
+    sha256 = "uliMzYkcaIf3TR2WQkM4o07M3dGF0a4/GYlWCljTlQo=";
   };
 
-  buildInputs = [ zlib sparsehash lz4 ];
-  nativeBuildInputs = [ cmake git cacert ];
+  buildInputs = [zlib sparsehash lz4];
+  nativeBuildInputs = [cmake git cacert];
 
-  cmakeFlags = [ "-DCMAKE_CXX_FLAGS=-w" ];
-  patches = [ ./patches/kognac-lz4.patch ];
+  cmakeFlags = ["-DCMAKE_CXX_FLAGS=-w" "-DCMAKE_SKIP_RPATH=1"];
+  # this patch forces CMake to prefer our provided lz4 library.
+  patches = [./patches/kognac-lz4.patch];
 
   installPhase = ''
     runHook preInstall

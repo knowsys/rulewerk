@@ -1,0 +1,22 @@
+tooth(?X) :- molar_tooth(?X) .
+part_of(?X, !T), tooth(!T) :- crown(?X) .
+part_of(?X, !T), crown(!T) :- cingulum(?X) .
+
+crown(?X), part_of(?X, !T), molar_tooth(!T) :- molar_crown(?X) .
+molar_crown(?X) :- crown(?X), part_of(?X, ?T), molar_tooth(?T) .
+
+cingulum(?X), part_of(?X, !T), molar_tooth(!T) :- molar_cingulum(?X) .
+molar_cingulum(?X) :- cingulum(?X), part_of(?X, ?T), molar_tooth(?T) .
+
+sameAs(?X, ?Y) :- cingulum(?C), tooth(?X), part_of(?C, ?X), tooth(?Y), part_of(?C, ?Y) .
+part_of(?A, ?Z) :- part_of(?A, ?Y), sameAs(?Y, ?Z) .
+sameAs(?Y, ?X) :- sameAs(?X, ?Y) .
+
+part_of(?X, ?Z) :- part_of(?X, ?Y), part_of(?Y, ?Z) .
+
+part_of_tooth(?X) :- tooth(?C), part_of(?X, ?C) .
+part_of_molar_crown(?X) :- molar_crown(?C), part_of(?X, ?C) .
+part_of_crown(?X) :- crown(?C), part_of(?X, ?C) .
+
+molar_cingulum(mc1) .
+cingulum(mc2) .
