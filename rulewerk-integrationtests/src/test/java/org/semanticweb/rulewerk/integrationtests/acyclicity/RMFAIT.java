@@ -89,8 +89,6 @@ public class RMFAIT extends AcyclicityTest {
 		}
 	}
 
-	// FIXME fix RMFA check
-	@Ignore
 	@Test
 	public void isNotRMFA_MFC_1() throws ParsingException {
 		try (Reasoner r = this.getReasonerWithKbFromResource("MFC-1.rls")) {
