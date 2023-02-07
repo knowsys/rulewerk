@@ -1,11 +1,22 @@
+From bef7c75789879a55479a2084a7089550628d0d48 Mon Sep 17 00:00:00 2001
+From: Maximilian Marx <mmarx@wh2.tu-dresden.de>
+Date: Fri, 2 Sep 2022 01:37:23 +0200
+Subject: [PATCH] Patch lz4
+
+Signed-off-by: Maximilian Marx <mmarx@wh2.tu-dresden.de>
+---
+ CMakeLists.txt | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
+
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b72b116..241a32d 100644
+index 289b2f3..9cc598c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -120,19 +120,9 @@ IF (${sparsehash} STREQUAL "sparsehash-NOTFOUND")
+@@ -127,20 +127,9 @@ IF (${sparsehash} STREQUAL "sparsehash-NOTFOUND")
+     include_directories(${KOGNAC_LIB}/external/sparsehash/src/)
  ENDIF()
  
- #LZ4
+-#LZ4
 -# find_library(lz4 lz4)
 -# find_path(lz4h lz4.h)
 -# IF (${lz4h} STREQUAL "lz4h-NOTFOUND")
@@ -25,3 +36,6 @@ index b72b116..241a32d 100644
  
  IF (JAVA)
      find_package(Java REQUIRED)
+-- 
+2.36.2
+

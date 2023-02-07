@@ -62,3 +62,4 @@ rulewerk-vlog/src/test/data/output/*
 /build-vlog/vlog/
 /TAGS
 /vlog/result*
+/.direnv/
