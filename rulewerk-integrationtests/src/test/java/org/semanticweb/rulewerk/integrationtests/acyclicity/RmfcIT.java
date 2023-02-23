@@ -22,82 +22,84 @@ package org.semanticweb.rulewerk.integrationtests.acyclicity;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.reasoner.Cyclicity;
+import org.semanticweb.rulewerk.core.reasoner.RulesCyclicityProperty;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
 public class RmfcIT extends AcyclicityIT {
 
-	private void checkIsRMFC(final String resourceName, boolean expected) throws ParsingException {
-		this.checkHasProperty(resourceName, Cyclicity.RMFC, expected);
+	@Override
+	protected RulesCyclicityProperty getPropertyToCheck() {
+		return Cyclicity.RMFC;
 	}
 
 	@Test
 	public void isNotRMFC_datalog() throws ParsingException {
-		this.checkIsRMFC("datalog.rls", false);
+		this.checkHasProperty("datalog.rls", false);
 	}
 
 	@Test
 	public void isNotRMFC_nonRecursive() throws ParsingException {
-		this.checkIsRMFC("nonRecursive.rls", false);
+		this.checkHasProperty("nonRecursive.rls", false);
 	}
 
 	@Test
 	public void isNotRMFC_JA_1() throws ParsingException {
-		this.checkIsRMFC("JA_1.rls", false);
+		this.checkHasProperty("JA_1.rls", false);
 	}
 
 	@Test
 	public void isNotRMFC_MSA_1() throws ParsingException {
-		this.checkIsRMFC("MSA_1.rls", false);
+		this.checkHasProperty("MSA_1.rls", false);
 	}
 
 	@Test
 	public void isNotMFC_MFA_1() throws ParsingException {
-		this.checkIsRMFC("MFA_1.rls", false);
+		this.checkHasProperty("MFA_1.rls", false);
 	}
 
 	@Test
 	public void isNotRMFC_1_depth_RMFA_1() throws ParsingException {
-		this.checkIsRMFC("1_depth_RMFA_1.rls", false);
+		this.checkHasProperty("1_depth_RMFA_1.rls", false);
 	}
 
 	@Test
 	public void isNotRMFC_RMFA_1() throws ParsingException {
-		this.checkIsRMFC("RMFA_1.rls", false);
+		this.checkHasProperty("RMFA_1.rls", false);
 	}
 
 	@Test
 	public void isNotRMFC_RMFA_2() throws ParsingException {
-		this.checkIsRMFC("RMFA_2.rls", false);
+		this.checkHasProperty("RMFA_2.rls", false);
 	}
 
 	@Test
 	public void isNotRMFC_RJA_1() throws ParsingException {
-		this.checkIsRMFC("RJA_1.rls", false);
+		this.checkHasProperty("RJA_1.rls", false);
 	}
 
 	@Test
 	public void isNotRMFC_RJA_2() throws ParsingException {
-		this.checkIsRMFC("RJA_2.rls", false);
+		this.checkHasProperty("RJA_2.rls", false);
 	}
 
 	@Test
 	public void isNotRMFC_RJA_3() throws ParsingException {
-		this.checkIsRMFC("RJA_3.rls", false);
+		this.checkHasProperty("RJA_3.rls", false);
 	}
 
 	@Test
 	public void isRMFC_MFC_1() throws ParsingException {
-		this.checkIsRMFC("MFC_1.rls", true);
+		this.checkHasProperty("MFC_1.rls", true);
 	}
 
 	@Test
 	public void isRMFC_RMFC_1() throws ParsingException {
-		this.checkIsRMFC("RMFC_1.rls", true);
+		this.checkHasProperty("RMFC_1.rls", true);
 	}
 
 	@Test
 	public void isNotRMFC_bike_wheel_spike() throws ParsingException {
-		this.checkIsRMFC("bike_wheel_spike.rls", false);
+		this.checkHasProperty("bike_wheel_spike.rls", false);
 	}
 
 }

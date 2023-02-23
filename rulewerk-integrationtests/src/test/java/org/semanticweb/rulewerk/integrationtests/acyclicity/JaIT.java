@@ -22,87 +22,91 @@ package org.semanticweb.rulewerk.integrationtests.acyclicity;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.reasoner.Acyclicity;
+import org.semanticweb.rulewerk.core.reasoner.RulesCyclicityProperty;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
 public class JaIT extends AcyclicityIT {
-
-	private void checkIsJA(final String resourceName, boolean expected) throws ParsingException {
-		this.checkHasProperty(resourceName, Acyclicity.JA, expected);
+	
+	@Override
+	protected RulesCyclicityProperty getPropertyToCheck() {
+		return Acyclicity.JA;
 	}
 
 	@Test
 	public void isJA_datalog() throws ParsingException {
-		this.checkIsJA("datalog.rls", true);
+		this.checkHasProperty("datalog.rls", true);
 	}
 
 	@Test
 	public void isJA_nonRecursive() throws ParsingException {
-		this.checkIsJA("nonRecursive.rls", true);
+		this.checkHasProperty("nonRecursive.rls", true);
 	}
 
 	@Test
 	public void isJA_JA_1() throws ParsingException {
-		this.checkIsJA("JA_1.rls", true);
+		this.checkHasProperty("JA_1.rls", true);
 	}
 
 	@Test
 	public void isNotJA_RJA_1() throws ParsingException {
-		this.checkIsJA("RJA_1.rls", false);
+		this.checkHasProperty("RJA_1.rls", false);
 	}
 
 	@Test
 	public void isNotJA_RJA_2() throws ParsingException {
-		this.checkIsJA("RJA_2.rls", false);
+		this.checkHasProperty("RJA_2.rls", false);
 	}
 
 	@Test
 	public void isNotJA_RJA_3() throws ParsingException {
-		this.checkIsJA("RJA_3.rls", false);
+		this.checkHasProperty("RJA_3.rls", false);
 	}
 	
 	@Test
 	public void isNotJA_MSA_1() throws ParsingException {
-		this.checkIsJA("MSA_1.rls", false);
+		this.checkHasProperty("MSA_1.rls", false);
 	}
 
 	@Test
 	public void isNotJA_MFA_1() throws ParsingException {
-		this.checkIsJA("MFA_1.rls", false);
+		this.checkHasProperty("MFA_1.rls", false);
 	}
 	
 	@Test
 	public void isNotJA_RMFA_1() throws ParsingException {
-		this.checkIsJA("RMFA_1.rls", false);
+		this.checkHasProperty("RMFA_1.rls", false);
 	}
 	
 	@Test
 	public void isNotJA_RMFA_2() throws ParsingException {
-		this.checkIsJA("RMFA_2.rls", false);
+		this.checkHasProperty("RMFA_2.rls", false);
 	}
 
 	@Test
 	public void isNotJA_1_depth_RMFA_1() throws ParsingException {
-		this.checkIsJA("1_depth_RMFA_1.rls", false);
+		this.checkHasProperty("1_depth_RMFA_1.rls", false);
 	}
 
 	@Test
 	public void isNotJA_MFC_1() throws ParsingException {
-		this.checkIsJA("MFC_1.rls", false);
+		this.checkHasProperty("MFC_1.rls", false);
 	}
 
 	@Test
 	public void isNotJA_RMFC_1() throws ParsingException {
-		this.checkIsJA("RMFC_1.rls", false);
+		this.checkHasProperty("RMFC_1.rls", false);
 	}
 	
 	@Test
 	public void isNotJA_constants_1() throws ParsingException {
-		this.checkIsJA("constants_1.rls", false);
+		this.checkHasProperty("constants_1.rls", false);
 	}
 	
 	@Test
 	public void isNotJA_bike_wheel_spike() throws ParsingException {
-		this.checkIsJA("bike_wheel_spike.rls", false);
+		this.checkHasProperty("bike_wheel_spike.rls", false);
 	}
+
+	
 	
 }

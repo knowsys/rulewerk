@@ -36,11 +36,18 @@ public abstract class AcyclicityIT extends AbstractRulewerkIT {
 	protected String getResourcePrefix() {
 		return "/acyclicity/";
 	}
+
+	protected abstract RulesCyclicityProperty getPropertyToCheck();
+	
+	protected void checkHasProperty(final String resourceName, boolean expected) throws ParsingException {
+		checkHasProperty(resourceName, this.getPropertyToCheck(), expected);
+	}
 	
 	protected void checkHasProperty(final String resourceName, RulesCyclicityProperty property, boolean expected)
 			throws ParsingException {
 		final KnowledgeBase knowledgeBase = this.parseKbFromResource(resourceName);
 		try (VLogRulesAnalyser staticAnalyser = new VLogRulesAnalyser()) {
+
 			boolean hasProperty = staticAnalyser.checkProperty(property, knowledgeBase.getRules());
 			if (expected) {
 				assertTrue(hasProperty);
@@ -49,4 +56,6 @@ public abstract class AcyclicityIT extends AbstractRulewerkIT {
 			}
 		}
 	}
+
+
 }

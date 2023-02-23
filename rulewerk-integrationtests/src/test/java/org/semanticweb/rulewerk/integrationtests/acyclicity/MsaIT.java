@@ -22,82 +22,91 @@ package org.semanticweb.rulewerk.integrationtests.acyclicity;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.reasoner.Acyclicity;
+import org.semanticweb.rulewerk.core.reasoner.RulesCyclicityProperty;
 import org.semanticweb.rulewerk.parser.ParsingException;
 
 public class MsaIT extends AcyclicityIT {
-	
-	private void checkIsMSA(final String resourceName, boolean expected) throws ParsingException {
-		this.checkHasProperty(resourceName, Acyclicity.MSA, expected);
+
+	@Override
+	protected RulesCyclicityProperty getPropertyToCheck() {
+		return Acyclicity.MSA;
 	}
 
 	@Test
 	public void isMSA_datalog() throws ParsingException {
-		this.checkIsMSA("datalog.rls", true);
+		this.checkHasProperty("datalog.rls", true);
 	}
 
 	@Test
 	public void isMSA_nonRecursive() throws ParsingException {
-		this.checkIsMSA("nonRecursive.rls", true);
+		this.checkHasProperty("nonRecursive.rls", true);
 	}
 
 	@Test
 	public void isMSA_JA_1() throws ParsingException {
-		this.checkIsMSA("JA_1.rls", true);
+		this.checkHasProperty("JA_1.rls", true);
 	}
-	
+
 	@Test
 	public void isNotMSA_RJA_1() throws ParsingException {
-		this.checkIsMSA("RJA_1.rls", false);
+		this.checkHasProperty("RJA_1.rls", false);
 	}
-	
+
 	@Test
 	public void isNotMSA_RJA_2() throws ParsingException {
-		this.checkIsMSA("RJA_2.rls", false);
+		this.checkHasProperty("RJA_2.rls", false);
 	}
-	
+
 	@Test
 	public void isNotMSA_RJA_3() throws ParsingException {
-		this.checkIsMSA("RJA_3.rls", false);
+		this.checkHasProperty("RJA_3.rls", false);
 	}
-	
+
 	@Test
 	public void isMSA_MSA_1() throws ParsingException {
-		this.checkIsMSA("MSA_1.rls", true);
+		this.checkHasProperty("MSA_1.rls", true);
 	}
-	
+
 	@Test
 	public void isNotMSA_MFA_1() throws ParsingException {
-		this.checkIsMSA("MFA_1.rls", false);
+		this.checkHasProperty("MFA_1.rls", false);
 	}
-	
+
 	@Test
 	public void isNotMSA_RMFA_1() throws ParsingException {
-		this.checkIsMSA("RMFA_1.rls", false);
+		this.checkHasProperty("RMFA_1.rls", false);
 	}
-	
+
 	@Test
 	public void isNotMSA_RMFA_2() throws ParsingException {
-		this.checkIsMSA("RMFA_2.rls", false);
+		this.checkHasProperty("RMFA_2.rls", false);
 	}
-	
+
 	@Test
 	public void isNotMSA_1_depth_RMFA_1() throws ParsingException {
-		this.checkIsMSA("1_depth_RMFA_1.rls", false);
+		this.checkHasProperty("1_depth_RMFA_1.rls", false);
 	}
 
 	@Test
 	public void isNotMSA_MFC_1() throws ParsingException {
-		this.checkIsMSA("MFC_1.rls", false);
+		this.checkHasProperty("MFC_1.rls", false);
 	}
 
 	@Test
 	public void isNotMSA_RMFC_1() throws ParsingException {
-		this.checkIsMSA("RMFC_1.rls", false);
+		this.checkHasProperty("RMFC_1.rls", false);
 	}
-	
+
 	@Test
 	public void isNotMSA_bike_wheel_spike() throws ParsingException {
-		this.checkIsMSA("bike_wheel_spike.rls", false);
+		this.checkHasProperty("bike_wheel_spike.rls", false);
 	}
+	
+	// TODO check correctness
+//	@Test
+//	public void isNotMSA_constants_1() throws ParsingException {
+//		// only MSA if the critical instance is built using all rule set constants
+//		this.checkHasProperty("constants_1.rls", false);
+//	}
 
 }
