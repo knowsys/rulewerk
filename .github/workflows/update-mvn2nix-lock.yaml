@@ -10,7 +10,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: cachix/install-nix-action@v17
+      - uses: DeterminateSystems/nix-installer-action@v4
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
       - name: Update mvn2nix-lock
         run: "nix run .#mvn2nix"
 

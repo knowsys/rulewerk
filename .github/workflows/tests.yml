@@ -14,15 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: cachix/install-nix-action@v18
-      with:
-        extra_nix_config: |
-          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-    - uses: cachix/cachix-action@v12
-      with:
-        name: knowsys-rulewerk
-        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-        extraPullNames: nix-community
+    - uses: DeterminateSystems/nix-installer-action@v4
+    - uses: DeterminateSystems/magic-nix-cache-action@v2
     - env:
         BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
       run: echo "name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
@@ -34,15 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: cachix/install-nix-action@v18
-      with:
-        extra_nix_config: |
-          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-    - uses: cachix/cachix-action@v12
-      with:
-        name: knowsys-rulewerk
-        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-        extraPullNames: nix-community
+    - uses: DeterminateSystems/nix-installer-action@v4
+    - uses: DeterminateSystems/magic-nix-cache-action@v2
     - env:
         BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
       run: echo "name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
