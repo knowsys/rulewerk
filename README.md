@@ -6,7 +6,7 @@ Rulewerk
 
 Rulewerk is a Java library based on the [VLog rule engine](https://github.com/karmaresearch/vlog).
 
-***Note:*** The recent [Nemo rule engine](https://github.com/knowsys/nemo) also implements support for a Rulewerk-like Datalog-dialect, and might be a good choice for some projects using Rulewerk. Currently, there is no Rulewerk-integration of Nemo yet, but many Rulewerk progams will work in Nemo (or can easliy be adapted), whereas Nemo tends to have more features (e.g., arithmetic built-ins and datatype support).
+***Note:*** The recent [Nemo rule engine](https://github.com/knowsys/nemo) also implements support for a Rulewerk-like Datalog-dialect, and might be a good choice for some projects using Rulewerk. Currently, there is no Rulewerk-integration of Nemo yet, but many Rulewerk progams will work in Nemo (or can easily be adapted), whereas Nemo tends to have more features (e.g., arithmetic built-ins and datatype support).
 
 Installation
 ------------
