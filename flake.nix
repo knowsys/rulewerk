@@ -2,7 +2,7 @@
   description = "Rulewerk, a java toolkit for reasoning with existential rules";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     utils.url = "github:gytis-ivaskevicius/flake-utils-plus";
     gitignore = {
       url = "github:hercules-ci/gitignore.nix";
