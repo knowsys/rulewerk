@@ -4,7 +4,9 @@ Rulewerk
 [![Coverage Status](https://coveralls.io/repos/github/knowsys/rulewerk/badge.svg?branch=master)](https://coveralls.io/github/knowsys/rulewerk?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.semanticweb.rulewerk/rulewerk-parent/badge.svg)](http://search.maven.org/#search|ga|1|g%3A%22org.semanticweb.rulewerk%22)
 
-A Java library based on the [VLog rule engine](https://github.com/karmaresearch/vlog)
+Rulewerk is a Java library based on the [VLog rule engine](https://github.com/karmaresearch/vlog).
+
+***Note:*** The recent [Nemo rule engine](https://github.com/knowsys/nemo) also implements support for a Rulewerk-like Datalog-dialect, and might be a good choice for some projects using Rulewerk. Currently, there is no Rulewerk-integration of Nemo yet, but many Rulewerk progams will work in Nemo (or can easliy be adapted), whereas Nemo tends to have more features (e.g., arithmetic built-ins and datatype support).
 
 Installation
 ------------
