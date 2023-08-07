@@ -42,10 +42,8 @@ import org.semanticweb.rulewerk.core.model.api.Rule;
 import org.semanticweb.rulewerk.core.model.api.Statement;
 import org.semanticweb.rulewerk.core.model.api.Term;
 import org.semanticweb.rulewerk.core.model.implementation.Expressions;
-import org.semanticweb.rulewerk.core.reasoner.AcyclicityNotion;
 import org.semanticweb.rulewerk.core.reasoner.Algorithm;
 import org.semanticweb.rulewerk.core.reasoner.Correctness;
-import org.semanticweb.rulewerk.core.reasoner.CyclicityResult;
 import org.semanticweb.rulewerk.core.reasoner.KnowledgeBase;
 import org.semanticweb.rulewerk.core.reasoner.LogLevel;
 import org.semanticweb.rulewerk.core.reasoner.QueryAnswerCount;
@@ -65,7 +63,6 @@ import karmaresearch.vlog.NonExistingPredicateException;
 import karmaresearch.vlog.NotStartedException;
 import karmaresearch.vlog.TermQueryResultIterator;
 import karmaresearch.vlog.VLog;
-import karmaresearch.vlog.VLog.CyclicCheckResult;
 
 /**
  * Reasoner implementation using the VLog backend.
@@ -592,60 +589,6 @@ public class VLogReasoner implements Reasoner {
 	}
 
 	@Override
-	public boolean isJA() {
-		return this.checkAcyclicity(AcyclicityNotion.JA);
-	}
-
-	@Override
-	public boolean isRJA() {
-		return this.checkAcyclicity(AcyclicityNotion.RJA);
-	}
-
-	@Override
-	public boolean isMFA() {
-		return this.checkAcyclicity(AcyclicityNotion.MFA);
-	}
-
-	@Override
-	public boolean isRMFA() {
-		return this.checkAcyclicity(AcyclicityNotion.RMFA);
-	}
-
-	@Override
-	public boolean isMFC() {
-		this.validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			try {
-				this.load();
-			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/rulewerk/issues/128
-				throw new RulewerkRuntimeException(e);
-			}
-		}
-
-		CyclicCheckResult checkCyclic;
-		try {
-			checkCyclic = this.vLog.checkCyclic("MFC");
-		} catch (final NotStartedException e) {
-			throw new RulewerkRuntimeException(e.getMessage(), e); // should be impossible
-		}
-		return checkCyclic.equals(CyclicCheckResult.CYCLIC);
-	}
-
-	@Override
-	public CyclicityResult checkForCycles() {
-		final boolean acyclic = this.isJA() || this.isRJA() || this.isMFA() || this.isRMFA();
-		if (acyclic) {
-			return CyclicityResult.ACYCLIC;
-		} else {
-			final boolean cyclic = this.isMFC();
-			if (cyclic) {
-				return CyclicityResult.CYCLIC;
-			}
-			return CyclicityResult.UNDETERMINED;
-		}
-	}
-
-	@Override
 	public void onStatementsAdded(final List<Statement> statementsAdded) {
 		// TODO more elaborate materialisation state handling
 
@@ -699,25 +642,6 @@ public class VLogReasoner implements Reasoner {
 			toBeGroundedVariables.add(Expressions.makeUniversalVariable("X" + i));
 		}
 		return Expressions.makePositiveLiteral(predicate, toBeGroundedVariables);
-	}
-
-	private boolean checkAcyclicity(final AcyclicityNotion acyclNotion) {
-		this.validateNotClosed();
-		if (this.reasonerState == ReasonerState.KB_NOT_LOADED) {
-			try {
-				this.load();
-			} catch (final IOException e) { // FIXME: quick fix for https://github.com/knowsys/rulewerk/issues/128
-				throw new RulewerkRuntimeException(e);
-			}
-		}
-
-		CyclicCheckResult checkCyclic;
-		try {
-			checkCyclic = this.vLog.checkCyclic(acyclNotion.name());
-		} catch (final NotStartedException e) {
-			throw new RulewerkRuntimeException(e.getMessage(), e); // should be impossible
-		}
-		return checkCyclic.equals(CyclicCheckResult.NON_CYCLIC);
 	}
 
 	private void updateReasonerToKnowledgeBaseChanged() {
