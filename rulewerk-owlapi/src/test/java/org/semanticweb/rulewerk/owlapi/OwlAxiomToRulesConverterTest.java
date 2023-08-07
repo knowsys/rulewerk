@@ -1164,5 +1164,4 @@ public class OwlAxiomToRulesConverterTest {
 			System.out.println(rule);
 		}
 	}
-
 }
