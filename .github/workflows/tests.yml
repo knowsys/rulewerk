@@ -1,36 +1,36 @@
 name: "Rulewerk Tests"
 on:
-  pull_request:
-    branches:
-      - main
-      - master
-  push:
-    branches:
-      - main
-      - master
+    pull_request:
+        branches:
+            - main
+            - master
+    push:
+        branches:
+            - main
+            - master
 jobs:
-  unit-tests:
-    name: "Rulewerk Unit Tests"
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: DeterminateSystems/nix-installer-action@v4
-    - uses: DeterminateSystems/magic-nix-cache-action@v2
-    - env:
-        BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
-      run: echo "name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
-    - run: echo "name=PR_NUMBER::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
-    - run: nix-shell --pure --run "mvn clean test jacoco:report && mvn coveralls:report -D repoToken=${{ secrets.COVERALLS_TOKEN }} -D serviceBuildUrl=https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks -D branch=$BRANCH_NAME -D pullRequest=$PR_NUMBER"
-  integration-tests:
-    name: "Rulewerk Integration Tests"
-    needs: unit-tests
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: DeterminateSystems/nix-installer-action@v4
-    - uses: DeterminateSystems/magic-nix-cache-action@v2
-    - env:
-        BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
-      run: echo "name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
-    - run: echo "name=PR_NUMBER::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
-    - run: nix-shell --pure --run "mvn clean verify -Dit.test=!org.semanticweb.rulewerk.integrationtests.vlogissues.*IT -DfailIfNoTests=false"
+    unit-tests:
+        name: "Rulewerk Unit Tests"
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: DeterminateSystems/nix-installer-action@v12
+            - uses: DeterminateSystems/magic-nix-cache-action@v7
+            - env:
+                  BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
+              run: echo "name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
+            - run: echo "name=PR_NUMBER::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+            - run: nix-shell --pure --run "mvn clean test jacoco:report && mvn coveralls:report -D repoToken=${{ secrets.COVERALLS_TOKEN }} -D serviceBuildUrl=https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks -D branch=$BRANCH_NAME -D pullRequest=$PR_NUMBER"
+    integration-tests:
+        name: "Rulewerk Integration Tests"
+        needs: unit-tests
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: DeterminateSystems/nix-installer-action@v12
+            - uses: DeterminateSystems/magic-nix-cache-action@v7
+            - env:
+                  BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
+              run: echo "name=BRANCH_NAME::${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
+            - run: echo "name=PR_NUMBER::$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+            - run: nix-shell --pure --run "mvn clean verify -Dit.test=!org.semanticweb.rulewerk.integrationtests.vlogissues.*IT -DfailIfNoTests=false"
