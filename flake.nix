@@ -35,9 +35,13 @@
     utils.lib.mkFlake rec {
       inherit self inputs;
 
-      overlays.default = import ./nix {
-        inherit getJdk;
-        inherit (gitignore.lib) gitignoreSource;
+      overlays = rec {
+        mvn2nix = inputs.mvn2nix.overlay;
+        rulewerk = import ./nix {
+          inherit getJdk;
+          inherit (gitignore.lib) gitignoreSource;
+        };
+        default = inputs.nixpkgs.lib.composeManyExtensions [mvn2nix rulewerk];
       };
 
       sharedOverlays = [
