@@ -4,7 +4,7 @@ package org.semanticweb.rulewerk.core.reasoner;
  * #%L
  * Rulewerk Core Components
  * %%
- * Copyright (C) 2018 - 2020 Rulewerk Developers
+ * Copyright (C) 2018 - 2021 Rulewerk Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,21 @@ package org.semanticweb.rulewerk.core.reasoner;
  * limitations under the License.
  * #L%
  */
+
 //TODO javadoc
-public enum AcyclicityNotion {
+public enum Cyclicity implements RulesCyclicityProperty {
 	/**
-	 * Joint Acyclicity
+	 * Model-Faithful Cyclicity
 	 */
-	JA,
+	MFC,
 	/**
-	 * Restricted Joint Acyclicity
+	 * Restricted Model-Faithful Cyclicity
 	 */
-	RJA,
-	/**
-	 * Model-Faithful Acyclicity
-	 */
-	MFA,
-	/**
-	 * Restricted Model-Faithful Acyclicity
-	 */
-	RMFA
+	RMFC;
+
+	@Override
+	public Type getType() {
+		return Type.CYCLIC;
+	}
+
 }

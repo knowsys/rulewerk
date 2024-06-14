@@ -1,8 +1,8 @@
-package org.semanticweb.rulewerk.integrationtests.acyclicity;
+package org.semanticweb.rulewerk.core.reasoner;
 
 /*-
  * #%L
- * Rulewerk Integration Tests
+ * Rulewerk Core Components
  * %%
  * Copyright (C) 2018 - 2021 Rulewerk Developers
  * %%
@@ -20,14 +20,20 @@ package org.semanticweb.rulewerk.integrationtests.acyclicity;
  * #L%
  */
 
+/**
+ * Property that characterizes a set of rules.
+ * 
+ * @author dragoste
+ *
+ */
+//TODO detail javadoc
+public interface RulesCyclicityProperty {
 
-import org.semanticweb.rulewerk.integrationtests.IntegrationTest;
-
-public abstract class AcyclicityTest extends IntegrationTest {
-
-	@Override
-	protected String getResourcePrefix() {
-		return "/acyclicity/";
+	static enum Type {
+		CYCLIC, ACYCLIC
 	}
 
+	Type getType();
+
+	String name();
 }

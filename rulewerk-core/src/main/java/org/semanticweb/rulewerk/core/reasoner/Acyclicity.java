@@ -1,10 +1,10 @@
-package org.semanticweb.rulewerk.integrationtests.vlogissues;
+package org.semanticweb.rulewerk.core.reasoner;
 
 /*-
  * #%L
- * Rulewerk Integration Tests
+ * Rulewerk Core Components
  * %%
- * Copyright (C) 2018 - 2021 Rulewerk Developers
+ * Copyright (C) 2018 - 2020 Rulewerk Developers
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,36 @@ package org.semanticweb.rulewerk.integrationtests.vlogissues;
  * #L%
  */
 
-import org.semanticweb.rulewerk.integrationtests.AbstractRulewerkIT;
+//TODO javadoc
+public enum Acyclicity implements RulesCyclicityProperty {
+	/**
+	 * Joint Acyclicity
+	 */
+	JA,
+	/**
+	 * Restricted Joint Acyclicity
+	 */
+	RJA,
+	/**
+	 * Model-Summarizing Acyclicity
+	 */
+	MSA,
+	/**
+	 * Restricted Model-Summarizing Acyclicity
+	 */
+	RMSA,
+	/**
+	 * Model-Faithful Acyclicity
+	 */
+	MFA,
+	/**
+	 * Restricted Model-Faithful Acyclicity
+	 */
+	RMFA;
 
-abstract class VLogIssue extends AbstractRulewerkIT {
 	@Override
-	protected String getResourcePrefix() {
-		return "/vlogissues/";
+	public Type getType() {
+		return Type.ACYCLIC;
 	}
 
 }

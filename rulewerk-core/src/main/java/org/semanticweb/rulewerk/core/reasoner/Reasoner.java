@@ -135,7 +135,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 * @throws IOException
 	 */
 	default Correctness writeInferences(final Writer writer) throws IOException {
-		final PrefixDeclarationRegistry prefixDeclarationRegistry = this.getKnowledgeBase().getPrefixDeclarationRegistry();
+		final PrefixDeclarationRegistry prefixDeclarationRegistry = this.getKnowledgeBase()
+				.getPrefixDeclarationRegistry();
 		final Serializer serializer = new Serializer(writer, prefixDeclarationRegistry);
 
 		serializer.writePrefixDeclarationRegistry(prefixDeclarationRegistry);
@@ -176,8 +177,8 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *         reasoning (materialisation) and its {@link KnowledgeBase}.
 	 * @throws IOException
 	 * @throws FileNotFoundException
-	 * @deprecated Use {@link Reasoner#writeInferences(Writer)} instead. The
-	 *             method will disappear.
+	 * @deprecated Use {@link Reasoner#writeInferences(Writer)} instead. The method
+	 *             will disappear.
 	 */
 	@Deprecated
 	default Correctness writeInferences(final String filePath) throws FileNotFoundException, IOException {
@@ -274,84 +275,6 @@ public interface Reasoner extends AutoCloseable, KnowledgeBaseListener {
 	 *                 to the default system output.
 	 */
 	void setLogFile(String filePath);
-
-	/**
-	 * Checks whether the loaded rules and loaded fact EDB predicates are Acyclic,
-	 * Cyclic, or cyclicity cannot be determined.
-	 *
-	 * @return the appropriate CyclicityResult.
-	 */
-	CyclicityResult checkForCycles();
-
-	/**
-	 * Check the <b>Joint Acyclicity (JA)</b> property of loaded rules and EDB
-	 * predicates of loaded facts. If a set of rules and EDB predicates is
-	 * <b>J</b>A, then, for the given set of rules and any facts over the given EDB
-	 * predicates, reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and,
-	 * implicitly, the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will
-	 * always terminate.
-	 *
-	 * @return {@code true}, if the loaded set of rules is Joint Acyclic with
-	 *         respect to the EDB predicates of loaded facts.<br>
-	 *         {@code false}, otherwise
-	 */
-	boolean isJA();
-
-	/**
-	 * Check the <b>Restricted Joint Acyclicity (RJA)</b> property of loaded rules
-	 * and EDB predicates of loaded facts. If a set of rules and EDB predicates is
-	 * <b>RJA</b>, then, for the given set of rules and any facts over the given EDB
-	 * predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE Restricted chase}
-	 * will always terminate
-	 *
-	 * @return {@code true}, if the loaded set of rules is Restricted Joint Acyclic
-	 *         with respect to the EDB predicates of loaded facts.<br>
-	 *         {@code false}, otherwise
-	 */
-	boolean isRJA();
-
-	/**
-	 * Check the <b>Model-Faithful Acyclicity (MFA)</b> property of loaded rules and
-	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is
-	 * <b>MFA</b>, then, for the given set of rules and any facts over the given EDB
-	 * predicates, reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} (and,
-	 * implicitly, the {@link Algorithm#RESTRICTED_CHASE Restricted chase}) will
-	 * always terminate
-	 *
-	 * @return {@code true}, if the loaded set of rules is Model-Faithful Acyclic
-	 *         with respect to the EDB predicates of loaded facts.<br>
-	 *         {@code false}, otherwise
-	 */
-	boolean isMFA();
-
-	/**
-	 * Check the <b>Restricted Model-Faithful Acyclicity (RMFA)</b> property of
-	 * loaded rules and EDB predicates of loaded facts. If a set of rules and EDB
-	 * predicates is <b>RMFA</b>, then, for the given set of rules and any facts
-	 * over the given EDB predicates, reasoning by {@link Algorithm#RESTRICTED_CHASE
-	 * Restricted chase} will always terminate. If a set of rules and EDB predicates
-	 * is MFA, then it is also JA.
-	 *
-	 * @return {@code true}, if the loaded set of rules is Restricted Model-Faithful
-	 *         Acyclic with respect to the EDB predicates of loaded facts.<br>
-	 *         {@code false}, otherwise
-	 */
-	boolean isRMFA();
-
-	/**
-	 * Check the <b>Model-Faithful Cyclicity (MFC)</b> property of loaded rules and
-	 * EDB predicates of loaded facts. If a set of rules and EDB predicates is
-	 * <b>MFC</b>, then there exists a set of facts over the given EDB predicates
-	 * for which reasoning by {@link Algorithm#SKOLEM_CHASE Skolem chase} algorithm
-	 * is guaranteed not to terminate for the loaded rules. If a set of rules and
-	 * EDB predicates is RMFA, then it is also RJA. Therefore, if a set or rules and
-	 * EDB predicates is MFC, it is not MFA, nor JA.
-	 *
-	 * @return {@code true}, if the loaded set of rules is Model-Faithful Cyclic
-	 *         with respect to the EDB predicates of loaded facts.<br>
-	 *         {@code false}, otherwise
-	 */
-	boolean isMFC();
 
 	/**
 	 * Performs materialisation on the reasoner {@link KnowledgeBase}, depending on

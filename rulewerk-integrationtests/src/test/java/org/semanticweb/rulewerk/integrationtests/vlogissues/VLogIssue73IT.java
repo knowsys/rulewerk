@@ -24,12 +24,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.semanticweb.rulewerk.core.model.api.DataSourceDeclaration;
-import org.semanticweb.rulewerk.core.model.api.Fact;
 import org.semanticweb.rulewerk.core.model.api.Statement;
 import org.semanticweb.rulewerk.core.reasoner.Correctness;
 import org.semanticweb.rulewerk.core.reasoner.QueryResultIterator;

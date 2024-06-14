@@ -28,7 +28,7 @@ import org.semanticweb.rulewerk.parser.ParsingException;
 import org.semanticweb.rulewerk.parser.RuleParser;
 import org.semanticweb.rulewerk.reasoner.vlog.VLogReasoner;
 
-public abstract class IntegrationTest {
+public abstract class AbstractRulewerkIT {
 	/**
 	 * Returns the prefix to use for resource names
 	 *
@@ -90,4 +90,5 @@ public abstract class IntegrationTest {
 	protected Reasoner getReasonerWithKbFromResource(final String resourceName) throws ParsingException {
 		return new VLogReasoner(this.parseKbFromResource(resourceName));
 	}
+	
 }
